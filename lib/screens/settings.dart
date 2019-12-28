@@ -10,28 +10,28 @@ class SettingsTile extends StatelessWidget {
       child: Card(
         margin: EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
         child: ListTile(
-            title: Text("MTN Nigeria Ltd",
+            title: Text("Abiola Rasheed",
               style: TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
                   fontSize: 15
               ),
             ),
-            subtitle: Text("Insufficient Funds"),
+            subtitle: Text("abiola.rasheed"),
             leading: Image.network(
-              'https://cdn.primedia.co.za/primedia-broadcasting/image/upload/c_fill,h_289,w_463/vog0kklmjnimmofrd1u4',
+              'https://avatars3.githubusercontent.com/u/2910568?s=460&v=4',
               height: 45,
               width: 45,
               colorBlendMode: BlendMode.darken,
               fit: BoxFit.fitWidth,
               filterQuality: FilterQuality.high,
             ),
-            trailing: Text(
-              "₦ 98,042",
-              style: TextStyle(color: Colors.green[400],
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15),
-            )
+            trailing: FlatButton(
+              child: Icon(Icons.mode_edit, color: Colors.grey[400]),
+              onPressed: () {
+
+              },
+            ),
         ),
       ),
     );
@@ -53,12 +53,32 @@ class _SettingsListState extends State<SettingsList> {
         backgroundColor: Colors.green,
         title: Text('Settings'),
       ),
-//      body: ListView.builder(
-//        itemBuilder: (context, index) {
-//          return SettingsTile();
-//        },
-//        itemCount: 10,
-//      ),
+      body: Center(
+        child: Container(
+          color: Colors.grey,
+          padding: EdgeInsets.all(24),
+          child: Center(
+            child: Column(
+              children: <Widget>[
+                SizedBox(height: 20),
+                SettingsTile(),
+                SizedBox(height: 20),
+
+                ButtonTheme(
+                  minWidth: double.infinity,
+                  child: MaterialButton(
+                    onPressed: () => {},
+                    textColor: Colors.black,
+                    color: Colors.white,
+                    height: 50,
+                    child: Text("Log In"),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
