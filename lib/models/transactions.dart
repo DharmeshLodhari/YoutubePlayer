@@ -1,13 +1,17 @@
 
 class Transaction {
-  int amount;
-  String title;
-  String subtitle;
   String status;
+  String uuid;
+  String description;
+  String payee;
+  String payeeUrl;
+  String currency;
+  int amount;
   bool isCredit;
 
   // Pass in as named parameter in constructor
-  Transaction({this.amount, this.title, this.subtitle, this.status, this.isCredit});
+  Transaction({this.status, this.uuid, this.description,
+    this.payee, this.payeeUrl, this.currency, this.amount, this.isCredit});
 
 }
 
