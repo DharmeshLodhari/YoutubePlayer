@@ -13,16 +13,16 @@ class TransactionTile extends StatelessWidget {
       child: Card(
         margin: EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
         child: ListTile(
-          title: Text("MTN Nigeria Ltd",
+          title: Text(transaction.payee,
             style: TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.bold,
                 fontSize: 15
             ),
           ),
-          subtitle: Text("Insufficient Funds"),
+          subtitle: Text(transaction.description),
           leading: Image.network(
-            'https://cdn.primedia.co.za/primedia-broadcasting/image/upload/c_fill,h_289,w_463/vog0kklmjnimmofrd1u4',
+            transaction.payeeUrl,
             height: 45,
             width: 45,
             colorBlendMode: BlendMode.darken,
@@ -30,8 +30,8 @@ class TransactionTile extends StatelessWidget {
             filterQuality: FilterQuality.high,
           ),
           trailing: Text(
-            "₦ 98,042",
-          style: TextStyle(color: Colors.green[400],
+            transaction.currency + ' ' + transaction.amount.toString(),
+          style: TextStyle(color: transaction.isCredit? Colors.green[400] : Colors.grey[600],
               fontWeight: FontWeight.bold,
               fontSize: 15),
           )
