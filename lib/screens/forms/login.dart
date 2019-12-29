@@ -86,7 +86,9 @@ class _UserLoginState extends State<UserLogin> {
                     //color: Colors.green,
                     minWidth: double.infinity,
                     child: MaterialButton(
-                      onPressed: () => {},
+                      onPressed: () {
+                        Navigator.of(context).pushNamed('/profile');
+                      },
                       textColor: Colors.white,
                       color: Colors.green,
                       height: 50,

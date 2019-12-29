@@ -1,3 +1,18 @@
+class BankAccount {
+  String uuid;
+  String bankAvatar;
+  String bankName;
+  String accountName;
+  int accountNumber;
+
+  BankAccount({ this.uuid,
+    this.bankAvatar,
+    this.bankName,
+    this.accountName,
+    this.accountNumber});
+
+}
+
 
 class Transaction {
   String status;

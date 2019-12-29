@@ -1,0 +1,59 @@
+import 'package:flutter/material.dart';
+import 'package:PayBay/screens/bank_accounts.dart';
+import 'package:PayBay/screens/forms/add_bank_account.dart';
+import 'package:PayBay/screens/forms/login.dart';
+import 'package:PayBay/screens/forms/payment.dart';
+import 'package:PayBay/screens/forms/signup.dart';
+import 'package:PayBay/screens/home.dart';
+import 'package:PayBay/screens/profile.dart';
+import 'package:PayBay/screens/settings.dart';
+import 'package:PayBay/screens/tiles/transaction.dart';
+import 'package:PayBay/screens/transactions.dart';
+
+
+class RouteGenerator {
+  static Route<dynamic> generateRoute(RouteSettings settings) {
+    // Getting arguments passed in while calling Navigator.pushNamed
+    final args = settings.arguments;
+
+    switch (settings.name) {
+      case '/':
+        return MaterialPageRoute(builder: (_) => Home());
+      case '/register':
+        return MaterialPageRoute(builder: (_) => SignUp());
+      case '/login':
+        return MaterialPageRoute(builder: (_) => UserLogin());
+      case '/profile':
+        return MaterialPageRoute(builder: (_) => Profile());
+      case '/accounts':
+        return MaterialPageRoute(builder: (_) => BankAccountList());
+      case '/transactions':
+        return MaterialPageRoute(builder: (_) => TransactionList());
+      case '/settings':
+        return MaterialPageRoute(builder: (_) => SettingsList());
+      case '/accounts':
+        return MaterialPageRoute(builder: (_) => AddAccount());
+      case '/send-payment' :
+        return MaterialPageRoute(builder: (_) => SendPayment());
+      case '/add-bank-account' :
+        return MaterialPageRoute(builder: (_) => AddAccount());
+
+      default:
+      // If there is no such named route in the switch statement, e.g. /third
+        return _errorRoute();
+    }
+  }
+
+  static Route<dynamic> _errorRoute() {
+    return MaterialPageRoute(builder: (_) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text('Error'),
+        ),
+        body: Center(
+          child: Text('ERROR'),
+        ),
+      );
+    });
+  }
+}

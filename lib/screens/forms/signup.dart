@@ -183,7 +183,9 @@ class _SignUpState extends State<SignUp> {
                     //color: Colors.green,
                     minWidth: double.infinity,
                     child: MaterialButton(
-                      onPressed: () => {},
+                      onPressed: () {
+                        Navigator.of(context).pushNamed('/login');
+                      },
                       textColor: Colors.white,
                       color: Colors.green,
                       height: 50,

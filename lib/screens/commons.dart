@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 
 
-// https://willowtreeapps.com/ideas/how-to-use-flutter-to-build-an-app-with-bottom-navigation
-//https://api.flutter.dev/flutter/material/BottomNavigationBar-class.html?source=post_page---------------------------
-
-
 BottomNavigationBar bottomNavigationBar = BottomNavigationBar(
-  currentIndex: 2, // new
+  currentIndex: 0,
   items: [
     BottomNavigationBarItem(
       icon: Icon(Icons.home,

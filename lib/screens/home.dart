@@ -38,7 +38,9 @@ class _HomeState extends State<Home> {
                   ButtonTheme(
                     minWidth: double.infinity,
                     child: MaterialButton(
-                      onPressed: () => {},
+                      onPressed: () {
+                        Navigator.of(context).pushNamed('/login');
+                      },
                       textColor: Colors.black,
                       color: Colors.white,
                       height: 50,
@@ -50,7 +52,9 @@ class _HomeState extends State<Home> {
                     minWidth: double.infinity,
                     child: MaterialButton(
                       shape: RoundedRectangleBorder(side: BorderSide(color: Colors.white, width: 2.0)),
-                      onPressed: () => {},
+                      onPressed: () {
+                        Navigator.of(context).pushNamed('/register');
+                      },
                       textColor: Colors.white,
                       color: Colors.green,
                       height: 50,
