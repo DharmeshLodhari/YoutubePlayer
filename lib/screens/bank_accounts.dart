@@ -1,12 +1,8 @@
-import 'dart:convert';
-
 import 'package:PayBay/data/state_notifier.dart';
-import 'package:PayBay/models/transactions.dart';
 import 'package:PayBay/screens/tiles/bank_account.dart';
 import 'package:PayBay/services/auth.dart';
 import 'package:PayBay/splash.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 

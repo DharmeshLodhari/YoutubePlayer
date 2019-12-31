@@ -25,9 +25,16 @@ dependencies:
   sqflite: ^1.2.0
   path_provider: ^1.5.1
 
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/android-chrome-512x512.png"
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: "^0.7.3"
 
 
 

@@ -1,7 +1,5 @@
 import 'package:PayBay/data/state_notifier.dart';
-import 'package:PayBay/models/user.dart';
 import 'package:PayBay/services/auth.dart';
-import 'package:PayBay/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
