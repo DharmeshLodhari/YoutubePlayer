@@ -1,9 +1,13 @@
 import 'dart:convert';
 
+import 'package:PayBay/data/state_notifier.dart';
 import 'package:PayBay/models/transactions.dart';
 import 'package:PayBay/screens/tiles/bank_account.dart';
+import 'package:PayBay/services/auth.dart';
+import 'package:PayBay/splash.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 
 class BankAccountList extends StatefulWidget {
@@ -15,34 +19,12 @@ class BankAccountList extends StatefulWidget {
 class _BankAccountListState extends State<BankAccountList> {
   // Get list of user bank account
   int _currentIndex = 1;
-
-  Future<List<BankAccount>> _getBankAccounts() async {
-    final String accountsURL = "https://api.mockaroo.com/api/dc0e65c0?count=4&key=b81ba250";
-    var response = await http.get(accountsURL);
-
-    List<BankAccount> accounts = [];
-    if (response.statusCode == 200) {
-      var jsonData = json.decode(response.body);
-
-      for(var item in jsonData) {
-        BankAccount account = BankAccount(
-            bankAvatar: item['bankAvatar'],
-            uuid: item['uuid'],
-            bankName: item['bankName'],
-            accountName: item['accountName'],
-            accountNumber: int.parse(item['accountNumber']));
-        accounts.add(account);
-      }
-
-      return accounts;
-    }else{
-      throw "Can't get https.";
-    }
-  }
-
+  final _auth = AuthService();
 
   @override
   Widget build(BuildContext context) {
+    final UserBloc userBloc = Provider.of<UserBloc>(context);
+
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
@@ -50,12 +32,10 @@ class _BankAccountListState extends State<BankAccountList> {
         title: Text('My Bank Accounts'),
       ),
       body: FutureBuilder(
-        future: _getBankAccounts(),
+        future: _auth.getBankAccounts(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.data == null) {
-            return Container(
-              child: Text('missing'),
-            );
+            return SplashScreen();
           } else {
             return ListView.builder(
               itemCount: snapshot.data.length,

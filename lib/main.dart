@@ -1,21 +1,22 @@
-import 'package:PayBay/screens/bank_accounts.dart';
-import 'package:PayBay/screens/forms/add_bank_account.dart';
-import 'package:PayBay/screens/forms/login.dart';
-import 'package:PayBay/screens/forms/payment.dart';
-import 'package:PayBay/screens/forms/signup.dart';
-import 'package:PayBay/screens/home.dart';
-import 'package:PayBay/screens/profile.dart';
+import 'package:PayBay/data/state_notifier.dart';
 import 'package:PayBay/screens/route_generator.dart';
-import 'package:PayBay/screens/settings.dart';
-import 'package:PayBay/screens/tiles/transaction.dart';
-import 'package:PayBay/screens/transactions.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 
-void main() => runApp(MaterialApp(
-    initialRoute: '/',
-    onGenerateRoute: RouteGenerator.generateRoute,
+void main() => runApp(
+    MultiProvider(
+        providers: [
+            ChangeNotifierProvider<UserBloc>.value(
+                value: UserBloc(),
+            )
+        ],
+       child: MaterialApp(
+           initialRoute: '/',
+           onGenerateRoute: RouteGenerator.generateRoute
+       )
+    ),
+);
 
-));
 
 

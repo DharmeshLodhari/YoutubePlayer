@@ -1,25 +1,31 @@
+import 'package:PayBay/data/state_notifier.dart';
+import 'package:PayBay/models/user.dart';
+import 'package:PayBay/services/auth.dart';
 import 'package:PayBay/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 
 class SettingsTile extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
+    final UserBloc userBloc = Provider.of<UserBloc>(context);
+
     return Padding(
       padding: EdgeInsets.only(top: 8.0),
       child: Card(
         margin: EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
         child: ListTile(
-            title: Text("Abiola Rasheed",
+            title: Text(userBloc.user.fullName,
               style: TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
                   fontSize: 15
               ),
             ),
-            subtitle: Text("abiola.rasheed"),
-            leading: Image.network(
-              'https://avatars3.githubusercontent.com/u/2910568?s=460&v=4',
+            subtitle: Text(userBloc.user.userName),
+            leading: Image.network(userBloc.user.avatar,
               height: 45,
               width: 45,
               colorBlendMode: BlendMode.darken,
@@ -38,14 +44,20 @@ class SettingsTile extends StatelessWidget {
 
 
 class SettingsList extends StatefulWidget {
+
   @override
   _SettingsListState createState() => _SettingsListState();
 }
 
 class _SettingsListState extends State<SettingsList> {
   int _currentIndex = 3;
+  final _auth = AuthService();
+
+
   @override
   Widget build(BuildContext context) {
+    final UserBloc userBloc = Provider.of<UserBloc>(context);
+
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
@@ -54,7 +66,7 @@ class _SettingsListState extends State<SettingsList> {
       ),
       body: Center(
         child: Container(
-          color: Colors.grey,
+          color: Colors.white,
           padding: EdgeInsets.all(24),
           child: Center(
             child: Column(
@@ -66,8 +78,9 @@ class _SettingsListState extends State<SettingsList> {
                 ButtonTheme(
                   minWidth: double.infinity,
                   child: MaterialButton(
-                    onPressed: () {
-                      logOut(context);
+                    onPressed: () async {
+                      await _auth.logOut();
+                      Navigator.of(context).pushNamed('/');
                     },
                     textColor: Colors.black,
                     color: Colors.white,

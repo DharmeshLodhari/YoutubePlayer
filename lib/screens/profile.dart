@@ -1,5 +1,7 @@
-import 'package:PayBay/models/user.dart';
+import 'package:PayBay/data/state_notifier.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 
 
 class Profile extends StatefulWidget {
@@ -7,20 +9,14 @@ class Profile extends StatefulWidget {
   _ProfileState createState() => _ProfileState();
 }
 
+
 class _ProfileState extends State<Profile> {
   int _currentIndex = 0;
 
-  User _user = User(
-    uuid: '16a33e14-36a0-4d9f-9efe-14ca1b0121bc',
-    url: 'http://paybay.com/api/v1/customer/abiola.rasheed',
-    phoneNumber: '+353877478230',
-    fullName: 'Abiola Rasheed',
-    userName: 'abiola.rasheed',
-    avatar: 'https://randomuser.me/api/portraits/men/83.jpg',
-    qrCode: 'https://cdn.britannica.com/s:700x500/17/155017-050-9AC96FC8/Example-QR-code.jpg');
-
   @override
   Widget build(BuildContext context) {
+    final UserBloc userBloc = Provider.of<UserBloc>(context);
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -47,7 +43,7 @@ class _ProfileState extends State<Profile> {
                           Container(
                             padding: EdgeInsets.all(40),
                             child: Image.network(
-                              _user.qrCode,
+                              userBloc.user.qrCode,
                               colorBlendMode: BlendMode.darken,
                               fit: BoxFit.fitWidth,
                               filterQuality: FilterQuality.high,
@@ -57,7 +53,7 @@ class _ProfileState extends State<Profile> {
                     children: <Widget>[
 
                       FlatButton(onPressed: (){},
-                          child: Text(_user.fullName, style: TextStyle(color: Colors.black, fontSize: 14))
+                          child: Text(userBloc.user.fullName, style: TextStyle(color: Colors.black, fontSize: 14))
                       ),
 
                       FlatButton.icon(onPressed: (){},

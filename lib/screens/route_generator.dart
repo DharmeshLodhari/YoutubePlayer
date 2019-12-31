@@ -7,7 +7,6 @@ import 'package:PayBay/screens/forms/signup.dart';
 import 'package:PayBay/screens/home.dart';
 import 'package:PayBay/screens/profile.dart';
 import 'package:PayBay/screens/settings.dart';
-import 'package:PayBay/screens/tiles/transaction.dart';
 import 'package:PayBay/screens/transactions.dart';
 
 
@@ -17,12 +16,12 @@ class RouteGenerator {
     final args = settings.arguments;
 
     switch (settings.name) {
+      case '/login':
+        return MaterialPageRoute(builder: (_) => UserLogin());
       case '/':
         return MaterialPageRoute(builder: (_) => Home());
       case '/register':
         return MaterialPageRoute(builder: (_) => SignUp());
-      case '/login':
-        return MaterialPageRoute(builder: (_) => UserLogin());
       case '/profile':
         return MaterialPageRoute(builder: (_) => Profile());
       case '/accounts':

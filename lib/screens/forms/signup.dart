@@ -1,4 +1,41 @@
+import 'package:PayBay/services/auth.dart';
 import 'package:flutter/material.dart';
+
+
+List<List<String >>  banks = [
+  ['Union Bank Of Nigeria Plc', 'union-bank-of-nigeria-plc'],
+  ['Unity Bank Plc', 'unity-bank-plc'],
+  ['Providus Bank', 'providus-bank'],
+  ['Zenith Bank Plc', 'zenith-bank-plc'],
+  ['Citibank Nigeria Limited', 'citibank-nigeria-limited'],
+  ['Stanbic Ibtc Bank Ltd', 'stanbic-ibtc-bank-ltd'],
+  ['Guaranty Trust Bank Plc', 'guaranty-trust-bank-plc'],
+  ['Suntrust Bank Nigeria Limited', 'suntrust-bank-nigeria-limited'],
+  ['Access Bank Plc', 'access-bank-plc'],
+  ['Key Stone Bank', 'key-stone-bank'],
+  ['First Bank Nigeria Limited', 'first-bank-nigeria-limited'],
+  ['Sterling Bank Plc', 'sterling-bank-plc'],
+  ['Ecobank Nigeria Plc', 'ecobank-nigeria-plc'],
+  ['Standard Chartered Bank Nigeria Ltd',
+  'standard-chartered-bank-nigeria-ltd'],
+  ['Heritage Banking Company Ltd', 'heritage-banking-company-ltd'],
+  ['Globus Bank Limited', 'globus-bank-limited'],
+  ['Titan Trust Bank Ltd', 'titan-trust-bank-ltd'],
+  ['United Bank For Africa Plc', 'united-bank-for-africa-plc'],
+  ['Diamond Bank Plc', 'diamond-bank-plc'],
+  ['First City Monument Bank Plc', 'first-city-monument-bank-plc'],
+  ['Polaris Bank', 'polaris-bank'],
+  ['Fidelity Bank Plc', 'fidelity-bank-plc'],
+  ['Wema Bank Plc', 'wema-bank-plc']
+];
+
+
+
+
+
+
+
+
 
 class SignUp extends StatefulWidget {
   @override
@@ -6,33 +43,42 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
+  final _formKey = GlobalKey<FormState>();
+  final _auth = AuthService();
+
   String phoneNumber = '';
 
-  String accountNumber = '';
-  String accountName = '';
   String bankName = '';
+  String accountName = '';
+  String accountNumber = '';
 
   String password1 = '';
   String password2 = '';
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text('Create your PayBay Account'),
         backgroundColor: Colors.green,
         elevation: 0.0,
       ),
-      body: Center(
-        child: SingleChildScrollView(
+      body: Container(
+        color: Colors.white,
+        //padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0),
+
+        child: Form(
+          key: _formKey,
           child: Container(
             color: Colors.white,
             padding: EdgeInsets.all(24),
             child: Center(
               child: Column(
                 children: <Widget>[
-                  TextField(
+                  TextFormField(
                     autofocus: false,
                     obscureText: false,
                     keyboardType: TextInputType.phone,
@@ -49,11 +95,22 @@ class _SignUpState extends State<SignUp> {
                                 width: 1,
                                 color: Colors.green,
                                 style: BorderStyle.solid))),
+                    validator: (val) {
+                      if(val.isNotEmpty && val.length == 13) {
+                        return null;
+                      }
+                      return "Invalid phone number";
+                    },
+                    onChanged: (val){
+                      setState(() {
+                        phoneNumber = val;
+                      });
+                    },
                   ),
                   SizedBox(
                     height: 10,
                   ),
-                  TextField(
+                  TextFormField(
                     autofocus: false,
                     obscureText: false,
                     //keyboardType: TextInputType.phone,
@@ -70,14 +127,18 @@ class _SignUpState extends State<SignUp> {
                                 width: 1,
                                 color: Colors.green,
                                 style: BorderStyle.solid))),
+                    validator: (val) => val.isEmpty ? "Enter a valid account number." : null,
+                    onChanged: (val){
+                      setState(() {
+                        bankName = val;
+                      });
+                    },
                   ),
                   SizedBox(
                     height: 10,
                   ),
-                  TextField(
-                    autofocus: false,
-                    obscureText: false,
-                    //keyboardType: TextInputType.phone,
+                  TextFormField(
+                    autofocus: true,
                     decoration: InputDecoration(
                         labelText: "Account Name",
                         hintText: "Account Name",
@@ -91,11 +152,17 @@ class _SignUpState extends State<SignUp> {
                                 width: 1,
                                 color: Colors.green,
                                 style: BorderStyle.solid))),
+                    validator: (val) => val.length < 5? "Enter a valid account number." : null,
+                    onChanged: (val){
+                      setState(() {
+                        accountName = val;
+                      });
+                    },
                   ),
                   SizedBox(
                     height: 10,
                   ),
-                  TextField(
+                  TextFormField(
                     autofocus: false,
                     obscureText: false,
                     keyboardType: TextInputType.phone,
@@ -112,6 +179,12 @@ class _SignUpState extends State<SignUp> {
                                 width: 1,
                                 color: Colors.green,
                                 style: BorderStyle.solid))),
+                    validator: (val) => val.length < 10 ? "Enter a valid account name." : null,
+                    onChanged: (val){
+                      setState(() {
+                        accountNumber = val;
+                      });
+                    },
                   ),
                   SizedBox(
                     height: 10,
@@ -125,8 +198,7 @@ class _SignUpState extends State<SignUp> {
                     height: 10,
                   ),
 
-
-                  TextField(
+                  TextFormField(
                     autofocus: false,
                     obscureText: true,
                     keyboardType: TextInputType.visiblePassword,
@@ -143,12 +215,18 @@ class _SignUpState extends State<SignUp> {
                                 width: 1,
                                 color: Colors.green,
                                 style: BorderStyle.solid))),
+                    validator: (val) => val.length < 6 ? "Enter a valid Password." : null,
+                    onChanged: (val){
+                      setState(() {
+                        password1 = val;
+                      });
+                    },
                   ),
                   SizedBox(
                     height: 10,
                   ),
 
-                  TextField(
+                  TextFormField(
                     autofocus: false,
                     obscureText: true,
                     keyboardType: TextInputType.visiblePassword,
@@ -165,6 +243,12 @@ class _SignUpState extends State<SignUp> {
                                 width: 1,
                                 color: Colors.green,
                                 style: BorderStyle.solid))),
+                    validator: (val) => (val.length < 6 && val != password1) ? "Enter a valid Password." : null,
+                    onChanged: (val){
+                      setState(() {
+                        password2 = val;
+                      });
+                    },
                   ),
 
                   SizedBox(
@@ -183,8 +267,23 @@ class _SignUpState extends State<SignUp> {
                     //color: Colors.green,
                     minWidth: double.infinity,
                     child: MaterialButton(
-                      onPressed: () {
-                        Navigator.of(context).pushNamed('/login');
+                      onPressed: () async {
+                        print('-----------------------------');
+
+                        if(_formKey.currentState.validate()) {
+                          Map data = {
+                            "phoneNumber": phoneNumber,
+                            "bankName": bankName,
+                            "accountName": accountName,
+                            "accountNumber": accountNumber,
+                            "password1": password1,
+                            "password2": password2,
+                          };
+                          bool isRegistered = await _auth.userRegistration(data);
+                          if(isRegistered) {
+                            Navigator.of(context).pushNamed('/login');
+                          }
+                        }
                       },
                       textColor: Colors.white,
                       color: Colors.green,
