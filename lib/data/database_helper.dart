@@ -37,6 +37,7 @@ class DatabaseHelper {
         "CREATE TABLE Jwt(access TEXT PRIMARY KEY, refresh TEXT, expiration TEXT)");
   }
 
+  // User Object methods
   Future<int> saveUser(User user) async {
     var dbClient = await db;
     int res = await dbClient.insert("User", user.toMap());
@@ -76,5 +77,30 @@ class DatabaseHelper {
       users.add(u);
     }
     return users[0];
+  }
+
+  // Jwt Object methods
+  Future<int> saveJwt(Map<String, dynamic> data) async {
+    var dbClient = await db;
+    int res = await dbClient.insert("Jwt", data);
+    return res;
+  }
+
+  Future<int> deleteJwt() async {
+    var dbClient = await db;
+    int res = await dbClient.delete("Jwt");
+    return res;
+  }
+
+  Future<Map<String, dynamic>> getJwt() async {
+    // Get the user
+    var dbClient = await db;
+    var res = await dbClient.query("Jwt");
+
+    try {
+      return res[0];
+    } catch (e) {
+      throw e;
+    }
   }
 }
