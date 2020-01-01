@@ -22,42 +22,50 @@ class DatabaseHelper {
 
   initDb() async {
     io.Directory documentsDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentsDirectory.path, "main2.db");
-    var theDb = await openDatabase(path, version: 2, onCreate: _onCreate);
+    String path = join(documentsDirectory.path, "main6.db");
+    var theDb = await openDatabase(path, version: 6, onCreate: _onCreate);
     return theDb;
   }
 
+  // Create this database tables when we initialize app
   void _onCreate(Database db, int version) async {
-    // When creating the db, create the table
+    // Create the user table
     await db.execute(
         "CREATE TABLE User(uuid TEXT PRIMARY KEY, fullName TEXT, userName TEXT, "
         "phoneNumber TEXT, password TEXT, avatar TEXT, qrCode TEXT, url TEXT)");
 
+    // Create the jwt table
     await db.execute(
         "CREATE TABLE Jwt(access TEXT PRIMARY KEY, refresh TEXT, expiration TEXT)");
   }
 
-  // User Object methods
+  // Close connect to the db
+  Future close() async => _db.close();
+
+  // User operations
+
+  // Save user to the db
   Future<int> saveUser(User user) async {
     var dbClient = await db;
     int res = await dbClient.insert("User", user.toMap());
     return res;
   }
 
+  // Delete user from db
   Future<int> deleteUsers() async {
     var dbClient = await db;
     int res = await dbClient.delete("User");
     return res;
   }
 
-  Future close() async => _db.close();
-
+  // check if the current user is logged in
   Future<bool> isLoggedIn() async {
     var dbClient = await db;
     var res = await dbClient.query("User");
     return res.length > 0 ? true : false;
   }
 
+  // Get the current user
   Future<User> getUser() async {
     // Get the user
     var dbClient = await db;
@@ -79,21 +87,24 @@ class DatabaseHelper {
     return users[0];
   }
 
-  // Jwt Object methods
+  // Jwt operations
+
+  // save user's jwt to the db
   Future<int> saveJwt(Map<String, dynamic> data) async {
     var dbClient = await db;
     int res = await dbClient.insert("Jwt", data);
     return res;
   }
 
+  // Delete the jwt from the db
   Future<int> deleteJwt() async {
     var dbClient = await db;
     int res = await dbClient.delete("Jwt");
     return res;
   }
 
+  // Get current user's jwt from db
   Future<Map<String, dynamic>> getJwt() async {
-    // Get the user
     var dbClient = await db;
     var res = await dbClient.query("Jwt");
 

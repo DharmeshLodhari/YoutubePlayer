@@ -5,7 +5,7 @@ import 'package:PayBay/models/transactions.dart';
 import 'package:PayBay/models/user.dart';
 import 'package:http/http.dart' as http;
 
-String ums = "http://192.168.1.5:8080";
+final String ums = "http://192.168.1.5:8080";
 final String pts = "http://192.168.1.5:8000";
 
 class AuthService {
@@ -29,19 +29,48 @@ class AuthService {
     return _user;
   }
 
-  // log user in if credentials are correct
+  // Log user in if credentials are correct
   Future<User> authenticate(String phoneNumber, String password) async {
-    // make http connection here and
+    // This method will pass the user name and password to the backend server
+    // and if credentials are correct will receive payload with jwt and user info
+    // which will be saved to the user table and jwt table then create
+    // a user instance which we should pass around throughout the application as
+    // the auth user.
+
+    DateTime now = DateTime.now();
+
     var url = ums + "/api/v1/auth/get-token/";
     Map _body = {"password": password, "phone_number": phoneNumber};
     var response = await http.post(url, body: _body);
 
     if (response.statusCode == 200) {
-      var jsonData = json.decode(response.body)["user"];
+      // Because the jwt expires every 5 minutes we will take note of the time they
+      // where  created and the use that to compute the expiration time of the
+      // token. So that we will only use the token if its still valid.
+      // We play safe and use 4 minutes
+      DateTime expirationTime = now.add(Duration(seconds: 300));
+
+      Map<String, String> data = {};
+      var jsonResponse = json.decode(response.body);
+      var jsonData = jsonResponse["user"];
+
+      // Get `access` and `refresh` Tokens from response
+      data["access"] = jsonResponse["access"];
+      data["refresh"] = jsonResponse["refresh"];
+
+      // Convert DateTime object to string before passing it in.
+      data["expiration"] = expirationTime.toString();
+
       jsonData["password"] = password;
       jsonData["url"] = ums + "/api/v1/customer/" + jsonData["username"];
 
+      // Delete user from db if one exist
       deleteUsers();
+
+      // Delete jwt from db if one exist
+      deleteJwt();
+
+      // Save user to database
       User user = createUser(
           jsonData["uuid"],
           jsonData["url"].replaceAll("http://127.0.0.1:8080", ums),
@@ -51,6 +80,9 @@ class AuthService {
           jsonData["avatar"].replaceAll("http://127.0.0.1:8080", ums),
           jsonData["qr_code"].replaceAll("http://127.0.0.1:8080", ums),
           jsonData["password"]);
+
+      _db.saveJwt(data);
+
       return user;
     }
     return User(
@@ -74,13 +106,48 @@ class AuthService {
     return await _db.deleteUsers();
   }
 
+  // Close connection to db
   Future close() async => _db.close();
 
-  // get user instance from db
+  // Get user instance from db
   Future<User> getUser() async {
     return await _db.getUser();
   }
 
+  // Check if token has expired
+  bool hasTokenExpired(String expirationTime) {
+    // Will return false if token is still valid and true is token is no longer usefull
+    DateTime now = DateTime.now();
+    DateTime tokenExpirationTime = DateTime.parse(expirationTime);
+    return !now.isBefore(tokenExpirationTime);
+  }
+
+  // Get jwt
+  Future<Map<String, dynamic>> getJwt() async {
+    return await _db.getJwt();
+  }
+
+  Future<Map<String, String>> getAuthHeaders() async {
+    var tokenData = await _db.getJwt();
+    String expirationTime = tokenData['expiration'];
+
+    // Authenticate again if token has expired
+    if (hasTokenExpired(expirationTime)) {
+      User _user = await getUser();
+      authenticate(_user.phoneNumber, _user.password);
+      tokenData = await _db.getJwt(); // get new token now
+    }
+    String bearer = "Bearer " + tokenData["access"];
+    var headers = {"Authorization": bearer, "Content-type": "application/json"};
+    return headers;
+  }
+
+  // Delete JWT from db
+  Future<int> deleteJwt() async {
+    return await _db.deleteJwt();
+  }
+
+  // Register the user with the backend servers
   Future<bool> userRegistration(Map _body) async {
     var url = ums + "/api/v1/account/";
     Map data = {};
@@ -101,9 +168,11 @@ class AuthService {
     return false;
   }
 
+  // List the users bank accounts
   Future<List<BankAccount>> getBankAccounts() async {
-    var url = pts + "/transactions/bank-accounts-list";
-    var response = await http.get(url);
+    var url = pts + "/transactions/bank-accounts-list/";
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
 
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
@@ -129,13 +198,16 @@ class AuthService {
     }
   }
 
+  // List users transactions
   Future<List<Transaction>> getTransactions() async {
-    var url = pts + "/transactions/list";
-    var response = await http.get(url);
+    var url = pts + "/transactions/list/";
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
 
-    List<Transaction> transactions = [];
-    var user = await getUser();
     if (response.statusCode == 200) {
+      List<Transaction> transactions = [];
+      // This variable will hold list of transactions we got from server
+      var user = await getUser();
       var jsonData = json.decode(response.body);
       var imageUrl = ums + "/media/customer/avatar/me_rWdkxLb.jpeg";
 
