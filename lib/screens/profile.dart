@@ -2,13 +2,10 @@ import 'package:PayBay/data/state_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-
-
 class Profile extends StatefulWidget {
   @override
   _ProfileState createState() => _ProfileState();
 }
-
 
 class _ProfileState extends State<Profile> {
   int _currentIndex = 0;
@@ -49,18 +46,22 @@ class _ProfileState extends State<Profile> {
                               filterQuality: FilterQuality.high,
                             ),
                           ),
-                  ButtonBar(
-                    children: <Widget>[
-
-                      FlatButton(onPressed: (){},
-                          child: Text(userBloc.user.fullName, style: TextStyle(color: Colors.black, fontSize: 14))
-                      ),
-
-                      FlatButton.icon(onPressed: (){},
-                          icon: Icon(Icons.settings, color: Colors.black),
-                          label: Text('Copy Url', style: TextStyle(color: Colors.black, fontSize: 14))),
-                    ],
-                  ),
+                          ButtonBar(
+                            children: <Widget>[
+                              FlatButton(
+                                  onPressed: () {},
+                                  child: Text(userBloc.user.fullName,
+                                      style: TextStyle(
+                                          color: Colors.black, fontSize: 14))),
+                              FlatButton.icon(
+                                  onPressed: () {},
+                                  icon:
+                                      Icon(Icons.settings, color: Colors.black),
+                                  label: Text('Copy Url',
+                                      style: TextStyle(
+                                          color: Colors.black, fontSize: 14))),
+                            ],
+                          ),
                         ],
                       ),
                     ),
@@ -108,37 +109,36 @@ class _ProfileState extends State<Profile> {
             case '3':
               return Navigator.of(context).pushNamed('/settings');
             default:
-            // If there is no such named route in the switch statement, e.g. /third
+              // If there is no such named route in the switch statement, e.g. /third
               return Navigator.of(context).pushNamed('/profile');
           }
         },
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home,
-              color: Colors.grey[400],),
-            title: Text('Home', style: TextStyle(color: Colors.grey[400], fontSize: 12)),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.group,
-                color: Colors.grey[400]),
-            title: Text('Accounts', style: TextStyle(color: Colors.grey[400], fontSize: 12)),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart,
-                color: Colors.grey[400]
+            icon: Icon(
+              Icons.home,
+              color: Colors.grey[400],
             ),
-            title: Text('Transactions', style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+            title: Text('Home',
+                style: TextStyle(color: Colors.grey[400], fontSize: 12)),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings,
-                color: Colors.grey[400]
-            ),
-            title: Text('Settings', style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+            icon: Icon(Icons.group, color: Colors.grey[400]),
+            title: Text('Accounts',
+                style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_cart, color: Colors.grey[400]),
+            title: Text('Transactions',
+                style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings, color: Colors.grey[400]),
+            title: Text('Settings',
+                style: TextStyle(color: Colors.grey[400], fontSize: 12)),
           ),
         ],
       ),
-
-
     );
   }
 }

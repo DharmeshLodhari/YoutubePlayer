@@ -5,13 +5,10 @@ import 'package:PayBay/splash.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-
-
 class TransactionList extends StatefulWidget {
   @override
   _TransactionListState createState() => _TransactionListState();
 }
-
 
 class _TransactionListState extends State<TransactionList> {
   // Get list of users transactions
@@ -36,12 +33,12 @@ class _TransactionListState extends State<TransactionList> {
           } else {
             return ListView.builder(
               itemCount: snapshot.data.length,
-              itemBuilder: (BuildContext context, int index){
+              itemBuilder: (BuildContext context, int index) {
                 var item = snapshot.data[index];
                 return TransactionTile(transaction: item);
               },
             );
-           }
+          }
         },
       ),
 // TODO: Find a better way to do this without duplication
@@ -64,35 +61,36 @@ class _TransactionListState extends State<TransactionList> {
             case '3':
               return Navigator.of(context).pushNamed('/settings');
             default:
-            // If there is no such named route in the switch statement, e.g. /third
+              // If there is no such named route in the switch statement, e.g. /third
               return Navigator.of(context).pushNamed('/profile');
           }
         },
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home,
-              color: Colors.grey[400],),
-            title: Text('Home', style: TextStyle(color: Colors.grey[400], fontSize: 12)),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.group,
-                color: Colors.grey[400]),
-            title: Text('Accounts', style: TextStyle(color: Colors.grey[400], fontSize: 12)),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart,
-                color: Colors.grey[400]
+            icon: Icon(
+              Icons.home,
+              color: Colors.grey[400],
             ),
-            title: Text('Transactions', style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+            title: Text('Home',
+                style: TextStyle(color: Colors.grey[400], fontSize: 12)),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings,
-                color: Colors.grey[400]
-            ),
-            title: Text('Settings', style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+            icon: Icon(Icons.group, color: Colors.grey[400]),
+            title: Text('Accounts',
+                style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_cart, color: Colors.grey[400]),
+            title: Text('Transactions',
+                style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings, color: Colors.grey[400]),
+            title: Text('Settings',
+                style: TextStyle(color: Colors.grey[400], fontSize: 12)),
           ),
         ],
-      ),    );
+      ),
+    );
   }
 }
-

@@ -3,12 +3,10 @@ import 'package:PayBay/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-
 class UserLogin extends StatefulWidget {
   @override
   _UserLoginState createState() => _UserLoginState();
 }
-
 
 class _UserLoginState extends State<UserLogin> {
   final _formKey = GlobalKey<FormState>();
@@ -31,7 +29,6 @@ class _UserLoginState extends State<UserLogin> {
       body: Container(
         color: Colors.white,
         padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0),
-
         child: Form(
           key: _formKey,
           child: Container(
@@ -47,7 +44,8 @@ class _UserLoginState extends State<UserLogin> {
                     child: SizedBox(
                       width: 100,
                       height: 100,
-                      child: Image.asset('assets/images/android-chrome-192x192.png'),
+                      child: Image.asset(
+                          'assets/images/android-chrome-192x192.png'),
                     ),
                   ),
                   SizedBox(
@@ -71,12 +69,12 @@ class _UserLoginState extends State<UserLogin> {
                                 color: Colors.green,
                                 style: BorderStyle.solid))),
                     validator: (val) {
-                      if(val.isNotEmpty && val.length == 13) {
+                      if (val.isNotEmpty && val.length == 13) {
                         return null;
                       }
                       return "Invalid phone number";
-                  },
-                    onChanged: (val){
+                    },
+                    onChanged: (val) {
                       setState(() {
                         phoneNumber = val;
                       });
@@ -101,10 +99,10 @@ class _UserLoginState extends State<UserLogin> {
                             borderSide: BorderSide(
                                 width: 1,
                                 color: Colors.green,
-                                style: BorderStyle.solid))
-                    ),
-                    validator: (val) => val.length < 6 ? "Enter a valid Password." : null,
-                    onChanged: (val){
+                                style: BorderStyle.solid))),
+                    validator: (val) =>
+                        val.length < 6 ? "Enter a valid Password." : null,
+                    onChanged: (val) {
                       setState(() {
                         password = val;
                       });
@@ -119,9 +117,10 @@ class _UserLoginState extends State<UserLogin> {
                     minWidth: double.infinity,
                     child: MaterialButton(
                       onPressed: () async {
-                        if(_formKey.currentState.validate()) {
-                          var _user = await _auth.authenticate(phoneNumber, password);
-                          if(_user.fullName.isNotEmpty) {
+                        if (_formKey.currentState.validate()) {
+                          var _user =
+                              await _auth.authenticate(phoneNumber, password);
+                          if (_user.fullName.isNotEmpty) {
                             userBloc.user = _user;
                             Navigator.of(context).pushNamed('/profile');
                           }

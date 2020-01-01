@@ -9,7 +9,6 @@ import 'package:PayBay/screens/profile.dart';
 import 'package:PayBay/screens/settings.dart';
 import 'package:PayBay/screens/transactions.dart';
 
-
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     // Getting arguments passed in while calling Navigator.pushNamed
@@ -32,13 +31,13 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => SettingsList());
       case '/accounts':
         return MaterialPageRoute(builder: (_) => AddAccount());
-      case '/send-payment' :
+      case '/send-payment':
         return MaterialPageRoute(builder: (_) => SendPayment());
-      case '/add-bank-account' :
+      case '/add-bank-account':
         return MaterialPageRoute(builder: (_) => AddAccount());
 
       default:
-      // If there is no such named route in the switch statement, e.g. /third
+        // If there is no such named route in the switch statement, e.g. /third
         return _errorRoute();
     }
   }

@@ -6,7 +6,6 @@ class AddAccount extends StatefulWidget {
 }
 
 class _AddAccountState extends State<AddAccount> {
-
   String accountNumber = '';
   String accountName = '';
   String bankName = '';
@@ -87,23 +86,21 @@ class _AddAccountState extends State<AddAccount> {
                                 color: Colors.green,
                                 style: BorderStyle.solid))),
                   ),
-
                   SizedBox(
                     height: 20,
                   ),
-
-              ButtonTheme(
-                //elevation: 4,
-                //color: Colors.green,
-                minWidth: double.infinity,
-                child: MaterialButton(
-                  onPressed: () => {},
-                  textColor: Colors.white,
-                  color: Colors.green,
-                  height: 50,
-                  child: Text("Submit"),
-                ),
-              )
+                  ButtonTheme(
+                    //elevation: 4,
+                    //color: Colors.green,
+                    minWidth: double.infinity,
+                    child: MaterialButton(
+                      onPressed: () => {},
+                      textColor: Colors.white,
+                      color: Colors.green,
+                      height: 50,
+                      child: Text("Submit"),
+                    ),
+                  )
                 ],
               ),
             ),

@@ -3,9 +3,7 @@ import 'package:PayBay/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-
 class SettingsTile extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     final UserBloc userBloc = Provider.of<UserBloc>(context);
@@ -15,34 +13,31 @@ class SettingsTile extends StatelessWidget {
       child: Card(
         margin: EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
         child: ListTile(
-            title: Text(userBloc.user.fullName,
-              style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15
-              ),
-            ),
-            subtitle: Text(userBloc.user.userName),
-            leading: Image.network(userBloc.user.avatar,
-              height: 45,
-              width: 45,
-              colorBlendMode: BlendMode.darken,
-              fit: BoxFit.fitWidth,
-              filterQuality: FilterQuality.high,
-            ),
-            trailing: FlatButton(
-              child: Icon(Icons.mode_edit, color: Colors.grey[400]),
-              onPressed: () {},
-            ),
+          title: Text(
+            userBloc.user.fullName,
+            style: TextStyle(
+                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+          ),
+          subtitle: Text(userBloc.user.userName),
+          leading: Image.network(
+            userBloc.user.avatar,
+            height: 45,
+            width: 45,
+            colorBlendMode: BlendMode.darken,
+            fit: BoxFit.fitWidth,
+            filterQuality: FilterQuality.high,
+          ),
+          trailing: FlatButton(
+            child: Icon(Icons.mode_edit, color: Colors.grey[400]),
+            onPressed: () {},
+          ),
         ),
       ),
     );
   }
 }
 
-
 class SettingsList extends StatefulWidget {
-
   @override
   _SettingsListState createState() => _SettingsListState();
 }
@@ -50,7 +45,6 @@ class SettingsList extends StatefulWidget {
 class _SettingsListState extends State<SettingsList> {
   int _currentIndex = 3;
   final _auth = AuthService();
-
 
   @override
   Widget build(BuildContext context) {
@@ -72,13 +66,13 @@ class _SettingsListState extends State<SettingsList> {
                 SizedBox(height: 20),
                 SettingsTile(),
                 SizedBox(height: 20),
-
                 ButtonTheme(
                   minWidth: double.infinity,
                   child: MaterialButton(
                     onPressed: () async {
                       await _auth.logOut();
-                      Navigator.pushNamedAndRemoveUntil(context, "/", (r) => false);
+                      Navigator.pushNamedAndRemoveUntil(
+                          context, "/", (r) => false);
                     },
                     textColor: Colors.black,
                     color: Colors.white,
@@ -112,36 +106,36 @@ class _SettingsListState extends State<SettingsList> {
             case '3':
               return Navigator.of(context).pushNamed('/settings');
             default:
-            // If there is no such named route in the switch statement, e.g. /third
+              // If there is no such named route in the switch statement, e.g. /third
               return Navigator.of(context).pushNamed('/profile');
           }
         },
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home,
-              color: Colors.grey[400],),
-            title: Text('Home', style: TextStyle(color: Colors.grey[400], fontSize: 12)),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.group,
-                color: Colors.grey[400]),
-            title: Text('Accounts', style: TextStyle(color: Colors.grey[400], fontSize: 12)),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart,
-                color: Colors.grey[400]
+            icon: Icon(
+              Icons.home,
+              color: Colors.grey[400],
             ),
-            title: Text('Transactions', style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+            title: Text('Home',
+                style: TextStyle(color: Colors.grey[400], fontSize: 12)),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings,
-                color: Colors.grey[400]
-            ),
-            title: Text('Settings', style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+            icon: Icon(Icons.group, color: Colors.grey[400]),
+            title: Text('Accounts',
+                style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_cart, color: Colors.grey[400]),
+            title: Text('Transactions',
+                style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings, color: Colors.grey[400]),
+            title: Text('Settings',
+                style: TextStyle(color: Colors.grey[400], fontSize: 12)),
           ),
         ],
       ),
     );
   }
 }
-

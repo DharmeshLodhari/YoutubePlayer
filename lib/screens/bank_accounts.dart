@@ -5,12 +5,10 @@ import 'package:PayBay/splash.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-
 class BankAccountList extends StatefulWidget {
   @override
   _BankAccountListState createState() => _BankAccountListState();
 }
-
 
 class _BankAccountListState extends State<BankAccountList> {
   // Get list of user bank account
@@ -35,7 +33,7 @@ class _BankAccountListState extends State<BankAccountList> {
           } else {
             return ListView.builder(
               itemCount: snapshot.data.length,
-              itemBuilder: (BuildContext context, int index){
+              itemBuilder: (BuildContext context, int index) {
                 var item = snapshot.data[index];
                 return BankAccountTile(account: item);
               },
@@ -63,36 +61,36 @@ class _BankAccountListState extends State<BankAccountList> {
             case '3':
               return Navigator.of(context).pushNamed('/settings');
             default:
-            // If there is no such named route in the switch statement, e.g. /third
+              // If there is no such named route in the switch statement, e.g. /third
               return Navigator.of(context).pushNamed('/profile');
           }
         },
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home,
-              color: Colors.grey[400],),
-            title: Text('Home', style: TextStyle(color: Colors.grey[400], fontSize: 12)),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.group,
-                color: Colors.grey[400]),
-            title: Text('Accounts', style: TextStyle(color: Colors.grey[400], fontSize: 12)),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart,
-                color: Colors.grey[400]
+            icon: Icon(
+              Icons.home,
+              color: Colors.grey[400],
             ),
-            title: Text('Transactions', style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+            title: Text('Home',
+                style: TextStyle(color: Colors.grey[400], fontSize: 12)),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings,
-                color: Colors.grey[400]
-            ),
-            title: Text('Settings', style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+            icon: Icon(Icons.group, color: Colors.grey[400]),
+            title: Text('Accounts',
+                style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_cart, color: Colors.grey[400]),
+            title: Text('Transactions',
+                style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings, color: Colors.grey[400]),
+            title: Text('Settings',
+                style: TextStyle(color: Colors.grey[400], fontSize: 12)),
           ),
         ],
       ),
-
     );
   }
 }

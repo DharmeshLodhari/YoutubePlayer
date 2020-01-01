@@ -1,4 +1,3 @@
-
 class User {
   String uuid;
   String url;
@@ -10,12 +9,19 @@ class User {
   String password;
 
   // Pass in as named parameter in constructor
-  User({this.uuid, this.url, this.phoneNumber, this.fullName, this.userName,
-    this.avatar, this.qrCode, this.password});
+  User(
+      {this.uuid,
+      this.url,
+      this.phoneNumber,
+      this.fullName,
+      this.userName,
+      this.avatar,
+      this.qrCode,
+      this.password});
 
-  bool isAuthenticated(){
+  bool isAuthenticated() {
     //  We should check here if instance has username then user is not Anonymous
-    return userName != null ? true: false;
+    return userName != null ? true : false;
   }
 
   User.map(dynamic obj) {
@@ -28,7 +34,6 @@ class User {
     this.avatar = obj["avatar"];
     this.qrCode = obj["qrCode"];
   }
-
 
   Map<String, dynamic> toMap() {
     var map = new Map<String, dynamic>();
@@ -44,7 +49,6 @@ class User {
   }
 }
 
-
 class Payee {
   //a person to whom money is paid or is to be paid, especially the person
   // to whom a cheque is made payable.
@@ -56,7 +60,12 @@ class Payee {
   String qrCode = '';
 
   // Pass in as named parameter in constructor
-  Payee({this.uuid, this.url, this.fullName, this.userName, this.avatar,
-    this.qrCode,});
-
+  Payee({
+    this.uuid,
+    this.url,
+    this.fullName,
+    this.userName,
+    this.avatar,
+    this.qrCode,
+  });
 }

@@ -3,20 +3,14 @@ import 'package:PayBay/screens/route_generator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-
 void main() => runApp(
-    MultiProvider(
-        providers: [
+      MultiProvider(
+          providers: [
             ChangeNotifierProvider<UserBloc>.value(
-                value: UserBloc(),
+              value: UserBloc(),
             )
-        ],
-       child: MaterialApp(
-           initialRoute: '/',
-           onGenerateRoute: RouteGenerator.generateRoute
-       )
-    ),
-);
-
-
-
+          ],
+          child: MaterialApp(
+              initialRoute: '/',
+              onGenerateRoute: RouteGenerator.generateRoute)),
+    );

@@ -2,9 +2,8 @@ import 'package:PayBay/models/transactions.dart';
 import 'package:flutter/material.dart';
 
 class TransactionTile extends StatelessWidget {
-
   final Transaction transaction;
-  TransactionTile({ this.transaction });
+  TransactionTile({this.transaction});
 
   @override
   Widget build(BuildContext context) {
@@ -13,29 +12,31 @@ class TransactionTile extends StatelessWidget {
       child: Card(
         margin: EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
         child: ListTile(
-          title: Text(transaction.payee,
-            style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 15
+            title: Text(
+              transaction.payee,
+              style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15),
             ),
-          ),
-          subtitle: Text(transaction.description),
-          leading: Image.network(
-            transaction.payeeUrl,
-            height: 45,
-            width: 45,
-            colorBlendMode: BlendMode.darken,
-            fit: BoxFit.fitWidth,
-            filterQuality: FilterQuality.high,
-          ),
-          trailing: Text(
-            transaction.currency + ' ' + transaction.amount.toString(),
-          style: TextStyle(color: transaction.isCredit? Colors.green[400] : Colors.grey[600],
-              fontWeight: FontWeight.bold,
-              fontSize: 15),
-          )
-        ),
+            subtitle: Text(transaction.description),
+            leading: Image.network(
+              transaction.payeeUrl,
+              height: 45,
+              width: 45,
+              colorBlendMode: BlendMode.darken,
+              fit: BoxFit.fitWidth,
+              filterQuality: FilterQuality.high,
+            ),
+            trailing: Text(
+              transaction.currency + ' ' + transaction.amount.toString(),
+              style: TextStyle(
+                  color: transaction.isCredit
+                      ? Colors.green[400]
+                      : Colors.grey[600],
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15),
+            )),
       ),
     );
   }

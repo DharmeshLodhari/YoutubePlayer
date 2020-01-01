@@ -5,28 +5,29 @@ import 'package:PayBay/models/transactions.dart';
 import 'package:PayBay/models/user.dart';
 import 'package:http/http.dart' as http;
 
-
 String ums = "http://192.168.1.5:8080";
 final String pts = "http://192.168.1.5:8000";
 
-
 class AuthService {
-
   DatabaseHelper _db = DatabaseHelper();
 
   // This function creates a user object from named args passed in
-  User createUser( String uuid,  String url, String phoneNumber,
-      String fullName, String username,  String avatar, String qrCode, String password) {
+  User createUser(String uuid, String url, String phoneNumber, String fullName,
+      String username, String avatar, String qrCode, String password) {
+    // Create user instance
+    User _user = User(
+        uuid: uuid,
+        url: url,
+        phoneNumber: phoneNumber,
+        fullName: fullName,
+        userName: username,
+        avatar: avatar,
+        qrCode: qrCode,
+        password: password);
 
-       // Create user instance
-       User _user = User(uuid: uuid, url: url, phoneNumber: phoneNumber,
-                         fullName: fullName, userName: username, avatar: avatar,
-                         qrCode: qrCode, password: password);
-
-       _db.saveUser(_user);
-       return _user;
+    _db.saveUser(_user);
+    return _user;
   }
-
 
   // log user in if credentials are correct
   Future<User> authenticate(String phoneNumber, String password) async {
@@ -41,41 +42,44 @@ class AuthService {
       jsonData["url"] = ums + "/api/v1/customer/" + jsonData["username"];
 
       deleteUsers();
-      User user = createUser(jsonData["uuid"],
-                            jsonData["url"].replaceAll("http://127.0.0.1:8080", ums),
-                            jsonData["phone_number"],
-                            jsonData["full_name"],
-                            jsonData["username"],
-                            jsonData["avatar"].replaceAll("http://127.0.0.1:8080", ums),
-                            jsonData["qr_code"].replaceAll("http://127.0.0.1:8080", ums),
-                            jsonData["password"]);
+      User user = createUser(
+          jsonData["uuid"],
+          jsonData["url"].replaceAll("http://127.0.0.1:8080", ums),
+          jsonData["phone_number"],
+          jsonData["full_name"],
+          jsonData["username"],
+          jsonData["avatar"].replaceAll("http://127.0.0.1:8080", ums),
+          jsonData["qr_code"].replaceAll("http://127.0.0.1:8080", ums),
+          jsonData["password"]);
       return user;
     }
-    return User(uuid: null, url: null, phoneNumber: null, fullName: null,
-                userName: null, avatar: null, qrCode: null, password: null);
+    return User(
+        uuid: null,
+        url: null,
+        phoneNumber: null,
+        fullName: null,
+        userName: null,
+        avatar: null,
+        qrCode: null,
+        password: null);
   }
-
 
   // Log user out
   Future<void> logOut() async {
     await deleteUsers();
   }
 
-
- // Delete user from db
+  // Delete user from db
   Future<int> deleteUsers() async {
     return await _db.deleteUsers();
   }
 
-
   Future close() async => _db.close();
-
 
   // get user instance from db
   Future<User> getUser() async {
     return await _db.getUser();
   }
-
 
   Future<bool> userRegistration(Map _body) async {
     var url = ums + "/api/v1/account/";
@@ -97,7 +101,6 @@ class AuthService {
     return false;
   }
 
-
   Future<List<BankAccount>> getBankAccounts() async {
     var url = pts + "/transactions/bank-accounts-list";
     var response = await http.get(url);
@@ -106,9 +109,10 @@ class AuthService {
       var jsonData = json.decode(response.body);
       List<BankAccount> accounts = [];
 
-      for(var item in jsonData) {
+      for (var item in jsonData) {
         var bank = item["bank"];
-        var logoUrl = item["bank"]['logo_url'].replaceAll("http://0.0.0.0:8000/", pts);
+        var logoUrl =
+            item["bank"]['logo_url'].replaceAll("http://0.0.0.0:8000/", pts);
         item["bank"]['logo_url'] = logoUrl;
 
         BankAccount account = BankAccount(
@@ -120,11 +124,10 @@ class AuthService {
         accounts.add(account);
       }
       return accounts;
-    }else{
+    } else {
       throw "Can't get https.";
     }
   }
-
 
   Future<List<Transaction>> getTransactions() async {
     var url = pts + "/transactions/list";
@@ -136,10 +139,12 @@ class AuthService {
       var jsonData = json.decode(response.body);
       var imageUrl = ums + "/media/customer/avatar/me_rWdkxLb.jpeg";
 
-    for(var item in jsonData){
+      for (var item in jsonData) {
         // if sender is not current user then
         bool isCredit = (item["from_customer"] != user.userName &&
-            item["to_customer"] == user.userName) ? true: false;
+                item["to_customer"] == user.userName)
+            ? true
+            : false;
 
         item['payeeUrl'] = imageUrl;
         Transaction transaction = Transaction(
@@ -154,7 +159,7 @@ class AuthService {
         transactions.add(transaction);
       }
       return transactions;
-    }else{
+    } else {
       throw "Can't get https.";
     }
   }

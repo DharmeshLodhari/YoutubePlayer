@@ -5,14 +5,13 @@ class BankAccount {
   String accountName;
   int accountNumber;
 
-  BankAccount({ this.uuid,
-    this.bankAvatar,
-    this.bankName,
-    this.accountName,
-    this.accountNumber});
-
+  BankAccount(
+      {this.uuid,
+      this.bankAvatar,
+      this.bankName,
+      this.accountName,
+      this.accountNumber});
 }
-
 
 class Transaction {
   String status;
@@ -25,11 +24,13 @@ class Transaction {
   bool isCredit;
 
   // Pass in as named parameter in constructor
-  Transaction({this.status, this.uuid, this.description,
-    this.payee, this.payeeUrl, this.currency, this.amount, this.isCredit});
-
+  Transaction(
+      {this.status,
+      this.uuid,
+      this.description,
+      this.payee,
+      this.payeeUrl,
+      this.currency,
+      this.amount,
+      this.isCredit});
 }
-
-
-
-
