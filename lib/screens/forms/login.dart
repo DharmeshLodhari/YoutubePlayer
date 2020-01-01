@@ -123,7 +123,6 @@ class _UserLoginState extends State<UserLogin> {
                           var _user = await _auth.authenticate(phoneNumber, password);
                           if(_user.fullName.isNotEmpty) {
                             userBloc.user = _user;
-
                             Navigator.of(context).pushNamed('/profile');
                           }
                         }

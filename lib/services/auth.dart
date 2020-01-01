@@ -7,26 +7,12 @@ import 'package:http/http.dart' as http;
 
 
 String ums = "http://192.168.1.5:8080";
+final String pts = "http://192.168.1.5:8000";
 
 
 class AuthService {
 
   DatabaseHelper _db = DatabaseHelper();
-
-  Future<User> registerUser(Map data) async {
-    var url = ums + "/api/v1/account";
-    http.Response response = await http.post(url, body: data);
-    if(response.statusCode == 201){
-      var jsonData = json.decode(response.body);
-
-      User _authUser = createUser(jsonData["uuid"], jsonData["url"], jsonData["phoneNumber"],
-          jsonData["fullName"], jsonData["username"], jsonData["avatar"], jsonData["qrCode"],
-          jsonData["password"]);
-      return _authUser;
-    }
-    return User(uuid: null, url: null, phoneNumber: null, fullName: null,
-        userName: null, avatar: null, qrCode: null, password: null);
-  }
 
   // This function creates a user object from named args passed in
   User createUser( String uuid,  String url, String phoneNumber,
@@ -38,7 +24,6 @@ class AuthService {
                          qrCode: qrCode, password: password);
 
        _db.saveUser(_user);
-
        return _user;
   }
 
@@ -74,15 +59,17 @@ class AuthService {
   // Log user out
   Future<void> logOut() async {
     await deleteUsers();
-    await close();
   }
+
 
  // Delete user from db
   Future<int> deleteUsers() async {
     return await _db.deleteUsers();
   }
 
+
   Future close() async => _db.close();
+
 
   // get user instance from db
   Future<User> getUser() async {
@@ -97,7 +84,7 @@ class AuthService {
     // convert code to types server understand.
     data["phone_number"] = _body["phoneNumber"];
     data["bank_name"] = _body["bankName"];
-    data["account_name"] = _body["accountName"];
+    data["full_name"] = _body["accountName"];
     data["account_number"] = _body["accountNumber"];
     data["password1"] = _body["password1"];
     data["password2"] = _body["password2"];
@@ -108,28 +95,30 @@ class AuthService {
       return true;
     }
     return false;
-
   }
 
 
   Future<List<BankAccount>> getBankAccounts() async {
-    final String accountsURL = "https://api.mockaroo.com/api/dc0e65c0?count=4&key=b81ba250";
-    var response = await http.get(accountsURL);
+    var url = pts + "/transactions/bank-accounts-list";
+    var response = await http.get(url);
 
-    List<BankAccount> accounts = [];
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
+      List<BankAccount> accounts = [];
 
       for(var item in jsonData) {
+        var bank = item["bank"];
+        var logoUrl = item["bank"]['logo_url'].replaceAll("http://0.0.0.0:8000/", pts);
+        item["bank"]['logo_url'] = logoUrl;
+
         BankAccount account = BankAccount(
-            bankAvatar: item['bankAvatar'],
-            uuid: item['uuid'],
-            bankName: item['bankName'],
-            accountName: item['accountName'],
-            accountNumber: int.parse(item['accountNumber']));
+            bankAvatar: item["bank"]['logo_url'],
+            uuid: item['id'].toString(),
+            bankName: bank['short_name'],
+            accountName: item['account_name'],
+            accountNumber: item['account_number']);
         accounts.add(account);
       }
-
       return accounts;
     }else{
       throw "Can't get https.";
@@ -138,28 +127,35 @@ class AuthService {
 
 
   Future<List<Transaction>> getTransactions() async {
-    final String transactionsURL = "https://api.mockaroo.com/api/a2960430?count=10&key=b81ba250";
-    var response = await http.get(transactionsURL);
+    var url = pts + "/transactions/list";
+    var response = await http.get(url);
 
     List<Transaction> transactions = [];
+    var user = await getUser();
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
+      var imageUrl = ums + "/media/customer/avatar/me_rWdkxLb.jpeg";
 
-      for(var item in jsonData){
-        Transaction transaction = Transaction(status: item['status'], uuid: item['uuid'],
-            description: item['description'], payee: item['payee'], payeeUrl: item['payeeUrl'],
-            currency: item['currency'], amount: item['amount'], isCredit: item['isCredit']);
+    for(var item in jsonData){
+        // if sender is not current user then
+        bool isCredit = (item["from_customer"] != user.userName &&
+            item["to_customer"] == user.userName) ? true: false;
+
+        item['payeeUrl'] = imageUrl;
+        Transaction transaction = Transaction(
+            status: item['status'],
+            uuid: item['slug'],
+            description: item['description'],
+            payee: item['to_customer'],
+            payeeUrl: item['payeeUrl'],
+            currency: item['currency'],
+            amount: item['amount'],
+            isCredit: isCredit);
         transactions.add(transaction);
       }
-
       return transactions;
     }else{
       throw "Can't get https.";
     }
   }
-
-
-
-
-
 }

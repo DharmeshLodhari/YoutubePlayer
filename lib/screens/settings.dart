@@ -78,7 +78,7 @@ class _SettingsListState extends State<SettingsList> {
                   child: MaterialButton(
                     onPressed: () async {
                       await _auth.logOut();
-                      Navigator.of(context).pushNamed('/');
+                      Navigator.pushNamedAndRemoveUntil(context, "/", (r) => false);
                     },
                     textColor: Colors.black,
                     color: Colors.white,

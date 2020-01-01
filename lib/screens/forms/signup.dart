@@ -268,8 +268,6 @@ class _SignUpState extends State<SignUp> {
                     minWidth: double.infinity,
                     child: MaterialButton(
                       onPressed: () async {
-                        print('-----------------------------');
-
                         if(_formKey.currentState.validate()) {
                           Map data = {
                             "phoneNumber": phoneNumber,

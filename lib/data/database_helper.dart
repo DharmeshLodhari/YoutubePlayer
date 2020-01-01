@@ -24,8 +24,8 @@ class DatabaseHelper {
 
   initDb() async {
     io.Directory documentsDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentsDirectory.path, "main.db");
-    var theDb = await openDatabase(path, version: 1, onCreate: _onCreate);
+    String path = join(documentsDirectory.path, "main2.db");
+    var theDb = await openDatabase(path, version: 2, onCreate: _onCreate);
     return theDb;
   }
 
