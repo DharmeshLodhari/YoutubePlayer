@@ -37,7 +37,7 @@ class RouteGenerator {
       case '/add-bank-account':
         return MaterialPageRoute(builder: (_) => AddAccount());
       case '/scan-qr':
-           return MaterialPageRoute(builder: (_) => QRCodeView());
+        return MaterialPageRoute(builder: (_) => QRCodeView());
 
       default:
         // If there is no such named route in the switch statement, e.g. /third
