@@ -8,7 +8,10 @@ void main() => runApp(
           providers: [
             ChangeNotifierProvider<UserBloc>.value(
               value: UserBloc(),
-            )
+            ),
+            ChangeNotifierProvider<PayeeBloc>.value(
+              value: PayeeBloc(),
+            ),
           ],
           child: MaterialApp(
               initialRoute: '/',
