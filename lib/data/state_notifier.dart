@@ -22,3 +22,24 @@ class UserBloc extends ChangeNotifier {
     notifyListeners();
   }
 }
+
+class PayeeBloc extends ChangeNotifier {
+  // This block notify's the change in user status and pass it round the app.
+  Payee _payee = Payee(
+    uuid: "",
+    url: "",
+    fullName: null,
+    userName: null,
+    avatar: null,
+    qrCode: null,
+  );
+
+  // Getter
+  Payee get payee => _payee;
+
+  // Setter
+  set payee(Payee val) {
+    _payee = val;
+    notifyListeners();
+  }
+}
