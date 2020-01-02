@@ -116,7 +116,7 @@ class AuthService {
 
   // Check if token has expired
   bool hasTokenExpired(String expirationTime) {
-    // Will return false if token is still valid and true is token is no longer usefull
+    // Will return false if token is still valid and true if token is no longer useful
     DateTime now = DateTime.now();
     DateTime tokenExpirationTime = DateTime.parse(expirationTime);
     return !now.isBefore(tokenExpirationTime);
