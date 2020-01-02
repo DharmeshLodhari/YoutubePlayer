@@ -1,3 +1,4 @@
+import 'package:PayBay/screens/scan_qr_code.dart';
 import 'package:flutter/material.dart';
 import 'package:PayBay/screens/bank_accounts.dart';
 import 'package:PayBay/screens/forms/add_bank_account.dart';
@@ -35,6 +36,8 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => SendPayment());
       case '/add-bank-account':
         return MaterialPageRoute(builder: (_) => AddAccount());
+      case '/scan-qr':
+           return MaterialPageRoute(builder: (_) => QRCodeView());
 
       default:
         // If there is no such named route in the switch statement, e.g. /third

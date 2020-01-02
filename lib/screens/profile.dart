@@ -73,7 +73,7 @@ class _ProfileState extends State<Profile> {
                   child: MaterialButton(
                     elevation: 4.0,
                     onPressed: () {
-                      Navigator.of(context).pushNamed('/send-payment');
+                      Navigator.of(context).pushNamed('/scan-qr');
                     },
                     textColor: Colors.black,
                     color: Colors.white,
