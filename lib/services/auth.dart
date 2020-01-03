@@ -98,6 +98,9 @@ class AuthService {
 
   // Log user out
   Future<void> logOut() async {
+    var url = ums + "/api/v1/auth/logout/";
+    var headers = await getAuthHeaders();
+    await http.get(url, headers: headers);
     await deleteUsers();
   }
 
@@ -243,5 +246,15 @@ class AuthService {
     var _data = jsonEncode(data);
     var response = await http.post(url, headers: headers, body: _data);
     return response;
+  }
+
+  // TODO: Marge with makePayment
+  //Send payment to backend
+  Future<bool> addBankAccount(Map data) async {
+    var url = pts + "/transactions/add-bank-account/";
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await http.post(url, headers: headers, body: _data);
+    return response.statusCode == 200;
   }
 }
