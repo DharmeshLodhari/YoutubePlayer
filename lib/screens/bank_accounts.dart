@@ -41,6 +41,17 @@ class _BankAccountListState extends State<BankAccountList> {
           }
         },
       ),
+
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.green,
+        onPressed: (){
+          Navigator.of(context).pushNamed('/add-account');
+        },
+        tooltip: 'Increment',
+        child: Icon(Icons.add),
+      ),
+
+
 // TODO: Find a better way to do this without duplication
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,

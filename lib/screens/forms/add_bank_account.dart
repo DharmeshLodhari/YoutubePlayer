@@ -1,4 +1,7 @@
+import 'package:PayBay/data/state_notifier.dart';
+import 'package:PayBay/services/auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class AddAccount extends StatefulWidget {
   @override
@@ -6,11 +9,16 @@ class AddAccount extends StatefulWidget {
 }
 
 class _AddAccountState extends State<AddAccount> {
+  int _currentIndex = 1;
+  final _auth = AuthService();
   String accountNumber = '';
   String accountName = '';
   String bankName = '';
+
   @override
   Widget build(BuildContext context) {
+    final UserBloc userBloc = Provider.of<UserBloc>(context);
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -107,6 +115,60 @@ class _AddAccountState extends State<AddAccount> {
           ),
         ),
       ),
+
+
+// TODO: Find a better way to do this without duplication
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+
+          String path = _currentIndex.toString();
+
+          switch (path) {
+            case '0':
+              return Navigator.of(context).pushNamed('/profile');
+            case '1':
+              return Navigator.of(context).pushNamed('/accounts');
+            case '2':
+              return Navigator.of(context).pushNamed('/transactions');
+            case '3':
+              return Navigator.of(context).pushNamed('/settings');
+            default:
+            // If there is no such named route in the switch statement, e.g. /third
+              return Navigator.of(context).pushNamed('/profile');
+          }
+        },
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.home,
+              color: Colors.grey[400],
+            ),
+            title: Text('Home',
+                style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.group, color: Colors.grey[400]),
+            title: Text('Accounts',
+                style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_cart, color: Colors.grey[400]),
+            title: Text('Transactions',
+                style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings, color: Colors.grey[400]),
+            title: Text('Settings',
+                style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+          ),
+        ],
+      ),
+
+
     );
   }
 }

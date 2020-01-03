@@ -30,7 +30,7 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => TransactionList());
       case '/settings':
         return MaterialPageRoute(builder: (_) => SettingsList());
-      case '/accounts':
+      case '/add-account':
         return MaterialPageRoute(builder: (_) => AddAccount());
       case '/send-payment':
         return MaterialPageRoute(builder: (_) => SendPayment());
