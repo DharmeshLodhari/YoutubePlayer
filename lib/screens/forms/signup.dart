@@ -105,7 +105,7 @@ class _SignUpState extends State<SignUp> {
                   TextFormField(
                     autofocus: false,
                     obscureText: false,
-                    //keyboardType: TextInputType.phone,
+                    keyboardType: TextInputType.text,
                     decoration: InputDecoration(
                         labelText: "Bank Name",
                         hintText: "Bank Name",
@@ -120,7 +120,7 @@ class _SignUpState extends State<SignUp> {
                                 color: Colors.green,
                                 style: BorderStyle.solid))),
                     validator: (val) =>
-                        val.isEmpty ? "Enter a valid account number." : null,
+                        val.isEmpty ? "Enter a valid bank name." : null,
                     onChanged: (val) {
                       setState(() {
                         bankName = val;
@@ -145,8 +145,9 @@ class _SignUpState extends State<SignUp> {
                                 width: 1,
                                 color: Colors.green,
                                 style: BorderStyle.solid))),
-                    validator: (val) =>
-                        val.length < 5 ? "Enter a valid account number." : null,
+                    validator: (val) => val.length < 5
+                        ? "Enter a valid name matching account number."
+                        : null,
                     onChanged: (val) {
                       setState(() {
                         accountName = val;
@@ -173,8 +174,9 @@ class _SignUpState extends State<SignUp> {
                                 width: 1,
                                 color: Colors.green,
                                 style: BorderStyle.solid))),
-                    validator: (val) =>
-                        val.length < 10 ? "Enter a valid account name." : null,
+                    validator: (val) => val.length < 10
+                        ? "Enter a valid account number."
+                        : null,
                     onChanged: (val) {
                       setState(() {
                         accountNumber = val;
