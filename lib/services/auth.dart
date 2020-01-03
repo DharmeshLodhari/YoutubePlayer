@@ -255,6 +255,6 @@ class AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.post(url, headers: headers, body: _data);
-    return response.statusCode == 200;
+    return response.statusCode == 201;
   }
 }
