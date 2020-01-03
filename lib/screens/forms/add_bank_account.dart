@@ -11,33 +11,45 @@ class AddAccount extends StatefulWidget {
 class _AddAccountState extends State<AddAccount> {
   int _currentIndex = 1;
   final _auth = AuthService();
-  String accountNumber = '';
-  String accountName = '';
-  String bankName = '';
+  final _formKey = GlobalKey<FormState>();
+  String errorMessage = "";
+
+  String bankName;
+  String accountName;
+  int accountNumber;
+  bool isDefault = false;
 
   @override
   Widget build(BuildContext context) {
     final UserBloc userBloc = Provider.of<UserBloc>(context);
 
     return Scaffold(
+      backgroundColor: Colors.white,
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text('Add A Bank Account'),
         backgroundColor: Colors.green,
         elevation: 0.0,
       ),
-      body: Center(
-        child: SingleChildScrollView(
+      body: Container(
+        color: Colors.white,
+
+
+        child: Form(
+          key: _formKey,
           child: Container(
             color: Colors.white,
             padding: EdgeInsets.all(24),
             child: Center(
               child: Column(
                 children: <Widget>[
-                  TextField(
+                  SizedBox(
+                    height: 80,
+                  ),
+                  TextFormField(
                     autofocus: false,
                     obscureText: false,
-                    //keyboardType: TextInputType.phone,
+                    keyboardType: TextInputType.text,
                     decoration: InputDecoration(
                         labelText: "Bank Name",
                         hintText: "Bank Name",
@@ -51,14 +63,21 @@ class _AddAccountState extends State<AddAccount> {
                                 width: 1,
                                 color: Colors.green,
                                 style: BorderStyle.solid))),
+                    validator: (val) =>
+                        val.isEmpty ? "Enter a valid bank name." : null,
+                    onChanged: (val) {
+                      setState(() {
+                        bankName = val;
+                      });
+                    },
                   ),
                   SizedBox(
                     height: 10,
                   ),
-                  TextField(
+                  TextFormField(
                     autofocus: false,
                     obscureText: false,
-                    //keyboardType: TextInputType.phone,
+                    keyboardType: TextInputType.text,
                     decoration: InputDecoration(
                         labelText: "Account Name",
                         hintText: "Account Name",
@@ -72,14 +91,22 @@ class _AddAccountState extends State<AddAccount> {
                                 width: 1,
                                 color: Colors.green,
                                 style: BorderStyle.solid))),
+                    validator: (val) => val.length < 5
+                        ? "Enter a valid name matching account number."
+                        : null,
+                    onChanged: (val) {
+                      setState(() {
+                        accountName = val;
+                      });
+                    },
                   ),
                   SizedBox(
                     height: 10,
                   ),
-                  TextField(
+                  TextFormField(
                     autofocus: false,
                     obscureText: false,
-                    keyboardType: TextInputType.phone,
+                    keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                         labelText: "Account Number",
                         hintText: "Account Number",
@@ -93,16 +120,63 @@ class _AddAccountState extends State<AddAccount> {
                                 width: 1,
                                 color: Colors.green,
                                 style: BorderStyle.solid))),
+                    validator: (val) => val.length < 10
+                        ? "Enter a valid account number."
+                        : null,
+                    onChanged: (val) {
+                      setState(() {
+                        accountNumber = int.parse(val);
+                      });
+                    },
                   ),
                   SizedBox(
                     height: 20,
                   ),
+                  Text("Set as default account"),
+                  Switch(
+                    value: isDefault,
+                    onChanged: (value) {
+                      setState(() {
+                        isDefault = value;
+                      });
+                    },
+                    activeTrackColor: Colors.lightGreenAccent,
+                    activeColor: Colors.green,
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    errorMessage,
+                    style: TextStyle(color: Colors.red),
+                  ),
+                  SizedBox(height: 20),
                   ButtonTheme(
                     //elevation: 4,
                     //color: Colors.green,
                     minWidth: double.infinity,
                     child: MaterialButton(
-                      onPressed: () => {},
+                      onPressed: () async {
+                        print('yess');
+                        if (_formKey.currentState.validate()) {
+                          Map data = {
+                            "customer_username": userBloc.user.userName,
+                            "bank": bankName,
+                            "account_name": accountName,
+                            "account_number": accountNumber,
+                            "is_default": isDefault,
+                          };
+                          bool wasSuccessful = await _auth.addBankAccount(data);
+                          if (wasSuccessful) {
+                            Navigator.of(context).pushNamed('/accounts');
+                          } else {
+                            setState(() {
+                              errorMessage =
+                                  "An error has occured please try again";
+                            });
+                          }
+                        }
+                      },
                       textColor: Colors.white,
                       color: Colors.green,
                       height: 50,
@@ -115,7 +189,6 @@ class _AddAccountState extends State<AddAccount> {
           ),
         ),
       ),
-
 
 // TODO: Find a better way to do this without duplication
       bottomNavigationBar: BottomNavigationBar(
@@ -137,7 +210,7 @@ class _AddAccountState extends State<AddAccount> {
             case '3':
               return Navigator.of(context).pushNamed('/settings');
             default:
-            // If there is no such named route in the switch statement, e.g. /third
+              // If there is no such named route in the switch statement, e.g. /third
               return Navigator.of(context).pushNamed('/profile');
           }
         },
@@ -167,8 +240,6 @@ class _AddAccountState extends State<AddAccount> {
           ),
         ],
       ),
-
-
     );
   }
 }

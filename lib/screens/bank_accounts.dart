@@ -44,13 +44,12 @@ class _BankAccountListState extends State<BankAccountList> {
 
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.green,
-        onPressed: (){
+        onPressed: () {
           Navigator.of(context).pushNamed('/add-account');
         },
-        tooltip: 'Increment',
+        tooltip: 'Add Account',
         child: Icon(Icons.add),
       ),
-
 
 // TODO: Find a better way to do this without duplication
       bottomNavigationBar: BottomNavigationBar(
