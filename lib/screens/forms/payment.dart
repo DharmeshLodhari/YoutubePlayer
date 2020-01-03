@@ -1,4 +1,5 @@
 import 'package:PayBay/data/state_notifier.dart';
+import 'package:PayBay/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -11,8 +12,13 @@ class SendPayment extends StatefulWidget {
 }
 
 class _SendPaymentState extends State<SendPayment> {
+  final _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
   int _currentIndex = 2;
+
+  int amount;
+  String reference = "";
+  String errorMessage = "";
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +81,6 @@ class _SendPaymentState extends State<SendPayment> {
                             child: TextFormField(
                               autofocus: true,
                               obscureText: false,
-                              //keyboardType: TextInputType.number,
                               keyboardType: TextInputType.number,
                               inputFormatters: [
                                 WhitelistingTextInputFormatter.digitsOnly
@@ -95,11 +100,26 @@ class _SendPaymentState extends State<SendPayment> {
                                   ),
                                   border: OutlineInputBorder(
                                       borderRadius:
-                                          BorderRadius.all(Radius.circular(4)),
+                                      BorderRadius.all(Radius.circular(4)),
                                       borderSide: BorderSide(
                                           width: 1,
                                           color: Colors.green,
                                           style: BorderStyle.solid))),
+
+                              validator: (val) {
+                                if (val.isNotEmpty) {
+                                  try{
+                                    int.parse(val);
+                                    return null;
+                                  }catch (e){}
+                                }
+                                return "Invalid amount";
+                              },
+                              onChanged: (val) {
+                                setState(() {
+                                  amount = int.parse(val);
+                                });
+                              },
                             ),
                           ),
                           Padding(
@@ -120,10 +140,20 @@ class _SendPaymentState extends State<SendPayment> {
                                             width: 1,
                                             color: Colors.green,
                                             style: BorderStyle.solid))),
-                              )),
+                                onChanged: (val) {
+                                  setState(() {
+                                    reference = val;
+                                  });
+                                },
+                              )
+                          ),
                         ],
                       ),
                     ),
+                  ),
+                  SizedBox(height: 20,),
+                  Text(errorMessage,
+                    style: TextStyle(color: Colors.red),
                   ),
                   SizedBox(height: 30),
                   ButtonTheme(
@@ -132,9 +162,27 @@ class _SendPaymentState extends State<SendPayment> {
                     minWidth: double.infinity,
                     child: MaterialButton(
                       elevation: 4.0,
-                      onPressed: () {
-                        Navigator.of(context).pushNamed('/transactions');
-                      },
+                      onPressed: () async {
+                        if (_formKey.currentState.validate()) {
+                          Map data = {
+                            "from_customer": userBloc.user.userName,
+                            "to_customer": payeeBloc.payee.userName,
+                            "currency": "NGN",
+                            "amount": amount.toString(),
+                            "category": "Shopping",
+                            "notes": reference,
+                            "description": reference
+                          };
+                          http.Response response = await _auth.makePayment(data);
+                          if (response.statusCode == 200) {
+                            Navigator.of(context).pushNamed('/transactions');
+                          }else {
+                            setState(() {
+                              errorMessage = "An error has occured please try again";
+                            });
+                          }
+                        }
+                        },
                       textColor: Colors.white,
                       color: Colors.green,
                       height: 50,
@@ -168,7 +216,7 @@ class _SendPaymentState extends State<SendPayment> {
             case '3':
               return Navigator.of(context).pushNamed('/settings');
             default:
-              // If there is no such named route in the switch statement, e.g. /third
+            // If there is no such named route in the switch statement, e.g. /third
               return Navigator.of(context).pushNamed('/profile');
           }
         },
