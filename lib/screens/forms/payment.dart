@@ -100,18 +100,17 @@ class _SendPaymentState extends State<SendPayment> {
                                   ),
                                   border: OutlineInputBorder(
                                       borderRadius:
-                                      BorderRadius.all(Radius.circular(4)),
+                                          BorderRadius.all(Radius.circular(4)),
                                       borderSide: BorderSide(
                                           width: 1,
                                           color: Colors.green,
                                           style: BorderStyle.solid))),
-
                               validator: (val) {
                                 if (val.isNotEmpty) {
-                                  try{
+                                  try {
                                     int.parse(val);
                                     return null;
-                                  }catch (e){}
+                                  } catch (e) {}
                                 }
                                 return "Invalid amount";
                               },
@@ -145,14 +144,16 @@ class _SendPaymentState extends State<SendPayment> {
                                     reference = val;
                                   });
                                 },
-                              )
-                          ),
+                              )),
                         ],
                       ),
                     ),
                   ),
-                  SizedBox(height: 20,),
-                  Text(errorMessage,
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    errorMessage,
                     style: TextStyle(color: Colors.red),
                   ),
                   SizedBox(height: 30),
@@ -173,16 +174,18 @@ class _SendPaymentState extends State<SendPayment> {
                             "notes": reference,
                             "description": reference
                           };
-                          http.Response response = await _auth.makePayment(data);
+                          http.Response response =
+                              await _auth.makePayment(data);
                           if (response.statusCode == 200) {
                             Navigator.of(context).pushNamed('/transactions');
-                          }else {
+                          } else {
                             setState(() {
-                              errorMessage = "An error has occured please try again";
+                              errorMessage =
+                                  "An error has occured please try again";
                             });
                           }
                         }
-                        },
+                      },
                       textColor: Colors.white,
                       color: Colors.green,
                       height: 50,
@@ -216,7 +219,7 @@ class _SendPaymentState extends State<SendPayment> {
             case '3':
               return Navigator.of(context).pushNamed('/settings');
             default:
-            // If there is no such named route in the switch statement, e.g. /third
+              // If there is no such named route in the switch statement, e.g. /third
               return Navigator.of(context).pushNamed('/profile');
           }
         },
