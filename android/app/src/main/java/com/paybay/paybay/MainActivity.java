@@ -1,4 +1,4 @@
-package com.paybay.paybay;
+package com.slydo.slydo;
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity;

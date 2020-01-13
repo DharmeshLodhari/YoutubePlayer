@@ -1,4 +1,4 @@
-import 'package:PayBay/services/auth.dart';
+import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 
 var banks = {
@@ -51,7 +51,7 @@ class _SignUpState extends State<SignUp> {
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: Text('Create your PayBay Account'),
+        title: Text('Create your Slydo Account'),
         backgroundColor: Colors.green,
         elevation: 0.0,
       ),

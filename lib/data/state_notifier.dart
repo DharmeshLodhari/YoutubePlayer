@@ -1,4 +1,4 @@
-import 'package:PayBay/models/user.dart';
+import 'package:Slydo/models/user.dart';
 import 'package:flutter/material.dart';
 
 class UserBloc extends ChangeNotifier {

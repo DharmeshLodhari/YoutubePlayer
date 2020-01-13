@@ -1,7 +1,7 @@
-import 'package:PayBay/data/state_notifier.dart';
-import 'package:PayBay/screens/tiles/bank_account.dart';
-import 'package:PayBay/services/auth.dart';
-import 'package:PayBay/splash.dart';
+import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/tiles/bank_account.dart';
+import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/splash.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

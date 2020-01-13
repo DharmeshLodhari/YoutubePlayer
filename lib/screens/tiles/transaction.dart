@@ -1,4 +1,4 @@
-import 'package:PayBay/models/transactions.dart';
+import 'package:Slydo/models/transactions.dart';
 import 'package:flutter/material.dart';
 
 class TransactionTile extends StatelessWidget {

@@ -1,4 +1,4 @@
-import 'package:PayBay/data/state_notifier.dart';
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

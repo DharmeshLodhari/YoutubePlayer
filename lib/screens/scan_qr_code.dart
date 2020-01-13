@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'package:PayBay/data/state_notifier.dart';
-import 'package:PayBay/models/user.dart';
-import 'package:PayBay/services/auth.dart';
+import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/models/user.dart';
+import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';

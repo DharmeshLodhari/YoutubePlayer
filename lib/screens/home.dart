@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+
 class Home extends StatefulWidget {
   @override
   _HomeState createState() => _HomeState();
@@ -11,7 +12,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: Text('PayBay'),
+        title: Text('Slydo'),
         backgroundColor: Colors.green,
         elevation: 0.0,
       ),

@@ -1,8 +1,8 @@
 import 'dart:convert';
 
-import 'package:PayBay/data/database_helper.dart';
-import 'package:PayBay/models/transactions.dart';
-import 'package:PayBay/models/user.dart';
+import 'package:Slydo/data/database_helper.dart';
+import 'package:Slydo/models/transactions.dart';
+import 'package:Slydo/models/user.dart';
 import 'package:http/http.dart' as http;
 
 final String ums = "http://192.168.0.104:8080";

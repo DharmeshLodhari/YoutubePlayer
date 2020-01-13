@@ -1,14 +1,14 @@
-import 'package:PayBay/screens/scan_qr_code.dart';
+import 'package:Slydo/screens/scan_qr_code.dart';
 import 'package:flutter/material.dart';
-import 'package:PayBay/screens/bank_accounts.dart';
-import 'package:PayBay/screens/forms/add_bank_account.dart';
-import 'package:PayBay/screens/forms/login.dart';
-import 'package:PayBay/screens/forms/payment.dart';
-import 'package:PayBay/screens/forms/signup.dart';
-import 'package:PayBay/screens/home.dart';
-import 'package:PayBay/screens/profile.dart';
-import 'package:PayBay/screens/settings.dart';
-import 'package:PayBay/screens/transactions.dart';
+import 'package:Slydo/screens/bank_accounts.dart';
+import 'package:Slydo/screens/forms/add_bank_account.dart';
+import 'package:Slydo/screens/forms/login.dart';
+import 'package:Slydo/screens/forms/payment.dart';
+import 'package:Slydo/screens/forms/signup.dart';
+import 'package:Slydo/screens/home.dart';
+import 'package:Slydo/screens/profile.dart';
+import 'package:Slydo/screens/settings.dart';
+import 'package:Slydo/screens/transactions.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
