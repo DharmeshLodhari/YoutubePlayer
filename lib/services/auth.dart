@@ -5,8 +5,8 @@ import 'package:PayBay/models/transactions.dart';
 import 'package:PayBay/models/user.dart';
 import 'package:http/http.dart' as http;
 
-final String ums = "http://192.168.1.5:8080";
-final String pts = "http://192.168.1.5:8000";
+final String ums = "http://192.168.0.104:8080";
+final String pts = "http://192.168.0.104:8000";
 
 class AuthService {
   DatabaseHelper _db = DatabaseHelper();

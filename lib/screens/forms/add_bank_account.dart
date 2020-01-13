@@ -33,8 +33,6 @@ class _AddAccountState extends State<AddAccount> {
       ),
       body: Container(
         color: Colors.white,
-
-
         child: Form(
           key: _formKey,
           child: Container(
@@ -157,7 +155,6 @@ class _AddAccountState extends State<AddAccount> {
                     minWidth: double.infinity,
                     child: MaterialButton(
                       onPressed: () async {
-                        print('yess');
                         if (_formKey.currentState.validate()) {
                           Map data = {
                             "customer_username": userBloc.user.userName,
@@ -168,7 +165,8 @@ class _AddAccountState extends State<AddAccount> {
                           };
                           bool wasSuccessful = await _auth.addBankAccount(data);
                           if (wasSuccessful) {
-                            Navigator.of(context).pushNamed('/accounts');
+                            Navigator.pushNamedAndRemoveUntil(
+                                context, "/accounts", (r) => false);
                           } else {
                             setState(() {
                               errorMessage =

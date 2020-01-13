@@ -1,34 +1,31 @@
 import 'package:PayBay/services/auth.dart';
 import 'package:flutter/material.dart';
 
-List<List<String>> banks = [
-  ['Union Bank Of Nigeria Plc', 'union-bank-of-nigeria-plc'],
-  ['Unity Bank Plc', 'unity-bank-plc'],
-  ['Providus Bank', 'providus-bank'],
-  ['Zenith Bank Plc', 'zenith-bank-plc'],
-  ['Citibank Nigeria Limited', 'citibank-nigeria-limited'],
-  ['Stanbic Ibtc Bank Ltd', 'stanbic-ibtc-bank-ltd'],
-  ['Guaranty Trust Bank Plc', 'guaranty-trust-bank-plc'],
-  ['Suntrust Bank Nigeria Limited', 'suntrust-bank-nigeria-limited'],
-  ['Access Bank Plc', 'access-bank-plc'],
-  ['Key Stone Bank', 'key-stone-bank'],
-  ['First Bank Nigeria Limited', 'first-bank-nigeria-limited'],
-  ['Sterling Bank Plc', 'sterling-bank-plc'],
-  ['Ecobank Nigeria Plc', 'ecobank-nigeria-plc'],
-  [
-    'Standard Chartered Bank Nigeria Ltd',
-    'standard-chartered-bank-nigeria-ltd'
-  ],
-  ['Heritage Banking Company Ltd', 'heritage-banking-company-ltd'],
-  ['Globus Bank Limited', 'globus-bank-limited'],
-  ['Titan Trust Bank Ltd', 'titan-trust-bank-ltd'],
-  ['United Bank For Africa Plc', 'united-bank-for-africa-plc'],
-  ['Diamond Bank Plc', 'diamond-bank-plc'],
-  ['First City Monument Bank Plc', 'first-city-monument-bank-plc'],
-  ['Polaris Bank', 'polaris-bank'],
-  ['Fidelity Bank Plc', 'fidelity-bank-plc'],
-  ['Wema Bank Plc', 'wema-bank-plc']
-];
+var banks = {
+  'Union Bank Of Nigeria Plc': 'union-bank-of-nigeria-plc',
+  'Unity Bank Plc': 'unity-bank-plc',
+  'Providus Bank': 'providus-bank',
+  'Zenith Bank Plc': 'zenith-bank-plc',
+  'Citibank Nigeria Limited': 'citibank-nigeria-limited',
+  'Stanbic Ibtc Bank Ltd': 'stanbic-ibtc-bank-ltd',
+  'Guaranty Trust Bank Plc': 'guaranty-trust-bank-plc',
+  'Suntrust Bank Nigeria Limited': 'suntrust-bank-nigeria-limited',
+  'Access Bank Plc': 'access-bank-plc',
+  'Key Stone Bank': 'key-stone-bank',
+  'First Bank Nigeria Limited': 'first-bank-nigeria-limited',
+  'Sterling Bank Plc': 'sterling-bank-plc',
+  'Ecobank Nigeria Plc': 'ecobank-nigeria-plc',
+  'Standard Chartered Bank Nigeria Ltd': 'standard-chartered-bank-nigeria-ltd',
+  'Heritage Banking Company Ltd': 'heritage-banking-company-ltd',
+  'Globus Bank Limited': 'globus-bank-limited',
+  'Titan Trust Bank Ltd': 'titan-trust-bank-ltd',
+  'United Bank For Africa Plc': 'united-bank-for-africa-plc',
+  'Diamond Bank Plc': 'diamond-bank-plc',
+  'First City Monument Bank Plc': 'first-city-monument-bank-plc',
+  'Polaris Bank': 'polaris-bank',
+  'Fidelity Bank Plc': 'fidelity-bank-plc',
+  'Wema Bank Plc': 'wema-bank-plc'};
+
 
 class SignUp extends StatefulWidget {
   @override
@@ -41,7 +38,7 @@ class _SignUpState extends State<SignUp> {
 
   String phoneNumber = '';
 
-  String bankName = '';
+  String bankName = 'First Bank Nigeria Limited';
   String accountName = '';
   String accountNumber = '';
 
@@ -98,6 +95,32 @@ class _SignUpState extends State<SignUp> {
                         phoneNumber = val;
                       });
                     },
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  DropdownButtonFormField<String>(
+                    value: bankName,
+                    icon: Icon(Icons.arrow_downward),
+                    iconSize: 24,
+                    elevation: 16,
+                    style: TextStyle(color: Colors.black),
+                    onChanged: (String newValue) {
+                      setState(() {
+                        bankName = newValue;
+                      });
+                    },
+                    items: banks.keys
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                        ),),
+                      );
+                    }).toList(),
                   ),
                   SizedBox(
                     height: 10,

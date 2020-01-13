@@ -1,9 +1,15 @@
+import 'dart:io';
 import 'package:PayBay/data/state_notifier.dart';
 import 'package:PayBay/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
 
 class SettingsTile extends StatelessWidget {
+  SettingsTile({Key key, this.pickImage}) : super(key: key);
+
+  final Function pickImage;
+
   @override
   Widget build(BuildContext context) {
     final UserBloc userBloc = Provider.of<UserBloc>(context);
@@ -29,7 +35,9 @@ class SettingsTile extends StatelessWidget {
           ),
           trailing: FlatButton(
             child: Icon(Icons.mode_edit, color: Colors.grey[400]),
-            onPressed: () {},
+            onPressed: () {
+              return pickImage();
+            },
           ),
         ),
       ),
@@ -45,6 +53,33 @@ class SettingsList extends StatefulWidget {
 class _SettingsListState extends State<SettingsList> {
   int _currentIndex = 3;
   final _auth = AuthService();
+
+  File _pickedImage;
+
+  void _pickImage() async {
+    final imageSource = await showDialog<ImageSource>(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text("Select the image source"),
+              actions: <Widget>[
+                MaterialButton(
+                  child: Text("Camera"),
+                  onPressed: () => Navigator.pop(context, ImageSource.camera),
+                ),
+                MaterialButton(
+                  child: Text("Gallery"),
+                  onPressed: () => Navigator.pop(context, ImageSource.gallery),
+                )
+              ],
+            ));
+
+    if (imageSource != null) {
+      final file = await ImagePicker.pickImage(source: imageSource);
+      if (file != null) {
+        setState(() => _pickedImage = file);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +99,7 @@ class _SettingsListState extends State<SettingsList> {
             child: Column(
               children: <Widget>[
                 SizedBox(height: 20),
-                SettingsTile(),
+                SettingsTile(pickImage: _pickImage),
                 SizedBox(height: 20),
                 ButtonTheme(
                   minWidth: double.infinity,

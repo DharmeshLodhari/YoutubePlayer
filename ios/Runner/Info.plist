@@ -11,6 +11,8 @@
 	</array>
 	<key>NSCameraUsageDescription</key>
     <string>Can we access your camera in order to scan barcodes?</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+    <string>Can we access your photo library to upload user photo?</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>
