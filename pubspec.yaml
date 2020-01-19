@@ -25,11 +25,12 @@ dependencies:
   sqflite: ^1.2.0
   path_provider: ^1.5.1
   qr_code_scanner: ^0.0.12
+  cached_network_image:
 
 flutter_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/images/android-chrome-512x512.png"
+  image_path: "assets/images/slydo.png"
 
 
 dev_dependencies:

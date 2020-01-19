@@ -24,8 +24,8 @@ var banks = {
   'First City Monument Bank Plc': 'first-city-monument-bank-plc',
   'Polaris Bank': 'polaris-bank',
   'Fidelity Bank Plc': 'fidelity-bank-plc',
-  'Wema Bank Plc': 'wema-bank-plc'};
-
+  'Wema Bank Plc': 'wema-bank-plc'
+};
 
 class SignUp extends StatefulWidget {
   @override
@@ -114,11 +114,13 @@ class _SignUpState extends State<SignUp> {
                         .map<DropdownMenuItem<String>>((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
-                        child: Text(value,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 16,
-                        ),),
+                        child: Text(
+                          value,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                          ),
+                        ),
                       );
                     }).toList(),
                   ),
