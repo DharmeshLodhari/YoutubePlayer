@@ -66,12 +66,12 @@ class _QRCodeViewState extends State<QRCodeView> {
                           'full_name': 'Alex Rasheed',
                           'uuid': '',
                           'url':
-                              'http://192.168.1.5:8080/media/customer/avatar/me_9c9uSF2.jpeg',
+                              'http://api.slydo.co/api/v1/media/customer/avatar/me_9c9uSF2.jpeg',
                           'username': 'alex.rasheed.2',
                           'avatar':
-                              'http://192.168.1.5:8080/media/customer/avatar/me_rWdkxLb.jpeg',
+                              'http://api.slydo.co/api/v1/media/customer/avatar/me_rWdkxLb.jpeg',
                           'qr_code':
-                              'http://192.168.1.5:8080/media/customer/qr-code/2b439ab4d0b343aab8360d6e38f6e83a.png'
+                              'http://api.slydo.co/api/v1/media/customer/qr-code/2b439ab4d0b343aab8360d6e38f6e83a.png'
                         };
                         Payee _payee = Payee(
                           uuid: jsonResponse['uuid'],

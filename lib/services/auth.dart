@@ -5,8 +5,8 @@ import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:http/http.dart' as http;
 
-final String ums = "http://192.168.0.104:8080";
-final String pts = "http://192.168.0.104:8000";
+final String ums = "http://api.slydo.co";
+final String pts = "http://api.slydo.co";
 
 class AuthService {
   DatabaseHelper _db = DatabaseHelper();
@@ -173,14 +173,13 @@ class AuthService {
 
   // List the users bank accounts
   Future<List<BankAccount>> getBankAccounts() async {
-    var url = pts + "/transactions/bank-accounts-list/";
+    var url = pts + "/api/v1/transactions/bank-accounts-list/";
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
 
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
       List<BankAccount> accounts = [];
-
       for (var item in jsonData) {
         var bank = item["bank"];
         var logoUrl =
@@ -203,7 +202,7 @@ class AuthService {
 
   // List users transactions
   Future<List<Transaction>> getTransactions() async {
-    var url = pts + "/transactions/list/";
+    var url = pts + "/api/v1/transactions/list/";
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
 
@@ -241,7 +240,7 @@ class AuthService {
 
   //Send payment to backend
   Future<http.Response> makePayment(Map data) async {
-    var url = pts + "/transactions/make-payment/";
+    var url = pts + "/api/v1/transactions/make-payment/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.post(url, headers: headers, body: _data);
@@ -251,7 +250,7 @@ class AuthService {
   // TODO: Marge with makePayment
   //Send payment to backend
   Future<bool> addBankAccount(Map data) async {
-    var url = pts + "/transactions/add-bank-account/";
+    var url = pts + "/api/v1/transactions/add-bank-account/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.post(url, headers: headers, body: _data);
