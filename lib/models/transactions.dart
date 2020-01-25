@@ -18,7 +18,7 @@ class Transaction {
   String uuid;
   String description;
   String payee;
-  String payeeUrl;
+  String avatar;
   String currency;
   int amount;
   bool isCredit;
@@ -29,7 +29,7 @@ class Transaction {
       this.uuid,
       this.description,
       this.payee,
-      this.payeeUrl,
+      this.avatar,
       this.currency,
       this.amount,
       this.isCredit});

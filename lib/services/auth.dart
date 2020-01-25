@@ -5,8 +5,8 @@ import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:http/http.dart' as http;
 
-final String ums = "http://api.slydo.co";
-final String pts = "http://api.slydo.co";
+final String baseUrl = "http://api.slydo.co";
+
 
 class AuthService {
   DatabaseHelper _db = DatabaseHelper();
@@ -39,7 +39,7 @@ class AuthService {
 
     DateTime now = DateTime.now();
 
-    var url = ums + "/api/v1/auth/get-token/";
+    var url = baseUrl + "/api/v1/auth/get-token/";
     Map _body = {"password": password, "phone_number": phoneNumber};
     var response = await http.post(url, body: _body);
 
@@ -62,7 +62,7 @@ class AuthService {
       data["expiration"] = expirationTime.toString();
 
       jsonData["password"] = password;
-      jsonData["url"] = ums + "/api/v1/customer/" + jsonData["username"];
+      jsonData["url"] = baseUrl + "/api/v1/customer/" + jsonData["username"];
 
       // Delete user from db if one exist
       deleteUsers();
@@ -73,12 +73,12 @@ class AuthService {
       // Save user to database
       User user = createUser(
           jsonData["uuid"],
-          jsonData["url"].replaceAll("http://127.0.0.1:8080", ums),
+          jsonData["url"],
           jsonData["phone_number"],
           jsonData["full_name"],
           jsonData["username"],
-          jsonData["avatar"].replaceAll("http://127.0.0.1:8080", ums),
-          jsonData["qr_code"].replaceAll("http://127.0.0.1:8080", ums),
+          jsonData["avatar"],
+          jsonData["qr_code"],
           jsonData["password"]);
 
       _db.saveJwt(data);
@@ -98,7 +98,7 @@ class AuthService {
 
   // Log user out
   Future<void> logOut() async {
-    var url = ums + "/api/v1/auth/logout/";
+    var url = baseUrl + "/api/v1/auth/logout/";
     var headers = await getAuthHeaders();
     await http.get(url, headers: headers);
     await deleteUsers();
@@ -150,9 +150,28 @@ class AuthService {
     return await _db.deleteJwt();
   }
 
+  // Fetch user profile
+  Future<CustomerProfile> fetchCustomerProfile(String userName) async {
+    var url = baseUrl + "/api/v1/customer/" + userName;
+    var response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+      CustomerProfile customerProfile = CustomerProfile(
+          fullName: jsonData["full_name"],
+          userName: jsonData["username"],
+          avatar: jsonData["avatar"],
+          qrCode: jsonData["qr_code"],
+      );
+      return customerProfile;
+    } else {
+      throw "Can't get https.";
+    }
+  }
+
   // Register the user with the backend servers
   Future<bool> userRegistration(Map _body) async {
-    var url = ums + "/api/v1/account/";
+    var url = baseUrl + "/api/v1/account/";
     Map data = {};
 
     // convert code to types server understand.
@@ -173,7 +192,7 @@ class AuthService {
 
   // List the users bank accounts
   Future<List<BankAccount>> getBankAccounts() async {
-    var url = pts + "/api/v1/transactions/bank-accounts-list/";
+    var url = baseUrl + "/api/v1/transactions/bank-accounts-list";
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
 
@@ -183,7 +202,7 @@ class AuthService {
       for (var item in jsonData) {
         var bank = item["bank"];
         var logoUrl =
-            item["bank"]['logo_url'].replaceAll("http://0.0.0.0:8000/", pts);
+            item["bank"]['logo_url'];
         item["bank"]['logo_url'] = logoUrl;
 
         BankAccount account = BankAccount(
@@ -202,7 +221,7 @@ class AuthService {
 
   // List users transactions
   Future<List<Transaction>> getTransactions() async {
-    var url = pts + "/api/v1/transactions/list/";
+    var url = baseUrl + "/api/v1/transactions/list/";
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
 
@@ -211,7 +230,6 @@ class AuthService {
       // This variable will hold list of transactions we got from server
       var user = await getUser();
       var jsonData = json.decode(response.body);
-      var imageUrl = ums + "/media/customer/avatar/me_rWdkxLb.jpeg";
 
       for (var item in jsonData) {
         // if sender is not current user then
@@ -220,13 +238,16 @@ class AuthService {
             ? true
             : false;
 
-        item['payeeUrl'] = imageUrl;
+        var payee = isCredit ? item["from_customer"]:item['to_customer'];
+        var customer = await fetchCustomerProfile(payee);
+        var avatar = customer.avatar;
+
         Transaction transaction = Transaction(
             status: item['status'],
             uuid: item['slug'],
             description: item['description'],
-            payee: item['to_customer'],
-            payeeUrl: item['payeeUrl'],
+            payee: payee,
+            avatar: avatar,
             currency: item['currency'],
             amount: item['amount'],
             isCredit: isCredit);
@@ -240,7 +261,7 @@ class AuthService {
 
   //Send payment to backend
   Future<http.Response> makePayment(Map data) async {
-    var url = pts + "/api/v1/transactions/make-payment/";
+    var url = baseUrl + "/api/v1/transactions/make-payment/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.post(url, headers: headers, body: _data);
@@ -250,7 +271,7 @@ class AuthService {
   // TODO: Marge with makePayment
   //Send payment to backend
   Future<bool> addBankAccount(Map data) async {
-    var url = pts + "/api/v1/transactions/add-bank-account/";
+    var url = baseUrl + "/api/v1/transactions/add-bank-account/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.post(url, headers: headers, body: _data);

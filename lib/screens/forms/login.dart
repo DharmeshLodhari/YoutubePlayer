@@ -40,14 +40,14 @@ class _UserLoginState extends State<UserLogin> {
                   SizedBox(
                     height: 60,
                   ),
-                  Center(
-                    child: SizedBox(
-                      width: 100,
-                      height: 100,
-                      child: Image.asset(
-                          'assets/images/android-chrome-192x192.png'),
-                    ),
-                  ),
+//                  Center(
+//                    child: SizedBox(
+//                      width: 100,
+//                      height: 100,
+//                      child: Image.asset(
+//                          'assets/images/android-chrome-192x192.png'),
+//                    ),
+//                  ),
                   SizedBox(
                     height: 80,
                   ),

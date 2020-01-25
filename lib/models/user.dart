@@ -69,3 +69,35 @@ class Payee {
     this.qrCode,
   });
 }
+
+class CustomerProfile {
+  String fullName;
+  String userName;
+  String avatar;
+  String qrCode;
+
+  // Pass in as named parameter in constructor
+  CustomerProfile(
+      {this.fullName,
+        this.userName,
+        this.avatar,
+        this.qrCode,
+      });
+
+  CustomerProfile.map(dynamic obj) {
+    this.userName = obj["username"];
+    this.fullName = obj["fullName"];
+    this.avatar = obj["avatar"];
+    this.qrCode = obj["qrCode"];
+  }
+
+  Map<String, dynamic> toMap() {
+    var map = new Map<String, dynamic>();
+    map["fullName"] = fullName;
+    map["userName"] = userName;
+    map["avatar"] = avatar;
+    map["qrCode"] = qrCode;
+    return map;
+  }
+}
+

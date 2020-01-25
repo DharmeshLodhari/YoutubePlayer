@@ -21,7 +21,7 @@ class TransactionTile extends StatelessWidget {
             ),
             subtitle: Text(transaction.description),
             leading: Image.network(
-              transaction.payeeUrl,
+              transaction.avatar,
               height: 45,
               width: 45,
               colorBlendMode: BlendMode.darken,

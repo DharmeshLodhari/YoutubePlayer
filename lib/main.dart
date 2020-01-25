@@ -15,5 +15,8 @@ void main() => runApp(
           ],
           child: MaterialApp(
               initialRoute: '/',
-              onGenerateRoute: RouteGenerator.generateRoute)),
+              onGenerateRoute: RouteGenerator.generateRoute,
+            debugShowCheckedModeBanner: false,
+          )
+      ),
     );

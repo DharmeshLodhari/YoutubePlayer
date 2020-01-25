@@ -59,9 +59,9 @@ class _QRCodeViewState extends State<QRCodeView> {
                   onPressed: () async {
                     if (controller != null) {
                       controller.flipCamera();
-                      String url = ums + "/api/v1/customer/alex.rasheed.2";
+                      String url = baseUrl + "/api/v1/customer/alex.rasheed.2";
 
-                      if (url.startsWith(ums)) {
+                      if (url.startsWith(baseUrl)) {
                         Map<String, dynamic> jsonResponse = {
                           'full_name': 'Alex Rasheed',
                           'uuid': '',
@@ -108,7 +108,7 @@ class _QRCodeViewState extends State<QRCodeView> {
     this.controller = controller;
     controller.scannedDataStream.listen((scanData) async {
       // if we get a text that belongs to us then we process it
-//      if (scanData.startsWith(ums)) {
+//      if (scanData.startsWith(baseUrl)) {
 //        var response = await http.get(scanData);
 //        if (response.statusCode == 200) {
 //          var jsonResponse = json.decode(response.body);
@@ -118,10 +118,8 @@ class _QRCodeViewState extends State<QRCodeView> {
 //              url: "", //jsonResponse['url'],
 //              fullName: jsonResponse['full_name'],
 //              userName: jsonResponse['username'],
-//              avatar: jsonResponse['avatar']
-//                  .replaceAll("http://127.0.0.1:8080", ums),
-//              qrCode: jsonResponse['qrcode']
-//                  .replaceAll("http://127.0.0.1:8080", ums),
+//              avatar: jsonResponse['avatar'],
+//              qrCode: jsonResponse['qrcode'],
 //            );
 //            payeeBloc.payee = _payee;
 //            Navigator.of(context).pushNamed('/send-payment');
