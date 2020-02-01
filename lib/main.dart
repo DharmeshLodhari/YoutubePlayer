@@ -12,6 +12,9 @@ void main() => runApp(
             ChangeNotifierProvider<PayeeBloc>.value(
               value: PayeeBloc(),
             ),
+            ChangeNotifierProvider<CustomerProfileBloc>.value(
+              value: CustomerProfileBloc(),
+            ),
           ],
           child: MaterialApp(
             initialRoute: '/',
