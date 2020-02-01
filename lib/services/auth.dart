@@ -6,6 +6,7 @@ import 'package:Slydo/models/user.dart';
 import 'package:http/http.dart' as http;
 
 final String baseUrl = "http://api.slydo.co";
+final String localHostUrl = "http://127.0.0.1";
 
 class AuthService {
   DatabaseHelper _db = DatabaseHelper();
