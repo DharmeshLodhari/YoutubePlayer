@@ -43,3 +43,22 @@ class PayeeBloc extends ChangeNotifier {
     notifyListeners();
   }
 }
+
+class CustomerProfileBloc extends ChangeNotifier {
+  // This block notify's the change in user status and pass it round the app.
+  CustomerProfile _customer = CustomerProfile(
+    fullName: null,
+    userName: null,
+    avatar: null,
+    qrCode: null,
+  );
+
+  // Getter
+  CustomerProfile get customer => _customer;
+
+  // Setter
+  set customer(CustomerProfile val) {
+    _customer = val;
+    notifyListeners();
+  }
+}
