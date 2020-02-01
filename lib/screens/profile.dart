@@ -1,4 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -12,75 +13,27 @@ class _ProfileState extends State<Profile> {
 
   @override
   Widget build(BuildContext context) {
-    final UserBloc userBloc = Provider.of<UserBloc>(context);
-
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: darkBlue(),
         title: Center(child: Text("Home")),
-        backgroundColor: Colors.green,
+        actions: <Widget>[
+          displayQRCodeButton(),
+        ],
       ),
       body: Center(
         child: Container(
-          //height: 600,
-          color: Colors.green,
+          color: lightBlue(),
           padding: EdgeInsets.all(30),
           child: Center(
             child: Column(
               children: <Widget>[
                 SizedBox(height: 10),
-                Center(
-                  child: Card(
-                    semanticContainer: true,
-                    elevation: 4.0,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Container(
-                          padding: EdgeInsets.all(40),
-                          child: Image.network(
-                            userBloc.user.qrCode,
-                            colorBlendMode: BlendMode.darken,
-                            fit: BoxFit.fitWidth,
-                            filterQuality: FilterQuality.high,
-                          ),
-                        ),
-                        ButtonBar(
-                          mainAxisSize: MainAxisSize.max,
-                          alignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            FlatButton(
-                                onPressed: () {},
-                                child: Text(userBloc.user.fullName,
-                                    style: TextStyle(
-                                        color: Colors.black, fontSize: 14))),
-                            FlatButton.icon(
-                                onPressed: () {},
-                                icon: Icon(Icons.settings, color: Colors.black),
-                                label: Text('Copy Url',
-                                    style: TextStyle(
-                                        color: Colors.black, fontSize: 14))),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                displayUserInfo(),
                 SizedBox(height: 30),
-                ButtonTheme(
-                  //elevation: 4,
-                  minWidth: double.infinity,
-                  child: MaterialButton(
-                    elevation: 4.0,
-                    onPressed: () {
-                      Navigator.of(context).pushNamed('/scan-qr');
-                    },
-                    textColor: Colors.black,
-                    color: Colors.white,
-                    height: 50,
-                    child: Text("Make a Payment"),
-                  ),
-                )
+                displayPaymentButton()
               ],
             ),
           ),
@@ -89,6 +42,7 @@ class _ProfileState extends State<Profile> {
 
 // TODO: Find a better way to do this without duplication
       bottomNavigationBar: BottomNavigationBar(
+        elevation: 0.0,
         currentIndex: _currentIndex,
         onTap: (index) {
           setState(() {
@@ -113,30 +67,96 @@ class _ProfileState extends State<Profile> {
         },
         items: [
           BottomNavigationBarItem(
+            backgroundColor: lightBlue(),
             icon: Icon(
               Icons.home,
-              color: Colors.grey[400],
+              color: Colors.white,
             ),
             title: Text('Home',
-                style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+                style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.group, color: Colors.grey[400]),
+            icon: Icon(Icons.group, color: Colors.white),
             title: Text('Accounts',
-                style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+                style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart, color: Colors.grey[400]),
+            icon: Icon(Icons.shopping_cart, color: Colors.white),
             title: Text('Transactions',
-                style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+                style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings, color: Colors.grey[400]),
+            icon: Icon(Icons.settings, color: Colors.white),
             title: Text('Settings',
-                style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+                style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
         ],
       ),
+    );
+  }
+
+  Widget displayUserInfo() {
+    final UserBloc userBloc = Provider.of<UserBloc>(context);
+    return Center(
+      child: Card(
+        semanticContainer: true,
+        elevation: 4.0,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Container(
+              padding: EdgeInsets.all(40),
+              child: Image.network(
+                userBloc.user.qrCode,
+                colorBlendMode: BlendMode.darken,
+                fit: BoxFit.fitWidth,
+                filterQuality: FilterQuality.high,
+              ),
+            ),
+            ButtonBar(
+              mainAxisSize: MainAxisSize.max,
+              alignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                FlatButton(
+                    onPressed: () {},
+                    child: Text(userBloc.user.fullName,
+                        style: TextStyle(color: Colors.black, fontSize: 14))),
+                FlatButton.icon(
+                    onPressed: () {},
+                    icon: Icon(Icons.settings, color: Colors.black),
+                    label: Text('Copy Url',
+                        style: TextStyle(color: Colors.black, fontSize: 14))),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget displayPaymentButton() {
+    return ButtonTheme(
+      //elevation: 4,
+      minWidth: double.infinity,
+      child: MaterialButton(
+        elevation: 4.0,
+        onPressed: () {
+          Navigator.of(context).pushNamed('/send-payment');
+        },
+        textColor: Colors.white,
+        color: darkBlue(),
+        height: 50,
+        child: Text("Make a Payment"),
+      ),
+    );
+  }
+
+  Widget displayQRCodeButton() {
+    return IconButton(
+      icon: Icon(Icons.camera),
+      onPressed: () {
+        Navigator.of(context).pushNamed('/scan-qr');
+      },
     );
   }
 }

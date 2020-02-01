@@ -29,6 +29,7 @@ class _QRCodeViewState extends State<QRCodeView> {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.transparent,
         elevation: 0.0,
         actions: <Widget>[],

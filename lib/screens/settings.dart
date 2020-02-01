@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -34,7 +35,7 @@ class SettingsTile extends StatelessWidget {
             filterQuality: FilterQuality.high,
           ),
           trailing: FlatButton(
-            child: Icon(Icons.mode_edit, color: Colors.grey[400]),
+            child: Icon(Icons.mode_edit, color: Colors.white),
             onPressed: () {
               return pickImage();
             },
@@ -86,14 +87,15 @@ class _SettingsListState extends State<SettingsList> {
     final UserBloc userBloc = Provider.of<UserBloc>(context);
 
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: lightBlue(),
       appBar: AppBar(
-        backgroundColor: Colors.green,
+        automaticallyImplyLeading: false,
+        backgroundColor: darkBlue(),
         title: Text('Settings'),
       ),
       body: Center(
         child: Container(
-          color: Colors.white,
+          color: lightBlue(),
           padding: EdgeInsets.all(24),
           child: Center(
             child: Column(
@@ -109,10 +111,10 @@ class _SettingsListState extends State<SettingsList> {
                       Navigator.pushNamedAndRemoveUntil(
                           context, "/", (r) => false);
                     },
-                    textColor: Colors.black,
-                    color: Colors.white,
+                    textColor: Colors.white,
+                    color: darkBlue(),
                     height: 50,
-                    child: Text("Log In"),
+                    child: Text("Logout"),
                   ),
                 ),
               ],
@@ -123,6 +125,7 @@ class _SettingsListState extends State<SettingsList> {
 
 // TODO: Find a better way to do this without duplication
       bottomNavigationBar: BottomNavigationBar(
+        elevation: 0.0,
         currentIndex: _currentIndex,
         onTap: (index) {
           setState(() {
@@ -149,25 +152,26 @@ class _SettingsListState extends State<SettingsList> {
           BottomNavigationBarItem(
             icon: Icon(
               Icons.home,
-              color: Colors.grey[400],
+              color: Colors.white,
             ),
             title: Text('Home',
-                style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+                style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.group, color: Colors.grey[400]),
+            icon: Icon(Icons.group, color: Colors.white),
             title: Text('Accounts',
-                style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+                style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart, color: Colors.grey[400]),
+            icon: Icon(Icons.shopping_cart, color: Colors.white),
             title: Text('Transactions',
-                style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+                style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings, color: Colors.grey[400]),
+            backgroundColor: lightBlue(),
+            icon: Icon(Icons.settings, color: Colors.white),
             title: Text('Settings',
-                style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+                style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
         ],
       ),

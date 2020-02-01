@@ -77,12 +77,12 @@ class CustomerProfile {
   String qrCode;
 
   // Pass in as named parameter in constructor
-  CustomerProfile(
-      {this.fullName,
-        this.userName,
-        this.avatar,
-        this.qrCode,
-      });
+  CustomerProfile({
+    this.fullName,
+    this.userName,
+    this.avatar,
+    this.qrCode,
+  });
 
   CustomerProfile.map(dynamic obj) {
     this.userName = obj["username"];
@@ -100,4 +100,3 @@ class CustomerProfile {
     return map;
   }
 }
-

@@ -7,7 +7,6 @@ import 'package:http/http.dart' as http;
 
 final String baseUrl = "http://api.slydo.co";
 
-
 class AuthService {
   DatabaseHelper _db = DatabaseHelper();
 
@@ -158,10 +157,10 @@ class AuthService {
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
       CustomerProfile customerProfile = CustomerProfile(
-          fullName: jsonData["full_name"],
-          userName: jsonData["username"],
-          avatar: jsonData["avatar"],
-          qrCode: jsonData["qr_code"],
+        fullName: jsonData["full_name"],
+        userName: jsonData["username"],
+        avatar: jsonData["avatar"],
+        qrCode: jsonData["qr_code"],
       );
       return customerProfile;
     } else {
@@ -201,8 +200,7 @@ class AuthService {
       List<BankAccount> accounts = [];
       for (var item in jsonData) {
         var bank = item["bank"];
-        var logoUrl =
-            item["bank"]['logo_url'];
+        var logoUrl = item["bank"]['logo_url'];
         item["bank"]['logo_url'] = logoUrl;
 
         BankAccount account = BankAccount(
@@ -238,7 +236,7 @@ class AuthService {
             ? true
             : false;
 
-        var payee = isCredit ? item["from_customer"]:item['to_customer'];
+        var payee = isCredit ? item["from_customer"] : item['to_customer'];
         var customer = await fetchCustomerProfile(payee);
         var avatar = customer.avatar;
 

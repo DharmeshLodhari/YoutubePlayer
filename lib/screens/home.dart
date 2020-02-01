@@ -1,3 +1,4 @@
+import 'package:Slydo/screens/colors.dart';
 import 'package:flutter/material.dart';
 
 class Home extends StatefulWidget {
@@ -12,12 +13,12 @@ class _HomeState extends State<Home> {
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text('Slydo'),
-        backgroundColor: Colors.green,
+        backgroundColor: darkBlue(),
         elevation: 0.0,
       ),
       body: Center(
         child: Container(
-          color: Colors.green,
+          color: lightBlue(),
           padding: EdgeInsets.all(24),
           child: Center(
             child: Column(
@@ -41,23 +42,28 @@ class _HomeState extends State<Home> {
                     onPressed: () {
                       Navigator.of(context).pushNamed('/login');
                     },
-                    textColor: Colors.black,
-                    color: Colors.white,
+                    textColor: Colors.white,
+                    color: darkBlue(),
                     height: 50,
                     child: Text("Log In"),
                   ),
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 10),
+                Text(
+                  'or',
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
+                SizedBox(height: 10),
                 ButtonTheme(
                   minWidth: double.infinity,
                   child: MaterialButton(
                     shape: RoundedRectangleBorder(
-                        side: BorderSide(color: Colors.white, width: 2.0)),
+                        side: BorderSide(color: darkBlue(), width: 2.0)),
                     onPressed: () {
                       Navigator.of(context).pushNamed('/register');
                     },
                     textColor: Colors.white,
-                    color: Colors.green,
+                    color: darkBlue(),
                     height: 50,
                     child: Text("Register"),
                   ),

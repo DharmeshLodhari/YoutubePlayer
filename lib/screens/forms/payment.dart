@@ -1,4 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -19,6 +20,7 @@ class _SendPaymentState extends State<SendPayment> {
   int amount;
   String reference = "";
   String errorMessage = "";
+  int recipient;
 
   @override
   Widget build(BuildContext context) {
@@ -28,12 +30,12 @@ class _SendPaymentState extends State<SendPayment> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
+          automaticallyImplyLeading: false,
           title: Center(child: Text("Send a Payment")),
-          backgroundColor: Colors.green),
+          backgroundColor: darkBlue()),
       body: SingleChildScrollView(
         child: Container(
-          height: 600,
-          color: Colors.white,
+          color: lightBlue(),
           padding: EdgeInsets.all(40),
           child: Center(
             child: Form(
@@ -42,124 +44,128 @@ class _SendPaymentState extends State<SendPayment> {
                 children: <Widget>[
                   SizedBox(height: 10),
                   Center(
-                    child: Card(
-                      semanticContainer: true,
-                      elevation: 4.0,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          SizedBox(
-                            height: 20,
-                          ),
-                          ListTile(
-                            title: Text(
-                              payeeBloc.payee.fullName,
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15),
-                            ),
-                            subtitle: Text(payeeBloc.payee.userName),
-                            leading: Image.network(
-                              payeeBloc.payee.avatar,
-                              colorBlendMode: BlendMode.darken,
-                              fit: BoxFit.fitWidth,
-                              filterQuality: FilterQuality.high,
-                            ),
-                            trailing: Image.network(
-                              payeeBloc.payee.qrCode,
-                              colorBlendMode: BlendMode.darken,
-                              fit: BoxFit.fitWidth,
-                              filterQuality: FilterQuality.high,
-                            ),
-                          ),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          Padding(
-                            padding: EdgeInsets.all(20.0),
-                            child: TextFormField(
-                              autofocus: true,
-                              obscureText: false,
-                              keyboardType: TextInputType.number,
-                              inputFormatters: [
-                                WhitelistingTextInputFormatter.digitsOnly
-                              ],
-                              decoration: InputDecoration(
-                                  prefixText: '#',
-                                  prefixStyle: TextStyle(
-                                      color: Colors.green,
-                                      backgroundColor: Colors.grey[400],
-                                      fontSize: 20,
-                                      letterSpacing: 5),
-                                  //labelText: "Enter Amount",
-                                  hintText: "Enter Amount",
-                                  labelStyle: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16,
-                                  ),
-                                  border: OutlineInputBorder(
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(4)),
-                                      borderSide: BorderSide(
-                                          width: 1,
-                                          color: Colors.green,
-                                          style: BorderStyle.solid))),
-                              validator: (val) {
-                                if (val.isNotEmpty) {
-                                  try {
-                                    int.parse(val);
-                                    return null;
-                                  } catch (e) {}
-                                }
-                                return "Invalid amount";
-                              },
-                              onChanged: (val) {
-                                setState(() {
-                                  amount = int.parse(val);
-                                });
-                              },
-                            ),
-                          ),
-                          Padding(
-                              padding: EdgeInsets.all(20.0),
-                              child: TextFormField(
-                                autofocus: false,
-                                decoration: InputDecoration(
-                                    labelText: "Reference",
-                                    hintText: "Reference",
-                                    labelStyle: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 16,
-                                    ),
-                                    border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(4)),
-                                        borderSide: BorderSide(
-                                            width: 1,
-                                            color: Colors.green,
-                                            style: BorderStyle.solid))),
-                                onChanged: (val) {
-                                  setState(() {
-                                    reference = val;
-                                  });
-                                },
-                              )),
-                        ],
-                      ),
-                    ),
+//                    child: Card(
+//                      semanticContainer: true,
+//                      elevation: 4.0,
+//                      child: Column(
+//                        mainAxisSize: MainAxisSize.min,
+//                        children: <Widget>[
+//                          SizedBox(
+//                            height: 10,
+//                          ),
+//                          ListTile(
+//                            title: Text(
+//                              payeeBloc.payee.fullName,
+//                              style: TextStyle(
+//                                  color: Colors.black,
+//                                  fontWeight: FontWeight.bold,
+//                                  fontSize: 15),
+//                            ),
+//                            subtitle: Text(payeeBloc.payee.userName),
+//                            leading: Image.network(
+//                              payeeBloc.payee.avatar,
+//                              colorBlendMode: BlendMode.darken,
+//                              fit: BoxFit.fitWidth,
+//                              filterQuality: FilterQuality.high,
+//                            ),
+//                            trailing: Image.network(
+//                              payeeBloc.payee.qrCode,
+//                              colorBlendMode: BlendMode.darken,
+//                              fit: BoxFit.fitWidth,
+//                              filterQuality: FilterQuality.high,
+//                            ),
+//                          ),
+//                          SizedBox(
+//                            height: 10,
+//                          ),
+//                          customerField(),
+//                          SizedBox(
+//                            height: 10,
+//                          ),
+//                          Padding(
+//                            padding: EdgeInsets.all(20.0),
+//                            child: TextFormField(
+//                              autofocus: true,
+//                              obscureText: false,
+//                              keyboardType: TextInputType.number,
+//                              inputFormatters: [
+//                                WhitelistingTextInputFormatter.digitsOnly
+//                              ],
+//                              decoration: InputDecoration(
+//                                  prefixText: '#',
+//                                  prefixStyle: TextStyle(
+//                                      color: darkBlue(),
+//                                      backgroundColor: Colors.white,
+//                                      fontSize: 20,
+//                                      letterSpacing: 5),
+//                                  //labelText: "Enter Amount",
+//                                  hintText: "Enter Amount",
+//                                  labelStyle: TextStyle(
+//                                    color: Colors.black,
+//                                    fontSize: 16,
+//                                  ),
+//                                  border: OutlineInputBorder(
+//                                      borderRadius:
+//                                          BorderRadius.all(Radius.circular(4)),
+//                                      borderSide: BorderSide(
+//                                          width: 1,
+//                                          color: darkBlue(),
+//                                          style: BorderStyle.solid))),
+//                              validator: (val) {
+//                                if (val.isNotEmpty) {
+//                                  try {
+//                                    int.parse(val);
+//                                    return null;
+//                                  } catch (e) {}
+//                                }
+//                                return "Invalid amount";
+//                              },
+//                              onChanged: (val) {
+//                                setState(() {
+//                                  amount = int.parse(val);
+//                                });
+//                              },
+//                            ),
+//                          ),
+//                          Padding(
+//                              padding: EdgeInsets.all(20.0),
+//                              child: TextFormField(
+//                                autofocus: false,
+//                                decoration: InputDecoration(
+//                                    labelText: "Reference",
+//                                    hintText: "Reference",
+//                                    labelStyle: TextStyle(
+//                                      color: Colors.black,
+//                                      fontSize: 16,
+//                                    ),
+//                                    border: OutlineInputBorder(
+//                                        borderRadius: BorderRadius.all(
+//                                            Radius.circular(4)),
+//                                        borderSide: BorderSide(
+//                                            width: 1,
+//                                            color: darkBlue(),
+//                                            style: BorderStyle.solid))),
+//                                onChanged: (val) {
+//                                  setState(() {
+//                                    reference = val;
+//                                  });
+//                                },
+//                              )),
+//                        ],
+//                      ),
+//                    ),
                   ),
                   SizedBox(
-                    height: 20,
+                    height: 10,
                   ),
                   Text(
                     errorMessage,
                     style: TextStyle(color: Colors.red),
                   ),
-                  SizedBox(height: 30),
+                  SizedBox(height: 10),
                   ButtonTheme(
                     //elevation: 4,
-                    //color: Colors.green,
+                    //color: darkBlue(),
                     minWidth: double.infinity,
                     child: MaterialButton(
                       elevation: 4.0,
@@ -167,7 +173,7 @@ class _SendPaymentState extends State<SendPayment> {
                         if (_formKey.currentState.validate()) {
                           Map data = {
                             "from_customer": userBloc.user.userName,
-                            "to_customer": payeeBloc.payee.userName,
+                            "to_customer": recipient,
                             "currency": "NGN",
                             "amount": amount.toString(),
                             "category": "Shopping",
@@ -187,7 +193,7 @@ class _SendPaymentState extends State<SendPayment> {
                         }
                       },
                       textColor: Colors.white,
-                      color: Colors.green,
+                      color: darkBlue(),
                       height: 50,
                       child: Text("Send Payment"),
                     ),
@@ -227,29 +233,54 @@ class _SendPaymentState extends State<SendPayment> {
           BottomNavigationBarItem(
             icon: Icon(
               Icons.home,
-              color: Colors.grey[400],
+              color: Colors.white,
             ),
             title: Text('Home',
-                style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+                style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.group, color: Colors.grey[400]),
+            icon: Icon(Icons.group, color: Colors.white),
             title: Text('Accounts',
-                style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+                style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart, color: Colors.grey[400]),
+            backgroundColor: lightBlue(),
+            icon: Icon(Icons.shopping_cart, color: Colors.white),
             title: Text('Transactions',
-                style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+                style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings, color: Colors.grey[400]),
+            icon: Icon(Icons.settings, color: Colors.white),
             title: Text('Settings',
-                style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+                style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
         ],
       ),
     );
     //
+  }
+
+  Widget customerField() {
+    return Padding(
+        padding: EdgeInsets.all(20.0),
+        child: TextFormField(
+          autofocus: false,
+          decoration: InputDecoration(
+              labelText: "Recipient",
+              hintText: "Recipient",
+              labelStyle: TextStyle(
+                color: Colors.black,
+                fontSize: 16,
+              ),
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(4)),
+                  borderSide: BorderSide(
+                      width: 1, color: darkBlue(), style: BorderStyle.solid))),
+          onChanged: (val) {
+            setState(() {
+              recipient = int.parse(val);
+            });
+          },
+        ));
   }
 }

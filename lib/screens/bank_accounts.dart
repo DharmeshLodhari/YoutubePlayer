@@ -1,4 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/screens/tiles/bank_account.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/splash.dart';
@@ -20,9 +21,10 @@ class _BankAccountListState extends State<BankAccountList> {
     final UserBloc userBloc = Provider.of<UserBloc>(context);
 
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: lightBlue(),
       appBar: AppBar(
-        backgroundColor: Colors.green,
+        automaticallyImplyLeading: false,
+        backgroundColor: darkBlue(),
         title: Text('My Bank Accounts'),
       ),
       body: FutureBuilder(
@@ -43,7 +45,7 @@ class _BankAccountListState extends State<BankAccountList> {
       ),
 
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.green,
+        backgroundColor: darkBlue(),
         onPressed: () {
           Navigator.of(context).pushNamed('/add-account');
         },
@@ -53,6 +55,7 @@ class _BankAccountListState extends State<BankAccountList> {
 
 // TODO: Find a better way to do this without duplication
       bottomNavigationBar: BottomNavigationBar(
+        elevation: 0.0,
         currentIndex: _currentIndex,
         onTap: (index) {
           setState(() {
@@ -77,27 +80,29 @@ class _BankAccountListState extends State<BankAccountList> {
         },
         items: [
           BottomNavigationBarItem(
+            backgroundColor: lightBlue(),
             icon: Icon(
               Icons.home,
-              color: Colors.grey[400],
+              color: Colors.white,
             ),
             title: Text('Home',
-                style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+                style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.group, color: Colors.grey[400]),
+            backgroundColor: lightBlue(),
+            icon: Icon(Icons.group, color: Colors.white),
             title: Text('Accounts',
-                style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+                style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart, color: Colors.grey[400]),
+            icon: Icon(Icons.shopping_cart, color: Colors.white),
             title: Text('Transactions',
-                style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+                style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings, color: Colors.grey[400]),
+            icon: Icon(Icons.settings, color: Colors.white),
             title: Text('Settings',
-                style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+                style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
         ],
       ),

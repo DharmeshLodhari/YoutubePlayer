@@ -1,4 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -24,11 +25,10 @@ class _AddAccountState extends State<AddAccount> {
     final UserBloc userBloc = Provider.of<UserBloc>(context);
 
     return Scaffold(
-      backgroundColor: Colors.white,
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
+        backgroundColor: darkBlue(),
         title: Text('Add A Bank Account'),
-        backgroundColor: Colors.green,
         elevation: 0.0,
       ),
       body: Container(
@@ -36,7 +36,7 @@ class _AddAccountState extends State<AddAccount> {
         child: Form(
           key: _formKey,
           child: Container(
-            color: Colors.white,
+//            color: Colors.white,
             padding: EdgeInsets.all(24),
             child: Center(
               child: Column(
@@ -138,8 +138,8 @@ class _AddAccountState extends State<AddAccount> {
                         isDefault = value;
                       });
                     },
-                    activeTrackColor: Colors.lightGreenAccent,
-                    activeColor: Colors.green,
+                    activeTrackColor: darkBlue(),
+                    activeColor: darkBlue(),
                   ),
                   SizedBox(
                     height: 20,
@@ -176,7 +176,7 @@ class _AddAccountState extends State<AddAccount> {
                         }
                       },
                       textColor: Colors.white,
-                      color: Colors.green,
+                      color: darkBlue(),
                       height: 50,
                       child: Text("Submit"),
                     ),
@@ -190,6 +190,7 @@ class _AddAccountState extends State<AddAccount> {
 
 // TODO: Find a better way to do this without duplication
       bottomNavigationBar: BottomNavigationBar(
+        elevation: 0.0,
         currentIndex: _currentIndex,
         onTap: (index) {
           setState(() {
@@ -216,25 +217,26 @@ class _AddAccountState extends State<AddAccount> {
           BottomNavigationBarItem(
             icon: Icon(
               Icons.home,
-              color: Colors.grey[400],
+              color: Colors.white,
             ),
             title: Text('Home',
-                style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+                style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.group, color: Colors.grey[400]),
+            backgroundColor: lightBlue(),
+            icon: Icon(Icons.group, color: Colors.white),
             title: Text('Accounts',
-                style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+                style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart, color: Colors.grey[400]),
+            icon: Icon(Icons.shopping_cart, color: Colors.white),
             title: Text('Transactions',
-                style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+                style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings, color: Colors.grey[400]),
+            icon: Icon(Icons.settings, color: Colors.white),
             title: Text('Settings',
-                style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+                style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
         ],
       ),
