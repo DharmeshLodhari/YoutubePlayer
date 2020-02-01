@@ -19,6 +19,7 @@ class _SendPaymentState extends State<SendPayment> {
   final _formKey = GlobalKey<FormState>();
   CustomerProfile _payee;
   UserBloc userBloc;
+  CustomerProfileBloc customerProfileBloc;
 
   bool isValidPayee = false;
   int amount;
@@ -29,6 +30,7 @@ class _SendPaymentState extends State<SendPayment> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+    customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
 
     return Scaffold(
       backgroundColor: lightBlue(),
@@ -125,6 +127,12 @@ class _SendPaymentState extends State<SendPayment> {
   }
 
   Widget getDisplayCard() {
+    if (customerProfileBloc.customer.userName != null) {
+      setState(() {
+        _payee = customerProfileBloc.customer;
+        recipient = _payee.userName;
+      });
+    }
     return _payee == null
         ? Text("")
         : Card(
