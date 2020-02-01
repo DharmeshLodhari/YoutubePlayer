@@ -1,4 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/models/user.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
@@ -13,21 +14,24 @@ class SendPayment extends StatefulWidget {
 }
 
 class _SendPaymentState extends State<SendPayment> {
+  int _currentIndex = 2;
   final _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
-  int _currentIndex = 2;
+  CustomerProfile _payee;
+  UserBloc userBloc;
 
+  bool isValidPayee = false;
   int amount;
   String reference = "";
   String errorMessage = "";
-  int recipient;
+  String recipient;
 
   @override
   Widget build(BuildContext context) {
-    final PayeeBloc payeeBloc = Provider.of<PayeeBloc>(context);
-    final UserBloc userBloc = Provider.of<UserBloc>(context);
+    userBloc = Provider.of<UserBloc>(context);
 
     return Scaffold(
+      backgroundColor: lightBlue(),
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
           automaticallyImplyLeading: false,
@@ -35,169 +39,29 @@ class _SendPaymentState extends State<SendPayment> {
           backgroundColor: darkBlue()),
       body: SingleChildScrollView(
         child: Container(
-          color: lightBlue(),
           padding: EdgeInsets.all(40),
           child: Center(
             child: Form(
               key: _formKey,
               child: Column(
                 children: <Widget>[
+                  getDisplayCard(),
                   SizedBox(height: 10),
-                  Center(
-//                    child: Card(
-//                      semanticContainer: true,
-//                      elevation: 4.0,
-//                      child: Column(
-//                        mainAxisSize: MainAxisSize.min,
-//                        children: <Widget>[
-//                          SizedBox(
-//                            height: 10,
-//                          ),
-//                          ListTile(
-//                            title: Text(
-//                              payeeBloc.payee.fullName,
-//                              style: TextStyle(
-//                                  color: Colors.black,
-//                                  fontWeight: FontWeight.bold,
-//                                  fontSize: 15),
-//                            ),
-//                            subtitle: Text(payeeBloc.payee.userName),
-//                            leading: Image.network(
-//                              payeeBloc.payee.avatar,
-//                              colorBlendMode: BlendMode.darken,
-//                              fit: BoxFit.fitWidth,
-//                              filterQuality: FilterQuality.high,
-//                            ),
-//                            trailing: Image.network(
-//                              payeeBloc.payee.qrCode,
-//                              colorBlendMode: BlendMode.darken,
-//                              fit: BoxFit.fitWidth,
-//                              filterQuality: FilterQuality.high,
-//                            ),
-//                          ),
-//                          SizedBox(
-//                            height: 10,
-//                          ),
-//                          customerField(),
-//                          SizedBox(
-//                            height: 10,
-//                          ),
-//                          Padding(
-//                            padding: EdgeInsets.all(20.0),
-//                            child: TextFormField(
-//                              autofocus: true,
-//                              obscureText: false,
-//                              keyboardType: TextInputType.number,
-//                              inputFormatters: [
-//                                WhitelistingTextInputFormatter.digitsOnly
-//                              ],
-//                              decoration: InputDecoration(
-//                                  prefixText: '#',
-//                                  prefixStyle: TextStyle(
-//                                      color: darkBlue(),
-//                                      backgroundColor: Colors.white,
-//                                      fontSize: 20,
-//                                      letterSpacing: 5),
-//                                  //labelText: "Enter Amount",
-//                                  hintText: "Enter Amount",
-//                                  labelStyle: TextStyle(
-//                                    color: Colors.black,
-//                                    fontSize: 16,
-//                                  ),
-//                                  border: OutlineInputBorder(
-//                                      borderRadius:
-//                                          BorderRadius.all(Radius.circular(4)),
-//                                      borderSide: BorderSide(
-//                                          width: 1,
-//                                          color: darkBlue(),
-//                                          style: BorderStyle.solid))),
-//                              validator: (val) {
-//                                if (val.isNotEmpty) {
-//                                  try {
-//                                    int.parse(val);
-//                                    return null;
-//                                  } catch (e) {}
-//                                }
-//                                return "Invalid amount";
-//                              },
-//                              onChanged: (val) {
-//                                setState(() {
-//                                  amount = int.parse(val);
-//                                });
-//                              },
-//                            ),
-//                          ),
-//                          Padding(
-//                              padding: EdgeInsets.all(20.0),
-//                              child: TextFormField(
-//                                autofocus: false,
-//                                decoration: InputDecoration(
-//                                    labelText: "Reference",
-//                                    hintText: "Reference",
-//                                    labelStyle: TextStyle(
-//                                      color: Colors.black,
-//                                      fontSize: 16,
-//                                    ),
-//                                    border: OutlineInputBorder(
-//                                        borderRadius: BorderRadius.all(
-//                                            Radius.circular(4)),
-//                                        borderSide: BorderSide(
-//                                            width: 1,
-//                                            color: darkBlue(),
-//                                            style: BorderStyle.solid))),
-//                                onChanged: (val) {
-//                                  setState(() {
-//                                    reference = val;
-//                                  });
-//                                },
-//                              )),
-//                        ],
-//                      ),
-//                    ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
+                  getRecipientField(),
+                  SizedBox(height: 10),
+                  displayAmountField(),
+                  SizedBox(height: 10),
+                  getReferenceField(),
+                  SizedBox(height: 10),
                   Text(
                     errorMessage,
-                    style: TextStyle(color: Colors.red),
+                    style: TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16),
                   ),
                   SizedBox(height: 10),
-                  ButtonTheme(
-                    //elevation: 4,
-                    //color: darkBlue(),
-                    minWidth: double.infinity,
-                    child: MaterialButton(
-                      elevation: 4.0,
-                      onPressed: () async {
-                        if (_formKey.currentState.validate()) {
-                          Map data = {
-                            "from_customer": userBloc.user.userName,
-                            "to_customer": recipient,
-                            "currency": "NGN",
-                            "amount": amount.toString(),
-                            "category": "Shopping",
-                            "notes": reference,
-                            "description": reference
-                          };
-                          http.Response response =
-                              await _auth.makePayment(data);
-                          if (response.statusCode == 200) {
-                            Navigator.of(context).pushNamed('/transactions');
-                          } else {
-                            setState(() {
-                              errorMessage =
-                                  "An error has occured please try again";
-                            });
-                          }
-                        }
-                      },
-                      textColor: Colors.white,
-                      color: darkBlue(),
-                      height: 50,
-                      child: Text("Send Payment"),
-                    ),
-                  )
+                  getSubmitButton(),
                 ],
               ),
             ),
@@ -260,27 +124,180 @@ class _SendPaymentState extends State<SendPayment> {
     //
   }
 
-  Widget customerField() {
-    return Padding(
-        padding: EdgeInsets.all(20.0),
-        child: TextFormField(
-          autofocus: false,
-          decoration: InputDecoration(
-              labelText: "Recipient",
-              hintText: "Recipient",
-              labelStyle: TextStyle(
-                color: Colors.black,
-                fontSize: 16,
+  Widget getDisplayCard() {
+    return _payee == null
+        ? Text("")
+        : Card(
+            semanticContainer: true,
+            child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+              SizedBox(height: 20),
+              ListTile(
+                title: Text(
+                  _payee.fullName,
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15),
+                ),
+                subtitle: Text(_payee.userName),
+                leading: Image.network(
+                  _payee.avatar,
+                  colorBlendMode: BlendMode.darken,
+                  fit: BoxFit.fitWidth,
+                  filterQuality: FilterQuality.high,
+                ),
+                trailing: Image.network(
+                  _payee.qrCode,
+                  colorBlendMode: BlendMode.darken,
+                  fit: BoxFit.fitWidth,
+                  filterQuality: FilterQuality.high,
+                ),
               ),
-              border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(4)),
-                  borderSide: BorderSide(
-                      width: 1, color: darkBlue(), style: BorderStyle.solid))),
-          onChanged: (val) {
+            ]),
+          );
+  }
+
+  Widget getRecipientField() {
+    return TextFormField(
+      cursorColor: darkBlue(),
+      autofocus: false,
+      obscureText: false,
+      decoration: InputDecoration(
+          fillColor: Colors.white,
+          filled: true,
+          hintText: "Recipient",
+          labelStyle: TextStyle(
+            color: Colors.black,
+            fontSize: 16,
+          ),
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(4)),
+              borderSide: BorderSide(
+                  width: 1, color: Colors.white, style: BorderStyle.solid))),
+      onChanged: (val) {
+        setState(() {
+          _payee = null;
+          recipient = val;
+        });
+      },
+    );
+  }
+
+  Widget displayAmountField() {
+    return TextFormField(
+      cursorColor: darkBlue(),
+      autofocus: false,
+      obscureText: false,
+      keyboardType: TextInputType.number,
+      inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
+      decoration: InputDecoration(
+          fillColor: Colors.white,
+          filled: true,
+          prefixText: '#',
+          prefixStyle: TextStyle(
+              color: darkBlue(),
+              backgroundColor: Colors.white,
+              fontSize: 20,
+              letterSpacing: 5),
+          //labelText: "Enter Amount",
+          hintText: "Enter Amount",
+          labelStyle: TextStyle(
+            color: Colors.black,
+            fontSize: 16,
+          ),
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(4)),
+              borderSide: BorderSide(
+                  width: 1, color: Colors.white, style: BorderStyle.solid))),
+      validator: (val) {
+        if (val.isNotEmpty) {
+          try {
+            int.parse(val);
+            return null;
+          } catch (e) {}
+        }
+        return "Invalid amount";
+      },
+      onTap: () async {
+        if (recipient != null) {
+          var customerProfile = await _auth.fetchCustomerProfile(recipient);
+          setState(() {
+            _payee = customerProfile;
+            isValidPayee = _payee.userName != userBloc.user.userName;
+          });
+        }
+      },
+      onChanged: (val) {
+        setState(() {
+          amount = int.parse(val);
+        });
+      },
+      //),
+    );
+  }
+
+  Widget getReferenceField() {
+    return TextFormField(
+      cursorColor: darkBlue(),
+      autofocus: false,
+      obscureText: false,
+      decoration: InputDecoration(
+          fillColor: Colors.white,
+          filled: true,
+          hintText: "Reference",
+          labelStyle: TextStyle(
+            color: Colors.black,
+            fontSize: 16,
+          ),
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(4)),
+              borderSide: BorderSide(
+                  width: 1, color: Colors.white, style: BorderStyle.solid))),
+      onChanged: (val) {
+        setState(() {
+          reference = val;
+        });
+      },
+    );
+  }
+
+  Widget getSubmitButton() {
+    return ButtonTheme(
+      minWidth: double.infinity,
+      child: MaterialButton(
+        elevation: 4.0,
+        onPressed: () async {
+          if (!isValidPayee) {
             setState(() {
-              recipient = int.parse(val);
+              errorMessage = "Invalid recipient";
             });
-          },
-        ));
+          }
+
+          if (isValidPayee && _formKey.currentState.validate()) {
+            Map data = {
+              "from_customer": userBloc.user.userName,
+              "to_customer": recipient,
+              "currency": "NGN",
+              "amount": amount.toString(),
+              "category": "Shopping",
+              "notes": reference,
+              "description": reference
+            };
+            http.Response response = await _auth.makePayment(data);
+            if (response.statusCode == 200) {
+              Navigator.of(context).pushNamed('/transactions');
+            } else {
+              setState(() {
+                errorMessage = "An error has occured please try again";
+              });
+            }
+          }
+        },
+        textColor: Colors.white,
+        color: darkBlue(),
+        height: 50,
+        child: Text("Send Payment"),
+      ),
+    );
   }
 }

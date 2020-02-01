@@ -32,7 +32,7 @@ class _AddAccountState extends State<AddAccount> {
         elevation: 0.0,
       ),
       body: Container(
-        color: Colors.white,
+        color: lightBlue(),
         child: Form(
           key: _formKey,
           child: Container(

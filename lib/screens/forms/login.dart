@@ -48,7 +48,6 @@ class _UserLoginState extends State<UserLogin> {
                       fit: BoxFit.cover,
                     ),
                   ),
-
                   phoneNumberField(),
                   SizedBox(
                     height: 30.0,
