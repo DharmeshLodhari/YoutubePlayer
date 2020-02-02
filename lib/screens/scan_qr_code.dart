@@ -81,15 +81,17 @@ class _QRCodeViewState extends State<QRCodeView> {
     this.controller = controller;
     controller.scannedDataStream.listen((scanData) async {
       //if we get a text that belongs to us then we process it
-      if (scanData.startsWith(baseUrl) | scanData.startsWith(localHostUrl)) {
-        List scanDataList = scanData.split('/');
-        scanDataList.removeWhere((value) => value == "");
-        var recipient = scanDataList.last;
-        var customerProfile = await _auth.fetchCustomerProfile(recipient);
-        setState(() {
-          customerProfileBloc.customer = customerProfile;
+      if (scanData != null) {
+        if (scanData.startsWith(baseUrl) || scanData.startsWith(localHostUrl)) {
+          var scanDataList = scanData.split('/');
+          scanDataList.removeWhere((value) => value == "");
+          var recipient = scanDataList.last;
+          var customerProfile = await _auth.fetchCustomerProfile(recipient);
+          setState(() {
+            customerProfileBloc.customer = customerProfile;
+          });
           Navigator.of(context).pushNamed('/send-payment');
-        });
+        }
       }
     });
   }
