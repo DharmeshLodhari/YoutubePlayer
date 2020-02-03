@@ -3,7 +3,6 @@ import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 
-
 class SignUp extends StatefulWidget {
   @override
   _SignUpState createState() => _SignUpState();
@@ -106,25 +105,26 @@ class _SignUpState extends State<SignUp> {
     return Container(
         color: Colors.white,
         child: DropdownButtonFormField(
-      value: bankName,
-      icon: Icon(Icons.arrow_downward),
-      iconSize: 24,
-      elevation: 16,
-      style: TextStyle(color: Colors.black),
-      onChanged: (String val) {
-        setState(() {
-          bankName = val;
-        });
-      },
-      items: banks.map((bank) {
-        return DropdownMenuItem(
-          value: bank.slug,
-          child: Text(bank.name, style: TextStyle(color: darkBlue(), fontSize: 16),
-          ),
-        );
-      }).toList(),
-    )
-    );
+          value: bankName,
+          icon: Icon(Icons.arrow_downward),
+          iconSize: 24,
+          elevation: 16,
+          style: TextStyle(color: Colors.black),
+          onChanged: (String val) {
+            setState(() {
+              bankName = val;
+            });
+          },
+          items: banks.map((bank) {
+            return DropdownMenuItem(
+              value: bank.slug,
+              child: Text(
+                bank.name,
+                style: TextStyle(color: darkBlue(), fontSize: 16),
+              ),
+            );
+          }).toList(),
+        ));
   }
 
   Widget getAccountNameField() {

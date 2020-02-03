@@ -27,7 +27,6 @@ class _PushNotificationWidgetState extends State<PushNotificationWidget> {
               image: notification['image']));
         });
       },
-
       onLaunch: (Map<String, dynamic> message) async {
         final notification = message['notification'];
         setState(() {
@@ -69,8 +68,6 @@ class _PushNotificationWidgetState extends State<PushNotificationWidget> {
 
     // Or do other work.
   }
-
-
 
   Future<Null> _navigateToItemDetail(Map<String, dynamic> message) async {
     // When user clicks on the notification we can inspect message

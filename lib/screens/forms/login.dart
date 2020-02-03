@@ -73,7 +73,6 @@ class _UserLoginState extends State<UserLogin> {
       decoration: InputDecoration(
           fillColor: Colors.white,
           filled: true,
-          labelText: "Phone Number",
           hintText: "Phone Number",
           labelStyle: TextStyle(
             color: darkBlue(),
@@ -105,7 +104,6 @@ class _UserLoginState extends State<UserLogin> {
       decoration: InputDecoration(
           fillColor: Colors.white,
           filled: true,
-          labelText: "Password",
           hintText: "Password",
           labelStyle: TextStyle(
             color: darkBlue(),
