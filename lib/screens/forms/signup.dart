@@ -1,32 +1,8 @@
+import 'package:Slydo/models/bank.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 
-var banks = {
-  'Union Bank Of Nigeria Plc': 'union-bank-of-nigeria-plc',
-  'Unity Bank Plc': 'unity-bank-plc',
-  'Providus Bank': 'providus-bank',
-  'Zenith Bank Plc': 'zenith-bank-plc',
-  'Citibank Nigeria Limited': 'citibank-nigeria-limited',
-  'Stanbic Ibtc Bank Ltd': 'stanbic-ibtc-bank-ltd',
-  'Guaranty Trust Bank Plc': 'guaranty-trust-bank-plc',
-  'Suntrust Bank Nigeria Limited': 'suntrust-bank-nigeria-limited',
-  'Access Bank Plc': 'access-bank-plc',
-  'Key Stone Bank': 'key-stone-bank',
-  'First Bank Nigeria Limited': 'first-bank-nigeria-limited',
-  'Sterling Bank Plc': 'sterling-bank-plc',
-  'Ecobank Nigeria Plc': 'ecobank-nigeria-plc',
-  'Standard Chartered Bank Nigeria Ltd': 'standard-chartered-bank-nigeria-ltd',
-  'Heritage Banking Company Ltd': 'heritage-banking-company-ltd',
-  'Globus Bank Limited': 'globus-bank-limited',
-  'Titan Trust Bank Ltd': 'titan-trust-bank-ltd',
-  'United Bank For Africa Plc': 'united-bank-for-africa-plc',
-  'Diamond Bank Plc': 'diamond-bank-plc',
-  'First City Monument Bank Plc': 'first-city-monument-bank-plc',
-  'Polaris Bank': 'polaris-bank',
-  'Fidelity Bank Plc': 'fidelity-bank-plc',
-  'Wema Bank Plc': 'wema-bank-plc'
-};
 
 class SignUp extends StatefulWidget {
   @override
@@ -39,12 +15,13 @@ class _SignUpState extends State<SignUp> {
 
   String phoneNumber = '';
 
-  String bankName = 'First Bank Nigeria Limited';
+  String bankName = 'first-bank-nigeria-limited';
   String accountName = '';
   String accountNumber = '';
 
   String password1 = '';
   String password2 = '';
+  List<Bank> banks = getBanks();
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +42,7 @@ class _SignUpState extends State<SignUp> {
                 children: <Widget>[
                   getPhoneNumberField(),
                   SizedBox(height: 10),
-                  getBankNameField(),
+                  getBankNameDropDownMenu(),
                   SizedBox(height: 10),
                   getAccountNameField(),
                   SizedBox(height: 10),
@@ -93,33 +70,6 @@ class _SignUpState extends State<SignUp> {
         ));
   }
 
-  Widget getBankNameDropDownMenu() {
-    return DropdownButtonFormField<String>(
-      value: bankName,
-      icon: Icon(Icons.arrow_downward),
-      iconSize: 24,
-      elevation: 16,
-      style: TextStyle(color: Colors.black),
-      onChanged: (String newValue) {
-        setState(() {
-          bankName = newValue;
-        });
-      },
-      items: banks.keys.map<DropdownMenuItem<String>>((String value) {
-        return DropdownMenuItem<String>(
-          value: value,
-          child: Text(
-            value,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 16,
-            ),
-          ),
-        );
-      }).toList(),
-    );
-  }
-
   Widget getPhoneNumberField() {
     return TextFormField(
       cursorColor: darkBlue(),
@@ -129,7 +79,6 @@ class _SignUpState extends State<SignUp> {
       decoration: InputDecoration(
           fillColor: Colors.white,
           filled: true,
-          labelText: "Phone Number",
           hintText: "Phone Number",
           labelStyle: TextStyle(
             color: darkBlue(),
@@ -153,30 +102,28 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
-  Widget getBankNameField() {
-    return TextFormField(
-      autofocus: false,
-      obscureText: false,
-      keyboardType: TextInputType.text,
-      decoration: InputDecoration(
-          fillColor: Colors.white,
-          filled: true,
-          labelText: "Bank Name",
-          hintText: "Bank Name",
-          labelStyle: TextStyle(
-            color: darkBlue(),
-            fontSize: 16,
-          ),
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
-      validator: (val) => val.isEmpty ? "Enter a valid bank name." : null,
-      onChanged: (val) {
+  Widget getBankNameDropDownMenu() {
+    return Container(
+        color: Colors.white,
+        child: DropdownButtonFormField(
+      value: bankName,
+      icon: Icon(Icons.arrow_downward),
+      iconSize: 24,
+      elevation: 16,
+      style: TextStyle(color: Colors.black),
+      onChanged: (String val) {
         setState(() {
           bankName = val;
         });
       },
+      items: banks.map((bank) {
+        return DropdownMenuItem(
+          value: bank.slug,
+          child: Text(bank.name, style: TextStyle(color: darkBlue(), fontSize: 16),
+          ),
+        );
+      }).toList(),
+    )
     );
   }
 
@@ -187,7 +134,6 @@ class _SignUpState extends State<SignUp> {
       decoration: InputDecoration(
           fillColor: Colors.white,
           filled: true,
-          labelText: "Account Name",
           hintText: "Account Name",
           labelStyle: TextStyle(
             color: darkBlue(),
@@ -215,7 +161,6 @@ class _SignUpState extends State<SignUp> {
       decoration: InputDecoration(
           fillColor: Colors.white,
           filled: true,
-          labelText: "Account Number",
           hintText: "Account Number",
           labelStyle: TextStyle(
             color: darkBlue(),
@@ -243,7 +188,6 @@ class _SignUpState extends State<SignUp> {
       decoration: InputDecoration(
           fillColor: Colors.white,
           filled: true,
-          labelText: "Password",
           hintText: "Password",
           labelStyle: TextStyle(
             color: darkBlue(),
@@ -270,7 +214,6 @@ class _SignUpState extends State<SignUp> {
       decoration: InputDecoration(
           fillColor: Colors.white,
           filled: true,
-          labelText: "Confirm Password",
           hintText: "Confirm Password",
           labelStyle: TextStyle(
             color: Colors.black,
