@@ -1,50 +1,11 @@
 import 'dart:io';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/colors.dart';
+import 'package:Slydo/screens/tiles/settings_tiles.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
-
-class SettingsTile extends StatelessWidget {
-  SettingsTile({Key key, this.pickImage}) : super(key: key);
-
-  final Function pickImage;
-
-  @override
-  Widget build(BuildContext context) {
-    final UserBloc userBloc = Provider.of<UserBloc>(context);
-
-    return Padding(
-      padding: EdgeInsets.only(top: 8.0),
-      child: Card(
-        margin: EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
-        child: ListTile(
-          title: Text(
-            userBloc.user.fullName,
-            style: TextStyle(
-                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
-          ),
-          subtitle: Text(userBloc.user.userName),
-          leading: Image.network(
-            userBloc.user.avatar,
-            height: 45,
-            width: 45,
-            colorBlendMode: BlendMode.darken,
-            fit: BoxFit.fitWidth,
-            filterQuality: FilterQuality.high,
-          ),
-          trailing: FlatButton(
-            child: Icon(Icons.mode_edit, color: Colors.white),
-            onPressed: () {
-              return pickImage();
-            },
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 class SettingsList extends StatefulWidget {
   @override
@@ -54,8 +15,6 @@ class SettingsList extends StatefulWidget {
 class _SettingsListState extends State<SettingsList> {
   int _currentIndex = 3;
   final _auth = AuthService();
-
-  File _pickedImage;
 
   void _pickImage() async {
     final imageSource = await showDialog<ImageSource>(
@@ -77,9 +36,25 @@ class _SettingsListState extends State<SettingsList> {
     if (imageSource != null) {
       final file = await ImagePicker.pickImage(source: imageSource);
       if (file != null) {
-        setState(() => _pickedImage = file);
+        _auth.updateCustomerAvatar(file);
       }
     }
+  }
+
+  Widget logOutButton() {
+    return ButtonTheme(
+      minWidth: double.infinity,
+      child: MaterialButton(
+        onPressed: () async {
+          await _auth.logOut();
+          Navigator.pushNamedAndRemoveUntil(context, "/", (r) => false);
+        },
+        textColor: Colors.white,
+        color: darkBlue(),
+        height: 50,
+        child: Text("Logout"),
+      ),
+    );
   }
 
   @override
@@ -103,20 +78,7 @@ class _SettingsListState extends State<SettingsList> {
                 SizedBox(height: 20),
                 SettingsTile(pickImage: _pickImage),
                 SizedBox(height: 20),
-                ButtonTheme(
-                  minWidth: double.infinity,
-                  child: MaterialButton(
-                    onPressed: () async {
-                      await _auth.logOut();
-                      Navigator.pushNamedAndRemoveUntil(
-                          context, "/", (r) => false);
-                    },
-                    textColor: Colors.white,
-                    color: darkBlue(),
-                    height: 50,
-                    child: Text("Logout"),
-                  ),
-                ),
+                logOutButton(),
               ],
             ),
           ),

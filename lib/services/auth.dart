@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:mime_type/mime_type.dart';
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/models/transactions.dart';
@@ -165,6 +166,51 @@ class AuthService {
         qrCode: jsonData["qr_code"],
       );
       return customerProfile;
+    } else {
+      throw "Can't get https.";
+    }
+  }
+
+  // Update User Avatar
+  Future<CustomerProfile> updateCustomerAvatar(File avatar) async {
+    User user = await getUser();
+    var headers = await getAuthHeaders();
+    var url = baseUrl + "/api/v1/update-avatar/" + user.userName;
+
+    if (avatar != null) {
+      var avatarPath = avatar.path;
+      var mimeType = mime(avatarPath);
+      //create multipart request for POST or PATCH method
+      var request = http.MultipartRequest("PATCH", Uri.parse(url));
+
+      //add fields
+      request.fields["username"] = user.userName;
+      request.fields["full_name"] = user.fullName;
+      request.fields["avatar"] = user.avatar;
+      String filename = basename(avatarPath);
+
+      //create multipart using filepath, string or bytes
+      var multipartFile =
+          await http.MultipartFile.fromPath(filename, avatarPath);
+
+      //add multipart to request
+      request.files.add(multipartFile);
+      headers.forEach((k, v) => request.headers[k] = v);
+      var response = await request.send();
+
+      var responseBody = await response.stream.bytesToString();
+      if (response.statusCode == 200) {
+        var jsonData = json.decode(responseBody);
+        CustomerProfile customerProfile = CustomerProfile(
+          fullName: jsonData["full_name"],
+          userName: jsonData["username"],
+          avatar: jsonData["avatar"],
+          qrCode: jsonData["qr_code"],
+        );
+        return customerProfile;
+      } else {
+        throw responseBody;
+      }
     } else {
       throw "Can't get https.";
     }

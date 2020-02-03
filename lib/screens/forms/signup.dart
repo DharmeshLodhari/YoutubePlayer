@@ -80,14 +80,6 @@ class _SignUpState extends State<SignUp> {
         ));
   }
 
-  Future getImage() async {
-    var image = await ImagePicker.pickImage(source: ImageSource.camera);
-
-    setState(() {
-      _image = image;
-    });
-  }
-
   Widget displayImage() {
     return Center(
       child: _image == null
@@ -106,6 +98,31 @@ class _SignUpState extends State<SignUp> {
       tooltip: 'Pick Image',
       child: Icon(Icons.add_a_photo),
     );
+  }
+
+  void getImage() async {
+    final imageSource = await showDialog<ImageSource>(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text("Select the image source"),
+              actions: <Widget>[
+                MaterialButton(
+                  child: Text("Camera"),
+                  onPressed: () => Navigator.pop(context, ImageSource.camera),
+                ),
+                MaterialButton(
+                  child: Text("Gallery"),
+                  onPressed: () => Navigator.pop(context, ImageSource.gallery),
+                )
+              ],
+            ));
+
+    if (imageSource != null) {
+      final image = await ImagePicker.pickImage(source: imageSource);
+      if (image != null) {
+        setState(() => _image = image);
+      }
+    }
   }
 
   Widget getPhoneNumberField() {
