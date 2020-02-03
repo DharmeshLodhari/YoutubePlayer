@@ -90,7 +90,7 @@ class _UserLoginState extends State<UserLogin> {
       },
       onChanged: (val) {
         setState(() {
-          phoneNumber = val;
+          phoneNumber = val.trim();
         });
       },
     );
@@ -116,7 +116,7 @@ class _UserLoginState extends State<UserLogin> {
       validator: (val) => val.length < 6 ? "Enter a valid Password." : null,
       onChanged: (val) {
         setState(() {
-          password = val;
+          password = val.trim();
         });
       },
     );

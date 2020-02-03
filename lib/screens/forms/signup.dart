@@ -1,7 +1,10 @@
+import 'dart:io';
+
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:Slydo/models/bank.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
-import 'package:flutter/material.dart';
 
 class SignUp extends StatefulWidget {
   @override
@@ -11,6 +14,8 @@ class SignUp extends StatefulWidget {
 class _SignUpState extends State<SignUp> {
   final _formKey = GlobalKey<FormState>();
   final _auth = AuthService();
+
+  File _image;
 
   String phoneNumber = '';
 
@@ -39,6 +44,11 @@ class _SignUpState extends State<SignUp> {
               key: _formKey,
               child: Column(
                 children: <Widget>[
+                  SizedBox(height: 10),
+                  displayImage(),
+                  SizedBox(height: 10),
+                  getImageField(),
+                  SizedBox(height: 10),
                   getPhoneNumberField(),
                   SizedBox(height: 10),
                   getBankNameDropDownMenu(),
@@ -62,11 +72,40 @@ class _SignUpState extends State<SignUp> {
                   ),
                   SizedBox(height: 10),
                   getSubmitButton(),
+                  SizedBox(height: 50),
                 ],
               ),
             ),
           ),
         ));
+  }
+
+  Future getImage() async {
+    var image = await ImagePicker.pickImage(source: ImageSource.camera);
+
+    setState(() {
+      _image = image;
+    });
+  }
+
+  Widget displayImage() {
+    return Center(
+      child: _image == null
+          ? Text('No image selected.')
+          : Image.file(
+              _image,
+              height: 150.0,
+              width: 150.0,
+            ),
+    );
+  }
+
+  Widget getImageField() {
+    return FloatingActionButton(
+      onPressed: getImage,
+      tooltip: 'Pick Image',
+      child: Icon(Icons.add_a_photo),
+    );
   }
 
   Widget getPhoneNumberField() {
@@ -112,12 +151,12 @@ class _SignUpState extends State<SignUp> {
           style: TextStyle(color: Colors.black),
           onChanged: (String val) {
             setState(() {
-              bankName = val;
+              bankName = val.trim();
             });
           },
           items: banks.map((bank) {
             return DropdownMenuItem(
-              value: bank.slug,
+              value: bank.slug.trim(),
               child: Text(
                 bank.name,
                 style: TextStyle(color: darkBlue(), fontSize: 16),
@@ -147,7 +186,7 @@ class _SignUpState extends State<SignUp> {
           val.length < 5 ? "Enter a valid name matching account number." : null,
       onChanged: (val) {
         setState(() {
-          accountName = val;
+          accountName = val.trim();
         });
       },
     );
@@ -174,7 +213,7 @@ class _SignUpState extends State<SignUp> {
           val.length < 10 ? "Enter a valid account number." : null,
       onChanged: (val) {
         setState(() {
-          accountNumber = val;
+          accountNumber = val.trim();
         });
       },
     );
@@ -200,7 +239,7 @@ class _SignUpState extends State<SignUp> {
       validator: (val) => val.length < 6 ? "Enter a valid Password." : null,
       onChanged: (val) {
         setState(() {
-          password1 = val;
+          password1 = val.trim();
         });
       },
     );
@@ -228,7 +267,7 @@ class _SignUpState extends State<SignUp> {
           : null,
       onChanged: (val) {
         setState(() {
-          password2 = val;
+          password2 = val.trim();
         });
       },
     );
@@ -249,6 +288,7 @@ class _SignUpState extends State<SignUp> {
               "accountNumber": accountNumber,
               "password1": password1,
               "password2": password2,
+              "avatar": _image,
             };
             bool isRegistered = await _auth.userRegistration(data);
             if (isRegistered) {

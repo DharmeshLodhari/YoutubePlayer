@@ -26,6 +26,8 @@ dependencies:
   path_provider: ^1.5.1
   qr_code_scanner: ^0.0.12
   firebase_messaging: ^4.0.0+1
+  image_picker: ^0.6.1+4
+  mime_type: ^0.2.5
   cached_network_image:
 
 flutter_icons:
@@ -38,7 +40,6 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_launcher_icons: "^0.7.3"
-  image_picker: ^0.6.1+4
 
 
 # For information on the generic Dart part of this file, see the

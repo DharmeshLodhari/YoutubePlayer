@@ -1,9 +1,10 @@
 import 'dart:convert';
-
+import 'package:mime_type/mime_type.dart';
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:http/http.dart' as http;
+import 'package:path/path.dart';
 
 final String baseUrl = "http://api.slydo.co";
 final String localHostUrl = "https://127.0.0.1:8080";
@@ -171,21 +172,48 @@ class AuthService {
 
   // Register the user with the backend servers
   Future<bool> userRegistration(Map _body) async {
+    String mimeType = 'text/plain; charset=UTF-8';
     var url = baseUrl + "/api/v1/account/";
     Map data = {};
 
-    // convert code to types server understand.
-    data["phone_number"] = _body["phoneNumber"];
-    data["bank_name"] = _body["bankName"];
-    data["full_name"] = _body["accountName"];
-    data["account_number"] = _body["accountNumber"];
-    data["password1"] = _body["password1"];
-    data["password2"] = _body["password2"];
+    var avatar = _body["avatar"];
 
-    var response = await http.post(url, body: data);
+    if (avatar != null) {
+      var avatarPath = avatar.path;
+      mimeType = mime(avatarPath);
+      //create multipart request for POST or PATCH method
+      var request = http.MultipartRequest("POST", Uri.parse(url));
 
-    if (response.statusCode == 200) {
-      return true;
+      //add fields
+      request.fields["phone_number"] = _body["phoneNumber"];
+      request.fields["bank_name"] = _body["bankName"];
+      request.fields["full_name"] = _body["accountName"];
+      request.fields["account_number"] = _body["accountNumber"];
+      request.fields["password1"] = _body["password1"];
+      request.fields["password2"] = _body["password2"];
+      String filename = basename(avatarPath);
+
+      //create multipart using filepath, string or bytes
+      var multipartFile =
+          await http.MultipartFile.fromPath(filename, avatarPath);
+      //add multipart to request
+      request.files.add(multipartFile);
+      var response = await request.send();
+      if (response.statusCode == 200) {
+        return true;
+      }
+    } else {
+      // convert code to types server understand.
+      data["phone_number"] = _body["phoneNumber"];
+      data["bank_name"] = _body["bankName"];
+      data["full_name"] = _body["accountName"];
+      data["account_number"] = _body["accountNumber"];
+      data["password1"] = _body["password1"];
+      data["password2"] = _body["password2"];
+      var response = await http.post(url, body: data);
+      if (response.statusCode == 200) {
+        return true;
+      }
     }
     return false;
   }
