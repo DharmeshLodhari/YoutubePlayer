@@ -28,6 +28,7 @@ dependencies:
   firebase_messaging: ^4.0.0+1
   image_picker: ^0.6.1+4
   mime_type: ^0.2.5
+  firebase_crashlytics:
   cached_network_image:
 
 flutter_icons:

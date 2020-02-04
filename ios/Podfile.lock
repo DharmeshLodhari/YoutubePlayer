@@ -94,7 +94,7 @@ PODS:
   - path_provider (0.0.1):
     - Flutter
   - PromisesObjC (1.2.8)
-  - Protobuf (3.11.2)
+  - Protobuf (3.11.3)
   - qr_code_scanner (0.0.2):
     - Flutter
     - MTBBarcodeScanner
@@ -167,10 +167,10 @@ SPEC CHECKSUMS:
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
   path_provider: fb74bd0465e96b594bb3b5088ee4a4e7bb1f2a9d
   PromisesObjC: c119f3cd559f50b7ae681fa59dc1acd19173b7e6
-  Protobuf: dd1aaea7140debfe4dd0683fb8ef208e527ae153
+  Protobuf: 0e94afe3b47cb11876eb6aee296638711a24bf75
   qr_code_scanner: 16107718bdad7d708cdf6a5eacdca24b56cdf471
   sqflite: 4001a31ff81d210346b500c55b17f4d6c7589dd0
 
-PODFILE CHECKSUM: 919983aa015c329f59688346c43161adc58b5289
+PODFILE CHECKSUM: b6ce2c3b7569374c7cd7b4963ebae33db72a2bf8
 
 COCOAPODS: 1.8.4
