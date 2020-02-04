@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:flutter/material.dart';
@@ -13,84 +15,109 @@ class _ProfileState extends State<Profile> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: darkBlue(),
-        title: Center(child: Text("Home")),
-        actions: <Widget>[
-          displayQRCodeButton(),
-        ],
-      ),
-      body: Center(
-        child: Container(
-          color: lightBlue(),
-          padding: EdgeInsets.all(30),
-          child: Center(
-            child: Column(
-              children: <Widget>[
-                SizedBox(height: 10),
-                displayUserInfo(),
-                SizedBox(height: 30),
-                displayPaymentButton()
-              ],
+    return WillPopScope(
+      onWillPop: () async {
+        showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+                  backgroundColor: darkBlue(),
+                  title: Text(
+                    "Are you Sure Want To Exit ?",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  actions: <Widget>[
+                    MaterialButton(
+                      color: Colors.white,
+                      child: Text("Yes", style: TextStyle(color: darkBlue())),
+                      onPressed: () => exit(0),
+                    ),
+                    MaterialButton(
+                      color: Colors.white,
+                      child: Text("Cancel", style: TextStyle(color: darkBlue())),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    )
+                  ],
+                ));
+
+        return false;
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          backgroundColor: darkBlue(),
+          title: Center(child: Text("Home")),
+          actions: <Widget>[
+            displayQRCodeButton(),
+          ],
+        ),
+        body: Center(
+          child: Container(
+            color: lightBlue(),
+            padding: EdgeInsets.all(30),
+            child: Center(
+              child: Column(
+                children: <Widget>[
+                  SizedBox(height: 10),
+                  displayUserInfo(),
+                  SizedBox(height: 30),
+                  displayPaymentButton()
+                ],
+              ),
             ),
           ),
         ),
-      ),
 
 // TODO: Find a better way to do this without duplication
-      bottomNavigationBar: BottomNavigationBar(
-        elevation: 0.0,
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-
-          String path = _currentIndex.toString();
-
-          switch (path) {
-            case '0':
-              return Navigator.of(context).pushNamed('/profile');
-            case '1':
-              return Navigator.of(context).pushNamed('/accounts');
-            case '2':
-              return Navigator.of(context).pushNamed('/transactions');
-            case '3':
-              return Navigator.of(context).pushNamed('/settings');
-            default:
-              // If there is no such named route in the switch statement, e.g. /third
-              return Navigator.of(context).pushNamed('/profile');
-          }
-        },
-        items: [
-          BottomNavigationBarItem(
-            backgroundColor: lightBlue(),
-            icon: Icon(
-              Icons.home,
-              color: Colors.white,
-            ),
-            title: Text('Home',
-                style: TextStyle(color: Colors.white, fontSize: 12)),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.group, color: Colors.white),
-            title: Text('Accounts',
-                style: TextStyle(color: Colors.white, fontSize: 12)),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart, color: Colors.white),
-            title: Text('Transactions',
-                style: TextStyle(color: Colors.white, fontSize: 12)),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings, color: Colors.white),
-            title: Text('Settings',
-                style: TextStyle(color: Colors.white, fontSize: 12)),
-          ),
-        ],
+//      bottomNavigationBar: BottomNavigationBar(
+//        elevation: 0.0,
+//        currentIndex: _currentIndex,
+//        onTap: (index) {
+//          setState(() {
+//            _currentIndex = index;
+//          });
+//
+//          String path = _currentIndex.toString();
+//
+//          switch (path) {
+//            case '0':
+//              return Navigator.of(context).pushNamed('/profile');
+//            case '1':
+//              return Navigator.of(context).pushNamed('/accounts');
+//            case '2':
+//              return Navigator.of(context).pushNamed('/transactions');
+//            case '3':
+//              return Navigator.of(context).pushNamed('/settings');
+//            default:
+//              // If there is no such named route in the switch statement, e.g. /third
+//              return Navigator.of(context).pushNamed('/profile');
+//          }
+//        },
+//        items: [
+//          BottomNavigationBarItem(
+//            backgroundColor: lightBlue(),
+//            icon: Icon(
+//              Icons.home,
+//              color: Colors.white,
+//            ),
+//            title: Text('Home', style: TextStyle(color: Colors.white, fontSize: 12)),
+//          ),
+//          BottomNavigationBarItem(
+//            icon: Icon(Icons.group, color: Colors.white),
+//            title: Text('Accounts', style: TextStyle(color: Colors.white, fontSize: 12)),
+//          ),
+//          BottomNavigationBarItem(
+//            icon: Icon(Icons.shopping_cart, color: Colors.white),
+//            title: Text('Transactions', style: TextStyle(color: Colors.white, fontSize: 12)),
+//          ),
+//          BottomNavigationBarItem(
+//            icon: Icon(Icons.settings, color: Colors.white),
+//            title: Text('Settings', style: TextStyle(color: Colors.white, fontSize: 12)),
+//          ),
+//        ],
+//      ),
       ),
     );
   }
@@ -124,8 +151,7 @@ class _ProfileState extends State<Profile> {
                 FlatButton.icon(
                     onPressed: () {},
                     icon: Icon(Icons.settings, color: Colors.black),
-                    label: Text('Copy Url',
-                        style: TextStyle(color: Colors.black, fontSize: 14))),
+                    label: Text('Copy Url', style: TextStyle(color: Colors.black, fontSize: 14))),
               ],
             ),
           ],

@@ -21,7 +21,7 @@ class _UserLoginState extends State<UserLogin> {
 
     return Scaffold(
         backgroundColor: lightBlue(),
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         appBar: AppBar(
           title: Text('Login'),
           backgroundColor: darkBlue(),
@@ -30,6 +30,7 @@ class _UserLoginState extends State<UserLogin> {
         body: Center(
           child: SingleChildScrollView(
             padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 40.0),
+            scrollDirection: Axis.vertical,
             child: Form(
               key: _formKey,
               child: Column(
@@ -80,8 +81,7 @@ class _UserLoginState extends State<UserLogin> {
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
+              borderSide: BorderSide(width: 1, color: Colors.white, style: BorderStyle.solid))),
       validator: (val) {
         if (val.isNotEmpty && val.length == 13) {
           return null;
@@ -111,8 +111,7 @@ class _UserLoginState extends State<UserLogin> {
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
+              borderSide: BorderSide(width: 1, color: Colors.white, style: BorderStyle.solid))),
       validator: (val) => val.length < 6 ? "Enter a valid Password." : null,
       onChanged: (val) {
         setState(() {
@@ -134,7 +133,7 @@ class _UserLoginState extends State<UserLogin> {
             var _user = await _auth.authenticate(phoneNumber, password);
             if (_user.fullName.isNotEmpty) {
               userBloc.user = _user;
-              Navigator.of(context).pushNamed('/profile');
+              Navigator.of(context).pushNamed('/dashboard');
             }
           }
         },

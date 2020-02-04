@@ -77,7 +77,7 @@ class _QRCodeViewState extends State<QRCodeView> {
 
   void _onQRViewCreated(QRViewController controller) {
     final CustomerProfileBloc customerProfileBloc =
-        Provider.of<CustomerProfileBloc>(context);
+        Provider.of<CustomerProfileBloc>(context, listen: false);
     this.controller = controller;
     controller.scannedDataStream.listen((scanData) async {
       //if we get a text that belongs to us then we process it

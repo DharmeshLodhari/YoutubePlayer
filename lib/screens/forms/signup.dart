@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:Slydo/models/bank.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class SignUp extends StatefulWidget {
   @override
@@ -31,7 +31,7 @@ class _SignUpState extends State<SignUp> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: lightBlue(),
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         appBar: AppBar(
           title: Text('Sign up'),
           backgroundColor: darkBlue(),
@@ -39,10 +39,12 @@ class _SignUpState extends State<SignUp> {
         ),
         body: Center(
           child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
             padding: EdgeInsets.symmetric(horizontal: 40.0),
             child: Form(
               key: _formKey,
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   SizedBox(height: 10),
                   displayImage(),
@@ -58,8 +60,8 @@ class _SignUpState extends State<SignUp> {
                   getAccountNumberField(),
                   SizedBox(height: 10),
                   Container(
-                    child: Text(
-                        'Use 8 or more characters with a mix of letters, numbers & symbols'),
+                    child:
+                        Text('Use 8 or more characters with a mix of letters, numbers & symbols'),
                   ),
                   SizedBox(height: 10),
                   getPassword1Field(),
@@ -67,8 +69,8 @@ class _SignUpState extends State<SignUp> {
                   getPassword2Field(),
                   SizedBox(height: 10),
                   Container(
-                    child: Text(
-                        'By clicking Register you are agreeing to the Terms and Conditions.'),
+                    child:
+                        Text('By clicking Register you are agreeing to the Terms and Conditions.'),
                   ),
                   SizedBox(height: 10),
                   getSubmitButton(),
@@ -132,17 +134,18 @@ class _SignUpState extends State<SignUp> {
       obscureText: false,
       keyboardType: TextInputType.phone,
       decoration: InputDecoration(
-          fillColor: Colors.white,
-          filled: true,
-          hintText: "Phone Number",
-          labelStyle: TextStyle(
-            color: darkBlue(),
-            fontSize: 16,
-          ),
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
+        fillColor: Colors.white,
+        filled: true,
+        hintText: "Phone Number",
+        labelStyle: TextStyle(
+          color: darkBlue(),
+          fontSize: 16,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(4)),
+          borderSide: BorderSide(width: 1, color: Colors.white, style: BorderStyle.solid),
+        ),
+      ),
       validator: (val) {
         if (val.isNotEmpty && val.length == 13) {
           return null;
@@ -162,7 +165,10 @@ class _SignUpState extends State<SignUp> {
         color: Colors.white,
         child: DropdownButtonFormField(
           value: bankName,
-          icon: Icon(Icons.arrow_downward),
+          icon: Flexible(
+            child: Icon(Icons.arrow_downward),
+            fit: FlexFit.tight,
+          ),
           iconSize: 24,
           elevation: 16,
           style: TextStyle(color: Colors.black),
@@ -197,10 +203,8 @@ class _SignUpState extends State<SignUp> {
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.green, style: BorderStyle.solid))),
-      validator: (val) =>
-          val.length < 5 ? "Enter a valid name matching account number." : null,
+              borderSide: BorderSide(width: 1, color: Colors.green, style: BorderStyle.solid))),
+      validator: (val) => val.length < 5 ? "Enter a valid name matching account number." : null,
       onChanged: (val) {
         setState(() {
           accountName = val.trim();
@@ -224,10 +228,8 @@ class _SignUpState extends State<SignUp> {
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.green, style: BorderStyle.solid))),
-      validator: (val) =>
-          val.length < 10 ? "Enter a valid account number." : null,
+              borderSide: BorderSide(width: 1, color: Colors.green, style: BorderStyle.solid))),
+      validator: (val) => val.length < 10 ? "Enter a valid account number." : null,
       onChanged: (val) {
         setState(() {
           accountNumber = val.trim();
@@ -251,8 +253,7 @@ class _SignUpState extends State<SignUp> {
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
+              borderSide: BorderSide(width: 1, color: Colors.white, style: BorderStyle.solid))),
       validator: (val) => val.length < 6 ? "Enter a valid Password." : null,
       onChanged: (val) {
         setState(() {
@@ -277,11 +278,8 @@ class _SignUpState extends State<SignUp> {
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
-      validator: (val) => (val.length < 6 && val != password1)
-          ? "Enter a valid Password."
-          : null,
+              borderSide: BorderSide(width: 1, color: Colors.white, style: BorderStyle.solid))),
+      validator: (val) => (val.length < 6 && val != password1) ? "Enter a valid Password." : null,
       onChanged: (val) {
         setState(() {
           password2 = val.trim();
