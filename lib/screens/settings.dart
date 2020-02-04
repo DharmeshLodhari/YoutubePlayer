@@ -1,10 +1,7 @@
-import 'dart:io';
-import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/screens/tiles/settings_tiles.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 
 class SettingsList extends StatefulWidget {
@@ -59,7 +56,6 @@ class _SettingsListState extends State<SettingsList> {
 
   @override
   Widget build(BuildContext context) {
-    final UserBloc userBloc = Provider.of<UserBloc>(context);
 
     return Scaffold(
       backgroundColor: lightBlue(),

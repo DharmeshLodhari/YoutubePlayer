@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:mime_type/mime_type.dart';
+//import 'package:mime_type/mime_type.dart';
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/models/user.dart';
@@ -179,7 +179,7 @@ class AuthService {
 
     if (avatar != null) {
       var avatarPath = avatar.path;
-      var mimeType = mime(avatarPath);
+      //var mimeType = mime(avatarPath);
       //create multipart request for POST or PATCH method
       var request = http.MultipartRequest("PATCH", Uri.parse(url));
 
@@ -218,7 +218,6 @@ class AuthService {
 
   // Register the user with the backend servers
   Future<bool> userRegistration(Map _body) async {
-    String mimeType = 'text/plain; charset=UTF-8';
     var url = baseUrl + "/api/v1/account/";
     Map data = {};
 
@@ -226,7 +225,7 @@ class AuthService {
 
     if (avatar != null) {
       var avatarPath = avatar.path;
-      mimeType = mime(avatarPath);
+      //String mimeType = mime(avatarPath);
       //create multipart request for POST or PATCH method
       var request = http.MultipartRequest("POST", Uri.parse(url));
 

@@ -1,10 +1,8 @@
-import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/screens/tiles/transaction.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/splash.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class TransactionList extends StatefulWidget {
   @override
@@ -18,7 +16,6 @@ class _TransactionListState extends State<TransactionList> {
 
   @override
   Widget build(BuildContext context) {
-    final UserBloc userBloc = Provider.of<UserBloc>(context);
 
     return Scaffold(
       backgroundColor: lightBlue(),
