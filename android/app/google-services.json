@@ -30,6 +30,13 @@
             {
               "client_id": "580706438195-rl9ho9s2po18ks4f2u6spl6ej3841c5a.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "580706438195-hl63sb1tmk5ld8pa7uut9jv41tn602he.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.slydo.slydo"
+              }
             }
           ]
         }
