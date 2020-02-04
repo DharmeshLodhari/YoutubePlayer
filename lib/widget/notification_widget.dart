@@ -66,7 +66,7 @@ class _PushNotificationWidgetState extends State<PushNotificationWidget> {
 //      });
 //    }
 
-    // Or do other work.
+  // Or do other work.
 //  }
 
   Future<Null> _navigateToItemDetail(Map<String, dynamic> message) async {

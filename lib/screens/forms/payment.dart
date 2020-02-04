@@ -68,8 +68,10 @@ class _SendPaymentState extends State<SendPayment> {
                     SizedBox(height: 10),
                     Text(
                       errorMessage,
-                      style:
-                          TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 16),
+                      style: TextStyle(
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16),
                     ),
                     SizedBox(height: 10),
                     getSubmitButton(),
@@ -79,58 +81,6 @@ class _SendPaymentState extends State<SendPayment> {
             ),
           ),
         ),
-
-// TODO: Find a better way to do this without duplication
-//      bottomNavigationBar: BottomNavigationBar(
-//        currentIndex: _currentIndex,
-//        onTap: (index) {
-//          setState(() {
-//            _currentIndex = index;
-//          });
-//
-//          String path = _currentIndex.toString();
-//
-//          switch (path) {
-//            case '0':
-//              return Navigator.of(context).pushNamed('/profile');
-//            case '1':
-//              return Navigator.of(context).pushNamed('/accounts');
-//            case '2':
-//              return Navigator.of(context).pushNamed('/transactions');
-//            case '3':
-//              return Navigator.of(context).pushNamed('/settings');
-//            default:
-//              // If there is no such named route in the switch statement, e.g. /third
-//              return Navigator.of(context).pushNamed('/profile');
-//          }
-//        },
-//        items: [
-//          BottomNavigationBarItem(
-//            icon: Icon(
-//              Icons.home,
-//              color: Colors.white,
-//            ),
-//            title: Text('Home',
-//                style: TextStyle(color: Colors.white, fontSize: 12)),
-//          ),
-//          BottomNavigationBarItem(
-//            icon: Icon(Icons.group, color: Colors.white),
-//            title: Text('Accounts',
-//                style: TextStyle(color: Colors.white, fontSize: 12)),
-//          ),
-//          BottomNavigationBarItem(
-//            backgroundColor: lightBlue(),
-//            icon: Icon(Icons.shopping_cart, color: Colors.white),
-//            title: Text('Transactions',
-//                style: TextStyle(color: Colors.white, fontSize: 12)),
-//          ),
-//          BottomNavigationBarItem(
-//            icon: Icon(Icons.settings, color: Colors.white),
-//            title: Text('Settings',
-//                style: TextStyle(color: Colors.white, fontSize: 12)),
-//          ),
-//        ],
-//      ),
       ),
     );
     //
@@ -152,7 +102,10 @@ class _SendPaymentState extends State<SendPayment> {
               ListTile(
                 title: Text(
                   _payee.fullName,
-                  style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15),
                 ),
                 subtitle: Text(_payee.userName),
                 leading: Image.network(
@@ -187,10 +140,11 @@ class _SendPaymentState extends State<SendPayment> {
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(width: 1, color: Colors.white, style: BorderStyle.solid))),
+              borderSide: BorderSide(
+                  width: 1, color: Colors.white, style: BorderStyle.solid))),
       onChanged: (val) {
         setState(() {
-          _payee = null;
+          //_payee = null;
           recipient = val;
         });
       },
@@ -209,7 +163,10 @@ class _SendPaymentState extends State<SendPayment> {
           filled: true,
           prefixText: '#',
           prefixStyle: TextStyle(
-              color: darkBlue(), backgroundColor: Colors.white, fontSize: 20, letterSpacing: 5),
+              color: darkBlue(),
+              backgroundColor: Colors.white,
+              fontSize: 20,
+              letterSpacing: 5),
           //labelText: "Enter Amount",
           hintText: "Enter Amount",
           labelStyle: TextStyle(
@@ -218,7 +175,8 @@ class _SendPaymentState extends State<SendPayment> {
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(width: 1, color: Colors.white, style: BorderStyle.solid))),
+              borderSide: BorderSide(
+                  width: 1, color: Colors.white, style: BorderStyle.solid))),
       validator: (val) {
         if (val.isNotEmpty) {
           try {
@@ -261,7 +219,8 @@ class _SendPaymentState extends State<SendPayment> {
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(width: 1, color: Colors.white, style: BorderStyle.solid))),
+              borderSide: BorderSide(
+                  width: 1, color: Colors.white, style: BorderStyle.solid))),
       onChanged: (val) {
         setState(() {
           reference = val;
