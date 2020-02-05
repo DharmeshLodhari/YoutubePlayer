@@ -161,32 +161,42 @@ class _SignUpState extends State<SignUp> {
   }
 
   Widget getBankNameDropDownMenu() {
-    return Container(
-        color: Colors.white,
-        child: DropdownButtonFormField(
-          value: bankName,
-          icon: Flexible(
-            child: Icon(Icons.arrow_downward),
-            fit: FlexFit.tight,
+    return DropdownButtonFormField(
+      isExpanded: true,
+      decoration: InputDecoration(
+        isDense: true,
+        fillColor: Colors.white,
+        filled: true,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(4)),
+          borderSide: BorderSide(width: 1, color: Colors.white, style: BorderStyle.solid),
+        ),
+      ),
+      value: bankName,
+      icon: Flexible(
+        child: Icon(
+          Icons.keyboard_arrow_down,
+        ),
+        fit: FlexFit.loose,
+      ),
+      iconSize: 24,
+      elevation: 16,
+      style: TextStyle(color: Colors.black),
+      onChanged: (String val) {
+        setState(() {
+          bankName = val.trim();
+        });
+      },
+      items: banks.map((bank) {
+        return DropdownMenuItem(
+          value: bank.slug.trim(),
+          child: Text(
+            bank.name,
+            style: TextStyle(color: darkBlue(), fontSize: 18),
           ),
-          iconSize: 24,
-          elevation: 16,
-          style: TextStyle(color: Colors.black),
-          onChanged: (String val) {
-            setState(() {
-              bankName = val.trim();
-            });
-          },
-          items: banks.map((bank) {
-            return DropdownMenuItem(
-              value: bank.slug.trim(),
-              child: Text(
-                bank.name,
-                style: TextStyle(color: darkBlue(), fontSize: 16),
-              ),
-            );
-          }).toList(),
-        ));
+        );
+      }).toList(),
+    );
   }
 
   Widget getAccountNameField() {

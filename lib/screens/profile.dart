@@ -1,9 +1,9 @@
-import 'dart:io';
-
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../widget/exit_alert_dialog.dart';
 
 class Profile extends StatefulWidget {
   @override
@@ -18,29 +18,9 @@ class _ProfileState extends State<Profile> {
     return WillPopScope(
       onWillPop: () async {
         showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-                  backgroundColor: darkBlue(),
-                  title: Text(
-                    "Are you Sure Want To Exit ?",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  actions: <Widget>[
-                    MaterialButton(
-                      color: Colors.white,
-                      child: Text("Yes", style: TextStyle(color: darkBlue())),
-                      onPressed: () => exit(0),
-                    ),
-                    MaterialButton(
-                      color: Colors.white,
-                      child: Text("Cancel", style: TextStyle(color: darkBlue())),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    )
-                  ],
-                ));
-
+          context: context,
+          builder: (context) => ExitAlertDialog(),
+        );
         return false;
       },
       child: Scaffold(
