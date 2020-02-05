@@ -11,7 +11,6 @@ class BankAccountList extends StatefulWidget {
 
 class _BankAccountListState extends State<BankAccountList> {
   // Get list of user bank account
-  int _currentIndex = 1;
   final _auth = AuthService();
 
   @override

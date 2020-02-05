@@ -11,8 +11,6 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-  int _currentIndex = 0;
-
   @override
   Widget build(BuildContext context) {
     return WillPopScope(

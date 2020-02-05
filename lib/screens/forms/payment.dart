@@ -14,7 +14,6 @@ class SendPayment extends StatefulWidget {
 }
 
 class _SendPaymentState extends State<SendPayment> {
-  int _currentIndex = 2;
   final _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
   CustomerProfile _payee;

@@ -11,7 +11,6 @@ class SettingsList extends StatefulWidget {
 }
 
 class _SettingsListState extends State<SettingsList> {
-  int _currentIndex = 3;
   final _auth = AuthService();
   Dashboard dashboard = Dashboard();
 

@@ -11,7 +11,6 @@ class TransactionList extends StatefulWidget {
 
 class _TransactionListState extends State<TransactionList> {
   // Get list of users transactions
-  int _currentIndex = 2;
   final _auth = AuthService();
 
   @override
