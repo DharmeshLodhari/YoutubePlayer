@@ -8,18 +8,26 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 class SendPayment extends StatefulWidget {
+  var arguments;
+  SendPayment({this.arguments});
+
   // Declare a field that holds the userData.
   @override
   _SendPaymentState createState() => _SendPaymentState();
 }
 
 class _SendPaymentState extends State<SendPayment> {
+  var currencyImage = Image.asset(
+    'assets/images/naira.png',
+    scale: 1.5,
+  );
   final _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
   CustomerProfile _payee;
   UserBloc userBloc;
   CustomerProfileBloc customerProfileBloc;
 
+  bool isFromProfile = false;
   bool isValidPayee = false;
   int amount;
   String reference = "";
@@ -28,21 +36,25 @@ class _SendPaymentState extends State<SendPayment> {
 
   @override
   Widget build(BuildContext context) {
+    isFromProfile = widget.arguments != null ? widget.arguments['isFromProfile'] : false;
+
     userBloc = Provider.of<UserBloc>(context);
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
 
     return WillPopScope(
       onWillPop: () async {
+        _payee = null;
         Navigator.pop(context);
         return false;
       },
       child: Scaffold(
         backgroundColor: lightBlue(),
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         appBar: AppBar(
             leading: IconButton(
               icon: Icon(Icons.arrow_back_ios),
               onPressed: () {
+                _payee = null;
                 Navigator.pop(context);
               },
             ),
@@ -67,10 +79,8 @@ class _SendPaymentState extends State<SendPayment> {
                     SizedBox(height: 10),
                     Text(
                       errorMessage,
-                      style: TextStyle(
-                          color: Colors.red,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16),
+                      style:
+                          TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 16),
                     ),
                     SizedBox(height: 10),
                     getSubmitButton(),
@@ -86,50 +96,56 @@ class _SendPaymentState extends State<SendPayment> {
   }
 
   Widget getDisplayCard() {
-    if (customerProfileBloc.customer.userName != null) {
-      setState(() {
-        _payee = customerProfileBloc.customer;
-        recipient = _payee.userName;
-      });
+    if (!isFromProfile) {
+      if (customerProfileBloc.customer.userName != null) {
+        setState(() {
+          _payee = customerProfileBloc.customer;
+          recipient = _payee.userName;
+        });
+      }
     }
+    var avtarImage;
+    var qrcodeImage;
+    if (_payee != null) {
+      avtarImage = Image.network(
+        _payee.avatar,
+        colorBlendMode: BlendMode.darken,
+        fit: BoxFit.fitWidth,
+        filterQuality: FilterQuality.high,
+      );
+      qrcodeImage = Image.network(
+        _payee.qrCode,
+        colorBlendMode: BlendMode.darken,
+        fit: BoxFit.fitWidth,
+        filterQuality: FilterQuality.high,
+      );
+    }
+
     return _payee == null
-        ? Text("")
+        ? Container()
         : Card(
             semanticContainer: true,
-            child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-              SizedBox(height: 20),
-              ListTile(
-                title: Text(
-                  _payee.fullName,
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15),
-                ),
-                subtitle: Text(_payee.userName),
-                leading: Image.network(
-                  _payee.avatar,
-                  colorBlendMode: BlendMode.darken,
-                  fit: BoxFit.fitWidth,
-                  filterQuality: FilterQuality.high,
-                ),
-                trailing: Image.network(
-                  _payee.qrCode,
-                  colorBlendMode: BlendMode.darken,
-                  fit: BoxFit.fitWidth,
-                  filterQuality: FilterQuality.high,
-                ),
+            child: ListTile(
+              dense: true,
+              title: Text(
+                _payee.fullName,
+                style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
               ),
-            ]),
+              subtitle: Text(_payee.userName),
+              leading: avtarImage,
+              trailing: qrcodeImage,
+            ),
           );
   }
 
   Widget getRecipientField() {
     return TextFormField(
+      initialValue: isFromProfile ? "" : _payee.userName,
       cursorColor: darkBlue(),
       autofocus: false,
       obscureText: false,
       decoration: InputDecoration(
+          prefixIcon: Icon(Icons.person),
           fillColor: Colors.white,
           filled: true,
           hintText: "Recipient",
@@ -139,12 +155,14 @@ class _SendPaymentState extends State<SendPayment> {
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
+              borderSide: BorderSide(width: 1, color: Colors.white, style: BorderStyle.solid))),
       onChanged: (val) {
         setState(() {
-          //_payee = null;
-          recipient = val;
+          if (!isFromProfile && _payee != null) {
+            recipient = _payee.userName;
+          } else {
+            recipient = val;
+          }
         });
       },
     );
@@ -160,13 +178,7 @@ class _SendPaymentState extends State<SendPayment> {
       decoration: InputDecoration(
           fillColor: Colors.white,
           filled: true,
-          prefixText: '#',
-          prefixStyle: TextStyle(
-              color: darkBlue(),
-              backgroundColor: Colors.white,
-              fontSize: 20,
-              letterSpacing: 5),
-          //labelText: "Enter Amount",
+          prefixIcon: currencyImage,
           hintText: "Enter Amount",
           labelStyle: TextStyle(
             color: Colors.black,
@@ -174,8 +186,7 @@ class _SendPaymentState extends State<SendPayment> {
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
+              borderSide: BorderSide(width: 1, color: Colors.white, style: BorderStyle.solid))),
       validator: (val) {
         if (val.isNotEmpty) {
           try {
@@ -209,6 +220,7 @@ class _SendPaymentState extends State<SendPayment> {
       autofocus: false,
       obscureText: false,
       decoration: InputDecoration(
+          prefixIcon: Icon(Icons.note),
           fillColor: Colors.white,
           filled: true,
           hintText: "Reference",
@@ -218,8 +230,7 @@ class _SendPaymentState extends State<SendPayment> {
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
+              borderSide: BorderSide(width: 1, color: Colors.white, style: BorderStyle.solid))),
       onChanged: (val) {
         setState(() {
           reference = val;

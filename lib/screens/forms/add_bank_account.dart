@@ -29,20 +29,23 @@ class _AddAccountState extends State<AddAccount> {
         return false;
       },
       child: Scaffold(
-        resizeToAvoidBottomInset: false,
+        backgroundColor: lightBlue(),
+        resizeToAvoidBottomInset: true,
         appBar: AppBar(
           backgroundColor: darkBlue(),
           title: Text('Add A Bank Account'),
           elevation: 0.0,
         ),
-        body: Container(
-          color: lightBlue(),
+        body: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
           child: Form(
             key: _formKey,
             child: Container(
+              color: lightBlue(),
               padding: EdgeInsets.all(24),
               child: Center(
                 child: Column(
+                  mainAxisSize: MainAxisSize.max,
                   children: <Widget>[
                     SizedBox(height: 80),
                     getBankName(),
@@ -85,8 +88,7 @@ class _AddAccountState extends State<AddAccount> {
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.green, style: BorderStyle.solid))),
+              borderSide: BorderSide(width: 1, color: Colors.green, style: BorderStyle.solid))),
       validator: (val) => val.isEmpty ? "Enter a valid bank name." : null,
       onChanged: (val) {
         setState(() {
@@ -111,10 +113,8 @@ class _AddAccountState extends State<AddAccount> {
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.green, style: BorderStyle.solid))),
-      validator: (val) =>
-          val.length < 5 ? "Enter a valid name matching account number." : null,
+              borderSide: BorderSide(width: 1, color: Colors.green, style: BorderStyle.solid))),
+      validator: (val) => val.length < 5 ? "Enter a valid name matching account number." : null,
       onChanged: (val) {
         setState(() {
           accountName = val;
@@ -138,10 +138,8 @@ class _AddAccountState extends State<AddAccount> {
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.green, style: BorderStyle.solid))),
-      validator: (val) =>
-          val.length < 10 ? "Enter a valid account number." : null,
+              borderSide: BorderSide(width: 1, color: Colors.green, style: BorderStyle.solid))),
+      validator: (val) => val.length < 10 ? "Enter a valid account number." : null,
       onChanged: (val) {
         setState(() {
           accountNumber = int.parse(val);
@@ -165,7 +163,6 @@ class _AddAccountState extends State<AddAccount> {
 
   Widget getSubmitButton(String userName) {
     return ButtonTheme(
-      //elevation: 4,
       //color: Colors.green,
       minWidth: double.infinity,
       child: MaterialButton(
@@ -180,8 +177,7 @@ class _AddAccountState extends State<AddAccount> {
             };
             bool wasSuccessful = await _auth.addBankAccount(data);
             if (wasSuccessful) {
-              Navigator.pushNamedAndRemoveUntil(
-                  context, "/accounts", (r) => false);
+              Navigator.pushNamedAndRemoveUntil(context, "/accounts", (r) => false);
             } else {
               setState(() {
                 errorMessage = "An error has occured please try again";

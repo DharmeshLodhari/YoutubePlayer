@@ -24,7 +24,8 @@ class _ProfileState extends State<Profile> {
         return false;
       },
       child: Scaffold(
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
+        backgroundColor: lightBlue(),
         appBar: AppBar(
           automaticallyImplyLeading: false,
           backgroundColor: darkBlue(),
@@ -34,17 +35,20 @@ class _ProfileState extends State<Profile> {
           ],
         ),
         body: Center(
-          child: Container(
-            color: lightBlue(),
-            padding: EdgeInsets.all(30),
-            child: Center(
-              child: Column(
-                children: <Widget>[
-                  SizedBox(height: 10),
-                  displayUserInfo(),
-                  SizedBox(height: 30),
-                  displayPaymentButton()
-                ],
+          child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: Container(
+              color: lightBlue(),
+              padding: EdgeInsets.all(30),
+              child: Center(
+                child: Column(
+                  children: <Widget>[
+                    SizedBox(height: 10),
+                    displayUserInfo(),
+                    SizedBox(height: 30),
+                    displayPaymentButton()
+                  ],
+                ),
               ),
             ),
           ),
@@ -147,7 +151,8 @@ class _ProfileState extends State<Profile> {
       child: MaterialButton(
         elevation: 4.0,
         onPressed: () {
-          Navigator.of(context).pushNamed('/send-payment');
+          Navigator.of(context)
+              .pushNamed('/send-payment', arguments: <String, bool>{'isFromProfile': true});
         },
         textColor: Colors.white,
         color: darkBlue(),

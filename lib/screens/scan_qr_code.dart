@@ -60,11 +60,11 @@ class _QRCodeViewState extends State<QRCodeView> {
     );
   }
 
-  @override
-  void dispose() {
-    controller?.dispose();
-    super.dispose();
-  }
+//  @override
+//  void dispose() {
+//    controller?.dispose();
+//    super.dispose();
+//  }
 
   Widget getFlipButton() {
     return RaisedButton(
@@ -89,10 +89,14 @@ class _QRCodeViewState extends State<QRCodeView> {
           scanDataList.removeWhere((value) => value == "");
           var recipient = scanDataList.last;
           var customerProfile = await _auth.fetchCustomerProfile(recipient);
-          setState(() {
-            customerProfileBloc.customer = customerProfile;
-          });
-          Navigator.of(context).pushNamed('/send-payment');
+          if (mounted) {
+            setState(() {
+              customerProfileBloc.customer = customerProfile;
+            });
+            Navigator.pop(context);
+            Navigator.of(context)
+                .pushNamed('/send-payment', arguments: <String, bool>{'isFromProfile': false});
+          }
         }
       }
     });

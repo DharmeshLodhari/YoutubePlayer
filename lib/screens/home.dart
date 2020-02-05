@@ -21,7 +21,7 @@ class _HomeState extends State<Home> {
         return false;
       },
       child: Scaffold(
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         appBar: AppBar(
           title: Text('Slydo'),
           backgroundColor: darkBlue(),

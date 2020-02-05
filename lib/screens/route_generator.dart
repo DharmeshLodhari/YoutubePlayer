@@ -38,7 +38,10 @@ class RouteGenerator {
       case '/add-account':
         return MaterialPageRoute(builder: (_) => AddAccount());
       case '/send-payment':
-        return MaterialPageRoute(builder: (_) => SendPayment());
+        return MaterialPageRoute(
+            builder: (_) => SendPayment(
+                  arguments: settings.arguments,
+                ));
       case '/add-bank-account':
         return MaterialPageRoute(builder: (_) => AddAccount());
       case '/scan-qr':
