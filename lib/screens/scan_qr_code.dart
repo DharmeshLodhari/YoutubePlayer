@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +26,7 @@ class _QRCodeViewState extends State<QRCodeView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-//      automaticallyImplyLeading: false,
+        automaticallyImplyLeading: Platform.isAndroid ? false : true,
         backgroundColor: Colors.transparent,
         elevation: 0.0,
         actions: <Widget>[],

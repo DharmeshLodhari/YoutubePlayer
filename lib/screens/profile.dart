@@ -2,7 +2,6 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../widget/exit_alert_dialog.dart';
 
 class Profile extends StatefulWidget {

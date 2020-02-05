@@ -81,7 +81,8 @@ class _UserLoginState extends State<UserLogin> {
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(width: 1, color: Colors.white, style: BorderStyle.solid))),
+              borderSide: BorderSide(
+                  width: 1, color: Colors.white, style: BorderStyle.solid))),
       validator: (val) {
         if (val.isNotEmpty && val.length == 13) {
           return null;
@@ -111,7 +112,8 @@ class _UserLoginState extends State<UserLogin> {
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(width: 1, color: Colors.white, style: BorderStyle.solid))),
+              borderSide: BorderSide(
+                  width: 1, color: Colors.white, style: BorderStyle.solid))),
       validator: (val) => val.length < 6 ? "Enter a valid Password." : null,
       onChanged: (val) {
         setState(() {

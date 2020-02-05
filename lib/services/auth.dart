@@ -1,11 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
-//import 'package:mime_type/mime_type.dart';
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:http/http.dart' as http;
-import 'package:path/path.dart';
 
 final String baseUrl = "http://api.slydo.co";
 final String localHostUrl = "https://127.0.0.1:8080";
@@ -179,7 +177,6 @@ class AuthService {
 
     if (avatar != null) {
       var avatarPath = avatar.path;
-      //var mimeType = mime(avatarPath);
       //create multipart request for POST or PATCH method
       var request = http.MultipartRequest("PATCH", Uri.parse(url));
 
@@ -187,11 +184,10 @@ class AuthService {
       request.fields["username"] = user.userName;
       request.fields["full_name"] = user.fullName;
       request.fields["avatar"] = user.avatar;
-      String filename = basename(avatarPath);
 
       //create multipart using filepath, string or bytes
       var multipartFile =
-          await http.MultipartFile.fromPath(filename, avatarPath);
+          await http.MultipartFile.fromPath("avatar", avatarPath);
 
       //add multipart to request
       request.files.add(multipartFile);
@@ -225,7 +221,6 @@ class AuthService {
 
     if (avatar != null) {
       var avatarPath = avatar.path;
-      //String mimeType = mime(avatarPath);
       //create multipart request for POST or PATCH method
       var request = http.MultipartRequest("POST", Uri.parse(url));
 
@@ -236,11 +231,10 @@ class AuthService {
       request.fields["account_number"] = _body["accountNumber"];
       request.fields["password1"] = _body["password1"];
       request.fields["password2"] = _body["password2"];
-      String filename = basename(avatarPath);
 
       //create multipart using filepath, string or bytes
       var multipartFile =
-          await http.MultipartFile.fromPath(filename, avatarPath);
+          await http.MultipartFile.fromPath("avatar", avatarPath);
       //add multipart to request
       request.files.add(multipartFile);
       var response = await request.send();
