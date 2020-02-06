@@ -3,6 +3,7 @@ import 'package:Slydo/screens/tiles/bank_account.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/splash.dart';
 import 'package:flutter/material.dart';
+import '../widget/LoadingIndicator.dart';
 
 class BankAccountList extends StatefulWidget {
   @override
@@ -32,7 +33,7 @@ class _BankAccountListState extends State<BankAccountList> {
           future: _auth.getBankAccounts(),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.data == null) {
-              return SplashScreen();
+              return LoadingIndicator();
             } else {
               return ListView.builder(
                 itemCount: snapshot.data.length,
@@ -44,13 +45,12 @@ class _BankAccountListState extends State<BankAccountList> {
             }
           },
         ),
-
         floatingActionButton: addAccountButton(),
       ),
     );
   }
 
-  Widget addAccountButton(){
+  Widget addAccountButton() {
     return FloatingActionButton(
       backgroundColor: darkBlue(),
       onPressed: () {

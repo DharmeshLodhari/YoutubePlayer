@@ -5,6 +5,7 @@ import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../widget/LoadingIndicator.dart';
 
 class SignUp extends StatefulWidget {
   @override
@@ -170,7 +171,8 @@ class _SignUpState extends State<SignUp> {
         filled: true,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(4)),
-          borderSide: BorderSide(width: 1, color: Colors.white, style: BorderStyle.solid),
+          borderSide: BorderSide(
+              width: 1, color: Colors.white, style: BorderStyle.solid),
         ),
       ),
       value: bankName,
@@ -324,10 +326,17 @@ class _SignUpState extends State<SignUp> {
               "password2": password2,
               "avatar": _image,
             };
-            bool isRegistered = await _auth.userRegistration(data);
-            if (isRegistered) {
-              Navigator.of(context).pushNamed('/login');
-            }
+
+            showDialog(
+                context: context, builder: (context) => LoadingIndicator());
+
+            bool isRegistered;
+            _auth.userRegistration(data).then((value) {
+              isRegistered = value;
+              if (isRegistered) {
+                Navigator.of(context).pushNamed('/login');
+              }
+            });
           }
         },
         textColor: Colors.white,

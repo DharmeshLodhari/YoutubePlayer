@@ -2,6 +2,7 @@ import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/screens/tiles/transaction.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/splash.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:flutter/material.dart';
 
 class TransactionList extends StatefulWidget {
@@ -32,7 +33,7 @@ class _TransactionListState extends State<TransactionList> {
           future: _auth.getTransactions(),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.data == null) {
-              return SplashScreen();
+              return LoadingIndicator();
             } else {
               return ListView.builder(
                 itemCount: snapshot.data.length,

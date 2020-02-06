@@ -30,6 +30,8 @@ dependencies:
   mime_type: ^0.2.5
   firebase_crashlytics:
   cached_network_image:
+  toast:
+  shared_preferences:
 
 flutter_icons:
   android: "launcher_icon"

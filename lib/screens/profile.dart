@@ -122,6 +122,18 @@ class _ProfileState extends State<Profile> {
                 colorBlendMode: BlendMode.darken,
                 fit: BoxFit.fitWidth,
                 filterQuality: FilterQuality.high,
+                loadingBuilder: (BuildContext context, Widget child,
+                    ImageChunkEvent loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return Center(
+                    child: CircularProgressIndicator(
+                      value: loadingProgress.expectedTotalBytes != null
+                          ? loadingProgress.cumulativeBytesLoaded /
+                              loadingProgress.expectedTotalBytes
+                          : null,
+                    ),
+                  );
+                },
               ),
             ),
             ButtonBar(
@@ -135,7 +147,8 @@ class _ProfileState extends State<Profile> {
                 FlatButton.icon(
                     onPressed: () {},
                     icon: Icon(Icons.settings, color: Colors.black),
-                    label: Text('Copy Url', style: TextStyle(color: Colors.black, fontSize: 14))),
+                    label: Text('Copy Url',
+                        style: TextStyle(color: Colors.black, fontSize: 14))),
               ],
             ),
           ],
@@ -151,8 +164,8 @@ class _ProfileState extends State<Profile> {
       child: MaterialButton(
         elevation: 4.0,
         onPressed: () {
-          Navigator.of(context)
-              .pushNamed('/send-payment', arguments: <String, bool>{'isFromProfile': true});
+          Navigator.of(context).pushNamed('/send-payment',
+              arguments: <String, bool>{'isFromProfile': true});
         },
         textColor: Colors.white,
         color: darkBlue(),

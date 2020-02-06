@@ -2,13 +2,16 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import 'package:toast/toast.dart';
 
 class SendPayment extends StatefulWidget {
   var arguments;
+
   SendPayment({this.arguments});
 
   // Declare a field that holds the userData.
@@ -17,6 +20,9 @@ class SendPayment extends StatefulWidget {
 }
 
 class _SendPaymentState extends State<SendPayment> {
+  TextEditingController _passwordController;
+  String _passwordFromPopUp = "";
+
   var currencyImage = Image.asset(
     'assets/images/naira.png',
     scale: 1.5,
@@ -36,8 +42,9 @@ class _SendPaymentState extends State<SendPayment> {
 
   @override
   Widget build(BuildContext context) {
-    isFromProfile = widget.arguments != null ? widget.arguments['isFromProfile'] : false;
-
+    isFromProfile =
+        widget.arguments != null ? widget.arguments['isFromProfile'] : false;
+    _passwordController = TextEditingController();
     userBloc = Provider.of<UserBloc>(context);
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
 
@@ -79,8 +86,10 @@ class _SendPaymentState extends State<SendPayment> {
                     SizedBox(height: 10),
                     Text(
                       errorMessage,
-                      style:
-                          TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 16),
+                      style: TextStyle(
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16),
                     ),
                     SizedBox(height: 10),
                     getSubmitButton(),
@@ -112,12 +121,49 @@ class _SendPaymentState extends State<SendPayment> {
         colorBlendMode: BlendMode.darken,
         fit: BoxFit.fitWidth,
         filterQuality: FilterQuality.high,
+        loadingBuilder: (BuildContext context, Widget child,
+            ImageChunkEvent loadingProgress) {
+          if (loadingProgress == null) return child;
+          return Container(
+            height: 45,
+            width: 45,
+            child: CircularProgressIndicator(
+              value: loadingProgress.expectedTotalBytes != null
+                  ? loadingProgress.cumulativeBytesLoaded /
+                      loadingProgress.expectedTotalBytes
+                  : null,
+            ),
+          );
+        },
       );
-      qrcodeImage = Image.network(
-        _payee.qrCode,
-        colorBlendMode: BlendMode.darken,
-        fit: BoxFit.fitWidth,
-        filterQuality: FilterQuality.high,
+      qrcodeImage = Column(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Center(
+              child: Image.network(
+                _payee.qrCode,
+                colorBlendMode: BlendMode.darken,
+                fit: BoxFit.fitWidth,
+                filterQuality: FilterQuality.high,
+                loadingBuilder: (BuildContext context, Widget child,
+                    ImageChunkEvent loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return Container(
+                    height: 45,
+                    width: 45,
+                    child: CircularProgressIndicator(
+                      value: loadingProgress.expectedTotalBytes != null
+                          ? loadingProgress.cumulativeBytesLoaded /
+                              loadingProgress.expectedTotalBytes
+                          : null,
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        ],
       );
     }
 
@@ -129,7 +175,10 @@ class _SendPaymentState extends State<SendPayment> {
               dense: true,
               title: Text(
                 _payee.fullName,
-                style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+                style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15),
               ),
               subtitle: Text(_payee.userName),
               leading: avtarImage,
@@ -155,7 +204,8 @@ class _SendPaymentState extends State<SendPayment> {
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(width: 1, color: Colors.white, style: BorderStyle.solid))),
+              borderSide: BorderSide(
+                  width: 1, color: Colors.white, style: BorderStyle.solid))),
       onChanged: (val) {
         setState(() {
           if (!isFromProfile && _payee != null) {
@@ -186,7 +236,8 @@ class _SendPaymentState extends State<SendPayment> {
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(width: 1, color: Colors.white, style: BorderStyle.solid))),
+              borderSide: BorderSide(
+                  width: 1, color: Colors.white, style: BorderStyle.solid))),
       validator: (val) {
         if (val.isNotEmpty) {
           try {
@@ -230,12 +281,62 @@ class _SendPaymentState extends State<SendPayment> {
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(width: 1, color: Colors.white, style: BorderStyle.solid))),
+              borderSide: BorderSide(
+                  width: 1, color: Colors.white, style: BorderStyle.solid))),
       onChanged: (val) {
         setState(() {
           reference = val;
         });
       },
+    );
+  }
+
+  Widget passwordPopUp() {
+    return AlertDialog(
+      backgroundColor: darkBlue(),
+      title: Text(
+        "Enter Your Password",
+        style: TextStyle(color: Colors.white),
+      ),
+      content: TextFormField(
+        autovalidate: true,
+        controller: _passwordController,
+        decoration: InputDecoration(
+            fillColor: Colors.white,
+            filled: true,
+            border:
+                OutlineInputBorder(borderRadius: BorderRadius.circular(15))),
+      ),
+      actions: <Widget>[
+        MaterialButton(
+          child: Text(
+            "OK",
+            style: TextStyle(color: darkBlue()),
+          ),
+          onPressed: () {
+            if (_passwordController.text != "") {
+              _passwordFromPopUp = _passwordController.text;
+              Navigator.pop(context);
+            } else {
+              Toast.show("Password Should not Be Empty !!", context,
+                  gravity: Toast.TOP,
+                  backgroundColor: darkBlue(),
+                  textColor: Colors.white);
+            }
+          },
+          color: Colors.white,
+        ),
+        MaterialButton(
+          child: Text(
+            "Cancel",
+            style: TextStyle(color: darkBlue()),
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          color: Colors.white,
+        )
+      ],
     );
   }
 
@@ -245,6 +346,8 @@ class _SendPaymentState extends State<SendPayment> {
       child: MaterialButton(
         elevation: 4.0,
         onPressed: () async {
+//          showDialog(context: context, builder: (context) => passwordPopUp());
+//          print(_passwordFromPopUp);
           if (!isValidPayee) {
             setState(() {
               errorMessage = "Invalid recipient";
@@ -252,6 +355,15 @@ class _SendPaymentState extends State<SendPayment> {
           }
 
           if (isValidPayee && _formKey.currentState.validate()) {
+            //password popup starts
+
+            await showDialog(
+                context: context, builder: (context) => passwordPopUp());
+            //use _passwordFromPopUp variable to pass in request
+            print(_passwordFromPopUp);
+
+            //password popup ends
+
             Map data = {
               "from_customer": userBloc.user.userName,
               "to_customer": recipient,
@@ -261,14 +373,21 @@ class _SendPaymentState extends State<SendPayment> {
               "notes": reference,
               "description": reference
             };
-            http.Response response = await _auth.makePayment(data);
-            if (response.statusCode == 200) {
-              Navigator.of(context).pushNamed('/transactions');
-            } else {
-              setState(() {
-                errorMessage = "An error has occured please try again";
-              });
-            }
+
+            showDialog(
+                context: context, builder: (context) => LoadingIndicator());
+
+            http.Response response;
+            _auth.makePayment(data).then((value) {
+              response = value;
+              if (response.statusCode == 200) {
+                Navigator.of(context).pushNamed('/transactions');
+              } else {
+                setState(() {
+                  errorMessage = "An error has occured please try again";
+                });
+              }
+            });
           }
         },
         textColor: Colors.white,

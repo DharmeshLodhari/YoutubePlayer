@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
@@ -88,15 +89,23 @@ class _QRCodeViewState extends State<QRCodeView> {
           var scanDataList = scanData.split('/');
           scanDataList.removeWhere((value) => value == "");
           var recipient = scanDataList.last;
-          var customerProfile = await _auth.fetchCustomerProfile(recipient);
-          if (mounted) {
-            setState(() {
-              customerProfileBloc.customer = customerProfile;
-            });
+
+          showDialog(
+              context: context, builder: (context) => LoadingIndicator());
+
+          var customerProfile;
+          _auth.fetchCustomerProfile(recipient).then((value) {
             Navigator.pop(context);
-            Navigator.of(context)
-                .pushNamed('/send-payment', arguments: <String, bool>{'isFromProfile': false});
-          }
+            customerProfile = value;
+            if (mounted) {
+              setState(() {
+                customerProfileBloc.customer = customerProfile;
+              });
+              Navigator.pop(context);
+              Navigator.of(context).pushNamed('/send-payment',
+                  arguments: <String, bool>{'isFromProfile': false});
+            }
+          });
         }
       }
     });
