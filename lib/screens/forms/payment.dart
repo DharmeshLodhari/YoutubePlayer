@@ -121,49 +121,12 @@ class _SendPaymentState extends State<SendPayment> {
         colorBlendMode: BlendMode.darken,
         fit: BoxFit.fitWidth,
         filterQuality: FilterQuality.high,
-        loadingBuilder: (BuildContext context, Widget child,
-            ImageChunkEvent loadingProgress) {
-          if (loadingProgress == null) return child;
-          return Container(
-            height: 45,
-            width: 45,
-            child: CircularProgressIndicator(
-              value: loadingProgress.expectedTotalBytes != null
-                  ? loadingProgress.cumulativeBytesLoaded /
-                      loadingProgress.expectedTotalBytes
-                  : null,
-            ),
-          );
-        },
       );
-      qrcodeImage = Column(
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Center(
-              child: Image.network(
-                _payee.qrCode,
-                colorBlendMode: BlendMode.darken,
-                fit: BoxFit.fitWidth,
-                filterQuality: FilterQuality.high,
-                loadingBuilder: (BuildContext context, Widget child,
-                    ImageChunkEvent loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Container(
-                    height: 45,
-                    width: 45,
-                    child: CircularProgressIndicator(
-                      value: loadingProgress.expectedTotalBytes != null
-                          ? loadingProgress.cumulativeBytesLoaded /
-                              loadingProgress.expectedTotalBytes
-                          : null,
-                    ),
-                  );
-                },
-              ),
-            ),
-          ),
-        ],
+      qrcodeImage = Image.network(
+        _payee.qrCode,
+        colorBlendMode: BlendMode.darken,
+        fit: BoxFit.fitWidth,
+        filterQuality: FilterQuality.high,
       );
     }
 
@@ -317,6 +280,33 @@ class _SendPaymentState extends State<SendPayment> {
             if (_passwordController.text != "") {
               _passwordFromPopUp = _passwordController.text;
               Navigator.pop(context);
+
+              //use _passwordFromPopUp variable to pass in request
+
+              Map data = {
+                "from_customer": userBloc.user.userName,
+                "to_customer": recipient,
+                "currency": "NGN",
+                "amount": amount.toString(),
+                "category": "Shopping",
+                "notes": reference,
+                "description": reference
+              };
+
+              showDialog(
+                  context: context, builder: (context) => LoadingIndicator());
+
+              http.Response response;
+              _auth.makePayment(data).then((value) {
+                response = value;
+                if (response.statusCode == 200) {
+                  Navigator.of(context).pushNamed('/transactions');
+                } else {
+                  setState(() {
+                    errorMessage = "An error has occured please try again";
+                  });
+                }
+              });
             } else {
               Toast.show("Password Should not Be Empty !!", context,
                   gravity: Toast.TOP,
@@ -346,8 +336,6 @@ class _SendPaymentState extends State<SendPayment> {
       child: MaterialButton(
         elevation: 4.0,
         onPressed: () async {
-//          showDialog(context: context, builder: (context) => passwordPopUp());
-//          print(_passwordFromPopUp);
           if (!isValidPayee) {
             setState(() {
               errorMessage = "Invalid recipient";
@@ -358,36 +346,9 @@ class _SendPaymentState extends State<SendPayment> {
             //password popup starts
 
             await showDialog(
-                context: context, builder: (context) => passwordPopUp());
-            //use _passwordFromPopUp variable to pass in request
-            print(_passwordFromPopUp);
-
-            //password popup ends
-
-            Map data = {
-              "from_customer": userBloc.user.userName,
-              "to_customer": recipient,
-              "currency": "NGN",
-              "amount": amount.toString(),
-              "category": "Shopping",
-              "notes": reference,
-              "description": reference
-            };
-
-            showDialog(
-                context: context, builder: (context) => LoadingIndicator());
-
-            http.Response response;
-            _auth.makePayment(data).then((value) {
-              response = value;
-              if (response.statusCode == 200) {
-                Navigator.of(context).pushNamed('/transactions');
-              } else {
-                setState(() {
-                  errorMessage = "An error has occured please try again";
-                });
-              }
-            });
+                barrierDismissible: false,
+                context: context,
+                builder: (context) => passwordPopUp());
           }
         },
         textColor: Colors.white,

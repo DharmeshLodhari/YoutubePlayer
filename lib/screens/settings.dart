@@ -34,7 +34,11 @@ class _SettingsListState extends State<SettingsList> {
     if (imageSource != null) {
       final file = await ImagePicker.pickImage(source: imageSource);
       if (file != null) {
-        _auth.updateCustomerAvatar(file);
+        try {
+          _auth.updateCustomerAvatar(file);
+        }catch(err) {
+          print('Caught error: $err');
+        }
       }
     }
   }

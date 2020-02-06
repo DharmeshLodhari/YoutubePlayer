@@ -1,10 +1,9 @@
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/models/bank.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:Slydo/models/bank.dart';
 
 class AddAccount extends StatefulWidget {
   @override
@@ -16,11 +15,11 @@ class _AddAccountState extends State<AddAccount> {
   final _formKey = GlobalKey<FormState>();
   String errorMessage = "";
 
-  List<Bank> banks = getBanks();
   String bankName = 'first-bank-nigeria-limited';
   String accountName;
   int accountNumber;
   bool isDefault = false;
+  List<Bank> banks = getBanks();
 
   @override
   Widget build(BuildContext context) {
@@ -50,12 +49,8 @@ class _AddAccountState extends State<AddAccount> {
                 child: Column(
                   mainAxisSize: MainAxisSize.max,
                   children: <Widget>[
-                    SizedBox(
-                      height: 60,
-                    ),
-                    getSelectBankLabel(),
+                    SizedBox(height: 80),
                     getBankNameDropDownMenu(),
-                    //getBankName(),
                     SizedBox(height: 10),
                     getAccountName(),
                     SizedBox(height: 10),
@@ -80,43 +75,17 @@ class _AddAccountState extends State<AddAccount> {
     );
   }
 
-//  Widget getBankName() {
-//    return TextFormField(
-//      autofocus: false,
-//      obscureText: false,
-//      keyboardType: TextInputType.text,
-//      decoration: InputDecoration(
-//          fillColor: Colors.white,
-//          filled: true,
-//          hintText: "Bank Name",
-//          labelStyle: TextStyle(
-//            color: Colors.black,
-//            fontSize: 16,
-//          ),
-//          border: OutlineInputBorder(
-//              borderRadius: BorderRadius.all(Radius.circular(4)),
-//              borderSide: BorderSide(
-//                  width: 1, color: Colors.green, style: BorderStyle.solid))),
-//      validator: (val) => val.isEmpty ? "Enter a valid bank name." : null,
-//      onChanged: (val) {
-//        setState(() {
-//          bankName = val;
-//        });
-//      },
-//    );
-//  }
 
   Widget getBankNameDropDownMenu() {
     return DropdownButtonFormField(
       isExpanded: true,
       decoration: InputDecoration(
-        contentPadding: EdgeInsets.all(8),
+        isDense: true,
         fillColor: Colors.white,
         filled: true,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(4)),
-          borderSide: BorderSide(
-              width: 1, color: Colors.white, style: BorderStyle.solid),
+          borderSide: BorderSide(width: 1, color: Colors.white, style: BorderStyle.solid),
         ),
       ),
       value: bankName,
@@ -139,12 +108,13 @@ class _AddAccountState extends State<AddAccount> {
           value: bank.slug.trim(),
           child: Text(
             bank.name,
-            style: TextStyle(color: darkBlue(), fontSize: 16),
+            style: TextStyle(color: darkBlue(), fontSize: 18),
           ),
         );
       }).toList(),
     );
   }
+
 
   Widget getAccountName() {
     return TextFormField(
@@ -152,6 +122,7 @@ class _AddAccountState extends State<AddAccount> {
       obscureText: false,
       keyboardType: TextInputType.text,
       decoration: InputDecoration(
+          prefixIcon: Icon(Icons.person),
           fillColor: Colors.white,
           filled: true,
           hintText: "Account Name",
@@ -161,10 +132,8 @@ class _AddAccountState extends State<AddAccount> {
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.green, style: BorderStyle.solid))),
-      validator: (val) =>
-          val.length < 5 ? "Enter a valid name matching account number." : null,
+              borderSide: BorderSide(width: 1, color: Colors.green, style: BorderStyle.solid))),
+      validator: (val) => val.length < 5 ? "Enter a valid name matching account number." : null,
       onChanged: (val) {
         setState(() {
           accountName = val;
@@ -179,6 +148,7 @@ class _AddAccountState extends State<AddAccount> {
       obscureText: false,
       keyboardType: TextInputType.number,
       decoration: InputDecoration(
+          prefixIcon: Icon(Icons.format_list_numbered),
           fillColor: Colors.white,
           filled: true,
           hintText: "Account Number",
@@ -188,10 +158,8 @@ class _AddAccountState extends State<AddAccount> {
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.green, style: BorderStyle.solid))),
-      validator: (val) =>
-          val.length < 10 ? "Enter a valid account number." : null,
+              borderSide: BorderSide(width: 1, color: Colors.green, style: BorderStyle.solid))),
+      validator: (val) => val.length < 10 ? "Enter a valid account number." : null,
       onChanged: (val) {
         setState(() {
           accountNumber = int.parse(val);
@@ -227,20 +195,14 @@ class _AddAccountState extends State<AddAccount> {
               "account_number": accountNumber,
               "is_default": isDefault,
             };
-            showDialog(
-                context: context, builder: (context) => LoadingIndicator());
-            bool wasSuccessful;
-            _auth.addBankAccount(data).then((value) {
-              wasSuccessful = value;
-              if (wasSuccessful) {
-                Navigator.pushNamedAndRemoveUntil(
-                    context, "/accounts", (r) => false);
-              } else {
-                setState(() {
-                  errorMessage = "An error has occured please try again";
-                });
-              }
-            });
+            bool wasSuccessful = await _auth.addBankAccount(data);
+            if (wasSuccessful) {
+              Navigator.pushNamedAndRemoveUntil(context, "/accounts", (r) => false);
+            } else {
+              setState(() {
+                errorMessage = "An error has occured please try again";
+              });
+            }
           }
         },
         textColor: Colors.white,
@@ -248,20 +210,6 @@ class _AddAccountState extends State<AddAccount> {
         height: 50,
         child: Text("Submit"),
       ),
-    );
-  }
-
-  Widget getSelectBankLabel() {
-    return Align(
-      child: Padding(
-        padding: const EdgeInsets.all(6.0),
-        child: Text(
-          "Select Bank",
-          style: TextStyle(
-              fontSize: 14, color: darkBlue(), fontWeight: FontWeight.bold),
-        ),
-      ),
-      alignment: Alignment.centerLeft,
     );
   }
 }
