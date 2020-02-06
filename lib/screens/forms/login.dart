@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
@@ -72,6 +74,7 @@ class _UserLoginState extends State<UserLogin> {
       obscureText: false,
       keyboardType: TextInputType.phone,
       decoration: InputDecoration(
+          prefixIcon: Icon( Platform.isAndroid ? Icons.phone_android: Icons.phone_iphone),
           fillColor: Colors.white,
           filled: true,
           hintText: "Phone Number",
@@ -103,6 +106,7 @@ class _UserLoginState extends State<UserLogin> {
       obscureText: true,
       keyboardType: TextInputType.visiblePassword,
       decoration: InputDecoration(
+          prefixIcon: Icon(Icons.lock),
           fillColor: Colors.white,
           filled: true,
           hintText: "Password",

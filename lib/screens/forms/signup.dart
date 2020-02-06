@@ -134,6 +134,7 @@ class _SignUpState extends State<SignUp> {
       obscureText: false,
       keyboardType: TextInputType.phone,
       decoration: InputDecoration(
+        prefixIcon: Icon( Platform.isAndroid ? Icons.phone_android: Icons.phone_iphone),
         fillColor: Colors.white,
         filled: true,
         hintText: "Phone Number",
@@ -205,6 +206,7 @@ class _SignUpState extends State<SignUp> {
       autofocus: true,
       obscureText: false,
       decoration: InputDecoration(
+          prefixIcon: Icon(Icons.person),
           fillColor: Colors.white,
           filled: true,
           hintText: "Account Name",
@@ -232,6 +234,7 @@ class _SignUpState extends State<SignUp> {
       obscureText: false,
       keyboardType: TextInputType.phone,
       decoration: InputDecoration(
+          prefixIcon: Icon(Icons.format_list_numbered),
           fillColor: Colors.white,
           filled: true,
           hintText: "Account Number",
@@ -259,6 +262,7 @@ class _SignUpState extends State<SignUp> {
       obscureText: true,
       keyboardType: TextInputType.visiblePassword,
       decoration: InputDecoration(
+          prefixIcon: Icon(Icons.lock),
           fillColor: Colors.white,
           filled: true,
           hintText: "Password",
@@ -285,6 +289,7 @@ class _SignUpState extends State<SignUp> {
       obscureText: true,
       keyboardType: TextInputType.visiblePassword,
       decoration: InputDecoration(
+          prefixIcon: Icon(Icons.lock),
           fillColor: Colors.white,
           filled: true,
           hintText: "Confirm Password",
