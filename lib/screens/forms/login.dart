@@ -249,11 +249,11 @@ class _UserLoginState extends State<UserLogin> {
 
   void isRememberChecked() async {
     if (isRemember) {
-      _sharedPreferences.setBool('isChecked', isChecked);
-      _sharedPreferences.setString('username', phoneNumber);
-      _sharedPreferences.setString('password', password);
-      bool isSuccessFullyStored = await _sharedPreferences.commit();
-      if (!isSuccessFullyStored) {
+      bool isCheckedSet = await _sharedPreferences.setBool('isChecked', isChecked);
+      bool usernameSet = await _sharedPreferences.setString('username', phoneNumber);
+      bool passwordSet = await _sharedPreferences.setString('password', password);
+      //bool isSuccessFullyStored = await _sharedPreferences.commit();
+      if (!isCheckedSet && !usernameSet && !passwordSet) {
         Toast.show("User Not Saved !!!", context);
       }
     } else {

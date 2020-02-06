@@ -113,16 +113,16 @@ class _SendPaymentState extends State<SendPayment> {
         });
       }
     }
-    var avtarImage;
-    var qrcodeImage;
+    var avatarImage;
+    var qrCodeImage;
     if (_payee != null) {
-      avtarImage = Image.network(
+      avatarImage = Image.network(
         _payee.avatar,
         colorBlendMode: BlendMode.darken,
         fit: BoxFit.fitWidth,
         filterQuality: FilterQuality.high,
       );
-      qrcodeImage = Image.network(
+      qrCodeImage = Image.network(
         _payee.qrCode,
         colorBlendMode: BlendMode.darken,
         fit: BoxFit.fitWidth,
@@ -144,8 +144,8 @@ class _SendPaymentState extends State<SendPayment> {
                     fontSize: 15),
               ),
               subtitle: Text(_payee.userName),
-              leading: avtarImage,
-              trailing: qrcodeImage,
+              leading: avatarImage,
+              trailing: qrCodeImage,
             ),
           );
   }
@@ -174,7 +174,7 @@ class _SendPaymentState extends State<SendPayment> {
           if (!isFromProfile && _payee != null) {
             recipient = _payee.userName;
           } else {
-            recipient = val;
+            recipient = val.toLowerCase();
           }
         });
       },
@@ -255,80 +255,92 @@ class _SendPaymentState extends State<SendPayment> {
   }
 
   Widget passwordPopUp() {
-    return AlertDialog(
-      backgroundColor: darkBlue(),
-      title: Text(
-        "Enter Your Password",
-        style: TextStyle(color: Colors.white),
-      ),
-      content: TextFormField(
-        autovalidate: true,
-        controller: _passwordController,
-        decoration: InputDecoration(
-            fillColor: Colors.white,
-            filled: true,
-            border:
-                OutlineInputBorder(borderRadius: BorderRadius.circular(15))),
-      ),
-      actions: <Widget>[
-        MaterialButton(
-          child: Text(
-            "OK",
-            style: TextStyle(color: darkBlue()),
-          ),
-          onPressed: () {
-            if (_passwordController.text != "") {
-              _passwordFromPopUp = _passwordController.text;
-              Navigator.pop(context);
-
-              //use _passwordFromPopUp variable to pass in request
-
-              Map data = {
-                "from_customer": userBloc.user.userName,
-                "to_customer": recipient,
-                "currency": "NGN",
-                "amount": amount.toString(),
-                "category": "Shopping",
-                "notes": reference,
-                "description": reference
-              };
-
-              showDialog(
-                  context: context, builder: (context) => LoadingIndicator());
-
-              http.Response response;
-              _auth.makePayment(data).then((value) {
-                response = value;
-                if (response.statusCode == 200) {
-                  Navigator.of(context).pushNamed('/transactions');
-                } else {
-                  setState(() {
-                    errorMessage = "An error has occured please try again";
-                  });
-                }
-              });
-            } else {
-              Toast.show("Password Should not Be Empty !!", context,
-                  gravity: Toast.TOP,
-                  backgroundColor: darkBlue(),
-                  textColor: Colors.white);
-            }
-          },
-          color: Colors.white,
+    return Container(
+      color: lightBlue(),
+      width: MediaQuery.of(context).size.width - 10,
+      height: MediaQuery.of(context).size.height -  80,
+      padding: EdgeInsets.all(20),
+      child: AlertDialog(
+        backgroundColor: lightBlue(),
+        elevation: 0.0,
+        title: Text(
+          "Enter Your Password",
+          style: TextStyle(color: Colors.white),
         ),
-        MaterialButton(
-          child: Text(
-            "Cancel",
-            style: TextStyle(color: darkBlue()),
+        content: TextFormField(
+          autovalidate: true,
+          autofocus: false,
+          obscureText: true,
+          controller: _passwordController,
+          keyboardType: TextInputType.visiblePassword,
+          decoration: InputDecoration(
+              hintText: "Password",
+              fillColor: Colors.white,
+              filled: true,
+              border:
+              OutlineInputBorder(borderRadius: BorderRadius.circular(15))),
+        ),
+        actions: <Widget>[
+          MaterialButton(
+            child: Text(
+              "OK",
+              style: TextStyle(color: Colors.white),
+            ),
+            onPressed: () {
+              if (_passwordController.text != "") {
+                _passwordFromPopUp = _passwordController.text;
+                Navigator.pop(context);
+
+                //use _passwordFromPopUp variable to pass in request
+
+                Map data = {
+                  "from_customer": userBloc.user.userName,
+                  "to_customer": recipient,
+                  "currency": "NGN",
+                  "amount": amount.toString(),
+                  "category": "Shopping",
+                  "notes": reference,
+                  "description": reference
+                };
+
+                showDialog(
+                    context: context, builder: (context) => LoadingIndicator());
+
+                http.Response response;
+                _auth.makePayment(data).then((value) {
+                  response = value;
+                  if (response.statusCode == 200) {
+                    Navigator.of(context).pushNamed('/transactions');
+                  } else {
+                    setState(() {
+                      errorMessage = "An error has occured please try again";
+                    });
+                  }
+                });
+              } else {
+                Toast.show("Password Should not Be Empty !!", context,
+                    gravity: Toast.TOP,
+                    backgroundColor: darkBlue(),
+                    textColor: Colors.white);
+              }
+            },
+            color: darkBlue(),
           ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          color: Colors.white,
-        )
-      ],
+          MaterialButton(
+            color: darkBlue(),
+            child: Text(
+              "Cancel",
+              style: TextStyle(color: Colors.white),
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          )
+        ],
+      ),
     );
   }
+
 
   Widget getSubmitButton() {
     return ButtonTheme(
