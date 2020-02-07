@@ -1,6 +1,8 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/colors.dart';
+import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../widget/exit_alert_dialog.dart';
@@ -12,9 +14,12 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   int _currentIndex = 0;
+  String _copy = "Copy Me";
 
   @override
   Widget build(BuildContext context) {
+    final key = GlobalKey<ScaffoldState>();
+
     return WillPopScope(
       onWillPop: () async {
         showDialog(
@@ -44,7 +49,7 @@ class _ProfileState extends State<Profile> {
                 child: Column(
                   children: <Widget>[
                     SizedBox(height: 10),
-                    displayUserInfo(),
+                    displayUserInfo(key),
                     SizedBox(height: 30),
                     displayPaymentButton()
                   ],
@@ -53,60 +58,11 @@ class _ProfileState extends State<Profile> {
             ),
           ),
         ),
-
-// TODO: Find a better way to do this without duplication
-//      bottomNavigationBar: BottomNavigationBar(
-//        elevation: 0.0,
-//        currentIndex: _currentIndex,
-//        onTap: (index) {
-//          setState(() {
-//            _currentIndex = index;
-//          });
-//
-//          String path = _currentIndex.toString();
-//
-//          switch (path) {
-//            case '0':
-//              return Navigator.of(context).pushNamed('/profile');
-//            case '1':
-//              return Navigator.of(context).pushNamed('/accounts');
-//            case '2':
-//              return Navigator.of(context).pushNamed('/transactions');
-//            case '3':
-//              return Navigator.of(context).pushNamed('/settings');
-//            default:
-//              // If there is no such named route in the switch statement, e.g. /third
-//              return Navigator.of(context).pushNamed('/profile');
-//          }
-//        },
-//        items: [
-//          BottomNavigationBarItem(
-//            backgroundColor: lightBlue(),
-//            icon: Icon(
-//              Icons.home,
-//              color: Colors.white,
-//            ),
-//            title: Text('Home', style: TextStyle(color: Colors.white, fontSize: 12)),
-//          ),
-//          BottomNavigationBarItem(
-//            icon: Icon(Icons.group, color: Colors.white),
-//            title: Text('Accounts', style: TextStyle(color: Colors.white, fontSize: 12)),
-//          ),
-//          BottomNavigationBarItem(
-//            icon: Icon(Icons.shopping_cart, color: Colors.white),
-//            title: Text('Transactions', style: TextStyle(color: Colors.white, fontSize: 12)),
-//          ),
-//          BottomNavigationBarItem(
-//            icon: Icon(Icons.settings, color: Colors.white),
-//            title: Text('Settings', style: TextStyle(color: Colors.white, fontSize: 12)),
-//          ),
-//        ],
-//      ),
       ),
     );
   }
 
-  Widget displayUserInfo() {
+  Widget displayUserInfo(key) {
     final UserBloc userBloc = Provider.of<UserBloc>(context);
     return Center(
       child: Card(
@@ -145,7 +101,15 @@ class _ProfileState extends State<Profile> {
                     child: Text(userBloc.user.fullName,
                         style: TextStyle(color: Colors.black, fontSize: 14))),
                 FlatButton.icon(
-                    onPressed: () {},
+                    onPressed: () {
+                      Clipboard.setData(new ClipboardData(
+                          text: baseUrl +
+                              "/api/v1/customer/" +
+                              userBloc.user.userName));
+                      key.currentState.showSnackBar(SnackBar(
+                        content: new Text("Coped!"),
+                      ));
+                    },
                     icon: Icon(Icons.settings, color: Colors.black),
                     label: Text('Copy Url',
                         style: TextStyle(color: Colors.black, fontSize: 14))),

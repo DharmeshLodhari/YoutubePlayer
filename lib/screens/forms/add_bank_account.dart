@@ -75,7 +75,6 @@ class _AddAccountState extends State<AddAccount> {
     );
   }
 
-
   Widget getBankNameDropDownMenu() {
     return DropdownButtonFormField(
       isExpanded: true,
@@ -85,7 +84,8 @@ class _AddAccountState extends State<AddAccount> {
         filled: true,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(4)),
-          borderSide: BorderSide(width: 1, color: Colors.white, style: BorderStyle.solid),
+          borderSide: BorderSide(
+              width: 1, color: Colors.white, style: BorderStyle.solid),
         ),
       ),
       value: bankName,
@@ -115,7 +115,6 @@ class _AddAccountState extends State<AddAccount> {
     );
   }
 
-
   Widget getAccountName() {
     return TextFormField(
       autofocus: false,
@@ -132,8 +131,10 @@ class _AddAccountState extends State<AddAccount> {
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(width: 1, color: Colors.green, style: BorderStyle.solid))),
-      validator: (val) => val.length < 5 ? "Enter a valid name matching account number." : null,
+              borderSide: BorderSide(
+                  width: 1, color: Colors.green, style: BorderStyle.solid))),
+      validator: (val) =>
+          val.length < 5 ? "Enter a valid name matching account number." : null,
       onChanged: (val) {
         setState(() {
           accountName = val;
@@ -158,8 +159,10 @@ class _AddAccountState extends State<AddAccount> {
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(width: 1, color: Colors.green, style: BorderStyle.solid))),
-      validator: (val) => val.length < 10 ? "Enter a valid account number." : null,
+              borderSide: BorderSide(
+                  width: 1, color: Colors.green, style: BorderStyle.solid))),
+      validator: (val) =>
+          val.length < 10 ? "Enter a valid account number." : null,
       onChanged: (val) {
         setState(() {
           accountNumber = int.parse(val);
@@ -197,7 +200,8 @@ class _AddAccountState extends State<AddAccount> {
             };
             bool wasSuccessful = await _auth.addBankAccount(data);
             if (wasSuccessful) {
-              Navigator.pushNamedAndRemoveUntil(context, "/accounts", (r) => false);
+              Navigator.pushNamedAndRemoveUntil(
+                  context, "/accounts", (r) => false);
             } else {
               setState(() {
                 errorMessage = "An error has occured please try again";

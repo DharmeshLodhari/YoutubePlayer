@@ -222,7 +222,7 @@ class AuthService {
     if (avatar != null) {
       var avatarPath = avatar.path;
       //create multipart request for POST or PATCH method
-      var request = http.MultipartRequest("POST", Uri.parse(url));
+      var request = http.MultipartRequest("PATCH", Uri.parse(url));
 
       //add fields
       request.fields["phone_number"] = _body["phoneNumber"];
@@ -238,6 +238,7 @@ class AuthService {
       //add multipart to request
       request.files.add(multipartFile);
       var response = await request.send();
+      print(json.decode(await response.stream.bytesToString()));
       if (response.statusCode == 200) {
         return true;
       }
@@ -249,7 +250,7 @@ class AuthService {
       data["account_number"] = _body["accountNumber"];
       data["password1"] = _body["password1"];
       data["password2"] = _body["password2"];
-      var response = await http.post(url, body: data);
+      var response = await http.patch(url, body: data);
       if (response.statusCode == 200) {
         return true;
       }

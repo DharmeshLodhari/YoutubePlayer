@@ -16,7 +16,8 @@ class ExitAlertDialog extends StatelessWidget {
         MaterialButton(
           color: Colors.white,
           child: Text("Yes", style: TextStyle(color: darkBlue())),
-          onPressed: () => SystemChannels.platform.invokeMethod<void>('SystemNavigator.pop'),
+          onPressed: () =>
+              SystemChannels.platform.invokeMethod<void>('SystemNavigator.pop'),
         ),
         MaterialButton(
           color: Colors.white,
