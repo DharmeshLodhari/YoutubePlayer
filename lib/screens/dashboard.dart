@@ -19,14 +19,20 @@ class _DashboardState extends State<Dashboard> {
   int _currentIndex = 0;
 
   @override
-  Widget build(BuildContext context) {
-    int indexFromRoute = widget.arguments['dashboardIndex'];
-    if (indexFromRoute != null) {
-      setState(() {
-        _currentIndex = indexFromRoute;
-      });
+  void initState() {
+    if (widget.arguments != null) {
+      int indexFromRoute = widget.arguments['dashboardIndex'];
+      if (indexFromRoute != null) {
+        setState(() {
+          _currentIndex = indexFromRoute;
+        });
+      }
     }
+    super.initState();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: page(),
       bottomNavigationBar: BottomNavigationBar(

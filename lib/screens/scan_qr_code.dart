@@ -90,20 +90,22 @@ class _QRCodeViewState extends State<QRCodeView> {
           scanDataList.removeWhere((value) => value == "");
           var recipient = scanDataList.last;
 
-          showDialog(
-              context: context, builder: (context) => LoadingIndicator());
+          showDialog(context: context, builder: (context) => LoadingIndicator());
 
           var customerProfile;
+
           _auth.fetchCustomerProfile(recipient).then((value) {
-            Navigator.pop(context);
             customerProfile = value;
+
+            Navigator.pop(context);
+
             if (mounted) {
               setState(() {
                 customerProfileBloc.customer = customerProfile;
               });
               Navigator.pop(context);
-              Navigator.of(context).pushNamed('/send-payment',
-                  arguments: <String, bool>{'isFromProfile': false});
+              Navigator.of(context)
+                  .pushNamed('/send-payment', arguments: <String, bool>{'isFromProfile': false});
             }
           });
         }

@@ -1,7 +1,6 @@
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/screens/tiles/transaction.dart';
 import 'package:Slydo/services/auth.dart';
-import 'package:Slydo/splash.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:flutter/material.dart';
 

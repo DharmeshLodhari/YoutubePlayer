@@ -2,7 +2,6 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -21,6 +20,7 @@ class SendPayment extends StatefulWidget {
 
 class _SendPaymentState extends State<SendPayment> {
   TextEditingController _passwordController;
+  http.Response response;
   String _passwordFromPopUp = "";
 
   var currencyImage = Image.asset(
@@ -41,12 +41,17 @@ class _SendPaymentState extends State<SendPayment> {
   String recipient;
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
     isFromProfile = widget.arguments != null ? widget.arguments['isFromProfile'] : false;
     _passwordController = TextEditingController();
+
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
-
     return WillPopScope(
       onWillPop: () async {
         _payee = null;
@@ -146,8 +151,16 @@ class _SendPaymentState extends State<SendPayment> {
 
   Widget getRecipientField() {
     return TextFormField(
+      enabled: isFromProfile,
       initialValue: isFromProfile ? "" : _payee.userName,
       cursorColor: darkBlue(),
+      validator: (value) {
+        if (!isFromProfile && value != _payee.userName) {
+          return "Enter Valid Recipient";
+        }
+        return null;
+      },
+      //
       autofocus: false,
       obscureText: false,
       decoration: InputDecoration(
@@ -245,146 +258,89 @@ class _SendPaymentState extends State<SendPayment> {
     );
   }
 
-  Widget passwordPopUp() {
-<<<<<<< HEAD
-    return AlertDialog(
-      backgroundColor: darkBlue(),
-      title: Text(
-        "Enter Your Password",
-        style: TextStyle(color: Colors.white),
-      ),
-      content: TextFormField(
-        autovalidate: true,
-        controller: _passwordController,
-        decoration: InputDecoration(
-            fillColor: Colors.white,
-            filled: true,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(15))),
-      ),
-      actions: <Widget>[
-        MaterialButton(
-          child: Text(
-            "OK",
-            style: TextStyle(color: darkBlue()),
-          ),
-          onPressed: () {
-            if (_passwordController.text != "") {
-              _passwordFromPopUp = _passwordController.text;
-              Navigator.pop(context);
-=======
-    return Container(
-      color: lightBlue(),
-      width: MediaQuery.of(context).size.width - 10,
-      height: MediaQuery.of(context).size.height - 80,
-      padding: EdgeInsets.all(20),
-      child: AlertDialog(
-        backgroundColor: lightBlue(),
-        elevation: 0.0,
-        title: Text(
-          "Enter Your Password",
-          style: TextStyle(color: Colors.white),
-        ),
-        content: TextFormField(
-          autovalidate: true,
-          autofocus: false,
-          obscureText: true,
-          controller: _passwordController,
-          keyboardType: TextInputType.visiblePassword,
-          decoration: InputDecoration(
-              hintText: "Password",
-              fillColor: Colors.white,
-              filled: true,
-              border:
-                  OutlineInputBorder(borderRadius: BorderRadius.circular(15))),
-        ),
-        actions: <Widget>[
-          MaterialButton(
-            child: Text(
-              "OK",
-              style: TextStyle(color: Colors.white),
-            ),
-            onPressed: () {
-              if (_passwordController.text != "") {
-                _passwordFromPopUp = _passwordController.text;
-                Navigator.pop(context);
->>>>>>> ac478f4f67fa0a7c97463dba898ce096178e066a
-
-                //use _passwordFromPopUp variable to pass in request
-
-                Map data = {
-                  "from_customer": userBloc.user.userName,
-                  "to_customer": recipient,
-                  "currency": "NGN",
-                  "amount": amount.toString(),
-                  "category": "Shopping",
-                  "notes": reference,
-                  "description": reference
-                };
-
-<<<<<<< HEAD
-              showDialog(context: context, builder: (context) => LoadingIndicator());
-
-              http.Response response;
-              _auth.makePayment(data).then((value) {
-                response = value;
-                if (response.statusCode == 200) {
-                  Navigator.of(context).pushNamed('/dashboard', arguments: {'dashboardIndex': 2});
-                } else {
-                  setState(() {
-                    errorMessage = "An error has occured please try again";
-                  });
-                }
-              });
-            } else {
-              Toast.show("Password Should not Be Empty !!", context,
-                  gravity: Toast.TOP, backgroundColor: darkBlue(), textColor: Colors.white);
-            }
-          },
-          color: Colors.white,
-        ),
-        MaterialButton(
-          child: Text(
-            "Cancel",
-            style: TextStyle(color: darkBlue()),
-=======
-                showDialog(
-                    context: context, builder: (context) => LoadingIndicator());
-
-                http.Response response;
-                _auth.makePayment(data).then((value) {
-                  response = value;
-                  if (response.statusCode == 200) {
-                    Navigator.of(context).pushNamed('/transactions');
-                  } else {
-                    setState(() {
-                      errorMessage = "An error has occured please try again";
-                    });
-                  }
-                });
-              } else {
-                Toast.show("Password Should not Be Empty !!", context,
-                    gravity: Toast.TOP,
-                    backgroundColor: darkBlue(),
-                    textColor: Colors.white);
-              }
-            },
-            color: darkBlue(),
->>>>>>> ac478f4f67fa0a7c97463dba898ce096178e066a
-          ),
-          MaterialButton(
-            color: darkBlue(),
-            child: Text(
-              "Cancel",
-              style: TextStyle(color: Colors.white),
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          )
-        ],
-      ),
-    );
-  }
+//  Widget passwordPopUp() {
+//    return Container(
+//      color: lightBlue(),
+//      width: MediaQuery.of(context).size.width - 10,
+//      height: MediaQuery.of(context).size.height - 80,
+//      padding: EdgeInsets.all(20),
+//      child: AlertDialog(
+//        backgroundColor: lightBlue(),
+//        elevation: 0.0,
+//        title: Text(
+//          "Enter Your Password",
+//          style: TextStyle(color: Colors.white),
+//        ),
+//        content: TextFormField(
+//          autovalidate: true,
+//          autofocus: false,
+//          obscureText: true,
+//          controller: _passwordController,
+//          keyboardType: TextInputType.visiblePassword,
+//          decoration: InputDecoration(
+//              hintText: "Password",
+//              fillColor: Colors.white,
+//              filled: true,
+//              border: OutlineInputBorder(borderRadius: BorderRadius.circular(15))),
+//        ),
+//        actions: <Widget>[
+//          MaterialButton(
+//            child: Text(
+//              "OK",
+//              style: TextStyle(color: Colors.white),
+//            ),
+//            onPressed: () {
+//              print(_passwordController.text);
+//              if (_passwordController.text != "") {
+//                _passwordFromPopUp = _passwordController.text;
+//                Navigator.pop(context);
+//
+//                //use _passwordFromPopUp variable to pass in request
+//
+//                Map data = {
+//                  "from_customer": userBloc.user.userName,
+//                  "to_customer": recipient,
+//                  "currency": "NGN",
+//                  "amount": amount.toString(),
+//                  "category": "Shopping",
+//                  "notes": reference,
+//                  "description": reference
+//                };
+//
+//                showDialog(context: context, builder: (context) => LoadingIndicator());
+//
+//                _auth.makePayment(data).then((value) {
+//                  response = value;
+//                  print(response.body);
+//                  if (response.statusCode == 200) {
+//                    Navigator.of(context).pushNamed('/dashboard', arguments: {'dashboardIndex': 2});
+//                  } else {
+//                    setState(() {
+//                      errorMessage = "An error has occured please try again";
+//                    });
+//                  }
+//                });
+//              } else {
+//                Toast.show("Password Should not Be Empty !!", context,
+//                    gravity: Toast.TOP, backgroundColor: darkBlue(), textColor: Colors.white);
+//              }
+//            },
+//            color: darkBlue(),
+//          ),
+//          MaterialButton(
+//            color: darkBlue(),
+//            child: Text(
+//              "Cancel",
+//              style: TextStyle(color: Colors.white),
+//            ),
+//            onPressed: () {
+//              Navigator.pop(context);
+//            },
+//          )
+//        ],
+//      ),
+//    );
+//  }
 
   Widget getSubmitButton() {
     return ButtonTheme(
@@ -392,17 +348,31 @@ class _SendPaymentState extends State<SendPayment> {
       child: MaterialButton(
         elevation: 4.0,
         onPressed: () async {
-          if (!isValidPayee) {
-            setState(() {
-              errorMessage = "Invalid recipient";
-            });
-          }
+          if (recipient == _payee.userName) {
+            if (!isValidPayee) {
+              setState(() {
+                errorMessage = "Invalid recipient";
+              });
+            }
 
-          if (isValidPayee && _formKey.currentState.validate()) {
-            //password popup starts
-
-            await showDialog(
-                barrierDismissible: false, context: context, builder: (context) => passwordPopUp());
+            if (isValidPayee && _formKey.currentState.validate()) {
+              Navigator.pushNamed(context, "/passwordPopup", arguments: {
+                'data': {
+                  "from_customer": userBloc.user.userName,
+                  "to_customer": recipient,
+                  "currency": "NGN",
+                  "amount": amount.toString(),
+                  "category": "Shopping",
+                  "notes": reference,
+                  "description": reference
+                },
+                '_auth': _auth
+              });
+            }
+          } else {
+            var msg = "Invalid recipient";
+            Toast.show(msg, context,
+                gravity: Toast.CENTER, backgroundColor: darkBlue(), textColor: Colors.white);
           }
         },
         textColor: Colors.white,

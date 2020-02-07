@@ -121,12 +121,7 @@ class _UserLoginState extends State<UserLogin> {
       obscureText: false,
       keyboardType: TextInputType.phone,
       decoration: InputDecoration(
-<<<<<<< HEAD
           prefixIcon: Icon(Platform.isAndroid ? Icons.phone_android : Icons.phone_iphone),
-=======
-          prefixIcon: Icon(
-              Platform.isAndroid ? Icons.phone_android : Icons.phone_iphone),
->>>>>>> ac478f4f67fa0a7c97463dba898ce096178e066a
           fillColor: Colors.white,
           filled: true,
           hintText: "Phone Number",
@@ -192,12 +187,17 @@ class _UserLoginState extends State<UserLogin> {
             var _user;
             _auth.authenticate(phoneNumber, password).then((value) {
               _user = value;
-              if (_user.fullName.isNotEmpty) {
+
+              if (_user.fullName != null) {
                 //method call for storing user info in shared preference
                 isRememberChecked();
 
                 userBloc.user = _user;
                 Navigator.of(context).pushNamed('/dashboard', arguments: {'dashboardIndex': 0});
+              } else {
+                Navigator.pop(context);
+                Toast.show("User is Not Registerd !!", context,
+                    gravity: Toast.CENTER, backgroundColor: darkBlue(), textColor: Colors.white);
               }
             });
           }
@@ -251,12 +251,9 @@ class _UserLoginState extends State<UserLogin> {
 
   void isRememberChecked() async {
     if (isRemember) {
-      bool isCheckedSet =
-          await _sharedPreferences.setBool('isChecked', isChecked);
-      bool usernameSet =
-          await _sharedPreferences.setString('username', phoneNumber);
-      bool passwordSet =
-          await _sharedPreferences.setString('password', password);
+      bool isCheckedSet = await _sharedPreferences.setBool('isChecked', isChecked);
+      bool usernameSet = await _sharedPreferences.setString('username', phoneNumber);
+      bool passwordSet = await _sharedPreferences.setString('password', password);
       //bool isSuccessFullyStored = await _sharedPreferences.commit();
       if (!isCheckedSet && !usernameSet && !passwordSet) {
         Toast.show("User Not Saved !!!", context);

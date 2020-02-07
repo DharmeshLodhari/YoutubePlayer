@@ -5,6 +5,8 @@ import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:toast/toast.dart';
+
 import '../../widget/LoadingIndicator.dart';
 
 class SignUp extends StatefulWidget {
@@ -61,8 +63,8 @@ class _SignUpState extends State<SignUp> {
                   getAccountNumberField(),
                   SizedBox(height: 10),
                   Container(
-                    child: Text(
-                        'Use 8 or more characters with a mix of letters, numbers & symbols'),
+                    child:
+                        Align(alignment: Alignment.centerLeft, child: Text('Use 4 Digit Number')),
                   ),
                   SizedBox(height: 10),
                   getPassword1Field(),
@@ -70,8 +72,8 @@ class _SignUpState extends State<SignUp> {
                   getPassword2Field(),
                   SizedBox(height: 10),
                   Container(
-                    child: Text(
-                        'By clicking Register you are agreeing to the Terms and Conditions.'),
+                    child:
+                        Text('By clicking Register you are agreeing to the Terms and Conditions.'),
                   ),
                   SizedBox(height: 10),
                   getSubmitButton(),
@@ -135,8 +137,7 @@ class _SignUpState extends State<SignUp> {
       obscureText: false,
       keyboardType: TextInputType.phone,
       decoration: InputDecoration(
-        prefixIcon:
-            Icon(Platform.isAndroid ? Icons.phone_android : Icons.phone_iphone),
+        prefixIcon: Icon(Platform.isAndroid ? Icons.phone_android : Icons.phone_iphone),
         fillColor: Colors.white,
         filled: true,
         hintText: "Phone Number",
@@ -146,8 +147,7 @@ class _SignUpState extends State<SignUp> {
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(4)),
-          borderSide: BorderSide(
-              width: 1, color: Colors.white, style: BorderStyle.solid),
+          borderSide: BorderSide(width: 1, color: Colors.white, style: BorderStyle.solid),
         ),
       ),
       validator: (val) {
@@ -173,8 +173,7 @@ class _SignUpState extends State<SignUp> {
         filled: true,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(4)),
-          borderSide: BorderSide(
-              width: 1, color: Colors.white, style: BorderStyle.solid),
+          borderSide: BorderSide(width: 1, color: Colors.white, style: BorderStyle.solid),
         ),
       ),
       value: bankName,
@@ -219,10 +218,8 @@ class _SignUpState extends State<SignUp> {
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.green, style: BorderStyle.solid))),
-      validator: (val) =>
-          val.length < 5 ? "Enter a valid name matching account number." : null,
+              borderSide: BorderSide(width: 1, color: Colors.green, style: BorderStyle.solid))),
+      validator: (val) => val.length < 5 ? "Enter a valid name matching account number." : null,
       onChanged: (val) {
         setState(() {
           accountName = val.trim();
@@ -247,10 +244,8 @@ class _SignUpState extends State<SignUp> {
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.green, style: BorderStyle.solid))),
-      validator: (val) =>
-          val.length < 10 ? "Enter a valid account number." : null,
+              borderSide: BorderSide(width: 1, color: Colors.green, style: BorderStyle.solid))),
+      validator: (val) => val.length < 10 ? "Enter a valid account number." : null,
       onChanged: (val) {
         setState(() {
           accountNumber = val.trim();
@@ -263,7 +258,9 @@ class _SignUpState extends State<SignUp> {
     return TextFormField(
       autofocus: false,
       obscureText: true,
-      keyboardType: TextInputType.visiblePassword,
+      keyboardType: TextInputType.number,
+      maxLength: 4,
+      maxLengthEnforced: true,
       decoration: InputDecoration(
           prefixIcon: Icon(Icons.lock),
           fillColor: Colors.white,
@@ -275,9 +272,8 @@ class _SignUpState extends State<SignUp> {
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
-      validator: (val) => val.length < 6 ? "Enter a valid Password." : null,
+              borderSide: BorderSide(width: 1, color: Colors.white, style: BorderStyle.solid))),
+      validator: (val) => val.length != 4 ? "Enter a valid Password." : null,
       onChanged: (val) {
         setState(() {
           password1 = val.trim();
@@ -290,7 +286,9 @@ class _SignUpState extends State<SignUp> {
     return TextFormField(
       autofocus: false,
       obscureText: true,
-      keyboardType: TextInputType.visiblePassword,
+      maxLength: 4,
+      maxLengthEnforced: true,
+      keyboardType: TextInputType.number,
       decoration: InputDecoration(
           prefixIcon: Icon(Icons.lock),
           fillColor: Colors.white,
@@ -302,11 +300,15 @@ class _SignUpState extends State<SignUp> {
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
-      validator: (val) => (val.length < 6 && val != password1)
-          ? "Enter a valid Password."
-          : null,
+              borderSide: BorderSide(width: 1, color: Colors.white, style: BorderStyle.solid))),
+      validator: (val) {
+        if (val.length != 4) {
+          return "Enter a valid Password.";
+        } else if (val != password1) {
+          return "Password MissMatch";
+        }
+        return null;
+      },
       onChanged: (val) {
         setState(() {
           password2 = val.trim();
@@ -333,8 +335,7 @@ class _SignUpState extends State<SignUp> {
               "avatar": _image,
             };
 
-            showDialog(
-                context: context, builder: (context) => LoadingIndicator());
+            showDialog(context: context, builder: (context) => LoadingIndicator());
 
             bool isRegistered;
             _auth.userRegistration(data).then((value) {
@@ -343,6 +344,10 @@ class _SignUpState extends State<SignUp> {
                 Navigator.of(context).pushNamed('/login');
               }
             });
+          } else {
+            var msg = "Invalid Details !!";
+            Toast.show(msg, context,
+                gravity: Toast.BOTTOM, backgroundColor: darkBlue(), textColor: Colors.white);
           }
         },
         textColor: Colors.white,

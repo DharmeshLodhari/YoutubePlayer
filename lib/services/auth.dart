@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/models/user.dart';
@@ -12,8 +13,8 @@ class AuthService {
   DatabaseHelper _db = DatabaseHelper();
 
   // This function creates a user object from named args passed in
-  User createUser(String uuid, String url, String phoneNumber, String fullName,
-      String username, String avatar, String qrCode, String password) {
+  User createUser(String uuid, String url, String phoneNumber, String fullName, String username,
+      String avatar, String qrCode, String password) {
     // Create user instance
     User _user = User(
         uuid: uuid,
@@ -186,8 +187,7 @@ class AuthService {
       request.fields["avatar"] = user.avatar;
 
       //create multipart using filepath, string or bytes
-      var multipartFile =
-          await http.MultipartFile.fromPath("avatar", avatarPath);
+      var multipartFile = await http.MultipartFile.fromPath("avatar", avatarPath);
 
       //add multipart to request
       request.files.add(multipartFile);
@@ -233,8 +233,7 @@ class AuthService {
       request.fields["password2"] = _body["password2"];
 
       //create multipart using filepath, string or bytes
-      var multipartFile =
-          await http.MultipartFile.fromPath("avatar", avatarPath);
+      var multipartFile = await http.MultipartFile.fromPath("avatar", avatarPath);
       //add multipart to request
       request.files.add(multipartFile);
       var response = await request.send();
@@ -300,10 +299,10 @@ class AuthService {
 
       for (var item in jsonData) {
         // if sender is not current user then
-        bool isCredit = (item["from_customer"] != user.userName &&
-                item["to_customer"] == user.userName)
-            ? true
-            : false;
+        bool isCredit =
+            (item["from_customer"] != user.userName && item["to_customer"] == user.userName)
+                ? true
+                : false;
 
         var payee = isCredit ? item["from_customer"] : item['to_customer'];
         var customer = await fetchCustomerProfile(payee);
