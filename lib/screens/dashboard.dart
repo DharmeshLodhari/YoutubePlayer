@@ -7,6 +7,10 @@ import 'settings.dart';
 import 'transactions.dart';
 
 class Dashboard extends StatefulWidget {
+  var arguments;
+
+  Dashboard({this.arguments});
+
   @override
   _DashboardState createState() => _DashboardState();
 }
@@ -16,6 +20,13 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
+    int indexFromRoute = widget.arguments['dashboardIndex'];
+    if (indexFromRoute != null) {
+      setState(() {
+        _currentIndex = indexFromRoute;
+      });
+    }
+
     return Scaffold(
       body: page(),
       bottomNavigationBar: BottomNavigationBar(
@@ -35,26 +46,22 @@ class _DashboardState extends State<Dashboard> {
               Icons.home,
               color: Colors.white,
             ),
-            title: Text('Home',
-                style: TextStyle(color: Colors.white, fontSize: 12)),
+            title: Text('Home', style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
           BottomNavigationBarItem(
             backgroundColor: lightBlue(),
             icon: Icon(Icons.group, color: Colors.white),
-            title: Text('Accounts',
-                style: TextStyle(color: Colors.white, fontSize: 12)),
+            title: Text('Accounts', style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
           BottomNavigationBarItem(
             backgroundColor: lightBlue(),
             icon: Icon(Icons.shopping_cart, color: Colors.white),
-            title: Text('Transactions',
-                style: TextStyle(color: Colors.white, fontSize: 12)),
+            title: Text('Transactions', style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
           BottomNavigationBarItem(
             backgroundColor: lightBlue(),
             icon: Icon(Icons.settings, color: Colors.white),
-            title: Text('Settings',
-                style: TextStyle(color: Colors.white, fontSize: 12)),
+            title: Text('Settings', style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
         ],
       ),

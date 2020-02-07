@@ -42,8 +42,7 @@ class _SendPaymentState extends State<SendPayment> {
 
   @override
   Widget build(BuildContext context) {
-    isFromProfile =
-        widget.arguments != null ? widget.arguments['isFromProfile'] : false;
+    isFromProfile = widget.arguments != null ? widget.arguments['isFromProfile'] : false;
     _passwordController = TextEditingController();
     userBloc = Provider.of<UserBloc>(context);
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
@@ -86,10 +85,8 @@ class _SendPaymentState extends State<SendPayment> {
                     SizedBox(height: 10),
                     Text(
                       errorMessage,
-                      style: TextStyle(
-                          color: Colors.red,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16),
+                      style:
+                          TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 16),
                     ),
                     SizedBox(height: 10),
                     getSubmitButton(),
@@ -138,10 +135,7 @@ class _SendPaymentState extends State<SendPayment> {
               dense: true,
               title: Text(
                 _payee.fullName,
-                style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15),
+                style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
               ),
               subtitle: Text(_payee.userName),
               leading: avtarImage,
@@ -167,8 +161,7 @@ class _SendPaymentState extends State<SendPayment> {
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
+              borderSide: BorderSide(width: 1, color: Colors.white, style: BorderStyle.solid))),
       onChanged: (val) {
         setState(() {
           if (!isFromProfile && _payee != null) {
@@ -199,8 +192,7 @@ class _SendPaymentState extends State<SendPayment> {
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
+              borderSide: BorderSide(width: 1, color: Colors.white, style: BorderStyle.solid))),
       validator: (val) {
         if (val.isNotEmpty) {
           try {
@@ -244,8 +236,7 @@ class _SendPaymentState extends State<SendPayment> {
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
+              borderSide: BorderSide(width: 1, color: Colors.white, style: BorderStyle.solid))),
       onChanged: (val) {
         setState(() {
           reference = val;
@@ -267,8 +258,7 @@ class _SendPaymentState extends State<SendPayment> {
         decoration: InputDecoration(
             fillColor: Colors.white,
             filled: true,
-            border:
-                OutlineInputBorder(borderRadius: BorderRadius.circular(15))),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(15))),
       ),
       actions: <Widget>[
         MaterialButton(
@@ -293,14 +283,13 @@ class _SendPaymentState extends State<SendPayment> {
                 "description": reference
               };
 
-              showDialog(
-                  context: context, builder: (context) => LoadingIndicator());
+              showDialog(context: context, builder: (context) => LoadingIndicator());
 
               http.Response response;
               _auth.makePayment(data).then((value) {
                 response = value;
                 if (response.statusCode == 200) {
-                  Navigator.of(context).pushNamed('/transactions');
+                  Navigator.of(context).pushNamed('/dashboard', arguments: {'dashboardIndex': 2});
                 } else {
                   setState(() {
                     errorMessage = "An error has occured please try again";
@@ -309,9 +298,7 @@ class _SendPaymentState extends State<SendPayment> {
               });
             } else {
               Toast.show("Password Should not Be Empty !!", context,
-                  gravity: Toast.TOP,
-                  backgroundColor: darkBlue(),
-                  textColor: Colors.white);
+                  gravity: Toast.TOP, backgroundColor: darkBlue(), textColor: Colors.white);
             }
           },
           color: Colors.white,
@@ -346,9 +333,7 @@ class _SendPaymentState extends State<SendPayment> {
             //password popup starts
 
             await showDialog(
-                barrierDismissible: false,
-                context: context,
-                builder: (context) => passwordPopUp());
+                barrierDismissible: false, context: context, builder: (context) => passwordPopUp());
           }
         },
         textColor: Colors.white,

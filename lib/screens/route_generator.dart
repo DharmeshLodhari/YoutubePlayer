@@ -26,7 +26,10 @@ class RouteGenerator {
 
       // dashboard starts
       case '/dashboard':
-        return MaterialPageRoute(builder: (_) => Dashboard());
+        return MaterialPageRoute(
+            builder: (_) => Dashboard(
+                  arguments: settings.arguments,
+                ));
       // dashboard ends
 
       case '/accounts':
