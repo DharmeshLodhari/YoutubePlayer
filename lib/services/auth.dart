@@ -13,8 +13,8 @@ class AuthService {
   DatabaseHelper _db = DatabaseHelper();
 
   // This function creates a user object from named args passed in
-  User createUser(String uuid, String url, String phoneNumber, String fullName, String username,
-      String avatar, String qrCode, String password) {
+  User createUser(String uuid, String url, String phoneNumber, String fullName,
+      String username, String avatar, String qrCode, String password) {
     // Create user instance
     User _user = User(
         uuid: uuid,
@@ -187,7 +187,8 @@ class AuthService {
       request.fields["avatar"] = user.avatar;
 
       //create multipart using filepath, string or bytes
-      var multipartFile = await http.MultipartFile.fromPath("avatar", avatarPath);
+      var multipartFile =
+          await http.MultipartFile.fromPath("avatar", avatarPath);
 
       //add multipart to request
       request.files.add(multipartFile);
@@ -233,7 +234,8 @@ class AuthService {
       request.fields["password2"] = _body["password2"];
 
       //create multipart using filepath, string or bytes
-      var multipartFile = await http.MultipartFile.fromPath("avatar", avatarPath);
+      var multipartFile =
+          await http.MultipartFile.fromPath("avatar", avatarPath);
       //add multipart to request
       request.files.add(multipartFile);
       var response = await request.send();
@@ -299,29 +301,33 @@ class AuthService {
 
       for (var item in jsonData) {
         // if sender is not current user then
-        bool isCredit =
-            (item["from_customer"] != user.userName && item["to_customer"] == user.userName)
-                ? true
-                : false;
+        bool isCredit = (item["from_customer"] != user.userName &&
+                item["to_customer"] == user.userName)
+            ? true
+            : false;
 
         var payee = isCredit ? item["from_customer"] : item['to_customer'];
-        var customer = await fetchCustomerProfile(payee);
-        var avatar = customer.avatar;
+        try {
+          var customer = await fetchCustomerProfile(payee);
+          var avatar = customer.avatar;
 
-        Transaction transaction = Transaction(
-            status: item['status'],
-            uuid: item['slug'],
-            description: item['description'],
-            payee: payee,
-            avatar: avatar,
-            currency: item['currency'],
-            amount: item['amount'],
-            isCredit: isCredit);
-        transactions.add(transaction);
+          Transaction transaction = Transaction(
+              status: item['status'],
+              uuid: item['slug'],
+              description: item['description'],
+              payee: payee,
+              avatar: avatar,
+              currency: item['currency'],
+              amount: item['amount'],
+              isCredit: isCredit);
+          transactions.add(transaction);
+        } catch (Exception) {}
       }
       return transactions;
+    } else if (response.statusCode == 500) {
+      throw "Server Error";
     } else {
-      throw "Can't get https.";
+      throw json.decode(response.body);
     }
   }
 

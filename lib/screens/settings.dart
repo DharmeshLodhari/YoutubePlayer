@@ -18,7 +18,7 @@ class _SettingsListState extends State<SettingsList> {
   Dashboard dashboard = Dashboard();
 
   void _pickImage() async {
-    final UserBloc userBloc = Provider.of<UserBloc>(context);
+    final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
     final imageSource = await showDialog<ImageSource>(
         context: context,
         builder: (context) => AlertDialog(
