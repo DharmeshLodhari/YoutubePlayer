@@ -102,8 +102,13 @@ class _ProfileState extends State<Profile> {
                         style: TextStyle(color: Colors.black, fontSize: 14))),
                 FlatButton.icon(
                     onPressed: () {
-                      Clipboard.setData(new ClipboardData(text: baseUrl + "/api/v1/customer/" + userBloc.user.userName));
-                      key.currentState.showSnackBar(SnackBar(content: new Text("Coped!"),));
+                      Clipboard.setData(new ClipboardData(
+                          text: baseUrl +
+                              "/api/v1/customer/" +
+                              userBloc.user.userName));
+                      key.currentState.showSnackBar(SnackBar(
+                        content: new Text("Coped!"),
+                      ));
                     },
                     icon: Icon(Icons.settings, color: Colors.black),
                     label: Text('Copy Url',

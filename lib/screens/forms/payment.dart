@@ -258,7 +258,7 @@ class _SendPaymentState extends State<SendPayment> {
     return Container(
       color: lightBlue(),
       width: MediaQuery.of(context).size.width - 10,
-      height: MediaQuery.of(context).size.height -  80,
+      height: MediaQuery.of(context).size.height - 80,
       padding: EdgeInsets.all(20),
       child: AlertDialog(
         backgroundColor: lightBlue(),
@@ -278,7 +278,7 @@ class _SendPaymentState extends State<SendPayment> {
               fillColor: Colors.white,
               filled: true,
               border:
-              OutlineInputBorder(borderRadius: BorderRadius.circular(15))),
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(15))),
         ),
         actions: <Widget>[
           MaterialButton(
@@ -340,7 +340,6 @@ class _SendPaymentState extends State<SendPayment> {
       ),
     );
   }
-
 
   Widget getSubmitButton() {
     return ButtonTheme(

@@ -121,7 +121,8 @@ class _UserLoginState extends State<UserLogin> {
       obscureText: false,
       keyboardType: TextInputType.phone,
       decoration: InputDecoration(
-          prefixIcon: Icon( Platform.isAndroid ? Icons.phone_android: Icons.phone_iphone),
+          prefixIcon: Icon(
+              Platform.isAndroid ? Icons.phone_android : Icons.phone_iphone),
           fillColor: Colors.white,
           filled: true,
           hintText: "Phone Number",
@@ -249,9 +250,12 @@ class _UserLoginState extends State<UserLogin> {
 
   void isRememberChecked() async {
     if (isRemember) {
-      bool isCheckedSet = await _sharedPreferences.setBool('isChecked', isChecked);
-      bool usernameSet = await _sharedPreferences.setString('username', phoneNumber);
-      bool passwordSet = await _sharedPreferences.setString('password', password);
+      bool isCheckedSet =
+          await _sharedPreferences.setBool('isChecked', isChecked);
+      bool usernameSet =
+          await _sharedPreferences.setString('username', phoneNumber);
+      bool passwordSet =
+          await _sharedPreferences.setString('password', password);
       //bool isSuccessFullyStored = await _sharedPreferences.commit();
       if (!isCheckedSet && !usernameSet && !passwordSet) {
         Toast.show("User Not Saved !!!", context);

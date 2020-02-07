@@ -135,7 +135,8 @@ class _SignUpState extends State<SignUp> {
       obscureText: false,
       keyboardType: TextInputType.phone,
       decoration: InputDecoration(
-        prefixIcon: Icon( Platform.isAndroid ? Icons.phone_android: Icons.phone_iphone),
+        prefixIcon:
+            Icon(Platform.isAndroid ? Icons.phone_android : Icons.phone_iphone),
         fillColor: Colors.white,
         filled: true,
         hintText: "Phone Number",

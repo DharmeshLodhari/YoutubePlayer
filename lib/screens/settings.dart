@@ -1,9 +1,12 @@
+import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/models/user.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/screens/dashboard.dart';
 import 'package:Slydo/screens/tiles/settings_tiles.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 class SettingsList extends StatefulWidget {
   @override
@@ -15,6 +18,7 @@ class _SettingsListState extends State<SettingsList> {
   Dashboard dashboard = Dashboard();
 
   void _pickImage() async {
+    final UserBloc userBloc = Provider.of<UserBloc>(context);
     final imageSource = await showDialog<ImageSource>(
         context: context,
         builder: (context) => AlertDialog(
@@ -36,7 +40,10 @@ class _SettingsListState extends State<SettingsList> {
       if (file != null) {
         try {
           _auth.updateCustomerAvatar(file);
-        }catch(err) {
+          User _user = await _auth.getUser();
+          _auth.authenticate(_user.phoneNumber, _user.password);
+          userBloc.user = _user;
+        } catch (err) {
           print('Caught error: $err');
         }
       }
