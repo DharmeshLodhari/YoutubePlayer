@@ -25,7 +25,7 @@ dependencies:
   sqflite: ^1.2.0
   path_provider: ^1.5.1
   qr_code_scanner: ^0.0.12
-  firebase_messaging: ^4.0.0+1
+  firebase_messaging: ^6.0.9
   image_picker: ^0.6.1+4
   mime_type: ^0.2.5
   firebase_crashlytics:

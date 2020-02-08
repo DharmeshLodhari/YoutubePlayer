@@ -239,7 +239,10 @@ class AuthService {
       //add multipart to request
       request.files.add(multipartFile);
       var response = await request.send();
-      print(json.decode(await response.stream.bytesToString()));
+
+      var resBody = await response.stream.bytesToString();
+      print(json.decode(resBody));
+
       if (response.statusCode == 200) {
         return true;
       }
@@ -249,8 +252,8 @@ class AuthService {
       data["bank_name"] = _body["bankName"];
       data["full_name"] = _body["accountName"];
       data["account_number"] = _body["accountNumber"];
-      data["password1"] = _body["password1"];
-      data["password2"] = _body["password2"];
+      data["password1"] = "123456Abcd"; //_body["password1"];
+      data["password2"] = "123456Abcd"; //_body["password2"];
       var response = await http.patch(url, body: data);
       if (response.statusCode == 200) {
         return true;
