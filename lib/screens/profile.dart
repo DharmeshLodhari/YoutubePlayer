@@ -135,7 +135,8 @@ class _ProfileState extends State<Profile> {
         textColor: Colors.white,
         color: darkBlue(),
         height: 50,
-        child: Text("Make a Payment"),
+        child: Text(
+            "Make a Payment"), // change this to make payment request button to
       ),
     );
   }
@@ -153,8 +154,10 @@ class _ProfileState extends State<Profile> {
     return CircleAvatar(
       radius: 10.00,
       foregroundColor: Colors.transparent,
-      child: Image.network(userBloc.user.avatar,
-      fit: BoxFit.fill,),
+      child: Image.network(
+        userBloc.user.avatar,
+        fit: BoxFit.fill,
+      ),
     );
   }
 }

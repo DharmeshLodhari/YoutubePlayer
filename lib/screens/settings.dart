@@ -1,8 +1,6 @@
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/models/user.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/screens/dashboard.dart';
-import 'package:Slydo/screens/tiles/settings_tiles.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -17,57 +15,10 @@ class _SettingsListState extends State<SettingsList> {
   final _auth = AuthService();
   Dashboard dashboard = Dashboard();
 
-  void _pickImage() async {
-    final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
-    final imageSource = await showDialog<ImageSource>(
-        context: context,
-        builder: (context) => AlertDialog(
-              title: Text("Select the image source"),
-              actions: <Widget>[
-                MaterialButton(
-                  child: Text("Camera"),
-                  onPressed: () => Navigator.pop(context, ImageSource.camera),
-                ),
-                MaterialButton(
-                  child: Text("Gallery"),
-                  onPressed: () => Navigator.pop(context, ImageSource.gallery),
-                )
-              ],
-            ));
-
-    if (imageSource != null) {
-      final file = await ImagePicker.pickImage(source: imageSource);
-      if (file != null) {
-        try {
-          _auth.updateCustomerAvatar(file);
-          User _user = await _auth.getUser();
-          _auth.authenticate(_user.phoneNumber, _user.password);
-          userBloc.user = _user;
-        } catch (err) {
-          print('Caught error: $err');
-        }
-      }
-    }
-  }
-
-  Widget logOutButton() {
-    return ButtonTheme(
-      minWidth: double.infinity,
-      child: MaterialButton(
-        onPressed: () async {
-          await _auth.logOut();
-          Navigator.pushNamedAndRemoveUntil(context, "/", (r) => false);
-        },
-        textColor: Colors.white,
-        color: darkBlue(),
-        height: 50,
-        child: Text("Logout"),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+    final UserBloc userBloc = Provider.of<UserBloc>(context);
+
     return WillPopScope(
       onWillPop: () async {
         Navigator.pop(context);
@@ -89,7 +40,7 @@ class _SettingsListState extends State<SettingsList> {
               child: Column(
                 children: <Widget>[
                   SizedBox(height: 20),
-                  SettingsTile(pickImage: _pickImage),
+                  displaySettingsTile(userBloc),
                   SizedBox(height: 20),
                   logOutButton(),
                 ],
@@ -99,5 +50,109 @@ class _SettingsListState extends State<SettingsList> {
         ),
       ),
     );
+  }
+
+  Widget displaySettingsTile(userBloc) {
+    return Padding(
+      padding: EdgeInsets.only(top: 8.0),
+      child: Card(
+        margin: EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
+        child: ListTile(
+          title: Text(
+            userBloc.user.fullName,
+            style: TextStyle(
+                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+          ),
+          subtitle: Text(userBloc.user.userName),
+          leading: Image.network(
+            userBloc.user.avatar,
+            height: 45,
+            width: 45,
+            colorBlendMode: BlendMode.darken,
+            fit: BoxFit.fitWidth,
+            filterQuality: FilterQuality.high,
+            loadingBuilder: (BuildContext context, Widget child,
+                ImageChunkEvent loadingProgress) {
+              if (loadingProgress == null) return child;
+              return Container(
+                height: 45,
+                width: 45,
+                child: CircularProgressIndicator(
+                  value: loadingProgress.expectedTotalBytes != null
+                      ? loadingProgress.cumulativeBytesLoaded /
+                          loadingProgress.expectedTotalBytes
+                      : null,
+                ),
+              );
+            },
+          ),
+          trailing: IconButton(
+            icon: Icon(
+              Icons.mode_edit,
+              color: darkBlue(),
+            ),
+            onPressed: () {
+              pickImage(userBloc);
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget logOutButton() {
+    return ButtonTheme(
+      minWidth: double.infinity,
+      child: MaterialButton(
+        onPressed: () async {
+          await _auth.logOut();
+          Navigator.pushNamedAndRemoveUntil(context, "/", (r) => false);
+        },
+        textColor: Colors.white,
+        color: darkBlue(),
+        height: 50,
+        child: Text("Logout"),
+      ),
+    );
+  }
+
+  void pickImage(userBloc) async {
+    final imageSource = await showDialog<ImageSource>(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text("Select the image source"),
+              actions: <Widget>[
+                MaterialButton(
+                  child: Text("Camera"),
+                  onPressed: () => Navigator.pop(context, ImageSource.camera),
+                ),
+                MaterialButton(
+                  child: Text("Gallery"),
+                  onPressed: () => Navigator.pop(context, ImageSource.gallery),
+                )
+              ],
+            ));
+
+    if (imageSource != null) {
+      final file = await ImagePicker.pickImage(source: imageSource);
+      if (file != null) {
+        try {
+          // Get user current login info so we can reuse it to login
+          var dbUser = await _auth.getUser();
+          var phoneNumber = dbUser.phoneNumber;
+          var password = dbUser.password;
+
+          // Upload Image new image
+          await _auth.updateCustomerAvatar(file);
+
+          // Get New updated user data and set new user data to userBloc
+          await _auth.authenticate(phoneNumber, password).then((value) {
+            userBloc.user = value;
+          });
+        } catch (err) {
+          print('Caught error: $err');
+        }
+      }
+    }
   }
 }
