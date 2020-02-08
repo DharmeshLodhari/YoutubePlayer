@@ -90,25 +90,13 @@ class _QRCodeViewState extends State<QRCodeView> {
           scanDataList.removeWhere((value) => value == "");
           var recipient = scanDataList.last;
 
-          showDialog(
-              context: context, builder: (context) => LoadingIndicator());
-
-          var customerProfile;
-
-          _auth.fetchCustomerProfile(recipient).then((value) {
-            customerProfile = value;
-
-            Navigator.pop(context);
-
-            if (mounted) {
-              setState(() {
-                customerProfileBloc.customer = customerProfile;
-              });
-              Navigator.pop(context);
-              Navigator.of(context).pushNamed('/send-payment',
-                  arguments: <String, bool>{'isFromProfile': false});
-            }
-          });
+          // Pull the user from the server
+          // TODO: Add try block here and check if error occurred in server like 404 then take user to home page and show error
+          customerProfileBloc.customer =
+              await _auth.fetchCustomerProfile(recipient);
+          Navigator.pop(context);
+          Navigator.of(context).pushNamed('/send-payment',
+              arguments: <String, bool>{'isFromProfile': false});
         }
       }
     });
