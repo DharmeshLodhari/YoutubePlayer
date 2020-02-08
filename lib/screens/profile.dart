@@ -19,6 +19,7 @@ class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
     final key = GlobalKey<ScaffoldState>();
+    final UserBloc userBloc = Provider.of<UserBloc>(context);
 
     return WillPopScope(
       onWillPop: () async {
@@ -35,6 +36,7 @@ class _ProfileState extends State<Profile> {
           automaticallyImplyLeading: false,
           backgroundColor: darkBlue(),
           title: Center(child: Text("Home")),
+          leading: displayUserAvatar(userBloc),
           actions: <Widget>[
             displayQRCodeButton(),
           ],
@@ -49,9 +51,9 @@ class _ProfileState extends State<Profile> {
                 child: Column(
                   children: <Widget>[
                     SizedBox(height: 10),
-                    displayUserInfo(key),
+                    displayUserInfo(key, userBloc),
                     SizedBox(height: 30),
-                    displayPaymentButton()
+                    //displayPaymentButton()
                   ],
                 ),
               ),
@@ -62,8 +64,7 @@ class _ProfileState extends State<Profile> {
     );
   }
 
-  Widget displayUserInfo(key) {
-    final UserBloc userBloc = Provider.of<UserBloc>(context);
+  Widget displayUserInfo(key, userBloc) {
     return Center(
       child: Card(
         semanticContainer: true,
@@ -145,6 +146,15 @@ class _ProfileState extends State<Profile> {
       onPressed: () {
         Navigator.of(context).pushNamed('/scan-qr');
       },
+    );
+  }
+
+  Widget displayUserAvatar(userBloc) {
+    return CircleAvatar(
+      radius: 10.00,
+      foregroundColor: Colors.transparent,
+      child: Image.network(userBloc.user.avatar,
+      fit: BoxFit.fill,),
     );
   }
 }
