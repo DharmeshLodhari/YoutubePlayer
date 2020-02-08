@@ -72,8 +72,8 @@ class _HomeState extends State<Home> {
                     ButtonTheme(
                       minWidth: double.infinity,
                       child: MaterialButton(
-                        shape:
-                            RoundedRectangleBorder(side: BorderSide(color: darkBlue(), width: 2.0)),
+                        shape: RoundedRectangleBorder(
+                            side: BorderSide(color: darkBlue(), width: 2.0)),
                         onPressed: () {
                           Navigator.of(context).pushNamed('/register');
                         },

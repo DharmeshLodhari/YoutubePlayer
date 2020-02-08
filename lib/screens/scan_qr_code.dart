@@ -90,7 +90,8 @@ class _QRCodeViewState extends State<QRCodeView> {
           scanDataList.removeWhere((value) => value == "");
           var recipient = scanDataList.last;
 
-          showDialog(context: context, builder: (context) => LoadingIndicator());
+          showDialog(
+              context: context, builder: (context) => LoadingIndicator());
 
           var customerProfile;
 
@@ -104,8 +105,8 @@ class _QRCodeViewState extends State<QRCodeView> {
                 customerProfileBloc.customer = customerProfile;
               });
               Navigator.pop(context);
-              Navigator.of(context)
-                  .pushNamed('/send-payment', arguments: <String, bool>{'isFromProfile': false});
+              Navigator.of(context).pushNamed('/send-payment',
+                  arguments: <String, bool>{'isFromProfile': false});
             }
           });
         }

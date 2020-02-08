@@ -42,7 +42,8 @@ class _SendPaymentState extends State<SendPayment> {
 
   @override
   void initState() {
-    isFromProfile = widget.arguments != null ? widget.arguments['isFromProfile'] : false;
+    isFromProfile =
+        widget.arguments != null ? widget.arguments['isFromProfile'] : false;
     _passwordController = TextEditingController();
 
     super.initState();
@@ -90,8 +91,10 @@ class _SendPaymentState extends State<SendPayment> {
                     SizedBox(height: 10),
                     Text(
                       errorMessage,
-                      style:
-                          TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 16),
+                      style: TextStyle(
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16),
                     ),
                     SizedBox(height: 10),
                     getSubmitButton(),
@@ -140,7 +143,10 @@ class _SendPaymentState extends State<SendPayment> {
               dense: true,
               title: Text(
                 _payee.fullName,
-                style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+                style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15),
               ),
               subtitle: Text(_payee.userName),
               leading: avatarImage,
@@ -174,7 +180,8 @@ class _SendPaymentState extends State<SendPayment> {
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(width: 1, color: Colors.white, style: BorderStyle.solid))),
+              borderSide: BorderSide(
+                  width: 1, color: Colors.white, style: BorderStyle.solid))),
       onChanged: (val) {
         setState(() {
           if (!isFromProfile && _payee != null) {
@@ -205,7 +212,8 @@ class _SendPaymentState extends State<SendPayment> {
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(width: 1, color: Colors.white, style: BorderStyle.solid))),
+              borderSide: BorderSide(
+                  width: 1, color: Colors.white, style: BorderStyle.solid))),
       validator: (val) {
         if (val.isNotEmpty) {
           try {
@@ -249,7 +257,8 @@ class _SendPaymentState extends State<SendPayment> {
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(width: 1, color: Colors.white, style: BorderStyle.solid))),
+              borderSide: BorderSide(
+                  width: 1, color: Colors.white, style: BorderStyle.solid))),
       onChanged: (val) {
         setState(() {
           reference = val;
@@ -288,7 +297,9 @@ class _SendPaymentState extends State<SendPayment> {
           } else {
             var msg = "Invalid recipient";
             Toast.show(msg, context,
-                gravity: Toast.CENTER, backgroundColor: darkBlue(), textColor: Colors.white);
+                gravity: Toast.CENTER,
+                backgroundColor: darkBlue(),
+                textColor: Colors.white);
           }
         },
         textColor: Colors.white,

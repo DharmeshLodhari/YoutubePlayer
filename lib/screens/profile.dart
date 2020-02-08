@@ -156,7 +156,6 @@ class _ProfileState extends State<Profile> {
         ),
       ),
     );
-
   }
 
   Widget displayUserAvatar(userBloc) {
