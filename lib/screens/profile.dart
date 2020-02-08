@@ -53,7 +53,7 @@ class _ProfileState extends State<Profile> {
                     SizedBox(height: 10),
                     displayUserInfo(key, userBloc),
                     SizedBox(height: 30),
-                    //displayPaymentButton()
+                    displayPaymentButton()
                   ],
                 ),
               ),
@@ -157,12 +157,6 @@ class _ProfileState extends State<Profile> {
       ),
     );
 
-    /*return IconButton(
-      icon: Icon(Icons.camera),
-      onPressed: () {
-        Navigator.of(context).pushNamed('/scan-qr');
-      },
-    );*/
   }
 
   Widget displayUserAvatar(userBloc) {
