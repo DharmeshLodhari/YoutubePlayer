@@ -46,16 +46,7 @@ class _PasswordPopupState extends State<PasswordPopup> {
           appBar: AppBar(
             backgroundColor: lightBlue(),
             elevation: 0,
-            leading: IconButton(
-              icon: Icon(
-                Icons.arrow_back_ios,
-                size: 20,
-                color: Colors.white,
-              ),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
+            leading: cancelPasswordPromptButton(),
           ),
           body: SingleChildScrollView(
             scrollDirection: Axis.vertical,
@@ -66,68 +57,75 @@ class _PasswordPopupState extends State<PasswordPopup> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    SizedBox(
-                      height: 80,
-                    ),
-                    Text(
-                      "Enter Your Password",
-                      style: TextStyle(color: Colors.white, fontSize: 18),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    TextFormField(
-                      maxLength: 4,
-                      maxLengthEnforced: true,
-                      onFieldSubmitted: verifyData,
-                      autovalidate: true,
-                      autofocus: false,
-                      obscureText: true,
-                      validator: (value) {
-                        if (value.length < 4) {
-                          return "Please enter 4 digit password !!";
-                        }
-                        return null;
-                      },
-                      controller: _passwordController,
-                      keyboardType: TextInputType.number,
-                      textInputAction: TextInputAction.send,
-                      decoration: InputDecoration(
-                          errorStyle: TextStyle(
-                              fontSize: 16, color: darkBlue(), fontWeight: FontWeight.bold),
-                          focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                              borderSide: BorderSide(color: Colors.green, width: 2)),
-                          contentPadding: EdgeInsets.all(20),
-                          isDense: true,
-                          hintText: "Password",
-                          fillColor: Colors.white,
-                          filled: true,
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(15))),
-                    ),
-//                    MaterialButton(
-//                      child: Text(
-//                        "OK",
-//                        style: TextStyle(color: Colors.white),
-//                      ),
-//                      onPressed: verifyData,
-//                      color: darkBlue(),
-//                    ),
-//                    MaterialButton(
-//                      color: darkBlue(),
-//                      child: Text(
-//                        "Cancel",
-//                        style: TextStyle(color: Colors.white),
-//                      ),
-//                      onPressed: () {
-//                        Navigator.pop(context);
-//                      },
-//                    )
+                    SizedBox(height: 80),
+                    Text("Enter Your Password", style: TextStyle(color: darkBlue(), fontSize: 18)),
+                    SizedBox(height: 20),
+                    passwordInput(),
+                    SizedBox(height: 100.0),
+                    passwordPromptButton(),
                   ],
                 ),
               ),
             ),
           )),
+    );
+  }
+
+  Widget passwordInput(){
+    return TextFormField(
+      maxLength: 4,
+      maxLengthEnforced: true,
+      onFieldSubmitted: verifyData,
+      autovalidate: true,
+      autofocus: false,
+      obscureText: true,
+      validator: (value) {
+        if (value.length < 4) {
+          return "Please enter 4 digit password !!";
+        }
+        return null;
+      },
+      controller: _passwordController,
+      keyboardType: TextInputType.number,
+      textInputAction: TextInputAction.send,
+      decoration: InputDecoration(
+          errorStyle: TextStyle(
+              fontSize: 16, color: darkBlue(), fontWeight: FontWeight.bold),
+          focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(15),
+              borderSide: BorderSide(color: Colors.green, width: 2)),
+          contentPadding: EdgeInsets.all(20),
+          isDense: true,
+          hintText: "Password",
+          fillColor: Colors.white,
+          filled: true,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(15))),
+    );
+  }
+
+  Widget cancelPasswordPromptButton(){
+    return MaterialButton(
+      child: Icon(Icons.cancel, color: Colors.red),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
+  }
+
+  Widget passwordPromptButton() {
+    return ButtonTheme(
+      //elevation: 4,
+      minWidth: double.infinity,
+      child: MaterialButton(
+        elevation: 4.0,
+        onPressed: () {
+          verifyData(_password);
+        },
+        textColor: Colors.white,
+        color: darkBlue(),
+        height: 50,
+        child: Text("Submit"), // change this to make payment request button to
+      ),
     );
   }
 
