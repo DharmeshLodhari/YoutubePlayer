@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
@@ -35,38 +35,44 @@ class _QRCodeViewState extends State<QRCodeView> {
       backgroundColor: Colors.transparent,
       body: Column(
         children: <Widget>[
-          Expanded(
-            flex: 5,
-            child: QRView(
-              key: qrKey,
-              overlay: QrScannerOverlayShape(
-                //overlayColor: Colors.transparent,
-                borderRadius: 10,
-                borderColor: Colors.red,
-                borderLength: 30,
-                borderWidth: 10,
-                cutOutSize: 300,
-              ),
-              onQRViewCreated: _onQRViewCreated,
-            ),
-          ),
-          Expanded(
-            child: Column(
-              children: <Widget>[getFlipButton()],
-            ),
-            flex: 1,
-          )
+          qrCodeExpandedView(),
+          flipCameraExpandedView(),
         ],
       ),
     );
   }
 
-//  @override
-//  void dispose() {
-//    controller?.dispose();
-//    super.dispose();
-//  }
+  @override
+  void dispose() {
+    controller?.dispose();
+    super.dispose();
+  }
 
+  Widget flipCameraExpandedView() {
+    return Expanded(
+        child: Column(children: <Widget>[getFlipButton()]), flex: 1);
+  }
+
+  // Camera View of scanner
+  Widget qrCodeExpandedView() {
+    return Expanded(
+      flex: 5,
+      child: QRView(
+        key: qrKey,
+        overlay: QrScannerOverlayShape(
+          //overlayColor: Colors.transparent,
+          borderRadius: 10,
+          borderColor: lightBlue(),
+          borderLength: 30,
+          borderWidth: 10,
+          cutOutSize: 300,
+        ),
+        onQRViewCreated: _onQRViewCreated,
+      ),
+    );
+  }
+
+  // Flip the camera around
   Widget getFlipButton() {
     return RaisedButton(
       onPressed: () async {
@@ -78,6 +84,7 @@ class _QRCodeViewState extends State<QRCodeView> {
     );
   }
 
+  // Scan qr code here and check on server then navigate to payment screen.
   void _onQRViewCreated(QRViewController controller) {
     final CustomerProfileBloc customerProfileBloc =
         Provider.of<CustomerProfileBloc>(context, listen: false);
