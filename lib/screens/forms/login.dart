@@ -176,8 +176,6 @@ class _UserLoginState extends State<UserLogin> {
   Widget submitButton(context) {
     final UserBloc userBloc = Provider.of<UserBloc>(context);
     return ButtonTheme(
-      //elevation: 4,
-      //color: Colors.green,
       minWidth: double.infinity,
       child: MaterialButton(
         onPressed: () async {
@@ -254,7 +252,6 @@ class _UserLoginState extends State<UserLogin> {
       bool isCheckedSet = await _sharedPreferences.setBool('isChecked', isChecked);
       bool usernameSet = await _sharedPreferences.setString('username', phoneNumber);
       bool passwordSet = await _sharedPreferences.setString('password', password);
-      //bool isSuccessFullyStored = await _sharedPreferences.commit();
       if (!isCheckedSet && !usernameSet && !passwordSet) {
         Toast.show("User Not Saved !!!", context);
       }
