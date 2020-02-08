@@ -292,7 +292,7 @@ class AuthService {
 
   // List users transactions
   Future<List<Transaction>> getTransactions() async {
-    Map<String, String> KnownCustomers = {};
+    Map<String, String> knownCustomers = {};
     var url = baseUrl + "/api/v1/transactions/list/";
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
@@ -313,11 +313,11 @@ class AuthService {
         var payee = isCredit ? item["from_customer"] : item['to_customer'];
 
         try {
-          if (KnownCustomers.containsKey(payee) == false) {
+          if (knownCustomers.containsKey(payee) == false) {
             var customer = await fetchCustomerProfile(payee);
-            KnownCustomers[payee] = customer.avatar;
+            knownCustomers[payee] = customer.avatar;
           }
-          var avatar = KnownCustomers[payee];
+          var avatar = knownCustomers[payee];
           Transaction transaction = Transaction(
               status: item['status'],
               uuid: item['slug'],
