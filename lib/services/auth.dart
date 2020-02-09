@@ -215,49 +215,18 @@ class AuthService {
 
   // Register the user with the backend servers
   Future<bool> userRegistration(Map _body) async {
+    var data = {};
     var url = baseUrl + "/api/v1/account/";
-    Map data = {};
 
-    var avatar = _body["avatar"];
+    // Convert to what the server is expecting
+    data["password1"] = _body["password1"];
+    data["password2"] = _body["password2"];
+    data["full_name"] = _body["fullName"];
+    data["phone_number"] = _body["phoneNumber"];
 
-    if (avatar != null) {
-      var avatarPath = avatar.path;
-      //create multipart request for POST or PATCH method
-      var request = http.MultipartRequest("PATCH", Uri.parse(url));
-
-      //add fields
-      request.fields["phone_number"] = _body["phoneNumber"];
-      request.fields["bank_name"] = _body["bankName"];
-      request.fields["full_name"] = _body["accountName"];
-      request.fields["account_number"] = _body["accountNumber"];
-      request.fields["password1"] = _body["password1"];
-      request.fields["password2"] = _body["password2"];
-
-      //create multipart using filepath, string or bytes
-      var multipartFile =
-          await http.MultipartFile.fromPath("avatar", avatarPath);
-      //add multipart to request
-      request.files.add(multipartFile);
-      var response = await request.send();
-
-      var resBody = await response.stream.bytesToString();
-      print(json.decode(resBody));
-
-      if (response.statusCode == 200) {
-        return true;
-      }
-    } else {
-      // convert code to types server understand.
-      data["phone_number"] = _body["phoneNumber"];
-      data["bank_name"] = _body["bankName"];
-      data["full_name"] = _body["accountName"];
-      data["account_number"] = _body["accountNumber"];
-      data["password1"] = "123456Abcd"; //_body["password1"];
-      data["password2"] = "123456Abcd"; //_body["password2"];
-      var response = await http.patch(url, body: data);
-      if (response.statusCode == 200) {
-        return true;
-      }
+    var response = await http.post(url, body: data);
+    if (response.statusCode == 200) {
+      return true;
     }
     return false;
   }

@@ -167,7 +167,7 @@ class _UserLoginState extends State<UserLogin> {
               borderRadius: BorderRadius.all(Radius.circular(4)),
               borderSide: BorderSide(
                   width: 1, color: Colors.white, style: BorderStyle.solid))),
-      validator: (val) => val.length < 6 ? "Enter a valid Password." : null,
+      validator: (val) => val.length < 4 ? "Enter a valid Password." : null,
       onChanged: (val) {
         setState(() {
           password = val.trim();

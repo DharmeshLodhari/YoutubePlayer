@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:Slydo/models/bank.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
@@ -19,16 +18,10 @@ class _SignUpState extends State<SignUp> {
   final _auth = AuthService();
 
   File _image;
-
   String phoneNumber = '';
-
-  String bankName = 'first-bank-nigeria-limited';
-  String accountName = '';
-  String accountNumber = '';
-
+  String fullName = '';
   String password1 = '';
   String password2 = '';
-  List<Bank> banks = getBanks();
 
   @override
   Widget build(BuildContext context) {
@@ -50,17 +43,9 @@ class _SignUpState extends State<SignUp> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   SizedBox(height: 10),
-                  displayImage(),
-                  SizedBox(height: 10),
-                  getImageField(),
-                  SizedBox(height: 10),
                   getPhoneNumberField(),
                   SizedBox(height: 10),
-                  getBankNameDropDownMenu(),
-                  SizedBox(height: 10),
-                  getAccountNameField(),
-                  SizedBox(height: 10),
-                  getAccountNumberField(),
+                  getFullNameField(),
                   SizedBox(height: 10),
                   Container(
                     child: Align(
@@ -84,51 +69,6 @@ class _SignUpState extends State<SignUp> {
             ),
           ),
         ));
-  }
-
-  Widget displayImage() {
-    return Center(
-      child: _image == null
-          ? Text('No image selected.')
-          : Image.file(
-              _image,
-              height: 150.0,
-              width: 150.0,
-            ),
-    );
-  }
-
-  Widget getImageField() {
-    return FloatingActionButton(
-      onPressed: getImage,
-      tooltip: 'Pick Image',
-      child: Icon(Icons.add_a_photo),
-    );
-  }
-
-  void getImage() async {
-    final imageSource = await showDialog<ImageSource>(
-        context: context,
-        builder: (context) => AlertDialog(
-              title: Text("Select the image source"),
-              actions: <Widget>[
-                MaterialButton(
-                  child: Text("Camera"),
-                  onPressed: () => Navigator.pop(context, ImageSource.camera),
-                ),
-                MaterialButton(
-                  child: Text("Gallery"),
-                  onPressed: () => Navigator.pop(context, ImageSource.gallery),
-                )
-              ],
-            ));
-
-    if (imageSource != null) {
-      final image = await ImagePicker.pickImage(source: imageSource);
-      if (image != null) {
-        setState(() => _image = image);
-      }
-    }
   }
 
   Widget getPhoneNumberField() {
@@ -167,47 +107,7 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
-  Widget getBankNameDropDownMenu() {
-    return DropdownButtonFormField(
-      isExpanded: true,
-      decoration: InputDecoration(
-        isDense: true,
-        fillColor: Colors.white,
-        filled: true,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(4)),
-          borderSide: BorderSide(
-              width: 1, color: Colors.white, style: BorderStyle.solid),
-        ),
-      ),
-      value: bankName,
-      icon: Flexible(
-        child: Icon(
-          Icons.keyboard_arrow_down,
-        ),
-        fit: FlexFit.loose,
-      ),
-      iconSize: 24,
-      elevation: 16,
-      style: TextStyle(color: Colors.black),
-      onChanged: (String val) {
-        setState(() {
-          bankName = val.trim();
-        });
-      },
-      items: banks.map((bank) {
-        return DropdownMenuItem(
-          value: bank.slug.trim(),
-          child: Text(
-            bank.name,
-            style: TextStyle(color: darkBlue(), fontSize: 18),
-          ),
-        );
-      }).toList(),
-    );
-  }
-
-  Widget getAccountNameField() {
+  Widget getFullNameField() {
     return TextFormField(
       autofocus: true,
       obscureText: false,
@@ -215,7 +115,7 @@ class _SignUpState extends State<SignUp> {
           prefixIcon: Icon(Icons.person),
           fillColor: Colors.white,
           filled: true,
-          hintText: "Account Name",
+          hintText: "Full Name",
           labelStyle: TextStyle(
             color: darkBlue(),
             fontSize: 16,
@@ -228,35 +128,7 @@ class _SignUpState extends State<SignUp> {
           val.length < 5 ? "Enter a valid name matching account number." : null,
       onChanged: (val) {
         setState(() {
-          accountName = val.trim();
-        });
-      },
-    );
-  }
-
-  Widget getAccountNumberField() {
-    return TextFormField(
-      autofocus: false,
-      obscureText: false,
-      keyboardType: TextInputType.phone,
-      decoration: InputDecoration(
-          prefixIcon: Icon(Icons.format_list_numbered),
-          fillColor: Colors.white,
-          filled: true,
-          hintText: "Account Number",
-          labelStyle: TextStyle(
-            color: darkBlue(),
-            fontSize: 16,
-          ),
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.green, style: BorderStyle.solid))),
-      validator: (val) =>
-          val.length < 10 ? "Enter a valid account number." : null,
-      onChanged: (val) {
-        setState(() {
-          accountNumber = val.trim();
+          fullName = val.trim();
         });
       },
     );
@@ -337,12 +209,9 @@ class _SignUpState extends State<SignUp> {
           if (_formKey.currentState.validate()) {
             Map data = {
               "phoneNumber": phoneNumber,
-              "bankName": bankName,
-              "accountName": accountName,
-              "accountNumber": accountNumber,
+              "fullName": fullName,
               "password1": password1,
               "password2": password2,
-              "avatar": _image,
             };
 
             showDialog(

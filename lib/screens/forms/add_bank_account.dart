@@ -17,8 +17,8 @@ class _AddAccountState extends State<AddAccount> {
   String errorMessage = "";
 
   String bankName = 'first-bank-nigeria-limited';
-  String accountName;
-  int accountNumber;
+  String accountName = "";
+  String accountNumber = "";
   bool isDefault = false;
   List<Bank> banks = getBanks();
 
@@ -166,7 +166,7 @@ class _AddAccountState extends State<AddAccount> {
           val.length < 10 ? "Enter a valid account number." : null,
       onChanged: (val) {
         setState(() {
-          accountNumber = int.parse(val);
+          accountNumber = val;
         });
       },
     );
