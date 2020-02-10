@@ -5,6 +5,7 @@ import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsList extends StatefulWidget {
   @override
@@ -13,7 +14,6 @@ class SettingsList extends StatefulWidget {
 
 class _SettingsListState extends State<SettingsList> {
   final _auth = AuthService();
-  Dashboard dashboard = Dashboard();
 
   @override
   Widget build(BuildContext context) {
@@ -104,10 +104,7 @@ class _SettingsListState extends State<SettingsList> {
     return ButtonTheme(
       minWidth: double.infinity,
       child: MaterialButton(
-        onPressed: () async {
-          await _auth.logOut();
-          Navigator.pushNamedAndRemoveUntil(context, "/", (r) => false);
-        },
+        onPressed: logoutUser,
         textColor: Colors.white,
         color: darkBlue(),
         height: 50,
@@ -154,5 +151,19 @@ class _SettingsListState extends State<SettingsList> {
         }
       }
     }
+  }
+
+  void logoutUser() async {
+    SharedPreferences _sharedPreferences;
+    await _auth.logOut();
+    _sharedPreferences = await SharedPreferences.getInstance();
+    _sharedPreferences.setBool('isLoggedOut', true);
+    try {
+      await _sharedPreferences.commit();
+    } catch (err) {
+      print('Caught error: $err');
+    }
+
+    Navigator.pushNamedAndRemoveUntil(context, "/", (r) => false);
   }
 }

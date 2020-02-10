@@ -56,14 +56,16 @@ class _UserLoginState extends State<UserLogin> {
         passwordController.text = passwordFromPref;
         phoneNumber = phoneNumberFromPref;
         password = passwordFromPref;
+
+//        if (phoneNumberFromPref != "" && passwordFromPref != "") {
+//          login();
+//        }
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    //final UserBloc userBloc = Provider.of<UserBloc>(context);
-
     return Scaffold(
         backgroundColor: lightBlue(),
         resizeToAvoidBottomInset: true,
@@ -177,36 +179,10 @@ class _UserLoginState extends State<UserLogin> {
   }
 
   Widget submitButton(context) {
-    final UserBloc userBloc = Provider.of<UserBloc>(context);
     return ButtonTheme(
       minWidth: double.infinity,
       child: MaterialButton(
-        onPressed: () async {
-          if (_formKey.currentState.validate()) {
-            showDialog(
-                context: context, builder: (context) => LoadingIndicator());
-
-            var _user;
-            _auth.authenticate(phoneNumber, password).then((value) {
-              _user = value;
-
-              if (_user.fullName != null) {
-                //method call for storing user info in shared preference
-                isRememberChecked();
-
-                userBloc.user = _user;
-                Navigator.of(context)
-                    .pushNamed('/dashboard', arguments: {'dashboardIndex': 0});
-              } else {
-                Navigator.pop(context);
-                Toast.show("User is Not Registerd !!", context,
-                    gravity: Toast.CENTER,
-                    backgroundColor: darkBlue(),
-                    textColor: Colors.white);
-              }
-            });
-          }
-        },
+        onPressed: login,
         textColor: Colors.white,
         color: darkBlue(),
         height: 50,
@@ -255,14 +231,16 @@ class _UserLoginState extends State<UserLogin> {
   }
 
   void isRememberChecked() async {
+    bool isLoggedOut = await _sharedPreferences.setBool('isLoggedOut', false);
     if (isRemember) {
       bool isCheckedSet =
           await _sharedPreferences.setBool('isChecked', isChecked);
+
       bool usernameSet =
           await _sharedPreferences.setString('username', phoneNumber);
       bool passwordSet =
           await _sharedPreferences.setString('password', password);
-      if (!isCheckedSet && !usernameSet && !passwordSet) {
+      if (!isCheckedSet && !isLoggedOut && !usernameSet && !passwordSet) {
         Toast.show("User Not Saved !!!", context);
       }
     } else {
@@ -271,6 +249,33 @@ class _UserLoginState extends State<UserLogin> {
       if (!isSuccessFullyStored) {
         Toast.show("User Not Saved !!!", context);
       }
+    }
+  }
+
+  void login() async {
+    final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+    if (_formKey.currentState.validate()) {
+      showDialog(context: context, builder: (context) => LoadingIndicator());
+
+      var _user;
+      _auth.authenticate(phoneNumber, password).then((value) {
+        _user = value;
+
+        if (_user.fullName != null) {
+          //method call for storing user info in shared preference
+          isRememberChecked();
+
+          userBloc.user = _user;
+          Navigator.of(context)
+              .pushNamed('/dashboard', arguments: {'dashboardIndex': 0});
+        } else {
+          Navigator.pop(context);
+          Toast.show("User is Not Registerd !!", context,
+              gravity: Toast.CENTER,
+              backgroundColor: darkBlue(),
+              textColor: Colors.white);
+        }
+      });
     }
   }
 }
