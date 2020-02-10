@@ -201,8 +201,8 @@ class _AddAccountState extends State<AddAccount> {
             };
             bool wasSuccessful = await _auth.addBankAccount(data);
             if (wasSuccessful) {
-              Navigator.pushNamedAndRemoveUntil(
-                  context, "/accounts", (r) => false);
+              Navigator.of(context).pushNamed('/dashboard', arguments: {'dashboardIndex': 1});
+
             } else {
               setState(() {
                 errorMessage = "An error has occured please try again";

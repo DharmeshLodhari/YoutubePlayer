@@ -33,6 +33,7 @@ dependencies:
   toast:
   shared_preferences:
   pinput:
+  location: ^2.3.5
 
 flutter_icons:
   android: "launcher_icon"

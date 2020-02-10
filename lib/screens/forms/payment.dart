@@ -2,9 +2,11 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/services/location_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
@@ -39,6 +41,7 @@ class _SendPaymentState extends State<SendPayment> {
   String reference = "";
   String errorMessage = "";
   String recipient;
+  final locationService = LocationService();
 
   @override
   void initState() {
@@ -281,7 +284,11 @@ class _SendPaymentState extends State<SendPayment> {
             }
 
             if (isValidPayee && _formKey.currentState.validate()) {
+              // Todo: Add a try block here and stop user from continuing if they deny location permission
+              var userLocation = await locationService.getLocation();
+              var picture = await ImagePicker.pickImage(source: ImageSource.camera);
               Navigator.pushNamed(context, "/passwordPopup", arguments: {
+
                 'data': {
                   "from_customer": userBloc.user.userName,
                   "to_customer": recipient,
@@ -289,7 +296,8 @@ class _SendPaymentState extends State<SendPayment> {
                   "amount": amount.toString(),
                   "category": "Shopping",
                   "notes": reference,
-                  "description": reference
+                  "description": reference,
+                  "location": userLocation,
                 },
                 '_auth': _auth
               });
