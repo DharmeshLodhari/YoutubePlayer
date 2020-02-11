@@ -1,6 +1,7 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/splash.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -57,12 +58,7 @@ class _HomeState extends State<Home> {
                 child: Column(
                   children: <Widget>[
                     SizedBox(height: 100),
-                    Container(
-                      child: Image.asset(
-                        'assets/images/index.png',
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+                    showHomeBackground(),
                     SizedBox(height: 20),
                     Text(
                       'An easy way to accept \n and receive payments.',
@@ -111,6 +107,27 @@ class _HomeState extends State<Home> {
     );
   }
 
+
+  Widget showHomeBackground() {
+    return Container(
+      child: Image.asset(
+        'assets/images/index.png',
+        fit: BoxFit.cover,
+      ),
+    );
+//    if (phoneNumberFromPref != "" && passwordFromPref != "") {
+//      return Container();
+//
+//    }else {
+//      return Container(
+//        child: Image.asset(
+//          'assets/images/index.png',
+//          fit: BoxFit.cover,
+//        ),
+//      );
+//    }
+  }
+
   Future<void> getLoggedInUser() async {
     _sharedPreferences = await SharedPreferences.getInstance();
     final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
@@ -131,14 +148,13 @@ class _HomeState extends State<Home> {
         await _sharedPreferences.setBool('isChecked', isChecked);
         await _sharedPreferences.setString('username', phoneNumberFromPref);
         await _sharedPreferences.setString('password', passwordFromPref);
-        await _sharedPreferences.commit();
 
         var phoneNumber = phoneNumberFromPref;
         var password = passwordFromPref;
 
         if (phoneNumberFromPref != "" && passwordFromPref != "") {
           showDialog(
-              context: context, builder: (context) => LoadingIndicator());
+              context: context, builder: (context) => SplashScreen());
 
           var _user;
           _auth.authenticate(phoneNumber, password).then((value) {

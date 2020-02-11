@@ -285,8 +285,8 @@ class _SendPaymentState extends State<SendPayment> {
 
             if (isValidPayee && _formKey.currentState.validate()) {
               // Todo: Add a try block here and stop user from continuing if they deny location permission
-              var userLocation = await locationService.getLocation();
-              var picture = await ImagePicker.pickImage(source: ImageSource.camera);
+              //var userLocation = await locationService.getLocation();
+              //var picture = await ImagePicker.pickImage(source: ImageSource.camera);
               Navigator.pushNamed(context, "/passwordPopup", arguments: {
 
                 'data': {
@@ -297,7 +297,7 @@ class _SendPaymentState extends State<SendPayment> {
                   "category": "Shopping",
                   "notes": reference,
                   "description": reference,
-                  "location": userLocation,
+//                  "location": userLocation,
                 },
                 '_auth': _auth
               });
