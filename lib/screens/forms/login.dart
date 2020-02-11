@@ -123,8 +123,7 @@ class _UserLoginState extends State<UserLogin> {
       obscureText: false,
       keyboardType: TextInputType.phone,
       decoration: InputDecoration(
-          prefixIcon: Icon(
-              Platform.isAndroid ? Icons.phone_android : Icons.phone_iphone),
+          prefixIcon: Icon(Platform.isAndroid ? Icons.phone_android : Icons.phone_iphone),
           fillColor: Colors.white,
           filled: true,
           hintText: "Phone Number",
@@ -134,8 +133,7 @@ class _UserLoginState extends State<UserLogin> {
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
+              borderSide: BorderSide(width: 1, color: Colors.white, style: BorderStyle.solid))),
       validator: (val) {
         if (val.isNotEmpty && val.length == 13) {
           return null;
@@ -167,8 +165,7 @@ class _UserLoginState extends State<UserLogin> {
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
+              borderSide: BorderSide(width: 1, color: Colors.white, style: BorderStyle.solid))),
       validator: (val) => val.length < 4 ? "Enter a valid Password." : null,
       onChanged: (val) {
         setState(() {
@@ -233,18 +230,15 @@ class _UserLoginState extends State<UserLogin> {
   void isRememberChecked() async {
     bool isLoggedOut = await _sharedPreferences.setBool('isLoggedOut', false);
     if (isRemember) {
-      bool isCheckedSet =
-          await _sharedPreferences.setBool('isChecked', isChecked);
-
-      bool usernameSet =
-          await _sharedPreferences.setString('username', phoneNumber);
-      bool passwordSet =
-          await _sharedPreferences.setString('password', password);
+      bool isCheckedSet = await _sharedPreferences.setBool('isChecked', isChecked);
+      bool usernameSet = await _sharedPreferences.setString('username', phoneNumber);
+      bool passwordSet = await _sharedPreferences.setString('password', password);
       if (!isCheckedSet && !isLoggedOut && !usernameSet && !passwordSet) {
         Toast.show("User Not Saved !!!", context);
       }
     } else {
       _sharedPreferences.setBool('isChecked', isChecked);
+
       bool isSuccessFullyStored = await _sharedPreferences.commit();
       if (!isSuccessFullyStored) {
         Toast.show("User Not Saved !!!", context);
@@ -266,14 +260,11 @@ class _UserLoginState extends State<UserLogin> {
           isRememberChecked();
 
           userBloc.user = _user;
-          Navigator.of(context)
-              .pushNamed('/dashboard', arguments: {'dashboardIndex': 0});
+          Navigator.of(context).pushNamed('/dashboard', arguments: {'dashboardIndex': 0});
         } else {
           Navigator.pop(context);
           Toast.show("User is Not Registerd !!", context,
-              gravity: Toast.CENTER,
-              backgroundColor: darkBlue(),
-              textColor: Colors.white);
+              gravity: Toast.CENTER, backgroundColor: darkBlue(), textColor: Colors.white);
         }
       });
     }

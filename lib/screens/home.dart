@@ -1,12 +1,5 @@
-import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/colors.dart';
-import 'package:Slydo/services/auth.dart';
-import 'package:Slydo/splash.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:toast/toast.dart';
 
 import '../widget/exit_alert_dialog.dart';
 import 'colors.dart';
@@ -17,18 +10,6 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  bool isChecked = false;
-  bool isLoggedOut = false;
-  String phoneNumberFromPref;
-  String passwordFromPref;
-  SharedPreferences _sharedPreferences;
-
-  @override
-  void initState() {
-    getLoggedInUser();
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -47,6 +28,7 @@ class _HomeState extends State<Home> {
           title: Text('Slydo'),
           backgroundColor: darkBlue(),
           elevation: 0.0,
+          automaticallyImplyLeading: false,
         ),
         body: SingleChildScrollView(
           scrollDirection: Axis.vertical,
@@ -86,8 +68,8 @@ class _HomeState extends State<Home> {
                     ButtonTheme(
                       minWidth: double.infinity,
                       child: MaterialButton(
-                        shape: RoundedRectangleBorder(
-                            side: BorderSide(color: darkBlue(), width: 2.0)),
+                        shape:
+                            RoundedRectangleBorder(side: BorderSide(color: darkBlue(), width: 2.0)),
                         onPressed: () {
                           Navigator.of(context).pushNamed('/register');
                         },
@@ -107,7 +89,6 @@ class _HomeState extends State<Home> {
     );
   }
 
-
   Widget showHomeBackground() {
     return Container(
       child: Image.asset(
@@ -126,54 +107,5 @@ class _HomeState extends State<Home> {
 //        ),
 //      );
 //    }
-  }
-
-  Future<void> getLoggedInUser() async {
-    _sharedPreferences = await SharedPreferences.getInstance();
-    final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
-    final _auth = AuthService();
-
-    if (_sharedPreferences != null) {
-      setState(() {
-        isChecked = _sharedPreferences.getBool('isChecked') ?? false;
-        isLoggedOut = _sharedPreferences.getBool('isLoggedOut') ?? false;
-      });
-      if (isLoggedOut) {
-        return;
-      } else {
-        phoneNumberFromPref = _sharedPreferences.getString('username') ?? "";
-        passwordFromPref = _sharedPreferences.getString('password') ?? "";
-
-        await _sharedPreferences.setBool('isLoggedOut', isLoggedOut);
-        await _sharedPreferences.setBool('isChecked', isChecked);
-        await _sharedPreferences.setString('username', phoneNumberFromPref);
-        await _sharedPreferences.setString('password', passwordFromPref);
-
-        var phoneNumber = phoneNumberFromPref;
-        var password = passwordFromPref;
-
-        if (phoneNumberFromPref != "" && passwordFromPref != "") {
-          showDialog(
-              context: context, builder: (context) => SplashScreen());
-
-          var _user;
-          _auth.authenticate(phoneNumber, password).then((value) {
-            _user = value;
-
-            if (_user.fullName != null) {
-              userBloc.user = _user;
-              Navigator.of(context)
-                  .pushNamed('/dashboard', arguments: {'dashboardIndex': 0});
-            } else {
-              Navigator.pop(context);
-              Toast.show("User is Not Registerd !!", context,
-                  gravity: Toast.CENTER,
-                  backgroundColor: darkBlue(),
-                  textColor: Colors.white);
-            }
-          });
-        }
-      }
-    }
   }
 }

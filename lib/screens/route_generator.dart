@@ -9,6 +9,7 @@ import 'package:Slydo/screens/profile.dart';
 import 'package:Slydo/screens/scan_qr_code.dart';
 import 'package:Slydo/screens/settings.dart';
 import 'package:Slydo/screens/transactions.dart';
+import 'package:Slydo/splash.dart';
 import 'package:Slydo/widget/passwordPopup.dart';
 import 'package:flutter/material.dart';
 
@@ -18,7 +19,9 @@ class RouteGenerator {
     switch (settings.name) {
       case '/login':
         return MaterialPageRoute(builder: (_) => UserLogin());
-      case '/':
+      case '/splash':
+        return MaterialPageRoute(builder: (_) => SplashScreen());
+      case '/home':
         return MaterialPageRoute(builder: (_) => Home());
       case '/register':
         return MaterialPageRoute(builder: (_) => SignUp());

@@ -4,6 +4,7 @@ import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:toast/toast.dart';
 
 import '../widget/exit_alert_dialog.dart';
 
@@ -53,7 +54,7 @@ class _ProfileState extends State<Profile> {
                     SizedBox(height: 10),
                     displayUserInfo(key, userBloc),
                     SizedBox(height: 30),
-                    displayPaymentButton()
+                    displayPaymentButtons()
                   ],
                 ),
               ),
@@ -79,8 +80,8 @@ class _ProfileState extends State<Profile> {
                 colorBlendMode: BlendMode.darken,
                 fit: BoxFit.fitWidth,
                 filterQuality: FilterQuality.high,
-                loadingBuilder: (BuildContext context, Widget child,
-                    ImageChunkEvent loadingProgress) {
+                loadingBuilder:
+                    (BuildContext context, Widget child, ImageChunkEvent loadingProgress) {
                   if (loadingProgress == null) return child;
                   return Center(
                     child: CircularProgressIndicator(
@@ -104,16 +105,13 @@ class _ProfileState extends State<Profile> {
                 FlatButton.icon(
                     onPressed: () {
                       Clipboard.setData(new ClipboardData(
-                          text: baseUrl +
-                              "/api/v1/customer/" +
-                              userBloc.user.userName));
+                          text: baseUrl + "/api/v1/customer/" + userBloc.user.userName));
                       key.currentState.showSnackBar(SnackBar(
                         content: new Text("Coped!"),
                       ));
                     },
                     icon: Icon(Icons.settings, color: Colors.black),
-                    label: Text('Copy Url',
-                        style: TextStyle(color: Colors.black, fontSize: 14))),
+                    label: Text('Copy Url', style: TextStyle(color: Colors.black, fontSize: 14))),
               ],
             ),
           ],
@@ -122,22 +120,51 @@ class _ProfileState extends State<Profile> {
     );
   }
 
-  Widget displayPaymentButton() {
-    return ButtonTheme(
-      //elevation: 4,
-      minWidth: double.infinity,
-      child: MaterialButton(
-        elevation: 4.0,
-        onPressed: () {
-          Navigator.of(context).pushNamed('/send-payment',
-              arguments: <String, bool>{'isFromProfile': true});
-        },
-        textColor: Colors.white,
-        color: darkBlue(),
-        height: 50,
-        child: Text(
-            "Make a Payment"), // change this to make payment request button to
-      ),
+  Widget displayPaymentButtons() {
+    return Row(
+      children: <Widget>[
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(0.0, 8.0, 8.0, 8.0),
+            child: ButtonTheme(
+              //elevation: 4,
+              child: MaterialButton(
+                elevation: 4.0,
+                onPressed: () {
+                  Toast.show("For Future Work !!!", context,
+                      gravity: Toast.BOTTOM,
+                      duration: Toast.LENGTH_LONG,
+                      backgroundColor: darkBlue());
+                },
+                textColor: Colors.white,
+                color: darkBlue(),
+                height: 50,
+                child: Text("Request"),
+              ),
+            ),
+          ),
+        ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(8.0, 8.0, 0.0, 8.0),
+            child: ButtonTheme(
+              //elevation: 4,
+
+              child: MaterialButton(
+                elevation: 4.0,
+                onPressed: () {
+                  Navigator.of(context)
+                      .pushNamed('/send-payment', arguments: <String, bool>{'isFromProfile': true});
+                },
+                textColor: Colors.white,
+                color: darkBlue(),
+                height: 50,
+                child: Text("Make a Payment"), // change this to make payment request button to
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 

@@ -1,6 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/colors.dart';
-import 'package:Slydo/screens/dashboard.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -60,8 +59,7 @@ class _SettingsListState extends State<SettingsList> {
         child: ListTile(
           title: Text(
             userBloc.user.fullName,
-            style: TextStyle(
-                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
           ),
           subtitle: Text(userBloc.user.userName),
           leading: Image.network(
@@ -71,16 +69,14 @@ class _SettingsListState extends State<SettingsList> {
             colorBlendMode: BlendMode.darken,
             fit: BoxFit.fitWidth,
             filterQuality: FilterQuality.high,
-            loadingBuilder: (BuildContext context, Widget child,
-                ImageChunkEvent loadingProgress) {
+            loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent loadingProgress) {
               if (loadingProgress == null) return child;
               return Container(
                 height: 45,
                 width: 45,
                 child: CircularProgressIndicator(
                   value: loadingProgress.expectedTotalBytes != null
-                      ? loadingProgress.cumulativeBytesLoaded /
-                          loadingProgress.expectedTotalBytes
+                      ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes
                       : null,
                 ),
               );
@@ -164,6 +160,6 @@ class _SettingsListState extends State<SettingsList> {
       print('Caught error: $err');
     }
 
-    Navigator.pushNamedAndRemoveUntil(context, "/", (r) => false);
+    Navigator.pushNamedAndRemoveUntil(context, "/home", (r) => false);
   }
 }

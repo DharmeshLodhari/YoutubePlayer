@@ -1,5 +1,7 @@
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
 import '../screens/colors.dart';
@@ -11,11 +13,11 @@ class PasswordPopup extends StatefulWidget {
   PasswordPopup({@required this.arguments});
 
   @override
-  _PasswordPopupState createState() =>
-      _PasswordPopupState(arguments: arguments);
+  _PasswordPopupState createState() => _PasswordPopupState(arguments: arguments);
 }
 
 class _PasswordPopupState extends State<PasswordPopup> {
+  UserBloc userBloc;
   _PasswordPopupState({@required this.arguments});
 
   http.Response response;
@@ -37,6 +39,8 @@ class _PasswordPopupState extends State<PasswordPopup> {
 
   @override
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
+
     return WillPopScope(
       onWillPop: () async {
         Navigator.pop(context);
@@ -59,8 +63,7 @@ class _PasswordPopupState extends State<PasswordPopup> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     SizedBox(height: 80),
-                    Text("Enter Your Password",
-                        style: TextStyle(color: darkBlue(), fontSize: 18)),
+                    Text("Enter Your Password", style: TextStyle(color: darkBlue(), fontSize: 18)),
                     SizedBox(height: 20),
                     passwordInput(),
                     SizedBox(height: 100.0),
@@ -91,8 +94,7 @@ class _PasswordPopupState extends State<PasswordPopup> {
       keyboardType: TextInputType.number,
       textInputAction: TextInputAction.send,
       decoration: InputDecoration(
-          errorStyle: TextStyle(
-              fontSize: 16, color: darkBlue(), fontWeight: FontWeight.bold),
+          errorStyle: TextStyle(fontSize: 16, color: darkBlue(), fontWeight: FontWeight.bold),
           focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(15),
               borderSide: BorderSide(color: Colors.green, width: 2)),
@@ -132,8 +134,7 @@ class _PasswordPopupState extends State<PasswordPopup> {
   }
 
   void verifyData(var password) {
-    if (_passwordController.text != "" &&
-        _passwordController.text.length == 4) {
+    if (_passwordController.text != "" && _passwordController.text.length == 4) {
       _password = _passwordController.text;
       // Navigator.pop(context);
 
@@ -141,35 +142,34 @@ class _PasswordPopupState extends State<PasswordPopup> {
 
       // showDialog(context: context, builder: (context) => LoadingIndicator());
 
-      _auth.makePayment(data).then((value) {
-        response = value;
-        if (response.statusCode == 200) {
-          Navigator.of(context)
-              .pushNamed('/dashboard', arguments: {'dashboardIndex': 2});
-        } else if (response.statusCode == 500) {
-          setState(() {
-            errorMessage = "Server Error";
-            Toast.show(errorMessage, context,
-                gravity: Toast.TOP,
-                backgroundColor: darkBlue(),
-                textColor: Colors.white);
-          });
-        } else {
-          setState(() {
-            errorMessage = "Wrong Password !!";
-            Toast.show(errorMessage, context,
-                gravity: Toast.TOP,
-                backgroundColor: darkBlue(),
-                textColor: Colors.white);
-          });
-        }
-      });
+      if (_password == userBloc.user.password) {
+        _auth.makePayment(data).then((value) {
+          response = value;
+          if (response.statusCode == 200) {
+            Navigator.of(context).pushNamed('/dashboard', arguments: {'dashboardIndex': 2});
+          } else if (response.statusCode == 500) {
+            setState(() {
+              errorMessage = "Server Error";
+              Toast.show(errorMessage, context,
+                  gravity: Toast.TOP, backgroundColor: darkBlue(), textColor: Colors.white);
+            });
+          } else {
+            setState(() {
+              errorMessage = "Wrong Password !!";
+              Toast.show(errorMessage, context,
+                  gravity: Toast.TOP, backgroundColor: darkBlue(), textColor: Colors.white);
+            });
+          }
+        });
+      } else {
+        errorMessage = "Incorrect Password !!";
+        Toast.show(errorMessage, context,
+            gravity: Toast.TOP, backgroundColor: darkBlue(), textColor: Colors.white);
+      }
     } else {
       errorMessage = "Please enter 4 digit password !!";
       Toast.show(errorMessage, context,
-          gravity: Toast.TOP,
-          backgroundColor: darkBlue(),
-          textColor: Colors.white);
+          gravity: Toast.TOP, backgroundColor: darkBlue(), textColor: Colors.white);
     }
   }
 }
