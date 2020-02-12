@@ -67,7 +67,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
             if (_user.fullName != null) {
               userBloc.user = _user;
-              Navigator.of(context).pushNamed('/dashboard', arguments: {'dashboardIndex': 0});
+              Navigator.of(context)
+                  .pushNamed('/dashboard', arguments: {'dashboardIndex': 0});
             } else {
               Navigator.pop(context);
               Navigator.of(context).pushNamed("/home");

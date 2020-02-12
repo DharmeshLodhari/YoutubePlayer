@@ -1,8 +1,6 @@
 import 'package:Slydo/models/user.dart';
 import 'package:location/location.dart';
 
-
-
 class LocationService {
   UserLocation _currentLocation;
 

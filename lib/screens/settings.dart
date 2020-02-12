@@ -1,5 +1,6 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/colors.dart';
+import 'package:Slydo/screens/tiles/bank_account.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -13,6 +14,19 @@ class SettingsList extends StatefulWidget {
 
 class _SettingsListState extends State<SettingsList> {
   final _auth = AuthService();
+
+  Widget displayBankAccountTile() {
+    return FutureBuilder(
+      future: _auth.getBankAccounts(),
+      builder: (context, snapshot) {
+        try {
+          return BankAccountTile(account: snapshot.data[0]);
+        } catch (e) {
+          return Text("");
+        }
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +44,12 @@ class _SettingsListState extends State<SettingsList> {
           automaticallyImplyLeading: false,
           backgroundColor: darkBlue(),
           title: Text('Settings'),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.cancel, color: Colors.white),
+              onPressed: logoutUser,
+            ),
+          ],
         ),
         body: Center(
           child: Container(
@@ -38,10 +58,10 @@ class _SettingsListState extends State<SettingsList> {
             child: Center(
               child: Column(
                 children: <Widget>[
-                  SizedBox(height: 20),
+                  SizedBox(height: 10),
                   displaySettingsTile(userBloc),
+                  displayBankAccountTile(),
                   SizedBox(height: 20),
-                  logOutButton(),
                 ],
               ),
             ),
@@ -59,7 +79,8 @@ class _SettingsListState extends State<SettingsList> {
         child: ListTile(
           title: Text(
             userBloc.user.fullName,
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+            style: TextStyle(
+                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
           ),
           subtitle: Text(userBloc.user.userName),
           leading: Image.network(
@@ -69,14 +90,16 @@ class _SettingsListState extends State<SettingsList> {
             colorBlendMode: BlendMode.darken,
             fit: BoxFit.fitWidth,
             filterQuality: FilterQuality.high,
-            loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent loadingProgress) {
+            loadingBuilder: (BuildContext context, Widget child,
+                ImageChunkEvent loadingProgress) {
               if (loadingProgress == null) return child;
               return Container(
                 height: 45,
                 width: 45,
                 child: CircularProgressIndicator(
                   value: loadingProgress.expectedTotalBytes != null
-                      ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes
+                      ? loadingProgress.cumulativeBytesLoaded /
+                          loadingProgress.expectedTotalBytes
                       : null,
                 ),
               );
@@ -92,19 +115,6 @@ class _SettingsListState extends State<SettingsList> {
             },
           ),
         ),
-      ),
-    );
-  }
-
-  Widget logOutButton() {
-    return ButtonTheme(
-      minWidth: double.infinity,
-      child: MaterialButton(
-        onPressed: logoutUser,
-        textColor: Colors.white,
-        color: darkBlue(),
-        height: 50,
-        child: Text("Logout"),
       ),
     );
   }
@@ -142,9 +152,7 @@ class _SettingsListState extends State<SettingsList> {
           await _auth.authenticate(phoneNumber, password).then((value) {
             userBloc.user = value;
           });
-        } catch (err) {
-          print('Caught error: $err');
-        }
+        } catch (err) {}
       }
     }
   }
@@ -154,12 +162,7 @@ class _SettingsListState extends State<SettingsList> {
     await _auth.logOut();
     _sharedPreferences = await SharedPreferences.getInstance();
     _sharedPreferences.setBool('isLoggedOut', true);
-    try {
-      await _sharedPreferences.commit();
-    } catch (err) {
-      print('Caught error: $err');
-    }
-
+    try {} catch (err) {}
     Navigator.pushNamedAndRemoveUntil(context, "/home", (r) => false);
   }
 }

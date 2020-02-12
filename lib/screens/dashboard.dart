@@ -1,3 +1,4 @@
+import 'package:Slydo/screens/explore.dart';
 import 'package:flutter/material.dart';
 
 import '../screens/colors.dart';
@@ -63,8 +64,14 @@ class _DashboardState extends State<Dashboard> {
           ),
           BottomNavigationBarItem(
             backgroundColor: lightBlue(),
-            icon: Icon(Icons.shopping_cart, color: Colors.white),
+            icon: Icon(Icons.account_balance_wallet, color: Colors.white),
             title: Text('Transactions',
+                style: TextStyle(color: Colors.white, fontSize: 12)),
+          ),
+          BottomNavigationBarItem(
+            backgroundColor: lightBlue(),
+            icon: Icon(Icons.explore, color: Colors.white),
+            title: Text('Explore',
                 style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
           BottomNavigationBarItem(
@@ -90,6 +97,9 @@ class _DashboardState extends State<Dashboard> {
         return TransactionList();
         break;
       case 3:
+        return ExploreList();
+        break;
+      case 4:
         return SettingsList();
         break;
       default:

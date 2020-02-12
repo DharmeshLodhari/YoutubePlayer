@@ -80,8 +80,8 @@ class _ProfileState extends State<Profile> {
                 colorBlendMode: BlendMode.darken,
                 fit: BoxFit.fitWidth,
                 filterQuality: FilterQuality.high,
-                loadingBuilder:
-                    (BuildContext context, Widget child, ImageChunkEvent loadingProgress) {
+                loadingBuilder: (BuildContext context, Widget child,
+                    ImageChunkEvent loadingProgress) {
                   if (loadingProgress == null) return child;
                   return Center(
                     child: CircularProgressIndicator(
@@ -105,13 +105,17 @@ class _ProfileState extends State<Profile> {
                 FlatButton.icon(
                     onPressed: () {
                       Clipboard.setData(new ClipboardData(
-                          text: baseUrl + "/api/v1/customer/" + userBloc.user.userName));
-                      key.currentState.showSnackBar(SnackBar(
-                        content: new Text("Coped!"),
-                      ));
+                          text: baseUrl +
+                              "/api/v1/customer/" +
+                              userBloc.user.userName));
+                      Toast.show("Copied!", context,
+                          gravity: Toast.CENTER,
+                          duration: Toast.LENGTH_LONG,
+                          backgroundColor: darkBlue());
                     },
                     icon: Icon(Icons.settings, color: Colors.black),
-                    label: Text('Copy Url', style: TextStyle(color: Colors.black, fontSize: 14))),
+                    label: Text('Copy Url',
+                        style: TextStyle(color: Colors.black, fontSize: 14))),
               ],
             ),
           ],
@@ -153,13 +157,14 @@ class _ProfileState extends State<Profile> {
               child: MaterialButton(
                 elevation: 4.0,
                 onPressed: () {
-                  Navigator.of(context)
-                      .pushNamed('/send-payment', arguments: <String, bool>{'isFromProfile': true});
+                  Navigator.of(context).pushNamed('/send-payment',
+                      arguments: <String, bool>{'isFromProfile': true});
                 },
                 textColor: Colors.white,
                 color: darkBlue(),
                 height: 50,
-                child: Text("Make a Payment"), // change this to make payment request button to
+                child: Text(
+                    "Send"), // change this to make payment request button to
               ),
             ),
           ),

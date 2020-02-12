@@ -288,7 +288,6 @@ class _SendPaymentState extends State<SendPayment> {
               //var userLocation = await locationService.getLocation();
               //var picture = await ImagePicker.pickImage(source: ImageSource.camera);
               Navigator.pushNamed(context, "/passwordPopup", arguments: {
-
                 'data': {
                   "from_customer": userBloc.user.userName,
                   "to_customer": recipient,
