@@ -14,13 +14,19 @@ class SettingsList extends StatefulWidget {
 
 class _SettingsListState extends State<SettingsList> {
   final _auth = AuthService();
+  bool _account = false;
 
   Widget displayBankAccountTile() {
     return FutureBuilder(
       future: _auth.getBankAccounts(),
       builder: (context, snapshot) {
         try {
-          return BankAccountTile(account: snapshot.data[0]);
+          // TODO: save this user to db and pull from there
+          var account = snapshot.data[0];
+          setState(() {
+            _account = true;
+          });
+          return BankAccountTile(account: account);
         } catch (e) {
           return Text("");
         }
@@ -67,8 +73,34 @@ class _SettingsListState extends State<SettingsList> {
             ),
           ),
         ),
+        floatingActionButton: addAccountButton(),
       ),
     );
+  }
+
+  Widget addAccountButton() {
+    if (_account == true) {
+      return Visibility(
+        visible: false,
+        child: FloatingActionButton(
+            backgroundColor: Colors.transparent,
+            onPressed: () {},
+            foregroundColor: Colors.transparent, // Colors.white,
+            elevation: 0.0,
+            focusColor: Colors.transparent,
+            hoverColor: Colors.transparent,
+            splashColor: Colors.transparent),
+      );
+    } else {
+      return FloatingActionButton(
+        backgroundColor: darkBlue(),
+        onPressed: () {
+          Navigator.of(context).pushNamed('/add-account');
+        },
+        tooltip: 'Add Account',
+        child: Icon(Icons.add),
+      );
+    }
   }
 
   Widget displaySettingsTile(userBloc) {
