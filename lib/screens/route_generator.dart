@@ -2,7 +2,7 @@ import 'package:Slydo/screens/bank_accounts.dart';
 import 'package:Slydo/screens/dashboard.dart';
 import 'package:Slydo/screens/forms/add_bank_account.dart';
 import 'package:Slydo/screens/forms/login.dart';
-import 'package:Slydo/screens/forms/payment.dart';
+import 'package:Slydo/screens/forms/send_payment.dart';
 import 'package:Slydo/screens/forms/signup.dart';
 import 'package:Slydo/screens/home.dart';
 import 'package:Slydo/screens/profile.dart';

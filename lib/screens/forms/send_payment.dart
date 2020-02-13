@@ -240,7 +240,6 @@ class _SendPaymentState extends State<SendPayment> {
           amount = int.parse(val);
         });
       },
-      //),
     );
   }
 
@@ -285,8 +284,7 @@ class _SendPaymentState extends State<SendPayment> {
 
             if (isValidPayee && _formKey.currentState.validate()) {
               // Todo: Add a try block here and stop user from continuing if they deny location permission
-              //var userLocation = await locationService.getLocation();
-              //var picture = await ImagePicker.pickImage(source: ImageSource.camera);
+              var userLocation = await locationService.getLocation();
               Navigator.pushNamed(context, "/passwordPopup", arguments: {
                 'data': {
                   "from_customer": userBloc.user.userName,
@@ -296,7 +294,8 @@ class _SendPaymentState extends State<SendPayment> {
                   "category": "Shopping",
                   "notes": reference,
                   "description": reference,
-//                  "location": userLocation,
+                  "latitude": userLocation.latitude,
+                  "longitude": userLocation.longitude,
                 },
                 '_auth': _auth
               });

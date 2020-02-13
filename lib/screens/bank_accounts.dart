@@ -27,7 +27,17 @@ class _BankAccountListState extends State<BankAccountList> {
         appBar: AppBar(
           automaticallyImplyLeading: false,
           backgroundColor: darkBlue(),
-          title: Text('My Bank Accounts'),
+          leading: IconButton(
+            icon: const Icon(Icons.email),
+            onPressed: () {},
+          ),
+          title: Text('Messages'),
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(Icons.search),
+              onPressed: () {},
+            )
+          ],
         ),
         body: FutureBuilder(
           future: _auth.getBankAccounts(),
