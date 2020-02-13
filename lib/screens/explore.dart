@@ -1,5 +1,5 @@
 import 'package:Slydo/screens/colors.dart';
-import 'package:Slydo/screens/tiles/transaction.dart';
+import 'package:Slydo/screens/tiles/user.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:flutter/material.dart';
@@ -14,12 +14,14 @@ class _ExploreListState extends State<ExploreList> {
   bool isValidSearch = false;
   TextEditingController searchController;
   String searchedText = "";
+  FocusNode searchFocus;
   final _auth = AuthService();
-  List<dynamic> searchResult;
+  List<dynamic> searchedResult;
 
   @override
   void initState() {
     searchController = TextEditingController();
+    searchFocus = FocusNode();
     super.initState();
   }
 
@@ -50,28 +52,7 @@ class _ExploreListState extends State<ExploreList> {
           actions: <Widget>[
             IconButton(
               icon: const Icon(Icons.search),
-              onPressed: () {
-                if (isSearchBoxOpen && searchController.text.length > 3) {
-                  fetchSearchResult();
-                  setState(() {
-                    isValidSearch = true;
-                  });
-                }
-                if (searchController.text.length <= 3) {
-                  setState(() {
-                    isValidSearch = false;
-                  });
-                }
-                if (isSearchBoxOpen && searchController.text.length == 0) {
-                  setState(() {
-                    isSearchBoxOpen = false;
-                  });
-                } else {
-                  setState(() {
-                    isSearchBoxOpen = true;
-                  });
-                }
-              },
+              onPressed: searchResult,
             )
           ],
         ),
@@ -88,8 +69,8 @@ class _ExploreListState extends State<ExploreList> {
               if (snapshot.hasData) {
                 return ListView.builder(
                     itemCount: snapshot.data.length,
-                    itemBuilder: (BuildContext context, int index) => TransactionTile(
-                          transaction: snapshot.data[index],
+                    itemBuilder: (BuildContext context, int index) => UserTile(
+                          user: snapshot.data[index],
                         ));
               }
               return LoadingIndicator();
@@ -111,9 +92,18 @@ class _ExploreListState extends State<ExploreList> {
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          Icon(
-            Icons.explore,
-            size: 30,
+          IconButton(
+            icon: Icon(
+              Icons.keyboard,
+              size: 30,
+            ),
+            onPressed: () {
+              if (searchFocus.hasFocus) {
+                FocusScope.of(context).unfocus();
+              } else {
+                FocusScope.of(context).requestFocus(searchFocus);
+              }
+            },
           ),
           SizedBox(
             width: 20,
@@ -121,6 +111,8 @@ class _ExploreListState extends State<ExploreList> {
           Expanded(
             child: Center(
               child: TextFormField(
+                textInputAction: TextInputAction.search,
+                focusNode: searchFocus,
                 controller: searchController,
                 decoration: InputDecoration(
                   hintText: "Seach here",
@@ -132,7 +124,7 @@ class _ExploreListState extends State<ExploreList> {
                   ),
                 ),
                 onFieldSubmitted: (val) {
-                  fetchSearchResult();
+                  searchResult();
                 },
                 onChanged: (value) {
                   searchedText = value;
@@ -145,9 +137,33 @@ class _ExploreListState extends State<ExploreList> {
     }
   }
 
+  void searchResult() {
+    if (isSearchBoxOpen && searchController.text.length >= 3) {
+      fetchSearchResult();
+      FocusScope.of(context).unfocus();
+      setState(() {
+        isValidSearch = true;
+      });
+    }
+    if (searchController.text.length < 3) {
+      setState(() {
+        isValidSearch = false;
+      });
+    }
+    if (isSearchBoxOpen && searchController.text.length == 0) {
+      setState(() {
+        isSearchBoxOpen = false;
+      });
+    } else {
+      setState(() {
+        isSearchBoxOpen = true;
+      });
+    }
+  }
+
   Future<List> fetchSearchResult() async {
     //call your searching API with passing searchedText variable and store your List in searchResult to be displayed
-    searchResult = await _auth.getTransactions();
-    return searchResult;
+    searchedResult = await _auth.getTransactions();
+    return searchedResult;
   }
 }
