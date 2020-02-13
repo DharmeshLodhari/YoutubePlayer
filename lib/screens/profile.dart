@@ -135,10 +135,9 @@ class _ProfileState extends State<Profile> {
               child: MaterialButton(
                 elevation: 4.0,
                 onPressed: () {
-                  Toast.show("For Future Work !!!", context,
-                      gravity: Toast.BOTTOM,
-                      duration: Toast.LENGTH_LONG,
-                      backgroundColor: darkBlue());
+                  Navigator.of(context).pushNamed('/request-payment',
+                      arguments: <String, bool>{'isFromProfile': true}
+                      );
                 },
                 textColor: Colors.white,
                 color: darkBlue(),

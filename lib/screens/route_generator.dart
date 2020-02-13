@@ -1,7 +1,9 @@
-import 'package:Slydo/screens/bank_accounts.dart';
+import 'package:Slydo/screens/request_payments_list.dart';
 import 'package:Slydo/screens/dashboard.dart';
+import 'package:Slydo/screens/explore.dart';
 import 'package:Slydo/screens/forms/add_bank_account.dart';
 import 'package:Slydo/screens/forms/login.dart';
+import 'package:Slydo/screens/forms/request_payment.dart';
 import 'package:Slydo/screens/forms/send_payment.dart';
 import 'package:Slydo/screens/forms/signup.dart';
 import 'package:Slydo/screens/home.dart';
@@ -49,6 +51,14 @@ class RouteGenerator {
             builder: (_) => SendPayment(
                   arguments: settings.arguments,
                 ));
+      case '/request-payment':
+        return MaterialPageRoute(
+            builder: (_) => RequestPayment(
+              arguments: settings.arguments,
+            ));
+      case '/expore':
+        return MaterialPageRoute(
+            builder: (_) => ExploreList());
       case '/passwordPopup':
         return MaterialPageRoute(
             builder: (_) => PasswordPopup(
