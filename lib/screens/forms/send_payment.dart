@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:Slydo/screens/colors.dart';
@@ -66,14 +68,8 @@ class _SendPaymentState extends State<SendPayment> {
         backgroundColor: lightBlue(),
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back_ios),
-              onPressed: () {
-                _payee = null;
-                Navigator.pop(context);
-              },
-            ),
-            automaticallyImplyLeading: false,
+            leading: showBackArrow(),
+            automaticallyImplyLeading: Platform.isAndroid ? false : true,
             title: Center(child: Text("Send a Payment")),
             backgroundColor: darkBlue()),
         body: SingleChildScrollView(
@@ -110,6 +106,21 @@ class _SendPaymentState extends State<SendPayment> {
       ),
     );
     //
+  }
+
+  Widget showBackArrow(){
+    if (Platform.isAndroid){
+      return Text("");
+    }else{
+      return IconButton(
+        icon: Icon(Icons.arrow_back_ios),
+        onPressed: () {
+          _payee = null;
+          Navigator.pop(context);
+        },
+      );
+    }
+
   }
 
   Widget getDisplayCard() {
