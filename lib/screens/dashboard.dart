@@ -2,7 +2,7 @@ import 'package:Slydo/screens/explore.dart';
 import 'package:flutter/material.dart';
 
 import '../screens/colors.dart';
-import 'bank_accounts.dart';
+import 'request_payments_list.dart';
 import 'profile.dart';
 import 'settings.dart';
 import 'transactions.dart';
