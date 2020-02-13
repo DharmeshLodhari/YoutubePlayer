@@ -58,8 +58,8 @@ class _DashboardState extends State<Dashboard> {
           ),
           BottomNavigationBarItem(
             backgroundColor: lightBlue(),
-            icon: Icon(Icons.group, color: Colors.white),
-            title: Text('Accounts',
+            icon: Icon(Icons.notificationsgi, color: Colors.white),
+            title: Text('Requests',
                 style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
           BottomNavigationBarItem(
