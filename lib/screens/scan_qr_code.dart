@@ -9,15 +9,23 @@ import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:qr_code_scanner/qr_scanner_overlay_shape.dart';
 
 class QRCodeView extends StatefulWidget {
-  const QRCodeView({
-    Key key,
-  }) : super(key: key);
+  var arguments;
+//  const QRCodeView({
+//    Key key,
+//  }) : super(key: key);
+
+  QRCodeView({this.arguments, Key key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _QRCodeViewState();
+  State<StatefulWidget> createState() => _QRCodeViewState(arguments: arguments);
 }
 
 class _QRCodeViewState extends State<QRCodeView> {
+  var arguments;
+  _QRCodeViewState({this.arguments});
+
+  bool isRequest = false;
+
   final _auth = AuthService();
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   var qrText = "";
@@ -25,6 +33,8 @@ class _QRCodeViewState extends State<QRCodeView> {
 
   @override
   Widget build(BuildContext context) {
+    isRequest = arguments != null ? arguments['isRequest'] : false;
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: Platform.isAndroid ? false : true,
@@ -49,8 +59,7 @@ class _QRCodeViewState extends State<QRCodeView> {
   }
 
   Widget flipCameraExpandedView() {
-    return Expanded(
-        child: Column(children: <Widget>[getFlipButton()]), flex: 1);
+    return Expanded(child: Column(children: <Widget>[getFlipButton()]), flex: 1);
   }
 
   // Camera View of scanner
@@ -99,11 +108,15 @@ class _QRCodeViewState extends State<QRCodeView> {
 
           // Pull the user from the server
           // TODO: Add try block here and check if error occurred in server like 404 then take user to home page and show error
-          customerProfileBloc.customer =
-              await _auth.fetchCustomerProfile(recipient);
+          customerProfileBloc.customer = await _auth.fetchCustomerProfile(recipient);
           Navigator.pop(context);
-          Navigator.of(context).pushNamed('/send-payment',
-              arguments: <String, bool>{'isFromProfile': false});
+          print(isRequest);
+          if (isRequest) {
+            Navigator.of(context).pushNamed('/request-payment');
+          } else {
+            Navigator.of(context)
+                .pushNamed('/send-payment', arguments: <String, bool>{'isFromProfile': false});
+          }
         }
       }
     });

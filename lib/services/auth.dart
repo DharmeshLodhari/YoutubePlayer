@@ -230,7 +230,6 @@ class AuthService {
     return false;
   }
 
-
   // List the users bank accounts
   Future<List<BankAccount>> getBankAccounts() async {
     var url = baseUrl + "/api/v1/transactions/bank-accounts-list";
@@ -275,9 +274,9 @@ class AuthService {
       for (var item in jsonData) {
         // if sender is not current user then
         bool isCredit =
-        (item["from_customer"] != user.userName && item["to_customer"] == user.userName)
-            ? true
-            : false;
+            (item["from_customer"] != user.userName && item["to_customer"] == user.userName)
+                ? true
+                : false;
 
         var payee = isCredit ? item["from_customer"] : item['to_customer'];
 
@@ -299,6 +298,7 @@ class AuthService {
           paymentRequests.add(paymentRequest);
         } catch (Exception) {}
       }
+      print(paymentRequests);
       return paymentRequests;
     } else if (response.statusCode == 500) {
       throw "Server Error";

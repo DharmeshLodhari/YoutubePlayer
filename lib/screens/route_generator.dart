@@ -1,4 +1,3 @@
-import 'package:Slydo/screens/request_payments_list.dart';
 import 'package:Slydo/screens/dashboard.dart';
 import 'package:Slydo/screens/explore.dart';
 import 'package:Slydo/screens/forms/add_bank_account.dart';
@@ -8,6 +7,7 @@ import 'package:Slydo/screens/forms/send_payment.dart';
 import 'package:Slydo/screens/forms/signup.dart';
 import 'package:Slydo/screens/home.dart';
 import 'package:Slydo/screens/profile.dart';
+import 'package:Slydo/screens/request_payments_list.dart';
 import 'package:Slydo/screens/scan_qr_code.dart';
 import 'package:Slydo/screens/settings.dart';
 import 'package:Slydo/screens/transactions.dart';
@@ -54,11 +54,10 @@ class RouteGenerator {
       case '/request-payment':
         return MaterialPageRoute(
             builder: (_) => RequestPayment(
-              arguments: settings.arguments,
-            ));
+                  arguments: settings.arguments,
+                ));
       case '/expore':
-        return MaterialPageRoute(
-            builder: (_) => ExploreList());
+        return MaterialPageRoute(builder: (_) => ExploreList());
       case '/passwordPopup':
         return MaterialPageRoute(
             builder: (_) => PasswordPopup(
@@ -67,7 +66,10 @@ class RouteGenerator {
       case '/add-bank-account':
         return MaterialPageRoute(builder: (_) => AddAccount());
       case '/scan-qr':
-        return MaterialPageRoute(builder: (_) => QRCodeView());
+        return MaterialPageRoute(
+            builder: (_) => QRCodeView(
+                  arguments: settings.arguments,
+                ));
 
       default:
         // If there is no such named route in the switch statement, e.g. /third
