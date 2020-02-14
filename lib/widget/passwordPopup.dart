@@ -13,8 +13,7 @@ class PasswordPopup extends StatefulWidget {
   PasswordPopup({@required this.arguments});
 
   @override
-  _PasswordPopupState createState() =>
-      _PasswordPopupState(arguments: arguments);
+  _PasswordPopupState createState() => _PasswordPopupState(arguments: arguments);
 }
 
 class _PasswordPopupState extends State<PasswordPopup> {
@@ -27,12 +26,14 @@ class _PasswordPopupState extends State<PasswordPopup> {
   String _password = "";
   AuthService _auth;
   Map data;
+  bool isRequest;
   TextEditingController _passwordController;
 
   @override
   void initState() {
     _auth = arguments['_auth'];
     data = arguments['data'];
+    isRequest = arguments['isRequest'];
     _passwordController = TextEditingController();
 
     super.initState();
@@ -64,8 +65,7 @@ class _PasswordPopupState extends State<PasswordPopup> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     SizedBox(height: 80),
-                    Text("Enter Your Password",
-                        style: TextStyle(color: darkBlue(), fontSize: 18)),
+                    Text("Enter Your Password", style: TextStyle(color: darkBlue(), fontSize: 18)),
                     SizedBox(height: 20),
                     passwordInput(),
                     SizedBox(height: 100.0),
@@ -96,8 +96,7 @@ class _PasswordPopupState extends State<PasswordPopup> {
       keyboardType: TextInputType.number,
       textInputAction: TextInputAction.send,
       decoration: InputDecoration(
-          errorStyle: TextStyle(
-              fontSize: 16, color: darkBlue(), fontWeight: FontWeight.bold),
+          errorStyle: TextStyle(fontSize: 16, color: darkBlue(), fontWeight: FontWeight.bold),
           focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(15),
               borderSide: BorderSide(color: Colors.green, width: 2)),
@@ -137,8 +136,7 @@ class _PasswordPopupState extends State<PasswordPopup> {
   }
 
   void verifyData(var password) {
-    if (_passwordController.text != "" &&
-        _passwordController.text.length == 4) {
+    if (_passwordController.text != "" && _passwordController.text.length == 4) {
       _password = _passwordController.text;
       // Navigator.pop(context);
 
@@ -147,42 +145,36 @@ class _PasswordPopupState extends State<PasswordPopup> {
       // showDialog(context: context, builder: (context) => LoadingIndicator());
 
       if (_password == userBloc.user.password) {
-        _auth.makePayment(data).then((value) {
-          response = value;
-          if (response.statusCode == 200) {
-            Navigator.of(context)
-                .pushNamed('/dashboard', arguments: {'dashboardIndex': 2});
-          } else if (response.statusCode == 500) {
-            setState(() {
-              errorMessage = "Server Error";
-              Toast.show(errorMessage, context,
-                  gravity: Toast.TOP,
-                  backgroundColor: darkBlue(),
-                  textColor: Colors.white);
-            });
-          } else {
-            setState(() {
-              errorMessage = "Wrong Password !!";
-              Toast.show(errorMessage, context,
-                  gravity: Toast.TOP,
-                  backgroundColor: darkBlue(),
-                  textColor: Colors.white);
-            });
-          }
-        });
+        if (isRequest) {
+        } else {
+          _auth.makePayment(data).then((value) {
+            response = value;
+            if (response.statusCode == 200) {
+              Navigator.of(context).pushNamed('/dashboard', arguments: {'dashboardIndex': 2});
+            } else if (response.statusCode == 500) {
+              setState(() {
+                errorMessage = "Server Error";
+                Toast.show(errorMessage, context,
+                    gravity: Toast.TOP, backgroundColor: darkBlue(), textColor: Colors.white);
+              });
+            } else {
+              setState(() {
+                errorMessage = "Wrong Password !!";
+                Toast.show(errorMessage, context,
+                    gravity: Toast.TOP, backgroundColor: darkBlue(), textColor: Colors.white);
+              });
+            }
+          });
+        }
       } else {
         errorMessage = "Incorrect Password !!";
         Toast.show(errorMessage, context,
-            gravity: Toast.TOP,
-            backgroundColor: darkBlue(),
-            textColor: Colors.white);
+            gravity: Toast.TOP, backgroundColor: darkBlue(), textColor: Colors.white);
       }
     } else {
       errorMessage = "Please enter 4 digit password !!";
       Toast.show(errorMessage, context,
-          gravity: Toast.TOP,
-          backgroundColor: darkBlue(),
-          textColor: Colors.white);
+          gravity: Toast.TOP, backgroundColor: darkBlue(), textColor: Colors.white);
     }
   }
 }

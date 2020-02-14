@@ -112,7 +112,7 @@ class _QRCodeViewState extends State<QRCodeView> {
           Navigator.pop(context);
           print(isRequest);
           if (isRequest) {
-            Navigator.of(context).pushNamed('/request-payment');
+            Navigator.of(context).pushNamed('/request-payment', arguments: {'isRequest': true});
           } else {
             Navigator.of(context)
                 .pushNamed('/send-payment', arguments: <String, bool>{'isFromProfile': false});

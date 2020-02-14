@@ -25,6 +25,7 @@ class _RequestPaymentState extends State<RequestPayment> {
   TextEditingController _passwordController;
   http.Response response;
   String _passwordFromPopUp = "";
+  bool isRequest = false;
 
   var currencyImage = Image.asset(
     'assets/images/naira.png',
@@ -47,6 +48,7 @@ class _RequestPaymentState extends State<RequestPayment> {
   @override
   void initState() {
     isFromProfile = widget.arguments != null ? widget.arguments['isFromProfile'] : false;
+    isRequest = widget.arguments != null ? widget.arguments['isRequest'] : false;
     _passwordController = TextEditingController();
 
     super.initState();
@@ -317,7 +319,8 @@ class _RequestPaymentState extends State<RequestPayment> {
                   "latitude": userLocation.latitude,
                   "longitude": userLocation.longitude,
                 },
-                '_auth': _auth
+                '_auth': _auth,
+                'isRequest': isRequest
               });
             }
           } else {

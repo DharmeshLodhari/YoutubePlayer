@@ -296,9 +296,16 @@ class AuthService {
               amount: item['amount'],
               isCredit: isCredit);
           paymentRequests.add(paymentRequest);
+          print(paymentRequest.status);
+          print(paymentRequest.uuid);
+          print(paymentRequest.description);
+          print(paymentRequest.payee);
+          print(paymentRequest.avatar);
+          print(paymentRequest.currency);
+          print(paymentRequest.isCredit);
         } catch (Exception) {}
       }
-      print(paymentRequests);
+
       return paymentRequests;
     } else if (response.statusCode == 500) {
       throw "Server Error";
