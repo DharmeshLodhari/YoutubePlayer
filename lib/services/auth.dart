@@ -271,7 +271,7 @@ class AuthService {
       var user = await getUser();
       var jsonData = json.decode(response.body);
 
-      for (var item in jsonData) {
+      for (var item in jsonData["results"]) {
         // if sender is not current user then
         bool isCredit =
             (item["from_customer"] != user.userName && item["to_customer"] == user.userName)
@@ -320,7 +320,7 @@ class AuthService {
       var user = await getUser();
       var jsonData = json.decode(response.body);
 
-      for (var item in jsonData) {
+      for (var item in jsonData["results"]) {
         // if sender is not current user then
         bool isCredit =
             (item["from_customer"] != user.userName && item["to_customer"] == user.userName)
