@@ -89,6 +89,7 @@ class _ExploreListState extends State<ExploreList> {
       return Center(child: Text("Explore"));
     } else {
       return Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
@@ -106,15 +107,18 @@ class _ExploreListState extends State<ExploreList> {
             },
           ),
           SizedBox(
-            width: 20,
+            width: 15,
           ),
           Expanded(
             child: Center(
               child: TextFormField(
+                textAlignVertical: TextAlignVertical.center,
+                style: TextStyle(fontSize: 15),
                 textInputAction: TextInputAction.search,
                 focusNode: searchFocus,
                 controller: searchController,
                 decoration: InputDecoration(
+                  contentPadding: EdgeInsets.all(10),
                   hintText: "Seach here",
                   isDense: true,
                   fillColor: Colors.white,

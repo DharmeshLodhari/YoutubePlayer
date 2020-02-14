@@ -2,8 +2,8 @@ import 'package:Slydo/screens/explore.dart';
 import 'package:flutter/material.dart';
 
 import '../screens/colors.dart';
-import 'request_payments_list.dart';
 import 'profile.dart';
+import 'request_payments_list.dart';
 import 'settings.dart';
 import 'transactions.dart';
 
@@ -53,32 +53,27 @@ class _DashboardState extends State<Dashboard> {
               Icons.home,
               color: Colors.white,
             ),
-            title: Text('Home',
-                style: TextStyle(color: Colors.white, fontSize: 12)),
+            title: Text('Home', style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
           BottomNavigationBarItem(
             backgroundColor: lightBlue(),
-            icon: Icon(Icons.notificationsgi, color: Colors.white),
-            title: Text('Requests',
-                style: TextStyle(color: Colors.white, fontSize: 12)),
+            icon: Icon(Icons.notifications, color: Colors.white),
+            title: Text('Requests', style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
           BottomNavigationBarItem(
             backgroundColor: lightBlue(),
             icon: Icon(Icons.account_balance_wallet, color: Colors.white),
-            title: Text('Transactions',
-                style: TextStyle(color: Colors.white, fontSize: 12)),
+            title: Text('Transactions', style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
           BottomNavigationBarItem(
             backgroundColor: lightBlue(),
             icon: Icon(Icons.explore, color: Colors.white),
-            title: Text('Explore',
-                style: TextStyle(color: Colors.white, fontSize: 12)),
+            title: Text('Explore', style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
           BottomNavigationBarItem(
             backgroundColor: lightBlue(),
             icon: Icon(Icons.settings, color: Colors.white),
-            title: Text('Settings',
-                style: TextStyle(color: Colors.white, fontSize: 12)),
+            title: Text('Settings', style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
         ],
       ),
