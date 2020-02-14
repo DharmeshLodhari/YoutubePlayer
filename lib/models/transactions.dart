@@ -34,3 +34,27 @@ class Transaction {
       this.amount,
       this.isCredit});
 }
+
+
+
+class PaymentRequest {
+  String status;
+  String uuid;
+  String description;
+  String payee;
+  String avatar;
+  String currency;
+  int amount;
+  bool isCredit;
+
+  // Pass in as named parameter in constructor
+  PaymentRequest(
+      {this.status,
+        this.uuid,
+        this.description,
+        this.payee,
+        this.avatar,
+        this.currency,
+        this.amount,
+        this.isCredit});
+}

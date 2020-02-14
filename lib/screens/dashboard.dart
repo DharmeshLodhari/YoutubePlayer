@@ -58,7 +58,7 @@ class _DashboardState extends State<Dashboard> {
           ),
           BottomNavigationBarItem(
             backgroundColor: lightBlue(),
-            icon: Icon(Icons.notificationsgi, color: Colors.white),
+            icon: Icon(Icons.notifications, color: Colors.white),
             title: Text('Requests',
                 style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
@@ -91,7 +91,7 @@ class _DashboardState extends State<Dashboard> {
         return Profile();
         break;
       case 1:
-        return BankAccountList();
+        return PaymentRequestList();
         break;
       case 2:
         return TransactionList();

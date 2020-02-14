@@ -1,16 +1,18 @@
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/screens/tiles/bank_account.dart';
+import 'package:Slydo/screens/tiles/transaction.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/splash.dart';
 import 'package:flutter/material.dart';
 import '../widget/LoadingIndicator.dart';
 
-class BankAccountList extends StatefulWidget {
+
+class PaymentRequestList extends StatefulWidget {
   @override
-  _BankAccountListState createState() => _BankAccountListState();
+  _PaymentRequestListState createState() => _PaymentRequestListState();
 }
 
-class _BankAccountListState extends State<BankAccountList> {
+class _PaymentRequestListState extends State<PaymentRequestList> {
   // Get list of user bank account
   final _auth = AuthService();
 
@@ -30,7 +32,7 @@ class _BankAccountListState extends State<BankAccountList> {
           title: Text('Payment Requests'),
         ),
         body: FutureBuilder(
-          future: _auth.getBankAccounts(),
+          future: _auth.listPaymentRequests(),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.data == null) {
               return LoadingIndicator();
@@ -39,22 +41,24 @@ class _BankAccountListState extends State<BankAccountList> {
                 itemCount: snapshot.data.length,
                 itemBuilder: (BuildContext context, int index) {
                   var item = snapshot.data[index];
-                  return BankAccountTile(account: item);
+                  return PaymentRequestTile(paymentRequest: item);
                 },
               );
             }
           },
         ),
-        floatingActionButton: addAccountButton(),
+        floatingActionButton: sendRequestButton(),
       ),
     );
   }
 
-  Widget addAccountButton() {
+  Widget sendRequestButton() {
     return FloatingActionButton(
       backgroundColor: darkBlue(),
       onPressed: () {
-        Navigator.of(context).pushNamed('/add-account');
+        Navigator.of(context).pushNamed('/request-payment',
+            arguments: <String, bool>{'isFromProfile': true}
+        );
       },
       tooltip: 'Add Account',
       child: Icon(Icons.add),

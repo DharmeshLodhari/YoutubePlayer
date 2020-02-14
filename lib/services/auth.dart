@@ -230,6 +230,7 @@ class AuthService {
     return false;
   }
 
+
   // List the users bank accounts
   Future<List<BankAccount>> getBankAccounts() async {
     var url = baseUrl + "/api/v1/transactions/bank-accounts-list";
@@ -255,6 +256,54 @@ class AuthService {
       return accounts;
     } else {
       throw "Can't get https.";
+    }
+  }
+
+  Future<List<PaymentRequest>> listPaymentRequests() async {
+    Map<String, String> knownCustomers = {};
+
+    var url = baseUrl + "/api/v1/transactions/request-payment/list";
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      List<PaymentRequest> paymentRequests = [];
+      // This variable will hold list of transactions we got from server
+      var user = await getUser();
+      var jsonData = json.decode(response.body);
+
+      for (var item in jsonData) {
+        // if sender is not current user then
+        bool isCredit =
+        (item["from_customer"] != user.userName && item["to_customer"] == user.userName)
+            ? true
+            : false;
+
+        var payee = isCredit ? item["from_customer"] : item['to_customer'];
+
+        try {
+          if (knownCustomers.containsKey(payee) == false) {
+            var customer = await fetchCustomerProfile(payee);
+            knownCustomers[payee] = customer.avatar;
+          }
+          var avatar = knownCustomers[payee];
+          PaymentRequest paymentRequest = PaymentRequest(
+              status: item['status'],
+              uuid: item['slug'],
+              description: item['description'],
+              payee: payee,
+              avatar: avatar,
+              currency: item['currency'],
+              amount: item['amount'],
+              isCredit: isCredit);
+          paymentRequests.add(paymentRequest);
+        } catch (Exception) {}
+      }
+      return paymentRequests;
+    } else if (response.statusCode == 500) {
+      throw "Server Error";
+    } else {
+      throw json.decode(response.body);
     }
   }
 

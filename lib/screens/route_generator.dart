@@ -39,7 +39,7 @@ class RouteGenerator {
       // dashboard ends
 
       case '/accounts':
-        return MaterialPageRoute(builder: (_) => BankAccountList());
+        return MaterialPageRoute(builder: (_) => PaymentRequestList());
       case '/transactions':
         return MaterialPageRoute(builder: (_) => TransactionList());
       case '/settings':

@@ -22,7 +22,7 @@ class _SettingsListState extends State<SettingsList> {
       builder: (context, snapshot) {
         try {
           // TODO: save this user to db and pull from there
-          var account = snapshot.data[0];
+          var account = snapshot.data;
           setState(() {
             _account = true;
           });
