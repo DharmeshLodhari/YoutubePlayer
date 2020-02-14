@@ -18,7 +18,7 @@ class RequestPayment extends StatefulWidget {
 
   // Declare a field that holds the userData.
   @override
-  _RequestPaymentState createState() => _RequestPaymentState();
+  _RequestPaymentState createState() => _RequestPaymentState(arguments: arguments);
 }
 
 class _RequestPaymentState extends State<RequestPayment> {
@@ -26,6 +26,8 @@ class _RequestPaymentState extends State<RequestPayment> {
   http.Response response;
   String _passwordFromPopUp = "";
   bool isRequest = false;
+  var arguments;
+  _RequestPaymentState({this.arguments});
 
   var currencyImage = Image.asset(
     'assets/images/naira.png',
@@ -47,8 +49,11 @@ class _RequestPaymentState extends State<RequestPayment> {
 
   @override
   void initState() {
-    isFromProfile = widget.arguments != null ? widget.arguments['isFromProfile'] : false;
-    isRequest = widget.arguments != null ? widget.arguments['isRequest'] : false;
+    isFromProfile = arguments != null
+        ? arguments['isFromProfile'] != null ? arguments['isFromProfile'] : false
+        : false;
+    isRequest =
+        arguments != null ? arguments['isRequest'] != null ? arguments['isRequest'] : false : false;
     _passwordController = TextEditingController();
 
     super.initState();

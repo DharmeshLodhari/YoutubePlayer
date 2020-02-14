@@ -26,14 +26,16 @@ class _PasswordPopupState extends State<PasswordPopup> {
   String _password = "";
   AuthService _auth;
   Map data;
-  bool isRequest;
+  bool isRequest = false;
   TextEditingController _passwordController;
 
   @override
   void initState() {
     _auth = arguments['_auth'];
     data = arguments['data'];
-    isRequest = arguments['isRequest'];
+    isRequest =
+        arguments != null ? arguments['isRequest'] != null ? arguments['isRequest'] : false : false;
+
     _passwordController = TextEditingController();
 
     super.initState();
@@ -145,7 +147,11 @@ class _PasswordPopupState extends State<PasswordPopup> {
       // showDialog(context: context, builder: (context) => LoadingIndicator());
 
       if (_password == userBloc.user.password) {
+        print(isRequest);
         if (isRequest) {
+          Toast.show("Need to Call Make Request API", context,
+              gravity: Toast.TOP, backgroundColor: darkBlue(), textColor: Colors.white);
+          Navigator.of(context).pushNamed('/dashboard', arguments: {'dashboardIndex': 1});
         } else {
           _auth.makePayment(data).then((value) {
             response = value;

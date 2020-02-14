@@ -30,11 +30,19 @@ class _QRCodeViewState extends State<QRCodeView> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   var qrText = "";
   QRViewController controller;
+  @override
+  void initState() {
+    print(arguments);
+    isRequest =
+        arguments != null ? arguments['isRequest'] != null ? arguments['isRequest'] : false : false;
+    // TODO: implement initState
+
+    print("isRequest $isRequest");
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    isRequest = arguments != null ? arguments['isRequest'] : false;
-
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: Platform.isAndroid ? false : true,
@@ -110,12 +118,12 @@ class _QRCodeViewState extends State<QRCodeView> {
           // TODO: Add try block here and check if error occurred in server like 404 then take user to home page and show error
           customerProfileBloc.customer = await _auth.fetchCustomerProfile(recipient);
           Navigator.pop(context);
-          print(isRequest);
+          print("end isRequest $isRequest");
           if (isRequest) {
             Navigator.of(context).pushNamed('/request-payment', arguments: {'isRequest': true});
           } else {
-            Navigator.of(context)
-                .pushNamed('/send-payment', arguments: <String, bool>{'isFromProfile': false});
+            Navigator.of(context).pushNamed('/send-payment',
+                arguments: <String, bool>{'isFromProfile': false, 'isRequest': false});
           }
         }
       }

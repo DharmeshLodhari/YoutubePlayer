@@ -296,13 +296,6 @@ class AuthService {
               amount: item['amount'],
               isCredit: isCredit);
           paymentRequests.add(paymentRequest);
-          print(paymentRequest.status);
-          print(paymentRequest.uuid);
-          print(paymentRequest.description);
-          print(paymentRequest.payee);
-          print(paymentRequest.avatar);
-          print(paymentRequest.currency);
-          print(paymentRequest.isCredit);
         } catch (Exception) {}
       }
 

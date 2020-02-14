@@ -1,6 +1,6 @@
 import 'package:Slydo/models/transactions.dart';
+import 'package:Slydo/screens/colors.dart';
 import 'package:flutter/material.dart';
-
 
 Future showScaleAlertBox({
   @required BuildContext context,
@@ -21,8 +21,7 @@ Future showScaleAlertBox({
           child: Opacity(
             opacity: a1.value,
             child: AlertDialog(
-              shape: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(15.0)),
+              shape: OutlineInputBorder(borderRadius: BorderRadius.circular(15.0)),
               title: title,
               content: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -49,7 +48,6 @@ Future showScaleAlertBox({
       pageBuilder: (context, animation1, animation2) {});
 }
 
-
 class PaymentRequestTile extends StatelessWidget {
   final PaymentRequest paymentRequest;
   PaymentRequestTile({this.paymentRequest});
@@ -59,19 +57,42 @@ class PaymentRequestTile extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.only(top: 8.0),
       child: Card(
-
         margin: EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
         child: InkWell(
-          onTap: (){
-            showScaleAlertBox(context: context, yourWidget: null, firstButton: null);
+          onTap: () {
+            showScaleAlertBox(
+                context: context,
+                yourWidget: Text("Do you want to accept this request ?"),
+                title: Text("Request Confirmation"),
+                firstButton: MaterialButton(
+                  color: darkBlue(),
+                  child: Text(
+                    "Accept",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onPressed: () {
+                    // call accept payment request API
+                  },
+                ),
+                secondButton: MaterialButton(
+                  color: darkBlue(),
+                  child: Text(
+                    "Reject",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                icon: Icon(
+                  Icons.error_outline,
+                  color: darkBlue(),
+                ));
           },
           child: ListTile(
               title: Text(
                 paymentRequest.payee,
-                style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15),
+                style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
               ),
               subtitle: Text(paymentRequest.description),
               leading: Image.network(
@@ -81,8 +102,8 @@ class PaymentRequestTile extends StatelessWidget {
                 colorBlendMode: BlendMode.darken,
                 fit: BoxFit.fitWidth,
                 filterQuality: FilterQuality.high,
-                loadingBuilder: (BuildContext context, Widget child,
-                    ImageChunkEvent loadingProgress) {
+                loadingBuilder:
+                    (BuildContext context, Widget child, ImageChunkEvent loadingProgress) {
                   if (loadingProgress == null) return child;
                   return Container(
                     height: 45,
@@ -90,7 +111,7 @@ class PaymentRequestTile extends StatelessWidget {
                     child: CircularProgressIndicator(
                       value: loadingProgress.expectedTotalBytes != null
                           ? loadingProgress.cumulativeBytesLoaded /
-                          loadingProgress.expectedTotalBytes
+                              loadingProgress.expectedTotalBytes
                           : null,
                     ),
                   );
@@ -99,9 +120,7 @@ class PaymentRequestTile extends StatelessWidget {
               trailing: Text(
                 paymentRequest.currency + ' ' + paymentRequest.amount.toString(),
                 style: TextStyle(
-                    color: paymentRequest.isCredit
-                        ? Colors.green[400]
-                        : Colors.grey[600],
+                    color: paymentRequest.isCredit ? Colors.green[400] : Colors.grey[600],
                     fontWeight: FontWeight.bold,
                     fontSize: 15),
               )),
@@ -110,7 +129,6 @@ class PaymentRequestTile extends StatelessWidget {
     );
   }
 }
-
 
 class TransactionTile extends StatelessWidget {
   final Transaction transaction;
@@ -125,10 +143,7 @@ class TransactionTile extends StatelessWidget {
         child: ListTile(
             title: Text(
               transaction.payee,
-              style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15),
+              style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
             ),
             subtitle: Text(transaction.description),
             leading: Image.network(
@@ -138,16 +153,15 @@ class TransactionTile extends StatelessWidget {
               colorBlendMode: BlendMode.darken,
               fit: BoxFit.fitWidth,
               filterQuality: FilterQuality.high,
-              loadingBuilder: (BuildContext context, Widget child,
-                  ImageChunkEvent loadingProgress) {
+              loadingBuilder:
+                  (BuildContext context, Widget child, ImageChunkEvent loadingProgress) {
                 if (loadingProgress == null) return child;
                 return Container(
                   height: 45,
                   width: 45,
                   child: CircularProgressIndicator(
                     value: loadingProgress.expectedTotalBytes != null
-                        ? loadingProgress.cumulativeBytesLoaded /
-                            loadingProgress.expectedTotalBytes
+                        ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes
                         : null,
                   ),
                 );
@@ -156,9 +170,7 @@ class TransactionTile extends StatelessWidget {
             trailing: Text(
               transaction.currency + ' ' + transaction.amount.toString(),
               style: TextStyle(
-                  color: transaction.isCredit
-                      ? Colors.green[400]
-                      : Colors.grey[600],
+                  color: transaction.isCredit ? Colors.green[400] : Colors.grey[600],
                   fontWeight: FontWeight.bold,
                   fontSize: 15),
             )),
