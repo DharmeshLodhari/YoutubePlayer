@@ -13,8 +13,8 @@ class AuthService {
   DatabaseHelper _db = DatabaseHelper();
 
   // This function creates a user object from named args passed in
-  User createUser(String uuid, String url, String phoneNumber, String fullName, String username,
-      String avatar, String qrCode, String password) {
+  User createUser(String uuid, String url, String phoneNumber, String fullName,
+      String username, String avatar, String qrCode, String password) {
     // Create user instance
     User _user = User(
         uuid: uuid,
@@ -187,7 +187,8 @@ class AuthService {
       request.fields["avatar"] = user.avatar;
 
       //create multipart using filepath, string or bytes
-      var multipartFile = await http.MultipartFile.fromPath("avatar", avatarPath);
+      var multipartFile =
+          await http.MultipartFile.fromPath("avatar", avatarPath);
 
       //add multipart to request
       request.files.add(multipartFile);
@@ -258,6 +259,18 @@ class AuthService {
     }
   }
 
+  Future<bool> acceptPaymentRequests() async {
+    return false;
+  }
+
+  Future<bool> rejectPaymentRequests() async {
+    return false;
+  }
+
+  Future<bool> createPaymentRequests() async {
+    return false;
+  }
+
   Future<List<PaymentRequest>> listPaymentRequests() async {
     Map<String, String> knownCustomers = {};
 
@@ -273,10 +286,10 @@ class AuthService {
 
       for (var item in jsonData["results"]) {
         // if sender is not current user then
-        bool isCredit =
-            (item["from_customer"] != user.userName && item["to_customer"] == user.userName)
-                ? true
-                : false;
+        bool isCredit = (item["from_customer"] != user.userName &&
+                item["to_customer"] == user.userName)
+            ? true
+            : false;
 
         var payee = isCredit ? item["from_customer"] : item['to_customer'];
 
@@ -322,10 +335,10 @@ class AuthService {
 
       for (var item in jsonData["results"]) {
         // if sender is not current user then
-        bool isCredit =
-            (item["from_customer"] != user.userName && item["to_customer"] == user.userName)
-                ? true
-                : false;
+        bool isCredit = (item["from_customer"] != user.userName &&
+                item["to_customer"] == user.userName)
+            ? true
+            : false;
 
         var payee = isCredit ? item["from_customer"] : item['to_customer'];
 
