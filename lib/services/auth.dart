@@ -259,15 +259,23 @@ class AuthService {
     }
   }
 
+  // Accept Payment with POST method with empty data
   Future<bool> acceptPaymentRequests() async {
+    var url = baseUrl + "/api/v1/transactions/request-payment/accept";
+    var data = {};
     return false;
   }
 
+  // Patch payment status with empty data
   Future<bool> rejectPaymentRequests() async {
+    var url = baseUrl + "/api/v1/transactions/request-payment/update";
+    var data = {};
     return false;
   }
 
+  // Create Payment request with data from user input
   Future<bool> createPaymentRequests() async {
+    var url = baseUrl + "/api/v1/transactions/request-payment/create/";
     return false;
   }
 

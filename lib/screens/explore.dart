@@ -4,6 +4,25 @@ import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:flutter/material.dart';
 
+final List<dynamic> services = [
+  ["Book Taxi", Icons.local_taxi],
+  ["Shopping", Icons.shopping_cart],
+  ["Transportation", Icons.train],
+  ["Hospitality", Icons.hotel],
+  ["Charity", Icons.people],
+  ["Public Service", Icons.public],
+  ["Utilities", Icons.home],
+  ["Mobile Top Up", Icons.phone_iphone],
+  ["Investment", Icons.attach_money],
+  ["Insurance", Icons.security],
+  ["Restaurant", Icons.restaurant],
+  ["Financial Service", Icons.account_balance],
+  ["Property", Icons.account_balance],
+  ["Entertainment", Icons.play_arrow],
+  ["E-Books", Icons.book],
+  ["News", Icons.info],
+];
+
 class ExploreList extends StatefulWidget {
   @override
   _ExploreListState createState() => _ExploreListState();
@@ -43,7 +62,8 @@ class _ExploreListState extends State<ExploreList> {
           backgroundColor: darkBlue(),
           title: AnimatedSwitcher(
             duration: Duration(milliseconds: 500),
-            transitionBuilder: (Widget child, Animation<double> animation) => ScaleTransition(
+            transitionBuilder: (Widget child, Animation<double> animation) =>
+                ScaleTransition(
               child: child,
               scale: animation,
             ),
@@ -75,13 +95,33 @@ class _ExploreListState extends State<ExploreList> {
               }
               return LoadingIndicator();
             })
-        : Center(
-            child: Container(
-            child: Text(
-              "There is nothing to show !!",
-              style: TextStyle(color: Colors.white, fontSize: 20),
-            ),
-          ));
+        : ListView.builder(
+            itemCount: services.length,
+            itemBuilder: (BuildContext context, int index) =>
+                getServiceList()[index]);
+  }
+
+  List<Widget> getServiceList() {
+    List<Widget> lst = [];
+    services.sort((a, b) => a[0].compareTo(b[0]));
+    for (final service in services) {
+      var card = Padding(
+        padding: EdgeInsets.only(top: 8.0),
+        child: Card(
+          margin: EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
+          child: ListTile(
+            title: Text(service[0],
+                style: TextStyle(
+                    color: darkBlue(),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15)),
+            leading: Icon(service[1], color: darkBlue()),
+          ),
+        ),
+      );
+      lst.add(card);
+    }
+    return lst;
   }
 
   Widget search() {
