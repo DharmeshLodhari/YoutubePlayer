@@ -13,7 +13,6 @@ class PaymentRequestList extends StatefulWidget {
 }
 
 class _PaymentRequestListState extends State<PaymentRequestList> {
-  // Get list of user bank account
   final _auth = AuthService();
   SlidableController slidableController;
 
@@ -31,6 +30,9 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
           automaticallyImplyLeading: false,
           backgroundColor: darkBlue(),
           title: Text('Payment Requests'),
+          actions: <Widget>[
+            sendRequestButton(),
+          ],
         ),
         body: FutureBuilder(
           future: _auth.listPaymentRequests(),
@@ -48,20 +50,20 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
             }
           },
         ),
-        floatingActionButton: sendRequestButton(),
       ),
     );
   }
 
   Widget sendRequestButton() {
-    return FloatingActionButton(
-      backgroundColor: darkBlue(),
-      onPressed: () {
-        Navigator.of(context).pushNamed('/request-payment',
-            arguments: <String, bool>{'isFromProfile': true});
-      },
-      tooltip: 'Request Payment',
-      child: Icon(Icons.add),
+    return Padding(
+      padding: const EdgeInsets.only(right: 4.0),
+      child: InkWell(
+        onTap: () {
+          Navigator.of(context).pushNamed('/request-payment',
+              arguments: <String, bool>{'isFromProfile': true});
+        },
+        child: Icon(Icons.add, color: Colors.white),
+      ),
     );
   }
 
@@ -95,7 +97,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
 
   List<Widget> listSecondaryActions(
       PaymentRequest paymentRequest, int index, AsyncSnapshot snapshot) {
-    String caption = paymentRequest.isCredit ? 'Cancel': 'Reject';
+    String caption = paymentRequest.isCredit ? 'Cancel' : 'Reject';
     return [
       IconSlideAction(
           caption: caption,
