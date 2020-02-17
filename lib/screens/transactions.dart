@@ -17,13 +17,18 @@ class _TransactionListState extends State<TransactionList> {
   String previous = "";
   List transactionList = [];
   ScrollController _scrollController = new ScrollController();
-  bool isCalled = false;
+  bool isLoading = false;
 
   @override
   void initState() {
+    setState(() {
+      isLoading = true;
+    });
     _scrollController.addListener(() {
-      if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
         // CircularProgressIndicator();
+
         getList();
       }
     });
@@ -55,9 +60,20 @@ class _TransactionListState extends State<TransactionList> {
                 controller: _scrollController,
                 itemCount: transactionList.length,
                 itemBuilder: (BuildContext context, int index) {
-                  var item = transactionList[index];
-
-                  return TransactionTile(transaction: item);
+                  if (isLoading) {
+                    return Align(
+                      alignment: Alignment.center,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: CircularProgressIndicator(
+                          backgroundColor: Colors.white,
+                        ),
+                      ),
+                    );
+                  } else {
+                    var item = transactionList[index];
+                    return TransactionTile(transaction: item);
+                  }
                 },
               );
             }
@@ -68,8 +84,9 @@ class _TransactionListState extends State<TransactionList> {
   }
 
   getList() {
-    if (next != null) {
-      Future<Map<String, dynamic>> result = _auth.getTransactions(next, previous);
+    if (next != null && isLoading) {
+      Future<Map<String, dynamic>> result =
+          _auth.getTransactions(next, previous);
 
       result.then((value) {
         count = value['count'];
@@ -80,16 +97,22 @@ class _TransactionListState extends State<TransactionList> {
         print(next);
         print(previous);
         print(transactionList);
-
         transactionList.addAll(tempList);
         print(transactionList.length);
-        setState(() {});
         print(transactionList);
       });
+      setState(() {
+        isLoading = false;
+      });
       return result;
+    }
+    if (next != null) {
+      setState(() {
+        isLoading = true;
+      });
     } else {
       Scaffold.of(context).showSnackBar(SnackBar(
-        content: Text("End Of The List"),
+        content: Text("Your have reached at bottom of the list"),
       ));
     }
   }

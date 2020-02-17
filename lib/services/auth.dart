@@ -13,8 +13,8 @@ class AuthService {
   DatabaseHelper _db = DatabaseHelper();
 
   // This function creates a user object from named args passed in
-  User createUser(String uuid, String url, String phoneNumber, String fullName, String username,
-      String avatar, String qrCode, String password) {
+  User createUser(String uuid, String url, String phoneNumber, String fullName,
+      String username, String avatar, String qrCode, String password) {
     // Create user instance
     User _user = User(
         uuid: uuid,
@@ -187,7 +187,8 @@ class AuthService {
       request.fields["avatar"] = user.avatar;
 
       //create multipart using filepath, string or bytes
-      var multipartFile = await http.MultipartFile.fromPath("avatar", avatarPath);
+      var multipartFile =
+          await http.MultipartFile.fromPath("avatar", avatarPath);
 
       //add multipart to request
       request.files.add(multipartFile);
@@ -278,10 +279,20 @@ class AuthService {
     return false;
   }
 
-  Future<List<PaymentRequest>> listPaymentRequests() async {
+  Future<Map<String, dynamic>> listPaymentRequests(
+      String next, String previous) async {
     Map<String, String> knownCustomers = {};
 
-    var url = baseUrl + "/api/v1/transactions/request-payment/list";
+    var url = "";
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      url = baseUrl + "/api/v1/transactions/request-payment/list";
+    } else {
+      url = next;
+    }
+
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
 
@@ -293,10 +304,10 @@ class AuthService {
 
       for (var item in jsonData["results"]) {
         // if sender is not current user then
-        bool isCredit =
-            (item["from_customer"] != user.userName && item["to_customer"] == user.userName)
-                ? true
-                : false;
+        bool isCredit = (item["from_customer"] != user.userName &&
+                item["to_customer"] == user.userName)
+            ? true
+            : false;
 
         var payee = isCredit ? item["from_customer"] : item['to_customer'];
 
@@ -318,8 +329,13 @@ class AuthService {
           paymentRequests.add(paymentRequest);
         } catch (Exception) {}
       }
-
-      return paymentRequests;
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": paymentRequests
+      };
+      return result;
     } else if (response.statusCode == 500) {
       throw "Server Error";
     } else {
@@ -328,7 +344,8 @@ class AuthService {
   }
 
   // List users transactions
-  Future<Map<String, dynamic>> getTransactions(String next, String previous) async {
+  Future<Map<String, dynamic>> getTransactions(
+      String next, String previous) async {
     var url = "";
     if (next == null) {
       return null;
@@ -351,10 +368,10 @@ class AuthService {
 
       for (var item in jsonData["results"]) {
         // if sender is not current user then
-        bool isCredit =
-            (item["from_customer"] != user.userName && item["to_customer"] == user.userName)
-                ? true
-                : false;
+        bool isCredit = (item["from_customer"] != user.userName &&
+                item["to_customer"] == user.userName)
+            ? true
+            : false;
 
         var payee = isCredit ? item["from_customer"] : item['to_customer'];
 

@@ -62,7 +62,8 @@ class _ExploreListState extends State<ExploreList> {
           backgroundColor: darkBlue(),
           title: AnimatedSwitcher(
             duration: Duration(milliseconds: 500),
-            transitionBuilder: (Widget child, Animation<double> animation) => ScaleTransition(
+            transitionBuilder: (Widget child, Animation<double> animation) =>
+                ScaleTransition(
               child: child,
               scale: animation,
             ),
@@ -96,7 +97,8 @@ class _ExploreListState extends State<ExploreList> {
             })
         : ListView.builder(
             itemCount: services.length,
-            itemBuilder: (BuildContext context, int index) => getServiceList()[index]);
+            itemBuilder: (BuildContext context, int index) =>
+                getServiceList()[index]);
   }
 
   List<Widget> getServiceList() {
@@ -109,7 +111,10 @@ class _ExploreListState extends State<ExploreList> {
           margin: EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
           child: ListTile(
             title: Text(service[0],
-                style: TextStyle(color: darkBlue(), fontWeight: FontWeight.bold, fontSize: 15)),
+                style: TextStyle(
+                    color: darkBlue(),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15)),
             leading: Icon(service[1], color: darkBlue()),
           ),
         ),
@@ -202,7 +207,7 @@ class _ExploreListState extends State<ExploreList> {
 
   Future<List> fetchSearchResult() async {
     //call your searching API with passing searchedText variable and store your List in searchResult to be displayed
-    searchedResult = await _auth.listPaymentRequests();
+    // searchedResult = await _auth.listPaymentRequests("","");
     return searchedResult;
   }
 }

@@ -15,6 +15,35 @@ class PaymentRequestList extends StatefulWidget {
 class _PaymentRequestListState extends State<PaymentRequestList> {
   final _auth = AuthService();
   SlidableController slidableController;
+  int count = 0;
+  String next = "";
+  String previous = "";
+  List requestPaymentList = [];
+  ScrollController _scrollController = new ScrollController();
+  bool isLoading = false;
+
+  @protected
+  void initState() {
+    setState(() {
+      isLoading = true;
+    });
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        // CircularProgressIndicator();
+        setState(() {
+          isLoading = true;
+        });
+        getList();
+      }
+    });
+    slidableController = SlidableController(
+      onSlideAnimationChanged: handleSlideAnimationChanged,
+      onSlideIsOpenChanged: handleSlideIsOpenChanged,
+    );
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,16 +64,36 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
           ],
         ),
         body: FutureBuilder(
-          future: _auth.listPaymentRequests(),
+          future: getList(),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if (snapshot.data == null) {
+            if (!snapshot.hasData) {
               return LoadingIndicator();
             } else {
               return ListView.builder(
-                itemCount: snapshot.data.length,
+                controller: _scrollController,
+                itemCount: requestPaymentList.length,
                 itemBuilder: (BuildContext context, int index) {
-                  var item = snapshot.data[index];
-                  return _getSlidableWithLists(context, item, index, snapshot);
+                  if (isLoading) {
+                    return Align(
+                      alignment: Alignment.center,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: CircularProgressIndicator(
+                          backgroundColor: Colors.white,
+                        ),
+                      ),
+                    );
+                  } else {
+                    //requestPaymentList[index]
+                    var item = requestPaymentList[index];
+//                    return Dismissible(
+//                      key: UniqueKey(),
+//                      child: PaymentRequestTile(
+//                        paymentRequest: item,
+//                      ),
+//                    );
+                    return _getSlidableWithLists(context, item, index);
+                  }
                 },
               );
             }
@@ -52,6 +101,41 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         ),
       ),
     );
+  }
+
+  getList() {
+    if (next != null && isLoading) {
+      Future<Map<String, dynamic>> result =
+          _auth.listPaymentRequests(next, previous);
+
+      result.then((value) {
+        count = value['count'];
+        next = value['next'];
+        previous = value['previous'];
+        var tempList = value['results'];
+        print(count);
+        print(next);
+        print(previous);
+        print(requestPaymentList);
+        requestPaymentList.addAll(tempList);
+        print(requestPaymentList.length);
+        print(requestPaymentList);
+      });
+      setState(() {
+        isLoading = false;
+      });
+      return result;
+    }
+    if (next != null) {
+//      setState(() {
+//        isLoading = true;
+//      });
+
+    } else {
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text("Your have reached at bottom of the list"),
+      ));
+    }
   }
 
   Widget sendRequestButton() {
@@ -65,15 +149,6 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         child: Icon(Icons.add, color: Colors.white),
       ),
     );
-  }
-
-  @protected
-  void initState() {
-    slidableController = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged,
-    );
-    super.initState();
   }
 
   Animation<double> _rotationAnimation;
@@ -95,28 +170,27 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
     Scaffold.of(context).showSnackBar(SnackBar(content: Text(text)));
   }
 
-  List<Widget> listSecondaryActions(
-      PaymentRequest paymentRequest, int index, AsyncSnapshot snapshot) {
+  List<Widget> listSecondaryActions(PaymentRequest paymentRequest, int index) {
     String caption = paymentRequest.isCredit ? 'Cancel' : 'Reject';
     return [
       IconSlideAction(
           caption: caption,
           color: Colors.red,
           icon: Icons.cancel,
-          onTap: () {
-//          bool done = _auth.rejectPaymentRequests();
-//          if (done){
-//            _showSnackBar(context, caption);
-//            snapshot.data.removeAt(index);
-//          }else{
-//            _showSnackBar(context, "Error");
-//          }
+          onTap: () async {
+            bool done = await _auth.rejectPaymentRequests();
+            if (done) {
+              _showSnackBar(context, caption);
+              requestPaymentList.removeAt(index);
+            } else {
+              _showSnackBar(context, "Error");
+            }
           }),
     ];
   }
 
   List<Widget> listActionSlideActions(
-      PaymentRequest paymentRequest, int index, AsyncSnapshot snapshot) {
+      PaymentRequest paymentRequest, int index) {
     if (paymentRequest.isCredit) {
       return [];
     } else {
@@ -125,21 +199,21 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
             caption: 'Send Money',
             color: Colors.green,
             icon: Icons.reply,
-            onTap: () {
-              //bool done = _auth.acceptPaymentRequests();
-//          if (done){
-//            _showSnackBar(context, 'Accept');
-//            snapshot.data.removeAt(index);
-//          }else{
-//            _showSnackBar(context, "Error");
-//          }
+            onTap: () async {
+              bool done = await _auth.acceptPaymentRequests();
+              if (done) {
+                _showSnackBar(context, 'Accept');
+                requestPaymentList.removeAt(index);
+              } else {
+                _showSnackBar(context, "Error");
+              }
             }),
       ];
     }
   }
 
-  Widget _getSlidableWithLists(BuildContext context,
-      PaymentRequest paymentRequest, int index, AsyncSnapshot snapshot) {
+  Widget _getSlidableWithLists(
+      BuildContext context, PaymentRequest paymentRequest, int index) {
     return Slidable(
       key: Key(paymentRequest.payee),
       controller: slidableController,
@@ -158,8 +232,8 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       actionPane: SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
       child: VerticalListItem(paymentRequest),
-      actions: listActionSlideActions(paymentRequest, index, snapshot),
-      secondaryActions: listSecondaryActions(paymentRequest, index, snapshot),
+      actions: listActionSlideActions(paymentRequest, index),
+      secondaryActions: listSecondaryActions(paymentRequest, index),
     );
   }
 }

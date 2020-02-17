@@ -52,11 +52,15 @@ class PaymentRequestTile extends StatelessWidget {
       padding: EdgeInsets.only(top: 8.0),
       child: Card(
         margin: EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
-        child: ListTile(
-            leading: getLeading(),
-            title: getTitle(),
-            trailing: getTrailing(),
-            subtitle: getSubtitle()),
+        child: Column(
+          children: <Widget>[
+            ListTile(
+                leading: getLeading(),
+                title: getTitle(),
+                trailing: getTrailing(),
+                subtitle: getSubtitle()),
+          ],
+        ),
       ),
     );
   }
