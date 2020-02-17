@@ -178,7 +178,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
           color: Colors.red,
           icon: Icons.cancel,
           onTap: () async {
-            bool done = await _auth.rejectPaymentRequests();
+            bool done = await _auth.rejectPaymentRequests(paymentRequest.id);
             if (done) {
               _showSnackBar(context, caption);
               requestPaymentList.removeAt(index);
@@ -200,7 +200,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
             color: Colors.green,
             icon: Icons.reply,
             onTap: () async {
-              bool done = await _auth.acceptPaymentRequests();
+              bool done = await _auth.acceptPaymentRequests(paymentRequest.id);
               if (done) {
                 _showSnackBar(context, 'Accept');
                 requestPaymentList.removeAt(index);

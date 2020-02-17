@@ -39,7 +39,7 @@ class Transaction {
 
 class PaymentRequest {
   String status;
-  String uuid;
+  String id;
   String description;
   String payee;
   String avatar;
@@ -50,7 +50,7 @@ class PaymentRequest {
   // Pass in as named parameter in constructor
   PaymentRequest(
       {this.status,
-        this.uuid,
+        this.id,
         this.description,
         this.payee,
         this.avatar,

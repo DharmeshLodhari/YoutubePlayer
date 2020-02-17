@@ -260,23 +260,44 @@ class AuthService {
   }
 
   // Accept Payment with POST method with empty data  post
-  Future<bool> acceptPaymentRequests() async {
-    var url = baseUrl + "/api/v1/transactions/request-payment/accept";
-    var data = {};
-    return false;
+  Future<bool> acceptPaymentRequests(var paymentRequest) async {
+    var url = baseUrl + "/api/v1/transactions/request-payment/accept/";
+    var data = {"id": paymentRequest.id};
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await http.post(url, headers: headers, body: _data);
+    if (response.statusCode == 200){
+      return false;
+    }else{
+      return true;
+    }
   }
 
   // Patch payment status with empty data  patch
-  Future<bool> rejectPaymentRequests() async {
-    var url = baseUrl + "/api/v1/transactions/request-payment/update";
+  Future<bool> rejectPaymentRequests(var paymentRequest) async {
+    var url = baseUrl + "/api/v1/transactions/request-payment/update/" + paymentRequest.id + "/";
     var data = {};
-    return false;
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await http.patch(url, headers: headers, body: _data);
+    if (response.statusCode == 200){
+      return false;
+    }else{
+      return true;
+    }
   }
 
   // Create Payment request with data from user input  post method  return true / false
-  Future<bool> createPaymentRequests() async {
+  Future<bool> createPaymentRequests(Map data) async {
     var url = baseUrl + "/api/v1/transactions/request-payment/create/";
-    return false;
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await http.post(url, headers: headers, body: _data);
+    if (response.statusCode == 200){
+        return false;
+    }else{
+      return true;
+    }
   }
 
   Future<Map<String, dynamic>> listPaymentRequests(
@@ -319,7 +340,7 @@ class AuthService {
           var avatar = knownCustomers[payee];
           PaymentRequest paymentRequest = PaymentRequest(
               status: item['status'],
-              uuid: item['slug'],
+              id: item['id'],
               description: item['description'],
               payee: payee,
               avatar: avatar,
