@@ -13,8 +13,8 @@ class AuthService {
   DatabaseHelper _db = DatabaseHelper();
 
   // This function creates a user object from named args passed in
-  User createUser(String uuid, String url, String phoneNumber, String fullName,
-      String username, String avatar, String qrCode, String password) {
+  User createUser(String uuid, String url, String phoneNumber, String fullName, String username,
+      String avatar, String qrCode, String password) {
     // Create user instance
     User _user = User(
         uuid: uuid,
@@ -187,8 +187,7 @@ class AuthService {
       request.fields["avatar"] = user.avatar;
 
       //create multipart using filepath, string or bytes
-      var multipartFile =
-          await http.MultipartFile.fromPath("avatar", avatarPath);
+      var multipartFile = await http.MultipartFile.fromPath("avatar", avatarPath);
 
       //add multipart to request
       request.files.add(multipartFile);
@@ -259,21 +258,21 @@ class AuthService {
     }
   }
 
-  // Accept Payment with POST method with empty data
+  // Accept Payment with POST method with empty data  post
   Future<bool> acceptPaymentRequests() async {
     var url = baseUrl + "/api/v1/transactions/request-payment/accept";
     var data = {};
     return false;
   }
 
-  // Patch payment status with empty data
+  // Patch payment status with empty data  patch
   Future<bool> rejectPaymentRequests() async {
     var url = baseUrl + "/api/v1/transactions/request-payment/update";
     var data = {};
     return false;
   }
 
-  // Create Payment request with data from user input
+  // Create Payment request with data from user input  post method  return true / false
   Future<bool> createPaymentRequests() async {
     var url = baseUrl + "/api/v1/transactions/request-payment/create/";
     return false;
@@ -294,10 +293,10 @@ class AuthService {
 
       for (var item in jsonData["results"]) {
         // if sender is not current user then
-        bool isCredit = (item["from_customer"] != user.userName &&
-                item["to_customer"] == user.userName)
-            ? true
-            : false;
+        bool isCredit =
+            (item["from_customer"] != user.userName && item["to_customer"] == user.userName)
+                ? true
+                : false;
 
         var payee = isCredit ? item["from_customer"] : item['to_customer'];
 
@@ -329,9 +328,18 @@ class AuthService {
   }
 
   // List users transactions
-  Future<List<Transaction>> getTransactions() async {
+  Future<Map<String, dynamic>> getTransactions(String next, String previous) async {
+    var url = "";
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      url = baseUrl + "/api/v1/transactions/list/";
+    } else {
+      url = next;
+    }
     Map<String, String> knownCustomers = {};
-    var url = baseUrl + "/api/v1/transactions/list/";
+    //   var url = baseUrl + "/api/v1/transactions/list/";
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
 
@@ -343,10 +351,10 @@ class AuthService {
 
       for (var item in jsonData["results"]) {
         // if sender is not current user then
-        bool isCredit = (item["from_customer"] != user.userName &&
-                item["to_customer"] == user.userName)
-            ? true
-            : false;
+        bool isCredit =
+            (item["from_customer"] != user.userName && item["to_customer"] == user.userName)
+                ? true
+                : false;
 
         var payee = isCredit ? item["from_customer"] : item['to_customer'];
 
@@ -368,13 +376,66 @@ class AuthService {
           transactions.add(transaction);
         } catch (Exception) {}
       }
-      return transactions;
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": transactions
+      };
+      return result;
     } else if (response.statusCode == 500) {
       throw "Server Error";
     } else {
       throw json.decode(response.body);
     }
   }
+
+//  Future<List<Transaction>> getTransactions() async {
+//    Map<String, String> knownCustomers = {};
+//    var url = baseUrl + "/api/v1/transactions/list/";
+//    var headers = await getAuthHeaders();
+//    var response = await http.get(url, headers: headers);
+//
+//    if (response.statusCode == 200) {
+//      List<Transaction> transactions = [];
+//      // This variable will hold list of transactions we got from server
+//      var user = await getUser();
+//      var jsonData = json.decode(response.body);
+//
+//      for (var item in jsonData["results"]) {
+//        // if sender is not current user then
+//        bool isCredit =
+//            (item["from_customer"] != user.userName && item["to_customer"] == user.userName)
+//                ? true
+//                : false;
+//
+//        var payee = isCredit ? item["from_customer"] : item['to_customer'];
+//
+//        try {
+//          if (knownCustomers.containsKey(payee) == false) {
+//            var customer = await fetchCustomerProfile(payee);
+//            knownCustomers[payee] = customer.avatar;
+//          }
+//          var avatar = knownCustomers[payee];
+//          Transaction transaction = Transaction(
+//              status: item['status'],
+//              uuid: item['slug'],
+//              description: item['description'],
+//              payee: payee,
+//              avatar: avatar,
+//              currency: item['currency'],
+//              amount: item['amount'],
+//              isCredit: isCredit);
+//          transactions.add(transaction);
+//        } catch (Exception) {}
+//      }
+//      return transactions;
+//    } else if (response.statusCode == 500) {
+//      throw "Server Error";
+//    } else {
+//      throw json.decode(response.body);
+//    }
+//  }
 
   //Send payment to backend
   Future<http.Response> makePayment(Map data) async {

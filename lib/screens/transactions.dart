@@ -12,6 +12,23 @@ class TransactionList extends StatefulWidget {
 class _TransactionListState extends State<TransactionList> {
   // Get list of users transactions
   final _auth = AuthService();
+  int count = 0;
+  String next = "";
+  String previous = "";
+  List transactionList = [];
+  ScrollController _scrollController = new ScrollController();
+  bool isCalled = false;
+
+  @override
+  void initState() {
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+        // CircularProgressIndicator();
+        getList();
+      }
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,15 +46,17 @@ class _TransactionListState extends State<TransactionList> {
           title: Text('Transactions'),
         ),
         body: FutureBuilder(
-          future: _auth.getTransactions(),
+          future: getList(),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if (snapshot.data == null) {
+            if (!snapshot.hasData) {
               return LoadingIndicator();
             } else {
               return ListView.builder(
-                itemCount: snapshot.data.length,
+                controller: _scrollController,
+                itemCount: transactionList.length,
                 itemBuilder: (BuildContext context, int index) {
-                  var item = snapshot.data[index];
+                  var item = transactionList[index];
+
                   return TransactionTile(transaction: item);
                 },
               );
@@ -46,5 +65,32 @@ class _TransactionListState extends State<TransactionList> {
         ),
       ),
     );
+  }
+
+  getList() {
+    if (next != null) {
+      Future<Map<String, dynamic>> result = _auth.getTransactions(next, previous);
+
+      result.then((value) {
+        count = value['count'];
+        next = value['next'];
+        previous = value['previous'];
+        var tempList = value['results'];
+        print(count);
+        print(next);
+        print(previous);
+        print(transactionList);
+
+        transactionList.addAll(tempList);
+        print(transactionList.length);
+        setState(() {});
+        print(transactionList);
+      });
+      return result;
+    } else {
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text("End Of The List"),
+      ));
+    }
   }
 }
