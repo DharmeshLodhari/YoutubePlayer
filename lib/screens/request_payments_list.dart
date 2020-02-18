@@ -5,8 +5,6 @@ import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
-import '../widget/LoadingIndicator.dart';
-
 class PaymentRequestList extends StatefulWidget {
   @override
   _PaymentRequestListState createState() => _PaymentRequestListState();
@@ -24,16 +22,11 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
 
   @protected
   void initState() {
-    setState(() {
-      isLoading = true;
-    });
+    this.getList();
+    super.initState();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
-        // CircularProgressIndicator();
-        setState(() {
-          isLoading = true;
-        });
         getList();
       }
     });
@@ -54,87 +47,78 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         return false;
       },
       child: Scaffold(
-        backgroundColor: lightBlue(),
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          backgroundColor: darkBlue(),
-          title: Text('Payment Requests'),
-          actions: <Widget>[
-            sendRequestButton(),
-          ],
-        ),
-        body: FutureBuilder(
-          future: getList(),
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if (!snapshot.hasData) {
-              return LoadingIndicator();
-            } else {
-              return ListView.builder(
-                controller: _scrollController,
-                itemCount: requestPaymentList.length,
-                itemBuilder: (BuildContext context, int index) {
-                  if (isLoading) {
-                    return Align(
-                      alignment: Alignment.center,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: CircularProgressIndicator(
-                          backgroundColor: Colors.white,
-                        ),
-                      ),
-                    );
-                  } else {
-                    //requestPaymentList[index]
-                    var item = requestPaymentList[index];
-//                    return Dismissible(
-//                      key: UniqueKey(),
-//                      child: PaymentRequestTile(
-//                        paymentRequest: item,
-//                      ),
-//                    );
-                    return _getSlidableWithLists(context, item, index);
-                  }
-                },
-              );
-            }
-          },
-        ),
+          backgroundColor: lightBlue(),
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            backgroundColor: darkBlue(),
+            title: Text('Payment Requests'),
+            actions: <Widget>[
+              sendRequestButton(),
+            ],
+          ),
+          body: Column(
+            children: <Widget>[
+              _buildRequestPaymentList(),
+            ],
+          )),
+    );
+  }
+
+  Widget _buildRequestPaymentList() {
+    return Expanded(
+      child: ListView.builder(
+        //+1 for progressbar
+        itemCount: requestPaymentList.length + 1,
+        itemBuilder: (BuildContext context, int index) {
+          if (index == requestPaymentList.length) {
+            return _buildIndicator();
+          } else {
+            return _getSlidableWithLists(
+                context, requestPaymentList[index], index);
+          }
+        },
+        controller: _scrollController,
       ),
     );
   }
 
-  getList() {
-    if (next != null && isLoading) {
-      Future<Map<String, dynamic>> result =
-          _auth.listPaymentRequests(next, previous);
+  Widget _buildIndicator() {
+    return new Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: new Center(
+        child: new Opacity(
+            opacity: isLoading ? 1.0 : 00,
+            child: isLoading
+                ? new CircularProgressIndicator(
+                    backgroundColor: Colors.white,
+                  )
+                : Container()),
+      ),
+    );
+  }
 
-      result.then((value) {
-        count = value['count'];
-        next = value['next'];
-        previous = value['previous'];
-        var tempList = value['results'];
-        print(count);
-        print(next);
-        print(previous);
-        print(requestPaymentList);
-        requestPaymentList.addAll(tempList);
-        print(requestPaymentList.length);
-        print(requestPaymentList);
-      });
-      setState(() {
-        isLoading = false;
-      });
-      return result;
-    }
-    if (next != null) {
-//      setState(() {
-//        isLoading = true;
-//      });
-
-    } else {
-      Scaffold.of(context).showSnackBar(SnackBar(
-        content: Text("Your have reached at bottom of the list"),
-      ));
+  void getList() async {
+    if (!isLoading) {
+      if (next != null && !isLoading) {
+        setState(() {
+          isLoading = true;
+        });
+        Map<String, dynamic> result =
+            await _auth.listPaymentRequests(next, previous);
+        count = result['count'];
+        next = result['next'];
+        previous = result['previous'];
+        var tempList = result['results'];
+        setState(() {
+          isLoading = false;
+          requestPaymentList.addAll(tempList);
+        });
+      }
+      if (next == null) {
+        Scaffold.of(context).showSnackBar(SnackBar(
+          content: Text("Your have reached at bottom of the list"),
+        ));
+      }
     }
   }
 
@@ -178,13 +162,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
           color: Colors.red,
           icon: Icons.cancel,
           onTap: () async {
-            bool done = await _auth.rejectPaymentRequests(paymentRequest.id);
-            if (done) {
-              _showSnackBar(context, caption);
-              requestPaymentList.removeAt(index);
-            } else {
-              _showSnackBar(context, "Error");
-            }
+            rejectPaymentRequestAlert(paymentRequest, index);
           }),
     ];
   }
@@ -196,36 +174,125 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
     } else {
       return [
         IconSlideAction(
-            caption: 'Send Money',
-            color: Colors.green,
-            icon: Icons.reply,
-            onTap: () async {
-              bool done = await _auth.acceptPaymentRequests(paymentRequest.id);
-              if (done) {
-                _showSnackBar(context, 'Accept');
-                requestPaymentList.removeAt(index);
-              } else {
-                _showSnackBar(context, "Error");
-              }
-            }),
+          caption: 'Send Money',
+          color: Colors.green,
+          icon: Icons.reply,
+          onTap: () {
+            acceptPaymentRequestAlert(paymentRequest, index);
+          },
+        ),
       ];
     }
+  }
+
+  void acceptPaymentRequestAlert(PaymentRequest paymentRequest, int index) {
+    showScaleAlertBox(
+      context: context,
+      yourWidget: Text("Are You Sure Want To Accept This Payment ? "),
+      icon: Icon(Icons.warning),
+      title: Text("Accept Payment Request"),
+      firstButton: MaterialButton(
+        color: darkBlue(),
+        child: Text(
+          "Yes",
+          style: TextStyle(color: Colors.white),
+        ),
+        onPressed: () async {
+          bool done = await _auth.acceptPaymentRequests(paymentRequest);
+          if (done) {
+            Navigator.pop(context);
+            _showSnackBar(context, 'Payment Request Accepted !!');
+            setState(() {
+              requestPaymentList.removeAt(index);
+              if (requestPaymentList.length <= 9) {
+                getList();
+              }
+            });
+          } else {
+            _showSnackBar(context, "Error");
+          }
+        },
+      ),
+      secondButton: MaterialButton(
+        color: darkBlue(),
+        child: Text(
+          "No",
+          style: TextStyle(color: Colors.white),
+        ),
+        onPressed: () {
+          setState(() {
+            requestPaymentList.insert(index, paymentRequest);
+            Navigator.pop(context);
+          });
+        },
+      ),
+    );
+  }
+
+  void rejectPaymentRequestAlert(PaymentRequest paymentRequest, int index) {
+    showScaleAlertBox(
+      context: context,
+      yourWidget: Text("Are You Sure Want To Reject This Payment ? "),
+      icon: Icon(Icons.warning),
+      title: Text("Cancle Payment Request"),
+      firstButton: MaterialButton(
+        color: darkBlue(),
+        child: Text(
+          "Yes",
+          style: TextStyle(color: Colors.white),
+        ),
+        onPressed: () async {
+          bool done = await _auth.rejectPaymentRequests(paymentRequest);
+          if (done) {
+            Navigator.pop(context);
+            _showSnackBar(context, "Payment Request Rejected !!");
+            setState(() {
+              requestPaymentList.removeAt(index);
+              if (requestPaymentList.length <= 9) {
+                getList();
+              }
+            });
+          } else {
+            _showSnackBar(context, "Error");
+          }
+        },
+      ),
+      secondButton: MaterialButton(
+        color: darkBlue(),
+        child: Text(
+          "No",
+          style: TextStyle(color: Colors.white),
+        ),
+        onPressed: () {
+          setState(() {
+            requestPaymentList.insert(index, paymentRequest);
+          });
+
+          Navigator.pop(context);
+        },
+      ),
+    );
   }
 
   Widget _getSlidableWithLists(
       BuildContext context, PaymentRequest paymentRequest, int index) {
     return Slidable(
       key: Key(paymentRequest.payee),
+//      key: UniqueKey(),
       controller: slidableController,
       direction: Axis.horizontal,
       dismissal: SlidableDismissal(
         child: SlidableDrawerDismissal(),
         onDismissed: (actionType) {
-          _showSnackBar(
-              context,
-              actionType == SlideActionType.primary
-                  ? 'Dismiss Archive'
-                  : 'Dimiss Delete');
+          setState(() {
+            requestPaymentList.removeAt(index);
+          });
+          if (actionType == SlideActionType.primary) {
+            acceptPaymentRequestAlert(paymentRequest, index);
+          } else {
+            rejectPaymentRequestAlert(paymentRequest, index);
+          }
+
           //make http call here
         },
       ),
@@ -235,6 +302,53 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       actions: listActionSlideActions(paymentRequest, index),
       secondaryActions: listSecondaryActions(paymentRequest, index),
     );
+  }
+
+  Future showScaleAlertBox({
+    @required BuildContext context,
+    @required Widget yourWidget,
+    Widget icon,
+    Widget title,
+    @required Widget firstButton,
+    Widget secondButton,
+  }) {
+    assert(context != null, "context is null!!");
+    assert(yourWidget != null, "yourWidget is null!!");
+    assert(firstButton != null, "button is null!!");
+    return showGeneralDialog(
+        barrierColor: Colors.black.withOpacity(0.7),
+        transitionBuilder: (context, a1, a2, widget) {
+          return Transform.scale(
+            scale: a1.value,
+            child: Opacity(
+              opacity: a1.value,
+              child: AlertDialog(
+                shape: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15.0)),
+                title: title,
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    icon,
+                    Container(
+                      height: 10,
+                    ),
+                    yourWidget
+                  ],
+                ),
+                actions: <Widget>[
+                  firstButton,
+                  secondButton,
+                ],
+              ),
+            ),
+          );
+        },
+        transitionDuration: Duration(milliseconds: 200),
+        barrierDismissible: true,
+        barrierLabel: '',
+        context: context,
+        pageBuilder: (context, animation1, animation2) {});
   }
 }
 
@@ -256,3 +370,5 @@ class VerticalListItem extends StatelessWidget {
     );
   }
 }
+
+enum LoadMoreData { LOADING, STABLE }

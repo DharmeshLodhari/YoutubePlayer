@@ -21,18 +21,14 @@ class _TransactionListState extends State<TransactionList> {
 
   @override
   void initState() {
-    setState(() {
-      isLoading = true;
-    });
+    this.getList();
+    super.initState();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
-        // CircularProgressIndicator();
-
         getList();
       }
     });
-    super.initState();
   }
 
   @override
@@ -50,70 +46,64 @@ class _TransactionListState extends State<TransactionList> {
           backgroundColor: darkBlue(),
           title: Text('Transactions'),
         ),
-        body: FutureBuilder(
-          future: getList(),
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if (!snapshot.hasData) {
-              return LoadingIndicator();
-            } else {
-              return ListView.builder(
-                controller: _scrollController,
-                itemCount: transactionList.length,
-                itemBuilder: (BuildContext context, int index) {
-                  if (isLoading) {
-                    return Align(
-                      alignment: Alignment.center,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: CircularProgressIndicator(
-                          backgroundColor: Colors.white,
-                        ),
-                      ),
-                    );
-                  } else {
-                    var item = transactionList[index];
-                    return TransactionTile(transaction: item);
-                  }
-                },
-              );
-            }
-          },
+        body: _buildTransactionList(),
+      ),
+    );
+  }
+
+  Widget _buildTransactionList() {
+    return ListView.builder(
+      //+1 for progressbar
+      itemCount: transactionList.length + 1,
+      itemBuilder: (BuildContext context, int index) {
+        if (index == transactionList.length) {
+          return _buildIndicator();
+        } else {
+          return TransactionTile(
+            transaction: transactionList[index],
+          );
+        }
+      },
+      controller: _scrollController,
+    );
+  }
+
+  Widget _buildIndicator() {
+    return new Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: new Center(
+        child: new Opacity(
+          opacity: isLoading ? 1.0 : 00,
+          child: new CircularProgressIndicator(
+            backgroundColor: Colors.white,
+          ),
         ),
       ),
     );
   }
 
-  getList() {
-    if (next != null && isLoading) {
-      Future<Map<String, dynamic>> result =
-          _auth.getTransactions(next, previous);
-
-      result.then((value) {
-        count = value['count'];
-        next = value['next'];
-        previous = value['previous'];
-        var tempList = value['results'];
-        print(count);
-        print(next);
-        print(previous);
-        print(transactionList);
-        transactionList.addAll(tempList);
-        print(transactionList.length);
-        print(transactionList);
-      });
-      setState(() {
-        isLoading = false;
-      });
-      return result;
-    }
-    if (next != null) {
-      setState(() {
-        isLoading = true;
-      });
-    } else {
-      Scaffold.of(context).showSnackBar(SnackBar(
-        content: Text("Your have reached at bottom of the list"),
-      ));
+  void getList() async {
+    if (!isLoading) {
+      if (next != null && !isLoading) {
+        setState(() {
+          isLoading = true;
+        });
+        Map<String, dynamic> result =
+            await _auth.getTransactions(next, previous);
+        count = result['count'];
+        next = result['next'];
+        previous = result['previous'];
+        var tempList = result['results'];
+        setState(() {
+          isLoading = false;
+          transactionList.addAll(tempList);
+        });
+      }
+      if (next == null) {
+        Scaffold.of(context).showSnackBar(SnackBar(
+          content: Text("Your have reached at bottom of the list"),
+        ));
+      }
     }
   }
 }

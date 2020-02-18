@@ -112,7 +112,8 @@ class _SettingsListState extends State<SettingsList> {
         child: ListTile(
           title: Text(
             userBloc.user.fullName,
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+            style: TextStyle(
+                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
           ),
           subtitle: Text(userBloc.user.userName),
           leading: Image.network(
@@ -122,14 +123,16 @@ class _SettingsListState extends State<SettingsList> {
             colorBlendMode: BlendMode.darken,
             fit: BoxFit.fitWidth,
             filterQuality: FilterQuality.high,
-            loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent loadingProgress) {
+            loadingBuilder: (BuildContext context, Widget child,
+                ImageChunkEvent loadingProgress) {
               if (loadingProgress == null) return child;
               return Container(
                 height: 45,
                 width: 45,
                 child: CircularProgressIndicator(
                   value: loadingProgress.expectedTotalBytes != null
-                      ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes
+                      ? loadingProgress.cumulativeBytesLoaded /
+                          loadingProgress.expectedTotalBytes
                       : null,
                 ),
               );

@@ -260,29 +260,32 @@ class AuthService {
   }
 
   // Accept Payment with POST method with empty data  post
-  Future<bool> acceptPaymentRequests(var paymentRequest) async {
+  Future<bool> acceptPaymentRequests(PaymentRequest paymentRequest) async {
     var url = baseUrl + "/api/v1/transactions/request-payment/accept/";
     var data = {"id": paymentRequest.id};
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.post(url, headers: headers, body: _data);
-    if (response.statusCode == 200){
+    if (response.statusCode == 200) {
       return false;
-    }else{
+    } else {
       return true;
     }
   }
 
   // Patch payment status with empty data  patch
-  Future<bool> rejectPaymentRequests(var paymentRequest) async {
-    var url = baseUrl + "/api/v1/transactions/request-payment/update/" + paymentRequest.id + "/";
+  Future<bool> rejectPaymentRequests(PaymentRequest paymentRequest) async {
+    var url = baseUrl +
+        "/api/v1/transactions/request-payment/update/" +
+        paymentRequest.id +
+        "/";
     var data = {};
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.patch(url, headers: headers, body: _data);
-    if (response.statusCode == 200){
+    if (response.statusCode == 200) {
       return false;
-    }else{
+    } else {
       return true;
     }
   }
@@ -293,9 +296,9 @@ class AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.post(url, headers: headers, body: _data);
-    if (response.statusCode == 200){
-        return false;
-    }else{
+    if (response.statusCode == 200) {
+      return false;
+    } else {
       return true;
     }
   }
@@ -322,7 +325,6 @@ class AuthService {
       // This variable will hold list of transactions we got from server
       var user = await getUser();
       var jsonData = json.decode(response.body);
-
       for (var item in jsonData["results"]) {
         // if sender is not current user then
         bool isCredit = (item["from_customer"] != user.userName &&
@@ -340,7 +342,7 @@ class AuthService {
           var avatar = knownCustomers[payee];
           PaymentRequest paymentRequest = PaymentRequest(
               status: item['status'],
-              id: item['id'],
+              id: item['id'].toString(),
               description: item['description'],
               payee: payee,
               avatar: avatar,
@@ -350,6 +352,7 @@ class AuthService {
           paymentRequests.add(paymentRequest);
         } catch (Exception) {}
       }
+
       Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
