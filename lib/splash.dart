@@ -40,6 +40,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> getLoggedInUser() async {
     _sharedPreferences = await SharedPreferences.getInstance();
     final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+    final BankAccountBloc bankAccountBloc = Provider.of(context, listen: false);
     final _auth = AuthService();
 
     if (_sharedPreferences != null) {
@@ -62,13 +63,25 @@ class _SplashScreenState extends State<SplashScreen> {
 
         if (phoneNumberFromPref != "" && passwordFromPref != "") {
           var _user;
+          var _bankAccount;
           _auth.authenticate(phoneNumber, password).then((value) {
             _user = value;
 
             if (_user.fullName != null) {
               userBloc.user = _user;
-              Navigator.of(context)
-                  .pushNamed('/dashboard', arguments: {'dashboardIndex': 0});
+
+              if (_user != null) {
+                _auth.getBankAccounts().then((accounts) {
+                  try {
+                    _bankAccount = accounts[0];
+                    if (_bankAccount != null) {
+                      bankAccountBloc.bankAccount = _bankAccount;
+                      Navigator.of(context).pushNamed('/dashboard',
+                          arguments: {'dashboardIndex': 0});
+                    }
+                  } catch (e) {}
+                });
+              }
             } else {
               Navigator.pop(context);
               Navigator.of(context).pushNamed("/home");

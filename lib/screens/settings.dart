@@ -2,6 +2,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/screens/tiles/bank_account.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -15,6 +16,7 @@ class SettingsList extends StatefulWidget {
 class _SettingsListState extends State<SettingsList> {
   final _auth = AuthService();
   bool _account = false;
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -73,28 +75,36 @@ class _SettingsListState extends State<SettingsList> {
                 color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
           ),
           subtitle: Text(userBloc.user.userName),
-          leading: Image.network(
-            userBloc.user.avatar,
-            height: 45,
-            width: 45,
-            colorBlendMode: BlendMode.darken,
-            fit: BoxFit.fitWidth,
-            filterQuality: FilterQuality.high,
-            loadingBuilder: (BuildContext context, Widget child,
-                ImageChunkEvent loadingProgress) {
-              if (loadingProgress == null) return child;
-              return Container(
-                height: 45,
-                width: 45,
-                child: CircularProgressIndicator(
-                  value: loadingProgress.expectedTotalBytes != null
-                      ? loadingProgress.cumulativeBytesLoaded /
-                          loadingProgress.expectedTotalBytes
-                      : null,
+          leading: isLoading
+              ? Container(
+                  height: 45,
+                  width: 45,
+                  child: CircularProgressIndicator(
+                    backgroundColor: Colors.white,
+                  ),
+                )
+              : Image.network(
+                  userBloc.user.avatar,
+                  height: 45,
+                  width: 45,
+                  colorBlendMode: BlendMode.darken,
+                  fit: BoxFit.fitWidth,
+                  filterQuality: FilterQuality.high,
+                  loadingBuilder: (BuildContext context, Widget child,
+                      ImageChunkEvent loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Container(
+                      height: 45,
+                      width: 45,
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded /
+                                loadingProgress.expectedTotalBytes
+                            : null,
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
-          ),
           trailing: IconButton(
             icon: Icon(
               Icons.mode_edit,
@@ -111,13 +121,15 @@ class _SettingsListState extends State<SettingsList> {
   }
 
   Widget displayBankAccountTile() {
-    final BankAccountBloc bankAccountBloc = Provider.of<BankAccountBloc>(context);
-    print(bankAccountBloc.bankAccount);
-    if (bankAccountBloc.bankAccount.uuid != null){
-      setState(() {_account = true;});
+    final BankAccountBloc bankAccountBloc =
+        Provider.of<BankAccountBloc>(context);
+
+    if (bankAccountBloc.bankAccount.bankName != null) {
+      setState(() {
+        _account = true;
+      });
       return BankAccountTile(account: bankAccountBloc.bankAccount);
-    }
-    else {
+    } else {
       return Text(" ");
     }
   }
@@ -168,6 +180,9 @@ class _SettingsListState extends State<SettingsList> {
       final file = await ImagePicker.pickImage(source: imageSource);
       if (file != null) {
         try {
+          setState(() {
+            isLoading = true;
+          });
           // Get user current login info so we can reuse it to login
           var dbUser = await _auth.getUser();
           var phoneNumber = dbUser.phoneNumber;
@@ -179,6 +194,9 @@ class _SettingsListState extends State<SettingsList> {
           // Get New updated user data and set new user data to userBloc
           await _auth.authenticate(phoneNumber, password).then((value) {
             userBloc.user = value;
+            setState(() {
+              isLoading = false;
+            });
           });
         } catch (err) {}
       }

@@ -202,7 +202,7 @@ class _AddAccountState extends State<AddAccount> {
             bool wasSuccessful = await _auth.addBankAccount(data);
             if (wasSuccessful) {
               Navigator.of(context)
-                  .pushNamed('/dashboard', arguments: {'dashboardIndex': 1});
+                  .pushNamed('/dashboard', arguments: {'dashboardIndex': 4});
             } else {
               setState(() {
                 errorMessage = "An error has occured please try again";
