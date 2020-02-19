@@ -1,3 +1,4 @@
+import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:flutter/material.dart';
 
@@ -22,6 +23,29 @@ class UserBloc extends ChangeNotifier {
     notifyListeners();
   }
 }
+
+class BankAccountBloc extends ChangeNotifier {
+  // This block notify's the change in user status and pass it round the app.
+  BankAccount _bankAccount = BankAccount(
+      uuid: null,
+      bankAvatar: null,
+      bankName: null,
+      accountName: null,
+      accountNumber: null);
+
+  // Getter
+  BankAccount get bankAccount => _bankAccount;
+
+  // Setter
+  set bankAccount(BankAccount val) {
+    _bankAccount = val;
+    notifyListeners();
+  }
+}
+
+
+
+
 
 class PayeeBloc extends ChangeNotifier {
   // This block notify's the change in user status and pass it round the app.

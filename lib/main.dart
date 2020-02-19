@@ -29,6 +29,9 @@ void main() {
             ChangeNotifierProvider<CustomerProfileBloc>.value(
               value: CustomerProfileBloc(),
             ),
+            ChangeNotifierProvider<BankAccountBloc>.value(
+              value: BankAccountBloc(),
+            ),
           ],
           child: MaterialApp(
             initialRoute: '/splash',

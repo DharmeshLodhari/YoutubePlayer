@@ -16,24 +16,6 @@ class _SettingsListState extends State<SettingsList> {
   final _auth = AuthService();
   bool _account = false;
 
-  Widget displayBankAccountTile() {
-    return FutureBuilder(
-      future: _auth.getBankAccounts(),
-      builder: (context, snapshot) {
-        try {
-          // TODO: save this user to db and pull from there
-          var account = snapshot.data;
-          setState(() {
-            _account = true;
-          });
-          return BankAccountTile(account: account);
-        } catch (e) {
-          return Text("");
-        }
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final UserBloc userBloc = Provider.of<UserBloc>(context);
@@ -77,31 +59,6 @@ class _SettingsListState extends State<SettingsList> {
         floatingActionButton: addAccountButton(),
       ),
     );
-  }
-
-  Widget addAccountButton() {
-    if (_account == true) {
-      return Visibility(
-        visible: false,
-        child: FloatingActionButton(
-            backgroundColor: Colors.transparent,
-            onPressed: () {},
-            foregroundColor: Colors.transparent, // Colors.white,
-            elevation: 0.0,
-            focusColor: Colors.transparent,
-            hoverColor: Colors.transparent,
-            splashColor: Colors.transparent),
-      );
-    } else {
-      return FloatingActionButton(
-        backgroundColor: darkBlue(),
-        onPressed: () {
-          Navigator.of(context).pushNamed('/add-account');
-        },
-        tooltip: 'Add Account',
-        child: Icon(Icons.add),
-      );
-    }
   }
 
   Widget displaySettingsTile(userBloc) {
@@ -151,6 +108,43 @@ class _SettingsListState extends State<SettingsList> {
         ),
       ),
     );
+  }
+
+  Widget displayBankAccountTile() {
+    final BankAccountBloc bankAccountBloc = Provider.of<BankAccountBloc>(context);
+    print(bankAccountBloc.bankAccount);
+    if (bankAccountBloc.bankAccount.uuid != null){
+      setState(() {_account = true;});
+      return BankAccountTile(account: bankAccountBloc.bankAccount);
+    }
+    else {
+      return Text(" ");
+    }
+  }
+
+  Widget addAccountButton() {
+    if (_account == true) {
+      return Visibility(
+        visible: false,
+        child: FloatingActionButton(
+            backgroundColor: Colors.transparent,
+            onPressed: () {},
+            foregroundColor: Colors.transparent, // Colors.white,
+            elevation: 0.0,
+            focusColor: Colors.transparent,
+            hoverColor: Colors.transparent,
+            splashColor: Colors.transparent),
+      );
+    } else {
+      return FloatingActionButton(
+        backgroundColor: darkBlue(),
+        onPressed: () {
+          Navigator.of(context).pushNamed('/add-account');
+        },
+        tooltip: 'Add Account',
+        child: Icon(Icons.add),
+      );
+    }
   }
 
   void pickImage(userBloc) async {

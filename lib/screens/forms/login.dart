@@ -82,37 +82,35 @@ class _UserLoginState extends State<UserLogin> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                Container(
-                  margin: EdgeInsets.all(20.0),
-                  padding: EdgeInsets.fromLTRB(10.0, 0.0, 10, 0),
-                  alignment: Alignment.topCenter,
-                  width: 200,
-                  height: 200,
-                  decoration: BoxDecoration(
-                    color: Colors.transparent,
-                  ),
-                  child: Image.asset(
-                    'assets/images/slydo.png',
-                    fit: BoxFit.cover,
-                  ),
-                ),
+                displayImage(),
                 phoneNumberField(),
-                SizedBox(
-                  height: 20.0,
-                ),
+                SizedBox(height: 20.0),
                 passwordField(),
-                SizedBox(
-                  height: 20.0,
-                ),
+                SizedBox(height: 20.0),
                 rememberLogin(),
-                SizedBox(
-                  height: 20,
-                ),
+                SizedBox(height: 20),
                 submitButton(context),
               ],
             ),
           ),
         ));
+  }
+
+  Widget displayImage(){
+    return Container(
+      margin: EdgeInsets.all(20.0),
+      padding: EdgeInsets.fromLTRB(10.0, 0.0, 10, 0),
+      alignment: Alignment.topCenter,
+      width: 200,
+      height: 200,
+      decoration: BoxDecoration(
+        color: Colors.transparent,
+      ),
+      child: Image.asset(
+        'assets/images/slydo.png',
+        fit: BoxFit.cover,
+      ),
+    );
   }
 
   Widget phoneNumberField() {
@@ -254,18 +252,36 @@ class _UserLoginState extends State<UserLogin> {
 
   void login() async {
     final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+    final BankAccountBloc bankAccountBloc = Provider.of<BankAccountBloc>(context, listen: false);
     if (_formKey.currentState.validate()) {
       showDialog(context: context, builder: (context) => LoadingIndicator());
 
       var _user;
+      var _bankAccount;
+
       _auth.authenticate(phoneNumber, password).then((value) {
         _user = value;
 
         if (_user.fullName != null) {
           //method call for storing user info in shared preference
           isRememberChecked();
-
           userBloc.user = _user;
+
+          // Get user's bank account if user is logged in
+          if (_user != null){
+            _auth.getBankAccounts().then((accounts) {
+              try{
+                _bankAccount = accounts[0];
+                print(_bankAccount);
+                if (_bankAccount != null) {
+                  bankAccountBloc.bankAccount = _bankAccount;
+                }
+              }catch(e){
+
+              }
+            });
+          }
+
           Navigator.of(context)
               .pushNamed('/dashboard', arguments: {'dashboardIndex': 0});
         } else {

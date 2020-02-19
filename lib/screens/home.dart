@@ -42,49 +42,51 @@ class _HomeState extends State<Home> {
                     SizedBox(height: 100),
                     showHomeBackground(),
                     SizedBox(height: 20),
-                    Text(
-                      'An easy way to accept \n and receive payments.',
-                      style: TextStyle(color: Colors.white, fontSize: 20),
-                    ),
+                    Text('An easy way to accept \n and receive payments.', style: TextStyle(color: Colors.white, fontSize: 20)),
                     SizedBox(height: 20),
-                    ButtonTheme(
-                      minWidth: double.infinity,
-                      child: MaterialButton(
-                        onPressed: () {
-                          Navigator.of(context).pushNamed('/login');
-                        },
-                        textColor: Colors.white,
-                        color: darkBlue(),
-                        height: 50,
-                        child: Text("Log In"),
-                      ),
-                    ),
+                    loginButton(),
                     SizedBox(height: 10),
-                    Text(
-                      'or',
-                      style: TextStyle(color: Colors.white, fontSize: 20),
-                    ),
+                    Text('or', style: TextStyle(color: Colors.white, fontSize: 20),),
                     SizedBox(height: 10),
-                    ButtonTheme(
-                      minWidth: double.infinity,
-                      child: MaterialButton(
-                        shape: RoundedRectangleBorder(
-                            side: BorderSide(color: darkBlue(), width: 2.0)),
-                        onPressed: () {
-                          Navigator.of(context).pushNamed('/register');
-                        },
-                        textColor: Colors.white,
-                        color: darkBlue(),
-                        height: 50,
-                        child: Text("Register"),
-                      ),
-                    ),
+                    registerButton(),
                   ],
                 ),
               ),
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget loginButton(){
+    return ButtonTheme(
+      minWidth: double.infinity,
+      child: MaterialButton(
+        onPressed: () {
+          Navigator.of(context).pushNamed('/login');
+        },
+        textColor: Colors.white,
+        color: darkBlue(),
+        height: 50,
+        child: Text("Log In"),
+      ),
+    );
+  }
+
+  Widget registerButton(){
+    return ButtonTheme(
+      minWidth: double.infinity,
+      child: MaterialButton(
+        shape: RoundedRectangleBorder(
+            side: BorderSide(color: darkBlue(), width: 2.0)),
+        onPressed: () {
+          Navigator.of(context).pushNamed('/register');
+        },
+        textColor: Colors.white,
+        color: darkBlue(),
+        height: 50,
+        child: Text("Register"),
       ),
     );
   }
@@ -96,16 +98,5 @@ class _HomeState extends State<Home> {
         fit: BoxFit.cover,
       ),
     );
-//    if (phoneNumberFromPref != "" && passwordFromPref != "") {
-//      return Container();
-//
-//    }else {
-//      return Container(
-//        child: Image.asset(
-//          'assets/images/index.png',
-//          fit: BoxFit.cover,
-//        ),
-//      );
-//    }
   }
 }

@@ -240,18 +240,20 @@ class AuthService {
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
       List<BankAccount> accounts = [];
-      for (var item in jsonData) {
-        var bank = item["bank"];
-        var logoUrl = item["bank"]['logo_url'];
-        item["bank"]['logo_url'] = logoUrl;
+      for (var item in jsonData['results']) {
+          if (item.is_default = true) {
+            var bank = item["bank"];
+            var logoUrl = item["bank"]['logo_url'];
+            item["bank"]['logo_url'] = logoUrl;
 
-        BankAccount account = BankAccount(
-            bankAvatar: item["bank"]['logo_url'],
-            uuid: item['id'].toString(),
-            bankName: bank['short_name'],
-            accountName: item['account_name'],
-            accountNumber: item['account_number']);
-        accounts.add(account);
+            BankAccount account = BankAccount(
+                bankAvatar: item["bank"]['logo_url'],
+                uuid: item['id'].toString(),
+                bankName: bank['short_name'],
+                accountName: item['account_name'],
+                accountNumber: item['account_number']);
+            accounts.add(account);
+        }
       }
       return accounts;
     } else {
