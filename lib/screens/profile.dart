@@ -75,26 +75,16 @@ class _ProfileState extends State<Profile> {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Container(
-              padding: EdgeInsets.all(40),
-              child: Image.network(
-                userBloc.user.qrCode,
-                colorBlendMode: BlendMode.darken,
-                fit: BoxFit.fitWidth,
-                filterQuality: FilterQuality.high,
-                loadingBuilder: (BuildContext context, Widget child,
-                    ImageChunkEvent loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Center(
-                    child: CircularProgressIndicator(
-                      value: loadingProgress.expectedTotalBytes != null
-                          ? loadingProgress.cumulativeBytesLoaded /
-                              loadingProgress.expectedTotalBytes
-                          : null,
-                    ),
-                  );
-                },
-              ),
-            ),
+                padding: EdgeInsets.all(40),
+                child: CachedNetworkImage(
+                  imageUrl: userBloc.user.qrCode,
+                  colorBlendMode: BlendMode.darken,
+                  fit: BoxFit.fitWidth,
+                  filterQuality: FilterQuality.high,
+                  placeholder: (context, url) => CircularProgressIndicator(
+                    backgroundColor: Colors.white,
+                  ),
+                )),
             ButtonBar(
               mainAxisSize: MainAxisSize.max,
               alignment: MainAxisAlignment.spaceBetween,

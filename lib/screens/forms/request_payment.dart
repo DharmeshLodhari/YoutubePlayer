@@ -5,6 +5,7 @@ import 'package:Slydo/models/user.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/location_service.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -18,7 +19,8 @@ class RequestPayment extends StatefulWidget {
 
   // Declare a field that holds the userData.
   @override
-  _RequestPaymentState createState() => _RequestPaymentState(arguments: arguments);
+  _RequestPaymentState createState() =>
+      _RequestPaymentState(arguments: arguments);
 }
 
 class _RequestPaymentState extends State<RequestPayment> {
@@ -50,10 +52,13 @@ class _RequestPaymentState extends State<RequestPayment> {
   @override
   void initState() {
     isFromProfile = arguments != null
-        ? arguments['isFromProfile'] != null ? arguments['isFromProfile'] : false
+        ? arguments['isFromProfile'] != null
+            ? arguments['isFromProfile']
+            : false
         : false;
-    isRequest =
-        arguments != null ? arguments['isRequest'] != null ? arguments['isRequest'] : false : false;
+    isRequest = arguments != null
+        ? arguments['isRequest'] != null ? arguments['isRequest'] : false
+        : false;
     _passwordController = TextEditingController();
 
     super.initState();
@@ -98,8 +103,10 @@ class _RequestPaymentState extends State<RequestPayment> {
                     SizedBox(height: 10),
                     Text(
                       errorMessage,
-                      style:
-                          TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 16),
+                      style: TextStyle(
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16),
                     ),
                     SizedBox(height: 10),
                     getSubmitButton(),
@@ -133,7 +140,8 @@ class _RequestPaymentState extends State<RequestPayment> {
       padding: const EdgeInsets.only(right: 4.0),
       child: InkWell(
         onTap: () {
-          Navigator.of(context).pushNamed('/scan-qr', arguments: {"isRequest": true});
+          Navigator.of(context)
+              .pushNamed('/scan-qr', arguments: {"isRequest": true});
         },
         child: Image.asset(
           'assets/images/qr_code.png',
@@ -157,14 +165,14 @@ class _RequestPaymentState extends State<RequestPayment> {
     var avatarImage;
     var qrCodeImage;
     if (_payee != null) {
-      avatarImage = Image.network(
-        _payee.avatar,
+      avatarImage = CachedNetworkImage(
+        imageUrl: _payee.avatar,
         colorBlendMode: BlendMode.darken,
         fit: BoxFit.fitWidth,
         filterQuality: FilterQuality.high,
       );
-      qrCodeImage = Image.network(
-        _payee.qrCode,
+      qrCodeImage = CachedNetworkImage(
+        imageUrl: _payee.qrCode,
         colorBlendMode: BlendMode.darken,
         fit: BoxFit.fitWidth,
         filterQuality: FilterQuality.high,
@@ -179,7 +187,10 @@ class _RequestPaymentState extends State<RequestPayment> {
               dense: true,
               title: Text(
                 _payee.fullName,
-                style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+                style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15),
               ),
               subtitle: Text(_payee.userName),
               leading: avatarImage,
@@ -213,7 +224,8 @@ class _RequestPaymentState extends State<RequestPayment> {
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(width: 1, color: Colors.white, style: BorderStyle.solid))),
+              borderSide: BorderSide(
+                  width: 1, color: Colors.white, style: BorderStyle.solid))),
       onChanged: (val) {
         setState(() {
           if (!isFromProfile && _payee != null) {
@@ -244,7 +256,8 @@ class _RequestPaymentState extends State<RequestPayment> {
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(width: 1, color: Colors.white, style: BorderStyle.solid))),
+              borderSide: BorderSide(
+                  width: 1, color: Colors.white, style: BorderStyle.solid))),
       validator: (val) {
         if (val.isNotEmpty) {
           try {
@@ -287,7 +300,8 @@ class _RequestPaymentState extends State<RequestPayment> {
           ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(width: 1, color: Colors.white, style: BorderStyle.solid))),
+              borderSide: BorderSide(
+                  width: 1, color: Colors.white, style: BorderStyle.solid))),
       onChanged: (val) {
         setState(() {
           reference = val;
@@ -331,7 +345,9 @@ class _RequestPaymentState extends State<RequestPayment> {
           } else {
             var msg = "Invalid recipient";
             Toast.show(msg, context,
-                gravity: Toast.CENTER, backgroundColor: darkBlue(), textColor: Colors.white);
+                gravity: Toast.CENTER,
+                backgroundColor: darkBlue(),
+                textColor: Colors.white);
           }
         },
         textColor: Colors.white,

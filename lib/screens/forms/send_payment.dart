@@ -5,6 +5,7 @@ import 'package:Slydo/models/user.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/location_service.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -108,10 +109,10 @@ class _SendPaymentState extends State<SendPayment> {
     //
   }
 
-  Widget showBackArrow(){
-    if (Platform.isAndroid){
+  Widget showBackArrow() {
+    if (Platform.isAndroid) {
       return Text("");
-    }else{
+    } else {
       return IconButton(
         icon: Icon(Icons.arrow_back_ios),
         onPressed: () {
@@ -120,7 +121,6 @@ class _SendPaymentState extends State<SendPayment> {
         },
       );
     }
-
   }
 
   Widget getDisplayCard() {
@@ -135,14 +135,14 @@ class _SendPaymentState extends State<SendPayment> {
     var avatarImage;
     var qrCodeImage;
     if (_payee != null) {
-      avatarImage = Image.network(
-        _payee.avatar,
+      avatarImage = CachedNetworkImage(
+        imageUrl: _payee.avatar,
         colorBlendMode: BlendMode.darken,
         fit: BoxFit.fitWidth,
         filterQuality: FilterQuality.high,
       );
-      qrCodeImage = Image.network(
-        _payee.qrCode,
+      qrCodeImage = CachedNetworkImage(
+        imageUrl: _payee.qrCode,
         colorBlendMode: BlendMode.darken,
         fit: BoxFit.fitWidth,
         filterQuality: FilterQuality.high,
