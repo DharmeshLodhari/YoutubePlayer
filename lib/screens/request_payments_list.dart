@@ -12,6 +12,7 @@ class PaymentRequestList extends StatefulWidget {
 }
 
 class _PaymentRequestListState extends State<PaymentRequestList> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final _auth = AuthService();
   SlidableController slidableController;
   int count = 0;
@@ -49,6 +50,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         return false;
       },
       child: Scaffold(
+          key: _scaffoldKey,
           backgroundColor: lightBlue(),
           appBar: AppBar(
             automaticallyImplyLeading: false,
@@ -119,7 +121,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
           noItemInList = true;
         });
       } else if (next == null && requestPaymentList.length > 6) {
-        Scaffold.of(context).showSnackBar(SnackBar(
+        _scaffoldKey.currentState.showSnackBar(SnackBar(
           content: Text("Your have reached at bottom of the list"),
           duration: Duration(milliseconds: 500),
         ));
@@ -156,7 +158,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   }
 
   void _showSnackBar(BuildContext context, String text) {
-    Scaffold.of(context).showSnackBar(SnackBar(content: Text(text)));
+    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(text)));
   }
 
   List<Widget> listSecondaryActions(PaymentRequest paymentRequest, int index) {
