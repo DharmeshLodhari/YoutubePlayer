@@ -1,6 +1,7 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -80,8 +81,8 @@ class _ProfileState extends State<Profile> {
                 colorBlendMode: BlendMode.darken,
                 fit: BoxFit.fitWidth,
                 filterQuality: FilterQuality.high,
-                loadingBuilder:
-                    (BuildContext context, Widget child, ImageChunkEvent loadingProgress) {
+                loadingBuilder: (BuildContext context, Widget child,
+                    ImageChunkEvent loadingProgress) {
                   if (loadingProgress == null) return child;
                   return Center(
                     child: CircularProgressIndicator(
@@ -105,14 +106,17 @@ class _ProfileState extends State<Profile> {
                 FlatButton.icon(
                     onPressed: () {
                       Clipboard.setData(new ClipboardData(
-                          text: baseUrl + "/api/v1/customer/" + userBloc.user.userName));
+                          text: baseUrl +
+                              "/api/v1/customer/" +
+                              userBloc.user.userName));
                       Toast.show("Copied!", context,
                           gravity: Toast.CENTER,
                           duration: Toast.LENGTH_LONG,
                           backgroundColor: darkBlue());
                     },
                     icon: Icon(Icons.settings, color: Colors.black),
-                    label: Text('Copy Url', style: TextStyle(color: Colors.black, fontSize: 14))),
+                    label: Text('Copy Url',
+                        style: TextStyle(color: Colors.black, fontSize: 14))),
               ],
             ),
           ],
@@ -152,13 +156,14 @@ class _ProfileState extends State<Profile> {
               child: MaterialButton(
                 elevation: 4.0,
                 onPressed: () {
-                  Navigator.of(context)
-                      .pushNamed('/send-payment', arguments: <String, bool>{'isFromProfile': true});
+                  Navigator.of(context).pushNamed('/send-payment',
+                      arguments: <String, bool>{'isFromProfile': true});
                 },
                 textColor: Colors.white,
                 color: darkBlue(),
                 height: 50,
-                child: Text("Send"), // change this to make payment request button to
+                child: Text(
+                    "Send"), // change this to make payment request button to
               ),
             ),
           ),
@@ -172,7 +177,8 @@ class _ProfileState extends State<Profile> {
       padding: const EdgeInsets.only(right: 4.0),
       child: InkWell(
         onTap: () {
-          Navigator.of(context).pushNamed('/scan-qr', arguments: {'isRequest': false});
+          Navigator.of(context)
+              .pushNamed('/scan-qr', arguments: {'isRequest': false});
         },
         child: Image.asset(
           'assets/images/qr_code.png',
@@ -188,11 +194,18 @@ class _ProfileState extends State<Profile> {
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: ClipOval(
-        child: Image.network(
-          userBloc.user.avatar,
+        child: CachedNetworkImage(
+          imageUrl: userBloc.user.avatar,
           height: 40,
           width: 40,
+          colorBlendMode: BlendMode.darken,
           fit: BoxFit.cover,
+          filterQuality: FilterQuality.high,
+          placeholder: (context, url) => userBloc.user.avatar == ""
+              ? Icon(Icons.person)
+              : CircularProgressIndicator(
+                  backgroundColor: Colors.white,
+                ),
         ),
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:Slydo/models/transactions.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class BankAccountTile extends StatelessWidget {
@@ -20,30 +21,19 @@ class BankAccountTile extends StatelessWidget {
           ),
           subtitle:
               Text('******' + account.accountNumber.toString().substring(5, 9)),
-          leading: Image.network(
-            account.bankAvatar,
+          leading: CachedNetworkImage(
+            imageUrl: account.bankAvatar,
             height: 45,
             width: 45,
             colorBlendMode: BlendMode.darken,
             fit: BoxFit.fitWidth,
             filterQuality: FilterQuality.high,
-            loadingBuilder: (BuildContext context, Widget child,
-                ImageChunkEvent loadingProgress) {
-              if (loadingProgress == null) return child;
-              return Container(
-                height: 45,
-                width: 45,
-                child: CircularProgressIndicator(
-                  value: loadingProgress.expectedTotalBytes != null
-                      ? loadingProgress.cumulativeBytesLoaded /
-                          loadingProgress.expectedTotalBytes
-                      : null,
-                ),
-              );
-            },
+            placeholder: (context, url) => CircularProgressIndicator(
+              backgroundColor: Colors.white,
+            ),
           ),
-          trailing: FlatButton(
-            child: Icon(Icons.settings, color: Colors.grey[400]),
+          trailing: IconButton(
+            icon: Icon(Icons.settings, color: Colors.grey[400]),
             onPressed: () {},
           ),
         ),

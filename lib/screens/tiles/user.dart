@@ -1,4 +1,6 @@
 import 'package:Slydo/models/transactions.dart';
+import 'package:Slydo/screens/colors.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class UserTile extends StatelessWidget {
@@ -14,29 +16,27 @@ class UserTile extends StatelessWidget {
         child: ListTile(
             title: Text(
               user.payee,
-              style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+              style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15),
             ),
             subtitle: Text(user.description),
-            leading: Image.network(
-              user.avatar,
+            leading: CachedNetworkImage(
+              imageUrl: user.avatar,
               height: 45,
               width: 45,
               colorBlendMode: BlendMode.darken,
               fit: BoxFit.fitWidth,
               filterQuality: FilterQuality.high,
-              loadingBuilder:
-                  (BuildContext context, Widget child, ImageChunkEvent loadingProgress) {
-                if (loadingProgress == null) return child;
-                return Container(
-                  height: 45,
-                  width: 45,
-                  child: CircularProgressIndicator(
-                    value: loadingProgress.expectedTotalBytes != null
-                        ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes
-                        : null,
-                  ),
-                );
-              },
+              placeholder: (context, url) => user.avatar == ""
+                  ? Icon(
+                      Icons.person,
+                      color: Colors.black,
+                    )
+                  : CircularProgressIndicator(
+                      backgroundColor: Colors.white,
+                    ),
             ),
             trailing: Text(
               user.currency + ' ' + user.amount.toString(),

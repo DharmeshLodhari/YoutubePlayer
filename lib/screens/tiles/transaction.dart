@@ -1,4 +1,5 @@
 import 'package:Slydo/models/transactions.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 Future showScaleAlertBox({
@@ -65,28 +66,41 @@ class PaymentRequestTile extends StatelessWidget {
     );
   }
 
+//  Widget getLeading() {
+//    return Image.network(
+//      paymentRequest.avatar,
+//      height: 45,
+//      width: 45,
+//      colorBlendMode: BlendMode.darken,
+//      fit: BoxFit.fitWidth,
+//      filterQuality: FilterQuality.high,
+//      loadingBuilder: (BuildContext context, Widget child,
+//          ImageChunkEvent loadingProgress) {
+//        if (loadingProgress == null) return child;
+//        return Container(
+//          height: 45,
+//          width: 45,
+//          child: CircularProgressIndicator(
+//            value: loadingProgress.expectedTotalBytes != null
+//                ? loadingProgress.cumulativeBytesLoaded /
+//                    loadingProgress.expectedTotalBytes
+//                : null,
+//          ),
+//        );
+//      },
+//    );
+
   Widget getLeading() {
-    return Image.network(
-      paymentRequest.avatar,
+    return CachedNetworkImage(
+      imageUrl: paymentRequest.avatar,
       height: 45,
       width: 45,
       colorBlendMode: BlendMode.darken,
       fit: BoxFit.fitWidth,
       filterQuality: FilterQuality.high,
-      loadingBuilder: (BuildContext context, Widget child,
-          ImageChunkEvent loadingProgress) {
-        if (loadingProgress == null) return child;
-        return Container(
-          height: 45,
-          width: 45,
-          child: CircularProgressIndicator(
-            value: loadingProgress.expectedTotalBytes != null
-                ? loadingProgress.cumulativeBytesLoaded /
-                    loadingProgress.expectedTotalBytes
-                : null,
-          ),
-        );
-      },
+      placeholder: (context, url) => CircularProgressIndicator(
+        backgroundColor: Colors.white,
+      ),
     );
   }
 
@@ -138,27 +152,16 @@ class TransactionTile extends StatelessWidget {
                   fontSize: 15),
             ),
             subtitle: Text(transaction.description),
-            leading: Image.network(
-              transaction.avatar,
+            leading: CachedNetworkImage(
+              imageUrl: transaction.avatar,
               height: 45,
               width: 45,
               colorBlendMode: BlendMode.darken,
               fit: BoxFit.fitWidth,
               filterQuality: FilterQuality.high,
-              loadingBuilder: (BuildContext context, Widget child,
-                  ImageChunkEvent loadingProgress) {
-                if (loadingProgress == null) return child;
-                return Container(
-                  height: 45,
-                  width: 45,
-                  child: CircularProgressIndicator(
-                    value: loadingProgress.expectedTotalBytes != null
-                        ? loadingProgress.cumulativeBytesLoaded /
-                            loadingProgress.expectedTotalBytes
-                        : null,
-                  ),
-                );
-              },
+              placeholder: (context, url) => CircularProgressIndicator(
+                backgroundColor: Colors.white,
+              ),
             ),
             trailing: Text(
               transaction.currency + ' ' + transaction.amount.toString(),

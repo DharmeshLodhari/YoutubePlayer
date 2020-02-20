@@ -4,6 +4,7 @@ import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/screens/tiles/bank_account.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -87,27 +88,22 @@ class _SettingsListState extends State<SettingsList> {
                     backgroundColor: Colors.white,
                   ),
                 )
-              : Image.network(
-                  userBloc.user.avatar,
+              : CachedNetworkImage(
+                  imageUrl: userBloc.user.avatar,
                   height: 45,
                   width: 45,
                   colorBlendMode: BlendMode.darken,
                   fit: BoxFit.fitWidth,
                   filterQuality: FilterQuality.high,
-                  loadingBuilder: (BuildContext context, Widget child,
-                      ImageChunkEvent loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return Container(
-                      height: 45,
-                      width: 45,
-                      child: CircularProgressIndicator(
-                        value: loadingProgress.expectedTotalBytes != null
-                            ? loadingProgress.cumulativeBytesLoaded /
-                                loadingProgress.expectedTotalBytes
-                            : null,
-                      ),
-                    );
-                  },
+                  placeholder: (context, url) => userBloc.user.avatar == ""
+                      ? Icon(
+                          Icons.person,
+                          color: Colors.black,
+                          size: 45,
+                        )
+                      : CircularProgressIndicator(
+                          backgroundColor: Colors.white,
+                        ),
                 ),
           trailing: IconButton(
             icon: Icon(

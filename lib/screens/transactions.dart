@@ -1,7 +1,6 @@
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/screens/tiles/transaction.dart';
 import 'package:Slydo/services/auth.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:flutter/material.dart';
 
@@ -106,16 +105,13 @@ class _TransactionListState extends State<TransactionList> {
         });
       }
       if (transactionList.isEmpty) {
-        Scaffold.of(context).showSnackBar(SnackBar(
-          content: Text("You have no any transactions History"),
-          duration: Duration(milliseconds: 1200),
-        ));
         setState(() {
           noItemInList = true;
         });
       } else if (next == null && transactionList.length > 6) {
         Scaffold.of(context).showSnackBar(SnackBar(
           content: Text("Your have reached at bottom of the list"),
+          duration: Duration(milliseconds: 500),
         ));
       }
     }

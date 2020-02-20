@@ -32,10 +32,18 @@ class _DashboardState extends State<Dashboard> {
     super.initState();
   }
 
+  List<Widget> screens = [
+    Profile(),
+    PaymentRequestList(),
+    TransactionList(),
+    ExploreList(),
+    SettingsList(),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: page(),
+      body: IndexedStack(index: _currentIndex, children: screens),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: lightBlue(),
         fixedColor: lightBlue(),
@@ -83,28 +91,6 @@ class _DashboardState extends State<Dashboard> {
         ],
       ),
     );
-  }
-
-  Widget page() {
-    switch (_currentIndex) {
-      case 0:
-        return Profile();
-        break;
-      case 1:
-        return PaymentRequestList();
-        break;
-      case 2:
-        return TransactionList();
-        break;
-      case 3:
-        return ExploreList();
-        break;
-      case 4:
-        return SettingsList();
-        break;
-      default:
-        return Profile();
-    }
   }
 
   changeIndex(index) {

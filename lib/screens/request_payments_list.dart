@@ -115,17 +115,13 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         });
       }
       if (requestPaymentList.isEmpty) {
-        Scaffold.of(context).showSnackBar(SnackBar(
-          content: Text("You have no any payment requests pending"),
-          duration: Duration(milliseconds: 1200),
-        ));
-
         setState(() {
           noItemInList = true;
         });
       } else if (next == null && requestPaymentList.length > 6) {
         Scaffold.of(context).showSnackBar(SnackBar(
           content: Text("Your have reached at bottom of the list"),
+          duration: Duration(milliseconds: 500),
         ));
       }
     }
