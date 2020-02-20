@@ -1,4 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/screens/tiles/bank_account.dart';
 import 'package:Slydo/services/auth.dart';
@@ -21,7 +22,8 @@ class _SettingsListState extends State<SettingsList> {
   @override
   Widget build(BuildContext context) {
     final UserBloc userBloc = Provider.of<UserBloc>(context);
-
+    final BankAccountBloc bankAccountBloc =
+        Provider.of<BankAccountBloc>(context);
     return WillPopScope(
       onWillPop: () async {
         Navigator.pop(context);
@@ -37,7 +39,9 @@ class _SettingsListState extends State<SettingsList> {
           actions: <Widget>[
             IconButton(
               icon: Icon(Icons.power_settings_new, color: Colors.white),
-              onPressed: logoutUser,
+              onPressed: () {
+                logoutUser(bankAccountBloc);
+              },
               tooltip: "Logout",
             ),
           ],
@@ -51,7 +55,7 @@ class _SettingsListState extends State<SettingsList> {
                 children: <Widget>[
                   SizedBox(height: 10),
                   displaySettingsTile(userBloc),
-                  displayBankAccountTile(),
+                  displayBankAccountTile(bankAccountBloc),
                   SizedBox(height: 20),
                 ],
               ),
@@ -120,10 +124,7 @@ class _SettingsListState extends State<SettingsList> {
     );
   }
 
-  Widget displayBankAccountTile() {
-    final BankAccountBloc bankAccountBloc =
-        Provider.of<BankAccountBloc>(context);
-
+  Widget displayBankAccountTile(BankAccountBloc bankAccountBloc) {
     if (bankAccountBloc.bankAccount.bankName != null) {
       setState(() {
         _account = true;
@@ -203,11 +204,16 @@ class _SettingsListState extends State<SettingsList> {
     }
   }
 
-  void logoutUser() async {
+  void logoutUser(BankAccountBloc bankAccountBloc) async {
     SharedPreferences _sharedPreferences;
     await _auth.logOut();
+    bankAccountBloc.bankAccount = BankAccount();
+    setState(() {
+      _account = false;
+    });
     _sharedPreferences = await SharedPreferences.getInstance();
     _sharedPreferences.setBool('isLoggedOut', true);
+
     try {} catch (err) {}
     Navigator.pushNamedAndRemoveUntil(context, "/home", (r) => false);
   }
