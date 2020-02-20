@@ -267,11 +267,11 @@ class AuthService {
     var data = {"id": paymentRequest.id};
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
-    var response = await http.post(url, headers: headers, body: _data);
+    var response = await http.patch(url, headers: headers, body: _data);
     if (response.statusCode == 200) {
-      return false;
-    } else {
       return true;
+    } else {
+      return false;
     }
   }
 
@@ -281,14 +281,14 @@ class AuthService {
         "/api/v1/transactions/request-payment/update/" +
         paymentRequest.id +
         "/";
-    var data = {};
     var headers = await getAuthHeaders();
+    var data = {};
     var _data = jsonEncode(data);
     var response = await http.patch(url, headers: headers, body: _data);
     if (response.statusCode == 200) {
-      return false;
-    } else {
       return true;
+    } else {
+      return false;
     }
   }
 
@@ -432,53 +432,6 @@ class AuthService {
       throw json.decode(response.body);
     }
   }
-
-//  Future<List<Transaction>> getTransactions() async {
-//    Map<String, String> knownCustomers = {};
-//    var url = baseUrl + "/api/v1/transactions/list/";
-//    var headers = await getAuthHeaders();
-//    var response = await http.get(url, headers: headers);
-//
-//    if (response.statusCode == 200) {
-//      List<Transaction> transactions = [];
-//      // This variable will hold list of transactions we got from server
-//      var user = await getUser();
-//      var jsonData = json.decode(response.body);
-//
-//      for (var item in jsonData["results"]) {
-//        // if sender is not current user then
-//        bool isCredit =
-//            (item["from_customer"] != user.userName && item["to_customer"] == user.userName)
-//                ? true
-//                : false;
-//
-//        var payee = isCredit ? item["from_customer"] : item['to_customer'];
-//
-//        try {
-//          if (knownCustomers.containsKey(payee) == false) {
-//            var customer = await fetchCustomerProfile(payee);
-//            knownCustomers[payee] = customer.avatar;
-//          }
-//          var avatar = knownCustomers[payee];
-//          Transaction transaction = Transaction(
-//              status: item['status'],
-//              uuid: item['slug'],
-//              description: item['description'],
-//              payee: payee,
-//              avatar: avatar,
-//              currency: item['currency'],
-//              amount: item['amount'],
-//              isCredit: isCredit);
-//          transactions.add(transaction);
-//        } catch (Exception) {}
-//      }
-//      return transactions;
-//    } else if (response.statusCode == 500) {
-//      throw "Server Error";
-//    } else {
-//      throw json.decode(response.body);
-//    }
-//  }
 
   //Send payment to backend
   Future<http.Response> makePayment(Map data) async {
