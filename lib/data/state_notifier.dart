@@ -43,10 +43,6 @@ class BankAccountBloc extends ChangeNotifier {
   }
 }
 
-
-
-
-
 class PayeeBloc extends ChangeNotifier {
   // This block notify's the change in user status and pass it round the app.
   Payee _payee = Payee(

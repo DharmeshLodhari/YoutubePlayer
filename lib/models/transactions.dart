@@ -35,8 +35,6 @@ class Transaction {
       this.isCredit});
 }
 
-
-
 class PaymentRequest {
   String status;
   String id;
@@ -50,11 +48,11 @@ class PaymentRequest {
   // Pass in as named parameter in constructor
   PaymentRequest(
       {this.status,
-        this.id,
-        this.description,
-        this.payee,
-        this.avatar,
-        this.currency,
-        this.amount,
-        this.isCredit});
+      this.id,
+      this.description,
+      this.payee,
+      this.avatar,
+      this.currency,
+      this.amount,
+      this.isCredit});
 }

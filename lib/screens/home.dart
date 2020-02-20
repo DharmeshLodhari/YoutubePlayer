@@ -42,11 +42,15 @@ class _HomeState extends State<Home> {
                     SizedBox(height: 100),
                     showHomeBackground(),
                     SizedBox(height: 20),
-                    Text('An easy way to accept \n and receive payments.', style: TextStyle(color: Colors.white, fontSize: 20)),
+                    Text('An easy way to accept \n and receive payments.',
+                        style: TextStyle(color: Colors.white, fontSize: 20)),
                     SizedBox(height: 20),
                     loginButton(),
                     SizedBox(height: 10),
-                    Text('or', style: TextStyle(color: Colors.white, fontSize: 20),),
+                    Text(
+                      'or',
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    ),
                     SizedBox(height: 10),
                     registerButton(),
                   ],
@@ -59,7 +63,7 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget loginButton(){
+  Widget loginButton() {
     return ButtonTheme(
       minWidth: double.infinity,
       child: MaterialButton(
@@ -74,7 +78,7 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget registerButton(){
+  Widget registerButton() {
     return ButtonTheme(
       minWidth: double.infinity,
       child: MaterialButton(

@@ -33,8 +33,9 @@ class _QRCodeViewState extends State<QRCodeView> {
   @override
   void initState() {
     print(arguments);
-    isRequest =
-        arguments != null ? arguments['isRequest'] != null ? arguments['isRequest'] : false : false;
+    isRequest = arguments != null
+        ? arguments['isRequest'] != null ? arguments['isRequest'] : false
+        : false;
     // TODO: implement initState
 
     print("isRequest $isRequest");
@@ -67,7 +68,8 @@ class _QRCodeViewState extends State<QRCodeView> {
   }
 
   Widget flipCameraExpandedView() {
-    return Expanded(child: Column(children: <Widget>[getFlipButton()]), flex: 1);
+    return Expanded(
+        child: Column(children: <Widget>[getFlipButton()]), flex: 1);
   }
 
   // Camera View of scanner
@@ -116,14 +118,19 @@ class _QRCodeViewState extends State<QRCodeView> {
 
           // Pull the user from the server
           // TODO: Add try block here and check if error occurred in server like 404 then take user to home page and show error
-          customerProfileBloc.customer = await _auth.fetchCustomerProfile(recipient);
+          customerProfileBloc.customer =
+              await _auth.fetchCustomerProfile(recipient);
           Navigator.pop(context);
           print("end isRequest $isRequest");
           if (isRequest) {
-            Navigator.of(context).pushNamed('/request-payment', arguments: {'isRequest': true});
+            Navigator.of(context)
+                .pushNamed('/request-payment', arguments: {'isRequest': true});
           } else {
             Navigator.of(context).pushNamed('/send-payment',
-                arguments: <String, bool>{'isFromProfile': false, 'isRequest': false});
+                arguments: <String, bool>{
+                  'isFromProfile': false,
+                  'isRequest': false
+                });
           }
         }
       }
