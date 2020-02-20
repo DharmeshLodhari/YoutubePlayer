@@ -57,10 +57,6 @@ class _UserLoginState extends State<UserLogin> {
         passwordController.text = passwordFromPref;
         phoneNumber = phoneNumberFromPref;
         password = passwordFromPref;
-
-//        if (phoneNumberFromPref != "" && passwordFromPref != "") {
-//          login();
-//        }
       }
     }
   }

@@ -2,6 +2,7 @@ import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/screens/tiles/transaction.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/widget/noItemInList.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
@@ -19,6 +20,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   List requestPaymentList = [];
   ScrollController _scrollController = new ScrollController();
   bool isLoading = false;
+  bool noItemInList = false;
 
   @protected
   void initState() {
@@ -56,30 +58,28 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
               sendRequestButton(),
             ],
           ),
-          body: Column(
-            children: <Widget>[
-              _buildRequestPaymentList(),
-            ],
-          )),
+          body: _buildRequestPaymentList()),
     );
   }
 
   Widget _buildRequestPaymentList() {
-    return Expanded(
-      child: ListView.builder(
-        //+1 for progressbar
-        itemCount: requestPaymentList.length + 1,
-        itemBuilder: (BuildContext context, int index) {
-          if (index == requestPaymentList.length) {
-            return _buildIndicator();
-          } else {
-            return _getSlidableWithLists(
-                context, requestPaymentList[index], index);
-          }
-        },
-        controller: _scrollController,
-      ),
-    );
+    return noItemInList
+        ? NoItemInList(
+            msg: "You Have No Payment Request Pending",
+          )
+        : ListView.builder(
+            //+1 for progressbar
+            itemCount: requestPaymentList.length + 1,
+            itemBuilder: (BuildContext context, int index) {
+              if (index == requestPaymentList.length) {
+                return _buildIndicator();
+              } else {
+                return _getSlidableWithLists(
+                    context, requestPaymentList[index], index);
+              }
+            },
+            controller: _scrollController,
+          );
   }
 
   Widget _buildIndicator() {
@@ -114,7 +114,16 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
           requestPaymentList.addAll(tempList);
         });
       }
-      if (next == null) {
+      if (requestPaymentList.isEmpty) {
+        Scaffold.of(context).showSnackBar(SnackBar(
+          content: Text("You have no any payment requests pending"),
+          duration: Duration(milliseconds: 1200),
+        ));
+
+        setState(() {
+          noItemInList = true;
+        });
+      } else if (next == null && requestPaymentList.length > 6) {
         Scaffold.of(context).showSnackBar(SnackBar(
           content: Text("Your have reached at bottom of the list"),
         ));

@@ -2,6 +2,7 @@ import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/screens/tiles/transaction.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/noItemInList.dart';
 import 'package:flutter/material.dart';
 
 class TransactionList extends StatefulWidget {
@@ -18,6 +19,7 @@ class _TransactionListState extends State<TransactionList> {
   List transactionList = [];
   ScrollController _scrollController = new ScrollController();
   bool isLoading = false;
+  bool noItemInList = false;
 
   @override
   void initState() {
@@ -52,20 +54,24 @@ class _TransactionListState extends State<TransactionList> {
   }
 
   Widget _buildTransactionList() {
-    return ListView.builder(
-      //+1 for progressbar
-      itemCount: transactionList.length + 1,
-      itemBuilder: (BuildContext context, int index) {
-        if (index == transactionList.length) {
-          return _buildIndicator();
-        } else {
-          return TransactionTile(
-            transaction: transactionList[index],
+    return noItemInList
+        ? NoItemInList(
+            msg: "You Have No Any Transaction History",
+          )
+        : ListView.builder(
+            //+1 for progressbar
+            itemCount: transactionList.length + 1,
+            itemBuilder: (BuildContext context, int index) {
+              if (index == transactionList.length) {
+                return _buildIndicator();
+              } else {
+                return TransactionTile(
+                  transaction: transactionList[index],
+                );
+              }
+            },
+            controller: _scrollController,
           );
-        }
-      },
-      controller: _scrollController,
-    );
   }
 
   Widget _buildIndicator() {
@@ -99,7 +105,15 @@ class _TransactionListState extends State<TransactionList> {
           transactionList.addAll(tempList);
         });
       }
-      if (next == null) {
+      if (transactionList.isEmpty) {
+        Scaffold.of(context).showSnackBar(SnackBar(
+          content: Text("You have no any transactions History"),
+          duration: Duration(milliseconds: 1200),
+        ));
+        setState(() {
+          noItemInList = true;
+        });
+      } else if (next == null && transactionList.length > 6) {
         Scaffold.of(context).showSnackBar(SnackBar(
           content: Text("Your have reached at bottom of the list"),
         ));
