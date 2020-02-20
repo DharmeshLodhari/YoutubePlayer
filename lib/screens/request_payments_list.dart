@@ -162,7 +162,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   }
 
   List<Widget> listSecondaryActions(PaymentRequest paymentRequest, int index) {
-    String caption = paymentRequest.isCredit ? 'Cancel' : 'Reject';
+    String caption = !paymentRequest.isCredit ? 'Cancel' : 'Reject';
     return [
       IconSlideAction(
           caption: caption,
@@ -176,7 +176,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
 
   List<Widget> listActionSlideActions(
       PaymentRequest paymentRequest, int index) {
-    if (paymentRequest.isCredit) {
+    if (!paymentRequest.isCredit) {
       return [];
     } else {
       return [
