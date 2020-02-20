@@ -1,5 +1,6 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/models/bank.dart';
+import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
@@ -186,6 +187,8 @@ class _AddAccountState extends State<AddAccount> {
   }
 
   Widget getSubmitButton(String userName) {
+    final BankAccountBloc bankAccountBloc =
+        Provider.of<BankAccountBloc>(context, listen: false);
     return ButtonTheme(
       //color: Colors.green,
       minWidth: double.infinity,
@@ -201,6 +204,17 @@ class _AddAccountState extends State<AddAccount> {
             };
             bool wasSuccessful = await _auth.addBankAccount(data);
             if (wasSuccessful) {
+              BankAccount _bankAccount;
+              _auth.getBankAccounts().then((accounts) {
+                try {
+                  _bankAccount = accounts[0];
+                  print(_bankAccount);
+                  if (_bankAccount != null) {
+                    bankAccountBloc.bankAccount = _bankAccount;
+                  }
+                } catch (e) {}
+              });
+
               Navigator.of(context)
                   .pushNamed('/dashboard', arguments: {'dashboardIndex': 4});
             } else {
