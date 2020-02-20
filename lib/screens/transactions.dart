@@ -57,7 +57,7 @@ class _TransactionListState extends State<TransactionList> {
   Widget _buildTransactionList() {
     return noItemInList
         ? NoItemInList(
-            msg: "You Have No Any Transaction History",
+            msg: "Transaction history empty",
           )
         : ListView.builder(
             //+1 for progressbar
@@ -112,7 +112,7 @@ class _TransactionListState extends State<TransactionList> {
         });
       } else if (next == null && transactionList.length > 6) {
         _scaffoldKey.currentState.showSnackBar(SnackBar(
-          content: Text("Your have reached at bottom of the list"),
+          content: Text("Your have reached the end of the list"),
           duration: Duration(milliseconds: 500),
         ));
       }

@@ -55,7 +55,7 @@ class _SettingsListState extends State<SettingsList> {
               child: Column(
                 children: <Widget>[
                   SizedBox(height: 10),
-                  displaySettingsTile(userBloc),
+                  displayProfileTile(userBloc),
                   displayBankAccountTile(bankAccountBloc),
                   SizedBox(height: 20),
                 ],
@@ -68,7 +68,7 @@ class _SettingsListState extends State<SettingsList> {
     );
   }
 
-  Widget displaySettingsTile(userBloc) {
+  Widget displayProfileTile(userBloc) {
     return Padding(
       padding: EdgeInsets.only(top: 8.0),
       child: Card(
@@ -79,7 +79,9 @@ class _SettingsListState extends State<SettingsList> {
             style: TextStyle(
                 color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
           ),
-          subtitle: Text(userBloc.user.userName),
+          isThreeLine: true,
+          subtitle:
+              Text(userBloc.user.userName + "\n" + userBloc.user.phoneNumber),
           leading: isLoading
               ? Container(
                   height: 45,

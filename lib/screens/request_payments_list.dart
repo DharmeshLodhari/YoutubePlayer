@@ -67,7 +67,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   Widget _buildRequestPaymentList() {
     return noItemInList
         ? NoItemInList(
-            msg: "You Have No Payment Request Pending",
+            msg: "No Pending Payment Request.",
           )
         : ListView.builder(
             //+1 for progressbar
@@ -122,7 +122,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         });
       } else if (next == null && requestPaymentList.length > 6) {
         _scaffoldKey.currentState.showSnackBar(SnackBar(
-          content: Text("Your have reached at bottom of the list"),
+          content: Text("Your have reached the bottom of the list"),
           duration: Duration(milliseconds: 500),
         ));
       }
@@ -195,7 +195,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   void acceptPaymentRequestAlert(PaymentRequest paymentRequest, int index) {
     showScaleAlertBox(
       context: context,
-      yourWidget: Text("Are You Sure Want To Accept This Payment ? "),
+      yourWidget: Text("Are You Sure You Want To Accept This Payment ? "),
       icon: Icon(Icons.warning),
       title: Text("Accept Payment Request"),
       firstButton: MaterialButton(
@@ -239,7 +239,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   void rejectPaymentRequestAlert(PaymentRequest paymentRequest, int index) {
     showScaleAlertBox(
       context: context,
-      yourWidget: Text("Are You Sure Want To Reject This Payment ? "),
+      yourWidget: Text("Are You Sure You Want To Reject This Payment ? "),
       icon: Icon(Icons.warning),
       title: Text("Cancle Payment Request"),
       firstButton: MaterialButton(
