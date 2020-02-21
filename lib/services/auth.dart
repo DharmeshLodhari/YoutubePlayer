@@ -451,4 +451,13 @@ class AuthService {
     var response = await http.post(url, headers: headers, body: _data);
     return response.statusCode == 201;
   }
+
+  Future<bool> registerDevice(Map data) async {
+    var url = baseUrl + "/api/v1/register-device/";
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await http.post(url, headers: headers, body: _data);
+    return response.statusCode == 200;
+  }
+
 }
