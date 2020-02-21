@@ -127,7 +127,10 @@ class _ProfileState extends State<Profile> {
                 elevation: 4.0,
                 onPressed: () {
                   Navigator.of(context).pushNamed('/request-payment',
-                      arguments: <String, bool>{'isFromProfile': true});
+                      arguments: <String, bool>{
+                        'isFromProfile': true,
+                        'isRequest': true
+                      });
                 },
                 textColor: Colors.white,
                 color: darkBlue(),

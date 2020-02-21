@@ -35,6 +35,8 @@ dependencies:
   pinput:
   location: ^2.3.5
   flutter_slidable: ^0.5.4
+  cached_listview: ^2.0.0
+
 
 
 flutter_icons:

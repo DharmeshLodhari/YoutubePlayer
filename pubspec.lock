@@ -29,6 +29,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.5"
+  cached_listview:
+    dependency: "direct main"
+    description:
+      name: cached_listview
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   cached_network_image:
     dependency: "direct main"
     description:
@@ -156,6 +163,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.6.3+1"
+  list_diff:
+    dependency: transitive
+    description:
+      name: list_diff
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.1"
   location:
     dependency: "direct main"
     description:
@@ -240,6 +254,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.0.3"
+  pull_to_refresh:
+    dependency: transitive
+    description:
+      name: pull_to_refresh
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.5.8"
   qr_code_scanner:
     dependency: "direct main"
     description:

@@ -135,7 +135,10 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       child: InkWell(
         onTap: () {
           Navigator.of(context).pushNamed('/request-payment',
-              arguments: <String, bool>{'isFromProfile': true});
+              arguments: <String, bool>{
+                'isRequest': true,
+                'isFromProfile': true
+              });
         },
         child: Icon(Icons.add, color: Colors.white),
       ),
