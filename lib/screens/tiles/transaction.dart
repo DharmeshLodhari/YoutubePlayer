@@ -98,9 +98,11 @@ class PaymentRequestTile extends StatelessWidget {
       colorBlendMode: BlendMode.darken,
       fit: BoxFit.fitWidth,
       filterQuality: FilterQuality.high,
-      placeholder: (context, url) => CircularProgressIndicator(
-        backgroundColor: Colors.white,
-      ),
+      placeholder: (context, url) => paymentRequest.avatar == ""
+          ? Icon(Icons.person)
+          : CircularProgressIndicator(
+              backgroundColor: Colors.white,
+            ),
     );
   }
 
@@ -159,9 +161,11 @@ class TransactionTile extends StatelessWidget {
               colorBlendMode: BlendMode.darken,
               fit: BoxFit.fitWidth,
               filterQuality: FilterQuality.high,
-              placeholder: (context, url) => CircularProgressIndicator(
-                backgroundColor: Colors.white,
-              ),
+              placeholder: (context, url) => transaction.avatar == ""
+                  ? Icon(Icons.person)
+                  : CircularProgressIndicator(
+                      backgroundColor: Colors.white,
+                    ),
             ),
             trailing: Text(
               transaction.currency + ' ' + transaction.amount.toString(),

@@ -219,6 +219,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
               }
             });
           } else {
+            Navigator.pop(context);
             _showSnackBar(context, "Error");
           }
         },
@@ -231,7 +232,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         ),
         onPressed: () {
           setState(() {
-            requestPaymentList.insert(index, paymentRequest);
+            //requestPaymentList.insert(index, paymentRequest);
             Navigator.pop(context);
           });
         },
@@ -263,6 +264,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
               }
             });
           } else {
+            Navigator.pop(context);
             _showSnackBar(context, "Error");
           }
         },
@@ -275,7 +277,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         ),
         onPressed: () {
           setState(() {
-            requestPaymentList.insert(index, paymentRequest);
+            //requestPaymentList.insert(index, paymentRequest);
           });
 
           Navigator.pop(context);
@@ -291,21 +293,21 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
 //      key: UniqueKey(),
       controller: slidableController,
       direction: Axis.horizontal,
-      dismissal: SlidableDismissal(
-        child: SlidableDrawerDismissal(),
-        onDismissed: (actionType) {
-          setState(() {
-            requestPaymentList.removeAt(index);
-          });
-          if (actionType == SlideActionType.primary) {
-            acceptPaymentRequestAlert(paymentRequest, index);
-          } else {
-            rejectPaymentRequestAlert(paymentRequest, index);
-          }
-
-          //make http call here
-        },
-      ),
+//      dismissal: SlidableDismissal(
+//        child: SlidableDrawerDismissal(),
+//        onDismissed: (actionType) {
+//          setState(() {
+//            requestPaymentList.removeAt(index);
+//          });
+//          if (actionType == SlideActionType.primary) {
+//            acceptPaymentRequestAlert(paymentRequest, index);
+//          } else {
+//            rejectPaymentRequestAlert(paymentRequest, index);
+//          }
+//
+//          //make http call here
+//        },
+//      ),
       actionPane: SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
       child: VerticalListItem(paymentRequest),

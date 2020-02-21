@@ -171,6 +171,7 @@ class _RequestPaymentState extends State<RequestPayment> {
         fit: BoxFit.fitWidth,
         filterQuality: FilterQuality.high,
       );
+
       qrCodeImage = CachedNetworkImage(
         imageUrl: _payee.qrCode,
         colorBlendMode: BlendMode.darken,
