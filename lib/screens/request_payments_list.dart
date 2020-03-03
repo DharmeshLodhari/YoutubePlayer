@@ -3,8 +3,10 @@ import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/screens/tiles/transaction.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/widget/noItemInList.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class PaymentRequestList extends StatefulWidget {
   @override
@@ -20,6 +22,8 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   String previous = "";
   List requestPaymentList = [];
   ScrollController _scrollController = new ScrollController();
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
   bool isLoading = false;
   bool noItemInList = false;
 
@@ -41,15 +45,24 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
     super.initState();
   }
 
+  void _onRefresh() async {
+    count = 0;
+    next = "";
+    previous = "";
+    requestPaymentList = [];
+    getList();
+    _refreshController.refreshCompleted();
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async {
-        Navigator.pop(context);
-        Navigator.pushNamed(context, '/dashboard');
-        return false;
-      },
-      child: Scaffold(
+        onWillPop: () async {
+          Navigator.pop(context);
+          Navigator.pushNamed(context, '/dashboard');
+          return false;
+        },
+        child: Scaffold(
           key: _scaffoldKey,
           backgroundColor: lightBlue(),
           appBar: AppBar(
@@ -60,8 +73,16 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
               sendRequestButton(),
             ],
           ),
-          body: _buildRequestPaymentList()),
-    );
+          body: SmartRefresher(
+              enablePullDown: true,
+              header: WaterDropHeader(
+                complete: Container(),
+                waterDropColor: darkBlue(),
+              ),
+              controller: _refreshController,
+              onRefresh: _onRefresh,
+              child: _buildRequestPaymentList()),
+        ));
   }
 
   Widget _buildRequestPaymentList() {
@@ -290,7 +311,6 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       BuildContext context, PaymentRequest paymentRequest, int index) {
     return Slidable(
       key: Key(paymentRequest.payee),
-//      key: UniqueKey(),
       controller: slidableController,
       direction: Axis.horizontal,
 //      dismissal: SlidableDismissal(

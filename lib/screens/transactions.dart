@@ -3,6 +3,7 @@ import 'package:Slydo/screens/tiles/transaction.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:flutter/material.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class TransactionList extends StatefulWidget {
   @override
@@ -18,6 +19,8 @@ class _TransactionListState extends State<TransactionList> {
   String previous = "";
   List transactionList = [];
   ScrollController _scrollController = new ScrollController();
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
   bool isLoading = false;
   bool noItemInList = false;
 
@@ -31,6 +34,15 @@ class _TransactionListState extends State<TransactionList> {
         getList();
       }
     });
+  }
+
+  void _onRefresh() async {
+    count = 0;
+    next = "";
+    previous = "";
+    transactionList = [];
+    getList();
+    _refreshController.refreshCompleted();
   }
 
   @override
@@ -49,7 +61,15 @@ class _TransactionListState extends State<TransactionList> {
           backgroundColor: darkBlue(),
           title: Text('Transactions'),
         ),
-        body: _buildTransactionList(),
+        body: SmartRefresher(
+            enablePullDown: true,
+            header: WaterDropHeader(
+              complete: Container(),
+              waterDropColor: darkBlue(),
+            ),
+            controller: _refreshController,
+            onRefresh: _onRefresh,
+            child: _buildTransactionList()),
       ),
     );
   }
