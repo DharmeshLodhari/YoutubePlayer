@@ -1,4 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -145,61 +146,68 @@ class _PasswordPopupState extends State<PasswordPopup> {
     if (_passwordController.text != "" &&
         _passwordController.text.length == 4) {
       _password = _passwordController.text;
-      // Navigator.pop(context);
 
-      //use _passwordFromPopUp variable to pass in request
-
-      // showDialog(context: context, builder: (context) => LoadingIndicator());
+      //for hiding keyboard
+      FocusScope.of(context).unfocus();
 
       if (_password == userBloc.user.password) {
-        print(isRequest);
-        if (isRequest) {
-          var result = false;
-          _auth.createPaymentRequests(data).then((value) {
-            result = value;
-            if (result) {
-              Navigator.of(context)
-                  .pushNamed('/dashboard', arguments: {'dashboardIndex': 1});
-            } else if (!result) {
-              Toast.show("Request Not Send ", context,
-                  gravity: Toast.TOP,
-                  backgroundColor: darkBlue(),
-                  textColor: Colors.white);
-            } else {
-              setState(() {
-                errorMessage = "Wrong Password !!";
-                Toast.show(errorMessage, context,
-                    gravity: Toast.TOP,
-                    backgroundColor: darkBlue(),
-                    textColor: Colors.white);
-              });
-            }
-          });
-        } else {
-          _auth.makePayment(data).then((value) {
-            response = value;
-            if (response.statusCode == 200) {
-              Navigator.of(context)
-                  .pushNamed('/dashboard', arguments: {'dashboardIndex': 2});
-            } else if (response.statusCode == 500) {
-              setState(() {
-                errorMessage = "Server Error";
-                Toast.show(errorMessage, context,
-                    gravity: Toast.TOP,
-                    backgroundColor: darkBlue(),
-                    textColor: Colors.white);
+        Connectivity().checkConnectivity().then((value) {
+          var connectionResult = value;
+          if (connectionResult == ConnectivityResult.wifi ||
+              connectionResult == ConnectivityResult.mobile) {
+            print(isRequest);
+            if (isRequest) {
+              var result = false;
+              _auth.createPaymentRequests(data).then((value) {
+                result = value;
+                if (result) {
+                  Navigator.of(context).pushNamed('/dashboard',
+                      arguments: {'dashboardIndex': 1});
+                } else if (!result) {
+                  Toast.show("Request Not Send ", context,
+                      gravity: Toast.TOP,
+                      backgroundColor: darkBlue(),
+                      textColor: Colors.white);
+                } else {
+                  setState(() {
+                    errorMessage = "Wrong Password !!";
+                    Toast.show(errorMessage, context,
+                        gravity: Toast.TOP,
+                        backgroundColor: darkBlue(),
+                        textColor: Colors.white);
+                  });
+                }
               });
             } else {
-              setState(() {
-                errorMessage = "Wrong Password !!";
-                Toast.show(errorMessage, context,
-                    gravity: Toast.TOP,
-                    backgroundColor: darkBlue(),
-                    textColor: Colors.white);
+              _auth.makePayment(data).then((value) {
+                response = value;
+                if (response.statusCode == 200) {
+                  Navigator.of(context).pushNamed('/dashboard',
+                      arguments: {'dashboardIndex': 2});
+                } else if (response.statusCode == 500) {
+                  setState(() {
+                    errorMessage = "Server Error";
+                    Toast.show(errorMessage, context,
+                        gravity: Toast.TOP,
+                        backgroundColor: darkBlue(),
+                        textColor: Colors.white);
+                  });
+                } else {
+                  setState(() {
+                    errorMessage = "Wrong Password !!";
+                    Toast.show(errorMessage, context,
+                        gravity: Toast.TOP,
+                        backgroundColor: darkBlue(),
+                        textColor: Colors.white);
+                  });
+                }
               });
             }
-          });
-        }
+          } else {
+            Toast.show("Internet Connection is not available", context,
+                gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+          }
+        });
       } else {
         errorMessage = "Incorrect Password !!";
         Toast.show(errorMessage, context,

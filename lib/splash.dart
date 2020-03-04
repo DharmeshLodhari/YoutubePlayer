@@ -1,9 +1,12 @@
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/widget/noItemInList.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:toast/toast.dart';
 
 import 'data/state_notifier.dart';
 
@@ -19,21 +22,69 @@ class _SplashScreenState extends State<SplashScreen> {
   String passwordFromPref;
   SharedPreferences _sharedPreferences;
 
+  // bool for to check if internet connection is available or not
+  var hasConnection = false;
+
   @override
   void initState() {
-    getLoggedInUser();
+    checkConnection();
     super.initState();
+  }
+
+  void checkConnection() {
+    Connectivity().checkConnectivity().then((value) {
+      var connectionResult = value;
+      if (connectionResult == ConnectivityResult.wifi ||
+          connectionResult == ConnectivityResult.mobile) {
+        setState(() {
+          hasConnection = true;
+        });
+        getLoggedInUser();
+      } else {
+        Toast.show("Internet Connection is not available", context,
+            gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+        setState(() {
+          hasConnection = false;
+        });
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       color: lightBlue(),
-      child: SpinKitChasingDots(
-        color: Colors.white,
-        size: 100.0,
-        duration: Duration(milliseconds: 4000),
-      ),
+      child: hasConnection
+          ? SpinKitChasingDots(
+              color: Colors.white,
+              size: 100.0,
+              duration: Duration(milliseconds: 4000),
+            )
+          : Scaffold(
+              backgroundColor: lightBlue(),
+              appBar: AppBar(
+                title: Text('Slydo'),
+                backgroundColor: darkBlue(),
+                elevation: 0.0,
+                automaticallyImplyLeading: false,
+              ),
+              body: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  NoItemInList(
+                    msg: "No Internet Connection !!",
+                  ),
+                  MaterialButton(
+                    color: darkBlue(),
+                    child: Text(
+                      "Retry",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    onPressed: checkConnection,
+                  )
+                ],
+              ),
+            ),
     );
   }
 

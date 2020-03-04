@@ -183,19 +183,22 @@ class _SendPaymentState extends State<SendPayment> {
       //
       autofocus: false,
       obscureText: false,
+
       decoration: InputDecoration(
-          prefixIcon: Icon(Icons.person),
-          fillColor: Colors.white,
-          filled: true,
-          hintText: "Recipient",
-          labelStyle: TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-          ),
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
+        prefixIcon: Icon(Icons.person),
+        fillColor: Colors.white,
+        filled: true,
+        hintText: "Recipient",
+        labelStyle: TextStyle(
+          color: Colors.black,
+          fontSize: 16,
+        ),
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(4)),
+            borderSide: BorderSide(
+                width: 1, color: Colors.white, style: BorderStyle.solid)),
+      ),
+
       onChanged: (val) {
         setState(() {
           if (!isFromProfile && _payee != null) {
@@ -295,21 +298,28 @@ class _SendPaymentState extends State<SendPayment> {
 
             if (isValidPayee && _formKey.currentState.validate()) {
               // Todo: Add a try block here and stop user from continuing if they deny location permission
-              var userLocation = await locationService.getLocation();
-              Navigator.pushNamed(context, "/passwordPopup", arguments: {
-                'data': {
-                  "from_customer": userBloc.user.userName,
-                  "to_customer": recipient,
-                  "currency": "NGN",
-                  "amount": amount.toString(),
-                  "category": "Shopping",
-                  "notes": reference,
-                  "description": reference,
-                  "latitude": userLocation.latitude,
-                  "longitude": userLocation.longitude,
-                },
-                '_auth': _auth
-              });
+              var userLocation;
+              try {
+                userLocation = await locationService.getLocation();
+                Navigator.pushNamed(context, "/passwordPopup", arguments: {
+                  'data': {
+                    "from_customer": userBloc.user.userName,
+                    "to_customer": recipient,
+                    "currency": "NGN",
+                    "amount": amount.toString(),
+                    "category": "Shopping",
+                    "notes": reference,
+                    "description": reference,
+                    "latitude": userLocation.latitude,
+                    "longitude": userLocation.longitude,
+                  },
+                  '_auth': _auth
+                });
+              } catch (e) {
+                print(e);
+                Toast.show(e, context,
+                    gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+              }
             }
           } else {
             var msg = "Invalid recipient";

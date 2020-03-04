@@ -2,8 +2,10 @@ import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/screens/tiles/transaction.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/widget/noItemInList.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:toast/toast.dart';
 
 class TransactionList extends StatefulWidget {
   @override
@@ -27,6 +29,7 @@ class _TransactionListState extends State<TransactionList> {
   @override
   void initState() {
     this.getList();
+
     super.initState();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
@@ -37,12 +40,22 @@ class _TransactionListState extends State<TransactionList> {
   }
 
   void _onRefresh() async {
-    count = 0;
-    next = "";
-    previous = "";
-    transactionList = [];
-    getList();
-    _refreshController.refreshCompleted();
+    Connectivity().checkConnectivity().then((value) {
+      var connectionResult = value;
+      if (connectionResult == ConnectivityResult.wifi ||
+          connectionResult == ConnectivityResult.mobile) {
+        count = 0;
+        next = "";
+        previous = "";
+        transactionList = [];
+        getList();
+        _refreshController.refreshCompleted();
+      } else {
+        Toast.show("Internet Connection is not available", context,
+            gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+        _refreshController.refreshCompleted();
+      }
+    });
   }
 
   @override

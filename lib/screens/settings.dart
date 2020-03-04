@@ -5,10 +5,12 @@ import 'package:Slydo/screens/tiles/bank_account.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:toast/toast.dart';
 
 class SettingsList extends StatefulWidget {
   @override
@@ -114,7 +116,16 @@ class _SettingsListState extends State<SettingsList> {
             ),
             tooltip: "Edit Profile",
             onPressed: () {
-              pickImage(userBloc);
+              Connectivity().checkConnectivity().then((value) {
+                var connectionResult = value;
+                if (connectionResult == ConnectivityResult.wifi ||
+                    connectionResult == ConnectivityResult.mobile) {
+                  pickImage(userBloc);
+                } else {
+                  Toast.show("Internet Connection is not available", context,
+                      gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+                }
+              });
             },
           ),
         ),

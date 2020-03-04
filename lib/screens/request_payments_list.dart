@@ -7,6 +7,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:toast/toast.dart';
+import 'package:connectivity/connectivity.dart';
 
 class PaymentRequestList extends StatefulWidget {
   @override
@@ -46,12 +48,22 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   }
 
   void _onRefresh() async {
-    count = 0;
-    next = "";
-    previous = "";
-    requestPaymentList = [];
-    getList();
-    _refreshController.refreshCompleted();
+    Connectivity().checkConnectivity().then((value) {
+      var connectionResult = value;
+      if (connectionResult == ConnectivityResult.wifi ||
+          connectionResult == ConnectivityResult.mobile) {
+        count = 0;
+        next = "";
+        previous = "";
+        requestPaymentList = [];
+        getList();
+        _refreshController.refreshCompleted();
+      } else {
+        Toast.show("Internet Connection is not available", context,
+            gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+        _refreshController.refreshCompleted();
+      }
+    });
   }
 
   @override
@@ -155,11 +167,20 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       padding: const EdgeInsets.only(right: 4.0),
       child: InkWell(
         onTap: () {
-          Navigator.of(context).pushNamed('/request-payment',
-              arguments: <String, bool>{
-                'isRequest': true,
-                'isFromProfile': true
-              });
+          Connectivity().checkConnectivity().then((value) {
+            var connectionResult = value;
+            if (connectionResult == ConnectivityResult.wifi ||
+                connectionResult == ConnectivityResult.mobile) {
+              Navigator.of(context).pushNamed('/request-payment',
+                  arguments: <String, bool>{
+                    'isRequest': true,
+                    'isFromProfile': true
+                  });
+            } else {
+              Toast.show("Internet Connection is not available", context,
+                  gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+            }
+          });
         },
         child: Icon(Icons.add, color: Colors.white),
       ),

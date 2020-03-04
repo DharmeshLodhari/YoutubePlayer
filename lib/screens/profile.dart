@@ -2,6 +2,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -126,11 +127,21 @@ class _ProfileState extends State<Profile> {
               child: MaterialButton(
                 elevation: 4.0,
                 onPressed: () {
-                  Navigator.of(context).pushNamed('/request-payment',
-                      arguments: <String, bool>{
-                        'isFromProfile': true,
-                        'isRequest': true
-                      });
+                  Connectivity().checkConnectivity().then((value) {
+                    var connectionResult = value;
+                    if (connectionResult == ConnectivityResult.wifi ||
+                        connectionResult == ConnectivityResult.mobile) {
+                      Navigator.of(context).pushNamed('/request-payment',
+                          arguments: <String, bool>{
+                            'isFromProfile': true,
+                            'isRequest': true
+                          });
+                    } else {
+                      Toast.show(
+                          "Internet Connection is not available", context,
+                          gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+                    }
+                  });
                 },
                 textColor: Colors.white,
                 color: darkBlue(),
@@ -149,8 +160,18 @@ class _ProfileState extends State<Profile> {
               child: MaterialButton(
                 elevation: 4.0,
                 onPressed: () {
-                  Navigator.of(context).pushNamed('/send-payment',
-                      arguments: <String, bool>{'isFromProfile': true});
+                  Connectivity().checkConnectivity().then((value) {
+                    var connectionResult = value;
+                    if (connectionResult == ConnectivityResult.wifi ||
+                        connectionResult == ConnectivityResult.mobile) {
+                      Navigator.of(context).pushNamed('/send-payment',
+                          arguments: <String, bool>{'isFromProfile': true});
+                    } else {
+                      Toast.show(
+                          "Internet Connection is not available", context,
+                          gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+                    }
+                  });
                 },
                 textColor: Colors.white,
                 color: darkBlue(),
@@ -170,8 +191,17 @@ class _ProfileState extends State<Profile> {
       padding: const EdgeInsets.only(right: 4.0),
       child: InkWell(
         onTap: () {
-          Navigator.of(context)
-              .pushNamed('/scan-qr', arguments: {'isRequest': false});
+          Connectivity().checkConnectivity().then((value) {
+            var connectionResult = value;
+            if (connectionResult == ConnectivityResult.wifi ||
+                connectionResult == ConnectivityResult.mobile) {
+              Navigator.of(context)
+                  .pushNamed('/scan-qr', arguments: {'isRequest': false});
+            } else {
+              Toast.show("Internet Connection is not available", context,
+                  gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+            }
+          });
         },
         child: Image.asset(
           'assets/images/qr_code.png',
