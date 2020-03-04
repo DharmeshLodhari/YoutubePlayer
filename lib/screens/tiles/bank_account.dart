@@ -41,3 +41,39 @@ class BankAccountTile extends StatelessWidget {
     );
   }
 }
+
+class AccountBalanceTile extends StatelessWidget {
+  // Pass account balance
+  String balance;
+  bool isLocked;
+  var currencyImage = Image.asset(
+    'assets/images/naira.png',
+    scale: 1.0,
+  );
+
+  AccountBalanceTile({this.balance, this.isLocked});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(top: 8.0),
+      child: Card(
+        margin: EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
+        child: ListTile(
+          title: Text(
+            'Account Balance',
+            style: TextStyle(
+                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+          ),
+          subtitle: Text(isLocked ? "*******":balance),
+          leading: currencyImage,
+          trailing: IconButton(
+            icon: Icon(isLocked ? Icons.lock_outline : Icons.lock_open,
+                color: Colors.grey[400]),
+            onPressed: () {},
+          ),
+        ),
+      ),
+    );
+  }
+}

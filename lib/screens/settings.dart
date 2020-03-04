@@ -3,7 +3,6 @@ import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/screens/tiles/bank_account.dart';
 import 'package:Slydo/services/auth.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +10,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
-import 'utils.dart';
 
 class SettingsList extends StatefulWidget {
   @override
@@ -22,7 +20,8 @@ class _SettingsListState extends State<SettingsList> {
   final _auth = AuthService();
   bool _account = false;
   bool isLoading = false;
-  String accountBalance = "1000";
+  String accountBalance = "800000000";
+  bool isLocked = true;
 
   @override
   Widget build(BuildContext context) {
@@ -59,8 +58,8 @@ class _SettingsListState extends State<SettingsList> {
               child: Column(
                 children: <Widget>[
                   SizedBox(height: 10),
-                  displayAccountBalance(),
                   displayProfileTile(userBloc),
+                  displayAccountBalance(isLocked),
                   displayBankAccountTile(bankAccountBloc),
                   SizedBox(height: 20),
                 ],
@@ -230,9 +229,7 @@ class _SettingsListState extends State<SettingsList> {
     Navigator.pushNamedAndRemoveUntil(context, "/home", (r) => false);
   }
 
-  Widget displayAccountBalance() {
-    return Card(
-      child: Text(humanizeMoney(accountBalance)),
-    );
+  Widget displayAccountBalance(isLocked) {
+    return AccountBalanceTile(balance: accountBalance, isLocked: isLocked);
   }
 }
