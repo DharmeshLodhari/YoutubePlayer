@@ -11,6 +11,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
+import 'utils.dart';
 
 class SettingsList extends StatefulWidget {
   @override
@@ -21,6 +22,7 @@ class _SettingsListState extends State<SettingsList> {
   final _auth = AuthService();
   bool _account = false;
   bool isLoading = false;
+  String accountBalance = "1000";
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +59,7 @@ class _SettingsListState extends State<SettingsList> {
               child: Column(
                 children: <Widget>[
                   SizedBox(height: 10),
+                  displayAccountBalance(),
                   displayProfileTile(userBloc),
                   displayBankAccountTile(bankAccountBloc),
                   SizedBox(height: 20),
@@ -225,5 +228,11 @@ class _SettingsListState extends State<SettingsList> {
 
     try {} catch (err) {}
     Navigator.pushNamedAndRemoveUntil(context, "/home", (r) => false);
+  }
+
+  Widget displayAccountBalance() {
+    return Card(
+      child: Text(humanizeMoney(accountBalance)),
+    );
   }
 }

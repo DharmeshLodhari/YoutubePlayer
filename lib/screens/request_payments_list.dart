@@ -238,94 +238,214 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   }
 
   void acceptPaymentRequestAlert(PaymentRequest paymentRequest, int index) {
-    showScaleAlertBox(
+    showDialog(
       context: context,
-      yourWidget: Text("Are You Sure You Want To Accept This Payment ? "),
-      icon: Icon(Icons.warning),
-      title: Text("Accept Payment Request"),
-      firstButton: MaterialButton(
-        color: darkBlue(),
-        child: Text(
-          "Yes",
-          style: TextStyle(color: Colors.white),
-        ),
-        onPressed: () async {
-          bool done = await _auth.acceptPaymentRequests(paymentRequest);
-          if (done) {
-            Navigator.pop(context);
-            _showSnackBar(context, 'Payment Request Accepted !!');
-            setState(() {
-              requestPaymentList.removeAt(index);
-              if (requestPaymentList.length <= 9) {
-                getList();
+      child: AlertDialog(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(15.0))),
+        content: Text('Are you sure want to Accept this request?',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 18,
+            )),
+        actions: <Widget>[
+          FlatButton(
+            child: const Text('YES'),
+            color: darkBlue(),
+            onPressed: () async {
+              bool done = await _auth.acceptPaymentRequests(paymentRequest);
+              if (done) {
+                Navigator.pop(context);
+                _showSnackBar(context, 'Payment Request Accepted !!');
+                setState(() {
+                  requestPaymentList.removeAt(index);
+                  if (requestPaymentList.length <= 9) {
+                    getList();
+                  }
+                });
+              } else {
+                Navigator.pop(context);
+                _showSnackBar(context, "Error");
               }
-            });
-          } else {
-            Navigator.pop(context);
-            _showSnackBar(context, "Error");
-          }
-        },
-      ),
-      secondButton: MaterialButton(
-        color: darkBlue(),
-        child: Text(
-          "No",
-          style: TextStyle(color: Colors.white),
-        ),
-        onPressed: () {
-          setState(() {
-            //requestPaymentList.insert(index, paymentRequest);
-            Navigator.pop(context);
-          });
-        },
+            },
+          ),
+          FlatButton(
+            color: darkBlue(),
+            child: const Text(
+              'NO',
+              style: TextStyle(fontWeight: FontWeight.w400),
+            ),
+            onPressed: () {
+              setState(() {
+                //requestPaymentList.insert(index, paymentRequest);
+                Navigator.pop(context);
+              });
+            },
+          ),
+        ],
       ),
     );
+
+//    showScaleAlertBox(
+//      context: context,
+//      yourWidget: Text("Are You Sure You Want To Accept This Payment ? "),
+//      icon: Icon(Icons.warning),
+//      title: Text("Accept Payment Request"),
+//      firstButton: MaterialButton(
+//        color: darkBlue(),
+//        child: Text(
+//          "Yes",
+//          style: TextStyle(color: Colors.white),
+//        ),
+//        onPressed: () async {
+//          bool done = await _auth.acceptPaymentRequests(paymentRequest);
+//          if (done) {
+//            Navigator.pop(context);
+//            _showSnackBar(context, 'Payment Request Accepted !!');
+//            setState(() {
+//              requestPaymentList.removeAt(index);
+//              if (requestPaymentList.length <= 9) {
+//                getList();
+//              }
+//            });
+//          } else {
+//            Navigator.pop(context);
+//            _showSnackBar(context, "Error");
+//          }
+//        },
+//      ),
+//      secondButton: MaterialButton(
+//        color: darkBlue(),
+//        child: Text(
+//          "No",
+//          style: TextStyle(color: Colors.white),
+//        ),
+//        onPressed: () {
+//          setState(() {
+//            //requestPaymentList.insert(index, paymentRequest);
+//            Navigator.pop(context);
+//          });
+//        },
+//      ),
+//    );
   }
 
   void rejectPaymentRequestAlert(PaymentRequest paymentRequest, int index) {
-    showScaleAlertBox(
+    showDialog(
       context: context,
-      yourWidget: Text("Are You Sure You Want To Reject This Payment ? "),
-      icon: Icon(Icons.warning),
-      title: Text("Cancle Payment Request"),
-      firstButton: MaterialButton(
-        color: darkBlue(),
-        child: Text(
-          "Yes",
-          style: TextStyle(color: Colors.white),
-        ),
-        onPressed: () async {
-          bool done = await _auth.rejectPaymentRequests(paymentRequest);
-          if (done) {
-            Navigator.pop(context);
-            _showSnackBar(context, "Payment Request Rejected !!");
-            setState(() {
-              requestPaymentList.removeAt(index);
-              if (requestPaymentList.length <= 9) {
-                getList();
+      child: AlertDialog(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(15.0))),
+        content: Text('Are you sure want to reject this request?',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 18,
+            )),
+        actions: <Widget>[
+          FlatButton(
+            child: const Text('YES'),
+            color: darkBlue(),
+            onPressed: () async {
+              bool done = await _auth.rejectPaymentRequests(paymentRequest);
+              if (done) {
+                Navigator.pop(context);
+                _showSnackBar(context, "Payment Request Rejected !!");
+                setState(() {
+                  requestPaymentList.removeAt(index);
+                  if (requestPaymentList.length <= 9) {
+                    getList();
+                  }
+                });
+              } else {
+                Navigator.pop(context);
+                _showSnackBar(context, "Error");
               }
-            });
-          } else {
-            Navigator.pop(context);
-            _showSnackBar(context, "Error");
-          }
-        },
-      ),
-      secondButton: MaterialButton(
-        color: darkBlue(),
-        child: Text(
-          "No",
-          style: TextStyle(color: Colors.white),
-        ),
-        onPressed: () {
-          setState(() {
-            //requestPaymentList.insert(index, paymentRequest);
-          });
+            },
+          ),
+          FlatButton(
+            color: darkBlue(),
+            child: const Text(
+              'NO',
+              style: TextStyle(fontWeight: FontWeight.w400),
+            ),
+            onPressed: () {
+              setState(() {
+                //requestPaymentList.insert(index, paymentRequest);
+              });
 
-          Navigator.pop(context);
-        },
+              Navigator.pop(context);
+            },
+          ),
+        ],
       ),
     );
+
+//    showScaleAlertBox(
+//      context: context,
+//      yourWidget: Text("Are You Sure You Want To Reject This Payment ? "),
+//      icon: Icon(Icons.warning),
+//      title: Text("Cancle Payment Request"),
+//      firstButton: MaterialButton(
+//        color: darkBlue(),
+//        child: Text(
+//          "Yes",
+//          style: TextStyle(color: Colors.white),
+//        ),
+//        onPressed: () async {
+//          bool done = await _auth.rejectPaymentRequests(paymentRequest);
+//          if (done) {
+//            Navigator.pop(context);
+//            _showSnackBar(context, "Payment Request Rejected !!");
+//            setState(() {
+//              requestPaymentList.removeAt(index);
+//              if (requestPaymentList.length <= 9) {
+//                getList();
+//              }
+//            });
+//          } else {
+//            Navigator.pop(context);
+//            _showSnackBar(context, "Error");
+//          }
+//        },
+//      ),
+//      secondButton: MaterialButton(
+//        color: darkBlue(),
+//        child: Text(
+//          "No",
+//          style: TextStyle(color: Colors.white),
+//        ),
+//        onPressed: () {
+//          setState(() {
+//            //requestPaymentList.insert(index, paymentRequest);
+//          });
+//
+//          Navigator.pop(context);
+//        },
+//      ),
+//    );
+  }
+
+  void showMaterialDialog<T>({BuildContext context, Widget child}) {
+    showDialog<T>(
+      context: context,
+      builder: (BuildContext context) => child,
+    ).then<void>((T value) {
+      // The value passed to Navigator.pop() or null.
+      if (value != null) {
+        _scaffoldKey.currentState.showSnackBar(SnackBar(
+          content: Text('You selected: $value'),
+        ));
+      }
+    });
+  }
+
+  void showCuperDialog<T>({BuildContext context, Widget child}) {
+    showCupertinoDialog<T>(
+      context: context,
+      builder: (BuildContext context) => child,
+    ).then((T value) {
+      if (value != null) {}
+    });
   }
 
   Widget _getSlidableWithLists(
@@ -402,6 +522,49 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         barrierLabel: '',
         context: context,
         pageBuilder: (context, animation1, animation2) {});
+  }
+}
+
+class CupertinoDessertDialog extends StatelessWidget {
+  const CupertinoDessertDialog({Key key, this.title, this.content})
+      : super(key: key);
+
+  final Widget title;
+  final Widget content;
+
+  @override
+  Widget build(BuildContext context) {
+    return CupertinoAlertDialog(
+      title: title,
+      content: content,
+      actions: <Widget>[
+        CupertinoDialogAction(
+          child: const Text('Banana Split'),
+          onPressed: () {
+            Navigator.pop(context, 'Banana Split');
+          },
+        ),
+        CupertinoDialogAction(
+          child: const Text('Oatmeal Cookie'),
+          onPressed: () {
+            Navigator.pop(context, 'Oatmeal Cookies');
+          },
+        ),
+        CupertinoDialogAction(
+          child: const Text('Chocolate Brownie'),
+          onPressed: () {
+            Navigator.pop(context, 'Chocolate Brownies');
+          },
+        ),
+        CupertinoDialogAction(
+          child: const Text('Cancel'),
+          isDestructiveAction: true,
+          onPressed: () {
+            Navigator.pop(context, 'Cancel');
+          },
+        ),
+      ],
+    );
   }
 }
 
