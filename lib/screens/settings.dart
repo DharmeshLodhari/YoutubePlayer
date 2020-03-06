@@ -12,8 +12,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
 
 class SettingsList extends StatefulWidget {
+  var arguments;
+  SettingsList({this.arguments});
+
   @override
-  _SettingsListState createState() => _SettingsListState();
+  _SettingsListState createState() => _SettingsListState(arguments: arguments);
 }
 
 class _SettingsListState extends State<SettingsList> {
@@ -21,7 +24,18 @@ class _SettingsListState extends State<SettingsList> {
   bool _account = false;
   bool isLoading = false;
   String accountBalance = "800000000";
-  bool isLocked = true;
+  bool isLocked;
+  var arguments;
+  _SettingsListState({this.arguments});
+
+  @override
+  void initState() {
+    setState(() {
+      isLocked = arguments['isLocked'];
+    });
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

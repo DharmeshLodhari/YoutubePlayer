@@ -1,4 +1,5 @@
 import 'package:Slydo/models/transactions.dart';
+import 'package:Slydo/screens/colors.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
@@ -66,30 +67,6 @@ class PaymentRequestTile extends StatelessWidget {
     );
   }
 
-//  Widget getLeading() {
-//    return Image.network(
-//      paymentRequest.avatar,
-//      height: 45,
-//      width: 45,
-//      colorBlendMode: BlendMode.darken,
-//      fit: BoxFit.fitWidth,
-//      filterQuality: FilterQuality.high,
-//      loadingBuilder: (BuildContext context, Widget child,
-//          ImageChunkEvent loadingProgress) {
-//        if (loadingProgress == null) return child;
-//        return Container(
-//          height: 45,
-//          width: 45,
-//          child: CircularProgressIndicator(
-//            value: loadingProgress.expectedTotalBytes != null
-//                ? loadingProgress.cumulativeBytesLoaded /
-//                    loadingProgress.expectedTotalBytes
-//                : null,
-//          ),
-//        );
-//      },
-//    );
-
   Widget getLeading() {
     return CachedNetworkImage(
       imageUrl: paymentRequest.avatar,
@@ -99,7 +76,11 @@ class PaymentRequestTile extends StatelessWidget {
       fit: BoxFit.fitWidth,
       filterQuality: FilterQuality.high,
       placeholder: (context, url) => paymentRequest.avatar == ""
-          ? Icon(Icons.person)
+          ? Icon(
+              Icons.person,
+              size: 45,
+              color: Colors.black,
+            )
           : CircularProgressIndicator(
               backgroundColor: Colors.white,
             ),
@@ -162,7 +143,11 @@ class TransactionTile extends StatelessWidget {
               fit: BoxFit.fitWidth,
               filterQuality: FilterQuality.high,
               placeholder: (context, url) => transaction.avatar == ""
-                  ? Icon(Icons.person)
+                  ? Icon(
+                      Icons.person,
+                      size: 45,
+                      color: Colors.black,
+                    )
                   : CircularProgressIndicator(
                       backgroundColor: Colors.white,
                     ),

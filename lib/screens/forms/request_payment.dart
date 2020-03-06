@@ -24,6 +24,8 @@ class RequestPayment extends StatefulWidget {
 }
 
 class _RequestPaymentState extends State<RequestPayment> {
+  TextEditingController _recipientController = TextEditingController();
+  FocusNode _recipientFocus = FocusNode();
   TextEditingController _passwordController;
   http.Response response;
   String _passwordFromPopUp = "";
@@ -61,13 +63,37 @@ class _RequestPaymentState extends State<RequestPayment> {
         : false;
     _passwordController = TextEditingController();
 
+    /* adding listener on recipientFocus when user unFocus
+    From Recipient Field then value of that field should be in lowerCase */
+    _recipientFocus
+      ..addListener(() {
+        if (!_recipientFocus.hasFocus) {
+          setState(() {
+            _recipientController.text = _recipientController.text.toLowerCase();
+          });
+        }
+      });
+
     super.initState();
+  }
+
+  void initializeDisplayCard() {
+    if (!isFromProfile) {
+      if (customerProfileBloc.customer.userName != null) {
+        setState(() {
+          _payee = customerProfileBloc.customer;
+          recipient = _payee.userName;
+          _recipientController.text = recipient;
+        });
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
+
     return WillPopScope(
       onWillPop: () async {
         _payee = null;
@@ -154,14 +180,7 @@ class _RequestPaymentState extends State<RequestPayment> {
   }
 
   Widget getDisplayCard() {
-    if (!isFromProfile) {
-      if (customerProfileBloc.customer.userName != null) {
-        setState(() {
-          _payee = customerProfileBloc.customer;
-          recipient = _payee.userName;
-        });
-      }
-    }
+    initializeDisplayCard();
     var avatarImage;
     var qrCodeImage;
     if (_payee != null) {
@@ -202,8 +221,10 @@ class _RequestPaymentState extends State<RequestPayment> {
 
   Widget getRecipientField() {
     return TextFormField(
+      controller: _recipientController,
       enabled: isFromProfile,
-      initialValue: isFromProfile ? "" : _payee.userName,
+      focusNode: _recipientFocus,
+//      initialValue: isFromProfile ? null : _payee.userName,
       cursorColor: darkBlue(),
       validator: (value) {
         if (!isFromProfile && value != _payee.userName) {
@@ -227,6 +248,7 @@ class _RequestPaymentState extends State<RequestPayment> {
               borderRadius: BorderRadius.all(Radius.circular(4)),
               borderSide: BorderSide(
                   width: 1, color: Colors.white, style: BorderStyle.solid))),
+
       onChanged: (val) {
         setState(() {
           if (!isFromProfile && _payee != null) {
@@ -290,6 +312,7 @@ class _RequestPaymentState extends State<RequestPayment> {
       cursorColor: darkBlue(),
       autofocus: false,
       obscureText: false,
+      textCapitalization: TextCapitalization.sentences,
       decoration: InputDecoration(
           prefixIcon: Icon(Icons.note),
           fillColor: Colors.white,

@@ -20,10 +20,8 @@ class PasswordPopup extends StatefulWidget {
 
 class _PasswordPopupState extends State<PasswordPopup> {
   UserBloc userBloc;
-  _PasswordPopupState({@required this.arguments});
-
   http.Response response;
-  var arguments;
+  Map arguments;
   String errorMessage = "";
   String _password = "";
   AuthService _auth;
@@ -31,13 +29,22 @@ class _PasswordPopupState extends State<PasswordPopup> {
   bool isRequest = false;
   TextEditingController _passwordController;
 
+  //for if we are checking password for showing account balance
+  bool isForShowingBalance = false;
+
+  _PasswordPopupState({@required this.arguments});
+
   @override
   void initState() {
-    _auth = arguments['_auth'];
-    data = arguments['data'];
-    isRequest = arguments != null
-        ? arguments['isRequest'] != null ? arguments['isRequest'] : false
-        : false;
+    if (arguments.containsKey("isForShowingBalance")) {
+      isForShowingBalance = arguments['isForShowingBalance'];
+    } else {
+      _auth = arguments['_auth'];
+      data = arguments['data'];
+      isRequest = arguments != null
+          ? arguments['isRequest'] != null ? arguments['isRequest'] : false
+          : false;
+    }
 
     _passwordController = TextEditingController();
 
@@ -155,53 +162,62 @@ class _PasswordPopupState extends State<PasswordPopup> {
           var connectionResult = value;
           if (connectionResult == ConnectivityResult.wifi ||
               connectionResult == ConnectivityResult.mobile) {
-            print(isRequest);
-            if (isRequest) {
-              var result = false;
-              _auth.createPaymentRequests(data).then((value) {
-                result = value;
-                if (result) {
-                  Navigator.of(context).pushNamed('/dashboard',
-                      arguments: {'dashboardIndex': 1});
-                } else if (!result) {
-                  Toast.show("Request Not Send ", context,
-                      gravity: Toast.TOP,
-                      backgroundColor: darkBlue(),
-                      textColor: Colors.white);
-                } else {
-                  setState(() {
-                    errorMessage = "Wrong Password !!";
-                    Toast.show(errorMessage, context,
-                        gravity: Toast.TOP,
-                        backgroundColor: darkBlue(),
-                        textColor: Colors.white);
-                  });
-                }
-              });
+            //if checking Password For showing account Balance
+            if (isForShowingBalance) {
+              Navigator.of(context).pushNamed('/dashboard',
+                  arguments: {'dashboardIndex': 4, 'isLocked': false});
             } else {
-              _auth.makePayment(data).then((value) {
-                response = value;
-                if (response.statusCode == 200) {
-                  Navigator.of(context).pushNamed('/dashboard',
-                      arguments: {'dashboardIndex': 2});
-                } else if (response.statusCode == 500) {
-                  setState(() {
-                    errorMessage = "Server Error";
-                    Toast.show(errorMessage, context,
+              //if checking Password For requesting Payment
+              if (isRequest) {
+                var result = false;
+                _auth.createPaymentRequests(data).then((value) {
+                  result = value;
+                  if (result) {
+                    Navigator.of(context).pushNamed('/dashboard',
+                        arguments: {'dashboardIndex': 1});
+                  } else if (!result) {
+                    Toast.show("Request Not Send ", context,
                         gravity: Toast.TOP,
                         backgroundColor: darkBlue(),
                         textColor: Colors.white);
-                  });
-                } else {
-                  setState(() {
-                    errorMessage = "Wrong Password !!";
-                    Toast.show(errorMessage, context,
-                        gravity: Toast.TOP,
-                        backgroundColor: darkBlue(),
-                        textColor: Colors.white);
-                  });
-                }
-              });
+                  } else {
+                    setState(() {
+                      errorMessage = "Wrong Password !!";
+                      Toast.show(errorMessage, context,
+                          gravity: Toast.TOP,
+                          backgroundColor: darkBlue(),
+                          textColor: Colors.white);
+                    });
+                  }
+                });
+              }
+
+              //if checking Password For sending Payment
+              else if (!isRequest) {
+                _auth.makePayment(data).then((value) {
+                  response = value;
+                  if (response.statusCode == 200) {
+                    Navigator.of(context).pushNamed('/dashboard',
+                        arguments: {'dashboardIndex': 2});
+                  } else if (response.statusCode == 500) {
+                    setState(() {
+                      errorMessage = "Server Error";
+                      Toast.show(errorMessage, context,
+                          gravity: Toast.TOP,
+                          backgroundColor: darkBlue(),
+                          textColor: Colors.white);
+                    });
+                  } else {
+                    setState(() {
+                      errorMessage = "Wrong Password !!";
+                      Toast.show(errorMessage, context,
+                          gravity: Toast.TOP,
+                          backgroundColor: darkBlue(),
+                          textColor: Colors.white);
+                    });
+                  }
+                });
+              }
             }
           } else {
             Toast.show("Internet Connection is not available", context,

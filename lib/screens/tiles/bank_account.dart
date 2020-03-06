@@ -42,16 +42,22 @@ class BankAccountTile extends StatelessWidget {
   }
 }
 
-class AccountBalanceTile extends StatelessWidget {
+class AccountBalanceTile extends StatefulWidget {
   // Pass account balance
   String balance;
   bool isLocked;
+
+  AccountBalanceTile({this.balance, this.isLocked});
+
+  @override
+  _AccountBalanceTileState createState() => _AccountBalanceTileState();
+}
+
+class _AccountBalanceTileState extends State<AccountBalanceTile> {
   var currencyImage = Image.asset(
     'assets/images/naira.png',
     scale: 1.0,
   );
-
-  AccountBalanceTile({this.balance, this.isLocked});
 
   @override
   Widget build(BuildContext context) {
@@ -65,12 +71,21 @@ class AccountBalanceTile extends StatelessWidget {
             style: TextStyle(
                 color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
           ),
-          subtitle: Text(isLocked ? "*******":balance),
+          subtitle: Text(widget.isLocked ? "*******" : widget.balance),
           leading: currencyImage,
           trailing: IconButton(
-            icon: Icon(isLocked ? Icons.lock_outline : Icons.lock_open,
+            icon: Icon(widget.isLocked ? Icons.lock_outline : Icons.lock_open,
                 color: Colors.grey[400]),
-            onPressed: () {},
+            onPressed: () {
+              if (widget.isLocked) {
+                Navigator.of(context).pushNamed('/passwordPopup',
+                    arguments: {'isForShowingBalance': true});
+              } else {
+                setState(() {
+                  widget.isLocked = true;
+                });
+              }
+            },
           ),
         ),
       ),

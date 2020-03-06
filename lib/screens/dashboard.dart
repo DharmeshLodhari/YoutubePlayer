@@ -13,32 +13,40 @@ class Dashboard extends StatefulWidget {
   Dashboard({this.arguments});
 
   @override
-  _DashboardState createState() => _DashboardState();
+  _DashboardState createState() => _DashboardState(arguments: arguments);
 }
 
 class _DashboardState extends State<Dashboard> {
   int _currentIndex = 0;
-
+  var arguments;
+  static var isLocked = true;
+  List<Widget> screens;
+  _DashboardState({this.arguments});
   @override
   void initState() {
-    if (widget.arguments != null) {
-      int indexFromRoute = widget.arguments['dashboardIndex'];
-      if (indexFromRoute != null) {
-        setState(() {
-          _currentIndex = indexFromRoute;
-        });
+    setState(() {
+      if (arguments != null) {
+        int indexFromRoute = arguments['dashboardIndex'];
+        isLocked = arguments['isLocked'] != null ? arguments['isLocked'] : true;
+        if (indexFromRoute != null) {
+          setState(() {
+            _currentIndex = indexFromRoute;
+          });
+        }
       }
-    }
+      screens = [
+        Profile(),
+        PaymentRequestList(),
+        TransactionList(),
+        ExploreList(),
+        SettingsList(
+          arguments: {'isLocked': isLocked},
+        ),
+      ];
+    });
+
     super.initState();
   }
-
-  List<Widget> screens = [
-    Profile(),
-    PaymentRequestList(),
-    TransactionList(),
-    ExploreList(),
-    SettingsList(),
-  ];
 
   @override
   Widget build(BuildContext context) {

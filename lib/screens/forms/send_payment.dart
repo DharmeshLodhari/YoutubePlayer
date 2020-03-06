@@ -24,6 +24,8 @@ class SendPayment extends StatefulWidget {
 }
 
 class _SendPaymentState extends State<SendPayment> {
+  TextEditingController _recipientController = TextEditingController();
+  FocusNode _recipientFocus = FocusNode();
   TextEditingController _passwordController;
   http.Response response;
   String _passwordFromPopUp = "";
@@ -52,7 +54,28 @@ class _SendPaymentState extends State<SendPayment> {
         widget.arguments != null ? widget.arguments['isFromProfile'] : false;
     _passwordController = TextEditingController();
 
+    _recipientFocus
+      ..addListener(() {
+        if (!_recipientFocus.hasFocus) {
+          setState(() {
+            _recipientController.text = _recipientController.text.toLowerCase();
+          });
+        }
+      });
+
     super.initState();
+  }
+
+  initializeDisplayCard() {
+    if (!isFromProfile) {
+      if (customerProfileBloc.customer.userName != null) {
+        setState(() {
+          _payee = customerProfileBloc.customer;
+          recipient = _payee.userName;
+          _recipientController.text = recipient;
+        });
+      }
+    }
   }
 
   @override
@@ -124,14 +147,7 @@ class _SendPaymentState extends State<SendPayment> {
   }
 
   Widget getDisplayCard() {
-    if (!isFromProfile) {
-      if (customerProfileBloc.customer.userName != null) {
-        setState(() {
-          _payee = customerProfileBloc.customer;
-          recipient = _payee.userName;
-        });
-      }
-    }
+    initializeDisplayCard();
     var avatarImage;
     var qrCodeImage;
     if (_payee != null) {
@@ -171,8 +187,10 @@ class _SendPaymentState extends State<SendPayment> {
 
   Widget getRecipientField() {
     return TextFormField(
+      controller: _recipientController,
       enabled: isFromProfile,
-      initialValue: isFromProfile ? "" : _payee.userName,
+      focusNode: _recipientFocus,
+//      initialValue: isFromProfile ? "" : _payee.userName,
       cursorColor: darkBlue(),
       validator: (value) {
         if (!isFromProfile && value != _payee.userName) {
@@ -262,6 +280,7 @@ class _SendPaymentState extends State<SendPayment> {
       cursorColor: darkBlue(),
       autofocus: false,
       obscureText: false,
+      textCapitalization: TextCapitalization.sentences,
       decoration: InputDecoration(
           prefixIcon: Icon(Icons.note),
           fillColor: Colors.white,
