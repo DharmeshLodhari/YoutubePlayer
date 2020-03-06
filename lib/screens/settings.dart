@@ -240,7 +240,8 @@ class _SettingsListState extends State<SettingsList> {
     _sharedPreferences.setBool('isLoggedOut', true);
 
     try {} catch (err) {}
-    Navigator.pushNamedAndRemoveUntil(context, "/home", (r) => false);
+    Navigator.pushNamedAndRemoveUntil(context, "/home", (r) => false,
+        arguments: {'isIntroDone': true});
   }
 
   Widget displayAccountBalance(isLocked) {

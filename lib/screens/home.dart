@@ -1,15 +1,111 @@
 import 'package:Slydo/screens/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:introduction_screen/introduction_screen.dart';
 
 import '../widget/exit_alert_dialog.dart';
 import 'colors.dart';
 
 class Home extends StatefulWidget {
+  var arguments;
+  Home({this.arguments});
   @override
-  _HomeState createState() => _HomeState();
+  _HomeState createState() => _HomeState(arguments: arguments);
 }
 
 class _HomeState extends State<Home> {
+  var arguments;
+  _HomeState({this.arguments});
+
+  // for Checking if User  start App first time or come back from logout button
+  bool isIntroDone = false;
+  //intro screen page index
+  int currentIndex = 0;
+
+  @override
+  void initState() {
+    isIntroDone = arguments != null ? arguments['isIntroDone'] : false;
+    pageModel = [
+      PageViewModel(
+        decoration: PageDecoration(pageColor: lightBlue()),
+        title: "Slydo",
+        bodyWidget: Column(
+          children: <Widget>[
+            Text(
+              "An easy way to accept \n and receive payments.",
+              style: TextStyle(fontSize: 20),
+            ),
+          ],
+        ),
+        image: Padding(
+          padding: EdgeInsets.fromLTRB(8.0, 50, 8.0, 8.0),
+          child: Image.asset(
+            'assets/images/index.png',
+            fit: BoxFit.fill,
+          ),
+        ),
+      ),
+      PageViewModel(
+        decoration: PageDecoration(pageColor: lightBlue()),
+        title: "Slydo",
+        bodyWidget: Column(
+          children: <Widget>[
+            Text(
+              "An easy way to accept \n and receive payments.",
+              style: TextStyle(fontSize: 20),
+            ),
+          ],
+        ),
+        image: Padding(
+          padding: EdgeInsets.fromLTRB(8.0, 50, 8.0, 8.0),
+          child: Image.asset(
+            'assets/images/index.png',
+            fit: BoxFit.fill,
+          ),
+        ),
+      ),
+      PageViewModel(
+        decoration: PageDecoration(pageColor: lightBlue()),
+        title: "Slydo",
+        bodyWidget: Column(
+          children: <Widget>[
+            Text(
+              "An easy way to accept \n and receive payments.",
+              style: TextStyle(fontSize: 20),
+            ),
+          ],
+        ),
+        image: Padding(
+          padding: EdgeInsets.fromLTRB(8.0, 50, 8.0, 8.0),
+          child: Image.asset(
+            'assets/images/index.png',
+            fit: BoxFit.fill,
+          ),
+        ),
+      ),
+      PageViewModel(
+        decoration: PageDecoration(pageColor: lightBlue()),
+        title: "Slydo",
+        bodyWidget: Column(
+          children: <Widget>[
+            Text(
+              "An easy way to accept \n and receive payments.",
+              style: TextStyle(fontSize: 20),
+            ),
+          ],
+        ),
+        image: Padding(
+          padding: EdgeInsets.fromLTRB(8.0, 50, 8.0, 8.0),
+          child: Image.asset(
+            'assets/images/index.png',
+            fit: BoxFit.fill,
+          ),
+        ),
+      ),
+    ];
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -22,41 +118,41 @@ class _HomeState extends State<Home> {
         return false;
       },
       child: Scaffold(
-        backgroundColor: lightBlue(),
-        resizeToAvoidBottomInset: true,
-        appBar: AppBar(
-          title: Text('Slydo'),
-          backgroundColor: darkBlue(),
-          elevation: 0.0,
-          automaticallyImplyLeading: false,
-        ),
-        body: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: Center(
-            child: Container(
-              color: lightBlue(),
-              padding: EdgeInsets.all(24),
-              child: Center(
-                child: Column(
-                  children: <Widget>[
-                    SizedBox(height: 100),
-                    showHomeBackground(),
-                    SizedBox(height: 20),
-                    Text('An easy way to accept \n and receive payments.',
-                        style: TextStyle(color: Colors.white, fontSize: 20)),
-                    SizedBox(height: 20),
-                    loginButton(),
-                    SizedBox(height: 10),
-                    Text(
-                      'or',
-                      style: TextStyle(color: Colors.white, fontSize: 20),
-                    ),
-                    SizedBox(height: 10),
-                    registerButton(),
-                  ],
-                ),
+          backgroundColor: lightBlue(),
+          resizeToAvoidBottomInset: true,
+          appBar: AppBar(
+            title: Text('Slydo'),
+            backgroundColor: darkBlue(),
+            elevation: 0.0,
+            automaticallyImplyLeading: false,
+          ),
+          body: !isIntroDone ? introScreen() : test()),
+    );
+  }
+
+  Widget test() {
+    return Center(
+      child: Container(
+        color: lightBlue(),
+        padding: EdgeInsets.all(24),
+        child: Center(
+          child: Column(
+            children: <Widget>[
+              SizedBox(height: 100),
+              showHomeBackground(),
+              SizedBox(height: 20),
+              Text('An easy way to accept \n and receive payments.',
+                  style: TextStyle(color: Colors.white, fontSize: 20)),
+              SizedBox(height: 20),
+              loginButton(),
+              SizedBox(height: 10),
+              Text(
+                'or',
+                style: TextStyle(color: Colors.white, fontSize: 20),
               ),
-            ),
+              SizedBox(height: 10),
+              registerButton(),
+            ],
           ),
         ),
       ),
@@ -65,8 +161,11 @@ class _HomeState extends State<Home> {
 
   Widget loginButton() {
     return ButtonTheme(
-      minWidth: double.infinity,
       child: MaterialButton(
+        minWidth: double.infinity,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: BorderSide(color: darkBlue(), width: 2.0)),
         onPressed: () {
           Navigator.of(context).pushNamed('/login');
         },
@@ -80,9 +179,10 @@ class _HomeState extends State<Home> {
 
   Widget registerButton() {
     return ButtonTheme(
-      minWidth: double.infinity,
       child: MaterialButton(
+        minWidth: double.infinity,
         shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
             side: BorderSide(color: darkBlue(), width: 2.0)),
         onPressed: () {
           Navigator.of(context).pushNamed('/register');
@@ -101,6 +201,35 @@ class _HomeState extends State<Home> {
         'assets/images/index.png',
         fit: BoxFit.cover,
       ),
+    );
+  }
+
+  List<PageViewModel> pageModel;
+  introScreen() {
+    return IntroductionScreen(
+      initialPage: currentIndex,
+      showSkipButton: true,
+      skip: const Text("Skip"),
+      done: const Text("Done", style: TextStyle(fontWeight: FontWeight.w600)),
+      dotsDecorator: DotsDecorator(
+          size: const Size.square(10.0),
+          activeSize: const Size(20.0, 10.0),
+          activeColor: darkBlue(),
+          color: Colors.black26,
+          spacing: const EdgeInsets.symmetric(horizontal: 3.0),
+          activeShape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(25.0))),
+      onDone: () {
+        setState(() {
+          isIntroDone = true;
+        });
+      },
+      onChange: (index) {
+        setState(() {
+          currentIndex = index;
+        });
+      },
+      pages: pageModel,
     );
   }
 }

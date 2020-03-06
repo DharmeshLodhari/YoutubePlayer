@@ -13,7 +13,6 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
 
-
 class UserLogin extends StatefulWidget {
   @override
   _UserLoginState createState() => _UserLoginState();
@@ -46,7 +45,7 @@ class _UserLoginState extends State<UserLogin> {
 
   void setupNotification() async {
     var data = await getDeviceInfo();
-    _firebaseMessaging.getToken().then((String token){
+    _firebaseMessaging.getToken().then((String token) {
       data["token"] = token;
       _auth.registerDevice(data);
     });
@@ -82,8 +81,8 @@ class _UserLoginState extends State<UserLogin> {
         _navigateToItemDetail(message);
       },
     );
-
   }
+
   @override
   void initState() {
     getSharedPreference();
@@ -204,7 +203,7 @@ class _UserLoginState extends State<UserLogin> {
       controller: passwordController,
       autofocus: false,
       obscureText: true,
-      keyboardType: TextInputType.visiblePassword,
+      keyboardType: TextInputType.number,
       decoration: InputDecoration(
           prefixIcon: Icon(Icons.lock),
           fillColor: Colors.white,

@@ -24,7 +24,10 @@ class RouteGenerator {
       case '/splash':
         return MaterialPageRoute(builder: (_) => SplashScreen());
       case '/home':
-        return MaterialPageRoute(builder: (_) => Home());
+        return MaterialPageRoute(
+            builder: (_) => Home(
+                  arguments: settings.arguments,
+                ));
       case '/register':
         return MaterialPageRoute(builder: (_) => SignUp());
       case '/profile':
