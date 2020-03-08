@@ -23,14 +23,14 @@ class _SettingsListState extends State<SettingsList> {
   final _auth = AuthService();
   bool _account = false;
   bool isLoading = false;
-  String accountBalance = "800000000";
+  String accountBalance = "0";
   bool isLocked;
   var arguments;
   _SettingsListState({this.arguments});
 
   @override
   void initState() {
-    setState(() {
+    setState((){
       isLocked = arguments['isLocked'];
     });
 
@@ -246,5 +246,13 @@ class _SettingsListState extends State<SettingsList> {
 
   Widget displayAccountBalance(isLocked) {
     return AccountBalanceTile(balance: accountBalance, isLocked: isLocked);
+  }
+
+  Future<void> getAccountBalance() async {
+    var data = await _auth.getAccountBalance();
+    var spendableBalance = data["spendable_balance"];
+    setState(() {
+      accountBalance = spendableBalance.toString();
+    });
   }
 }

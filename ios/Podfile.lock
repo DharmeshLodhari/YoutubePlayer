@@ -1,4 +1,9 @@
 PODS:
+  - connectivity (0.0.1):
+    - Flutter
+    - Reachability
+  - connectivity_macos (0.0.1):
+    - Flutter
   - Crashlytics (3.14.0):
     - Fabric (~> 1.10.2)
   - device_info (0.0.1):
@@ -112,6 +117,7 @@ PODS:
   - qr_code_scanner (0.0.2):
     - Flutter
     - MTBBarcodeScanner
+  - Reachability (3.2)
   - shared_preferences (0.0.1):
     - Flutter
   - shared_preferences_macos (0.0.1):
@@ -123,6 +129,8 @@ PODS:
     - FMDB (~> 2.7.2)
 
 DEPENDENCIES:
+  - connectivity (from `.symlinks/plugins/connectivity/ios`)
+  - connectivity_macos (from `.symlinks/plugins/connectivity_macos/ios`)
   - device_info (from `.symlinks/plugins/device_info/ios`)
   - firebase_crashlytics (from `.symlinks/plugins/firebase_crashlytics/ios`)
   - firebase_messaging (from `.symlinks/plugins/firebase_messaging/ios`)
@@ -159,8 +167,13 @@ SPEC REPOS:
     - nanopb
     - PromisesObjC
     - Protobuf
+    - Reachability
 
 EXTERNAL SOURCES:
+  connectivity:
+    :path: ".symlinks/plugins/connectivity/ios"
+  connectivity_macos:
+    :path: ".symlinks/plugins/connectivity_macos/ios"
   device_info:
     :path: ".symlinks/plugins/device_info/ios"
   firebase_crashlytics:
@@ -189,6 +202,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/sqflite/ios"
 
 SPEC CHECKSUMS:
+  connectivity: 6e94255659cc86dcbef1d452ad3e0491bb1b3e75
+  connectivity_macos: e2e9731b6b22dda39eb1b128f6969d574460e191
   Crashlytics: 540b7e5f5da5a042647227a5e3ac51d85eed06df
   device_info: cbf09d2ec12aa7110e0b09fabe54b5bd6c8efe74
   Fabric: 706c8b8098fff96c33c0db69cbf81f9c551d0d74
@@ -218,6 +233,7 @@ SPEC CHECKSUMS:
   PromisesObjC: c119f3cd559f50b7ae681fa59dc1acd19173b7e6
   Protobuf: 0e94afe3b47cb11876eb6aee296638711a24bf75
   qr_code_scanner: 16107718bdad7d708cdf6a5eacdca24b56cdf471
+  Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   shared_preferences: 430726339841afefe5142b9c1f50cb6bd7793e01
   shared_preferences_macos: f3f29b71ccbb56bf40c9dd6396c9acf15e214087
   shared_preferences_web: 141cce0c3ed1a1c5bf2a0e44f52d31eeb66e5ea9
@@ -225,4 +241,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 34d1a6b3f1e7576153d9b08905486afb4cd10d0f
 
-COCOAPODS: 1.8.4
+COCOAPODS: 1.9.0

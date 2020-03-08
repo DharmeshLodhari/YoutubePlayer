@@ -460,4 +460,19 @@ class AuthService {
     return response.statusCode == 200;
   }
 
+  // Get Account Balance
+  Future<Map> getAccountBalance() async {
+    var url = baseUrl + "/api/v1/transactions/check-account-balance/";
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+      return jsonData;
+    } else {
+      return {"balance": 0, "spendable_balance": 0, "over_draft": 0};
+    }
+
+  }
+
 }
