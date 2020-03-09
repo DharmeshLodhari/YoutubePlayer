@@ -46,8 +46,9 @@ class AccountBalanceTile extends StatefulWidget {
   // Pass account balance
   String balance;
   bool isLocked;
+  GestureTapCallback onTap;
 
-  AccountBalanceTile({this.balance, this.isLocked});
+  AccountBalanceTile({this.balance, this.isLocked, this.onTap});
 
   @override
   _AccountBalanceTileState createState() => _AccountBalanceTileState();
@@ -80,8 +81,11 @@ class _AccountBalanceTileState extends State<AccountBalanceTile> {
               if (widget.isLocked) {
                 Navigator.of(context).pushNamed('/passwordPopup',
                     arguments: {'isForShowingBalance': true});
+                widget.onTap();
               } else {
                 setState(() {
+                  Navigator.of(context).pushNamed('/dashboard',
+                      arguments: {'dashboardIndex': 4, 'isLocked': true});
                   widget.isLocked = true;
                 });
               }

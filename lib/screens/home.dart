@@ -27,78 +27,157 @@ class _HomeState extends State<Home> {
     isIntroDone = arguments != null ? arguments['isIntroDone'] : false;
     pageModel = [
       PageViewModel(
-        decoration: PageDecoration(pageColor: lightBlue()),
-        title: "Slydo",
+        decoration: PageDecoration(
+            pageColor: Colors.white,
+            imagePadding: EdgeInsets.fromLTRB(0.0, 70, 0, 0),
+            titlePadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
+            contentPadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
+            descriptionPadding: EdgeInsets.fromLTRB(20, 30, 20, 0)),
+        titleWidget: Text(
+          "Scan QR Code",
+          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+        ),
         bodyWidget: Column(
           children: <Widget>[
             Text(
-              "An easy way to accept \n and receive payments.",
-              style: TextStyle(fontSize: 20),
+              "Slydo allows you to send and receive\npayments instantly in Africa",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey[600]),
             ),
           ],
         ),
         image: Padding(
-          padding: EdgeInsets.fromLTRB(8.0, 50, 8.0, 8.0),
+          padding: EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
           child: Image.asset(
-            'assets/images/index.png',
-            fit: BoxFit.fill,
+            'assets/images/Group 16@2x.png',
+            scale: 1,
           ),
         ),
       ),
       PageViewModel(
-        decoration: PageDecoration(pageColor: lightBlue()),
-        title: "Slydo",
+        decoration: PageDecoration(
+            pageColor: Colors.white,
+            imagePadding: EdgeInsets.fromLTRB(0.0, 70, 0, 0),
+            titlePadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
+            contentPadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
+            descriptionPadding: EdgeInsets.fromLTRB(20, 30, 20, 0)),
+        titleWidget: Text(
+          "Send Payment",
+          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+        ),
         bodyWidget: Column(
           children: <Widget>[
             Text(
-              "An easy way to accept \n and receive payments.",
-              style: TextStyle(fontSize: 20),
+              "Slydo allows you to send and receive\npayments instantly in Africa",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey[600]),
             ),
           ],
         ),
         image: Padding(
-          padding: EdgeInsets.fromLTRB(8.0, 50, 8.0, 8.0),
+          padding: EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
           child: Image.asset(
-            'assets/images/index.png',
-            fit: BoxFit.fill,
+            'assets/images/Group 15@2x.png',
+            scale: 1,
           ),
         ),
       ),
       PageViewModel(
-        decoration: PageDecoration(pageColor: lightBlue()),
-        title: "Slydo",
+        decoration: PageDecoration(
+            pageColor: Colors.white,
+            imagePadding: EdgeInsets.fromLTRB(0.0, 70, 0, 0),
+            titlePadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
+            contentPadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
+            descriptionPadding: EdgeInsets.fromLTRB(20, 30, 20, 0)),
+        titleWidget: Text(
+          "View transactions",
+          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+        ),
         bodyWidget: Column(
           children: <Widget>[
             Text(
-              "An easy way to accept \n and receive payments.",
-              style: TextStyle(fontSize: 20),
+              "Slydo allows you to send and receive\npayments instantly in Africa",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey[600]),
             ),
           ],
         ),
         image: Padding(
-          padding: EdgeInsets.fromLTRB(8.0, 50, 8.0, 8.0),
+          padding: EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
           child: Image.asset(
-            'assets/images/index.png',
-            fit: BoxFit.fill,
+            'assets/images/Group 14@2x.png',
+            scale: 1,
           ),
         ),
       ),
       PageViewModel(
-        decoration: PageDecoration(pageColor: lightBlue()),
-        title: "Slydo",
+        decoration: PageDecoration(
+            pageColor: Colors.white,
+            imagePadding: EdgeInsets.fromLTRB(0.0, 70, 0, 0),
+            titlePadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
+            contentPadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
+            descriptionPadding: EdgeInsets.fromLTRB(20, 30, 20, 0)),
+        titleWidget: Text(
+          "View transactions",
+          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+        ),
         bodyWidget: Column(
           children: <Widget>[
             Text(
-              "An easy way to accept \n and receive payments.",
-              style: TextStyle(fontSize: 20),
+              "Slydo allows you to send and receive\npayments instantly in Africa",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey[600]),
             ),
           ],
         ),
         image: Padding(
-          padding: EdgeInsets.fromLTRB(8.0, 50, 8.0, 8.0),
+          padding: EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
           child: Image.asset(
-            'assets/images/index.png',
-            fit: BoxFit.fill,
+            'assets/images/Group 13@2x.png',
+            scale: 1,
+          ),
+        ),
+      ),
+      PageViewModel(
+        decoration: PageDecoration(
+            pageColor: Colors.white,
+            imagePadding: EdgeInsets.fromLTRB(0.0, 70, 0, 0),
+            titlePadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
+            contentPadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
+            descriptionPadding: EdgeInsets.fromLTRB(20, 30, 20, 0)),
+        titleWidget: Text(
+          "View transactions",
+          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+        ),
+        bodyWidget: Column(
+          children: <Widget>[
+            Text(
+              "Slydo allows you to send and receive\npayments instantly in Africa",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey[600]),
+            ),
+          ],
+        ),
+        image: Padding(
+          padding: EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
+          child: Image.asset(
+            'assets/images/Group 13@2x.png',
+            scale: 1,
           ),
         ),
       ),
@@ -120,12 +199,6 @@ class _HomeState extends State<Home> {
       child: Scaffold(
           backgroundColor: lightBlue(),
           resizeToAvoidBottomInset: true,
-          appBar: AppBar(
-            title: Text('Slydo'),
-            backgroundColor: darkBlue(),
-            elevation: 0.0,
-            automaticallyImplyLeading: false,
-          ),
           body: !isIntroDone ? introScreen() : test()),
     );
   }
