@@ -105,7 +105,7 @@ class _ProfileState extends State<Profile> {
                           duration: Toast.LENGTH_LONG,
                           backgroundColor: darkBlue());
                     },
-                    icon: Icon(Icons.settings, color: Colors.black),
+                    icon: Icon(Icons.content_copy, color: Colors.black),
                     label: Text('Copy Url',
                         style: TextStyle(color: Colors.black, fontSize: 14))),
               ],

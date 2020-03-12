@@ -5,6 +5,7 @@ import 'package:Slydo/models/user.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/location_service.dart';
+import 'package:Slydo/widget/passcodePopup.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -348,10 +349,15 @@ class _RequestPaymentState extends State<RequestPayment> {
             }
 
             if (isValidPayee && _formKey.currentState.validate()) {
+              FocusScope.of(context).unfocus();
+
               // Todo: Add a try block here and stop user from continuing if they deny location permission
-              var userLocation = await locationService.getLocation();
-              Navigator.pushNamed(context, "/passwordPopup", arguments: {
-                'data': {
+
+              var userLocation;
+              try {
+                userLocation = await locationService.getLocation();
+
+                var data = {
                   "from_customer": userBloc.user.userName,
                   "to_customer": recipient,
                   "currency": "NGN",
@@ -361,10 +367,77 @@ class _RequestPaymentState extends State<RequestPayment> {
                   "description": reference,
                   "latitude": userLocation.latitude,
                   "longitude": userLocation.longitude,
-                },
-                '_auth': _auth,
-                'isRequest': isRequest
-              });
+                };
+
+                PasscodePopup(
+                    context: context,
+                    isValidCallback: () {
+                      showDialog(
+                          context: context,
+                          builder: (context) =>
+                              Center(child: CircularProgressIndicator()));
+                      _auth.createPaymentRequests(data).then((value) {
+                        if (value) {
+                          Navigator.of(context).pushNamed('/dashboard',
+                              arguments: {'dashboardIndex': 1});
+                        } else if (!value) {
+                          Navigator.pop(context);
+                          Toast.show("Request Not Send ", context,
+                              gravity: Toast.TOP,
+                              backgroundColor: darkBlue(),
+                              textColor: Colors.white);
+                        } else {
+                          Navigator.pop(context);
+                          setState(() {
+                            errorMessage = "Wrong Password !!";
+                            Toast.show(errorMessage, context,
+                                gravity: Toast.TOP,
+                                backgroundColor: darkBlue(),
+                                textColor: Colors.white);
+                          });
+                        }
+                      });
+                    },
+                    cancelCallBack: () {
+                      Scaffold.of(context).showSnackBar(SnackBar(
+                        content: Text("Wrong Password !!"),
+                      ));
+                    });
+
+//                Navigator.of(context)
+//                    .pushNamed('/resultPasswordPopup')
+//                    .then((result) {
+//                  if ("true" == result) {
+//                    _auth.createPaymentRequests(data).then((value) {
+//                      if (value) {
+//                        Navigator.of(context).pushNamed('/dashboard',
+//                            arguments: {'dashboardIndex': 1});
+//                      } else if (!value) {
+//                        Toast.show("Request Not Send ", context,
+//                            gravity: Toast.TOP,
+//                            backgroundColor: darkBlue(),
+//                            textColor: Colors.white);
+//                      } else {
+//                        setState(() {
+//                          errorMessage = "Wrong Password !!";
+//                          Toast.show(errorMessage, context,
+//                              gravity: Toast.TOP,
+//                              backgroundColor: darkBlue(),
+//                              textColor: Colors.white);
+//                        });
+//                      }
+//                    });
+//                  } else {
+//                    Scaffold.of(context).showSnackBar(SnackBar(
+//                      content: Text("Wrong Password !!"),
+//                    ));
+//                  }
+//                });
+              } catch (e) {
+                print(e);
+                Toast.show(e, context,
+                    gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+              }
             }
           } else {
             var msg = "Invalid recipient";

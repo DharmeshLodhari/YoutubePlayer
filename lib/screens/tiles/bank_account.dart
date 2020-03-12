@@ -1,4 +1,5 @@
 import 'package:Slydo/models/transactions.dart';
+import 'package:Slydo/widget/passcodePopup.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
@@ -34,7 +35,7 @@ class BankAccountTile extends StatelessWidget {
           ),
           trailing: IconButton(
             icon: Icon(Icons.settings, color: Colors.grey[400]),
-            onPressed: () {},
+            onPressed: () async {},
           ),
         ),
       ),
@@ -79,8 +80,17 @@ class _AccountBalanceTileState extends State<AccountBalanceTile> {
                 color: Colors.grey[400]),
             onPressed: () {
               if (widget.isLocked) {
-                Navigator.of(context).pushNamed('/passwordPopup',
-                    arguments: {'isForShowingBalance': true});
+                PasscodePopup(
+                    context: context,
+                    isValidCallback: () {
+                      Navigator.of(context).pushNamed('/dashboard',
+                          arguments: {'dashboardIndex': 4, 'isLocked': false});
+                    },
+                    cancelCallBack: () {
+                      Scaffold.of(context).showSnackBar(SnackBar(
+                        content: Text("Wrong Password !!"),
+                      ));
+                    });
                 widget.onTap();
               } else {
                 setState(() {

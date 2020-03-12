@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:toast/toast.dart';
 
 import '../../widget/LoadingIndicator.dart';

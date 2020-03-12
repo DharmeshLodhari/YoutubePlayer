@@ -3,12 +3,12 @@ import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/screens/tiles/transaction.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/widget/noItemInList.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:toast/toast.dart';
-import 'package:connectivity/connectivity.dart';
 
 class PaymentRequestList extends StatefulWidget {
   @override

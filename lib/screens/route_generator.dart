@@ -13,6 +13,7 @@ import 'package:Slydo/screens/settings.dart';
 import 'package:Slydo/screens/transactions.dart';
 import 'package:Slydo/splash.dart';
 import 'package:Slydo/widget/passwordPopup.dart';
+import 'package:Slydo/widget/resultReturningPasswordPopup.dart';
 import 'package:flutter/material.dart';
 
 class RouteGenerator {
@@ -66,6 +67,9 @@ class RouteGenerator {
             builder: (_) => PasswordPopup(
                   arguments: settings.arguments,
                 ));
+      case '/resultPasswordPopup':
+        return MaterialPageRoute(
+            builder: (_) => ResultReturningPasswordPopup());
       case '/add-bank-account':
         return MaterialPageRoute(builder: (_) => AddAccount());
       case '/scan-qr':

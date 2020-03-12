@@ -5,11 +5,11 @@ import 'package:Slydo/models/user.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/location_service.dart';
+import 'package:Slydo/widget/passcodePopup.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
@@ -316,24 +316,97 @@ class _SendPaymentState extends State<SendPayment> {
             }
 
             if (isValidPayee && _formKey.currentState.validate()) {
+              FocusScope.of(context).unfocus();
               // Todo: Add a try block here and stop user from continuing if they deny location permission
               var userLocation;
               try {
                 userLocation = await locationService.getLocation();
-                Navigator.pushNamed(context, "/passwordPopup", arguments: {
-                  'data': {
-                    "from_customer": userBloc.user.userName,
-                    "to_customer": recipient,
-                    "currency": "NGN",
-                    "amount": amount.toString(),
-                    "category": "Shopping",
-                    "notes": reference,
-                    "description": reference,
-                    "latitude": userLocation.latitude,
-                    "longitude": userLocation.longitude,
-                  },
-                  '_auth': _auth
-                });
+                var data = {
+                  "from_customer": userBloc.user.userName,
+                  "to_customer": recipient,
+                  "currency": "NGN",
+                  "amount": amount.toString(),
+                  "category": "Shopping",
+                  "notes": reference,
+                  "description": reference,
+                  "latitude": userLocation.latitude,
+                  "longitude": userLocation.longitude,
+                };
+
+                PasscodePopup(
+                    context: context,
+                    isValidCallback: () {
+                      showDialog(
+                          context: context,
+                          builder: (context) =>
+                              Center(child: CircularProgressIndicator()));
+                      _auth.makePayment(data).then((value) {
+                        response = value;
+                        if (response.statusCode == 200) {
+                          Navigator.of(context).pushNamed('/dashboard',
+                              arguments: {'dashboardIndex': 2});
+                        } else if (response.statusCode == 500) {
+                          Navigator.pop(context);
+                          setState(() {
+                            errorMessage =
+                                "Server Error please try after some time !";
+                            Toast.show(errorMessage, context,
+                                gravity: Toast.TOP,
+                                backgroundColor: darkBlue(),
+                                textColor: Colors.white);
+                          });
+                        } else {
+                          Navigator.pop(context);
+                          setState(() {
+                            errorMessage = "Something went wrong  !!";
+                            Toast.show(errorMessage, context,
+                                gravity: Toast.TOP,
+                                backgroundColor: darkBlue(),
+                                textColor: Colors.white);
+                          });
+                        }
+                      });
+                    },
+                    cancelCallBack: () {
+                      Scaffold.of(context).showSnackBar(SnackBar(
+                        content: Text("Wrong Password !!"),
+                      ));
+                    });
+
+//                Navigator.of(context)
+//                    .pushNamed('/resultPasswordPopup')
+//                    .then((result) {
+//                  if ("true" == result) {
+//                    _auth.makePayment(data).then((value) {
+//                      response = value;
+//                      if (response.statusCode == 200) {
+//                        Navigator.of(context).pushNamed('/dashboard',
+//                            arguments: {'dashboardIndex': 2});
+//                      } else if (response.statusCode == 500) {
+//                        setState(() {
+//                          errorMessage =
+//                              "Server Error please try after some time !";
+//                          Toast.show(errorMessage, context,
+//                              gravity: Toast.TOP,
+//                              backgroundColor: darkBlue(),
+//                              textColor: Colors.white);
+//                        });
+//                      } else {
+//                        setState(() {
+//                          errorMessage = "Something went wrong  !!";
+//                          Toast.show(errorMessage, context,
+//                              gravity: Toast.TOP,
+//                              backgroundColor: darkBlue(),
+//                              textColor: Colors.white);
+//                        });
+//                      }
+//                    });
+//                  } else {
+//                    Scaffold.of(context).showSnackBar(SnackBar(
+//                      content: Text("Wrong Password !!"),
+//                    ));
+//                  }
+//                });
               } catch (e) {
                 print(e);
                 Toast.show(e, context,
