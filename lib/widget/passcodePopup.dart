@@ -26,7 +26,7 @@ class PasscodePopup {
               title: "Enter Passcode",
               passwordEnteredCallback: _onPasscodeEntered,
               cancelLocalizedText: 'Cancel',
-              deleteLocalizedText: 'delete',
+              deleteLocalizedText: 'Delete',
               shouldTriggerVerification: _verificationNotifier.stream,
               passwordDigits: 4,
               isValidCallback: isValidCallback,
