@@ -453,7 +453,7 @@ class AuthService {
   }
 
   Future<bool> registerDevice(Map data) async {
-    var url = baseUrl + "/api/v1/register-device/";
+    var url = baseUrl + "/api/v1/notification/register-device/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.post(url, headers: headers, body: _data);
@@ -465,12 +465,11 @@ class AuthService {
     var url = baseUrl + "/api/v1/transactions/check-account-balance/";
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
-    print("response Ststus code: ${response.statusCode}");
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
       return jsonData;
     } else {
-      return {"balance": 0, "spendable_balance": 123, "over_draft": 0};
+      return {"balance": 0, "spendable_balance": 0, "over_draft": 0};
     }
   }
 }

@@ -10,13 +10,13 @@ Future<Map> getDeviceInfo() async {
     IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
     data["mode"] = iosInfo.model;
     data["device_id"] = iosInfo.identifierForVendor;
-    data["name"] = iosInfo.name;
+    data["device_name"] = iosInfo.name;
   }
   else {
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
     data["mode"] = androidInfo.model;
     data["device_id"] = androidInfo.androidId;
-    data["name"] = androidInfo.display;
+    data["device_name"] = androidInfo.display;
   }
   return data;
 }

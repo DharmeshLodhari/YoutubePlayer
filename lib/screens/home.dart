@@ -28,14 +28,14 @@ class _HomeState extends State<Home> {
     pageModel = [
       PageViewModel(
         decoration: PageDecoration(
-            pageColor: Colors.white,
+            pageColor: lightBlue(),
             imagePadding: EdgeInsets.fromLTRB(0.0, 70, 0, 0),
             titlePadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
             contentPadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
             descriptionPadding: EdgeInsets.fromLTRB(20, 30, 20, 0)),
         titleWidget: Text(
           "Scan QR Code",
-          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: Colors.white),
         ),
         bodyWidget: Column(
           children: <Widget>[
@@ -45,28 +45,28 @@ class _HomeState extends State<Home> {
               style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w500,
-                  color: Colors.grey[600]),
+                  color: Colors.white),
             ),
           ],
         ),
         image: Padding(
           padding: EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
           child: Image.asset(
-            'assets/images/Group 16@2x.png',
+            'assets/images/Group16@2x.png',
             scale: 1,
           ),
         ),
       ),
       PageViewModel(
         decoration: PageDecoration(
-            pageColor: Colors.white,
+            pageColor: lightBlue(),
             imagePadding: EdgeInsets.fromLTRB(0.0, 70, 0, 0),
             titlePadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
             contentPadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
             descriptionPadding: EdgeInsets.fromLTRB(20, 30, 20, 0)),
         titleWidget: Text(
           "Send Payment",
-          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: Colors.white),
         ),
         bodyWidget: Column(
           children: <Widget>[
@@ -76,28 +76,28 @@ class _HomeState extends State<Home> {
               style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w500,
-                  color: Colors.grey[600]),
+                  color: Colors.white),
             ),
           ],
         ),
         image: Padding(
           padding: EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
           child: Image.asset(
-            'assets/images/Group 15@2x.png',
+            'assets/images/Group15@2x.png',
             scale: 1,
           ),
         ),
       ),
       PageViewModel(
         decoration: PageDecoration(
-            pageColor: Colors.white,
+            pageColor: lightBlue(),
             imagePadding: EdgeInsets.fromLTRB(0.0, 70, 0, 0),
             titlePadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
             contentPadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
             descriptionPadding: EdgeInsets.fromLTRB(20, 30, 20, 0)),
         titleWidget: Text(
           "View transactions",
-          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: Colors.white),
         ),
         bodyWidget: Column(
           children: <Widget>[
@@ -107,28 +107,28 @@ class _HomeState extends State<Home> {
               style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w500,
-                  color: Colors.grey[600]),
+                  color: Colors.white),
             ),
           ],
         ),
         image: Padding(
           padding: EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
           child: Image.asset(
-            'assets/images/Group 14@2x.png',
+            'assets/images/Group14@2x.png',
             scale: 1,
           ),
         ),
       ),
       PageViewModel(
         decoration: PageDecoration(
-            pageColor: Colors.white,
+            pageColor: lightBlue(),
             imagePadding: EdgeInsets.fromLTRB(0.0, 70, 0, 0),
             titlePadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
             contentPadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
             descriptionPadding: EdgeInsets.fromLTRB(20, 30, 20, 0)),
         titleWidget: Text(
           "View transactions",
-          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: Colors.white),
         ),
         bodyWidget: Column(
           children: <Widget>[
@@ -138,45 +138,14 @@ class _HomeState extends State<Home> {
               style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w500,
-                  color: Colors.grey[600]),
+                  color: Colors.white),
             ),
           ],
         ),
         image: Padding(
           padding: EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
           child: Image.asset(
-            'assets/images/Group 13@2x.png',
-            scale: 1,
-          ),
-        ),
-      ),
-      PageViewModel(
-        decoration: PageDecoration(
-            pageColor: Colors.white,
-            imagePadding: EdgeInsets.fromLTRB(0.0, 70, 0, 0),
-            titlePadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
-            contentPadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
-            descriptionPadding: EdgeInsets.fromLTRB(20, 30, 20, 0)),
-        titleWidget: Text(
-          "View transactions",
-          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-        ),
-        bodyWidget: Column(
-          children: <Widget>[
-            Text(
-              "Slydo allows you to send and receive\npayments instantly in Africa",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.grey[600]),
-            ),
-          ],
-        ),
-        image: Padding(
-          padding: EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
-          child: Image.asset(
-            'assets/images/Group 13@2x.png',
+            'assets/images/Group13@2x.png',
             scale: 1,
           ),
         ),
@@ -282,8 +251,8 @@ class _HomeState extends State<Home> {
     return IntroductionScreen(
       initialPage: currentIndex,
       showSkipButton: true,
-      skip: const Text("Skip"),
-      done: const Text("Done", style: TextStyle(fontWeight: FontWeight.w600)),
+      skip: const Text("Skip",  style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white)),
+      done: const Text("Done", style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white)),
       dotsDecorator: DotsDecorator(
           size: const Size.square(10.0),
           activeSize: const Size(20.0, 10.0),
