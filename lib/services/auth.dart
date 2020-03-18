@@ -298,6 +298,7 @@ class AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.post(url, headers: headers, body: _data);
+    print('${response.body}');
     if (response.statusCode == 200) {
       return false;
     } else {
@@ -456,7 +457,9 @@ class AuthService {
     var url = baseUrl + "/api/v1/notification/register-device/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
+
     var response = await http.post(url, headers: headers, body: _data);
+
     return response.statusCode == 200;
   }
 

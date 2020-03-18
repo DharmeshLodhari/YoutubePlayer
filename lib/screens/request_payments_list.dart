@@ -58,6 +58,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         requestPaymentList = [];
         getList();
         _refreshController.refreshCompleted();
+        print("Refresh Controller called !!!");
       } else {
         Toast.show("Internet Connection is not available", context,
             gravity: Toast.BOTTOM, backgroundColor: darkBlue());

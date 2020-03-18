@@ -1,12 +1,40 @@
 import 'package:Slydo/models/transactions.dart';
+import 'package:Slydo/widget/local_notification.dart';
 import 'package:Slydo/widget/passcodePopup.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-class BankAccountTile extends StatelessWidget {
+class BankAccountTile extends StatefulWidget {
   // Pass account object into this constructor
   final BankAccount account;
   BankAccountTile({this.account});
+
+  @override
+  _BankAccountTileState createState() => _BankAccountTileState();
+}
+
+class _BankAccountTileState extends State<BankAccountTile> {
+  final localNotifications = FlutterLocalNotificationsPlugin();
+  @override
+  void initState() {
+    super.initState();
+
+    final settingsAndroid = AndroidInitializationSettings(
+      'app_icon',
+    );
+    final settingsIOS = IOSInitializationSettings(
+        onDidReceiveLocalNotification: (id, title, body, payload) =>
+            onSelectNotification(payload));
+
+    localNotifications.initialize(
+        InitializationSettings(settingsAndroid, settingsIOS),
+        onSelectNotification: onSelectNotification);
+  }
+
+  Future onSelectNotification(String payload) async =>
+      await Navigator.of(context)
+          .pushNamed('/dashboard', arguments: {'dashboardIndex': 0});
 
   @override
   Widget build(BuildContext context) {
@@ -16,14 +44,14 @@ class BankAccountTile extends StatelessWidget {
         margin: EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
         child: ListTile(
           title: Text(
-            account.bankName,
+            widget.account.bankName,
             style: TextStyle(
                 color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
           ),
-          subtitle:
-              Text('******' + account.accountNumber.toString().substring(5, 9)),
+          subtitle: Text('******' +
+              widget.account.accountNumber.toString().substring(5, 9)),
           leading: CachedNetworkImage(
-            imageUrl: account.bankAvatar,
+            imageUrl: widget.account.bankAvatar,
             height: 45,
             width: 45,
             colorBlendMode: BlendMode.darken,
@@ -35,7 +63,10 @@ class BankAccountTile extends StatelessWidget {
           ),
           trailing: IconButton(
             icon: Icon(Icons.settings, color: Colors.grey[400]),
-            onPressed: () async {},
+            onPressed: () {
+              showOngoingNotification(localNotifications,
+                  title: "title", body: "body");
+            },
           ),
         ),
       ),
