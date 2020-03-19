@@ -1,9 +1,7 @@
 import 'package:Slydo/models/transactions.dart';
-import 'package:Slydo/widget/local_notification.dart';
 import 'package:Slydo/widget/passcodePopup.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class BankAccountTile extends StatefulWidget {
   // Pass account object into this constructor
@@ -15,26 +13,10 @@ class BankAccountTile extends StatefulWidget {
 }
 
 class _BankAccountTileState extends State<BankAccountTile> {
-  final localNotifications = FlutterLocalNotificationsPlugin();
   @override
   void initState() {
     super.initState();
-
-    final settingsAndroid = AndroidInitializationSettings(
-      'app_icon',
-    );
-    final settingsIOS = IOSInitializationSettings(
-        onDidReceiveLocalNotification: (id, title, body, payload) =>
-            onSelectNotification(payload));
-
-    localNotifications.initialize(
-        InitializationSettings(settingsAndroid, settingsIOS),
-        onSelectNotification: onSelectNotification);
   }
-
-  Future onSelectNotification(String payload) async =>
-      await Navigator.of(context)
-          .pushNamed('/dashboard', arguments: {'dashboardIndex': 0});
 
   @override
   Widget build(BuildContext context) {
@@ -63,10 +45,7 @@ class _BankAccountTileState extends State<BankAccountTile> {
           ),
           trailing: IconButton(
             icon: Icon(Icons.settings, color: Colors.grey[400]),
-            onPressed: () {
-              showOngoingNotification(localNotifications,
-                  title: "title", body: "body");
-            },
+            onPressed: () {},
           ),
         ),
       ),
