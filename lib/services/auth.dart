@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:Slydo/data/database_helper.dart';
+import 'package:Slydo/models/message.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:http/http.dart' as http;
@@ -49,7 +50,7 @@ class AuthService {
       // where  created and the use that to compute the expiration time of the
       // token. So that we will only use the token if its still valid.
       // We play safe and use 4 minutes
-      DateTime expirationTime = now.add(Duration(seconds: 300));
+      DateTime expirationTime = now.add(Duration(seconds: 240));
 
       Map<String, String> data = {};
       var jsonResponse = json.decode(response.body);
@@ -474,5 +475,71 @@ class AuthService {
     } else {
       return {"balance": 0, "spendable_balance": 0, "over_draft": 0};
     }
+  }
+
+  // it will send the message
+  Map<String, dynamic> sendMessage() {}
+
+  // it will update the message actions:  [Archived,UnArchived,Starred,UnStarred]
+  Map<String, dynamic> updateMessage(String id, String action) {
+    switch (action) {
+      case "Archived":
+        break;
+      case "UnArchived":
+        break;
+      case "Starred":
+        break;
+      case "UnStarred":
+        break;
+    }
+  }
+
+  // it will delete the message
+  Map<String, dynamic> deleteMessage(String id) {}
+
+  //get single message
+  Message getMessage() {
+    Message message = Message(
+        id: 1.toString(),
+        body: """
+Reverent Sir,
+
+Hoping wellness at your perfect self from my side. I am Mr. Carlson, the cashier in this branch of bank. I am posted here from the past seven years and very near to up gradation. Throughout my career I had not availed a single leave on behalf of
+any reason so far. You can check my leave record and quality of work done by me.
+
+Now the need arises and I want to have a month’s leave due to my falling health. Medical care is needed utmost. Kindly grant me the said leaves so that I can rejoin my seat in better spirits. Thanking in anticipation.""",
+        timeStamp: "22/02/2020 6:30 pm",
+        isArchived: true,
+        isRead: true,
+        isStarred: true,
+        recipient: "pankaj.sakariya",
+        sender: "brijesh.sakariya",
+        senderAvtar:
+            "https://slydo-assets.s3.amazonaws.com/media/customer/avatar/f05d89d7d7944001adff2a0fb295f10a.jpg",
+        subject: "Application for Sick Leave for Employee");
+    return message;
+    //return single Message
+  }
+
+  // get messages list messages filters: [archived,sent,starred,all]
+  List<PartialMessage> listMessages({String filter}) {
+    List<PartialMessage> messagesList = [];
+    for (int i = 0; i < 10; i++) {
+      PartialMessage message = PartialMessage(
+          id: i.toString(),
+          subtitle: "test",
+          timeStamp: "${i}:30 pm",
+          isArchived: true,
+          isRead: true,
+          isStarred: true,
+          recipient: "pankaj.sakariya",
+          sender: "brijesh.sakariya",
+          senderAvtar:
+              "https://slydo-assets.s3.amazonaws.com/media/customer/avatar/f05d89d7d7944001adff2a0fb295f10a.jpg",
+          subject: "Test Subject");
+
+      messagesList.add(message);
+    }
+    return messagesList;
   }
 }

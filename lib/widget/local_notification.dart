@@ -16,11 +16,8 @@ Future<NotificationDetails> _icon(BuildContext context, Image icon) async {
 
 NotificationDetails get _ongoing {
   final androidChannelSpecifics = AndroidNotificationDetails(
-    'your channel id',
-    'your channel name',
-    'your channel description',
-    icon: "app_icon",
-  );
+      'your channel id', 'your channel name', 'your channel description',
+      icon: "app_icon");
   final iOSChannelSpecifics = IOSNotificationDetails();
   return NotificationDetails(androidChannelSpecifics, iOSChannelSpecifics);
 }
@@ -42,13 +39,3 @@ Future _showNotification(
   int id = 0,
 }) =>
     notifications.show(id, title, body, type);
-
-Future showIconNotification(
-  BuildContext context,
-  FlutterLocalNotificationsPlugin notifications, {
-  @required String title,
-  @required String body,
-  @required Image icon,
-  int id = 0,
-}) async =>
-    notifications.show(id, title, body, await _icon(context, icon));

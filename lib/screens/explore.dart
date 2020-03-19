@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/screens/tiles/user.dart';
@@ -53,14 +54,15 @@ class _ExploreListState extends State<ExploreList> {
     return WillPopScope(
       onWillPop: () async {
         Navigator.pop(context);
-        Navigator.pushNamed(context, '/dashboard');
+        Navigator.pushNamed(context, '/dashboard',
+            arguments: {'dashboardIndex': 4});
         return false;
       },
       child: Scaffold(
         resizeToAvoidBottomInset: true,
         backgroundColor: lightBlue(),
         appBar: AppBar(
-          automaticallyImplyLeading: false,
+          automaticallyImplyLeading: Platform.isAndroid ? false : true,
           backgroundColor: darkBlue(),
           title: AnimatedSwitcher(
             duration: Duration(milliseconds: 500),

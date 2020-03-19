@@ -1,6 +1,7 @@
 import 'package:Slydo/screens/dashboard.dart';
 import 'package:Slydo/screens/explore.dart';
 import 'package:Slydo/screens/forms/add_bank_account.dart';
+import 'package:Slydo/screens/forms/compose_message.dart';
 import 'package:Slydo/screens/forms/login.dart';
 import 'package:Slydo/screens/forms/request_payment.dart';
 import 'package:Slydo/screens/forms/send_payment.dart';
@@ -15,6 +16,8 @@ import 'package:Slydo/splash.dart';
 import 'package:Slydo/widget/passwordPopup.dart';
 import 'package:Slydo/widget/resultReturningPasswordPopup.dart';
 import 'package:flutter/material.dart';
+
+import 'detailed_message.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -60,8 +63,15 @@ class RouteGenerator {
             builder: (_) => RequestPayment(
                   arguments: settings.arguments,
                 ));
-      case '/expore':
+      case '/explore':
         return MaterialPageRoute(builder: (_) => ExploreList());
+      case '/compose_message':
+        return MaterialPageRoute(builder: (_) => ComposeMessage());
+      case '/detail_message':
+        return MaterialPageRoute(
+            builder: (_) => DetailedMessage(
+                  arguments: settings.arguments,
+                ));
       case '/passwordPopup':
         return MaterialPageRoute(
             builder: (_) => PasswordPopup(

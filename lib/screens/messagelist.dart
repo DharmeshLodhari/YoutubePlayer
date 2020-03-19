@@ -1,6 +1,6 @@
-import 'package:Slydo/models/transactions.dart';
+import 'package:Slydo/models/message.dart';
 import 'package:Slydo/screens/colors.dart';
-import 'package:Slydo/screens/tiles/transaction.dart';
+import 'package:Slydo/screens/tiles/message.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:connectivity/connectivity.dart';
@@ -10,24 +10,25 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:toast/toast.dart';
 
-class PaymentRequestList extends StatefulWidget {
+class MessageList extends StatefulWidget {
   @override
-  _PaymentRequestListState createState() => _PaymentRequestListState();
+  _MessageListState createState() => _MessageListState();
 }
 
-class _PaymentRequestListState extends State<PaymentRequestList> {
+class _MessageListState extends State<MessageList> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final _auth = AuthService();
   SlidableController slidableController;
   int count = 0;
   String next = "";
   String previous = "";
-  List requestPaymentList = [];
+  List messageList = [];
   ScrollController _scrollController = new ScrollController();
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isLoading = false;
   bool noItemInList = false;
+  String filterValue = "All";
 
   @protected
   void initState() {
@@ -55,7 +56,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         count = 0;
         next = "";
         previous = "";
-        requestPaymentList = [];
+        messageList = [];
         getList();
         _refreshController.refreshCompleted();
         print("Refresh Controller called !!!");
@@ -81,10 +82,8 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
           appBar: AppBar(
             automaticallyImplyLeading: false,
             backgroundColor: darkBlue(),
-            title: Text('Payment Requests'),
-            actions: <Widget>[
-              sendRequestButton(),
-            ],
+            title: Text('Messages'),
+            actions: <Widget>[_threeItemPopup()],
           ),
           body: SmartRefresher(
               enablePullDown: true,
@@ -94,24 +93,109 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
               ),
               controller: _refreshController,
               onRefresh: _onRefresh,
-              child: _buildRequestPaymentList()),
+              child: _buildMessageList()),
+          floatingActionButton: FloatingActionButton(
+            backgroundColor: darkBlue(),
+            child: Icon(Icons.message),
+            onPressed: () {
+              Navigator.of(context).pushNamed("/compose_message");
+            },
+          ),
         ));
   }
 
-  Widget _buildRequestPaymentList() {
+  Widget _threeItemPopup() => PopupMenuButton(
+        padding: EdgeInsets.all(0),
+        captureInheritedThemes: true,
+        itemBuilder: (context) {
+          var list = List<PopupMenuEntry<Object>>();
+          list.add(
+            PopupMenuItem(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text("Filter"),
+                  Icon(
+                    Icons.sort,
+                    color: Colors.black,
+                  )
+                ],
+              ),
+              value: 1,
+            ),
+          );
+          list.add(
+            PopupMenuDivider(
+              height: 10,
+            ),
+          );
+          list.add(
+            CheckedPopupMenuItem(
+              child: Text(
+                "All",
+                style: TextStyle(color: Colors.black),
+              ),
+              value: "All",
+              checked: filterValue == "All" ? true : false,
+            ),
+          );
+          list.add(
+            CheckedPopupMenuItem(
+              child: Text(
+                "Archived",
+                style: TextStyle(color: Colors.black),
+              ),
+              value: "Archived",
+              checked: filterValue == "Archived" ? true : false,
+            ),
+          );
+
+          list.add(
+            CheckedPopupMenuItem(
+              child: Text(
+                "Sent",
+                style: TextStyle(color: Colors.black),
+              ),
+              value: "Sent",
+              checked: filterValue == "Sent" ? true : false,
+            ),
+          );
+          list.add(
+            CheckedPopupMenuItem(
+              child: Text(
+                "Starred",
+                style: TextStyle(color: Colors.black),
+              ),
+              value: "Starred",
+              checked: filterValue == "Starred" ? true : false,
+            ),
+          );
+          return list;
+        },
+        onSelected: (Object object) {
+          setState(() {
+            if (object != 1) {
+              filterValue = object;
+              _onRefresh();
+            }
+          });
+        },
+      );
+
+  Widget _buildMessageList() {
     return noItemInList
         ? NoItemInList(
-            msg: "No Pending Payment Request.",
+            msg: "No Messages",
           )
         : ListView.builder(
             //+1 for progressbar
-            itemCount: requestPaymentList.length + 1,
+            itemCount: messageList.length + 1,
             itemBuilder: (BuildContext context, int index) {
-              if (index == requestPaymentList.length) {
+              if (index == messageList.length) {
                 return _buildIndicator();
               } else {
                 return _getSlidableWithLists(
-                    context, requestPaymentList[index], index);
+                    context, messageList[index], index);
               }
             },
             controller: _scrollController,
@@ -139,22 +223,29 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         setState(() {
           isLoading = true;
         });
-        Map<String, dynamic> result =
-            await _auth.listPaymentRequests(next, previous);
-        count = result['count'];
-        next = result['next'];
-        previous = result['previous'];
-        var tempList = result['results'];
+//        Map<String, dynamic> result =
+//            await _auth.listPaymentRequests(next, previous);
+//        count = result['count'];
+//        next = result['next'];
+//        previous = result['previous'];
+//        var tempList = result['results'];
+//        setState(() {
+//          isLoading = false;
+//          messageList.addAll(tempList);
+//        });
+
+        List<PartialMessage> result = _auth.listMessages(filter: filterValue);
+
         setState(() {
           isLoading = false;
-          requestPaymentList.addAll(tempList);
+          messageList.addAll(result);
         });
       }
-      if (requestPaymentList.isEmpty) {
+      if (messageList.isEmpty) {
         setState(() {
           noItemInList = true;
         });
-      } else if (next == null && requestPaymentList.length > 6) {
+      } else if (next == null && messageList.length > 6) {
         _scaffoldKey.currentState.showSnackBar(SnackBar(
           content: Text("Your have reached the bottom of the list"),
           duration: Duration(milliseconds: 500),
@@ -163,33 +254,10 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
     }
   }
 
-  Widget sendRequestButton() {
-    return Padding(
-      padding: const EdgeInsets.only(right: 4.0),
-      child: InkWell(
-        onTap: () {
-          Connectivity().checkConnectivity().then((value) {
-            var connectionResult = value;
-            if (connectionResult == ConnectivityResult.wifi ||
-                connectionResult == ConnectivityResult.mobile) {
-              Navigator.of(context).pushNamed('/request-payment',
-                  arguments: <String, bool>{
-                    'isRequest': true,
-                    'isFromProfile': true
-                  });
-            } else {
-              Toast.show("Internet Connection is not available", context,
-                  gravity: Toast.BOTTOM, backgroundColor: darkBlue());
-            }
-          });
-        },
-        child: Icon(Icons.add, color: Colors.white),
-      ),
-    );
-  }
-
   Animation<double> _rotationAnimation;
   Color _fabColor = Colors.blue;
+
+  //TODO:starred, archived, delete, markedAsread
 
   void handleSlideAnimationChanged(Animation<double> slideAnimation) {
     setState(() {
@@ -207,44 +275,66 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
     _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(text)));
   }
 
-  List<Widget> listSecondaryActions(PaymentRequest paymentRequest, int index) {
-    String caption = !paymentRequest.isCredit ? 'Cancel' : 'Reject';
-    return [
-      IconSlideAction(
-          caption: caption,
-          color: Colors.red,
-          icon: Icons.cancel,
-          onTap: () async {
-            rejectPaymentRequestAlert(paymentRequest, index);
-          }),
-    ];
-  }
-
   List<Widget> listActionSlideActions(
-      PaymentRequest paymentRequest, int index) {
-    if (!paymentRequest.isCredit) {
-      return [];
-    } else {
-      return [
-        IconSlideAction(
-          caption: 'Send Money',
-          color: Colors.green,
-          icon: Icons.reply,
-          onTap: () {
-            acceptPaymentRequestAlert(paymentRequest, index);
+      PartialMessage partialMessage, int index) {
+    return [displayArchviedUnArchivedButton(partialMessage, index)];
+  }
+
+  Widget displayArchviedUnArchivedButton(
+      PartialMessage partialMessage, int index) {
+    return Container(
+        height: double.infinity,
+        color: Colors.green,
+        child: IconButton(
+          icon: partialMessage.isArchived
+              ? Icon(
+                  Icons.unarchive,
+                  color: Colors.white,
+                )
+              : Icon(
+                  Icons.archive,
+                  color: Colors.white,
+                ),
+          onPressed: () {
+            markArchivedUnArchivedMessage(partialMessage, index);
+            slidableController.activeState.close();
           },
-        ),
-      ];
-    }
+        ));
   }
 
-  void acceptPaymentRequestAlert(PaymentRequest paymentRequest, int index) {
+  void markArchivedUnArchivedMessage(PartialMessage partialMessage, int index) {
+    setState(() {
+      partialMessage.isArchived = partialMessage.isArchived ? false : true;
+    });
+  }
+
+  List<Widget> listSecondaryActions(PartialMessage partialMessage, int index) {
+    return [displayDeleteButton(partialMessage, index)];
+  }
+
+  Widget displayDeleteButton(PartialMessage partialMessage, int index) {
+    return Container(
+        height: double.infinity,
+        color: Colors.red,
+        child: IconButton(
+          icon: Icon(
+            Icons.delete,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            deleteMessage(partialMessage, index);
+            slidableController.activeState.close();
+          },
+        ));
+  }
+
+  void deleteMessage(PartialMessage partialMessage, int index) {
     showDialog(
       context: context,
       child: AlertDialog(
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(15.0))),
-        content: Text('Are you sure want to Accept this request?',
+        content: Text('Are you sure want to delete this Message?',
             style: TextStyle(
               color: Colors.black,
               fontSize: 18,
@@ -254,13 +344,14 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
             child: const Text('YES'),
             color: darkBlue(),
             onPressed: () async {
-              bool done = await _auth.acceptPaymentRequests(paymentRequest);
+              // call delete message _auth method
+              bool done = false;
               if (done) {
                 Navigator.pop(context);
-                _showSnackBar(context, 'Payment Request Accepted !!');
+                _showSnackBar(context, "Message is deleted successfully!!");
                 setState(() {
-                  requestPaymentList.removeAt(index);
-                  if (requestPaymentList.length <= 9) {
+                  messageList.removeAt(index);
+                  if (messageList.length <= 9) {
                     getList();
                   }
                 });
@@ -277,60 +368,6 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
               style: TextStyle(fontWeight: FontWeight.w400),
             ),
             onPressed: () {
-              setState(() {
-                //requestPaymentList.insert(index, paymentRequest);
-                Navigator.pop(context);
-              });
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  void rejectPaymentRequestAlert(PaymentRequest paymentRequest, int index) {
-    showDialog(
-      context: context,
-      child: AlertDialog(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(15.0))),
-        content: Text('Are you sure want to reject this request?',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-            )),
-        actions: <Widget>[
-          FlatButton(
-            child: const Text('YES'),
-            color: darkBlue(),
-            onPressed: () async {
-              bool done = await _auth.rejectPaymentRequests(paymentRequest);
-              if (done) {
-                Navigator.pop(context);
-                _showSnackBar(context, "Payment Request Rejected !!");
-                setState(() {
-                  requestPaymentList.removeAt(index);
-                  if (requestPaymentList.length <= 9) {
-                    getList();
-                  }
-                });
-              } else {
-                Navigator.pop(context);
-                _showSnackBar(context, "Error");
-              }
-            },
-          ),
-          FlatButton(
-            color: darkBlue(),
-            child: const Text(
-              'NO',
-              style: TextStyle(fontWeight: FontWeight.w400),
-            ),
-            onPressed: () {
-              setState(() {
-                //requestPaymentList.insert(index, paymentRequest);
-              });
-
               Navigator.pop(context);
             },
           ),
@@ -363,31 +400,16 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   }
 
   Widget _getSlidableWithLists(
-      BuildContext context, PaymentRequest paymentRequest, int index) {
+      BuildContext context, PartialMessage partialMessage, int index) {
     return Slidable(
-      key: Key(paymentRequest.payee),
+      key: Key(partialMessage.id),
       controller: slidableController,
       direction: Axis.horizontal,
-//      dismissal: SlidableDismissal(
-//        child: SlidableDrawerDismissal(),
-//        onDismissed: (actionType) {
-//          setState(() {
-//            requestPaymentList.removeAt(index);
-//          });
-//          if (actionType == SlideActionType.primary) {
-//            acceptPaymentRequestAlert(paymentRequest, index);
-//          } else {
-//            rejectPaymentRequestAlert(paymentRequest, index);
-//          }
-//
-//          //make http call here
-//        },
-//      ),
       actionPane: SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
-      child: VerticalListItem(paymentRequest),
-      actions: listActionSlideActions(paymentRequest, index),
-      secondaryActions: listSecondaryActions(paymentRequest, index),
+      child: VerticalListItem(partialMessage),
+      actions: listActionSlideActions(partialMessage, index),
+      secondaryActions: listSecondaryActions(partialMessage, index),
     );
   }
 
@@ -439,63 +461,18 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   }
 }
 
-class CupertinoDessertDialog extends StatelessWidget {
-  const CupertinoDessertDialog({Key key, this.title, this.content})
-      : super(key: key);
-
-  final Widget title;
-  final Widget content;
-
-  @override
-  Widget build(BuildContext context) {
-    return CupertinoAlertDialog(
-      title: title,
-      content: content,
-      actions: <Widget>[
-        CupertinoDialogAction(
-          child: const Text('Banana Split'),
-          onPressed: () {
-            Navigator.pop(context, 'Banana Split');
-          },
-        ),
-        CupertinoDialogAction(
-          child: const Text('Oatmeal Cookie'),
-          onPressed: () {
-            Navigator.pop(context, 'Oatmeal Cookies');
-          },
-        ),
-        CupertinoDialogAction(
-          child: const Text('Chocolate Brownie'),
-          onPressed: () {
-            Navigator.pop(context, 'Chocolate Brownies');
-          },
-        ),
-        CupertinoDialogAction(
-          child: const Text('Cancel'),
-          isDestructiveAction: true,
-          onPressed: () {
-            Navigator.pop(context, 'Cancel');
-          },
-        ),
-      ],
-    );
-  }
-}
-
 class VerticalListItem extends StatelessWidget {
-  VerticalListItem(this.paymentRequest);
-  final PaymentRequest paymentRequest;
+  VerticalListItem(this.partialMessage);
+  final PartialMessage partialMessage;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () =>
-          Slidable.of(context)?.renderingMode == SlidableRenderingMode.none
-              ? Slidable.of(context)?.open()
-              : Slidable.of(context)?.close(),
+      onTap: () => Navigator.of(context)
+          .pushNamed('/detail_message', arguments: {'id': partialMessage.id}),
       child: Container(
         color: lightBlue(),
-        child: PaymentRequestTile(paymentRequest: paymentRequest),
+        child: MessageTile(partialMessage: partialMessage),
       ),
     );
   }

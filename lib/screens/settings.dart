@@ -2,6 +2,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/screens/tiles/bank_account.dart';
+import 'package:Slydo/screens/tiles/explore.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
@@ -78,6 +79,7 @@ class _SettingsListState extends State<SettingsList> {
                   displayProfileTile(userBloc),
                   displayAccountBalance(isLocked),
                   displayBankAccountTile(bankAccountBloc),
+                  ExploreTile(),
                   SizedBox(height: 20),
                 ],
               ),

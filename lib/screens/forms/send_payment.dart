@@ -307,6 +307,10 @@ class _SendPaymentState extends State<SendPayment> {
       minWidth: double.infinity,
       child: MaterialButton(
         elevation: 4.0,
+        textColor: Colors.white,
+        color: darkBlue(),
+        height: 50,
+        child: Text("Send Payment"),
         onPressed: () async {
           if (recipient == _payee.userName) {
             if (!isValidPayee) {
@@ -421,10 +425,6 @@ class _SendPaymentState extends State<SendPayment> {
                 textColor: Colors.white);
           }
         },
-        textColor: Colors.white,
-        color: darkBlue(),
-        height: 50,
-        child: Text("Send Payment"),
       ),
     );
   }

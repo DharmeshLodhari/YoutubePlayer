@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:Slydo/models/notification.dart';
-import 'package:Slydo/screens/explore.dart';
+import 'package:Slydo/screens/messagelist.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/device_info.dart';
 import 'package:Slydo/widget/local_notification.dart';
@@ -50,7 +50,7 @@ class _DashboardState extends State<Dashboard> {
         Profile(),
         PaymentRequestList(),
         TransactionList(),
-        ExploreList(),
+        MessageList(),
         SettingsList(
           arguments: {'isLocked': isLocked},
         ),
@@ -115,8 +115,8 @@ class _DashboardState extends State<Dashboard> {
           ),
           BottomNavigationBarItem(
             backgroundColor: lightBlue(),
-            icon: Icon(Icons.explore, color: Colors.white),
-            title: Text('Explore',
+            icon: Icon(Icons.email, color: Colors.white),
+            title: Text('Messages',
                 style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
           BottomNavigationBarItem(
