@@ -1,18 +1,5 @@
-import 'package:Slydo/widget/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-
-Future<NotificationDetails> _icon(BuildContext context, Image icon) async {
-  final iconPath = await saveImage(context, icon);
-  final androidPlatformChannelSpecifics = AndroidNotificationDetails(
-    'big text channel id',
-    'big text channel name',
-    'big text channel description',
-    largeIcon: iconPath,
-    largeIconBitmapSource: BitmapSource.FilePath,
-  );
-  return NotificationDetails(androidPlatformChannelSpecifics, null);
-}
 
 NotificationDetails get _ongoing {
   final androidChannelSpecifics = AndroidNotificationDetails(

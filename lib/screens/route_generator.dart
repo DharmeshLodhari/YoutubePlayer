@@ -13,7 +13,6 @@ import 'package:Slydo/screens/scan_qr_code.dart';
 import 'package:Slydo/screens/settings.dart';
 import 'package:Slydo/screens/transactions.dart';
 import 'package:Slydo/splash.dart';
-import 'package:Slydo/widget/passwordPopup.dart';
 import 'package:Slydo/widget/resultReturningPasswordPopup.dart';
 import 'package:flutter/material.dart';
 
@@ -32,19 +31,15 @@ class RouteGenerator {
             builder: (_) => Home(
                   arguments: settings.arguments,
                 ));
-      case '/register':
-        return MaterialPageRoute(builder: (_) => SignUp());
-      case '/profile':
-        return MaterialPageRoute(builder: (_) => Profile());
-
-      // dashboard starts
       case '/dashboard':
         return MaterialPageRoute(
             builder: (_) => Dashboard(
                   arguments: settings.arguments,
                 ));
-      // dashboard ends
-
+      case '/register':
+        return MaterialPageRoute(builder: (_) => SignUp());
+      case '/profile':
+        return MaterialPageRoute(builder: (_) => Profile());
       case '/accounts':
         return MaterialPageRoute(builder: (_) => PaymentRequestList());
       case '/transactions':
@@ -66,15 +61,13 @@ class RouteGenerator {
       case '/explore':
         return MaterialPageRoute(builder: (_) => ExploreList());
       case '/compose_message':
-        return MaterialPageRoute(builder: (_) => ComposeMessage());
+        return MaterialPageRoute(
+            builder: (_) => ComposeMessage(
+                  arguments: settings.arguments,
+                ));
       case '/detail_message':
         return MaterialPageRoute(
             builder: (_) => DetailedMessage(
-                  arguments: settings.arguments,
-                ));
-      case '/passwordPopup':
-        return MaterialPageRoute(
-            builder: (_) => PasswordPopup(
                   arguments: settings.arguments,
                 ));
       case '/resultPasswordPopup':

@@ -16,7 +16,6 @@ class _SignUpState extends State<SignUp> {
   final _formKey = GlobalKey<FormState>();
   final _auth = AuthService();
 
-  File _image;
   String phoneNumber = '';
   String fullName = '';
   String password1 = '';
@@ -111,18 +110,25 @@ class _SignUpState extends State<SignUp> {
       autofocus: true,
       obscureText: false,
       decoration: InputDecoration(
-          prefixIcon: Icon(Icons.person),
-          fillColor: Colors.white,
-          filled: true,
-          hintText: "Full Name",
-          labelStyle: TextStyle(
-            color: darkBlue(),
-            fontSize: 16,
+        prefixIcon: Icon(Icons.person),
+        fillColor: Colors.white,
+        filled: true,
+        hintText: "Full Name",
+        labelStyle: TextStyle(
+          color: darkBlue(),
+          fontSize: 16,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(4),
           ),
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.green, style: BorderStyle.solid))),
+          borderSide: BorderSide(
+            width: 1,
+            color: Colors.green,
+            style: BorderStyle.solid,
+          ),
+        ),
+      ),
       validator: (val) =>
           val.length < 5 ? "Enter a valid name matching account number." : null,
       onChanged: (val) {
@@ -141,18 +147,25 @@ class _SignUpState extends State<SignUp> {
       maxLength: 4,
       maxLengthEnforced: true,
       decoration: InputDecoration(
-          prefixIcon: Icon(Icons.lock),
-          fillColor: Colors.white,
-          filled: true,
-          hintText: "Password",
-          labelStyle: TextStyle(
-            color: darkBlue(),
-            fontSize: 16,
+        prefixIcon: Icon(Icons.lock),
+        fillColor: Colors.white,
+        filled: true,
+        hintText: "Password",
+        labelStyle: TextStyle(
+          color: darkBlue(),
+          fontSize: 16,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(4),
           ),
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
+          borderSide: BorderSide(
+            width: 1,
+            color: Colors.white,
+            style: BorderStyle.solid,
+          ),
+        ),
+      ),
       validator: (val) => val.length != 4 ? "Enter a valid Password." : null,
       onChanged: (val) {
         setState(() {
@@ -170,18 +183,25 @@ class _SignUpState extends State<SignUp> {
       maxLengthEnforced: true,
       keyboardType: TextInputType.number,
       decoration: InputDecoration(
-          prefixIcon: Icon(Icons.lock),
-          fillColor: Colors.white,
-          filled: true,
-          hintText: "Confirm Password",
-          labelStyle: TextStyle(
-            color: Colors.black,
-            fontSize: 16,
+        prefixIcon: Icon(Icons.lock),
+        fillColor: Colors.white,
+        filled: true,
+        hintText: "Confirm Password",
+        labelStyle: TextStyle(
+          color: Colors.black,
+          fontSize: 16,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(4),
           ),
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
+          borderSide: BorderSide(
+            width: 1,
+            color: Colors.white,
+            style: BorderStyle.solid,
+          ),
+        ),
+      ),
       validator: (val) {
         if (val.length != 4) {
           return "Enter a valid Password.";

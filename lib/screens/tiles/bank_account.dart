@@ -32,15 +32,19 @@ class _BankAccountTileState extends State<BankAccountTile> {
           ),
           subtitle: Text('******' +
               widget.account.accountNumber.toString().substring(5, 9)),
-          leading: CachedNetworkImage(
-            imageUrl: widget.account.bankAvatar,
-            height: 45,
-            width: 45,
-            colorBlendMode: BlendMode.darken,
-            fit: BoxFit.fitWidth,
-            filterQuality: FilterQuality.high,
-            placeholder: (context, url) => CircularProgressIndicator(
-              backgroundColor: Colors.white,
+          leading: ClipOval(
+            child: CachedNetworkImage(
+              imageUrl: widget.account.bankAvatar,
+              height: 50,
+              width: 50,
+              colorBlendMode: BlendMode.darken,
+              fit: BoxFit.cover,
+              filterQuality: FilterQuality.high,
+              placeholder: (context, url) => widget.account.bankAvatar == ""
+                  ? Icon(Icons.account_balance)
+                  : CircularProgressIndicator(
+                      backgroundColor: Colors.white,
+                    ),
             ),
           ),
           trailing: IconButton(

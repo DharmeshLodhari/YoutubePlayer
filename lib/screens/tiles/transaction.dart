@@ -2,47 +2,6 @@ import 'package:Slydo/models/transactions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
-Future showScaleAlertBox({
-  @required BuildContext context,
-  @required Widget yourWidget,
-  Widget icon,
-  Widget title,
-  @required Widget firstButton,
-  Widget secondButton,
-}) {
-  assert(context != null, "context is null!!");
-  assert(yourWidget != null, "yourWidget is null!!");
-  assert(firstButton != null, "button is null!!");
-  return showGeneralDialog(
-      barrierColor: Colors.black.withOpacity(0.7),
-      transitionBuilder: (context, a1, a2, widget) {
-        return Transform.scale(
-          scale: a1.value,
-          child: Opacity(
-            opacity: a1.value,
-            child: AlertDialog(
-              shape:
-                  OutlineInputBorder(borderRadius: BorderRadius.circular(15.0)),
-              title: title,
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[icon, Container(height: 10), yourWidget],
-              ),
-              actions: <Widget>[
-                firstButton,
-                secondButton,
-              ],
-            ),
-          ),
-        );
-      },
-      transitionDuration: Duration(milliseconds: 200),
-      barrierDismissible: true,
-      barrierLabel: '',
-      context: context,
-      pageBuilder: (context, animation1, animation2) {});
-}
-
 class PaymentRequestTile extends StatelessWidget {
   final PaymentRequest paymentRequest;
   PaymentRequestTile({this.paymentRequest});
@@ -67,22 +26,20 @@ class PaymentRequestTile extends StatelessWidget {
   }
 
   Widget getLeading() {
-    return CachedNetworkImage(
-      imageUrl: paymentRequest.avatar,
-      height: 45,
-      width: 45,
-      colorBlendMode: BlendMode.darken,
-      fit: BoxFit.fitWidth,
-      filterQuality: FilterQuality.high,
-      placeholder: (context, url) => paymentRequest.avatar == ""
-          ? Icon(
-              Icons.person,
-              size: 45,
-              color: Colors.black,
-            )
-          : CircularProgressIndicator(
-              backgroundColor: Colors.white,
-            ),
+    return ClipOval(
+      child: CachedNetworkImage(
+        imageUrl: paymentRequest.avatar,
+        height: 50,
+        width: 50,
+        colorBlendMode: BlendMode.darken,
+        fit: BoxFit.cover,
+        filterQuality: FilterQuality.high,
+        placeholder: (context, url) => paymentRequest.avatar == ""
+            ? Icon(Icons.person)
+            : CircularProgressIndicator(
+                backgroundColor: Colors.white,
+              ),
+      ),
     );
   }
 
@@ -108,9 +65,7 @@ class PaymentRequestTile extends StatelessWidget {
     return Text(
       paymentRequest.description,
       style: TextStyle(
-          color: paymentRequest.isCredit ? Colors.green[400] : Colors.grey[600],
-          fontWeight: FontWeight.bold,
-          fontSize: 15),
+          color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 15),
     );
   }
 }
@@ -134,22 +89,20 @@ class TransactionTile extends StatelessWidget {
                   fontSize: 15),
             ),
             subtitle: Text(transaction.description),
-            leading: CachedNetworkImage(
-              imageUrl: transaction.avatar,
-              height: 45,
-              width: 45,
-              colorBlendMode: BlendMode.darken,
-              fit: BoxFit.fitWidth,
-              filterQuality: FilterQuality.high,
-              placeholder: (context, url) => transaction.avatar == ""
-                  ? Icon(
-                      Icons.person,
-                      size: 45,
-                      color: Colors.black,
-                    )
-                  : CircularProgressIndicator(
-                      backgroundColor: Colors.white,
-                    ),
+            leading: ClipOval(
+              child: CachedNetworkImage(
+                imageUrl: transaction.avatar,
+                height: 50,
+                width: 50,
+                colorBlendMode: BlendMode.darken,
+                fit: BoxFit.cover,
+                filterQuality: FilterQuality.high,
+                placeholder: (context, url) => transaction.avatar == ""
+                    ? Icon(Icons.person)
+                    : CircularProgressIndicator(
+                        backgroundColor: Colors.white,
+                      ),
+              ),
             ),
             trailing: Text(
               transaction.currency + ' ' + transaction.amount.toString(),

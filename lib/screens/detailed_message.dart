@@ -221,7 +221,12 @@ class _DetailedMessageState extends State<DetailedMessage> {
       color: darkBlue(),
       height: 50,
       child: Text("Replay"),
-      onPressed: () {},
+      onPressed: () {
+        Navigator.of(context).pushNamed('/compose_message', arguments: {
+          'recipient': message.sender,
+          'subject': 'Re: ${message.subject}',
+        });
+      },
     );
   }
 }

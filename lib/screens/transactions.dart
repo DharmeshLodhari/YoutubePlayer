@@ -40,6 +40,7 @@ class _TransactionListState extends State<TransactionList> {
   }
 
   void _onRefresh() async {
+    //check network connectivity and if true then refresh the list
     Connectivity().checkConnectivity().then((value) {
       var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||

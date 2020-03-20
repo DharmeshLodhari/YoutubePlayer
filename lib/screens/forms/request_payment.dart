@@ -9,10 +9,10 @@ import 'package:Slydo/widget/passcodePopup.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
+// ignore: must_be_immutable
 class RequestPayment extends StatefulWidget {
   var arguments;
 
@@ -27,9 +27,7 @@ class RequestPayment extends StatefulWidget {
 class _RequestPaymentState extends State<RequestPayment> {
   TextEditingController _recipientController = TextEditingController();
   FocusNode _recipientFocus = FocusNode();
-  TextEditingController _passwordController;
-  http.Response response;
-  String _passwordFromPopUp = "";
+
   bool isRequest = false;
   var arguments;
   _RequestPaymentState({this.arguments});
@@ -62,7 +60,6 @@ class _RequestPaymentState extends State<RequestPayment> {
     isRequest = arguments != null
         ? arguments['isRequest'] != null ? arguments['isRequest'] : false
         : false;
-    _passwordController = TextEditingController();
 
     /* adding listener on recipientFocus when user unFocus
     From Recipient Field then value of that field should be in lowerCase */
@@ -341,16 +338,24 @@ class _RequestPaymentState extends State<RequestPayment> {
       child: MaterialButton(
         elevation: 4.0,
         onPressed: () async {
+          FocusScope.of(context).unfocus();
+
+          if (!isValidPayee) {
+            setState(() {
+              errorMessage = "Invalid recipient";
+              return;
+            });
+          }
+
           if (recipient == _payee.userName) {
             if (!isValidPayee) {
               setState(() {
                 errorMessage = "Invalid recipient";
+                return;
               });
             }
 
             if (isValidPayee && _formKey.currentState.validate()) {
-              FocusScope.of(context).unfocus();
-
               // Todo: Add a try block here and stop user from continuing if they deny location permission
 
               var userLocation;
@@ -403,36 +408,6 @@ class _RequestPaymentState extends State<RequestPayment> {
                         content: Text("Wrong Password !!"),
                       ));
                     });
-
-//                Navigator.of(context)
-//                    .pushNamed('/resultPasswordPopup')
-//                    .then((result) {
-//                  if ("true" == result) {
-//                    _auth.createPaymentRequests(data).then((value) {
-//                      if (value) {
-//                        Navigator.of(context).pushNamed('/dashboard',
-//                            arguments: {'dashboardIndex': 1});
-//                      } else if (!value) {
-//                        Toast.show("Request Not Send ", context,
-//                            gravity: Toast.TOP,
-//                            backgroundColor: darkBlue(),
-//                            textColor: Colors.white);
-//                      } else {
-//                        setState(() {
-//                          errorMessage = "Wrong Password !!";
-//                          Toast.show(errorMessage, context,
-//                              gravity: Toast.TOP,
-//                              backgroundColor: darkBlue(),
-//                              textColor: Colors.white);
-//                        });
-//                      }
-//                    });
-//                  } else {
-//                    Scaffold.of(context).showSnackBar(SnackBar(
-//                      content: Text("Wrong Password !!"),
-//                    ));
-//                  }
-//                });
               } catch (e) {
                 print(e);
                 Toast.show(e, context,

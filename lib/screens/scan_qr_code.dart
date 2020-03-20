@@ -10,9 +10,6 @@ import 'package:qr_code_scanner/qr_scanner_overlay_shape.dart';
 
 class QRCodeView extends StatefulWidget {
   var arguments;
-//  const QRCodeView({
-//    Key key,
-//  }) : super(key: key);
 
   QRCodeView({this.arguments, Key key}) : super(key: key);
 
@@ -36,9 +33,6 @@ class _QRCodeViewState extends State<QRCodeView> {
     isRequest = arguments != null
         ? arguments['isRequest'] != null ? arguments['isRequest'] : false
         : false;
-    // TODO: implement initState
-
-    print("isRequest $isRequest");
     super.initState();
   }
 
@@ -121,10 +115,11 @@ class _QRCodeViewState extends State<QRCodeView> {
           customerProfileBloc.customer =
               await _auth.fetchCustomerProfile(recipient);
           Navigator.pop(context);
-          print("end isRequest $isRequest");
           if (isRequest) {
-            Navigator.of(context)
-                .pushNamed('/request-payment', arguments: {'isRequest': true});
+            Navigator.of(context).pushNamed(
+              '/request-payment',
+              arguments: {'isRequest': true},
+            );
           } else {
             Navigator.of(context).pushNamed('/send-payment',
                 arguments: <String, bool>{

@@ -35,7 +35,8 @@ class _HomeState extends State<Home> {
             descriptionPadding: EdgeInsets.fromLTRB(20, 30, 20, 0)),
         titleWidget: Text(
           "Scan QR Code",
-          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: Colors.white),
+          style: TextStyle(
+              fontSize: 25, fontWeight: FontWeight.bold, color: Colors.white),
         ),
         bodyWidget: Column(
           children: <Widget>[
@@ -66,7 +67,8 @@ class _HomeState extends State<Home> {
             descriptionPadding: EdgeInsets.fromLTRB(20, 30, 20, 0)),
         titleWidget: Text(
           "Send Payment",
-          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: Colors.white),
+          style: TextStyle(
+              fontSize: 25, fontWeight: FontWeight.bold, color: Colors.white),
         ),
         bodyWidget: Column(
           children: <Widget>[
@@ -97,7 +99,8 @@ class _HomeState extends State<Home> {
             descriptionPadding: EdgeInsets.fromLTRB(20, 30, 20, 0)),
         titleWidget: Text(
           "View transactions",
-          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: Colors.white),
+          style: TextStyle(
+              fontSize: 25, fontWeight: FontWeight.bold, color: Colors.white),
         ),
         bodyWidget: Column(
           children: <Widget>[
@@ -128,7 +131,8 @@ class _HomeState extends State<Home> {
             descriptionPadding: EdgeInsets.fromLTRB(20, 30, 20, 0)),
         titleWidget: Text(
           "View transactions",
-          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: Colors.white),
+          style: TextStyle(
+              fontSize: 25, fontWeight: FontWeight.bold, color: Colors.white),
         ),
         bodyWidget: Column(
           children: <Widget>[
@@ -205,9 +209,6 @@ class _HomeState extends State<Home> {
     return ButtonTheme(
       child: MaterialButton(
         minWidth: double.infinity,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-            side: BorderSide(color: darkBlue(), width: 2.0)),
         onPressed: () {
           Navigator.of(context).pushNamed('/login');
         },
@@ -223,9 +224,6 @@ class _HomeState extends State<Home> {
     return ButtonTheme(
       child: MaterialButton(
         minWidth: double.infinity,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-            side: BorderSide(color: darkBlue(), width: 2.0)),
         onPressed: () {
           Navigator.of(context).pushNamed('/register');
         },
@@ -251,8 +249,10 @@ class _HomeState extends State<Home> {
     return IntroductionScreen(
       initialPage: currentIndex,
       showSkipButton: true,
-      skip: const Text("Skip",  style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white)),
-      done: const Text("Done", style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white)),
+      skip: const Text("Skip",
+          style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white)),
+      done: const Text("Done",
+          style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white)),
       dotsDecorator: DotsDecorator(
           size: const Size.square(10.0),
           activeSize: const Size(20.0, 10.0),

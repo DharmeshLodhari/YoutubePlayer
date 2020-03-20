@@ -11,22 +11,27 @@ import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
 class ComposeMessage extends StatefulWidget {
+  var arguments;
+  ComposeMessage({this.arguments});
   @override
-  _ComposeMessageState createState() => _ComposeMessageState();
+  _ComposeMessageState createState() =>
+      _ComposeMessageState(arguments: arguments);
 }
 
 class _ComposeMessageState extends State<ComposeMessage> {
+  var arguments;
+  _ComposeMessageState({this.arguments});
+
   TextEditingController _recipientController = TextEditingController();
+  TextEditingController _subjectController = TextEditingController();
   FocusNode _recipientFocus = FocusNode();
 
-  http.Response response;
   bool isValidPayee = false;
+  bool isReplayMessage = false;
   final _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
   CustomerProfile _payee;
@@ -39,6 +44,35 @@ class _ComposeMessageState extends State<ComposeMessage> {
 
   @override
   void initState() {
+    // to adding listener on recipient field when user leave that textField it will convert that
+    // recipient text lowercase
+    makeUsernameLowercase();
+
+    // checking if the message is replay message then we fetch recipient and subject Details
+    // and set into recipient field and subject field and also display the recipent data tile
+    if (arguments != null) {
+      setState(() {
+        isReplayMessage = true;
+      });
+      recipient = arguments['recipient'];
+      _recipientController.text = recipient;
+      subject = arguments['subject'];
+      _subjectController.text = subject;
+      fetchCustomer();
+    }
+
+    super.initState();
+  }
+
+  fetchCustomer() async {
+    var customerProfile = await _auth.fetchCustomerProfile(recipient);
+    setState(() {
+      _payee = customerProfile;
+      isValidPayee = _payee.userName != userBloc.user.userName;
+    });
+  }
+
+  void makeUsernameLowercase() {
     /* adding listener on recipientFocus when user unFocus
     From Recipient Field then value of that field should be in lowerCase */
     _recipientFocus
@@ -49,8 +83,6 @@ class _ComposeMessageState extends State<ComposeMessage> {
           });
         }
       });
-
-    super.initState();
   }
 
   void initializeDisplayCard() {
@@ -130,9 +162,12 @@ class _ComposeMessageState extends State<ComposeMessage> {
               });
             }
             if (_formKey.currentState.validate()) {
+              //TODO:Make a call for send message
               FocusScope.of(context).unfocus();
-
               Navigator.pop(context);
+              if (isReplayMessage) {
+                Navigator.pop(context);
+              }
               try {
                 var data = {
                   "from_customer": userBloc.user.userName,
@@ -140,7 +175,6 @@ class _ComposeMessageState extends State<ComposeMessage> {
                   "message": message
                 };
               } catch (e) {
-                print(e);
                 Toast.show(e, context,
                     gravity: Toast.BOTTOM, backgroundColor: darkBlue());
               }
@@ -223,7 +257,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
   Widget getRecipientField() {
     return TextFormField(
       controller: _recipientController,
-      enabled: true,
+      enabled: isReplayMessage ? false : true,
       focusNode: _recipientFocus,
       cursorColor: darkBlue(),
       validator: (value) {
@@ -263,8 +297,9 @@ class _ComposeMessageState extends State<ComposeMessage> {
 
   Widget getSubjectField() {
     return TextFormField(
-      enabled: true,
+      enabled: isReplayMessage ? false : true,
       cursorColor: darkBlue(),
+      controller: _subjectController,
       autofocus: false,
       obscureText: false,
       decoration: InputDecoration(

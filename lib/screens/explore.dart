@@ -134,55 +134,6 @@ class _ExploreListState extends State<ExploreList> {
     return lst;
   }
 
-//  final String serverToken =
-//      'dlaPvW3Wsik:APA91bGXLQT9tgMIsXG0MCBVwrLoiBEiDpTqqHucGinXxnsJH9xKZl7Xzb9vQl7mwR_-CkBkeQ3ioAqOKlbrijpCMEoi38iEFn7mqiztmoC32_sgXZ675FN2eO-UIr8u1toASI0FlXq2';
-//  final FirebaseMessaging firebaseMessaging = FirebaseMessaging();
-//
-//  Future<Map<String, dynamic>> sendAndRetrieveMessage() async {
-//    await firebaseMessaging.requestNotificationPermissions(
-//      const IosNotificationSettings(
-//          sound: true, badge: true, alert: true, provisional: false),
-//    );
-//
-//    await http
-//        .post(
-//      'https://fcm.googleapis.com/fcm/send',
-//      headers: <String, String>{
-//        'Content-Type': 'application/json',
-//        'Authorization': 'key=$serverToken',
-//      },
-//      body: jsonEncode(
-//        <String, dynamic>{
-//          'notification': <String, dynamic>{
-//            'body': 'this is a body',
-//            'title': 'this is a title'
-//          },
-//          'priority': 'high',
-//          'data': <String, dynamic>{
-//            'click_action': 'FLUTTER_NOTIFICATION_CLICK',
-//            'id': '1',
-//            'status': 'done'
-//          },
-//          'to': await firebaseMessaging.getToken(),
-//        },
-//      ),
-//    )
-//        .then((result) {
-//      print(result.body);
-//    });
-//
-//    final Completer<Map<String, dynamic>> completer =
-//        Completer<Map<String, dynamic>>();
-//
-//    firebaseMessaging.configure(
-//      onMessage: (Map<String, dynamic> message) async {
-//        completer.complete(message);
-//      },
-//    );
-//
-//    return completer.future;
-//  }
-
   Widget search() {
     if (!isSearchBoxOpen) {
       return Center(child: Text("Explore"));
@@ -265,7 +216,7 @@ class _ExploreListState extends State<ExploreList> {
   }
 
   Future<List> fetchSearchResult() async {
-    //call your searching API with passing searchedText variable and store your List in searchResult to be displayed
+    //TODO:call your searching API with passing searchedText variable and store your List in searchResult to be displayed
     // searchedResult = await _auth.listPaymentRequests("","");
     return searchedResult;
   }

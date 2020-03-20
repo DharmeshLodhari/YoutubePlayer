@@ -48,27 +48,6 @@ class _PushNotificationWidgetState extends State<PushNotificationWidget> {
     }
   }
 
-//  Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) {
-//    if (message.containsKey('data')) {
-//      // Handle data message
-//      final dynamic data = message['data'];
-//    }
-//
-//    if (message.containsKey('notification')) {
-//      // Handle notification message
-//      final dynamic notification = message['notification'];
-//      setState(() {
-//        notifications.add(PushNotification(
-//          title: '${notification['title']}',
-//          body: '${notification['body']}',
-//          image: '${notification['image']}',
-//        ));
-//      });
-//    }
-
-  // Or do other work.
-//  }
-
   Future<Null> _navigateToItemDetail(Map<String, dynamic> message) async {
     // When user clicks on the notification we can inspect message
     // then redirect user to right screen but for now we have just transactions

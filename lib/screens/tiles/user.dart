@@ -21,21 +21,20 @@ class UserTile extends StatelessWidget {
                   fontSize: 15),
             ),
             subtitle: Text(user.description),
-            leading: CachedNetworkImage(
-              imageUrl: user.avatar,
-              height: 45,
-              width: 45,
-              colorBlendMode: BlendMode.darken,
-              fit: BoxFit.fitWidth,
-              filterQuality: FilterQuality.high,
-              placeholder: (context, url) => user.avatar == ""
-                  ? Icon(
-                      Icons.person,
-                      color: Colors.black,
-                    )
-                  : CircularProgressIndicator(
-                      backgroundColor: Colors.white,
-                    ),
+            leading: ClipOval(
+              child: CachedNetworkImage(
+                imageUrl: user.avatar,
+                height: 50,
+                width: 50,
+                colorBlendMode: BlendMode.darken,
+                fit: BoxFit.cover,
+                filterQuality: FilterQuality.high,
+                placeholder: (context, url) => user.avatar == ""
+                    ? Icon(Icons.person)
+                    : CircularProgressIndicator(
+                        backgroundColor: Colors.white,
+                      ),
+              ),
             ),
             trailing: Text(
               user.currency + ' ' + user.amount.toString(),

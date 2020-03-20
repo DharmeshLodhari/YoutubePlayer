@@ -113,22 +113,20 @@ class _SettingsListState extends State<SettingsList> {
                     backgroundColor: Colors.white,
                   ),
                 )
-              : CachedNetworkImage(
-                  imageUrl: userBloc.user.avatar,
-                  height: 45,
-                  width: 45,
-                  colorBlendMode: BlendMode.darken,
-                  fit: BoxFit.fitWidth,
-                  filterQuality: FilterQuality.high,
-                  placeholder: (context, url) => userBloc.user.avatar == ""
-                      ? Icon(
-                          Icons.person,
-                          color: Colors.black,
-                          size: 45,
-                        )
-                      : CircularProgressIndicator(
-                          backgroundColor: Colors.white,
-                        ),
+              : ClipOval(
+                  child: CachedNetworkImage(
+                    imageUrl: userBloc.user.avatar,
+                    height: 45,
+                    width: 45,
+                    colorBlendMode: BlendMode.darken,
+                    fit: BoxFit.cover,
+                    filterQuality: FilterQuality.high,
+                    placeholder: (context, url) => userBloc.user.avatar == ""
+                        ? Icon(Icons.person)
+                        : CircularProgressIndicator(
+                            backgroundColor: Colors.white,
+                          ),
+                  ),
                 ),
           trailing: IconButton(
             icon: Icon(

@@ -16,9 +16,6 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-  int _currentIndex = 0;
-  String _copy = "Copy Me";
-
   @override
   Widget build(BuildContext context) {
     final key = GlobalKey<ScaffoldState>();

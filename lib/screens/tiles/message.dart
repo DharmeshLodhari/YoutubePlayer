@@ -35,23 +35,20 @@ class _MessageTileState extends State<MessageTile> {
   }
 
   Widget getLeading() {
-    return CachedNetworkImage(
-      imageUrl: partialMessage.senderAvtar,
-      height: 45,
-      width: 45,
-      colorBlendMode: BlendMode.darken,
-      fit: BoxFit.fitWidth,
-      filterQuality: FilterQuality.high,
-      placeholder: (context, url) =>
-          partialMessage.senderAvtar == "assets/images/slydo.png"
-              ? Icon(
-                  Icons.email,
-                  size: 45,
-                  color: Colors.black,
-                )
-              : CircularProgressIndicator(
-                  backgroundColor: Colors.white,
-                ),
+    return ClipOval(
+      child: CachedNetworkImage(
+        imageUrl: partialMessage.senderAvtar,
+        height: 50,
+        width: 50,
+        colorBlendMode: BlendMode.darken,
+        fit: BoxFit.cover,
+        filterQuality: FilterQuality.high,
+        placeholder: (context, url) => partialMessage.senderAvtar == ""
+            ? Icon(Icons.person)
+            : CircularProgressIndicator(
+                backgroundColor: Colors.white,
+              ),
+      ),
     );
   }
 

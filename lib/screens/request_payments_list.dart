@@ -278,7 +278,6 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
             ),
             onPressed: () {
               setState(() {
-                //requestPaymentList.insert(index, paymentRequest);
                 Navigator.pop(context);
               });
             },
@@ -368,116 +367,11 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       key: Key(paymentRequest.payee),
       controller: slidableController,
       direction: Axis.horizontal,
-//      dismissal: SlidableDismissal(
-//        child: SlidableDrawerDismissal(),
-//        onDismissed: (actionType) {
-//          setState(() {
-//            requestPaymentList.removeAt(index);
-//          });
-//          if (actionType == SlideActionType.primary) {
-//            acceptPaymentRequestAlert(paymentRequest, index);
-//          } else {
-//            rejectPaymentRequestAlert(paymentRequest, index);
-//          }
-//
-//          //make http call here
-//        },
-//      ),
       actionPane: SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
       child: VerticalListItem(paymentRequest),
       actions: listActionSlideActions(paymentRequest, index),
       secondaryActions: listSecondaryActions(paymentRequest, index),
-    );
-  }
-
-  Future showScaleAlertBox({
-    @required BuildContext context,
-    @required Widget yourWidget,
-    Widget icon,
-    Widget title,
-    @required Widget firstButton,
-    Widget secondButton,
-  }) {
-    assert(context != null, "context is null!!");
-    assert(yourWidget != null, "yourWidget is null!!");
-    assert(firstButton != null, "button is null!!");
-    return showGeneralDialog(
-        barrierColor: Colors.black.withOpacity(0.7),
-        transitionBuilder: (context, a1, a2, widget) {
-          return Transform.scale(
-            scale: a1.value,
-            child: Opacity(
-              opacity: a1.value,
-              child: AlertDialog(
-                shape: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15.0)),
-                title: title,
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    icon,
-                    Container(
-                      height: 10,
-                    ),
-                    yourWidget
-                  ],
-                ),
-                actions: <Widget>[
-                  firstButton,
-                  secondButton,
-                ],
-              ),
-            ),
-          );
-        },
-        transitionDuration: Duration(milliseconds: 200),
-        barrierDismissible: true,
-        barrierLabel: '',
-        context: context,
-        pageBuilder: (context, animation1, animation2) {});
-  }
-}
-
-class CupertinoDessertDialog extends StatelessWidget {
-  const CupertinoDessertDialog({Key key, this.title, this.content})
-      : super(key: key);
-
-  final Widget title;
-  final Widget content;
-
-  @override
-  Widget build(BuildContext context) {
-    return CupertinoAlertDialog(
-      title: title,
-      content: content,
-      actions: <Widget>[
-        CupertinoDialogAction(
-          child: const Text('Banana Split'),
-          onPressed: () {
-            Navigator.pop(context, 'Banana Split');
-          },
-        ),
-        CupertinoDialogAction(
-          child: const Text('Oatmeal Cookie'),
-          onPressed: () {
-            Navigator.pop(context, 'Oatmeal Cookies');
-          },
-        ),
-        CupertinoDialogAction(
-          child: const Text('Chocolate Brownie'),
-          onPressed: () {
-            Navigator.pop(context, 'Chocolate Brownies');
-          },
-        ),
-        CupertinoDialogAction(
-          child: const Text('Cancel'),
-          isDestructiveAction: true,
-          onPressed: () {
-            Navigator.pop(context, 'Cancel');
-          },
-        ),
-      ],
     );
   }
 }
