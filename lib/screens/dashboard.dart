@@ -162,9 +162,7 @@ class _DashboardState extends State<Dashboard> {
       print("onMessage: $message");
 
 //      creating notification from server payload
-      var notification = !Platform.isIOS
-          ? getAndroidNotification(message)
-          : getIOSNotification(message);
+      var notification = getAndroidNotification(message);
 
       // it will show notification
       showOngoingNotification(
@@ -176,29 +174,18 @@ class _DashboardState extends State<Dashboard> {
 
         // onLaunch will be called when App is not running
         onLaunch: (Map<String, dynamic> message) async {
-      var notification = !Platform.isIOS
-          ? getAndroidNotification(message)
-          : getIOSNotification(message);
+      var notification = getAndroidNotification(message);
 
       showOngoingNotification(localNotifications,
           title: notification['title'], body: notification['body']);
     },
         // onResume will be called when App is running and it is in background
         onResume: (Map<String, dynamic> message) async {
-      var notification = !Platform.isIOS
-          ? getAndroidNotification(message)
-          : getIOSNotification(message);
+      var notification = getAndroidNotification(message);
 
       showOngoingNotification(localNotifications,
           title: notification['title'], body: notification['body']);
     });
-  }
-
-  getIOSNotification(Map<String, dynamic> message) {
-    var notification = message['aps'];
-    print("notification from ios getnotification $notification");
-    return notification;
-    //"{aps: {"badge":"","alert":{"body":"Requesting #300","title":"Payment Request"},"sound":"default","icon":"https:\/\/image.com\/image.png","link":null,"vibrate":[200,100,200,100,200,100,400],"tag":"Slydo Notification","dir":"auto","actions":[]}, from: 580706438195}";
   }
 
   getAndroidNotification(Map<String, dynamic> message) {
@@ -215,6 +202,5 @@ class _DashboardState extends State<Dashboard> {
     notification["actions"] = message['data']['actions'];
     print("notification from android getnotification $notification");
     return notification;
-    // {notification: {title: null, body: null}, data: {data: {"badge":"","sound":"","icon":"https:\/\/image.com\/image.png","link":null,"vibrate":[200,100,200,100,200,100,400],"tag":"Slydo Notification","body":"Requesting #300","dir":"auto","title":"Payment Request","actions":[]}}}
   }
 }
