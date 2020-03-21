@@ -307,7 +307,8 @@ class AuthService {
     }
   }
 
-  Future<Map<String, dynamic>> listPaymentRequests(String next, String previous) async {
+  Future<Map<String, dynamic>> listPaymentRequests(
+      String next, String previous) async {
     Map<String, String> knownCustomers = {};
 
     var url = "";
@@ -503,7 +504,6 @@ class AuthService {
     } else {
       throw jsonData;
     }
-
   }
 
   // it will delete the message
@@ -516,7 +516,6 @@ class AuthService {
     } else {
       return false;
     }
-
   }
 
   // Get single message
@@ -539,10 +538,8 @@ class AuthService {
           senderAvtar: jsonData["sender_avatar"]);
       return message;
     } else {
-
       throw jsonData;
     }
-
   }
 
   // List messages filters: [archived,sent,starred,all]
@@ -553,7 +550,7 @@ class AuthService {
     var response = await http.get(url, headers: headers);
     var jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
-      for (var item in jsonData["results"]){
+      for (var item in jsonData["results"]) {
         PartialMessage message = PartialMessage(
             subtitle: item["subtitle"],
             subject: item["sender"],
@@ -570,5 +567,4 @@ class AuthService {
     }
     return messagesList;
   }
-
 }

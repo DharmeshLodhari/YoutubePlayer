@@ -233,7 +233,8 @@ class _MessageListState extends State<MessageList> {
 //          messageList.addAll(tempList);
 //        });
 
-        List<PartialMessage> result = await _auth.listMessages(filter: filterValue);
+        List<PartialMessage> result =
+            await _auth.listMessages(filter: filterValue);
 
         setState(() {
           isLoading = false;
@@ -295,7 +296,7 @@ class _MessageListState extends State<MessageList> {
                   color: Colors.white,
                 ),
           onPressed: () async {
-            var action = partialMessage.isArchived ? "unarchive": "archive";
+            var action = partialMessage.isArchived ? "unarchive" : "archive";
             await _auth.updateMessage(partialMessage.id, action);
             markArchivedUnArchivedMessage(partialMessage, index);
             slidableController.activeState.close();
@@ -345,7 +346,6 @@ class _MessageListState extends State<MessageList> {
             child: const Text('YES'),
             color: darkBlue(),
             onPressed: () async {
-
               // call delete message _auth method
               bool done = await _auth.deleteMessage(messageList[index].id);
               if (done) {
@@ -426,7 +426,8 @@ class VerticalListItem extends StatelessWidget {
     return GestureDetector(
       onTap: () async {
         var message = await _auth.getMessage(partialMessage.id);
-        Navigator.of(context).pushNamed('/detail_message', arguments: {'message': message});
+        Navigator.of(context)
+            .pushNamed('/detail_message', arguments: {'message': message});
       },
       child: Container(
         color: lightBlue(),
