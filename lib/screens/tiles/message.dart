@@ -1,4 +1,5 @@
 import 'package:Slydo/models/message.dart';
+import 'package:Slydo/services/auth.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
@@ -12,6 +13,7 @@ class MessageTile extends StatefulWidget {
 }
 
 class _MessageTileState extends State<MessageTile> {
+  final _auth = AuthService();
   PartialMessage partialMessage;
   _MessageTileState({this.partialMessage});
 
@@ -81,7 +83,9 @@ class _MessageTileState extends State<MessageTile> {
                 : Icon(
                     Icons.star_border,
                   ),
-            onPressed: () {
+            onPressed: () async {
+              var action = partialMessage.isStarred ? "unstar" : "star";
+              await _auth.updateMessage(partialMessage.id, action);
               setState(() {
                 partialMessage.isStarred =
                     partialMessage.isStarred ? false : true;

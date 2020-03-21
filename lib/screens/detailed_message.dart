@@ -18,20 +18,13 @@ class DetailedMessage extends StatefulWidget {
   DetailedMessage({this.arguments});
   @override
   _DetailedMessageState createState() =>
-      _DetailedMessageState(id: arguments['id']);
+      _DetailedMessageState(message: arguments['message']);
 }
 
 class _DetailedMessageState extends State<DetailedMessage> {
-  String id;
   Message message;
-  _DetailedMessageState({this.id});
+  _DetailedMessageState({this.message});
   final _auth = AuthService();
-
-  @override
-  void initState() {
-    message = _auth.getMessage();
-    super.initState();
-  }
 
   Widget showBackArrow() {
     if (Platform.isAndroid) {
@@ -155,9 +148,10 @@ class _DetailedMessageState extends State<DetailedMessage> {
               Icons.archive,
             )
           : Icon(Icons.unarchive),
-      onPressed: () {
+      onPressed: () async {
+        var action = message.isArchived ? "unarchive" : "archive";
+        await _auth.updateMessage(message.id, action);
         setState(() {
-          // TODO : to call _auth.updateMessage with action: archived / unArchived
           message.isArchived = message.isArchived ? false : true;
         });
       },
@@ -172,9 +166,10 @@ class _DetailedMessageState extends State<DetailedMessage> {
               color: Colors.orangeAccent,
             )
           : Icon(Icons.star_border),
-      onPressed: () {
+      onPressed: () async {
+        var action = message.isStarred ? "unstar" : "star";
+        await _auth.updateMessage(message.id, action);
         setState(() {
-          // TODO : to call _auth.updateMessage with action: Starred / unStarred
           message.isStarred = message.isStarred ? false : true;
         });
       },

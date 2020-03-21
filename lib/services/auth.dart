@@ -307,8 +307,7 @@ class AuthService {
     }
   }
 
-  Future<Map<String, dynamic>> listPaymentRequests(
-      String next, String previous) async {
+  Future<Map<String, dynamic>> listPaymentRequests(String next, String previous) async {
     Map<String, String> knownCustomers = {};
 
     var url = "";
@@ -477,69 +476,99 @@ class AuthService {
     }
   }
 
-  // it will send the message
-  Map<String, dynamic> sendMessage() {}
+  // Send email to user.
+  Future<bool> sendMessage(Map data) async {
+    var url = baseUrl + "/api/v1/messaging/send/";
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await http.post(url, body: _data, headers: headers);
+
+    if (response.statusCode == 201) {
+      return true;
+    } else {
+      var jsonData = json.decode(response.body);
+      throw jsonData;
+    }
+  }
 
   // it will update the message actions:  [Archived,UnArchived,Starred,UnStarred]
-  Map<String, dynamic> updateMessage(String id, String action) {
-    switch (action) {
-      case "Archived":
-        break;
-      case "UnArchived":
-        break;
-      case "Starred":
-        break;
-      case "UnStarred":
-        break;
+  Future<bool> updateMessage(String id, String action) async {
+    var url = baseUrl + "/api/v1/messaging/update/" + id + "/" + action + "/";
+    var headers = await getAuthHeaders();
+    var response = await http.patch(url, headers: headers);
+    var jsonData = json.decode(response.body);
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      throw jsonData;
     }
+
   }
 
   // it will delete the message
-  Map<String, dynamic> deleteMessage(String id) {}
+  Future<bool> deleteMessage(String id) async {
+    var url = baseUrl + "/api/v1/messaging/delete/" + id + "/";
+    var headers = await getAuthHeaders();
+    var response = await http.delete(url, headers: headers);
+    if (response.statusCode == 204) {
+      return true;
+    } else {
+      return false;
+    }
 
-  //get single message
-  Message getMessage() {
-    Message message = Message(
-        id: 1.toString(),
-        body: """
-Reverent Sir,
-
-Hoping wellness at your perfect self from my side. I am Mr. Carlson, the cashier in this branch of bank. I am posted here from the past seven years and very near to up gradation. Throughout my career I had not availed a single leave on behalf of
-any reason so far. You can check my leave record and quality of work done by me.
-
-Now the need arises and I want to have a month’s leave due to my falling health. Medical care is needed utmost. Kindly grant me the said leaves so that I can rejoin my seat in better spirits. Thanking in anticipation.""",
-        timeStamp: "22/02/2020 6:30 pm",
-        isArchived: true,
-        isRead: true,
-        isStarred: true,
-        recipient: "pankaj.sakariya",
-        sender: "brijesh.sakariya",
-        senderAvtar:
-            "https://slydo-assets.s3.amazonaws.com/media/customer/avatar/f05d89d7d7944001adff2a0fb295f10a.jpg",
-        subject: "Application for Sick Leave for Employee");
-    return message;
-    //return single Message
   }
 
-  // get messages list messages filters: [archived,sent,starred,all]
-  List<PartialMessage> listMessages({String filter}) {
-    List<PartialMessage> messagesList = [];
-    for (int i = 0; i < 10; i++) {
-      PartialMessage message = PartialMessage(
-          id: i.toString(),
-          subtitle: "test",
-          timeStamp: "${i}:30 pm",
-          isArchived: true,
-          isRead: true,
-          isStarred: true,
-          recipient: "pankaj.sakariya",
-          sender: "brijesh.sakariya",
-          senderAvtar:
-              "https://slydo-assets.s3.amazonaws.com/media/customer/avatar/f05d89d7d7944001adff2a0fb295f10a.jpg",
-          subject: "Test Subject");
+  // Get single message
+  Future<Message> getMessage(String id) async {
+    var url = baseUrl + "/api/v1/messaging/read/" + id + "/";
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
+    var jsonData = json.decode(response.body);
+    if (response.statusCode == 200) {
+      Message message = Message(
+          subject: jsonData["subject"],
+          id: jsonData["id"],
+          body: jsonData["body"],
+          timeStamp: jsonData["time_sent"],
+          isArchived: jsonData["is_archived"],
+          isRead: jsonData["is_read"],
+          isStarred: jsonData["is_starred"],
+          recipient: jsonData["recipient"],
+          sender: jsonData["sender"],
+          senderAvtar: jsonData["sender_avatar"]);
+      return message;
+    } else {
 
-      messagesList.add(message);
+      throw jsonData;
+    }
+
+  }
+
+  // List messages filters: [archived,sent,starred,all]
+  Future<List<PartialMessage>> listMessages({String filter}) async {
+    var url = baseUrl + "/api/v1/messaging/list/" + filter + "/";
+    List<PartialMessage> messagesList = [];
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
+    var jsonData = json.decode(response.body);
+    if (response.statusCode == 200) {
+      for (var item in jsonData["results"]){
+        PartialMessage message = PartialMessage(
+            subtitle: item["subtitle"],
+            subject: item["sender"],
+            id: item["id"],
+            timeStamp: item["time_sent"],
+            isArchived: item["is_archived"],
+            isRead: item["is_read"],
+            isStarred: item["is_starred"],
+            recipient: item["recipient"],
+            sender: item["sender"],
+            senderAvtar: item["sender_avatar"]);
+        messagesList.add(message);
+      }
     }
     return messagesList;
   }
+
 }

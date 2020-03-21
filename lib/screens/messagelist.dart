@@ -28,7 +28,7 @@ class _MessageListState extends State<MessageList> {
       RefreshController(initialRefresh: false);
   bool isLoading = false;
   bool noItemInList = false;
-  String filterValue = "All";
+  String filterValue = "all";
 
   @protected
   void initState() {
@@ -59,7 +59,6 @@ class _MessageListState extends State<MessageList> {
         messageList = [];
         getList();
         _refreshController.refreshCompleted();
-        print("Refresh Controller called !!!");
       } else {
         Toast.show("Internet Connection is not available", context,
             gravity: Toast.BOTTOM, backgroundColor: darkBlue());
@@ -135,8 +134,8 @@ class _MessageListState extends State<MessageList> {
                 "All",
                 style: TextStyle(color: Colors.black),
               ),
-              value: "All",
-              checked: filterValue == "All" ? true : false,
+              value: "all",
+              checked: filterValue == "all" ? true : false,
             ),
           );
           list.add(
@@ -145,8 +144,8 @@ class _MessageListState extends State<MessageList> {
                 "Archived",
                 style: TextStyle(color: Colors.black),
               ),
-              value: "Archived",
-              checked: filterValue == "Archived" ? true : false,
+              value: "archived",
+              checked: filterValue == "archived" ? true : false,
             ),
           );
 
@@ -156,8 +155,8 @@ class _MessageListState extends State<MessageList> {
                 "Sent",
                 style: TextStyle(color: Colors.black),
               ),
-              value: "Sent",
-              checked: filterValue == "Sent" ? true : false,
+              value: "sent",
+              checked: filterValue == "sent" ? true : false,
             ),
           );
           list.add(
@@ -166,8 +165,8 @@ class _MessageListState extends State<MessageList> {
                 "Starred",
                 style: TextStyle(color: Colors.black),
               ),
-              value: "Starred",
-              checked: filterValue == "Starred" ? true : false,
+              value: "starred",
+              checked: filterValue == "starred" ? true : false,
             ),
           );
           return list;
@@ -234,7 +233,7 @@ class _MessageListState extends State<MessageList> {
 //          messageList.addAll(tempList);
 //        });
 
-        List<PartialMessage> result = _auth.listMessages(filter: filterValue);
+        List<PartialMessage> result = await _auth.listMessages(filter: filterValue);
 
         setState(() {
           isLoading = false;
@@ -288,14 +287,16 @@ class _MessageListState extends State<MessageList> {
         child: IconButton(
           icon: partialMessage.isArchived
               ? Icon(
-                  Icons.unarchive,
+                  Icons.archive,
                   color: Colors.white,
                 )
               : Icon(
-                  Icons.archive,
+                  Icons.unarchive,
                   color: Colors.white,
                 ),
-          onPressed: () {
+          onPressed: () async {
+            var action = partialMessage.isArchived ? "unarchive": "archive";
+            await _auth.updateMessage(partialMessage.id, action);
             markArchivedUnArchivedMessage(partialMessage, index);
             slidableController.activeState.close();
           },
@@ -344,8 +345,9 @@ class _MessageListState extends State<MessageList> {
             child: const Text('YES'),
             color: darkBlue(),
             onPressed: () async {
+
               // call delete message _auth method
-              bool done = false;
+              bool done = await _auth.deleteMessage(messageList[index].id);
               if (done) {
                 Navigator.pop(context);
                 _showSnackBar(context, "Message is deleted successfully!!");
@@ -417,12 +419,15 @@ class _MessageListState extends State<MessageList> {
 class VerticalListItem extends StatelessWidget {
   VerticalListItem(this.partialMessage);
   final PartialMessage partialMessage;
+  final _auth = AuthService();
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.of(context)
-          .pushNamed('/detail_message', arguments: {'id': partialMessage.id}),
+      onTap: () async {
+        var message = await _auth.getMessage(partialMessage.id);
+        Navigator.of(context).pushNamed('/detail_message', arguments: {'message': message});
+      },
       child: Container(
         color: lightBlue(),
         child: MessageTile(partialMessage: partialMessage),

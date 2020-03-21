@@ -170,10 +170,12 @@ class _ComposeMessageState extends State<ComposeMessage> {
               }
               try {
                 var data = {
-                  "from_customer": userBloc.user.userName,
-                  "to_customer": recipient,
-                  "message": message
+                  "sender": userBloc.user.userName,
+                  "recipient": recipient,
+                  "body": message,
+                  "subject": subject,
                 };
+                _auth.sendMessage(data);
               } catch (e) {
                 Toast.show(e, context,
                     gravity: Toast.BOTTOM, backgroundColor: darkBlue());
