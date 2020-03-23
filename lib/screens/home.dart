@@ -172,11 +172,11 @@ class _HomeState extends State<Home> {
       child: Scaffold(
           backgroundColor: lightBlue(),
           resizeToAvoidBottomInset: true,
-          body: !isIntroDone ? introScreen() : test()),
+          body: !isIntroDone ? introScreen() : HomeScreen()),
     );
   }
 
-  Widget test() {
+  Widget HomeScreen() {
     return Center(
       child: Container(
         color: lightBlue(),

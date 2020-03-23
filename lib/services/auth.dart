@@ -483,7 +483,6 @@ class AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.post(url, body: _data, headers: headers);
-
     if (response.statusCode == 201) {
       return true;
     } else {
@@ -495,8 +494,10 @@ class AuthService {
   // it will update the message actions:  [Archived,UnArchived,Starred,UnStarred]
   Future<bool> updateMessage(String id, String action) async {
     var url = baseUrl + "/api/v1/messaging/update/" + id + "/" + action + "/";
+    print(url);
     var headers = await getAuthHeaders();
     var response = await http.patch(url, headers: headers);
+    print(response.body);
     var jsonData = json.decode(response.body);
 
     if (response.statusCode == 200) {
@@ -543,13 +544,25 @@ class AuthService {
   }
 
   // List messages filters: [archived,sent,starred,all]
-  Future<List<PartialMessage>> listMessages({String filter}) async {
-    var url = baseUrl + "/api/v1/messaging/list/" + filter + "/";
-    List<PartialMessage> messagesList = [];
+  Future<Map<String, dynamic>> listMessages(String next, String previous,
+      {String filter}) async {
+    var url = "";
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      url = baseUrl + "/api/v1/messaging/list/" + filter + "/";
+    } else {
+      url = next;
+    }
+    print(url);
+
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
-    var jsonData = json.decode(response.body);
+
     if (response.statusCode == 200) {
+      List<PartialMessage> messagesList = [];
+      var jsonData = json.decode(response.body);
       for (var item in jsonData["results"]) {
         PartialMessage message = PartialMessage(
             subtitle: item["subtitle"],
@@ -564,7 +577,19 @@ class AuthService {
             senderAvtar: item["sender_avatar"]);
         messagesList.add(message);
       }
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": messagesList
+      };
+      print(result);
+      return result;
+    } else if (response.statusCode == 500) {
+      throw "Server Error";
+    } else {
+      throw json.decode(response.body);
     }
-    return messagesList;
   }
 }

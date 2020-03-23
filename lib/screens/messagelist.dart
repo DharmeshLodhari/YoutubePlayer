@@ -222,23 +222,15 @@ class _MessageListState extends State<MessageList> {
         setState(() {
           isLoading = true;
         });
-//        Map<String, dynamic> result =
-//            await _auth.listPaymentRequests(next, previous);
-//        count = result['count'];
-//        next = result['next'];
-//        previous = result['previous'];
-//        var tempList = result['results'];
-//        setState(() {
-//          isLoading = false;
-//          messageList.addAll(tempList);
-//        });
-
-        List<PartialMessage> result =
-            await _auth.listMessages(filter: filterValue);
-
+        Map<String, dynamic> result =
+            await _auth.listMessages(next, previous, filter: filterValue);
+        count = result['count'];
+        next = result['next'];
+        previous = result['previous'];
+        var tempList = result['results'];
         setState(() {
           isLoading = false;
-          messageList.addAll(result);
+          messageList.addAll(tempList);
         });
       }
       if (messageList.isEmpty) {
@@ -288,11 +280,11 @@ class _MessageListState extends State<MessageList> {
         child: IconButton(
           icon: partialMessage.isArchived
               ? Icon(
-                  Icons.archive,
+                  Icons.unarchive,
                   color: Colors.white,
                 )
               : Icon(
-                  Icons.unarchive,
+                  Icons.archive,
                   color: Colors.white,
                 ),
           onPressed: () async {

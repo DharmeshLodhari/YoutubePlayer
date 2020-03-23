@@ -168,6 +168,7 @@ class _SettingsListState extends State<SettingsList> {
       return Visibility(
         visible: false,
         child: FloatingActionButton(
+            heroTag: null,
             backgroundColor: Colors.transparent,
             onPressed: () {},
             foregroundColor: Colors.transparent, // Colors.white,
@@ -178,6 +179,7 @@ class _SettingsListState extends State<SettingsList> {
       );
     } else {
       return FloatingActionButton(
+        heroTag: null,
         backgroundColor: darkBlue(),
         onPressed: () {
           Navigator.of(context).pushNamed('/add-account');
@@ -242,7 +244,6 @@ class _SettingsListState extends State<SettingsList> {
     _sharedPreferences = await SharedPreferences.getInstance();
     _sharedPreferences.setBool('isLoggedOut', true);
 
-    try {} catch (err) {}
     Navigator.pushNamedAndRemoveUntil(context, "/home", (r) => false,
         arguments: {'isIntroDone': true});
   }

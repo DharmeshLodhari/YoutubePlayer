@@ -85,10 +85,13 @@ class _MessageTileState extends State<MessageTile> {
                   ),
             onPressed: () async {
               var action = partialMessage.isStarred ? "unstar" : "star";
-              await _auth.updateMessage(partialMessage.id, action);
-              setState(() {
-                partialMessage.isStarred =
-                    partialMessage.isStarred ? false : true;
+              await _auth
+                  .updateMessage(partialMessage.id, action)
+                  .then((value) {
+                setState(() {
+                  partialMessage.isStarred =
+                      partialMessage.isStarred ? false : true;
+                });
               });
             },
           ),
