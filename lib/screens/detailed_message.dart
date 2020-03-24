@@ -7,12 +7,14 @@
 
 import 'dart:io';
 
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/models/message.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:provider/provider.dart';
 
 class DetailedMessage extends StatefulWidget {
   var arguments;
@@ -24,6 +26,7 @@ class DetailedMessage extends StatefulWidget {
 
 class _DetailedMessageState extends State<DetailedMessage> {
   Message message;
+  UserBloc userBloc;
   _DetailedMessageState({this.message});
   final _auth = AuthService();
 
@@ -47,6 +50,7 @@ class _DetailedMessageState extends State<DetailedMessage> {
 
   @override
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
     return WillPopScope(
       onWillPop: () async {
         Navigator.pop(context);
@@ -153,37 +157,74 @@ class _DetailedMessageState extends State<DetailedMessage> {
   }
 
   getArchivedButton() {
+    // this variable is responsible for the message which is user seeing isRecipient is seeing message
+    // or isSender is seeing message we got that user and check if it is recipient then
+    // we are showing and modifying archive icon by message's isArchivedByRecipient property and if it sender then
+    // we are showing and modifying archive icon by message's isArchivedBySender property
+    bool isRecipient = userBloc.user.userName == message.recipient;
     return IconButton(
-      icon: message.isArchivedByRecipient
-          ? Icon(
-              Icons.archive,
-            )
-          : Icon(Icons.unarchive),
+      icon: isRecipient
+          ? message.isArchivedByRecipient
+              ? Icon(
+                  Icons.archive,
+                )
+              : Icon(Icons.unarchive)
+          : message.isArchivedBySender
+              ? Icon(
+                  Icons.archive,
+                )
+              : Icon(Icons.unarchive),
       onPressed: () async {
-        var action = message.isArchivedByRecipient ? "unarchive" : "archive";
+        var action = isRecipient
+            ? message.isArchivedByRecipient ? "unarchive" : "archive"
+            : message.isArchivedBySender ? "unarchive" : "archive";
         await _auth.updateMessage(message.id, action);
         setState(() {
-          message.isArchivedByRecipient =
-              message.isArchivedByRecipient ? false : true;
+          if (isRecipient) {
+            message.isArchivedByRecipient =
+                message.isArchivedByRecipient ? false : true;
+          } else {
+            message.isArchivedBySender =
+                message.isArchivedBySender ? false : true;
+          }
         });
       },
     );
   }
 
   getIsStarredButton() {
+    // this variable is responsible for the message which is user seeing isRecipient is seeing message
+    // or isSender is seeing message we got that user and check if it is recipient then
+    // we are showing and modifying star icon by message's isStarredByRecipient property and if it sender then
+    // we are showing and modifying star icon by message's isStarredBySender property
+    bool isRecipient = userBloc.user.userName == message.recipient;
     return IconButton(
-      icon: message.isStarredByRecipient
-          ? Icon(
-              Icons.star,
-              color: Colors.orangeAccent,
-            )
-          : Icon(Icons.star_border),
+      icon: isRecipient
+          ? message.isStarredByRecipient
+              ? Icon(
+                  Icons.star,
+                  color: Colors.orangeAccent,
+                )
+              : Icon(Icons.star_border)
+          : message.isStarredBySender
+              ? Icon(
+                  Icons.star,
+                  color: Colors.orangeAccent,
+                )
+              : Icon(Icons.star_border),
       onPressed: () async {
-        var action = message.isStarredByRecipient ? "unstar" : "star";
+        var action = isRecipient
+            ? message.isStarredByRecipient ? "unstar" : "star"
+            : message.isStarredBySender ? "unstar" : "star";
         await _auth.updateMessage(message.id, action);
         setState(() {
-          message.isStarredByRecipient =
-              message.isStarredByRecipient ? false : true;
+          if (isRecipient) {
+            message.isStarredByRecipient =
+                message.isStarredByRecipient ? false : true;
+          } else {
+            message.isStarredBySender =
+                message.isStarredBySender ? false : true;
+          }
         });
       },
     );

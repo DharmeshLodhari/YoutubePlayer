@@ -29,6 +29,38 @@ class PartialMessage {
     this.isArchivedBySender,
     this.isStarredBySender,
   });
+
+  bool isStarredMessage(String username) {
+    if (username == recipient) {
+      if (isStarredByRecipient) {
+        return true;
+      } else {
+        return false;
+      }
+    } else if (username == sender) {
+      if (isStarredBySender) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
+
+  bool isArchievedMessage(String username) {
+    if (username == recipient) {
+      if (isArchivedByRecipient) {
+        return true;
+      } else {
+        return false;
+      }
+    } else if (username == sender) {
+      if (isArchivedBySender) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
 }
 
 class Message {
@@ -64,4 +96,36 @@ class Message {
     this.isArchivedBySender,
     this.isStarredBySender,
   });
+
+  bool isStarredMessage(String username) {
+    if (username == recipient) {
+      if (isStarredByRecipient) {
+        return true;
+      } else {
+        return false;
+      }
+    } else if (username == sender) {
+      if (isStarredBySender) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
+
+  bool isArchievedMessage(String username) {
+    if (username == recipient) {
+      if (isArchivedByRecipient) {
+        return true;
+      } else {
+        return false;
+      }
+    } else if (username == sender) {
+      if (isArchivedBySender) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
 }

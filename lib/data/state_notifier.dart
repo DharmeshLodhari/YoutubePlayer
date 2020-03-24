@@ -12,7 +12,8 @@ class UserBloc extends ChangeNotifier {
       userName: null,
       avatar: null,
       qrCode: null,
-      password: null);
+      password: null,
+      currency: null);
 
   // Getter
   User get user => _user;
@@ -46,13 +47,13 @@ class BankAccountBloc extends ChangeNotifier {
 class PayeeBloc extends ChangeNotifier {
   // This block notify's the change in user status and pass it round the app.
   Payee _payee = Payee(
-    uuid: "",
-    url: "",
-    fullName: null,
-    userName: null,
-    avatar: null,
-    qrCode: null,
-  );
+      uuid: "",
+      url: "",
+      fullName: null,
+      userName: null,
+      avatar: null,
+      qrCode: null,
+      currency: null);
 
   // Getter
   Payee get payee => _payee;

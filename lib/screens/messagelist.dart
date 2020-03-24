@@ -1,3 +1,4 @@
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/models/message.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/screens/tiles/message.dart';
@@ -7,6 +8,7 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:toast/toast.dart';
 
@@ -29,6 +31,7 @@ class _MessageListState extends State<MessageList> {
   bool isLoading = false;
   bool noItemInList = false;
   String filterValue = "all";
+  UserBloc userBloc;
 
   @protected
   void initState() {
@@ -69,6 +72,7 @@ class _MessageListState extends State<MessageList> {
 
   @override
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
     return WillPopScope(
         onWillPop: () async {
           Navigator.pop(context);
@@ -274,24 +278,48 @@ class _MessageListState extends State<MessageList> {
 
   Widget displayArchviedUnArchivedButton(
       PartialMessage partialMessage, int index) {
+    // this variable is responsible for the message which is user seeing isRecipient is seeing message
+    // or isSender is seeing message we got that user and check if it is recipient then
+    // we are showing and modifying archive icon by message's isArchivedByRecipient property and if it sender then
+    // we are showing and modifying archive icon by message's isArchivedBySender property
+    bool isRecipient = userBloc.user.userName == partialMessage.recipient;
     return Container(
         height: double.infinity,
         color: Colors.green,
         child: IconButton(
-          icon: partialMessage.isArchivedByRecipient
-              ? Icon(
-                  Icons.unarchive,
-                  color: Colors.white,
-                )
-              : Icon(
-                  Icons.archive,
-                  color: Colors.white,
-                ),
+          icon: isRecipient
+              ? partialMessage.isArchivedByRecipient
+                  ? Icon(
+                      Icons.archive,
+                      color: Colors.white,
+                    )
+                  : Icon(
+                      Icons.unarchive,
+                      color: Colors.white,
+                    )
+              : partialMessage.isArchivedBySender
+                  ? Icon(
+                      Icons.archive,
+                      color: Colors.white,
+                    )
+                  : Icon(
+                      Icons.unarchive,
+                      color: Colors.white,
+                    ),
           onPressed: () async {
-            var action =
-                partialMessage.isArchivedByRecipient ? "unarchive" : "archive";
+            var action = isRecipient
+                ? partialMessage.isArchivedByRecipient ? "unarchive" : "archive"
+                : partialMessage.isArchivedBySender ? "unarchive" : "archive";
             await _auth.updateMessage(partialMessage.id, action);
-            markArchivedUnArchivedMessage(partialMessage, index);
+            setState(() {
+              if (isRecipient) {
+                partialMessage.isArchivedByRecipient =
+                    partialMessage.isArchivedByRecipient ? false : true;
+              } else {
+                partialMessage.isArchivedBySender =
+                    partialMessage.isArchivedBySender ? false : true;
+              }
+            });
             slidableController.activeState.close();
           },
         ));

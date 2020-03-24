@@ -7,6 +7,7 @@ class User {
   String avatar;
   String qrCode;
   String password;
+  String currency;
 
   // Pass in as named parameter in constructor
   User(
@@ -17,7 +18,8 @@ class User {
       this.userName,
       this.avatar,
       this.qrCode,
-      this.password});
+      this.password,
+      this.currency = "€"});
 
   bool isAuthenticated() {
     //  We should check here if instance has username then user is not Anonymous
@@ -58,16 +60,17 @@ class Payee {
   String userName = '';
   String avatar = '';
   String qrCode = '';
+  String currency;
 
   // Pass in as named parameter in constructor
-  Payee({
-    this.uuid,
-    this.url,
-    this.fullName,
-    this.userName,
-    this.avatar,
-    this.qrCode,
-  });
+  Payee(
+      {this.uuid,
+      this.url,
+      this.fullName,
+      this.userName,
+      this.avatar,
+      this.qrCode,
+      this.currency = "€"});
 }
 
 class CustomerProfile {
