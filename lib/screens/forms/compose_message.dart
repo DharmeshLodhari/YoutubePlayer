@@ -163,11 +163,17 @@ class _ComposeMessageState extends State<ComposeMessage> {
             }
             if (_formKey.currentState.validate()) {
               //TODO:Make a call for send message
-              FocusScope.of(context).unfocus();
-              Navigator.pop(context);
-              if (isReplayMessage) {
-                Navigator.pop(context);
+              if (FocusScope.of(context).hasFocus) {
+                FocusScope.of(context).unfocus();
               }
+
+              Navigator.of(context).popAndPushNamed("/dashboard",
+                  arguments: {"dashboardIndex": 3});
+              if (isReplayMessage) {
+                Navigator.of(context).popAndPushNamed("/dashboard",
+                    arguments: {"dashboardIndex": 3});
+              }
+
               try {
                 var data = {
                   "sender": userBloc.user.userName,
@@ -305,6 +311,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
       autofocus: false,
       obscureText: false,
       decoration: InputDecoration(
+        prefixText: isReplayMessage ? "Re:" : "",
         prefixIcon: Icon(Icons.subject),
         fillColor: Colors.white,
         filled: true,

@@ -3,12 +3,15 @@ class PartialMessage {
   String subtitle;
   String subject;
   String sender;
-  String senderAvtar;
+  String senderAvatar;
   String recipient;
+  String recipientAvatar;
   String timeStamp;
   bool isRead;
-  bool isStarred;
-  bool isArchived;
+  bool isArchivedByRecipient;
+  bool isStarredByRecipient;
+  bool isArchivedBySender;
+  bool isStarredBySender;
 
   // Pass in as named parameter in constructor
   PartialMessage({
@@ -16,12 +19,15 @@ class PartialMessage {
     this.subtitle,
     this.subject,
     this.sender,
-    this.senderAvtar,
+    this.senderAvatar,
     this.recipient,
+    this.recipientAvatar,
     this.timeStamp,
     this.isRead,
-    this.isStarred,
-    this.isArchived,
+    this.isArchivedByRecipient,
+    this.isStarredByRecipient,
+    this.isArchivedBySender,
+    this.isStarredBySender,
   });
 }
 
@@ -30,12 +36,16 @@ class Message {
   String body;
   String subject;
   String sender;
-  String senderAvtar;
+  String senderAvatar;
   String recipient;
+  String recipientAvatar;
   String timeStamp;
   bool isRead;
   bool isStarred;
-  bool isArchived;
+  bool isArchivedByRecipient;
+  bool isStarredByRecipient;
+  bool isArchivedBySender;
+  bool isStarredBySender;
 
   // Pass in as named parameter in constructor
   Message({
@@ -43,11 +53,15 @@ class Message {
     this.body,
     this.subject,
     this.sender,
-    this.senderAvtar,
+    this.senderAvatar,
     this.recipient,
+    this.recipientAvatar,
     this.timeStamp,
     this.isRead,
     this.isStarred,
-    this.isArchived,
+    this.isArchivedByRecipient,
+    this.isStarredByRecipient,
+    this.isArchivedBySender,
+    this.isStarredBySender,
   });
 }

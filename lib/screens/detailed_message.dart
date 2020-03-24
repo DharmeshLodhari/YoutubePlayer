@@ -12,6 +12,7 @@ import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 class DetailedMessage extends StatefulWidget {
   var arguments;
@@ -80,14 +81,24 @@ class _DetailedMessageState extends State<DetailedMessage> {
   Widget displaySubject() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: RichText(
-        text: TextSpan(
-            text: message.subject,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Text(
+            message.subject,
             style: TextStyle(
               fontSize: 22,
               color: Colors.black,
               fontWeight: FontWeight.bold,
-            )),
+            ),
+          ),
+          Text(getDate(),
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey,
+                fontWeight: FontWeight.bold,
+              )),
+        ],
       ),
     );
   }
@@ -100,7 +111,7 @@ class _DetailedMessageState extends State<DetailedMessage> {
 //        contentPadding: EdgeInsets.symmetric(horizontal: 15),
         leading: getLeading(),
         title: getSender(),
-        subtitle: getDate(),
+        subtitle: Text("to: test"),
         trailing: Container(
           width: 100,
           child: Row(
@@ -115,13 +126,13 @@ class _DetailedMessageState extends State<DetailedMessage> {
   getLeading() {
     return ClipOval(
       child: CachedNetworkImage(
-        imageUrl: message.senderAvtar,
+        imageUrl: message.senderAvatar,
         height: 40,
         width: 40,
         colorBlendMode: BlendMode.darken,
         fit: BoxFit.cover,
         filterQuality: FilterQuality.high,
-        placeholder: (context, url) => message.senderAvtar == ""
+        placeholder: (context, url) => message.senderAvatar == ""
             ? Icon(Icons.person)
             : CircularProgressIndicator(
                 backgroundColor: Colors.white,
@@ -143,16 +154,17 @@ class _DetailedMessageState extends State<DetailedMessage> {
 
   getArchivedButton() {
     return IconButton(
-      icon: message.isArchived
+      icon: message.isArchivedByRecipient
           ? Icon(
               Icons.archive,
             )
           : Icon(Icons.unarchive),
       onPressed: () async {
-        var action = message.isArchived ? "unarchive" : "archive";
+        var action = message.isArchivedByRecipient ? "unarchive" : "archive";
         await _auth.updateMessage(message.id, action);
         setState(() {
-          message.isArchived = message.isArchived ? false : true;
+          message.isArchivedByRecipient =
+              message.isArchivedByRecipient ? false : true;
         });
       },
     );
@@ -160,27 +172,25 @@ class _DetailedMessageState extends State<DetailedMessage> {
 
   getIsStarredButton() {
     return IconButton(
-      icon: message.isStarred
+      icon: message.isStarredByRecipient
           ? Icon(
               Icons.star,
               color: Colors.orangeAccent,
             )
           : Icon(Icons.star_border),
       onPressed: () async {
-        var action = message.isStarred ? "unstar" : "star";
+        var action = message.isStarredByRecipient ? "unstar" : "star";
         await _auth.updateMessage(message.id, action);
         setState(() {
-          message.isStarred = message.isStarred ? false : true;
+          message.isStarredByRecipient =
+              message.isStarredByRecipient ? false : true;
         });
       },
     );
   }
 
   getDate() {
-    return Text(
-      message.timeStamp,
-      style: TextStyle(color: Colors.grey, fontSize: 14),
-    );
+    return message.timeStamp;
   }
 
   displayMessageInfo() {
@@ -219,7 +229,7 @@ class _DetailedMessageState extends State<DetailedMessage> {
       onPressed: () {
         Navigator.of(context).pushNamed('/compose_message', arguments: {
           'recipient': message.sender,
-          'subject': 'Re: ${message.subject}',
+          'subject': message.subject,
         });
       },
     );
