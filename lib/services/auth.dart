@@ -531,12 +531,14 @@ class AuthService {
           id: jsonData["id"],
           body: jsonData["body"],
           timeStamp: jsonData["time_sent"],
-          isArchived: jsonData["is_archived"],
           isRead: jsonData["is_read"],
-          isStarred: jsonData["is_starred"],
+          isArchivedByRecipient: jsonData["is_archived_by_recipient"],
+          isStarredByRecipient: jsonData["is_starred_by_recipient"],
+          isArchivedBySender: jsonData["is_archived_by_sender"],
+          isStarredBySender: jsonData["is_starred_by_sender"],
           recipient: jsonData["recipient"],
           sender: jsonData["sender"],
-          senderAvtar: jsonData["sender_avatar"]);
+          senderAvatar: jsonData["sender_avatar"]);
       return message;
     } else {
       throw jsonData;
@@ -569,12 +571,14 @@ class AuthService {
             subject: item["sender"],
             id: item["id"],
             timeStamp: item["time_sent"],
-            isArchived: item["is_archived"],
             isRead: item["is_read"],
-            isStarred: item["is_starred"],
+            isArchivedByRecipient: item["is_archived_by_recipient"],
+            isStarredByRecipient: item["is_starred_by_recipient"],
+            isArchivedBySender: item["is_archived_by_sender"],
+            isStarredBySender: item["is_starred_by_sender"],
             recipient: item["recipient"],
             sender: item["sender"],
-            senderAvtar: item["sender_avatar"]);
+            senderAvatar: item["sender_avatar"]);
         messagesList.add(message);
       }
 

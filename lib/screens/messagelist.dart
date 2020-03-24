@@ -278,7 +278,8 @@ class _MessageListState extends State<MessageList> {
         height: double.infinity,
         color: Colors.green,
         child: IconButton(
-          icon: partialMessage.isArchived
+          icon: 1 > 2
+//          partialMessage.isArchived
               ? Icon(
                   Icons.unarchive,
                   color: Colors.white,
@@ -288,7 +289,8 @@ class _MessageListState extends State<MessageList> {
                   color: Colors.white,
                 ),
           onPressed: () async {
-            var action = partialMessage.isArchived ? "unarchive" : "archive";
+            var action =  "archive";
+//            partialMessage.isArchived ? "unarchive" : "archive";
             await _auth.updateMessage(partialMessage.id, action);
             markArchivedUnArchivedMessage(partialMessage, index);
             slidableController.activeState.close();
@@ -298,7 +300,7 @@ class _MessageListState extends State<MessageList> {
 
   void markArchivedUnArchivedMessage(PartialMessage partialMessage, int index) {
     setState(() {
-      partialMessage.isArchived = partialMessage.isArchived ? false : true;
+//      partialMessage.isArchived = partialMessage.isArchived ? false : true;
     });
   }
 

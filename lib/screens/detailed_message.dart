@@ -115,13 +115,13 @@ class _DetailedMessageState extends State<DetailedMessage> {
   getLeading() {
     return ClipOval(
       child: CachedNetworkImage(
-        imageUrl: message.senderAvtar,
+        imageUrl: message.senderAvatar,
         height: 40,
         width: 40,
         colorBlendMode: BlendMode.darken,
         fit: BoxFit.cover,
         filterQuality: FilterQuality.high,
-        placeholder: (context, url) => message.senderAvtar == ""
+        placeholder: (context, url) => message.senderAvatar == ""
             ? Icon(Icons.person)
             : CircularProgressIndicator(
                 backgroundColor: Colors.white,
@@ -143,16 +143,18 @@ class _DetailedMessageState extends State<DetailedMessage> {
 
   getArchivedButton() {
     return IconButton(
-      icon: message.isArchived
+      icon: 1 > 2
+//      message.isArchived
           ? Icon(
               Icons.archive,
             )
           : Icon(Icons.unarchive),
       onPressed: () async {
-        var action = message.isArchived ? "unarchive" : "archive";
+        var action = "archive";
+//        message.isArchived ? "unarchive" : "archive";
         await _auth.updateMessage(message.id, action);
         setState(() {
-          message.isArchived = message.isArchived ? false : true;
+//          message.isArchived = message.isArchived ? false : true;
         });
       },
     );
@@ -160,17 +162,19 @@ class _DetailedMessageState extends State<DetailedMessage> {
 
   getIsStarredButton() {
     return IconButton(
-      icon: message.isStarred
+      icon: 1 > 2
+//      message.isStarred
           ? Icon(
               Icons.star,
               color: Colors.orangeAccent,
             )
           : Icon(Icons.star_border),
       onPressed: () async {
-        var action = message.isStarred ? "unstar" : "star";
+        var action = "star";
+//        message.isStarred ? "unstar" : "star";
         await _auth.updateMessage(message.id, action);
         setState(() {
-          message.isStarred = message.isStarred ? false : true;
+//          message.isStarred = message.isStarred ? false : true;
         });
       },
     );

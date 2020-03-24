@@ -39,13 +39,13 @@ class _MessageTileState extends State<MessageTile> {
   Widget getLeading() {
     return ClipOval(
       child: CachedNetworkImage(
-        imageUrl: partialMessage.senderAvtar,
+        imageUrl: partialMessage.senderAvatar,
         height: 50,
         width: 50,
         colorBlendMode: BlendMode.darken,
         fit: BoxFit.cover,
         filterQuality: FilterQuality.high,
-        placeholder: (context, url) => partialMessage.senderAvtar == ""
+        placeholder: (context, url) => partialMessage.senderAvatar == ""
             ? Icon(Icons.person)
             : CircularProgressIndicator(
                 backgroundColor: Colors.white,
@@ -75,7 +75,8 @@ class _MessageTileState extends State<MessageTile> {
         Expanded(
           flex: 2,
           child: IconButton(
-            icon: partialMessage.isStarred
+            icon: 1 > 2
+//            partialMessage.isStarred
                 ? Icon(
                     Icons.star,
                     color: Colors.orangeAccent,
@@ -84,13 +85,14 @@ class _MessageTileState extends State<MessageTile> {
                     Icons.star_border,
                   ),
             onPressed: () async {
-              var action = partialMessage.isStarred ? "unstar" : "star";
+              var action = "star";
+//              partialMessage.isStarred ? "unstar" : "star";
               await _auth
                   .updateMessage(partialMessage.id, action)
                   .then((value) {
                 setState(() {
-                  partialMessage.isStarred =
-                      partialMessage.isStarred ? false : true;
+//                  partialMessage.isStarred =
+//                      partialMessage.isStarred ? false : true;
                 });
               });
             },
