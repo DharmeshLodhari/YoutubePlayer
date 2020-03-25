@@ -1,3 +1,4 @@
+import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/widget/passcodePopup.dart';
@@ -96,7 +97,7 @@ class _AccountBalanceTileState extends State<AccountBalanceTile> {
           ),
           subtitle: Text(widget.isLocked
               ? "*******"
-              : "${userBloc.user.currency} ${widget.balance}"),
+              : worldCurrencies[userBloc.user.currency] + widget.balance),
           leading: currencyImage,
           trailing: IconButton(
             icon: Icon(widget.isLocked ? Icons.lock_outline : Icons.lock_open,
