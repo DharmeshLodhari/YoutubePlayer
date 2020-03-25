@@ -14,8 +14,16 @@ class AuthService {
   DatabaseHelper _db = DatabaseHelper();
 
   // This function creates a user object from named args passed in
-  User createUser(String uuid, String url, String phoneNumber, String fullName,
-      String username, String avatar, String qrCode, String password) {
+  User createUser(
+      String uuid,
+      String url,
+      String phoneNumber,
+      String fullName,
+      String username,
+      String avatar,
+      String qrCode,
+      String password,
+      String currency) {
     // Create user instance
     User _user = User(
         uuid: uuid,
@@ -25,7 +33,8 @@ class AuthService {
         userName: username,
         avatar: avatar,
         qrCode: qrCode,
-        password: password);
+        password: password,
+        currency: currency);
 
     _db.saveUser(_user);
     return _user;
@@ -74,14 +83,16 @@ class AuthService {
 
       // Save user to database
       User user = createUser(
-          jsonData["uuid"],
-          jsonData["url"],
-          jsonData["phone_number"],
-          jsonData["full_name"],
-          jsonData["username"],
-          jsonData["avatar"],
-          jsonData["qr_code"],
-          jsonData["password"]);
+        jsonData["uuid"],
+        jsonData["url"],
+        jsonData["phone_number"],
+        jsonData["full_name"],
+        jsonData["username"],
+        jsonData["avatar"],
+        jsonData["qr_code"],
+        jsonData["password"],
+        jsonData["default_currency"],
+      );
 
       _db.saveJwt(data);
 

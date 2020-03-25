@@ -1,3 +1,4 @@
+import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -53,7 +54,9 @@ class PaymentRequestTile extends StatelessWidget {
 
   Widget getTrailing() {
     return Text(
-      paymentRequest.currency + ' ' + paymentRequest.amount.toString(),
+      worldCurrencies[paymentRequest.currency] +
+          ' ' +
+          paymentRequest.amount.toString(),
       style: TextStyle(
           color: paymentRequest.isCredit ? Colors.green[400] : Colors.grey[600],
           fontWeight: FontWeight.bold,
@@ -104,7 +107,9 @@ class TransactionTile extends StatelessWidget {
               ),
             ),
             trailing: Text(
-              transaction.currency + ' ' + transaction.amount.toString(),
+              worldCurrencies[transaction.currency] +
+                  ' ' +
+                  transaction.amount.toString(),
               style: TextStyle(
                   color: transaction.isCredit
                       ? Colors.green[400]

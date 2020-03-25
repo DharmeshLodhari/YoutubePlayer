@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:Slydo/screens/colors.dart';
@@ -264,7 +265,7 @@ class _RequestPaymentState extends State<RequestPayment> {
             width: 20,
             child: Center(
               child: Text(
-                "${userBloc.user.currency}",
+                worldCurrencies[userBloc.user.currency],
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     fontSize: 22,
@@ -368,7 +369,7 @@ class _RequestPaymentState extends State<RequestPayment> {
                 var data = {
                   "from_customer": userBloc.user.userName,
                   "to_customer": recipient,
-                  "currency": "NGN",
+                  "currency": userBloc.user.currency,
                   "amount": amount.toString(),
                   "category": "Shopping",
                   "notes": reference,
