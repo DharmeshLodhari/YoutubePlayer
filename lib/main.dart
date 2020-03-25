@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/route_generator.dart';
+import 'package:Slydo/services/app_life_cycle.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -33,10 +34,12 @@ void main() {
               value: BankAccountBloc(),
             ),
           ],
-          child: MaterialApp(
-            initialRoute: '/splash',
-            onGenerateRoute: RouteGenerator.generateRoute,
-            debugShowCheckedModeBanner: false,
+          child: AppLifeCycle(
+            child: MaterialApp(
+              initialRoute: '/splash',
+              onGenerateRoute: RouteGenerator.generateRoute,
+              debugShowCheckedModeBanner: false,
+            ),
           )),
     );
   }, onError: Crashlytics.instance.recordError);
