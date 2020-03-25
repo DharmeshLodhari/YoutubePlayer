@@ -47,21 +47,21 @@ class _AppLifeCycleState extends State<AppLifeCycle>
 
   void onResume() {
     // TODO: implementation of onResume
-    print("App Life Cycle state is resumed and onResume is called");
+    debugPrint("App Life Cycle state is resumed and onResume is called");
   }
 
   void onInactive() {
     // TODO: implementation of onInactive
-    print("App Life Cycle state is inactive and onInactive is called");
+    debugPrint("App Life Cycle state is inactive and onInactive is called");
   }
 
   void onPause() {
     // TODO: implementation of onPause
-    print("App Life Cycle state is paused and onPause is called");
+    debugPrint("App Life Cycle state is paused and onPause is called");
   }
 
   void onDetached() {
     // TODO: implementation of onDetached
-    print("App Life Cycle state is detached and onDetached is called");
+    debugPrint("App Life Cycle state is detached and onDetached is called");
   }
 }

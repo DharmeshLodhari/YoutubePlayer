@@ -72,10 +72,30 @@ class _DashboardState extends State<Dashboard> {
     super.initState();
   }
 
-  Future onSelectNotification(String payload) async =>
-      await Navigator.of(context).pushNamed('/dashboard', arguments: {
-        'dashboardIndex': payload == '/transaction' ? 1 : 2,
+  // ignore: missing_return
+  Future onSelectNotification(String payload) {
+    // example of notification response
+    // {body: pankaj.sakariya sent you a message,
+    // title: You've Got Mail, vibrate: [200,100,200,100,200,100,400],
+    // icon: null, badge: null, sound: null, link: null, tag: null, dir: auto,
+    // actions: /detail_message/40892023-fa43-4652-b3eb-fd584f6530e9}
+
+    print("payload : $payload");
+    if (payload == "/request-payment") {
+      Navigator.of(context).pushNamed('/dashboard', arguments: {
+        'dashboardIndex': 1,
       });
+    } else if (payload == "/transaction") {
+      Navigator.of(context).pushNamed('/dashboard', arguments: {
+        'dashboardIndex': 2,
+      });
+    } else {
+      String idOfMessage = payload.replaceAll("/detail_message/", "");
+      Navigator.of(context).pushNamed('/detail_message', arguments: {
+        'id': idOfMessage,
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -157,35 +177,35 @@ class _DashboardState extends State<Dashboard> {
     }
 
     _firebaseMessaging.configure(
-        // onMessage will be called when App is running and also app is in foreground
-        onMessage: (Map<String, dynamic> message) async {
-      print("onMessage: $message");
+      // onMessage will be called when App is running and also app is in foreground
+      onMessage: (Map<String, dynamic> message) async {
+        print("onMessage: $message");
+        // creating notification from server payload
+        var notification = getAndroidNotification(message);
+        // it will show notification
+        showOngoingNotification(localNotifications,
+            title: notification['title'],
+            body: notification['body'],
+            payload: notification['actions']);
+      },
 
-//      creating notification from server payload
-      var notification = getAndroidNotification(message);
-
-      // it will show notification
-      showOngoingNotification(
-        localNotifications,
-        title: notification['title'],
-        body: notification['body'],
-      );
-    },
-
-        // onLaunch will be called when App is not running
-        onLaunch: (Map<String, dynamic> message) async {
-      var notification = getAndroidNotification(message);
-
-      showOngoingNotification(localNotifications,
-          title: notification['title'], body: notification['body']);
-    },
-        // onResume will be called when App is running and it is in background
-        onResume: (Map<String, dynamic> message) async {
-      var notification = getAndroidNotification(message);
-
-      showOngoingNotification(localNotifications,
-          title: notification['title'], body: notification['body']);
-    });
+      // onLaunch will be called when App is not running
+      onLaunch: (Map<String, dynamic> message) async {
+        var notification = getAndroidNotification(message);
+        showOngoingNotification(localNotifications,
+            title: notification['title'],
+            body: notification['body'],
+            payload: notification['actions']);
+      },
+      // onResume will be called when App is running and it is in background
+      onResume: (Map<String, dynamic> message) async {
+        var notification = getAndroidNotification(message);
+        showOngoingNotification(localNotifications,
+            title: notification['title'],
+            body: notification['body'],
+            payload: notification['actions']);
+      },
+    );
   }
 
   getAndroidNotification(Map<String, dynamic> message) {

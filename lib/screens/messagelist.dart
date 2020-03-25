@@ -47,7 +47,6 @@ class _MessageListState extends State<MessageList> {
       onSlideAnimationChanged: handleSlideAnimationChanged,
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
     );
-
     super.initState();
   }
 
@@ -447,9 +446,8 @@ class VerticalListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-        var message = await _auth.getMessage(partialMessage.id);
         Navigator.of(context)
-            .pushNamed('/detail_message', arguments: {'message': message});
+            .pushNamed('/detail_message', arguments: {'id': partialMessage.id});
       },
       child: Container(
         color: lightBlue(),

@@ -21,14 +21,31 @@ class DetailedMessage extends StatefulWidget {
   DetailedMessage({this.arguments});
   @override
   _DetailedMessageState createState() =>
-      _DetailedMessageState(message: arguments['message']);
+      _DetailedMessageState(id: arguments['id']);
 }
 
 class _DetailedMessageState extends State<DetailedMessage> {
+  bool isLoading = true;
+  var id;
   Message message;
   UserBloc userBloc;
-  _DetailedMessageState({this.message});
+  _DetailedMessageState({this.id});
   final _auth = AuthService();
+
+  @override
+  void initState() {
+    fetchMessage();
+    super.initState();
+  }
+
+  void fetchMessage() async {
+    await _auth.getMessage(id).then((value) {
+      message = value;
+      setState(() {
+        isLoading = false;
+      });
+    });
+  }
 
   Widget showBackArrow() {
     if (Platform.isAndroid) {
@@ -54,7 +71,7 @@ class _DetailedMessageState extends State<DetailedMessage> {
     return WillPopScope(
       onWillPop: () async {
         Navigator.pop(context);
-        return false;
+        return true;
       },
       child: Scaffold(
         backgroundColor: lightBlue(),
@@ -64,20 +81,26 @@ class _DetailedMessageState extends State<DetailedMessage> {
             automaticallyImplyLeading: Platform.isAndroid ? false : true,
             title: Center(child: Text("Message")),
             backgroundColor: darkBlue()),
-        body: SingleChildScrollView(
-          child: Container(
-            padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
-            child: Column(
-              children: <Widget>[
-                SizedBox(height: 10),
-                displayMessageInfo(),
-                SizedBox(height: 10),
-                displayReplayButton(),
-                SizedBox(height: 10),
-              ],
-            ),
-          ),
-        ),
+        body: isLoading
+            ? Center(
+                child: CircularProgressIndicator(
+                  backgroundColor: Colors.white,
+                ),
+              )
+            : SingleChildScrollView(
+                child: Container(
+                  padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
+                  child: Column(
+                    children: <Widget>[
+                      SizedBox(height: 10),
+                      displayMessageInfo(),
+                      SizedBox(height: 10),
+                      displayReplayButton(),
+                      SizedBox(height: 10),
+                    ],
+                  ),
+                ),
+              ),
       ),
     );
   }

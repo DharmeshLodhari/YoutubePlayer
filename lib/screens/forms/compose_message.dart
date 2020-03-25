@@ -152,57 +152,56 @@ class _ComposeMessageState extends State<ComposeMessage> {
 
   Widget sendMessage() {
     return IconButton(
-      icon: Icon(Icons.send),
-      onPressed: () {
-        if (_payee != null) {
-          if (recipient == _payee.userName) {
-            if (!isValidPayee) {
-              setState(() {
-                errorMessage = "Invalid recipient";
-              });
-            }
-            if (_formKey.currentState.validate()) {
-              //TODO:Make a call for send message
-              if (FocusScope.of(context).hasFocus) {
-                FocusScope.of(context).unfocus();
+        icon: Icon(Icons.send),
+        onPressed: () {
+          if (_payee != null) {
+            if (recipient == _payee.userName) {
+              if (!isValidPayee) {
+                setState(() {
+                  errorMessage = "Invalid recipient";
+                });
               }
+              if (_formKey.currentState.validate()) {
+                //TODO:Make a call for send message
+                if (FocusScope.of(context).hasFocus) {
+                  FocusScope.of(context).unfocus();
+                }
 
-              Navigator.of(context).popAndPushNamed("/dashboard",
-                  arguments: {"dashboardIndex": 3});
-              if (isReplayMessage) {
                 Navigator.of(context).popAndPushNamed("/dashboard",
                     arguments: {"dashboardIndex": 3});
-              }
+                if (isReplayMessage) {
+                  Navigator.of(context).popAndPushNamed("/dashboard",
+                      arguments: {"dashboardIndex": 3});
+                }
 
-              try {
-                var data = {
-                  "sender": userBloc.user.userName,
-                  "recipient": recipient,
-                  "body": message,
-                  "subject": subject,
-                };
-                _auth.sendMessage(data);
-              } catch (e) {
-                Toast.show(e, context,
-                    gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+                try {
+                  var data = {
+                    "sender": userBloc.user.userName,
+                    "recipient": recipient,
+                    "body": message,
+                    "subject": subject,
+                  };
+                  _auth.sendMessage(data);
+                } catch (e) {
+                  Toast.show(e, context,
+                      gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+                }
               }
+            } else {
+              var msg = "Invalid recipient";
+              Toast.show(msg, context,
+                  gravity: Toast.CENTER,
+                  backgroundColor: darkBlue(),
+                  textColor: Colors.white);
             }
           } else {
-            var msg = "Invalid recipient";
+            var msg = "Please Fill Details";
             Toast.show(msg, context,
                 gravity: Toast.CENTER,
                 backgroundColor: darkBlue(),
                 textColor: Colors.white);
           }
-        } else {
-          var msg = "Please Fill Details";
-          Toast.show(msg, context,
-              gravity: Toast.CENTER,
-              backgroundColor: darkBlue(),
-              textColor: Colors.white);
-        }
-      },
-    );
+        });
   }
 
   Widget showBackArrow() {
