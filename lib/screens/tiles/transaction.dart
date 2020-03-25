@@ -64,8 +64,7 @@ class PaymentRequestTile extends StatelessWidget {
   Widget getSubtitle() {
     return Text(
       paymentRequest.description,
-      style: TextStyle(
-          color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 15),
+      style: TextStyle(color: Colors.grey[600]),
     );
   }
 }

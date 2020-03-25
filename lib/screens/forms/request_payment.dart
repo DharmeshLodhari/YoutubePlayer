@@ -15,7 +15,6 @@ import 'package:toast/toast.dart';
 // ignore: must_be_immutable
 class RequestPayment extends StatefulWidget {
   var arguments;
-
   RequestPayment({this.arguments});
 
   // Declare a field that holds the userData.
@@ -28,14 +27,9 @@ class _RequestPaymentState extends State<RequestPayment> {
   TextEditingController _recipientController = TextEditingController();
   FocusNode _recipientFocus = FocusNode();
 
-  bool isRequest = false;
   var arguments;
   _RequestPaymentState({this.arguments});
 
-  var currencyImage = Image.asset(
-    'assets/images/naira.png',
-    scale: 1.5,
-  );
   final _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
   CustomerProfile _payee;
@@ -56,9 +50,6 @@ class _RequestPaymentState extends State<RequestPayment> {
         ? arguments['isFromProfile'] != null
             ? arguments['isFromProfile']
             : false
-        : false;
-    isRequest = arguments != null
-        ? arguments['isRequest'] != null ? arguments['isRequest'] : false
         : false;
 
     /* adding listener on recipientFocus when user unFocus
@@ -269,7 +260,19 @@ class _RequestPaymentState extends State<RequestPayment> {
       decoration: InputDecoration(
           fillColor: Colors.white,
           filled: true,
-          prefixIcon: currencyImage,
+          prefixIcon: Container(
+            width: 20,
+            child: Center(
+              child: Text(
+                "${userBloc.user.currency}",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey[600]),
+              ),
+            ),
+          ),
           hintText: "Enter Amount",
           labelStyle: TextStyle(
             color: Colors.black,

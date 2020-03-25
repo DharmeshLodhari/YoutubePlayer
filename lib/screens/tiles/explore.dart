@@ -17,13 +17,10 @@ class _ExploreTileState extends State<ExploreTile> {
             style: TextStyle(
                 color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
           ),
-          leading: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Icon(
-              Icons.explore,
-              color: Colors.black,
-              size: 40,
-            ),
+          leading: Icon(
+            Icons.explore,
+            color: Colors.black,
+            size: 45,
           ),
           onTap: () {
             Navigator.of(context).pushNamed('/explore');

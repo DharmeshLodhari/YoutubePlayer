@@ -123,7 +123,8 @@ class _MessageTileState extends State<MessageTile> {
     return Text(
       partialMessage.subtitle,
       style: TextStyle(
-          color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 15),
+        color: Colors.grey[600],
+      ),
     );
   }
 }

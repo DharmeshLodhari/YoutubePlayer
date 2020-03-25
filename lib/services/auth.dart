@@ -566,7 +566,6 @@ class AuthService {
     if (response.statusCode == 200) {
       List<PartialMessage> messagesList = [];
       var jsonData = json.decode(response.body);
-      print(jsonData);
       for (var item in jsonData["results"]) {
         PartialMessage message = PartialMessage(
           subtitle: item["subtitle"],
@@ -592,7 +591,6 @@ class AuthService {
         "previous": jsonData["previous"],
         "results": messagesList
       };
-      print(result);
       return result;
     } else if (response.statusCode == 500) {
       throw "Server Error";

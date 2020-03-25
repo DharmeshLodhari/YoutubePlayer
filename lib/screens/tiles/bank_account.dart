@@ -1,7 +1,9 @@
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/widget/passcodePopup.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class BankAccountTile extends StatefulWidget {
   // Pass account object into this constructor
@@ -35,8 +37,8 @@ class _BankAccountTileState extends State<BankAccountTile> {
           leading: ClipOval(
             child: CachedNetworkImage(
               imageUrl: widget.account.bankAvatar,
-              height: 50,
-              width: 50,
+              height: 45,
+              width: 45,
               colorBlendMode: BlendMode.darken,
               fit: BoxFit.cover,
               filterQuality: FilterQuality.high,
@@ -70,13 +72,18 @@ class AccountBalanceTile extends StatefulWidget {
 }
 
 class _AccountBalanceTileState extends State<AccountBalanceTile> {
+  UserBloc userBloc;
   var currencyImage = Image.asset(
-    'assets/images/naira.png',
-    scale: 1.0,
+    'assets/images/money.png',
+    scale: 0.8,
+    width: 45,
+    height: 45,
+    fit: BoxFit.fill,
   );
 
   @override
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
     return Padding(
       padding: EdgeInsets.only(top: 8.0),
       child: Card(
@@ -87,7 +94,9 @@ class _AccountBalanceTileState extends State<AccountBalanceTile> {
             style: TextStyle(
                 color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
           ),
-          subtitle: Text(widget.isLocked ? "*******" : widget.balance),
+          subtitle: Text(widget.isLocked
+              ? "*******"
+              : "${userBloc.user.currency} ${widget.balance}"),
           leading: currencyImage,
           trailing: IconButton(
             icon: Icon(widget.isLocked ? Icons.lock_outline : Icons.lock_open,

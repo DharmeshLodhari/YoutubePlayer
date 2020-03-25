@@ -13,6 +13,7 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
+// ignore: must_be_immutable
 class SendPayment extends StatefulWidget {
   var arguments;
 
@@ -26,14 +27,8 @@ class SendPayment extends StatefulWidget {
 class _SendPaymentState extends State<SendPayment> {
   TextEditingController _recipientController = TextEditingController();
   FocusNode _recipientFocus = FocusNode();
-  TextEditingController _passwordController;
   http.Response response;
-  String _passwordFromPopUp = "";
 
-  var currencyImage = Image.asset(
-    'assets/images/naira.png',
-    scale: 1.5,
-  );
   final _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
   CustomerProfile _payee;
@@ -52,7 +47,6 @@ class _SendPaymentState extends State<SendPayment> {
   void initState() {
     isFromProfile =
         widget.arguments != null ? widget.arguments['isFromProfile'] : false;
-    _passwordController = TextEditingController();
 
     _recipientFocus
       ..addListener(() {
@@ -239,7 +233,19 @@ class _SendPaymentState extends State<SendPayment> {
       decoration: InputDecoration(
           fillColor: Colors.white,
           filled: true,
-          prefixIcon: currencyImage,
+          prefixIcon: Container(
+            width: 20,
+            child: Center(
+              child: Text(
+                "${userBloc.user.currency}",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey[600]),
+              ),
+            ),
+          ),
           hintText: "Enter Amount",
           labelStyle: TextStyle(
             color: Colors.black,
