@@ -192,6 +192,7 @@ class _DashboardState extends State<Dashboard> {
       // onLaunch will be called when App is not running
       onLaunch: (Map<String, dynamic> message) async {
         var notification = getAndroidNotification(message);
+
         showOngoingNotification(localNotifications,
             title: notification['title'],
             body: notification['body'],
@@ -200,6 +201,7 @@ class _DashboardState extends State<Dashboard> {
       // onResume will be called when App is running and it is in background
       onResume: (Map<String, dynamic> message) async {
         var notification = getAndroidNotification(message);
+
         showOngoingNotification(localNotifications,
             title: notification['title'],
             body: notification['body'],
