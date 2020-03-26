@@ -86,7 +86,7 @@ class _SettingsListState extends State<SettingsList> {
             ),
           ),
         ),
-        floatingActionButton: addAccountButton(),
+        floatingActionButton: _account == true ? null : addAccountButton(),
       ),
     );
   }
@@ -164,32 +164,15 @@ class _SettingsListState extends State<SettingsList> {
   }
 
   Widget addAccountButton() {
-    if (_account == true) {
-      return Visibility(
-        visible: false,
-        child: FloatingActionButton(
-            key: UniqueKey(),
-            heroTag: "none",
-            backgroundColor: Colors.transparent,
-            onPressed: () {},
-            foregroundColor: Colors.transparent, // Colors.white,
-            elevation: 0.0,
-            focusColor: Colors.transparent,
-            hoverColor: Colors.transparent,
-            splashColor: Colors.transparent),
-      );
-    } else {
-      return FloatingActionButton(
-        key: UniqueKey(),
-        heroTag: "add",
-        backgroundColor: darkBlue(),
-        onPressed: () {
-          Navigator.of(context).pushNamed('/add-account');
-        },
-        tooltip: 'Add Account',
-        child: Icon(Icons.add),
-      );
-    }
+    return FloatingActionButton(
+      heroTag: "add-account",
+      backgroundColor: darkBlue(),
+      onPressed: () {
+        Navigator.of(context).pushNamed('/add-account');
+      },
+      tooltip: 'Add Account',
+      child: Icon(Icons.add),
+    );
   }
 
   void pickImage(userBloc) async {

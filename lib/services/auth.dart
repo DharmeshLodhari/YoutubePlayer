@@ -5,6 +5,7 @@ import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/models/message.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/models/user.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 
 final String baseUrl = "http://api.slydo.co";
@@ -117,6 +118,7 @@ class AuthService {
     await http.get(url, headers: headers);
     await deleteUsers();
     await deleteDevice();
+    await unRegisterDevice();
   }
 
   // Delete user from db
@@ -478,7 +480,35 @@ class AuthService {
     var _data = jsonEncode(data);
 
     var response = await http.post(url, headers: headers, body: _data);
+    return response.statusCode == 200;
+  }
 
+  // it will unregister the device from server
+  Future<bool> unRegisterDevice() async {
+    var url = baseUrl + "/api/v1/notification/unregister-device/";
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode({});
+    var response;
+    try {
+      response = await http.patch(url, headers: headers, body: _data);
+    } catch (e) {
+      debugPrint(e);
+    }
+    return response.statusCode == 200;
+  }
+
+  // it will tell the server our app is in which state
+  Future<bool> updateAppState(Map data) async {
+    var url = baseUrl + "/api/v1/notification/update-app-state/";
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response;
+    try {
+      response = await http.patch(url, headers: headers, body: _data);
+    } catch (e) {
+      debugPrint(e);
+    }
+    print(response.statusCode);
     return response.statusCode == 200;
   }
 

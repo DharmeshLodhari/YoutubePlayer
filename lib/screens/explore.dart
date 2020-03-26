@@ -53,12 +53,10 @@ class _ExploreListState extends State<ExploreList> {
 
     return WillPopScope(
       onWillPop: () async {
-        Navigator.pop(context);
-        Navigator.pushNamed(context, '/dashboard',
-            arguments: {'dashboardIndex': 4});
-        return false;
+        return true;
       },
       child: Scaffold(
+        key: key,
         resizeToAvoidBottomInset: true,
         backgroundColor: lightBlue(),
         appBar: AppBar(

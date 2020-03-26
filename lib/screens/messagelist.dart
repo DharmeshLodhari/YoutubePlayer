@@ -114,7 +114,7 @@ class _MessageListState extends State<MessageList> {
               onRefresh: _onRefresh,
               child: _buildMessageList()),
           floatingActionButton: FloatingActionButton(
-            key: UniqueKey(),
+            heroTag: "compose_message",
             backgroundColor: darkBlue(),
             child: Icon(Icons.message),
             onPressed: () {
@@ -250,6 +250,7 @@ class _MessageListState extends State<MessageList> {
         previous = result['previous'];
         var tempList = result['results'];
         setState(() {
+          noItemInList = false;
           isLoading = false;
           messageList.addAll(tempList);
         });

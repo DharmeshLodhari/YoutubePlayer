@@ -143,6 +143,9 @@ class DatabaseHelper {
   // save user's Device data to the db
   Future<int> saveDevice(Map<String, dynamic> data) async {
     var dbClient = await db;
+    try {
+      dbClient.delete("Device");
+    } catch (e) {}
     int res = await dbClient.insert("Device", data);
     return res;
   }

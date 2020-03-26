@@ -1,4 +1,6 @@
+import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -14,6 +16,9 @@ class _AppLifeCycleState extends State<AppLifeCycle>
   RefreshBlocForTransaction _refreshBlocForTransaction;
   RefreshBlocForRequestPayment _refreshBlocForRequestPayment;
   RefreshBlocForMessages _refreshBlocForMessages;
+  DatabaseHelper _db = DatabaseHelper();
+  final _auth = AuthService();
+  Map<String, dynamic> device;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +33,18 @@ class _AppLifeCycleState extends State<AppLifeCycle>
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
+
+    // fetching device info from db
+    fetchDeviceInfo();
     super.initState();
+  }
+
+  void fetchDeviceInfo() async {
+    try {
+      device = await _db.getDevice();
+    } catch (e) {
+      debugPrint(e);
+    }
   }
 
   @override
@@ -59,22 +75,51 @@ class _AppLifeCycleState extends State<AppLifeCycle>
   void onResume() {
     // refreshing the list on onResume
     onRefresh();
-    // TODO: implementation of onResume
+
+    //this will store the device data and the app state
+    Map<String, String> tempData = Map<String, String>();
+    tempData['token'] = device != null ? device['firebaseToken'] : "";
+    tempData['type'] = device != null ? device['type'] : "";
+    tempData['state'] = "active";
+    tempData['device_name'] = device != null ? device['deviceName'] : "";
+    _auth.updateAppState(tempData);
+
     debugPrint("App Life Cycle state is resumed and onResume is called");
   }
 
   void onInactive() {
-    // TODO: implementation of onInactive
+    //this will store the device data and the app state
+    Map<String, String> tempData = Map<String, String>();
+    tempData['token'] = device != null ? device['firebaseToken'] : "";
+    tempData['type'] = device != null ? device['type'] : "";
+    tempData['state'] = "inActive";
+    tempData['device_name'] = device != null ? device['deviceName'] : "";
+    _auth.updateAppState(tempData);
+
     debugPrint("App Life Cycle state is inactive and onInactive is called");
   }
 
   void onPause() {
-    // TODO: implementation of onPause
+    //this will store the device data and the app state
+    Map<String, String> tempData = Map<String, String>();
+    tempData['token'] = device != null ? device['firebaseToken'] : "";
+    tempData['type'] = device != null ? device['type'] : "";
+    tempData['state'] = "inBackground";
+    tempData['device_name'] = device != null ? device['deviceName'] : "";
+    _auth.updateAppState(tempData);
+
     debugPrint("App Life Cycle state is paused and onPause is called");
   }
 
   void onDetached() {
-    // TODO: implementation of onDetached
+    //this will store the device data and the app state
+    Map<String, String> tempData = Map<String, String>();
+    tempData['token'] = device != null ? device['firebaseToken'] : "";
+    tempData['type'] = device != null ? device['type'] : "";
+    tempData['state'] = "suspended";
+    tempData['device_name'] = device != null ? device['deviceName'] : "";
+    _auth.updateAppState(tempData);
+
     debugPrint("App Life Cycle state is detached and onDetached is called");
   }
 
