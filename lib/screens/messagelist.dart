@@ -32,11 +32,12 @@ class _MessageListState extends State<MessageList> {
   bool noItemInList = false;
   String filterValue = "all";
   UserBloc userBloc;
+  RefreshBlocForMessages _refreshBloc;
 
   @protected
   void initState() {
     this.getList();
-    super.initState();
+
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -47,7 +48,20 @@ class _MessageListState extends State<MessageList> {
       onSlideAnimationChanged: handleSlideAnimationChanged,
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
     );
+
     super.initState();
+  }
+
+  // refresh the list when lifecycle called onResume method
+  void _onRefreshOnResume() {
+    _refreshBloc = Provider.of<RefreshBlocForMessages>(context);
+    _refreshBloc
+      ..addListener(() {
+        if (_refreshBloc.isRefresh) {
+          _onRefresh();
+          _refreshBloc.isRefresh = false;
+        }
+      });
   }
 
   void _onRefresh() async {
@@ -72,6 +86,9 @@ class _MessageListState extends State<MessageList> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+    // refresh the list when lifecycle called onResume method
+    _onRefreshOnResume();
+
     return WillPopScope(
         onWillPop: () async {
           Navigator.pop(context);
@@ -97,6 +114,7 @@ class _MessageListState extends State<MessageList> {
               onRefresh: _onRefresh,
               child: _buildMessageList()),
           floatingActionButton: FloatingActionButton(
+            key: UniqueKey(),
             backgroundColor: darkBlue(),
             child: Icon(Icons.message),
             onPressed: () {

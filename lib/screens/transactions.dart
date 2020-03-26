@@ -1,9 +1,11 @@
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/screens/tiles/transaction.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:toast/toast.dart';
 
@@ -25,6 +27,7 @@ class _TransactionListState extends State<TransactionList> {
       RefreshController(initialRefresh: false);
   bool isLoading = false;
   bool noItemInList = false;
+  RefreshBlocForTransaction _refreshBloc;
 
   @override
   void initState() {
@@ -37,6 +40,18 @@ class _TransactionListState extends State<TransactionList> {
         getList();
       }
     });
+  }
+
+  // refresh the list when lifecycle called onResume method
+  void _onRefreshOnResume() {
+    _refreshBloc = Provider.of<RefreshBlocForTransaction>(context);
+    _refreshBloc
+      ..addListener(() {
+        if (_refreshBloc.isRefresh) {
+          _onRefresh();
+          _refreshBloc.isRefresh = false;
+        }
+      });
   }
 
   void _onRefresh() async {
@@ -61,6 +76,9 @@ class _TransactionListState extends State<TransactionList> {
 
   @override
   Widget build(BuildContext context) {
+    // refresh the list when lifecycle called onResume method
+    _onRefreshOnResume();
+
     return WillPopScope(
       onWillPop: () async {
         Navigator.pop(context);

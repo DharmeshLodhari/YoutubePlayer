@@ -168,7 +168,8 @@ class _SettingsListState extends State<SettingsList> {
       return Visibility(
         visible: false,
         child: FloatingActionButton(
-            heroTag: null,
+            key: UniqueKey(),
+            heroTag: "none",
             backgroundColor: Colors.transparent,
             onPressed: () {},
             foregroundColor: Colors.transparent, // Colors.white,
@@ -179,7 +180,8 @@ class _SettingsListState extends State<SettingsList> {
       );
     } else {
       return FloatingActionButton(
-        heroTag: null,
+        key: UniqueKey(),
+        heroTag: "add",
         backgroundColor: darkBlue(),
         onPressed: () {
           Navigator.of(context).pushNamed('/add-account');

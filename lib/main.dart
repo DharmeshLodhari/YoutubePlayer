@@ -33,6 +33,15 @@ void main() {
             ChangeNotifierProvider<BankAccountBloc>.value(
               value: BankAccountBloc(),
             ),
+            ChangeNotifierProvider<RefreshBlocForTransaction>.value(
+              value: RefreshBlocForTransaction(),
+            ),
+            ChangeNotifierProvider<RefreshBlocForRequestPayment>.value(
+              value: RefreshBlocForRequestPayment(),
+            ),
+            ChangeNotifierProvider<RefreshBlocForMessages>.value(
+              value: RefreshBlocForMessages(),
+            ),
           ],
           child: AppLifeCycle(
             child: MaterialApp(
@@ -42,5 +51,10 @@ void main() {
             ),
           )),
     );
-  }, onError: Crashlytics.instance.recordError);
+  }, onError: (exception, stack) {
+    Crashlytics.instance.recordError(exception, stack);
+//    final _auth = AuthService();
+//    _auth.logOut();
+//    exit(0);
+  });
 }

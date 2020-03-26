@@ -111,15 +111,22 @@ class AuthService {
 
   // Log user out
   Future<void> logOut() async {
+    print("i am called");
     var url = baseUrl + "/api/v1/auth/logout/";
     var headers = await getAuthHeaders();
     await http.get(url, headers: headers);
     await deleteUsers();
+    await deleteDevice();
   }
 
   // Delete user from db
   Future<int> deleteUsers() async {
     return await _db.deleteUsers();
+  }
+
+  // Delete device from db
+  Future<int> deleteDevice() async {
+    return await _db.deleteDevice();
   }
 
   // Close connection to db

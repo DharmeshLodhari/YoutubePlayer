@@ -32,11 +32,15 @@ class DatabaseHelper {
     // Create the user table
     await db.execute(
         "CREATE TABLE User(uuid TEXT PRIMARY KEY, fullName TEXT, userName TEXT, "
-        "phoneNumber TEXT, password TEXT, avatar TEXT, qrCode TEXT, url TEXT)");
+        "phoneNumber TEXT, password TEXT, avatar TEXT, qrCode TEXT, url TEXT, currency TEXT)");
 
     // Create the jwt table
     await db.execute(
         "CREATE TABLE Jwt(access TEXT PRIMARY KEY, refresh TEXT, expiration TEXT)");
+
+    // Create the device table
+    await db.execute(
+        "CREATE TABLE Device(firebaseToken TEXT PRIMARY KEY, type TEXT, mode TEXT, deviceId TEXT, deviceName TEXT)");
   }
 
   // Close connect to the db
@@ -113,5 +117,33 @@ class DatabaseHelper {
     } catch (e) {
       throw e;
     }
+  }
+
+  // Device operation
+
+  // get device information
+  Future<Map<String, dynamic>> getDevice() async {
+    var dbClient = await db;
+    var res = await dbClient.query("Device");
+
+    try {
+      return res[0];
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  // delete device
+  Future<int> deleteDevice() async {
+    var dbClient = await db;
+    int res = await dbClient.delete("Device");
+    return res;
+  }
+
+  // save user's Device data to the db
+  Future<int> saveDevice(Map<String, dynamic> data) async {
+    var dbClient = await db;
+    int res = await dbClient.insert("Device", data);
+    return res;
   }
 }

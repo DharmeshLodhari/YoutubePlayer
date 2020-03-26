@@ -83,3 +83,36 @@ class CustomerProfileBloc extends ChangeNotifier {
     notifyListeners();
   }
 }
+
+class RefreshBlocForTransaction extends ChangeNotifier {
+  bool _isRefresh = false;
+
+  bool get isRefresh => _isRefresh;
+
+  set isRefresh(bool value) {
+    _isRefresh = value;
+    notifyListeners();
+  }
+}
+
+class RefreshBlocForRequestPayment extends ChangeNotifier {
+  bool _isRefresh = false;
+
+  bool get isRefresh => _isRefresh;
+
+  set isRefresh(bool value) {
+    _isRefresh = value;
+    notifyListeners();
+  }
+}
+
+class RefreshBlocForMessages extends ChangeNotifier {
+  bool _isRefresh = false;
+
+  bool get isRefresh => _isRefresh;
+
+  set isRefresh(bool value) {
+    _isRefresh = value;
+    notifyListeners();
+  }
+}

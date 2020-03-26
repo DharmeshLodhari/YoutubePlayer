@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/models/notification.dart';
 import 'package:Slydo/screens/messagelist.dart';
 import 'package:Slydo/services/auth.dart';
@@ -34,6 +35,10 @@ class _DashboardState extends State<Dashboard> {
   final List<PushNotification> notifications = [];
   final localNotifications = FlutterLocalNotificationsPlugin();
   _DashboardState({this.arguments});
+
+  // creating a instance of the databaseHelper
+  DatabaseHelper _db = DatabaseHelper();
+
   @override
   void initState() {
     setState(() {
@@ -90,6 +95,7 @@ class _DashboardState extends State<Dashboard> {
         'dashboardIndex': 2,
       });
     } else {
+      //this variable will fetch the id of message from the response
       String idOfMessage = payload.replaceAll("/detail_message/", "");
       Navigator.of(context).pushNamed('/detail_message', arguments: {
         'id': idOfMessage,
@@ -168,6 +174,20 @@ class _DashboardState extends State<Dashboard> {
     var data = await getDeviceInfo();
     _firebaseMessaging.getToken().then((String token) {
       data["token"] = token;
+
+      // this piece of code convert Map<dynamic,dynamic> data to Map<String,String> tempData
+      // so we can store that data into database
+      Map<String, dynamic> tempData = new Map<String, dynamic>();
+      tempData['firebaseToken'] = data['token'];
+      tempData['type'] = data['token'];
+      tempData['mode'] = data['mode'];
+      tempData['deviceId'] = data['device_id'];
+      tempData['deviceName'] = data['device_name'];
+
+      // save device info to database
+      _db.saveDevice(tempData);
+
+      // register device with the backend
       _auth.registerDevice(data);
     });
 
@@ -191,8 +211,10 @@ class _DashboardState extends State<Dashboard> {
 
       // onLaunch will be called when App is not running
       onLaunch: (Map<String, dynamic> message) async {
+        print("onLaunch: $message");
+        // creating notification from server payload
         var notification = getAndroidNotification(message);
-
+        // it will show notification
         showOngoingNotification(localNotifications,
             title: notification['title'],
             body: notification['body'],
@@ -200,8 +222,10 @@ class _DashboardState extends State<Dashboard> {
       },
       // onResume will be called when App is running and it is in background
       onResume: (Map<String, dynamic> message) async {
+        print("onResume: $message");
+        // creating notification from server payload
         var notification = getAndroidNotification(message);
-
+        // it will show notification
         showOngoingNotification(localNotifications,
             title: notification['title'],
             body: notification['body'],

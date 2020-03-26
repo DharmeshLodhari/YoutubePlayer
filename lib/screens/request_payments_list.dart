@@ -1,3 +1,4 @@
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/screens/tiles/transaction.dart';
@@ -7,6 +8,7 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:toast/toast.dart';
 
@@ -28,6 +30,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       RefreshController(initialRefresh: false);
   bool isLoading = false;
   bool noItemInList = false;
+  RefreshBlocForRequestPayment _refreshBloc;
 
   @protected
   void initState() {
@@ -45,6 +48,18 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
     );
 
     super.initState();
+  }
+
+  // refresh the list when lifecycle called onResume method
+  void _onRefreshOnResume() {
+    _refreshBloc = Provider.of<RefreshBlocForRequestPayment>(context);
+    _refreshBloc
+      ..addListener(() {
+        if (_refreshBloc.isRefresh) {
+          _onRefresh();
+          _refreshBloc.isRefresh = false;
+        }
+      });
   }
 
   void _onRefresh() async {
@@ -68,6 +83,9 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
 
   @override
   Widget build(BuildContext context) {
+    // refresh the list when lifecycle called onResume method\
+    _onRefreshOnResume();
+
     return WillPopScope(
         onWillPop: () async {
           Navigator.pop(context);
