@@ -112,7 +112,6 @@ class AuthService {
 
   // Log user out
   Future<void> logOut() async {
-    print("i am called");
     var url = baseUrl + "/api/v1/auth/logout/";
     var headers = await getAuthHeaders();
     await http.get(url, headers: headers);
@@ -187,7 +186,7 @@ class AuthService {
       );
       return customerProfile;
     } else {
-      throw "Can't get https.";
+      debugPrint("Can't get https.");
     }
   }
 
@@ -319,7 +318,6 @@ class AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.post(url, headers: headers, body: _data);
-    print('${response.body}');
     if (response.statusCode == 200) {
       return false;
     } else {
@@ -508,7 +506,7 @@ class AuthService {
     } catch (e) {
       debugPrint(e);
     }
-    print(response.statusCode);
+    debugPrint(response.statusCode.toString());
     return response.statusCode == 200;
   }
 
@@ -542,10 +540,8 @@ class AuthService {
   // it will update the message actions:  [Archived,UnArchived,Starred,UnStarred]
   Future<bool> updateMessage(String id, String action) async {
     var url = baseUrl + "/api/v1/messaging/update/" + id + "/" + action + "/";
-    print(url);
     var headers = await getAuthHeaders();
     var response = await http.patch(url, headers: headers);
-    print(response.body);
     var jsonData = json.decode(response.body);
 
     if (response.statusCode == 200) {

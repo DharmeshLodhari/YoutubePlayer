@@ -79,7 +79,9 @@ class _SettingsListState extends State<SettingsList> {
                   displayProfileTile(userBloc),
                   displayAccountBalance(isLocked),
                   displayBankAccountTile(bankAccountBloc),
-                  ExploreTile(),
+                  userBloc.user.userName == "abilola.rashhed.2"
+                      ? ExploreTile()
+                      : Container(),
                   SizedBox(height: 20),
                 ],
               ),
