@@ -4,6 +4,7 @@ import 'dart:io' as io;
 import 'package:Slydo/models/user.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
@@ -136,8 +137,13 @@ class DatabaseHelper {
   // delete device
   Future<int> deleteDevice() async {
     var dbClient = await db;
-    int res = await dbClient.delete("Device");
-    return res;
+    try {
+      int res = await dbClient.delete("Device");
+      return res;
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+
   }
 
   // save user's Device data to the db

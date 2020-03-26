@@ -49,8 +49,6 @@ class AuthService {
     // a user instance which we should pass around throughout the application as
     // the auth user.
 
-    DateTime now = DateTime.now();
-
     var url = baseUrl + "/api/v1/auth/get-token/";
     Map _body = {"password": password, "phone_number": phoneNumber};
     var response = await http.post(url, body: _body);
@@ -60,7 +58,8 @@ class AuthService {
       // where  created and the use that to compute the expiration time of the
       // token. So that we will only use the token if its still valid.
       // We play safe and use 4 minutes
-      DateTime expirationTime = now.add(Duration(seconds: 240));
+      DateTime now = DateTime.now();
+      DateTime expirationTime = now.add(Duration(seconds: 200));  // 3.33333 Minute
 
       Map<String, String> data = {};
       var jsonResponse = json.decode(response.body);
@@ -143,7 +142,7 @@ class AuthService {
     // Will return false if token is still valid and true if token is no longer useful
     DateTime now = DateTime.now();
     DateTime tokenExpirationTime = DateTime.parse(expirationTime);
-    return !now.isBefore(tokenExpirationTime);
+    return now.isAfter(tokenExpirationTime);
   }
 
   // Get jwt
@@ -490,7 +489,7 @@ class AuthService {
     try {
       response = await http.patch(url, headers: headers, body: _data);
     } catch (e) {
-      debugPrint(e);
+      debugPrint(e.toString());
     }
     return response.statusCode == 200;
   }
@@ -501,12 +500,17 @@ class AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response;
+    debugPrint(_data);
+
     try {
       response = await http.patch(url, headers: headers, body: _data);
     } catch (e) {
-      debugPrint(e);
     }
-    debugPrint(response.statusCode.toString());
+    if (response.statusCode != 200){
+      var jsonData = json.decode(response.body);
+      debugPrint(jsonData);
+    }
+
     return response.statusCode == 200;
   }
 

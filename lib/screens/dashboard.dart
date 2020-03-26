@@ -179,7 +179,7 @@ class _DashboardState extends State<Dashboard> {
       // so we can store that data into database
       Map<String, dynamic> tempData = new Map<String, dynamic>();
       tempData['firebaseToken'] = data['token'];
-      tempData['type'] = data['token'];
+      tempData['type'] = data['type'];
       tempData['mode'] = data['mode'];
       tempData['deviceId'] = data['device_id'];
       tempData['deviceName'] = data['device_name'];

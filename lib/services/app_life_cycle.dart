@@ -43,7 +43,7 @@ class _AppLifeCycleState extends State<AppLifeCycle>
     try {
       device = await _db.getDevice();
     } catch (e) {
-      debugPrint(e);
+      debugPrint(e.toString());
     }
   }
 
@@ -104,7 +104,7 @@ class _AppLifeCycleState extends State<AppLifeCycle>
     Map<String, String> tempData = Map<String, String>();
     tempData['token'] = device != null ? device['firebaseToken'] : "";
     tempData['type'] = device != null ? device['type'] : "";
-    tempData['state'] = "inBackground";
+    tempData['state'] = "in-background";
     tempData['device_name'] = device != null ? device['deviceName'] : "";
     _auth.updateAppState(tempData);
 
