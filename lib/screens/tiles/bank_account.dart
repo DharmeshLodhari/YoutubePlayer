@@ -23,37 +23,34 @@ class _BankAccountTileState extends State<BankAccountTile> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(top: 8.0),
-      child: Card(
-        margin: EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
-        child: ListTile(
-          title: Text(
-            widget.account.bankName,
-            style: TextStyle(
-                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+    return Card(
+      margin: EdgeInsets.symmetric(horizontal: 40),
+      child: ListTile(
+        title: Text(
+          widget.account.bankName,
+          style: TextStyle(
+              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+        ),
+        subtitle: Text(
+            '******' + widget.account.accountNumber.toString().substring(5, 9)),
+        leading: ClipOval(
+          child: CachedNetworkImage(
+            imageUrl: widget.account.bankAvatar,
+            height: 45,
+            width: 45,
+            colorBlendMode: BlendMode.darken,
+            fit: BoxFit.cover,
+            filterQuality: FilterQuality.high,
+            placeholder: (context, url) => widget.account.bankAvatar == ""
+                ? Icon(Icons.account_balance)
+                : CircularProgressIndicator(
+                    backgroundColor: Colors.white,
+                  ),
           ),
-          subtitle: Text('******' +
-              widget.account.accountNumber.toString().substring(5, 9)),
-          leading: ClipOval(
-            child: CachedNetworkImage(
-              imageUrl: widget.account.bankAvatar,
-              height: 45,
-              width: 45,
-              colorBlendMode: BlendMode.darken,
-              fit: BoxFit.cover,
-              filterQuality: FilterQuality.high,
-              placeholder: (context, url) => widget.account.bankAvatar == ""
-                  ? Icon(Icons.account_balance)
-                  : CircularProgressIndicator(
-                      backgroundColor: Colors.white,
-                    ),
-            ),
-          ),
-          trailing: IconButton(
-            icon: Icon(Icons.settings, color: Colors.grey[400]),
-            onPressed: () {},
-          ),
+        ),
+        trailing: IconButton(
+          icon: Icon(Icons.settings, color: Colors.grey[400]),
+          onPressed: () {},
         ),
       ),
     );
@@ -85,46 +82,43 @@ class _AccountBalanceTileState extends State<AccountBalanceTile> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    return Padding(
-      padding: EdgeInsets.only(top: 8.0),
-      child: Card(
-        margin: EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
-        child: ListTile(
-          title: Text(
-            'Account Balance',
-            style: TextStyle(
-                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
-          ),
-          subtitle: Text(widget.isLocked
-              ? "*******"
-              : worldCurrencies[userBloc.user.currency] + widget.balance),
-          leading: currencyImage,
-          trailing: IconButton(
-            icon: Icon(widget.isLocked ? Icons.lock_outline : Icons.lock_open,
-                color: Colors.grey[400]),
-            onPressed: () {
-              if (widget.isLocked) {
-                PasscodePopup(
-                    context: context,
-                    isValidCallback: () {
-                      Navigator.of(context).pushNamed('/dashboard',
-                          arguments: {'dashboardIndex': 4, 'isLocked': false});
-                    },
-                    cancelCallBack: () {
-                      Scaffold.of(context).showSnackBar(SnackBar(
-                        content: Text("Wrong Password !!"),
-                      ));
-                    });
-                widget.onTap();
-              } else {
-                setState(() {
-                  Navigator.of(context).pushNamed('/dashboard',
-                      arguments: {'dashboardIndex': 4, 'isLocked': true});
-                  widget.isLocked = true;
-                });
-              }
-            },
-          ),
+    return Card(
+      margin: EdgeInsets.symmetric(horizontal: 40),
+      child: ListTile(
+        title: Text(
+          'Account Balance',
+          style: TextStyle(
+              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+        ),
+        subtitle: Text(widget.isLocked
+            ? "*******"
+            : worldCurrencies[userBloc.user.currency] + widget.balance),
+        leading: currencyImage,
+        trailing: IconButton(
+          icon: Icon(widget.isLocked ? Icons.lock_outline : Icons.lock_open,
+              color: Colors.grey[400]),
+          onPressed: () {
+            if (widget.isLocked) {
+              PasscodePopup(
+                  context: context,
+                  isValidCallback: () {
+                    Navigator.of(context).pushNamed('/dashboard',
+                        arguments: {'dashboardIndex': 4, 'isLocked': false});
+                  },
+                  cancelCallBack: () {
+                    Scaffold.of(context).showSnackBar(SnackBar(
+                      content: Text("Wrong Password !!"),
+                    ));
+                  });
+              widget.onTap();
+            } else {
+              setState(() {
+                Navigator.of(context).pushNamed('/dashboard',
+                    arguments: {'dashboardIndex': 4, 'isLocked': true});
+                widget.isLocked = true;
+              });
+            }
+          },
         ),
       ),
     );

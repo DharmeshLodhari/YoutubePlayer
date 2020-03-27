@@ -218,8 +218,8 @@ SPEC CHECKSUMS:
   device_info: cbf09d2ec12aa7110e0b09fabe54b5bd6c8efe74
   Fabric: 706c8b8098fff96c33c0db69cbf81f9c551d0d74
   Firebase: 497158b816d0a86fc31babbd05546fcd7e6083ff
-  firebase_crashlytics: 265e6ac91dc72d40effbb1a0415daa2940a44aa8
-  firebase_messaging: edab61b94fb3bfb399f32f9d4dedb5196d680084
+  firebase_crashlytics: bd8c58df07f107cb7e1a20cb190b9a468e0a69fd
+  firebase_messaging: cffb57ce40958c6204f03fb0c81713e4cd1e240c
   FirebaseAnalytics: cf95d3aab897612783020fbd98401d5366f135ee
   FirebaseAnalyticsInterop: 3f86269c38ae41f47afeb43ebf32a001f58fcdae
   FirebaseCore: 85064903ed6c28e47fec9c7bd149d94ba1b6b6e7
@@ -253,4 +253,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 34d1a6b3f1e7576153d9b08905486afb4cd10d0f
 
-COCOAPODS: 1.9.0
+COCOAPODS: 1.8.4

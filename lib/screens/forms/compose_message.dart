@@ -85,13 +85,15 @@ class _ComposeMessageState extends State<ComposeMessage> {
       });
   }
 
-  void initializeDisplayCard() {
-    if (customerProfileBloc.customer.userName != null) {
-      setState(() {
-        _payee = customerProfileBloc.customer;
-        recipient = _payee.userName;
-        _recipientController.text = recipient;
-      });
+  initializeDisplayCard() {
+    if (isReplayMessage) {
+      if (customerProfileBloc.customer.userName != null) {
+        setState(() {
+          _payee = customerProfileBloc.customer;
+          recipient = _payee.userName;
+          _recipientController.text = recipient;
+        });
+      }
     }
   }
 
@@ -154,48 +156,49 @@ class _ComposeMessageState extends State<ComposeMessage> {
     return IconButton(
         icon: Icon(Icons.send),
         onPressed: () {
-          if (_payee != null) {
-            if (recipient == _payee.userName) {
-              if (!isValidPayee) {
-                setState(() {
-                  errorMessage = "Invalid recipient";
-                });
-              }
-              if (_formKey.currentState.validate()) {
-                //TODO:Make a call for send message
-                if (FocusScope.of(context).hasFocus) {
-                  FocusScope.of(context).unfocus();
-                }
-
+          if (FocusScope.of(context).hasFocus) {
+            FocusScope.of(context).unfocus();
+          }
+          if (!isValidPayee) {
+            setState(() {
+              errorMessage = "Invalid recipient";
+              return;
+            });
+          } else if (recipient == userBloc.user.userName) {
+            setState(() {
+              errorMessage = "Invalid recipient";
+              return;
+            });
+          } else if (recipient == _payee.userName) {
+            if (!isValidPayee) {
+              setState(() {
+                errorMessage = "Invalid recipient";
+                return;
+              });
+            }
+            if (_formKey.currentState.validate()) {
+              Navigator.of(context).popAndPushNamed("/dashboard",
+                  arguments: {"dashboardIndex": 3});
+              if (isReplayMessage) {
                 Navigator.of(context).popAndPushNamed("/dashboard",
                     arguments: {"dashboardIndex": 3});
-                if (isReplayMessage) {
-                  Navigator.of(context).popAndPushNamed("/dashboard",
-                      arguments: {"dashboardIndex": 3});
-                }
-
-                try {
-                  var data = {
-                    "sender": userBloc.user.userName,
-                    "recipient": recipient,
-                    "body": message,
-                    "subject": subject,
-                  };
-                  _auth.sendMessage(data);
-                } catch (e) {
-                  Toast.show(e, context,
-                      gravity: Toast.BOTTOM, backgroundColor: darkBlue());
-                }
               }
-            } else {
-              var msg = "Invalid recipient";
-              Toast.show(msg, context,
-                  gravity: Toast.CENTER,
-                  backgroundColor: darkBlue(),
-                  textColor: Colors.white);
+
+              try {
+                var data = {
+                  "sender": userBloc.user.userName,
+                  "recipient": recipient,
+                  "body": message,
+                  "subject": subject,
+                };
+                _auth.sendMessage(data);
+              } catch (e) {
+                Toast.show(e, context,
+                    gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+              }
             }
           } else {
-            var msg = "Please Fill Details";
+            var msg = "Invalid recipient";
             Toast.show(msg, context,
                 gravity: Toast.CENTER,
                 backgroundColor: darkBlue(),
@@ -273,7 +276,6 @@ class _ComposeMessageState extends State<ComposeMessage> {
         }
         return null;
       },
-      //
       autofocus: false,
       obscureText: false,
       decoration: InputDecoration(
@@ -289,10 +291,9 @@ class _ComposeMessageState extends State<ComposeMessage> {
               borderRadius: BorderRadius.all(Radius.circular(4)),
               borderSide: BorderSide(
                   width: 1, color: Colors.white, style: BorderStyle.solid))),
-
       onChanged: (val) {
         setState(() {
-          if (_payee != null) {
+          if (isReplayMessage && _payee != null) {
             recipient = _payee.userName;
           } else {
             recipient = val.toLowerCase();
@@ -367,15 +368,6 @@ class _ComposeMessageState extends State<ComposeMessage> {
               borderRadius: BorderRadius.all(Radius.circular(4)),
               borderSide: BorderSide(
                   width: 1, color: Colors.white, style: BorderStyle.solid))),
-      onTap: () async {
-        if (recipient != null) {
-          var customerProfile = await _auth.fetchCustomerProfile(recipient);
-          setState(() {
-            _payee = customerProfile;
-            isValidPayee = _payee.userName != userBloc.user.userName;
-          });
-        }
-      },
       onChanged: (val) {
         setState(() {
           message = val;

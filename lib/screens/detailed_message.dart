@@ -138,7 +138,7 @@ class _DetailedMessageState extends State<DetailedMessage> {
 //        contentPadding: EdgeInsets.symmetric(horizontal: 15),
         leading: getLeading(),
         title: getSender(),
-        subtitle: Text("to: test"),
+        subtitle: Text("to: ${message.recipient}"),
         trailing: Container(
           width: 100,
           child: Row(

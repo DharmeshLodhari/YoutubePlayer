@@ -369,15 +369,6 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
     });
   }
 
-  void showCuperDialog<T>({BuildContext context, Widget child}) {
-    showCupertinoDialog<T>(
-      context: context,
-      builder: (BuildContext context) => child,
-    ).then((T value) {
-      if (value != null) {}
-    });
-  }
-
   Widget _getSlidableWithLists(
       BuildContext context, PaymentRequest paymentRequest, int index) {
     return Slidable(
@@ -411,5 +402,3 @@ class VerticalListItem extends StatelessWidget {
     );
   }
 }
-
-enum LoadMoreData { LOADING, STABLE }

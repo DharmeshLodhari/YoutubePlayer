@@ -7,6 +7,7 @@ import 'package:Slydo/screens/forms/request_payment.dart';
 import 'package:Slydo/screens/forms/send_payment.dart';
 import 'package:Slydo/screens/forms/signup.dart';
 import 'package:Slydo/screens/home.dart';
+import 'package:Slydo/screens/payout_transactions.dart';
 import 'package:Slydo/screens/profile.dart';
 import 'package:Slydo/screens/request_payments_list.dart';
 import 'package:Slydo/screens/scan_qr_code.dart';
@@ -17,6 +18,7 @@ import 'package:Slydo/widget/resultReturningPasswordPopup.dart';
 import 'package:flutter/material.dart';
 
 import 'detailed_message.dart';
+import 'forms/payout.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -80,6 +82,10 @@ class RouteGenerator {
             builder: (_) => QRCodeView(
                   arguments: settings.arguments,
                 ));
+      case '/payout':
+        return MaterialPageRoute(builder: (context) => Payout());
+      case '/payout-list':
+        return MaterialPageRoute(builder: (context) => PayoutTransactions());
 
       default:
         // If there is no such named route in the switch statement, e.g. /third

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/models/message.dart';
+import 'package:Slydo/models/payout.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:flutter/cupertino.dart';
@@ -59,7 +60,7 @@ class AuthService {
       // token. So that we will only use the token if its still valid.
       // We play safe and use 4 minutes
       DateTime now = DateTime.now();
-      DateTime expirationTime = now.add(Duration(seconds: 240)); // 4 Minute
+      DateTime expirationTime = now.add(Duration(seconds: 10)); // 4 Minute
 
       Map<String, String> data = {};
       var jsonResponse = json.decode(response.body);
@@ -461,6 +462,80 @@ class AuthService {
     var _data = jsonEncode(data);
     var response = await http.post(url, headers: headers, body: _data);
     return response;
+  }
+
+  //Send payment to backend
+  Future<http.Response> accountPayout(Map data) async {
+    var url = baseUrl + "/api/v1/transactions/payout/";
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await http.post(url, headers: headers, body: _data);
+    return response;
+  }
+
+  // List of bank Payout
+  Future<Map<String, dynamic>> getPayoutList(
+      String next, String previous) async {
+    var url = "";
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      url = baseUrl + "/api/v1/transactions/list/";
+    } else {
+      url = next;
+    }
+    Map<String, String> knownCustomers = {};
+    //   var url = baseUrl + "/api/v1/transactions/list/";
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      List<Payout> payouts = [];
+      // This variable will hold list of transactions we got from server
+      var user = await getUser();
+      var jsonData = json.decode(response.body);
+
+      for (var item in jsonData["results"]) {
+        // if sender is not current user then
+        bool isCredit = (item["from_customer"] != user.userName &&
+                item["to_customer"] == user.userName)
+            ? true
+            : false;
+
+        var payee = isCredit ? item["from_customer"] : item['to_customer'];
+
+        try {
+          if (knownCustomers.containsKey(payee) == false) {
+            var customer = await fetchCustomerProfile(payee);
+            knownCustomers[payee] = customer.avatar;
+          }
+          var avatar = knownCustomers[payee];
+          Payout payout = Payout(
+              status: item['status'],
+              uuid: item['slug'],
+              description: item['description'],
+              payee: payee,
+              timeStemp: "02/02/2020 6:30 PM",
+              avatar: avatar,
+              currency: item['currency'],
+              amount: item['amount'],
+              isCredit: isCredit);
+          payouts.add(payout);
+        } catch (Exception) {}
+      }
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": payouts
+      };
+      return result;
+    } else if (response.statusCode == 500) {
+      throw "Server Error";
+    } else {
+      throw json.decode(response.body);
+    }
   }
 
   // TODO: Marge with makePayment

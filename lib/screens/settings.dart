@@ -7,6 +7,7 @@ import 'package:Slydo/services/auth.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,6 +28,8 @@ class _SettingsListState extends State<SettingsList> {
   String accountBalance = "";
   bool isLocked;
   var arguments;
+  SlidableController slidableController;
+
   _SettingsListState({this.arguments});
 
   @override
@@ -37,6 +40,11 @@ class _SettingsListState extends State<SettingsList> {
     if (!isLocked) {
       getAccountBalance();
     }
+
+    slidableController = SlidableController(
+      onSlideAnimationChanged: handleSlideAnimationChanged,
+      onSlideIsOpenChanged: handleSlideIsOpenChanged,
+    );
 
     super.initState();
   }
@@ -71,17 +79,25 @@ class _SettingsListState extends State<SettingsList> {
         body: Center(
           child: Container(
             color: lightBlue(),
-            padding: EdgeInsets.all(24),
+            padding: EdgeInsets.fromLTRB(0, 24, 0, 0),
             child: Center(
               child: Column(
                 children: <Widget>[
-                  SizedBox(height: 10),
+                  SizedBox(height: 20),
                   displayProfileTile(userBloc),
-                  displayAccountBalance(isLocked),
+                  SizedBox(height: 10),
+                  _getSlidableWithLists(
+                      context, displayAccountBalance(isLocked)),
+                  SizedBox(height: 10),
                   displayBankAccountTile(bankAccountBloc),
+                  SizedBox(height: 10),
                   userBloc.user.userName == "abiola.rashhed.2"
                       ? ExploreTile()
                       : Container(),
+                  userBloc.user.userName == "abiola.rashhed.2"
+                      ? SizedBox(height: 10)
+                      : Container(),
+                  slydoBankAccountTile(),
                   SizedBox(height: 20),
                 ],
               ),
@@ -94,61 +110,58 @@ class _SettingsListState extends State<SettingsList> {
   }
 
   Widget displayProfileTile(userBloc) {
-    return Padding(
-      padding: EdgeInsets.only(top: 8.0),
-      child: Card(
-        margin: EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
-        child: ListTile(
-          title: Text(
-            userBloc.user.fullName,
-            style: TextStyle(
-                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
-          ),
-          isThreeLine: true,
-          subtitle:
-              Text(userBloc.user.userName + "\n" + userBloc.user.phoneNumber),
-          leading: isLoading
-              ? Container(
+    return Card(
+      margin: EdgeInsets.symmetric(horizontal: 40),
+      child: ListTile(
+        title: Text(
+          userBloc.user.fullName,
+          style: TextStyle(
+              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+        ),
+        isThreeLine: true,
+        subtitle:
+            Text(userBloc.user.userName + "\n" + userBloc.user.phoneNumber),
+        leading: isLoading
+            ? Container(
+                height: 45,
+                width: 45,
+                child: CircularProgressIndicator(
+                  backgroundColor: Colors.white,
+                ),
+              )
+            : ClipOval(
+                child: CachedNetworkImage(
+                  imageUrl: userBloc.user.avatar,
                   height: 45,
                   width: 45,
-                  child: CircularProgressIndicator(
-                    backgroundColor: Colors.white,
-                  ),
-                )
-              : ClipOval(
-                  child: CachedNetworkImage(
-                    imageUrl: userBloc.user.avatar,
-                    height: 45,
-                    width: 45,
-                    colorBlendMode: BlendMode.darken,
-                    fit: BoxFit.cover,
-                    filterQuality: FilterQuality.high,
-                    placeholder: (context, url) => userBloc.user.avatar == ""
-                        ? Icon(Icons.person)
-                        : CircularProgressIndicator(
-                            backgroundColor: Colors.white,
-                          ),
-                  ),
+                  colorBlendMode: BlendMode.darken,
+                  fit: BoxFit.cover,
+                  filterQuality: FilterQuality.high,
+                  placeholder: (context, url) => userBloc.user.avatar == ""
+                      ? Icon(Icons.person)
+                      : CircularProgressIndicator(
+                          backgroundColor: Colors.white,
+                        ),
                 ),
-          trailing: IconButton(
-            icon: Icon(
-              Icons.mode_edit,
-              color: darkBlue(),
-            ),
-            tooltip: "Edit Profile",
-            onPressed: () {
-              Connectivity().checkConnectivity().then((value) {
-                var connectionResult = value;
-                if (connectionResult == ConnectivityResult.wifi ||
-                    connectionResult == ConnectivityResult.mobile) {
-                  pickImage(userBloc);
-                } else {
-                  Toast.show("Internet Connection is not available", context,
-                      gravity: Toast.BOTTOM, backgroundColor: darkBlue());
-                }
-              });
-            },
+              ),
+        trailing: IconButton(
+          icon: Icon(
+            Icons.mode_edit,
+            color: darkBlue(),
           ),
+          tooltip: "Edit Profile",
+          onPressed: () {
+            Connectivity().checkConnectivity().then((value) {
+              var connectionResult = value;
+              if (connectionResult == ConnectivityResult.wifi ||
+                  connectionResult == ConnectivityResult.mobile) {
+                pickImage(userBloc);
+              } else {
+                Toast.show("Internet Connection is not available", context,
+                    gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+              }
+            });
+          },
         ),
       ),
     );
@@ -248,5 +261,109 @@ class _SettingsListState extends State<SettingsList> {
         accountBalance = spendableBalance.toString();
       });
     });
+  }
+
+  Widget slydoBankAccountTile() {
+    return Card(
+      margin: EdgeInsets.symmetric(horizontal: 40),
+      color: Colors.white,
+      child: ListTile(
+        leading: ClipOval(
+            child: Image.asset(
+          "assets/images/slydo.png",
+          height: 45,
+          width: 45,
+        )),
+        title: Text(
+          "Bank Name: GTB",
+          style: TextStyle(
+              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text("Account Number: 12345"),
+            Text("Name : Slydo Private ltd "),
+          ],
+        ),
+        trailing: IconButton(
+          icon: Icon(Icons.account_balance),
+          onPressed: () {},
+        ),
+      ),
+    );
+  }
+
+  Widget _getSlidableWithLists(
+      BuildContext context, Widget accountBalanceTile) {
+    return Slidable(
+      controller: slidableController,
+      direction: Axis.horizontal,
+      actionPane: SlidableBehindActionPane(),
+      actionExtentRatio: 0.25,
+      child: VerticalListItem(accountBalanceTile),
+      actions: listActionSlideActions(),
+      secondaryActions: listSecondaryActions(),
+    );
+  }
+
+  List<Widget> listSecondaryActions() {
+    String caption = 'payout';
+    return [
+      IconSlideAction(
+          caption: caption,
+          color: Colors.green,
+          icon: Icons.send,
+          onTap: () async {
+            Navigator.pushNamed(context, '/payout');
+          }),
+    ];
+  }
+
+  List<Widget> listActionSlideActions() {
+    return [
+      IconSlideAction(
+        caption: 'payout list',
+        color: Colors.green,
+        icon: Icons.event_note,
+        onTap: () {
+          Navigator.pushNamed(context, '/payout-list');
+        },
+      ),
+    ];
+  }
+
+  Animation<double> _rotationAnimation;
+  Color _fabColor = Colors.blue;
+
+  void handleSlideAnimationChanged(Animation<double> slideAnimation) {
+    setState(() {
+      _rotationAnimation = slideAnimation;
+    });
+  }
+
+  void handleSlideIsOpenChanged(bool isOpen) {
+    setState(() {
+      _fabColor = isOpen ? Colors.green : Colors.blue;
+    });
+  }
+}
+
+class VerticalListItem extends StatelessWidget {
+  VerticalListItem(this.child);
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () =>
+          Slidable.of(context)?.renderingMode == SlidableRenderingMode.none
+              ? Slidable.of(context)?.open()
+              : Slidable.of(context)?.close(),
+      child: Container(
+        color: lightBlue(),
+        child: child,
+      ),
+    );
   }
 }
