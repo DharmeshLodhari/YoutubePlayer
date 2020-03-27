@@ -32,9 +32,12 @@ class DatabaseHelper {
   // UPGRADE DATABASE TABLES BY APPLYING MIGRATIONS
   void _onUpgrade(Database db, int oldVersion, int newVersion) {
     if (oldVersion < newVersion) {
-      print("No migrations to apply");
+      debugPrint("Appling migrations");
       // when we upgrade and database has changed we should put our migration statement over here
-      // db.execute("ALTER TABLE User ADD COLUMN newCol TEXT;");
+      // db.execute("ALTER TABLE table_name ADD column_name TEXT;")  adding column
+      // db.execute("ALTER TABLE table_name DROP column_name;")  adding column
+    } else {
+      debugPrint("No migrations to apply");
     }
   }
 
