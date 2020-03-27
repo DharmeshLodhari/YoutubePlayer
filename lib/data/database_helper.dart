@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:io' as io;
 
 import 'package:Slydo/models/user.dart';
+import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
@@ -24,8 +24,18 @@ class DatabaseHelper {
   initDb() async {
     io.Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, "main.db");
-    var theDb = await openDatabase(path, version: 1, onCreate: _onCreate);
+    var theDb = await openDatabase(path,
+        version: 1, onCreate: _onCreate, onUpgrade: _onUpgrade);
     return theDb;
+  }
+
+  // UPGRADE DATABASE TABLES BY APPLYING MIGRATIONS
+  void _onUpgrade(Database db, int oldVersion, int newVersion) {
+    if (oldVersion < newVersion) {
+      print("No migrations to apply");
+      // when we upgrade and database has changed we should put our migration statement over here
+      // db.execute("ALTER TABLE User ADD COLUMN newCol TEXT;");
+    }
   }
 
   // Create this database tables when we initialize app
@@ -113,10 +123,12 @@ class DatabaseHelper {
     var dbClient = await db;
     var res = await dbClient.query("Jwt");
 
-    try {
-      return res[0];
-    } catch (e) {
-      throw e;
+    if (res != null) {
+      try {
+        return res[0];
+      } catch (e) {
+        throw e;
+      }
     }
   }
 
@@ -143,7 +155,6 @@ class DatabaseHelper {
     } catch (e) {
       debugPrint(e.toString());
     }
-
   }
 
   // save user's Device data to the db

@@ -59,8 +59,7 @@ class AuthService {
       // token. So that we will only use the token if its still valid.
       // We play safe and use 4 minutes
       DateTime now = DateTime.now();
-      DateTime expirationTime =
-          now.add(Duration(seconds: 200)); // 3.33333 Minute
+      DateTime expirationTime = now.add(Duration(seconds: 240)); // 4 Minute
 
       Map<String, String> data = {};
       var jsonResponse = json.decode(response.body);
@@ -157,9 +156,11 @@ class AuthService {
 
     // Authenticate again if token has expired
     if (hasTokenExpired(expirationTime)) {
+      debugPrint("Token Expired getting new one");
       User _user = await getUser();
-      authenticate(_user.phoneNumber, _user.password);
-      tokenData = await _db.getJwt(); // get new token now
+      authenticate(_user.phoneNumber, _user.password).then((value) async {
+        tokenData = await _db.getJwt(); // get new token now
+      });
     }
     String bearer = "Bearer " + tokenData["access"];
     var headers = {"Authorization": bearer, "Content-type": "application/json"};
@@ -501,12 +502,11 @@ class AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response;
-    debugPrint(_data);
     try {
       response = await http.patch(url, headers: headers, body: _data);
     } catch (e) {}
     if (response.statusCode != 200) {
-      var jsonData = json.decode(response.body);
+      var jsonData = response.body;
       debugPrint(jsonData);
     }
     return response.statusCode == 200;
