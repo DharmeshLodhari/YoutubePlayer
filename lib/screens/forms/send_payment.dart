@@ -185,6 +185,7 @@ class _SendPaymentState extends State<SendPayment> {
       controller: _recipientController,
       enabled: isFromProfile,
       focusNode: _recipientFocus,
+      textCapitalization: TextCapitalization.none,
 //      initialValue: isFromProfile ? "" : _payee.userName,
       cursorColor: darkBlue(),
       validator: (value) {

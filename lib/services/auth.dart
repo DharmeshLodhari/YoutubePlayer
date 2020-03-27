@@ -59,7 +59,8 @@ class AuthService {
       // token. So that we will only use the token if its still valid.
       // We play safe and use 4 minutes
       DateTime now = DateTime.now();
-      DateTime expirationTime = now.add(Duration(seconds: 200));  // 3.33333 Minute
+      DateTime expirationTime =
+          now.add(Duration(seconds: 200)); // 3.33333 Minute
 
       Map<String, String> data = {};
       var jsonResponse = json.decode(response.body);
@@ -501,16 +502,13 @@ class AuthService {
     var _data = jsonEncode(data);
     var response;
     debugPrint(_data);
-
     try {
       response = await http.patch(url, headers: headers, body: _data);
-    } catch (e) {
-    }
-    if (response.statusCode != 200){
+    } catch (e) {}
+    if (response.statusCode != 200) {
       var jsonData = json.decode(response.body);
       debugPrint(jsonData);
     }
-
     return response.statusCode == 200;
   }
 

@@ -214,6 +214,7 @@ class _RequestPaymentState extends State<RequestPayment> {
       controller: _recipientController,
       enabled: isFromProfile,
       focusNode: _recipientFocus,
+      textCapitalization: TextCapitalization.none,
 //      initialValue: isFromProfile ? null : _payee.userName,
       cursorColor: darkBlue(),
       validator: (value) {

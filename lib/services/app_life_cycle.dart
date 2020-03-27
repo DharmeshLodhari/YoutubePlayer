@@ -82,7 +82,9 @@ class _AppLifeCycleState extends State<AppLifeCycle>
     tempData['type'] = device != null ? device['type'] : "";
     tempData['state'] = "active";
     tempData['device_name'] = device != null ? device['deviceName'] : "";
-    _auth.updateAppState(tempData);
+    if (device != null) {
+      _auth.updateAppState(tempData);
+    }
 
     debugPrint("App Life Cycle state is resumed and onResume is called");
   }
@@ -94,7 +96,9 @@ class _AppLifeCycleState extends State<AppLifeCycle>
     tempData['type'] = device != null ? device['type'] : "";
     tempData['state'] = "inActive";
     tempData['device_name'] = device != null ? device['deviceName'] : "";
-    _auth.updateAppState(tempData);
+    if (device != null) {
+      _auth.updateAppState(tempData);
+    }
 
     debugPrint("App Life Cycle state is inactive and onInactive is called");
   }
@@ -106,7 +110,9 @@ class _AppLifeCycleState extends State<AppLifeCycle>
     tempData['type'] = device != null ? device['type'] : "";
     tempData['state'] = "in-background";
     tempData['device_name'] = device != null ? device['deviceName'] : "";
-    _auth.updateAppState(tempData);
+    if (device != null) {
+      _auth.updateAppState(tempData);
+    }
 
     debugPrint("App Life Cycle state is paused and onPause is called");
   }
@@ -118,7 +124,9 @@ class _AppLifeCycleState extends State<AppLifeCycle>
     tempData['type'] = device != null ? device['type'] : "";
     tempData['state'] = "suspended";
     tempData['device_name'] = device != null ? device['deviceName'] : "";
-    _auth.updateAppState(tempData);
+    if (device != null) {
+      _auth.updateAppState(tempData);
+    }
 
     debugPrint("App Life Cycle state is detached and onDetached is called");
   }
