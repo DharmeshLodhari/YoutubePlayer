@@ -60,7 +60,7 @@ class AuthService {
       // token. So that we will only use the token if its still valid.
       // We play safe and use 4 minutes
       DateTime now = DateTime.now();
-      DateTime expirationTime = now.add(Duration(seconds: 10)); // 4 Minute
+      DateTime expirationTime = now.add(Duration(seconds: 240)); // 4 Minute
 
       Map<String, String> data = {};
       var jsonResponse = json.decode(response.body);
@@ -404,7 +404,6 @@ class AuthService {
       url = next;
     }
     Map<String, String> knownCustomers = {};
-    //   var url = baseUrl + "/api/v1/transactions/list/";
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
 
@@ -464,7 +463,7 @@ class AuthService {
     return response;
   }
 
-  //Send payment to backend
+  //Send payout to backend
   Future<http.Response> accountPayout(Map data) async {
     var url = baseUrl + "/api/v1/transactions/payout/";
     var headers = await getAuthHeaders();
@@ -481,12 +480,10 @@ class AuthService {
       return null;
     }
     if (next == "") {
-      url = baseUrl + "/api/v1/transactions/list/";
+      url = baseUrl + "/api/v1/transactions/payout/";
     } else {
       url = next;
     }
-    Map<String, String> knownCustomers = {};
-    //   var url = baseUrl + "/api/v1/transactions/list/";
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
 
@@ -497,32 +494,16 @@ class AuthService {
       var jsonData = json.decode(response.body);
 
       for (var item in jsonData["results"]) {
-        // if sender is not current user then
-        bool isCredit = (item["from_customer"] != user.userName &&
-                item["to_customer"] == user.userName)
-            ? true
-            : false;
-
-        var payee = isCredit ? item["from_customer"] : item['to_customer'];
-
-        try {
-          if (knownCustomers.containsKey(payee) == false) {
-            var customer = await fetchCustomerProfile(payee);
-            knownCustomers[payee] = customer.avatar;
-          }
-          var avatar = knownCustomers[payee];
-          Payout payout = Payout(
-              status: item['status'],
-              uuid: item['slug'],
-              description: item['description'],
-              payee: payee,
-              timeStemp: "02/02/2020 6:30 PM",
-              avatar: avatar,
-              currency: item['currency'],
-              amount: item['amount'],
-              isCredit: isCredit);
-          payouts.add(payout);
-        } catch (Exception) {}
+        Payout payout = Payout(
+          uuid: item['id'],
+          status: item['status'],
+          amount: item['amount'],
+          currency: item['currency'],
+          timeStemp: item["created_at"],
+          bankName: item["customer_bank_account"]["bank"]["short_name"],
+          bankLogo: item["customer_bank_account"]["bank"]["logo_url"],
+        );
+        payouts.add(payout);
       }
       Map<String, dynamic> result = {
         "count": jsonData["count"],

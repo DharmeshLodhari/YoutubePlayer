@@ -42,7 +42,6 @@ dependencies:
   connectivity:
   flutter_local_notifications: ^0.6.0
 
-
 flutter_icons:
   android: "launcher_icon"
   ios: true

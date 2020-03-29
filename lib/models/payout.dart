@@ -1,23 +1,19 @@
 class Payout {
   String status;
   String uuid;
-  String description;
-  String payee;
   String timeStemp;
-  String avatar;
+  String bankLogo;
   String currency;
+  String bankName;
   int amount;
-  bool isCredit;
 
   // Pass in as named parameter in constructor
   Payout(
       {this.status,
       this.uuid,
-      this.description,
-      this.payee,
       this.timeStemp,
-      this.avatar,
+      this.bankLogo,
       this.currency,
-      this.amount,
-      this.isCredit});
+      this.bankName,
+      this.amount});
 }

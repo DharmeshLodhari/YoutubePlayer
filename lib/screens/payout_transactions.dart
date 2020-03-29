@@ -110,7 +110,7 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
   Widget _buildTransactionList() {
     return noItemInList
         ? NoItemInList(
-            msg: "Transaction history empty",
+            msg: "Payout history empty",
           )
         : ListView.builder(
             //+1 for progressbar
