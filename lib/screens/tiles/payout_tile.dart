@@ -42,7 +42,7 @@ class PayoutTile extends StatelessWidget {
                 Text(
                   "Status : ${payout.status} ",
                 ),
-                Text("Time : ${payout.timeStemp} "),
+                Text("Time : ${payout.timeStamp} "),
               ],
             ),
             trailing: Text(

@@ -499,7 +499,7 @@ class AuthService {
           status: item['status'],
           amount: item['amount'],
           currency: item['currency'],
-          timeStemp: item["created_at"],
+          timeStamp: item["created_at"],
           bankName: item["customer_bank_account"]["bank"]["short_name"],
           bankLogo: item["customer_bank_account"]["bank"]["logo_url"],
         );

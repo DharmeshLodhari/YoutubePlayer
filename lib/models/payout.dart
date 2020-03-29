@@ -1,7 +1,7 @@
 class Payout {
   String status;
   String uuid;
-  String timeStemp;
+  String timeStamp;
   String bankLogo;
   String currency;
   String bankName;
@@ -11,7 +11,7 @@ class Payout {
   Payout(
       {this.status,
       this.uuid,
-      this.timeStemp,
+      this.timeStamp,
       this.bankLogo,
       this.currency,
       this.bankName,
