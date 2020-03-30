@@ -41,6 +41,9 @@ class PayoutTile extends StatelessWidget {
               children: <Widget>[
                 Text(
                   "Status : ${payout.status} ",
+                  style: TextStyle(
+                    color: getStatusColor(payout.status),
+                  ),
                 ),
                 Text("Time : ${payout.timeStamp} "),
               ],
@@ -54,5 +57,15 @@ class PayoutTile extends StatelessWidget {
             )),
       ),
     );
+  }
+
+  getStatusColor(String status) {
+    if (status == "Paid") {
+      return Colors.green[400];
+    } else if (status == "Pending") {
+      return Colors.orange[400];
+    } else {
+      return Colors.red[400];
+    }
   }
 }
