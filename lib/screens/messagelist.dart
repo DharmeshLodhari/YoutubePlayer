@@ -407,29 +407,6 @@ class _MessageListState extends State<MessageList> {
     );
   }
 
-  void showMaterialDialog<T>({BuildContext context, Widget child}) {
-    showDialog<T>(
-      context: context,
-      builder: (BuildContext context) => child,
-    ).then<void>((T value) {
-      // The value passed to Navigator.pop() or null.
-      if (value != null) {
-        _scaffoldKey.currentState.showSnackBar(SnackBar(
-          content: Text('You selected: $value'),
-        ));
-      }
-    });
-  }
-
-  void showCuperDialog<T>({BuildContext context, Widget child}) {
-    showCupertinoDialog<T>(
-      context: context,
-      builder: (BuildContext context) => child,
-    ).then((T value) {
-      if (value != null) {}
-    });
-  }
-
   Widget _getSlidableWithLists(
       BuildContext context, PartialMessage partialMessage, int index) {
     return Slidable(
@@ -463,4 +440,3 @@ class VerticalListItem extends StatelessWidget {
     );
   }
 }
-

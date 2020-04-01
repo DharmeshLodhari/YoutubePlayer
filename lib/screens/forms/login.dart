@@ -45,6 +45,7 @@ class _UserLoginState extends State<UserLogin> {
       setState(() {
         isChecked = _sharedPreferences.getBool('isChecked') ?? false;
       });
+      isRemember = isChecked;
 
       if (isChecked) {
         phoneNumberFromPref = _sharedPreferences.getString('username') ?? "";
@@ -238,6 +239,7 @@ class _UserLoginState extends State<UserLogin> {
   void isRememberChecked() async {
     bool isLoggedOut = await _sharedPreferences.setBool('isLoggedOut', false);
     if (isRemember) {
+      await _sharedPreferences.clear();
       bool isCheckedSet =
           await _sharedPreferences.setBool('isChecked', isChecked);
       bool usernameSet =
@@ -245,7 +247,7 @@ class _UserLoginState extends State<UserLogin> {
       bool passwordSet =
           await _sharedPreferences.setString('password', password);
 
-      if (!isCheckedSet && !isLoggedOut && !usernameSet && !passwordSet) {
+      if (!isCheckedSet || !isLoggedOut || !usernameSet || !passwordSet) {
         Toast.show("User Not Saved !!!", context);
       }
     } else {
@@ -271,7 +273,7 @@ class _UserLoginState extends State<UserLogin> {
         _user = value;
 
         if (_user.fullName != null) {
-          //method call for storing user info in shared preference
+          //method call for storing user info into shared preference
           isRememberChecked();
           userBloc.user = _user;
 

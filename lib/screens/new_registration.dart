@@ -2,7 +2,7 @@ import 'package:Slydo/widget/exit_alert_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 
-import 'screens/colors.dart';
+import 'colors.dart';
 
 class Registration extends StatefulWidget {
   @override
