@@ -93,10 +93,10 @@ class _SettingsListState extends State<SettingsList> {
                   SizedBox(height: 10),
                   displayBankAccountTile(bankAccountBloc),
                   SizedBox(height: 10),
-                  userBloc.user.userName == "abiola.rashhed.2"
+                  userBloc.user.userName == "abiola.rasheed.2"
                       ? ExploreTile()
                       : Container(),
-                  userBloc.user.userName == "abiola.rashhed.2"
+                  userBloc.user.userName == "abiola.rasheed.2"
                       ? SizedBox(height: 10)
                       : Container(),
                   slydoBankAccountTile(),

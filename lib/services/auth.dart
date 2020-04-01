@@ -517,12 +517,14 @@ class AuthService {
       var jsonData = json.decode(response.body);
 
       for (var item in jsonData["results"]) {
+        var timeStamp = item["credited_at"] == null ? item["created_at"]:item["credited_at"];
+
         Payout payout = Payout(
           uuid: item['id'],
           status: item['status'],
           amount: item['amount'],
           currency: item['currency'],
-          timeStamp: item["created_at"],
+          timeStamp: timeStamp,
           bankName: item["customer_bank_account"]["bank"]["short_name"],
           bankLogo: item["customer_bank_account"]["bank"]["logo_url"],
         );
