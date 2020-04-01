@@ -83,6 +83,8 @@ class _UserLoginState extends State<UserLogin> {
                 passwordField(),
                 SizedBox(height: 20.0),
                 rememberLogin(),
+                SizedBox(height: 15),
+                forgotPasswordButton(),
                 SizedBox(height: 20),
                 submitButton(context),
               ],
@@ -186,6 +188,7 @@ class _UserLoginState extends State<UserLogin> {
 
   Widget rememberLogin() {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         Checkbox(
           onChanged: (value) {
@@ -286,5 +289,22 @@ class _UserLoginState extends State<UserLogin> {
         }
       });
     }
+  }
+
+  Widget forgotPasswordButton() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).pushNamed('/forgot-password');
+      },
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          "Forgot Password?",
+          style: TextStyle(
+            decoration: TextDecoration.underline,
+          ),
+        ),
+      ),
+    );
   }
 }

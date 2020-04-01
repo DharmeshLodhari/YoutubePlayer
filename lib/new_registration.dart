@@ -1,30 +1,29 @@
-import 'package:Slydo/screens/colors.dart';
+import 'package:Slydo/widget/exit_alert_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 
-import '../widget/exit_alert_dialog.dart';
-import 'colors.dart';
+import 'screens/colors.dart';
 
-class Home extends StatefulWidget {
-  var arguments;
-  Home({this.arguments});
+class Registration extends StatefulWidget {
   @override
-  _HomeState createState() => _HomeState(arguments: arguments);
+  _RegistrationState createState() => _RegistrationState();
 }
 
-class _HomeState extends State<Home> {
-  var arguments;
-  _HomeState({this.arguments});
-
-  // for Checking if User  start App first time or come back from logout button
-  bool isIntroDone = false;
+class _RegistrationState extends State<Registration> {
+  List<PageViewModel> pageModel;
   //intro screen page index
   int currentIndex = 0;
-  List<PageViewModel> pageModel;
+
   @override
   void initState() {
-    isIntroDone = arguments != null ? arguments['isIntroDone'] : false;
+    //TODO: first page select the country
+    //TODO: Second page Enter the PhoneNumber and registration data
+    //TODO: third page user can Upload with onfido
+    //TODO: fourth page Registration Button
+    //TODO: fifth page enter verification code
+
+    //TODO: LOGGED the user in after registration
+
     pageModel = [
       PageViewModel(
         decoration: PageDecoration(
@@ -158,7 +157,6 @@ class _HomeState extends State<Home> {
     super.initState();
   }
 
-  @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
@@ -172,75 +170,7 @@ class _HomeState extends State<Home> {
       child: Scaffold(
           backgroundColor: lightBlue(),
           resizeToAvoidBottomInset: true,
-          body: !isIntroDone ? introScreen() : HomeScreen()),
-    );
-  }
-
-  Widget HomeScreen() {
-    return Center(
-      child: Container(
-        color: lightBlue(),
-        padding: EdgeInsets.all(24),
-        child: Center(
-          child: Column(
-            children: <Widget>[
-              SizedBox(height: 100),
-              showHomeBackground(),
-              SizedBox(height: 20),
-              Text('An easy way to accept \n and receive payments.',
-                  style: TextStyle(color: Colors.white, fontSize: 20)),
-              SizedBox(height: 20),
-              loginButton(),
-              SizedBox(height: 10),
-              Text(
-                'or',
-                style: TextStyle(color: Colors.white, fontSize: 20),
-              ),
-              SizedBox(height: 10),
-              registerButton(),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget loginButton() {
-    return ButtonTheme(
-      child: MaterialButton(
-        minWidth: double.infinity,
-        onPressed: () {
-          Navigator.of(context).pushNamed('/login');
-        },
-        textColor: Colors.white,
-        color: darkBlue(),
-        height: 50,
-        child: Text("Log In"),
-      ),
-    );
-  }
-
-  Widget registerButton() {
-    return ButtonTheme(
-      child: MaterialButton(
-        minWidth: double.infinity,
-        onPressed: () {
-          Navigator.of(context).pushNamed('/register');
-        },
-        textColor: Colors.white,
-        color: darkBlue(),
-        height: 50,
-        child: Text("Register"),
-      ),
-    );
-  }
-
-  Widget showHomeBackground() {
-    return Container(
-      child: Image.asset(
-        'assets/images/index.png',
-        fit: BoxFit.cover,
-      ),
+          body: introScreen()),
     );
   }
 
@@ -262,7 +192,7 @@ class _HomeState extends State<Home> {
               borderRadius: BorderRadius.circular(25.0))),
       onDone: () {
         setState(() {
-          isIntroDone = true;
+//          isIntroDone = true;
         });
       },
       onChange: (index) {

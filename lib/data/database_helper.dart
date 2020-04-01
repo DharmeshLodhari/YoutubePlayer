@@ -126,12 +126,10 @@ class DatabaseHelper {
     var dbClient = await db;
     var res = await dbClient.query("Jwt");
 
-    if (res != null) {
-      try {
-        return res[0];
-      } catch (e) {
-        throw e;
-      }
+    try {
+      return res[0];
+    } catch (e) {
+      throw e;
     }
   }
 

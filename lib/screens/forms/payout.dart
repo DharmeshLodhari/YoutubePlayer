@@ -162,7 +162,10 @@ class _PayoutState extends State<Payout> {
             height: 50,
             child: Text("Submit"),
             onPressed: () async {
-              FocusScope.of(context).unfocus();
+              //for closing the keypad if it is open
+              if (FocusScope.of(context).hasFocus) {
+                FocusScope.of(context).unfocus();
+              }
 
               if (_formKey.currentState.validate()) {
                 try {
@@ -223,11 +226,11 @@ class _PayoutState extends State<Payout> {
   Widget displayBalance() {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 40),
-      child: Row(
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Text(
-            "Account balance : ",
+            "Account balance",
             style: TextStyle(fontSize: 20),
           ),
           Text(
@@ -245,7 +248,7 @@ class _PayoutState extends State<Payout> {
       child: Text(
         "you are about to transfer money into your bank account",
         style: TextStyle(
-            fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
+            fontSize: 18, color: Colors.white, fontWeight: FontWeight.w600),
       ),
     );
   }

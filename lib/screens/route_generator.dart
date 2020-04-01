@@ -1,9 +1,11 @@
 import 'package:Slydo/screens/dashboard.dart';
 import 'package:Slydo/screens/explore.dart';
+import 'package:Slydo/screens/forgot_password.dart';
 import 'package:Slydo/screens/forms/add_bank_account.dart';
 import 'package:Slydo/screens/forms/compose_message.dart';
 import 'package:Slydo/screens/forms/login.dart';
 import 'package:Slydo/screens/forms/request_payment.dart';
+import 'package:Slydo/screens/forms/reset_password.dart';
 import 'package:Slydo/screens/forms/send_payment.dart';
 import 'package:Slydo/screens/forms/signup.dart';
 import 'package:Slydo/screens/home.dart';
@@ -86,6 +88,13 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (context) => Payout());
       case '/payout-list':
         return MaterialPageRoute(builder: (context) => PayoutTransactions());
+      case '/forgot-password':
+        return MaterialPageRoute(builder: (context) => ForgotPassword());
+      case '/reset-password':
+        return MaterialPageRoute(
+            builder: (context) => ResetPassword(
+                  arguments: settings.arguments,
+                ));
 
       default:
         // If there is no such named route in the switch statement, e.g. /third
