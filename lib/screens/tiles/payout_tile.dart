@@ -40,18 +40,17 @@ class PayoutTile extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
                 Text(
-                  "Status : ${payout.status} ",
+                  getTime(payout.timeStamp),
                   style: TextStyle(
-                    color: getStatusColor(payout.status),
+                    color: Colors.grey[400],
                   ),
                 ),
-                Text("Time : ${payout.timeStamp} "),
               ],
             ),
             trailing: Text(
               worldCurrencies[payout.currency] + ' ' + payout.amount.toString(),
               style: TextStyle(
-                  color: Colors.green[400],
+                  color: getStatusColor(payout.status),
                   fontWeight: FontWeight.bold,
                   fontSize: 15),
             )),
@@ -67,5 +66,11 @@ class PayoutTile extends StatelessWidget {
     } else {
       return Colors.red[400];
     }
+  }
+
+  String getTime(String timeStamp) {
+    String date = timeStamp.substring(0, 10);
+    String time = timeStamp.substring(11, 16);
+    return date + " " + time;
   }
 }
