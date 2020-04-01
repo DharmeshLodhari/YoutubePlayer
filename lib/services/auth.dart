@@ -8,6 +8,7 @@ import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
+import 'package:uuid/uuid.dart';
 
 final String baseUrl = "http://api.slydo.co";
 final String localHostUrl = "https://127.0.0.1:8080";
@@ -51,9 +52,16 @@ class AuthService {
     // the auth user.
 
     var url = baseUrl + "/api/v1/auth/get-token/";
+    var uuid = Uuid();
+    var transactionId = uuid.v4();
+    var headers = {
+//      "Content-type": "application/json",
+      "TransactionId": transactionId,
+      "DeviceType": Platform.isAndroid ? "Android" : "IOS",
+      "User-Agent": "Slydo-Mobile",
+    };
     Map _body = {"password": password, "phone_number": phoneNumber};
-    var response = await http.post(url, body: _body);
-
+    var response = await http.post(url, body: _body, headers: headers);
     if (response.statusCode == 200) {
       // Because the jwt expires every 5 minutes we will take note of the time they
       // where  created and the use that to compute the expiration time of the
@@ -164,7 +172,15 @@ class AuthService {
       });
     }
     String bearer = "Bearer " + tokenData["access"];
-    var headers = {"Authorization": bearer, "Content-type": "application/json"};
+    var uuid = Uuid();
+    var transactionId = uuid.v4();
+    var headers = {
+      "Authorization": bearer,
+      "Content-type": "application/json",
+      "TransactionId": transactionId,
+      "DeviceType": Platform.isAndroid ? "Android" : "IOS",
+      "User-Agent": "Slydo-Mobile",
+    };
     return headers;
   }
 
@@ -176,7 +192,15 @@ class AuthService {
   // Fetch user profile
   Future<CustomerProfile> fetchCustomerProfile(String userName) async {
     var url = baseUrl + "/api/v1/customer/" + userName;
-    var response = await http.get(url);
+    var uuid = Uuid();
+    var transactionId = uuid.v4();
+    var headers = {
+      "Content-type": "application/json",
+      "TransactionId": transactionId,
+      "DeviceType": Platform.isAndroid ? "Android" : "IOS",
+      "User-Agent": "Slydo-Mobile",
+    };
+    var response = await http.get(url, headers: headers);
 
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);

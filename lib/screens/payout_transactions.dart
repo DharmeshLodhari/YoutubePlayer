@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/tiles/payout_tile.dart';
 import 'package:Slydo/services/auth.dart';
@@ -83,14 +85,15 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
     return WillPopScope(
       onWillPop: () async {
         Navigator.pop(context);
-        Navigator.pushNamed(context, '/dashboard');
+        Navigator.pushNamed(context, '/dashboard',
+            arguments: {'dashboardIndex': 4});
         return false;
       },
       child: Scaffold(
         key: _scaffoldKey,
         backgroundColor: lightBlue(),
         appBar: AppBar(
-          automaticallyImplyLeading: true,
+          automaticallyImplyLeading: Platform.isAndroid ? false : true,
           backgroundColor: darkBlue(),
           title: Text('Bank Payout'),
         ),

@@ -76,10 +76,11 @@ class _SettingsListState extends State<SettingsList> {
             ),
           ],
         ),
-        body: Center(
+        body: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
           child: Container(
             color: lightBlue(),
-            padding: EdgeInsets.fromLTRB(0, 24, 0, 0),
+            padding: EdgeInsets.fromLTRB(0, 16, 0, 36),
             child: Center(
               child: Column(
                 children: <Widget>[
