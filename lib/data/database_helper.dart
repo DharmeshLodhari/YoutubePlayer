@@ -126,11 +126,14 @@ class DatabaseHelper {
     var dbClient = await db;
     var res = await dbClient.query("Jwt");
 
-    try {
-      return res[0];
-    } catch (e) {
-      throw e;
+    if (res != null) {
+      try {
+        return res[0];
+      } catch (e) {
+        throw e;
+      }
     }
+    return null;
   }
 
   // Device operation
@@ -145,6 +148,8 @@ class DatabaseHelper {
     } catch (e) {
       throw e;
     }
+
+    // if the dbClient.query return error
   }
 
   // delete device
@@ -156,6 +161,8 @@ class DatabaseHelper {
     } catch (e) {
       debugPrint(e.toString());
     }
+    // if the dbclient.delete return error
+    return 1000;
   }
 
   // save user's Device data to the db

@@ -57,6 +57,7 @@ class _BankAccountTileState extends State<BankAccountTile> {
   }
 }
 
+// ignore: must_be_immutable
 class AccountBalanceTile extends StatefulWidget {
   // Pass account balance
   String balance;

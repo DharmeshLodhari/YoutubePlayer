@@ -61,36 +61,45 @@ class _UserLoginState extends State<UserLogin> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: lightBlue(),
-        resizeToAvoidBottomInset: true,
-        appBar: AppBar(
-          title: Text('Login'),
-          backgroundColor: darkBlue(),
-          elevation: 0.0,
-        ),
-        body: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 40.0),
-          scrollDirection: Axis.vertical,
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                displayImage(),
-                phoneNumberField(),
-                SizedBox(height: 20.0),
-                passwordField(),
-                SizedBox(height: 20.0),
-                rememberLogin(),
-                SizedBox(height: 15),
-                forgotPasswordButton(),
-                SizedBox(height: 20),
-                submitButton(context),
-              ],
-            ),
+    return WillPopScope(
+      onWillPop: () {
+        if (FocusScope.of(context).hasFocus) {
+          FocusScope.of(context).unfocus();
+        }
+
+        return Future.value(true);
+      },
+      child: Scaffold(
+          backgroundColor: lightBlue(),
+          resizeToAvoidBottomInset: true,
+          appBar: AppBar(
+            title: Text('Login'),
+            backgroundColor: darkBlue(),
+            elevation: 0.0,
           ),
-        ));
+          body: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 40.0),
+            scrollDirection: Axis.vertical,
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  displayImage(),
+                  phoneNumberField(),
+                  SizedBox(height: 20.0),
+                  passwordField(),
+                  SizedBox(height: 20.0),
+                  rememberLogin(),
+                  SizedBox(height: 15),
+                  forgotPasswordButton(),
+                  SizedBox(height: 20),
+                  submitButton(context),
+                ],
+              ),
+            ),
+          )),
+    );
   }
 
   Widget displayImage() {
@@ -235,13 +244,13 @@ class _UserLoginState extends State<UserLogin> {
           await _sharedPreferences.setString('username', phoneNumber);
       bool passwordSet =
           await _sharedPreferences.setString('password', password);
+
       if (!isCheckedSet && !isLoggedOut && !usernameSet && !passwordSet) {
         Toast.show("User Not Saved !!!", context);
       }
     } else {
-      _sharedPreferences.setBool('isChecked', isChecked);
-
-      bool isSuccessFullyStored = await _sharedPreferences.commit();
+      bool isSuccessFullyStored =
+          await _sharedPreferences.setBool('isChecked', isChecked);
       if (!isSuccessFullyStored) {
         Toast.show("User Not Saved !!!", context);
       }
@@ -297,7 +306,7 @@ class _UserLoginState extends State<UserLogin> {
         Navigator.of(context).pushNamed('/forgot-password');
       },
       child: Align(
-        alignment: Alignment.centerLeft,
+        alignment: Alignment.centerRight,
         child: Text(
           "Forgot Password?",
           style: TextStyle(

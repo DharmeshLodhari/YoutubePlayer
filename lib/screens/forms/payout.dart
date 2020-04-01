@@ -33,6 +33,7 @@ class _PayoutState extends State<Payout> {
   @override
   void initState() {
     getAccountBalance();
+    super.initState();
   }
 
   @override

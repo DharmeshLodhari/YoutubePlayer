@@ -69,7 +69,7 @@ class _ResetPasswordState extends State<ResetPassword> {
       autofocus: false,
       maxLength: 4,
       maxLengthEnforced: true,
-      obscureText: false,
+      obscureText: true,
       keyboardType: TextInputType.number,
       decoration: InputDecoration(
           prefixIcon: Icon(Icons.dialpad),
@@ -102,7 +102,7 @@ class _ResetPasswordState extends State<ResetPassword> {
     return TextFormField(
       cursorColor: darkBlue(),
       autofocus: false,
-      obscureText: false,
+      obscureText: true,
       maxLength: 4,
       maxLengthEnforced: true,
       keyboardType: TextInputType.number,
@@ -154,7 +154,7 @@ class _ResetPasswordState extends State<ResetPassword> {
       FocusScope.of(context).unfocus();
     }
 
-    //TODO:CALL UPDATE PASSWORD API FOR CURRENT USER BY USING phoneNumber VARIABLE
+    //TODO: CALL UPDATE PASSWORD API FOR CURRENT USER BY USING phoneNumber VARIABLE
 
     if (_formKey.currentState.validate()) {
       Navigator.of(context).pop();

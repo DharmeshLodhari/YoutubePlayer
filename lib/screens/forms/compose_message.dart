@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
+// ignore: must_be_immutable
 class ComposeMessage extends StatefulWidget {
   var arguments;
   ComposeMessage({this.arguments});

@@ -6,6 +6,7 @@ import 'package:introduction_screen/introduction_screen.dart';
 import '../widget/exit_alert_dialog.dart';
 import 'colors.dart';
 
+// ignore: must_be_immutable
 class Home extends StatefulWidget {
   var arguments;
   Home({this.arguments});
@@ -172,11 +173,11 @@ class _HomeState extends State<Home> {
       child: Scaffold(
           backgroundColor: lightBlue(),
           resizeToAvoidBottomInset: true,
-          body: !isIntroDone ? introScreen() : HomeScreen()),
+          body: !isIntroDone ? introScreen() : homeScreen()),
     );
   }
 
-  Widget HomeScreen() {
+  Widget homeScreen() {
     return Center(
       child: Container(
         color: lightBlue(),

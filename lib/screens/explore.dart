@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/screens/tiles/user.dart';
-import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:flutter/material.dart';
 
@@ -37,7 +36,6 @@ class _ExploreListState extends State<ExploreList> {
   TextEditingController searchController;
   String searchedText = "";
   FocusNode searchFocus;
-  final _auth = AuthService();
   List<dynamic> searchedResult;
 
   @override

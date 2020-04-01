@@ -205,20 +205,9 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
     );
   }
 
-  Animation<double> _rotationAnimation;
-  Color _fabColor = Colors.blue;
+  void handleSlideAnimationChanged(Animation<double> slideAnimation) {}
 
-  void handleSlideAnimationChanged(Animation<double> slideAnimation) {
-    setState(() {
-      _rotationAnimation = slideAnimation;
-    });
-  }
-
-  void handleSlideIsOpenChanged(bool isOpen) {
-    setState(() {
-      _fabColor = isOpen ? Colors.green : Colors.blue;
-    });
-  }
+  void handleSlideIsOpenChanged(bool isOpen) {}
 
   void _showSnackBar(BuildContext context, String text) {
     _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(text)));

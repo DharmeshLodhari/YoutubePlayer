@@ -13,6 +13,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
 
+// ignore: must_be_immutable
 class SettingsList extends StatefulWidget {
   var arguments;
   SettingsList({this.arguments});
@@ -334,20 +335,9 @@ class _SettingsListState extends State<SettingsList> {
     ];
   }
 
-  Animation<double> _rotationAnimation;
-  Color _fabColor = Colors.blue;
+  void handleSlideAnimationChanged(Animation<double> slideAnimation) {}
 
-  void handleSlideAnimationChanged(Animation<double> slideAnimation) {
-    setState(() {
-      _rotationAnimation = slideAnimation;
-    });
-  }
-
-  void handleSlideIsOpenChanged(bool isOpen) {
-    setState(() {
-      _fabColor = isOpen ? Colors.green : Colors.blue;
-    });
-  }
+  void handleSlideIsOpenChanged(bool isOpen) {}
 }
 
 class VerticalListItem extends StatelessWidget {

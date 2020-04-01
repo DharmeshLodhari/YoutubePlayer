@@ -16,6 +16,7 @@ import 'request_payments_list.dart';
 import 'settings.dart';
 import 'transactions.dart';
 
+// ignore: must_be_immutable
 class Dashboard extends StatefulWidget {
   var arguments;
 
@@ -160,14 +161,6 @@ class _DashboardState extends State<Dashboard> {
     setState(() {
       _currentIndex = index;
     });
-  }
-
-  Future<Null> _navigateToItemDetail(Map<String, dynamic> message) async {
-    // When user clicks on the notification we can inspect message
-    // then redirect user to right screen but for now we have just transactions
-    //so we redirect to transactions
-    Navigator.popUntil(context, (Route<dynamic> route) => route is PageRoute);
-    Navigator.of(context).pushNamed('/transactions');
   }
 
   void setupNotification() async {

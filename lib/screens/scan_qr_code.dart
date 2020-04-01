@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:qr_code_scanner/qr_scanner_overlay_shape.dart';
 
+// ignore: must_be_immutable
 class QRCodeView extends StatefulWidget {
   var arguments;
 

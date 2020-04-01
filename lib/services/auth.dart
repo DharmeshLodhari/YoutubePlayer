@@ -213,6 +213,7 @@ class AuthService {
       return customerProfile;
     } else {
       debugPrint("Can't get https.");
+      return null;
     }
   }
 
@@ -513,8 +514,6 @@ class AuthService {
 
     if (response.statusCode == 200) {
       List<Payout> payouts = [];
-      // This variable will hold list of transactions we got from server
-      var user = await getUser();
       var jsonData = json.decode(response.body);
 
       for (var item in jsonData["results"]) {

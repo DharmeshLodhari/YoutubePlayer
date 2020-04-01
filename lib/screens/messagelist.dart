@@ -268,22 +268,11 @@ class _MessageListState extends State<MessageList> {
     }
   }
 
-  Animation<double> _rotationAnimation;
-  Color _fabColor = Colors.blue;
-
   //TODO:starred, archived, delete, markedAsread
 
-  void handleSlideAnimationChanged(Animation<double> slideAnimation) {
-    setState(() {
-      _rotationAnimation = slideAnimation;
-    });
-  }
+  void handleSlideAnimationChanged(Animation<double> slideAnimation) {}
 
-  void handleSlideIsOpenChanged(bool isOpen) {
-    setState(() {
-      _fabColor = isOpen ? Colors.green : Colors.blue;
-    });
-  }
+  void handleSlideIsOpenChanged(bool isOpen) {}
 
   void _showSnackBar(BuildContext context, String text) {
     _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(text)));
@@ -459,7 +448,6 @@ class _MessageListState extends State<MessageList> {
 class VerticalListItem extends StatelessWidget {
   VerticalListItem(this.partialMessage);
   final PartialMessage partialMessage;
-  final _auth = AuthService();
 
   @override
   Widget build(BuildContext context) {
