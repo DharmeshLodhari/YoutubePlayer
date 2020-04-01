@@ -464,4 +464,3 @@ class VerticalListItem extends StatelessWidget {
   }
 }
 
-enum LoadMoreData { LOADING, STABLE }

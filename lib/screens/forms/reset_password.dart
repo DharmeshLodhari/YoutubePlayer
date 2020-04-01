@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../colors.dart';
 
+// ignore: must_be_immutable
 class ResetPassword extends StatefulWidget {
   var arguments;
 
