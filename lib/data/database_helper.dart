@@ -66,6 +66,7 @@ class DatabaseHelper {
   Future<int> saveUser(User user) async {
     var dbClient = await db;
     int res = await dbClient.insert("User", user.toMap());
+    debugPrint("User saved to db");
     return res;
   }
 
@@ -73,6 +74,7 @@ class DatabaseHelper {
   Future<int> deleteUsers() async {
     var dbClient = await db;
     int res = await dbClient.delete("User");
+    debugPrint("User deleted");
     return res;
   }
 
@@ -102,7 +104,12 @@ class DatabaseHelper {
           password: obj["password"]);
       users.add(u);
     }
-    return users[0];
+
+    try {
+      return users[0];
+    } catch (e) {
+      return null;
+    }
   }
 
   // Jwt operations
@@ -111,6 +118,7 @@ class DatabaseHelper {
   Future<int> saveJwt(Map<String, dynamic> data) async {
     var dbClient = await db;
     int res = await dbClient.insert("Jwt", data);
+    debugPrint("Jwt saved to db");
     return res;
   }
 
@@ -118,6 +126,7 @@ class DatabaseHelper {
   Future<int> deleteJwt() async {
     var dbClient = await db;
     int res = await dbClient.delete("Jwt");
+    debugPrint("Jwt deleted from db");
     return res;
   }
 

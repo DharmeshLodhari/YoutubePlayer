@@ -85,10 +85,10 @@ class AuthService {
       jsonData["url"] = baseUrl + "/api/v1/customer/" + jsonData["username"];
 
       // Delete user from db if one exist
-      deleteUsers();
+      await deleteUsers();
 
       // Delete jwt from db if one exist
-      deleteJwt();
+      await deleteJwt();
 
       // Save user to database
       User user = createUser(
@@ -103,7 +103,7 @@ class AuthService {
         jsonData["default_currency"],
       );
 
-      _db.saveJwt(data);
+      await _db.saveJwt(data);
 
       return user;
     }
