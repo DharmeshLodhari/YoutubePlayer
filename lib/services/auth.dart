@@ -51,7 +51,7 @@ class AuthService {
     // a user instance which we should pass around throughout the application as
     // the auth user.
 
-    var url = baseUrl + "/api/v1/auth/get-token/";
+    var url = baseUrl + "/api/v1/user/auth/get-token/";
     var uuid = Uuid();
     var transactionId = uuid.v4();
     var headers = {
@@ -82,7 +82,7 @@ class AuthService {
       data["expiration"] = expirationTime.toString();
 
       jsonData["password"] = password;
-      jsonData["url"] = baseUrl + "/api/v1/customer/" + jsonData["username"];
+      jsonData["url"] = baseUrl + "/api/v1/user/customer/" + jsonData["username"];
 
       // Delete user from db if one exist
       await deleteUsers();
@@ -120,7 +120,7 @@ class AuthService {
 
   // Log user out
   Future<void> logOut() async {
-    var url = baseUrl + "/api/v1/auth/logout/";
+    var url = baseUrl + "/api/v1/user/auth/logout/";
     var headers = await getAuthHeaders();
     await http.get(url, headers: headers);
     await deleteUsers();
@@ -191,7 +191,7 @@ class AuthService {
 
   // Fetch user profile
   Future<CustomerProfile> fetchCustomerProfile(String userName) async {
-    var url = baseUrl + "/api/v1/customer/" + userName;
+    var url = baseUrl + "/api/v1/user/customer/" + userName;
     var uuid = Uuid();
     var transactionId = uuid.v4();
     var headers = {
@@ -221,7 +221,7 @@ class AuthService {
   Future<CustomerProfile> updateCustomerAvatar(File avatar) async {
     User user = await getUser();
     var headers = await getAuthHeaders();
-    var url = baseUrl + "/api/v1/update-avatar/" + user.userName;
+    var url = baseUrl + "/api/v1/user/update-avatar/" + user.userName;
 
     if (avatar != null) {
       var avatarPath = avatar.path;
@@ -263,7 +263,7 @@ class AuthService {
   // Register the user with the backend servers
   Future<bool> userRegistration(Map _body) async {
     var data = {};
-    var url = baseUrl + "/api/v1/account/";
+    var url = baseUrl + "/api/v1/user/account/";
 
     // Convert to what the server is expecting
     data["password1"] = _body["password1"];
