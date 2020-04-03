@@ -21,7 +21,6 @@ class _RegistrationState extends State<Registration> {
     //TODO: third page user can Upload with onfido
     //TODO: fourth page Registration Button
     //TODO: fifth page enter verification code
-
     //TODO: LOGGED the user in after registration
 
     pageModel = [

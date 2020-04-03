@@ -285,7 +285,9 @@ class _UserLoginState extends State<UserLogin> {
                 if (_bankAccount != null) {
                   bankAccountBloc.bankAccount = _bankAccount;
                 }
-              } catch (e) {}
+              } catch (e) {
+                debugPrint(e);
+              }
             });
           }
 

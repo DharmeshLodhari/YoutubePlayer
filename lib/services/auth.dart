@@ -82,13 +82,14 @@ class AuthService {
       data["expiration"] = expirationTime.toString();
 
       jsonData["password"] = password;
-      jsonData["url"] = baseUrl + "/api/v1/user/customer/" + jsonData["username"];
+      jsonData["url"] =
+          baseUrl + "/api/v1/user/customer/" + jsonData["username"];
 
       // Delete user from db if one exist
-      await deleteUsers();
+      deleteUsers();
 
       // Delete jwt from db if one exist
-      await deleteJwt();
+      deleteJwt();
 
       // Save user to database
       User user = createUser(
@@ -103,7 +104,7 @@ class AuthService {
         jsonData["default_currency"],
       );
 
-      await _db.saveJwt(data);
+      _db.saveJwt(data);
 
       return user;
     }
@@ -517,7 +518,9 @@ class AuthService {
       var jsonData = json.decode(response.body);
 
       for (var item in jsonData["results"]) {
-        var timeStamp = item["credited_at"] == null ? item["created_at"]:item["credited_at"];
+        var timeStamp = item["credited_at"] == null
+            ? item["created_at"]
+            : item["credited_at"];
 
         Payout payout = Payout(
           uuid: item['id'],
@@ -643,6 +646,61 @@ class AuthService {
       return true;
     } else {
       return false;
+    }
+  }
+
+  // it will register the phone number to get OTP
+  Future<bool> registerPhoneNumber(String phoneNumber) async {
+    var url = baseUrl + "/api/v1/sms/register-phone-number";
+    var headers = await getAuthHeaders();
+    var data = {
+      "phone": phoneNumber,
+    };
+    var _data = jsonEncode(data);
+    var response = await http.post(url, body: _data, headers: headers);
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  // it will verify the phone number to  OTP
+  Future<String> verifyPhoneNumber(String phoneNumber, String OTP) async {
+    var url = baseUrl + "/api/v1/sms/verify";
+    var headers = await getAuthHeaders();
+    var data = {
+      "phone": phoneNumber,
+      "code": OTP,
+    };
+    var _data = jsonEncode(data);
+    var response = await http.post(url, body: _data, headers: headers);
+    var jsonData = json.decode(response.body);
+    if (response.statusCode == 200) {
+      var resetToken = jsonData['reset-token'];
+      return resetToken;
+    } else {
+      throw jsonData;
+    }
+  }
+
+  // it will verify the phone number to  OTP
+  Future<bool> passwordReset(
+      String passwordOne, String passwordTwo, String resetToken) async {
+    var url = baseUrl + "/api/v1/user/auth/password-reset";
+    var headers = await getAuthHeaders();
+    var data = {
+      "password1": passwordOne,
+      "password2": passwordTwo,
+      "reset-token": resetToken,
+    };
+    var _data = jsonEncode(data);
+    var response = await http.patch(url, body: _data, headers: headers);
+    var jsonData = json.decode(response.body);
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      throw jsonData;
     }
   }
 
