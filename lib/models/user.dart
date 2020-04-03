@@ -8,18 +8,21 @@ class User {
   String qrCode;
   String password;
   String currency;
+  bool isVerified;
 
   // Pass in as named parameter in constructor
-  User(
-      {this.uuid,
-      this.url,
-      this.phoneNumber,
-      this.fullName,
-      this.userName,
-      this.avatar,
-      this.qrCode,
-      this.password,
-      this.currency = "€"});
+  User({
+    this.uuid,
+    this.url,
+    this.phoneNumber,
+    this.fullName,
+    this.userName,
+    this.avatar,
+    this.qrCode,
+    this.password,
+    this.currency = "€",
+    this.isVerified = false,
+  });
 
   bool isAuthenticated() {
     //  We should check here if instance has username then user is not Anonymous

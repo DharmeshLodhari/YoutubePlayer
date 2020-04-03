@@ -257,8 +257,12 @@ class _SignUpState extends State<SignUp> {
 //            _auth.userRegistration(data).then((value) {
 //              isRegistered = value;
 //              if (isRegistered) {
-            Navigator.pop(context);
-            Navigator.of(context).popAndPushNamed('/add-document');
+//            _auth.authenticate(phoneNumber, password1).then((value){
+              Navigator.pop(context);
+              Navigator.of(context).popAndPushNamed('/add-document');
+
+//            });
+
 //              }
 //            });
           } else {

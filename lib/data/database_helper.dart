@@ -36,6 +36,7 @@ class DatabaseHelper {
       // when we upgrade and database has changed we should put our migration statement over here
       // db.execute("ALTER TABLE table_name ADD column_name TEXT;")  adding column
       // db.execute("ALTER TABLE table_name DROP column_name;")  adding column
+//      db.execute("ALTER TABLE User ADD is_verified INTEGER;");
     } else {
       debugPrint("No migrations to apply");
     }
@@ -94,14 +95,16 @@ class DatabaseHelper {
 
     for (var obj in res) {
       var u = User(
-          uuid: obj["uuid"],
-          url: obj["url"],
-          phoneNumber: obj["phoneNumber"],
-          fullName: obj["fullName"],
-          userName: obj["userName"],
-          avatar: obj["avatar"],
-          qrCode: obj["qrCode"],
-          password: obj["password"]);
+        uuid: obj["uuid"],
+        url: obj["url"],
+        phoneNumber: obj["phoneNumber"],
+        fullName: obj["fullName"],
+        userName: obj["userName"],
+        avatar: obj["avatar"],
+        qrCode: obj["qrCode"],
+        password: obj["password"],
+        isVerified: obj["is_verified"],
+      );
       users.add(u);
     }
 

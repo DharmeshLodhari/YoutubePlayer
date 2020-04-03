@@ -1,8 +1,11 @@
 import 'dart:io';
 
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/colors.dart';
+import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 //TODO: 1 select document [passport]
 //TODO: 2 Passport screen scan user's passport by camera or pick picture from the page
@@ -368,20 +371,6 @@ class _AddDocumentState extends State<AddDocument> {
           height: 300,
           width: double.infinity,
         ),
-        MaterialButton(
-          child: Text(
-            "Upload Image",
-            style: TextStyle(color: Colors.white),
-          ),
-          onPressed: () {
-            ImagePicker.pickImage(source: ImageSource.gallery).then((value) {
-              setState(() {
-                userImage = value;
-              });
-            });
-          },
-          color: darkBlue(),
-        ),
         SizedBox(
           height: 10,
         ),
@@ -409,7 +398,15 @@ class _AddDocumentState extends State<AddDocument> {
                 ),
                 color: darkBlue(),
                 onPressed: () {
-                  Navigator.of(context).popAndPushNamed('/login');
+                  //TODO: call the api with the documentPhoto and userPhoto
+                  final _auth = AuthService();
+                  final userBloc = Provider.of<UserBloc>(context,listen:false);
+                  _auth.verifyUserDetail(documentImage, userImage).then((user) {
+                    if (user.isVerified) {
+                      userBloc.user = user;
+                      Navigator.of(context).popAndPushNamed('/dashboard');
+                    }
+                  });
                 },
               )
             : Container(),

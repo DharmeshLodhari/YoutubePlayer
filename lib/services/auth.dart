@@ -18,26 +18,30 @@ class AuthService {
 
   // This function creates a user object from named args passed in
   User createUser(
-      String uuid,
-      String url,
-      String phoneNumber,
-      String fullName,
-      String username,
-      String avatar,
-      String qrCode,
-      String password,
-      String currency) {
+    String uuid,
+    String url,
+    String phoneNumber,
+    String fullName,
+    String username,
+    String avatar,
+    String qrCode,
+    String password,
+    String currency,
+    bool isVerified,
+  ) {
     // Create user instance
     User _user = User(
-        uuid: uuid,
-        url: url,
-        phoneNumber: phoneNumber,
-        fullName: fullName,
-        userName: username,
-        avatar: avatar,
-        qrCode: qrCode,
-        password: password,
-        currency: currency);
+      uuid: uuid,
+      url: url,
+      phoneNumber: phoneNumber,
+      fullName: fullName,
+      userName: username,
+      avatar: avatar,
+      qrCode: qrCode,
+      password: password,
+      currency: currency,
+      isVerified: isVerified,
+    );
 
     _db.saveUser(_user);
     return _user;
@@ -102,6 +106,7 @@ class AuthService {
         jsonData["qr_code"],
         jsonData["password"],
         jsonData["default_currency"],
+        jsonData["is_verified"] ?? false,
       );
 
       _db.saveJwt(data);
@@ -253,6 +258,57 @@ class AuthService {
           qrCode: jsonData["qr_code"],
         );
         return customerProfile;
+      } else {
+        throw responseBody;
+      }
+    } else {
+      throw "Can't get https.";
+    }
+  }
+
+  Future<User> verifyUserDetail(File documentPhoto, File userPhoto) async {
+    User user = await getUser();
+    var headers = await getAuthHeaders();
+    var url = baseUrl + "/api/v1/user/verify-user/" + user.userName;
+
+    if (documentPhoto != null && userPhoto != null) {
+      var document = documentPhoto.path;
+      var selfy = userPhoto.path;
+      //create multipart request for POST or PATCH method
+      var request = http.MultipartRequest("PATCH", Uri.parse(url));
+
+      //add fields
+      request.fields["document"] = document;
+      request.fields["selfy"] = selfy;
+
+      //create multipart using filepath, string or bytes
+      var multipartFile1 =
+          await http.MultipartFile.fromPath("document", document);
+      var multipartFile2 = await http.MultipartFile.fromPath("selfy", selfy);
+
+      //add multipart to request
+      request.files.add(multipartFile1);
+      request.files.add(multipartFile2);
+      headers.forEach((k, v) => request.headers[k] = v);
+      var response = await request.send();
+
+      var responseBody = await response.stream.bytesToString();
+      if (response.statusCode == 200) {
+        var jsonData = json.decode(responseBody);
+
+        User user = createUser(
+          jsonData["uuid"],
+          jsonData["url"],
+          jsonData["phone_number"],
+          jsonData["full_name"],
+          jsonData["username"],
+          jsonData["avatar"],
+          jsonData["qr_code"],
+          jsonData["password"],
+          jsonData["default_currency"],
+          jsonData["is_verified"] ?? true,
+        );
+        return user;
       } else {
         throw responseBody;
       }
