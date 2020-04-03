@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 
 import 'colors.dart';
@@ -14,6 +15,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   final _formKey = GlobalKey<FormState>();
   String sentOTP = "";
   String phoneNumber = "";
+  final _auth = AuthService();
 
   @override
   Widget build(BuildContext context) {
@@ -113,6 +115,9 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         }
         return null;
       },
+      onChanged: (val) {
+        sentOTP = val;
+      },
     );
   }
 
@@ -136,9 +141,11 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     }
 
     if (_formKey.currentState.validate()) {
-      //TODO: NAVIGATE TO THE RESET PASSWORD SCREEN
-      Navigator.of(context).popAndPushNamed('/reset-password',
-          arguments: {'phoneNumber': phoneNumber});
+      _auth.verifyPhoneNumber(phoneNumber, sentOTP).then((value) {
+        String resetToken = value;
+        Navigator.of(context).popAndPushNamed('/reset-password',
+            arguments: {'phoneNumber': phoneNumber, "resetToken": resetToken});
+      });
     }
   }
 
@@ -147,14 +154,12 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     if (FocusScope.of(context).hasFocus) {
       FocusScope.of(context).unfocus();
     }
-
-    //TODO: CALL SENDING OTP API TO SEND OTP TO USER AND STORE OTP IN BELOW VARIALBE
-    sentOTP = "123456";
-
-    if (_formKey.currentState.validate()) {
-      setState(() {
-        isOTPSent = true;
-      });
-    }
+    _auth.registerPhoneNumber(phoneNumber).then((value) {
+      if (_formKey.currentState.validate()) {
+        setState(() {
+          isOTPSent = true;
+        });
+      }
+    });
   }
 }

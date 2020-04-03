@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 
 import '../colors.dart';
@@ -18,14 +19,17 @@ class _ResetPasswordState extends State<ResetPassword> {
   var arguments;
   _ResetPasswordState({@required this.arguments});
 
+  final _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
   String newPassword = "";
   String confirmPassword = "";
   String phoneNumber = "";
+  String resetToken = "";
 
   @override
   void initState() {
     phoneNumber = arguments['phoneNumber'];
+    resetToken = arguments['resetToken'];
     super.initState();
   }
 
@@ -57,7 +61,8 @@ class _ResetPasswordState extends State<ResetPassword> {
                     SizedBox(
                       height: 20,
                     ),
-                    resetPasswordButton()
+                    resetPasswordButton(),
+                    Text(resetToken)
                   ],
                 ),
               ),
@@ -155,10 +160,14 @@ class _ResetPasswordState extends State<ResetPassword> {
       FocusScope.of(context).unfocus();
     }
 
-    //TODO: CALL UPDATE PASSWORD API FOR CURRENT USER BY USING phoneNumber VARIABLE
-
     if (_formKey.currentState.validate()) {
-      Navigator.of(context).pop();
+      _auth
+          .passwordReset(newPassword, confirmPassword, resetToken)
+          .then((value) {
+        if (value) {
+          Navigator.of(context).pop();
+        }
+      });
     }
   }
 }

@@ -649,10 +649,22 @@ class AuthService {
     }
   }
 
+  Map getNonAuthHeader() {
+    var uuid = Uuid();
+    var transactionId = uuid.v4();
+    var headers = {
+      "Content-type": "application/json",
+      "TransactionId": transactionId,
+      "DeviceType": Platform.isAndroid ? "Android" : "IOS",
+      "User-Agent": "Slydo-Mobile",
+    };
+    return headers;
+  }
+
   // it will register the phone number to get OTP
   Future<bool> registerPhoneNumber(String phoneNumber) async {
-    var url = baseUrl + "/api/v1/sms/register-phone-number";
-    var headers = await getAuthHeaders();
+    var url = baseUrl + "/api/v1/sms/register-phone-number/";
+    var headers = getNonAuthHeader();
     var data = {
       "phone": phoneNumber,
     };
@@ -661,20 +673,22 @@ class AuthService {
     if (response.statusCode == 200) {
       return true;
     } else {
-      return false;
+      throw response.body;
     }
   }
 
   // it will verify the phone number to  OTP
   Future<String> verifyPhoneNumber(String phoneNumber, String OTP) async {
-    var url = baseUrl + "/api/v1/sms/verify";
+    var url = baseUrl + "/api/v1/sms/verify/";
     var headers = await getAuthHeaders();
     var data = {
       "phone": phoneNumber,
       "code": OTP,
+      "password-token": "true",
     };
     var _data = jsonEncode(data);
     var response = await http.post(url, body: _data, headers: headers);
+    debugPrint("${response.body}");
     var jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
       var resetToken = jsonData['reset-token'];
@@ -687,7 +701,7 @@ class AuthService {
   // it will verify the phone number to  OTP
   Future<bool> passwordReset(
       String passwordOne, String passwordTwo, String resetToken) async {
-    var url = baseUrl + "/api/v1/user/auth/password-reset";
+    var url = baseUrl + "/api/v1/user/auth/password-reset/";
     var headers = await getAuthHeaders();
     var data = {
       "password1": passwordOne,
@@ -696,6 +710,7 @@ class AuthService {
     };
     var _data = jsonEncode(data);
     var response = await http.patch(url, body: _data, headers: headers);
+    debugPrint("${response.statusCode}");
     var jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
       return true;
