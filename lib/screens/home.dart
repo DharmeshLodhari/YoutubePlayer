@@ -226,7 +226,7 @@ class _HomeState extends State<Home> {
       child: MaterialButton(
         minWidth: double.infinity,
         onPressed: () {
-          Navigator.of(context).pushNamed('/register');
+          Navigator.of(context).pushNamed('/new-registration');
         },
         textColor: Colors.white,
         color: darkBlue(),

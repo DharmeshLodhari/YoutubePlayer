@@ -1,6 +1,14 @@
-import 'package:Slydo/widget/exit_alert_dialog.dart';
+//TODO: first page select the country
+//TODO: Second page Enter the PhoneNumber and registration data
+//TODO: third page user can Upload with onfido
+//TODO: fourth page Registration Button
+//TODO: fifth page enter verification code
+//TODO: LOGGED the user in after registration
+
+import 'dart:io';
+
+import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
-import 'package:introduction_screen/introduction_screen.dart';
 
 import 'colors.dart';
 
@@ -10,196 +18,159 @@ class Registration extends StatefulWidget {
 }
 
 class _RegistrationState extends State<Registration> {
-  List<PageViewModel> pageModel;
-  //intro screen page index
-  int currentIndex = 0;
+  bool isOTPSent = false;
+  final _formKey = GlobalKey<FormState>();
+  String sentOTP = "";
+  String phoneNumber = "";
+  final _auth = AuthService();
 
   @override
-  void initState() {
-    //TODO: first page select the country
-    //TODO: Second page Enter the PhoneNumber and registration data
-    //TODO: third page user can Upload with onfido
-    //TODO: fourth page Registration Button
-    //TODO: fifth page enter verification code
-    //TODO: LOGGED the user in after registration
-
-    pageModel = [
-      PageViewModel(
-        decoration: PageDecoration(
-            pageColor: lightBlue(),
-            imagePadding: EdgeInsets.fromLTRB(0.0, 70, 0, 0),
-            titlePadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
-            contentPadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
-            descriptionPadding: EdgeInsets.fromLTRB(20, 30, 20, 0)),
-        titleWidget: Text(
-          "Scan QR Code",
-          style: TextStyle(
-              fontSize: 25, fontWeight: FontWeight.bold, color: Colors.white),
-        ),
-        bodyWidget: Column(
-          children: <Widget>[
-            Text(
-              "Slydo allows you to send and receive\npayments instantly in Africa",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.white),
-            ),
-          ],
-        ),
-        image: Padding(
-          padding: EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
-          child: Image.asset(
-            'assets/images/Group16@2x.png',
-            scale: 1,
-          ),
-        ),
-      ),
-      PageViewModel(
-        decoration: PageDecoration(
-            pageColor: lightBlue(),
-            imagePadding: EdgeInsets.fromLTRB(0.0, 70, 0, 0),
-            titlePadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
-            contentPadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
-            descriptionPadding: EdgeInsets.fromLTRB(20, 30, 20, 0)),
-        titleWidget: Text(
-          "Send Payment",
-          style: TextStyle(
-              fontSize: 25, fontWeight: FontWeight.bold, color: Colors.white),
-        ),
-        bodyWidget: Column(
-          children: <Widget>[
-            Text(
-              "Slydo allows you to send and receive\npayments instantly in Africa",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.white),
-            ),
-          ],
-        ),
-        image: Padding(
-          padding: EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
-          child: Image.asset(
-            'assets/images/Group15@2x.png',
-            scale: 1,
-          ),
-        ),
-      ),
-      PageViewModel(
-        decoration: PageDecoration(
-            pageColor: lightBlue(),
-            imagePadding: EdgeInsets.fromLTRB(0.0, 70, 0, 0),
-            titlePadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
-            contentPadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
-            descriptionPadding: EdgeInsets.fromLTRB(20, 30, 20, 0)),
-        titleWidget: Text(
-          "View transactions",
-          style: TextStyle(
-              fontSize: 25, fontWeight: FontWeight.bold, color: Colors.white),
-        ),
-        bodyWidget: Column(
-          children: <Widget>[
-            Text(
-              "Slydo allows you to send and receive\npayments instantly in Africa",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.white),
-            ),
-          ],
-        ),
-        image: Padding(
-          padding: EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
-          child: Image.asset(
-            'assets/images/Group14@2x.png',
-            scale: 1,
-          ),
-        ),
-      ),
-      PageViewModel(
-        decoration: PageDecoration(
-            pageColor: lightBlue(),
-            imagePadding: EdgeInsets.fromLTRB(0.0, 70, 0, 0),
-            titlePadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
-            contentPadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
-            descriptionPadding: EdgeInsets.fromLTRB(20, 30, 20, 0)),
-        titleWidget: Text(
-          "View transactions",
-          style: TextStyle(
-              fontSize: 25, fontWeight: FontWeight.bold, color: Colors.white),
-        ),
-        bodyWidget: Column(
-          children: <Widget>[
-            Text(
-              "Slydo allows you to send and receive\npayments instantly in Africa",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.white),
-            ),
-          ],
-        ),
-        image: Padding(
-          padding: EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
-          child: Image.asset(
-            'assets/images/Group13@2x.png',
-            scale: 1,
-          ),
-        ),
-      ),
-    ];
-    super.initState();
-  }
-
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async {
-        showDialog(
-          context: context,
-          builder: (context) => ExitAlertDialog(),
-        );
+        onWillPop: () async {
+          Navigator.pop(context);
+          return false;
+        },
+        child: Scaffold(
+            backgroundColor: lightBlue(),
+            resizeToAvoidBottomInset: true,
+            appBar: AppBar(
+                automaticallyImplyLeading: Platform.isAndroid ? false : true,
+                title: Center(child: Text("Sign Up")),
+                backgroundColor: darkBlue()),
+            body: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(vertical: 40.0, horizontal: 40.0),
+              scrollDirection: Axis.vertical,
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: <Widget>[
+                    getPhoneNumberWidget(),
+                    isOTPSent
+                        ? SizedBox(
+                            height: 20,
+                          )
+                        : Container(),
+                    isOTPSent ? getVerificationOTPWidget() : Container(),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    submitButton()
+                  ],
+                ),
+              ),
+            )));
+  }
 
-        return false;
+  getPhoneNumberWidget() {
+    return TextFormField(
+      cursorColor: darkBlue(),
+      enabled: isOTPSent ? false : true,
+      autofocus: false,
+      obscureText: false,
+      keyboardType: TextInputType.phone,
+      decoration: InputDecoration(
+          prefixIcon: Icon(
+              Platform.isAndroid ? Icons.phone_android : Icons.phone_iphone),
+          fillColor: Colors.white,
+          filled: true,
+          hintText: "Enter Your Phone Number",
+          labelStyle: TextStyle(
+            color: darkBlue(),
+            fontSize: 16,
+          ),
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(4)),
+              borderSide: BorderSide(
+                  width: 1, color: Colors.white, style: BorderStyle.solid))),
+      validator: (val) {
+        if (val.isNotEmpty && val.length == 13) {
+          return null;
+        }
+        return "Invalid phone number";
       },
-      child: Scaffold(
-          backgroundColor: lightBlue(),
-          resizeToAvoidBottomInset: true,
-          body: introScreen()),
+      onChanged: (val) {
+        phoneNumber = val;
+      },
     );
   }
 
-  introScreen() {
-    return IntroductionScreen(
-      initialPage: currentIndex,
-      showSkipButton: true,
-      skip: const Text("Skip",
-          style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white)),
-      done: const Text("Done",
-          style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white)),
-      dotsDecorator: DotsDecorator(
-          size: const Size.square(10.0),
-          activeSize: const Size(20.0, 10.0),
-          activeColor: darkBlue(),
-          color: Colors.black26,
-          spacing: const EdgeInsets.symmetric(horizontal: 3.0),
-          activeShape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(25.0))),
-      onDone: () {
-        setState(() {
-//          isIntroDone = true;
-        });
+  Widget getVerificationOTPWidget() {
+    return TextFormField(
+      cursorColor: darkBlue(),
+      autofocus: false,
+      obscureText: false,
+      keyboardType: TextInputType.phone,
+      decoration: InputDecoration(
+          prefixIcon: Icon(Icons.dialpad),
+          fillColor: Colors.white,
+          filled: true,
+          hintText: "Enter Your OTP Here",
+          labelStyle: TextStyle(
+            color: darkBlue(),
+            fontSize: 16,
+          ),
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(4)),
+              borderSide: BorderSide(
+                  width: 1, color: Colors.white, style: BorderStyle.solid))),
+      validator: (val) {
+        if (val.isEmpty) {
+          return "Please Enter OTP";
+        } else if (val.length != 6 || val != sentOTP) {
+          return "Invalid OTP";
+        }
+        return null;
       },
-      onChange: (index) {
-        setState(() {
-          currentIndex = index;
-        });
+      onChanged: (val) {
+        sentOTP = val;
       },
-      pages: pageModel,
     );
+  }
+
+  Widget submitButton() {
+    return ButtonTheme(
+      minWidth: double.infinity,
+      child: MaterialButton(
+        onPressed: isOTPSent ? verifyOTP : sendOTP,
+        textColor: Colors.white,
+        color: darkBlue(),
+        height: 50,
+        child: Text(isOTPSent ? "Verify OTP" : "Continue"),
+      ),
+    );
+  }
+
+  void verifyOTP() {
+    //for closing the keypad if it is open
+    if (FocusScope.of(context).hasFocus) {
+      FocusScope.of(context).unfocus();
+    }
+
+    if (_formKey.currentState.validate()) {
+      //TODO: Call THE verify MOBILE NUMBER api
+//      _auth.verifyPhoneNumber(phoneNumber, sentOTP).then((value) {
+      String resetToken = "value";
+      Navigator.of(context).popAndPushNamed('/register', arguments: {
+        'phoneNumber': phoneNumber,
+      });
+//      });
+    }
+  }
+
+  void sendOTP() {
+    //for closing the keypad if it is open
+    if (FocusScope.of(context).hasFocus) {
+      FocusScope.of(context).unfocus();
+    }
+    sentOTP = "123456";
+    //TODO: Call THE REGISTER MOBILE NUMBER api
+//    _auth.registerPhoneNumber(phoneNumber).then((value) {
+    if (_formKey.currentState.validate()) {
+      setState(() {
+        isOTPSent = true;
+      });
+    }
+//    });
   }
 }

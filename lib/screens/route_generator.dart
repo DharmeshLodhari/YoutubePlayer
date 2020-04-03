@@ -1,3 +1,4 @@
+import 'package:Slydo/screens/add_document.dart';
 import 'package:Slydo/screens/dashboard.dart';
 import 'package:Slydo/screens/explore.dart';
 import 'package:Slydo/screens/forgot_password.dart';
@@ -21,6 +22,7 @@ import 'package:flutter/material.dart';
 
 import 'detailed_message.dart';
 import 'forms/payout.dart';
+import 'new_registration.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -40,8 +42,15 @@ class RouteGenerator {
             builder: (_) => Dashboard(
                   arguments: settings.arguments,
                 ));
+      case '/new-registration':
+        return MaterialPageRoute(builder: (_) => Registration());
       case '/register':
-        return MaterialPageRoute(builder: (_) => SignUp());
+        return MaterialPageRoute(
+            builder: (_) => SignUp(
+                  arguments: settings.arguments,
+                ));
+      case '/add-document':
+        return MaterialPageRoute(builder: (_) => AddDocument());
       case '/profile':
         return MaterialPageRoute(builder: (_) => Profile());
       case '/accounts':

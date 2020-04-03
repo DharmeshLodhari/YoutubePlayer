@@ -1,3 +1,7 @@
+//TODO: first page take phone number and verify OTP and submit Button
+//TODO: Second Screen registration screen with disabled phone number take password and register Button
+//TODO: Third page add Document
+
 import 'dart:io';
 
 import 'package:Slydo/screens/colors.dart';
@@ -8,11 +12,17 @@ import 'package:toast/toast.dart';
 import '../../widget/LoadingIndicator.dart';
 
 class SignUp extends StatefulWidget {
+  var arguments;
+  SignUp({@required this.arguments});
+
   @override
-  _SignUpState createState() => _SignUpState();
+  _SignUpState createState() => _SignUpState(arguments: arguments);
 }
 
 class _SignUpState extends State<SignUp> {
+  var arguments;
+  _SignUpState({@required this.arguments});
+
   final _formKey = GlobalKey<FormState>();
   final _auth = AuthService();
 
@@ -20,6 +30,12 @@ class _SignUpState extends State<SignUp> {
   String fullName = '';
   String password1 = '';
   String password2 = '';
+
+  @override
+  void initState() {
+    phoneNumber = arguments['phoneNumber'];
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,8 +87,10 @@ class _SignUpState extends State<SignUp> {
 
   Widget getPhoneNumberField() {
     return TextFormField(
+      enabled: false,
       cursorColor: darkBlue(),
       autofocus: false,
+      initialValue: phoneNumber,
       obscureText: false,
       keyboardType: TextInputType.phone,
       decoration: InputDecoration(
@@ -96,11 +114,6 @@ class _SignUpState extends State<SignUp> {
           return null;
         }
         return "Invalid phone number";
-      },
-      onChanged: (val) {
-        setState(() {
-          phoneNumber = val;
-        });
       },
     );
   }
@@ -225,6 +238,9 @@ class _SignUpState extends State<SignUp> {
       minWidth: double.infinity,
       child: MaterialButton(
         onPressed: () async {
+          if (FocusScope.of(context).hasFocus) {
+            FocusScope.of(context).unfocus();
+          }
           if (_formKey.currentState.validate()) {
             Map data = {
               "phoneNumber": phoneNumber,
@@ -236,13 +252,15 @@ class _SignUpState extends State<SignUp> {
             showDialog(
                 context: context, builder: (context) => LoadingIndicator());
 
+            //TODO: Call The USER REGISTRATION API
             bool isRegistered;
-            _auth.userRegistration(data).then((value) {
-              isRegistered = value;
-              if (isRegistered) {
-                Navigator.of(context).pushNamed('/login');
-              }
-            });
+//            _auth.userRegistration(data).then((value) {
+//              isRegistered = value;
+//              if (isRegistered) {
+            Navigator.pop(context);
+            Navigator.of(context).popAndPushNamed('/add-document');
+//              }
+//            });
           } else {
             var msg = "Invalid Details !!";
             Toast.show(msg, context,
