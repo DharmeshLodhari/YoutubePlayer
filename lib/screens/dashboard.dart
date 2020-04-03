@@ -81,7 +81,7 @@ class _DashboardState extends State<Dashboard> {
   // ignore: missing_return
   Future onSelectNotification(String payload) {
     // example of notification response
-    // {body: pankaj.sakariya sent you a message,
+    // {body: abiola.rasheed.2 sent you a message,
     // title: You've Got Mail, vibrate: [200,100,200,100,200,100,400],
     // icon: null, badge: null, sound: null, link: null, tag: null, dir: auto,
     // actions: /detail_message/40892023-fa43-4652-b3eb-fd584f6530e9}
