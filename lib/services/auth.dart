@@ -737,7 +737,7 @@ class AuthService {
   // it will verify the phone number to  OTP
   Future<String> verifyPhoneNumber(String phoneNumber, String OTP) async {
     var url = baseUrl + "/api/v1/sms/verify";
-    var headers = await getAuthHeaders();
+    var headers = await getNonAuthHeader();
     var data = {
       "phone": phoneNumber,
       "code": OTP,
@@ -745,7 +745,6 @@ class AuthService {
     };
     var _data = jsonEncode(data);
     var response = await http.post(url, body: _data, headers: headers);
-    debugPrint("${response.body}");
     var jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
       var resetToken = jsonData['reset-token'];
@@ -759,7 +758,7 @@ class AuthService {
   Future<bool> passwordReset(
       String passwordOne, String passwordTwo, String resetToken) async {
     var url = baseUrl + "/api/v1/user/auth/password-reset/";
-    var headers = await getAuthHeaders();
+    var headers = getNonAuthHeader();
     var data = {
       "password1": passwordOne,
       "password2": passwordTwo,
