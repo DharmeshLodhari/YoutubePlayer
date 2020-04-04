@@ -719,23 +719,24 @@ class AuthService {
 
   // it will register the phone number to get OTP
   Future<bool> registerPhoneNumber(String phoneNumber) async {
-    var url = baseUrl + "/api/v1/sms/register-phone-number/";
+    var url = baseUrl + "/api/v1/sms/register-phone-number";
     var headers = getNonAuthHeader();
     var data = {
       "phone": phoneNumber,
     };
     var _data = jsonEncode(data);
     var response = await http.post(url, body: _data, headers: headers);
+    var jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
       return true;
     } else {
-      throw response.body;
+      throw jsonData;
     }
   }
 
   // it will verify the phone number to  OTP
   Future<String> verifyPhoneNumber(String phoneNumber, String OTP) async {
-    var url = baseUrl + "/api/v1/sms/verify/";
+    var url = baseUrl + "/api/v1/sms/verify";
     var headers = await getAuthHeaders();
     var data = {
       "phone": phoneNumber,
