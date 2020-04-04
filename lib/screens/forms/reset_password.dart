@@ -162,7 +162,7 @@ class _ResetPasswordState extends State<ResetPassword> {
 
     if (_formKey.currentState.validate()) {
       _auth
-          .passwordReset(newPassword, confirmPassword, resetToken)
+          .passwordReset(newPassword, confirmPassword, phoneNumber, resetToken)
           .then((value) {
         if (value) {
           Navigator.of(context).pop();

@@ -756,13 +756,14 @@ class AuthService {
 
   // it will verify the phone number to  OTP
   Future<bool> passwordReset(
-      String passwordOne, String passwordTwo, String resetToken) async {
+      String passwordOne, String passwordTwo, String phoneNumber, String resetToken) async {
     var url = baseUrl + "/api/v1/user/auth/password-reset/";
     var headers = getNonAuthHeader();
     var data = {
       "password1": passwordOne,
       "password2": passwordTwo,
       "reset-token": resetToken,
+      "phone-number": phoneNumber,
     };
     var _data = jsonEncode(data);
     var response = await http.patch(url, body: _data, headers: headers);
