@@ -148,13 +148,13 @@ class _RegistrationState extends State<Registration> {
     }
 
     if (_formKey.currentState.validate()) {
-      //TODO: Call THE verify MOBILE NUMBER api
-//      _auth.verifyPhoneNumber(phoneNumber, sentOTP).then((value) {
-      String resetToken = "value";
+      String passwordToken = "false";
+      _auth.verifyPhoneNumber(phoneNumber, sentOTP, passwordToken).then((value) {
+      String resetToken = value;
       Navigator.of(context).popAndPushNamed('/register', arguments: {
         'phoneNumber': phoneNumber,
       });
-//      });
+      });
     }
   }
 
@@ -163,14 +163,13 @@ class _RegistrationState extends State<Registration> {
     if (FocusScope.of(context).hasFocus) {
       FocusScope.of(context).unfocus();
     }
-    sentOTP = "123456";
-    //TODO: Call THE REGISTER MOBILE NUMBER api
-//    _auth.registerPhoneNumber(phoneNumber).then((value) {
+
+    _auth.registerPhoneNumber(phoneNumber).then((value) {
     if (_formKey.currentState.validate()) {
       setState(() {
         isOTPSent = true;
       });
     }
-//    });
+    });
   }
 }

@@ -269,7 +269,7 @@ class AuthService {
   Future<User> verifyUserDetail(File documentPhoto, File userPhoto) async {
     User user = await getUser();
     var headers = await getAuthHeaders();
-    var url = baseUrl + "/api/v1/user/verify-user/" + user.userName;
+    var url = baseUrl + "/api/v1/user/kyc/";
 
     if (documentPhoto != null && userPhoto != null) {
       var document = documentPhoto.path;
@@ -735,13 +735,13 @@ class AuthService {
   }
 
   // it will verify the phone number to  OTP
-  Future<String> verifyPhoneNumber(String phoneNumber, String OTP) async {
+  Future<String> verifyPhoneNumber(String phoneNumber, String OTP, String passwordToken) async {
     var url = baseUrl + "/api/v1/sms/verify";
-    var headers = await getNonAuthHeader();
+    var headers = getNonAuthHeader();
     var data = {
       "phone": phoneNumber,
       "code": OTP,
-      "password-token": "true",
+      "password-token": passwordToken,
     };
     var _data = jsonEncode(data);
     var response = await http.post(url, body: _data, headers: headers);

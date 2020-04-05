@@ -141,7 +141,8 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     }
 
     if (_formKey.currentState.validate()) {
-      _auth.verifyPhoneNumber(phoneNumber, sentOTP).then((value) {
+      String passwordToken = "true";
+      _auth.verifyPhoneNumber(phoneNumber, sentOTP, passwordToken).then((value) {
         String resetToken = value;
         Navigator.of(context).popAndPushNamed('/reset-password',
             arguments: {'phoneNumber': phoneNumber, "resetToken": resetToken});
