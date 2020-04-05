@@ -149,11 +149,13 @@ class _RegistrationState extends State<Registration> {
 
     if (_formKey.currentState.validate()) {
       String passwordToken = "false";
-      _auth.verifyPhoneNumber(phoneNumber, sentOTP, passwordToken).then((value) {
-      String resetToken = value;
-      Navigator.of(context).popAndPushNamed('/register', arguments: {
-        'phoneNumber': phoneNumber,
-      });
+      _auth
+          .verifyPhoneNumber(phoneNumber, sentOTP, passwordToken)
+          .then((value) {
+        String resetToken = value;
+        Navigator.of(context).popAndPushNamed('/register', arguments: {
+          'phoneNumber': phoneNumber,
+        });
       });
     }
   }
@@ -165,11 +167,11 @@ class _RegistrationState extends State<Registration> {
     }
 
     _auth.registerPhoneNumber(phoneNumber).then((value) {
-    if (_formKey.currentState.validate()) {
-      setState(() {
-        isOTPSent = true;
-      });
-    }
+      if (_formKey.currentState.validate()) {
+        setState(() {
+          isOTPSent = true;
+        });
+      }
     });
   }
 }
