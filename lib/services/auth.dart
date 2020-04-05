@@ -267,24 +267,23 @@ class AuthService {
   }
 
   Future<User> verifyUserDetail(File documentPhoto, File userPhoto) async {
-    User user = await getUser();
     var headers = await getAuthHeaders();
     var url = baseUrl + "/api/v1/user/kyc/";
 
     if (documentPhoto != null && userPhoto != null) {
       var document = documentPhoto.path;
-      var selfy = userPhoto.path;
+      var selfie = userPhoto.path;
       //create multipart request for POST or PATCH method
       var request = http.MultipartRequest("PATCH", Uri.parse(url));
 
       //add fields
       request.fields["document"] = document;
-      request.fields["selfy"] = selfy;
+      request.fields["selfie"] = selfie;
 
       //create multipart using filepath, string or bytes
       var multipartFile1 =
           await http.MultipartFile.fromPath("document", document);
-      var multipartFile2 = await http.MultipartFile.fromPath("selfy", selfy);
+      var multipartFile2 = await http.MultipartFile.fromPath("selfie", selfie);
 
       //add multipart to request
       request.files.add(multipartFile1);
@@ -735,7 +734,8 @@ class AuthService {
   }
 
   // it will verify the phone number to  OTP
-  Future<String> verifyPhoneNumber(String phoneNumber, String OTP, String passwordToken) async {
+  Future<String> verifyPhoneNumber(
+      String phoneNumber, String OTP, String passwordToken) async {
     var url = baseUrl + "/api/v1/sms/verify";
     var headers = getNonAuthHeader();
     var data = {
@@ -755,8 +755,8 @@ class AuthService {
   }
 
   // it will verify the phone number to  OTP
-  Future<bool> passwordReset(
-      String passwordOne, String passwordTwo, String phoneNumber, String resetToken) async {
+  Future<bool> passwordReset(String passwordOne, String passwordTwo,
+      String phoneNumber, String resetToken) async {
     var url = baseUrl + "/api/v1/user/auth/password-reset/";
     var headers = getNonAuthHeader();
     var data = {

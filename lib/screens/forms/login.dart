@@ -291,12 +291,11 @@ class _UserLoginState extends State<UserLogin> {
             });
           }
 
-          if (_user.isVerified || true) {
+          if (_user.isVerified == true) {
             Navigator.of(context)
                 .pushNamed('/dashboard', arguments: {'dashboardIndex': 0});
           } else {
             Navigator.of(context).popAndPushNamed('/add-document');
-            //TODO: Navigate to the verification page
           }
         } else {
           Navigator.pop(context);

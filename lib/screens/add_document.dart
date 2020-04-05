@@ -400,12 +400,26 @@ class _AddDocumentState extends State<AddDocument> {
                 onPressed: () {
                   //TODO: call the api with the documentPhoto and userPhoto
                   final _auth = AuthService();
-                  final userBloc = Provider.of<UserBloc>(context,listen:false);
-                  _auth.verifyUserDetail(documentImage, userImage).then((user) {
-                    if (user.isVerified) {
-                      userBloc.user = user;
-                      Navigator.of(context).popAndPushNamed('/dashboard');
-                    }
+                  final userBloc =
+                      Provider.of<UserBloc>(context, listen: false);
+                  // Get new token for user before attempting to post data to server
+                  _auth
+                      .authenticate(
+                          userBloc.user.phoneNumber, userBloc.user.password)
+                      .then((user) {
+                    _auth
+                        .verifyUserDetail(documentImage, userImage)
+                        .then((user) {
+                      _auth
+                          .authenticate(
+                              userBloc.user.phoneNumber, userBloc.user.password)
+                          .then((user) {
+                        if (user.isVerified) {
+                          userBloc.user = user;
+                          Navigator.of(context).popAndPushNamed('/dashboard');
+                        }
+                      });
+                    });
                   });
                 },
               )
