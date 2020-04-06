@@ -45,6 +45,7 @@ class _RegistrationState extends State<Registration> {
                 key: _formKey,
                 child: Column(
                   children: <Widget>[
+                    getCountryDropdown(),
                     getPhoneNumberWidget(),
                     isOTPSent
                         ? SizedBox(
@@ -173,5 +174,19 @@ class _RegistrationState extends State<Registration> {
         });
       }
     });
+  }
+
+  getCountryDropdown() {
+    return DropdownButton(
+      onChanged: (index) {},
+      items: [
+        DropdownMenuItem(
+          child: Text("India"),
+        ),
+        DropdownMenuItem(
+          child: Text("USA"),
+        ),
+      ],
+    );
   }
 }

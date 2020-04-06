@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/models/notification.dart';
 import 'package:Slydo/screens/messagelist.dart';
+import 'package:Slydo/screens/search_user.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/device_info.dart';
 import 'package:Slydo/widget/local_notification.dart';
@@ -11,10 +12,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import '../screens/colors.dart';
-import 'profile.dart';
+import 'home.dart';
 import 'request_payments_list.dart';
 import 'settings.dart';
-import 'transactions.dart';
+import 'transactions_list.dart';
 
 // ignore: must_be_immutable
 class Dashboard extends StatefulWidget {
@@ -53,13 +54,14 @@ class _DashboardState extends State<Dashboard> {
         }
       }
       screens = [
-        Profile(),
+        Home(),
         PaymentRequestList(),
         TransactionList(),
         MessageList(),
         SettingsList(
           arguments: {'isLocked': isLocked},
         ),
+        SearchUser()
       ];
     });
 
@@ -150,6 +152,12 @@ class _DashboardState extends State<Dashboard> {
             backgroundColor: lightBlue(),
             icon: Icon(Icons.settings, color: Colors.white),
             title: Text('Settings',
+                style: TextStyle(color: Colors.white, fontSize: 12)),
+          ),
+          BottomNavigationBarItem(
+            backgroundColor: lightBlue(),
+            icon: Icon(Icons.supervised_user_circle, color: Colors.white),
+            title: Text('Users',
                 style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
         ],

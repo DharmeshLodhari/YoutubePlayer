@@ -99,7 +99,7 @@ class _SplashScreenState extends State<SplashScreen> {
       isLoggedOut = _sharedPreferences.getBool('isLoggedOut') ?? false;
       if (isLoggedOut) {
         Navigator.pop(context);
-        Navigator.of(context).pushNamed("/home");
+        Navigator.of(context).pushNamed("/index");
       } else {
         phoneNumberFromPref = _sharedPreferences.getString('username') ?? "";
         passwordFromPref = _sharedPreferences.getString('password') ?? "";
@@ -127,25 +127,29 @@ class _SplashScreenState extends State<SplashScreen> {
                     _bankAccount = accounts[0];
                     if (_bankAccount != null) {
                       bankAccountBloc.bankAccount = _bankAccount;
-                      Navigator.of(context).pushNamed('/dashboard',
-                          arguments: {'dashboardIndex': 0});
+                      if (_user.isVerified == true) {
+                        Navigator.of(context)
+                            .pushNamed('/dashboard', arguments: {'dashboardIndex': 0});
+                      } else {
+                        Navigator.of(context).popAndPushNamed('/add-document');
+                      }
                     }
                   } catch (e) {}
                 });
               }
             } else {
               Navigator.pop(context);
-              Navigator.of(context).pushNamed("/home");
+              Navigator.of(context).pushNamed("/index");
             }
           });
         } else {
           Navigator.pop(context);
-          Navigator.of(context).pushNamed("/home");
+          Navigator.of(context).pushNamed("/index");
         }
       }
     } else {
       Navigator.pop(context);
-      Navigator.of(context).pushNamed("/home");
+      Navigator.of(context).pushNamed("/index");
     }
   }
 }

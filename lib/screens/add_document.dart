@@ -23,6 +23,9 @@ class _AddDocumentState extends State<AddDocument> {
 
   File documentImage;
   File userImage;
+  bool isPassportAllowed = true;
+  bool isDrivingLicenceAllowed = false;
+  bool isIdentiticardAllowed = false;
 
   @override
   Widget build(BuildContext context) {
@@ -115,7 +118,8 @@ class _AddDocumentState extends State<AddDocument> {
               ),
               title: "Passport",
               subtitle: "Face photo page",
-              onTap: _nextFormStep),
+              onTap: _nextFormStep,
+              enabled: isPassportAllowed),
           documentTypeTile(
               icon: Icon(
                 Icons.directions_car,
@@ -123,7 +127,8 @@ class _AddDocumentState extends State<AddDocument> {
               ),
               title: "Driver's License",
               subtitle: "Front and Back",
-              onTap: _nextFormStep),
+              onTap: _nextFormStep,
+              enabled: isDrivingLicenceAllowed),
           documentTypeTile(
               icon: Icon(
                 Icons.card_membership,
@@ -131,7 +136,8 @@ class _AddDocumentState extends State<AddDocument> {
               ),
               title: "Identical Card",
               subtitle: "Front and Back",
-              onTap: _nextFormStep),
+              onTap: _nextFormStep,
+              enabled: isIdentiticardAllowed),
         ],
       ),
     );
@@ -140,7 +146,8 @@ class _AddDocumentState extends State<AddDocument> {
   Widget titleTextOne() {
     return Text(
       "Verify your identity",
-      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+      style: TextStyle(
+          fontWeight: FontWeight.bold, fontSize: 24, color: darkBlue()),
     );
   }
 
@@ -156,13 +163,15 @@ class _AddDocumentState extends State<AddDocument> {
       {@required Widget icon,
       @required String title,
       @required String subtitle,
-      @required Function onTap}) {
+      @required Function onTap,
+      @required bool enabled}) {
     return Card(
         child: ListTile(
+      enabled: enabled,
       leading: icon,
       title: Text(
         title,
-        style: TextStyle(fontWeight: FontWeight.bold),
+        style: TextStyle(fontWeight: FontWeight.bold, color: darkBlue()),
       ),
       subtitle: Text(subtitle),
       trailing: Icon(Icons.keyboard_arrow_right),
@@ -174,7 +183,7 @@ class _AddDocumentState extends State<AddDocument> {
   Widget formTwo() {
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
-      padding: EdgeInsets.symmetric(vertical: 30, horizontal: 10),
+      padding: EdgeInsets.symmetric(vertical: 6, horizontal: 10),
       child: Column(
         children: <Widget>[
           SizedBox(
@@ -185,10 +194,11 @@ class _AddDocumentState extends State<AddDocument> {
             height: 20,
           ),
           takeDocumentPhotoFromCamera(),
+          takeDocumentPhotoFromGallery2(),
           SizedBox(
             height: 10,
           ),
-          takeDocumentPhotoFromGallery(),
+          documentImage != null ? takeDocumentPhotoFromGallery() : Container(),
           buttonBarTwo()
         ],
       ),
@@ -225,6 +235,31 @@ class _AddDocumentState extends State<AddDocument> {
     );
   }
 
+  Widget takeDocumentPhotoFromGallery2() {
+    return Card(
+      child: ListTile(
+        leading: Icon(
+          Icons.cloud_upload,
+          size: 40,
+        ),
+        title: Text(
+          "Upload photo from your device",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        subtitle: Text("Tap hear to continue"),
+        onTap: () async {
+          ImagePicker.pickImage(
+            source: ImageSource.gallery,
+          ).then((value) {
+            setState(() {
+              documentImage = value;
+            });
+          });
+        },
+      ),
+    );
+  }
+
   Widget takeDocumentPhotoFromGallery() {
     return Card(
         child: Column(
@@ -246,25 +281,6 @@ class _AddDocumentState extends State<AddDocument> {
           height: 300,
           width: double.infinity,
         ),
-        MaterialButton(
-          child: Text(
-            "Upload Image",
-            style: TextStyle(color: Colors.white),
-          ),
-          onPressed: () {
-            ImagePicker.pickImage(
-              source: ImageSource.gallery,
-            ).then((value) {
-              setState(() {
-                documentImage = value;
-              });
-            });
-          },
-          color: darkBlue(),
-        ),
-        SizedBox(
-          height: 10,
-        ),
       ],
     ));
   }
@@ -273,14 +289,14 @@ class _AddDocumentState extends State<AddDocument> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        MaterialButton(
-          child: Text(
-            "Previous",
-            style: TextStyle(color: Colors.white),
-          ),
-          color: darkBlue(),
-          onPressed: _previousFormStep,
-        ),
+//        MaterialButton(
+//          child: Text(
+//            "Previous",
+//            style: TextStyle(color: Colors.white),
+//          ),
+//          color: darkBlue(),
+//          onPressed: _previousFormStep,
+//        ),
         documentImage != null
             ? MaterialButton(
                 child: Text(
@@ -313,7 +329,7 @@ class _AddDocumentState extends State<AddDocument> {
           SizedBox(
             height: 10,
           ),
-          takeUserPhotoFromGallary(),
+          userImage != null ? takeUserPhotoFromGallary() : Container(),
           buttonBarThree()
         ],
       ),
@@ -323,7 +339,8 @@ class _AddDocumentState extends State<AddDocument> {
   Widget titleTextThree() {
     return Text(
       "User Photo page",
-      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+      style: TextStyle(
+          fontWeight: FontWeight.bold, fontSize: 24, color: darkBlue()),
     );
   }
 
@@ -336,7 +353,7 @@ class _AddDocumentState extends State<AddDocument> {
         ),
         title: Text(
           "Need to use your mobile to take photos?",
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.bold, color: darkBlue()),
         ),
         subtitle: Text("Tap hear to continue"),
         onTap: () {
@@ -398,7 +415,6 @@ class _AddDocumentState extends State<AddDocument> {
                 ),
                 color: darkBlue(),
                 onPressed: () {
-                  //TODO: call the api with the documentPhoto and userPhoto
                   final _auth = AuthService();
                   final userBloc =
                       Provider.of<UserBloc>(context, listen: false);
@@ -407,6 +423,7 @@ class _AddDocumentState extends State<AddDocument> {
                       .authenticate(
                           userBloc.user.phoneNumber, userBloc.user.password)
                       .then((user) {
+                    //TODO: implement try catch block in this calls
                     _auth
                         .verifyUserDetail(documentImage, userImage)
                         .then((user) {

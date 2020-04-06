@@ -9,19 +9,21 @@ import 'package:Slydo/screens/forms/request_payment.dart';
 import 'package:Slydo/screens/forms/reset_password.dart';
 import 'package:Slydo/screens/forms/send_payment.dart';
 import 'package:Slydo/screens/forms/signup.dart';
-import 'package:Slydo/screens/home.dart';
 import 'package:Slydo/screens/payout_transactions.dart';
 import 'package:Slydo/screens/profile.dart';
 import 'package:Slydo/screens/request_payments_list.dart';
 import 'package:Slydo/screens/scan_qr_code.dart';
+import 'package:Slydo/screens/search_user.dart';
 import 'package:Slydo/screens/settings.dart';
-import 'package:Slydo/screens/transactions.dart';
+import 'package:Slydo/screens/transactions_list.dart';
 import 'package:Slydo/splash.dart';
 import 'package:Slydo/widget/resultReturningPasswordPopup.dart';
 import 'package:flutter/material.dart';
 
 import 'detailed_message.dart';
 import 'forms/payout.dart';
+import 'home.dart';
+import 'index.dart';
 import 'new_registration.dart';
 
 class RouteGenerator {
@@ -32,9 +34,9 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => UserLogin());
       case '/splash':
         return MaterialPageRoute(builder: (_) => SplashScreen());
-      case '/home':
+      case '/index':
         return MaterialPageRoute(
-            builder: (_) => Home(
+            builder: (_) => Index(
                   arguments: settings.arguments,
                 ));
       case '/dashboard':
@@ -51,8 +53,8 @@ class RouteGenerator {
                 ));
       case '/add-document':
         return MaterialPageRoute(builder: (_) => AddDocument());
-      case '/profile':
-        return MaterialPageRoute(builder: (_) => Profile());
+      case '/home':
+        return MaterialPageRoute(builder: (_) => Home());
       case '/accounts':
         return MaterialPageRoute(builder: (_) => PaymentRequestList());
       case '/transactions':
@@ -73,6 +75,10 @@ class RouteGenerator {
                 ));
       case '/explore':
         return MaterialPageRoute(builder: (_) => ExploreList());
+      case '/search-user':
+        return MaterialPageRoute(builder: (_) => SearchUser());
+      case '/profile':
+        return MaterialPageRoute(builder: (_) => Profile());
       case '/compose_message':
         return MaterialPageRoute(
             builder: (_) => ComposeMessage(

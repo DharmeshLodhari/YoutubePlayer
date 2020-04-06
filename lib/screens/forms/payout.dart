@@ -3,9 +3,9 @@ import 'dart:io';
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/colors.dart';
-import 'package:Slydo/screens/tiles/bank_account.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/widget/passcodePopup.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -96,7 +96,36 @@ class _PayoutState extends State<Payout> {
   }
 
   Widget getUserBankAccount() {
-    return BankAccountTile(account: bankAccountBloc.bankAccount);
+    return Card(
+      margin: EdgeInsets.symmetric(horizontal: 40),
+      child: ListTile(
+        title: Text(
+          bankAccountBloc.bankAccount.bankName,
+          style: TextStyle(
+              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+        ),
+        subtitle: Text('******' +
+            bankAccountBloc.bankAccount.accountNumber
+                .toString()
+                .substring(5, 9)),
+        leading: ClipOval(
+          child: CachedNetworkImage(
+            imageUrl: bankAccountBloc.bankAccount.bankAvatar,
+            height: 45,
+            width: 45,
+            colorBlendMode: BlendMode.darken,
+            fit: BoxFit.cover,
+            filterQuality: FilterQuality.high,
+            placeholder: (context, url) =>
+                bankAccountBloc.bankAccount.bankAvatar == ""
+                    ? Icon(Icons.account_balance)
+                    : CircularProgressIndicator(
+                        backgroundColor: Colors.white,
+                      ),
+          ),
+        ),
+      ),
+    );
   }
 
   Widget displayAmountField() {
@@ -235,8 +264,10 @@ class _PayoutState extends State<Payout> {
             style: TextStyle(fontSize: 20),
           ),
           Text(
-            accountBalance.toString(),
-            style: TextStyle(fontSize: 25),
+            accountBalance.toString() +
+                " " +
+                worldCurrencies[userBloc.user.currency],
+            style: TextStyle(fontSize: 25, color: Colors.white),
           ),
         ],
       ),
@@ -249,7 +280,7 @@ class _PayoutState extends State<Payout> {
       child: Text(
         "you are about to transfer money into your bank account",
         style: TextStyle(
-            fontSize: 18, color: Colors.white, fontWeight: FontWeight.w600),
+            fontSize: 13, color: Colors.white, fontWeight: FontWeight.w600),
       ),
     );
   }

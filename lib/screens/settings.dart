@@ -90,8 +90,12 @@ class _SettingsListState extends State<SettingsList> {
                   SizedBox(height: 10),
                   _getSlidableWithLists(
                       context, displayAccountBalance(isLocked)),
-                  SizedBox(height: 10),
-                  displayBankAccountTile(bankAccountBloc),
+                  bankAccountBloc.bankAccount.bankName != null
+                      ? SizedBox(height: 10)
+                      : Container(),
+                  bankAccountBloc.bankAccount.bankName != null
+                      ? displayBankAccountTile(bankAccountBloc)
+                      : Container(),
                   SizedBox(height: 10),
                   userBloc.user.userName == "abiola.rasheed.2"
                       ? ExploreTile()
@@ -176,7 +180,7 @@ class _SettingsListState extends State<SettingsList> {
       });
       return BankAccountTile(account: bankAccountBloc.bankAccount);
     } else {
-      return Text(" ");
+      return Container();
     }
   }
 
@@ -246,7 +250,7 @@ class _SettingsListState extends State<SettingsList> {
     _sharedPreferences = await SharedPreferences.getInstance();
     _sharedPreferences.setBool('isLoggedOut', true);
 
-    Navigator.pushNamedAndRemoveUntil(context, "/home", (r) => false,
+    Navigator.pushNamedAndRemoveUntil(context, "/index", (r) => false,
         arguments: {'isIntroDone': true});
   }
 
@@ -270,6 +274,8 @@ class _SettingsListState extends State<SettingsList> {
       margin: EdgeInsets.symmetric(horizontal: 40),
       color: Colors.white,
       child: ListTile(
+        isThreeLine: true,
+        dense: true,
         leading: ClipOval(
             child: Image.asset(
           "assets/images/slydo.png",
@@ -283,6 +289,7 @@ class _SettingsListState extends State<SettingsList> {
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Text("Account Number: 12345"),
             Text("Name : Slydo Private ltd "),
