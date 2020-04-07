@@ -1,8 +1,10 @@
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:provider/provider.dart';
 
 class Profile extends StatefulWidget {
   var arguments;
@@ -19,15 +21,27 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
   CustomerProfile searchedUser;
   ScrollController _scrollController = new ScrollController();
 
+  // this variable will responsible for is the user is owner of the products and add
+  // edit button on the product if user is owner
+  bool isOwner = false;
+  UserBloc userBloc;
+
   @override
   void initState() {
     searchedUser = arguments['searchedUser'];
+
     _tabController = new TabController(length: 2, vsync: this);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
+
+    if (userBloc.user.userName == searchedUser.userName) {
+      isOwner = true;
+    }
+
     return Scaffold(
       backgroundColor: lightBlue(),
       appBar: AppBar(
@@ -39,8 +53,13 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
           userDetails(),
-          Divider(),
+          Divider(
+            color: darkBlue(),
+          ),
           tabBar(),
+          Divider(
+            color: darkBlue(),
+          ),
           tabViews(),
         ],
       ),
@@ -146,7 +165,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                       child: Text(
                     "Productes",
                     style: TextStyle(
-                      color: darkBlue(),
+                      color: Colors.white,
                       fontWeight: FontWeight.bold,
                     ),
                   )))),
@@ -158,7 +177,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                       child: Text(
                     "Services",
                     style: TextStyle(
-                      color: darkBlue(),
+                      color: Colors.white,
                       fontWeight: FontWeight.bold,
                     ),
                   )))),
@@ -197,13 +216,28 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
               child: Column(
                 children: <Widget>[
                   Expanded(
-                    child: CachedNetworkImage(
-                      width: double.infinity,
-                      imageUrl:
-                          "https://i.picsum.photos/id/${index * 10}/200/300.jpg",
-                      fit: BoxFit.fill,
-                      filterQuality: FilterQuality.high,
-                    ),
+                    child: Stack(children: <Widget>[
+                      CachedNetworkImage(
+                        width: double.infinity,
+                        imageUrl:
+                            "https://i.picsum.photos/id/${index * 10}/200/300.jpg",
+                        fit: BoxFit.fill,
+                        filterQuality: FilterQuality.high,
+                      ),
+                      isOwner
+                          ? Positioned(
+                              right: 0,
+                              child: IconButton(
+                                icon: Icon(
+                                  Icons.edit,
+                                  size: 20,
+                                  color: darkBlue(),
+                                ),
+                                onPressed: () {},
+                              ),
+                            )
+                          : Container()
+                    ]),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 4.0),
@@ -213,8 +247,14 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Text("Leptop"),
-                            Text("MacBook Pro"),
+                            Text(
+                              "Leptop",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              "MacBook Pro",
+                              style: TextStyle(color: Colors.grey),
+                            ),
                           ],
                         ),
                         Text(r"$" + "$index" + ".00")
@@ -271,6 +311,15 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
           style: TextStyle(color: darkBlue(), fontWeight: FontWeight.bold),
         ),
         subtitle: Text("tap to get details"),
+        trailing: isOwner
+            ? IconButton(
+                icon: Icon(
+                  Icons.edit,
+                  color: darkBlue(),
+                ), 
+                onPressed: () {},
+              )
+            : null,
       ),
     );
   }
