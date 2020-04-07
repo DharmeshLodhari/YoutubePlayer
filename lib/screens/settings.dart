@@ -126,7 +126,7 @@ class _SettingsListState extends State<SettingsList> {
         ),
         isThreeLine: true,
         subtitle: Text(
-            userBloc.user.userName + "\n" + userBloc.user.enteredPhoneNumber),
+            userBloc.user.userName + "\n" + userBloc.user.phoneNumber),
         leading: isLoading
             ? Container(
                 height: 45,
