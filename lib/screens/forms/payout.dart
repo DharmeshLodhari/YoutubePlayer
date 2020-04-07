@@ -260,13 +260,10 @@ class _PayoutState extends State<Payout> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Text(
-            "Account balance",
+            "Current Balance",
             style: TextStyle(fontSize: 20),
           ),
-          Text(
-            accountBalance.toString() +
-                " " +
-                worldCurrencies[userBloc.user.currency],
+          Text(worldCurrencies[userBloc.user.currency] + accountBalance.toString(),
             style: TextStyle(fontSize: 25, color: Colors.white),
           ),
         ],
