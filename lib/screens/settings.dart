@@ -125,8 +125,8 @@ class _SettingsListState extends State<SettingsList> {
               color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
         ),
         isThreeLine: true,
-        subtitle:
-            Text(userBloc.user.userName + "\n" + userBloc.user.phoneNumber),
+        subtitle: Text(
+            userBloc.user.userName + "\n" + userBloc.user.enteredPhoneNumber),
         leading: isLoading
             ? Container(
                 height: 45,

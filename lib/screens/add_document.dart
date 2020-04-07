@@ -6,10 +6,7 @@ import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-
-//TODO: 1 select document [passport]
-//TODO: 2 Passport screen scan user's passport by camera or pick picture from the page
-//TODO: 3 take user image for the user avatar and submit button
+import 'package:toast/toast.dart';
 
 class AddDocument extends StatefulWidget {
   @override
@@ -423,20 +420,24 @@ class _AddDocumentState extends State<AddDocument> {
                       .authenticate(
                           userBloc.user.phoneNumber, userBloc.user.password)
                       .then((user) {
-                    //TODO: implement try catch block in this calls
-                    _auth
-                        .verifyUserDetail(documentImage, userImage)
-                        .then((user) {
+                    try {
                       _auth
-                          .authenticate(
-                              userBloc.user.phoneNumber, userBloc.user.password)
+                          .verifyUserDetail(documentImage, userImage)
                           .then((user) {
-                        if (user.isVerified) {
-                          userBloc.user = user;
-                          Navigator.of(context).popAndPushNamed('/dashboard');
-                        }
+                        _auth
+                            .authenticate(userBloc.user.phoneNumber,
+                                userBloc.user.password)
+                            .then((user) {
+                          if (user.isVerified) {
+                            userBloc.user = user;
+                            Navigator.of(context).popAndPushNamed('/dashboard');
+                          }
+                        });
                       });
-                    });
+                    } catch (exception) {
+                      Toast.show(exception, context,
+                          textColor: Colors.white, backgroundColor: darkBlue());
+                    }
                   });
                 },
               )

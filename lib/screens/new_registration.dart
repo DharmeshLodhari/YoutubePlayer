@@ -8,6 +8,10 @@
 import 'dart:io';
 
 import 'package:Slydo/services/auth.dart';
+import 'package:country_pickers/country.dart';
+import 'package:country_pickers/country_picker_dialog.dart';
+import 'package:country_pickers/utils/utils.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'colors.dart';
@@ -21,8 +25,18 @@ class _RegistrationState extends State<Registration> {
   bool isOTPSent = false;
   final _formKey = GlobalKey<FormState>();
   String sentOTP = "";
-  String phoneNumber = "";
+  String enteredPhoneNumber = "";
+  String phoneNumberWithCountryCode = "";
   final _auth = AuthService();
+
+  List<DropdownMenuItem> dropdownlist = new List<DropdownMenuItem>();
+  int selectedCountry = 0;
+  Country _selectedDialogCountry = CountryPickerUtils.getCountryByIsoCode('IE');
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,10 +60,13 @@ class _RegistrationState extends State<Registration> {
                 child: Column(
                   children: <Widget>[
                     getCountryDropdown(),
+                    SizedBox(
+                      height: 10,
+                    ),
                     getPhoneNumberWidget(),
                     isOTPSent
                         ? SizedBox(
-                            height: 20,
+                            height: 10,
                           )
                         : Container(),
                     isOTPSent ? getVerificationOTPWidget() : Container(),
@@ -75,6 +92,7 @@ class _RegistrationState extends State<Registration> {
               Platform.isAndroid ? Icons.phone_android : Icons.phone_iphone),
           fillColor: Colors.white,
           filled: true,
+          prefixText: "+" + _selectedDialogCountry.phoneCode,
           hintText: "Enter Your Phone Number",
           labelStyle: TextStyle(
             color: darkBlue(),
@@ -85,13 +103,29 @@ class _RegistrationState extends State<Registration> {
               borderSide: BorderSide(
                   width: 1, color: Colors.white, style: BorderStyle.solid))),
       validator: (val) {
-        if (val.isNotEmpty && val.length == 13) {
+        if (val.isNotEmpty && val.length >= 9) {
           return null;
+        }
+        if (val.startsWith("0")) {
+          return "Invalid phone number";
+        }
+        if (val.contains('+') ||
+            val.contains('-') ||
+            val.contains('*') ||
+            val.contains('#') ||
+            val.contains(',') ||
+            val.contains(';') ||
+            val.contains('(') ||
+            val.contains(')') ||
+            val.contains('/') ||
+            val.contains('N') ||
+            val.contains(' ')) {
+          return "Invalid phone number";
         }
         return "Invalid phone number";
       },
       onChanged: (val) {
-        phoneNumber = val;
+        enteredPhoneNumber = val;
       },
     );
   }
@@ -143,6 +177,10 @@ class _RegistrationState extends State<Registration> {
   }
 
   void verifyOTP() {
+    //final phoneNumber with countrycode
+    phoneNumberWithCountryCode =
+        "+" + _selectedDialogCountry.phoneCode + enteredPhoneNumber;
+
     //for closing the keypad if it is open
     if (FocusScope.of(context).hasFocus) {
       FocusScope.of(context).unfocus();
@@ -151,11 +189,11 @@ class _RegistrationState extends State<Registration> {
     if (_formKey.currentState.validate()) {
       String passwordToken = "false";
       _auth
-          .verifyPhoneNumber(phoneNumber, sentOTP, passwordToken)
+          .verifyPhoneNumber(phoneNumberWithCountryCode, sentOTP, passwordToken)
           .then((value) {
         String resetToken = value;
         Navigator.of(context).popAndPushNamed('/register', arguments: {
-          'phoneNumber': phoneNumber,
+          'phoneNumber': phoneNumberWithCountryCode,
         });
       });
     }
@@ -167,26 +205,68 @@ class _RegistrationState extends State<Registration> {
       FocusScope.of(context).unfocus();
     }
 
-    _auth.registerPhoneNumber(phoneNumber).then((value) {
-      if (_formKey.currentState.validate()) {
+    if (_formKey.currentState.validate()) {
+      _auth.registerPhoneNumber(phoneNumberWithCountryCode).then((value) {
         setState(() {
           isOTPSent = true;
         });
-      }
-    });
+      });
+    }
   }
 
   getCountryDropdown() {
-    return DropdownButton(
-      onChanged: (index) {},
-      items: [
-        DropdownMenuItem(
-          child: Text("India"),
-        ),
-        DropdownMenuItem(
-          child: Text("USA"),
-        ),
-      ],
+    return Card(
+      margin: EdgeInsets.all(0),
+      borderOnForeground: true,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.fromLTRB(8.0, 8.0, 0, 0),
+            child: Text(
+              "Select Your Country",
+              style: TextStyle(color: darkBlue()),
+            ),
+          ),
+          ListTile(
+            contentPadding: EdgeInsets.fromLTRB(8, 0, 0, 0),
+            onTap: isOTPSent ? () {} : _openCountryPickerDialog,
+            title: _buildDialogItem(_selectedDialogCountry),
+          ),
+        ],
+      ),
     );
   }
+
+  Widget _buildDialogItem(Country country) => Row(
+        children: <Widget>[
+          CountryPickerUtils.getDefaultFlagImage(country),
+          SizedBox(width: 8.0),
+          Text("+${country.phoneCode}"),
+          SizedBox(width: 8.0),
+          Flexible(child: Text(country.name))
+        ],
+      );
+
+  void _openCountryPickerDialog() => showDialog(
+        context: context,
+        builder: (context) => Theme(
+          data: Theme.of(context).copyWith(primaryColor: Colors.pink),
+          child: CountryPickerDialog(
+            titlePadding: EdgeInsets.all(8.0),
+            searchCursorColor: Colors.pinkAccent,
+            searchInputDecoration: InputDecoration(hintText: 'Search...'),
+            isSearchable: true,
+            title: Text('Select your phone code'),
+            onValuePicked: (Country country) =>
+                setState(() => _selectedDialogCountry = country),
+            itemBuilder: _buildDialogItem,
+            priorityList: [
+              CountryPickerUtils.getCountryByIsoCode('IE'),
+              CountryPickerUtils.getCountryByIsoCode('NG'),
+              CountryPickerUtils.getCountryByIsoCode('GB-ENG'),
+            ],
+          ),
+        ),
+      );
 }
