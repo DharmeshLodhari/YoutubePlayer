@@ -57,11 +57,11 @@ class _DashboardState extends State<Dashboard> {
         Home(),
         PaymentRequestList(),
         TransactionList(),
+        SearchUser(),
         MessageList(),
         SettingsList(
           arguments: {'isLocked': isLocked},
         ),
-        SearchUser()
       ];
     });
 
@@ -144,6 +144,12 @@ class _DashboardState extends State<Dashboard> {
           ),
           BottomNavigationBarItem(
             backgroundColor: lightBlue(),
+            icon: Icon(Icons.supervised_user_circle, color: Colors.white),
+            title: Text('Users',
+                style: TextStyle(color: Colors.white, fontSize: 12)),
+          ),
+          BottomNavigationBarItem(
+            backgroundColor: lightBlue(),
             icon: Icon(Icons.email, color: Colors.white),
             title: Text('Messages',
                 style: TextStyle(color: Colors.white, fontSize: 12)),
@@ -152,12 +158,6 @@ class _DashboardState extends State<Dashboard> {
             backgroundColor: lightBlue(),
             icon: Icon(Icons.settings, color: Colors.white),
             title: Text('Settings',
-                style: TextStyle(color: Colors.white, fontSize: 12)),
-          ),
-          BottomNavigationBarItem(
-            backgroundColor: lightBlue(),
-            icon: Icon(Icons.supervised_user_circle, color: Colors.white),
-            title: Text('Users',
                 style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
         ],

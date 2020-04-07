@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
 final List<dynamic> services = [];
+CustomerProfile _payee;
 
 class SearchUser extends StatefulWidget {
   @override
@@ -25,7 +26,6 @@ class _SearchUserState extends State<SearchUser> {
   FocusNode searchFocus;
   List<dynamic> searchedResult;
 
-  CustomerProfile _payee;
   final _auth = AuthService();
   SlidableController slidableController;
 
@@ -311,7 +311,8 @@ class VerticalListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, '/profile');
+        Navigator.pushNamed(context, '/profile',
+            arguments: {"searchedUser": _payee});
       },
       child: Container(
         color: lightBlue(),

@@ -86,7 +86,7 @@ class _SettingsListState extends State<SettingsList> {
               child: Column(
                 children: <Widget>[
                   SizedBox(height: 20),
-                  displayProfileTile(userBloc),
+                  displayProfileTile(),
                   SizedBox(height: 10),
                   _getSlidableWithLists(
                       context, displayAccountBalance(isLocked)),
@@ -115,7 +115,8 @@ class _SettingsListState extends State<SettingsList> {
     );
   }
 
-  Widget displayProfileTile(userBloc) {
+  Widget displayProfileTile() {
+    final UserBloc userBloc = Provider.of<UserBloc>(context);
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 40),
       child: ListTile(
@@ -125,8 +126,8 @@ class _SettingsListState extends State<SettingsList> {
               color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
         ),
         isThreeLine: true,
-        subtitle: Text(
-            userBloc.user.userName + "\n" + userBloc.user.enteredPhoneNumber),
+        subtitle:
+            Text(userBloc.user.userName + "\n" + userBloc.user.phoneNumber),
         leading: isLoading
             ? Container(
                 height: 45,

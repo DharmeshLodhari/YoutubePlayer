@@ -115,7 +115,7 @@ class _AccountBalanceTileState extends State<AccountBalanceTile> {
             } else {
               setState(() {
                 Navigator.of(context).pushNamed('/dashboard',
-                    arguments: {'dashboardIndex': 4, 'isLocked': true});
+                    arguments: {'dashboardIndex': 5, 'isLocked': true});
                 widget.isLocked = true;
               });
             }

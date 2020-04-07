@@ -179,10 +179,10 @@ class _ComposeMessageState extends State<ComposeMessage> {
             }
             if (_formKey.currentState.validate()) {
               Navigator.of(context).popAndPushNamed("/dashboard",
-                  arguments: {"dashboardIndex": 3});
+                  arguments: {"dashboardIndex": 4});
               if (isReplayMessage) {
                 Navigator.of(context).popAndPushNamed("/dashboard",
-                    arguments: {"dashboardIndex": 3});
+                    arguments: {"dashboardIndex": 4});
               }
 
               try {

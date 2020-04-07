@@ -78,7 +78,10 @@ class RouteGenerator {
       case '/search-user':
         return MaterialPageRoute(builder: (_) => SearchUser());
       case '/profile':
-        return MaterialPageRoute(builder: (_) => Profile());
+        return MaterialPageRoute(
+            builder: (_) => Profile(
+                  arguments: settings.arguments,
+                ));
       case '/compose_message':
         return MaterialPageRoute(
             builder: (_) => ComposeMessage(

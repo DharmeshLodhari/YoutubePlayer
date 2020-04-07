@@ -86,7 +86,7 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
       onWillPop: () async {
         Navigator.pop(context);
         Navigator.pushNamed(context, '/dashboard',
-            arguments: {'dashboardIndex': 4});
+            arguments: {'dashboardIndex': 5});
         return false;
       },
       child: Scaffold(

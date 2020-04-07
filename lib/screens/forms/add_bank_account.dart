@@ -216,7 +216,7 @@ class _AddAccountState extends State<AddAccount> {
               });
 
               Navigator.of(context)
-                  .pushNamed('/dashboard', arguments: {'dashboardIndex': 4});
+                  .pushNamed('/dashboard', arguments: {'dashboardIndex': 5});
             } else {
               setState(() {
                 errorMessage = "An error has occured please try again";
