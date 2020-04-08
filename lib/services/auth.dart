@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/models/message.dart';
 import 'package:Slydo/models/payout.dart';
+import 'package:Slydo/models/store.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:flutter/cupertino.dart';
@@ -704,78 +705,6 @@ class AuthService {
     }
   }
 
-  Map getNonAuthHeader() {
-    var uuid = Uuid();
-    var transactionId = uuid.v4();
-    var headers = {
-      "Content-type": "application/json",
-      "TransactionId": transactionId,
-      "DeviceType": Platform.isAndroid ? "Android" : "IOS",
-      "User-Agent": "Slydo-Mobile",
-    };
-    return headers;
-  }
-
-  // it will register the phone number to get OTP
-  Future<bool> registerPhoneNumber(String phoneNumber) async {
-    var url = baseUrl + "/api/v1/sms/register-phone-number";
-    var headers = getNonAuthHeader();
-    var data = {
-      "phone": phoneNumber,
-    };
-    var _data = jsonEncode(data);
-    var response = await http.post(url, body: _data, headers: headers);
-    var jsonData = json.decode(response.body);
-    if (response.statusCode == 200) {
-      return true;
-    } else {
-      throw jsonData;
-    }
-  }
-
-  // it will verify the phone number to  OTP
-  Future<String> verifyPhoneNumber(
-      String phoneNumber, String OTP, String passwordToken) async {
-    var url = baseUrl + "/api/v1/sms/verify";
-    var headers = getNonAuthHeader();
-    var data = {
-      "phone": phoneNumber,
-      "code": OTP,
-      "password-token": passwordToken,
-    };
-    var _data = jsonEncode(data);
-    var response = await http.post(url, body: _data, headers: headers);
-    var jsonData = json.decode(response.body);
-    if (response.statusCode == 200) {
-      var resetToken = jsonData['reset-token'];
-      return resetToken;
-    } else {
-      throw jsonData;
-    }
-  }
-
-  // it will verify the phone number to  OTP
-  Future<bool> passwordReset(String passwordOne, String passwordTwo,
-      String phoneNumber, String resetToken) async {
-    var url = baseUrl + "/api/v1/user/auth/password-reset/";
-    var headers = getNonAuthHeader();
-    var data = {
-      "password1": passwordOne,
-      "password2": passwordTwo,
-      "reset-token": resetToken,
-      "phone-number": phoneNumber,
-    };
-    var _data = jsonEncode(data);
-    var response = await http.patch(url, body: _data, headers: headers);
-    debugPrint("${response.statusCode}");
-    var jsonData = json.decode(response.body);
-    if (response.statusCode == 200) {
-      return true;
-    } else {
-      throw jsonData;
-    }
-  }
-
   // Get single message
   Future<Message> getMessage(String id) async {
     var url = baseUrl + "/api/v1/messaging/read/" + id + "/";
@@ -853,6 +782,196 @@ class AuthService {
       throw "Server Error";
     } else {
       throw json.decode(response.body);
+    }
+  }
+
+  Map getNonAuthHeader() {
+    var uuid = Uuid();
+    var transactionId = uuid.v4();
+    var headers = {
+      "Content-type": "application/json",
+      "TransactionId": transactionId,
+      "DeviceType": Platform.isAndroid ? "Android" : "IOS",
+      "User-Agent": "Slydo-Mobile",
+    };
+    return headers;
+  }
+
+  // it will register the phone number to get OTP
+  Future<bool> registerPhoneNumber(String phoneNumber) async {
+    var url = baseUrl + "/api/v1/sms/register-phone-number";
+    var headers = getNonAuthHeader();
+    var data = {
+      "phone": phoneNumber,
+    };
+    var _data = jsonEncode(data);
+    var response = await http.post(url, body: _data, headers: headers);
+    var jsonData = json.decode(response.body);
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      throw jsonData;
+    }
+  }
+
+  // it will verify the phone number to  OTP
+  Future<String> verifyPhoneNumber(
+      String phoneNumber, String OTP, String passwordToken) async {
+    var url = baseUrl + "/api/v1/sms/verify";
+    var headers = getNonAuthHeader();
+    var data = {
+      "phone": phoneNumber,
+      "code": OTP,
+      "password-token": passwordToken,
+    };
+    var _data = jsonEncode(data);
+    var response = await http.post(url, body: _data, headers: headers);
+    var jsonData = json.decode(response.body);
+    if (response.statusCode == 200) {
+      var resetToken = jsonData['reset-token'];
+      return resetToken;
+    } else {
+      throw jsonData;
+    }
+  }
+
+  // it will verify the phone number to  OTP
+  Future<bool> passwordReset(String passwordOne, String passwordTwo,
+      String phoneNumber, String resetToken) async {
+    var url = baseUrl + "/api/v1/user/auth/password-reset/";
+    var headers = getNonAuthHeader();
+    var data = {
+      "password1": passwordOne,
+      "password2": passwordTwo,
+      "reset-token": resetToken,
+      "phone-number": phoneNumber,
+    };
+    var _data = jsonEncode(data);
+    var response = await http.patch(url, body: _data, headers: headers);
+    debugPrint("${response.statusCode}");
+    var jsonData = json.decode(response.body);
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      throw jsonData;
+    }
+  }
+
+  //Products
+
+  // addproduct
+  Future<bool> addProduct(Product product) async {
+    var headers = await getAuthHeaders();
+    var url = baseUrl + "/api/v1/products/";
+
+    var imagesPath = Map<String, String>();
+    int index = 0;
+    product.images.forEach((file) {
+      imagesPath["$index"] = file.path;
+      index++;
+    });
+
+    //create multipart request for POST or PATCH method
+    var request = http.MultipartRequest("POST", Uri.parse(url));
+
+    int index2 = 0;
+    imagesPath.forEach((k, v) async {
+      //add fields
+      request.fields["image$k"] = v;
+
+      //create multipart using filepath, string or bytes
+      var multipartFile = await http.MultipartFile.fromPath("image$k", v);
+
+      //add multipart to request
+      request.files.add(multipartFile);
+
+      index2++;
+    });
+
+    headers.forEach((k, v) => request.headers[k] = v);
+    var response = await request.send();
+    var responseBody = await response.stream.bytesToString();
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(responseBody);
+      return true;
+    } else {
+      throw responseBody;
+    }
+  }
+
+  // edit product
+  Future<User> editProduct(Product product) async {
+    var headers = await getAuthHeaders();
+    var url = baseUrl + "/api/v1/products/";
+
+    var document = " ";
+//    var selfie = userPhoto.path;
+    var selfie = " ";
+    //create multipart request for POST or PATCH method
+    var request = http.MultipartRequest("PATCH", Uri.parse(url));
+
+    //add fields
+    request.fields["document"] = document;
+    request.fields["selfie"] = selfie;
+
+    //create multipart using filepath, string or bytes
+    var multipartFile1 =
+        await http.MultipartFile.fromPath("document", document);
+    var multipartFile2 = await http.MultipartFile.fromPath("selfie", selfie);
+
+    //add multipart to request
+    request.files.add(multipartFile1);
+    request.files.add(multipartFile2);
+    headers.forEach((k, v) => request.headers[k] = v);
+    var response = await request.send();
+
+    var responseBody = await response.stream.bytesToString();
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(responseBody);
+
+      User user = createUser(
+        jsonData["uuid"],
+        jsonData["url"],
+        jsonData["phone_number"],
+        jsonData["full_name"],
+        jsonData["username"],
+        jsonData["avatar"],
+        jsonData["qr_code"],
+        jsonData["password"],
+        jsonData["default_currency"],
+        jsonData["is_verified"] ?? true,
+      );
+      return user;
+    } else {
+      throw responseBody;
+    }
+  }
+
+  // Get single product
+  Future<Message> getProduct(String id) async {
+    var url = baseUrl + "/api/v1/products/" + id + "/";
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
+    var jsonData = json.decode(response.body);
+    if (response.statusCode == 200) {
+      Message message = Message(
+        subject: jsonData["subject"],
+        id: jsonData["id"],
+        body: jsonData["body"],
+        timeStamp: jsonData["time_sent"],
+        isRead: jsonData["is_read"],
+        recipient: jsonData["recipient"],
+        sender: jsonData["sender"],
+        senderAvatar: jsonData["sender_avatar"],
+        recipientAvatar: jsonData["recipient_avatar"],
+        isArchivedByRecipient: jsonData["is_archived_by_recipient"],
+        isStarredByRecipient: jsonData["is_starred_by_recipient"],
+        isArchivedBySender: jsonData["is_archived_by_sender"],
+        isStarredBySender: jsonData["is_starred_by_sender"],
+      );
+      return message;
+    } else {
+      throw jsonData;
     }
   }
 }

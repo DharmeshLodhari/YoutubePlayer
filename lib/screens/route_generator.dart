@@ -1,4 +1,5 @@
 import 'package:Slydo/screens/add_document.dart';
+import 'package:Slydo/screens/add_product.dart';
 import 'package:Slydo/screens/dashboard.dart';
 import 'package:Slydo/screens/explore.dart';
 import 'package:Slydo/screens/forgot_password.dart';
@@ -82,6 +83,8 @@ class RouteGenerator {
             builder: (_) => Profile(
                   arguments: settings.arguments,
                 ));
+      case '/add-product':
+        return MaterialPageRoute(builder: (_) => AddProduct());
       case '/compose_message':
         return MaterialPageRoute(
             builder: (_) => ComposeMessage(

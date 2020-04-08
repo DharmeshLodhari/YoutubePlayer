@@ -137,85 +137,107 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
   }
 
   Widget productsList() {
-    return Container(
-      color: lightBlue(),
-      padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
-      child: StaggeredGridView.countBuilder(
-        crossAxisCount: 4,
-        itemCount: 200,
-        itemBuilder: (BuildContext context, int index) => new Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10.0),
-              child: Column(
-                children: <Widget>[
-                  Expanded(
-                    child: Stack(children: <Widget>[
-                      CachedNetworkImage(
-                        width: double.infinity,
-                        imageUrl:
-                            "https://i.picsum.photos/id/${index * 10}/200/300.jpg",
-                        fit: BoxFit.fill,
-                        filterQuality: FilterQuality.high,
-                      ),
-                      isOwner
-                          ? Positioned(
-                              right: 0,
-                              child: IconButton(
-                                icon: Icon(
-                                  Icons.edit,
-                                  size: 20,
-                                  color: darkBlue(),
-                                ),
-                                onPressed: () {},
-                              ),
-                            )
-                          : Container()
-                    ]),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              "Leptop",
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              "MacBook Pro",
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                          ],
-                        ),
-                        Text(r"$" + "$index" + ".00")
-                      ],
-                    ),
-                  )
-                ],
+    return Scaffold(
+      body: Container(
+        color: lightBlue(),
+        padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
+        child: StaggeredGridView.countBuilder(
+          crossAxisCount: 4,
+          itemCount: 200,
+          itemBuilder: (BuildContext context, int index) => new Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
               ),
-            )),
-        staggeredTileBuilder: (int index) =>
-            new StaggeredTile.count(2, index.isEven ? 2 : 1.5),
-        mainAxisSpacing: 2.0,
-        crossAxisSpacing: 2.0,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10.0),
+                child: Column(
+                  children: <Widget>[
+                    Expanded(
+                      child: Stack(children: <Widget>[
+                        CachedNetworkImage(
+                          width: double.infinity,
+                          imageUrl:
+                              "https://i.picsum.photos/id/${index * 10}/200/300.jpg",
+                          fit: BoxFit.fill,
+                          filterQuality: FilterQuality.high,
+                        ),
+                        isOwner
+                            ? Positioned(
+                                right: 0,
+                                child: IconButton(
+                                  icon: Icon(
+                                    Icons.edit,
+                                    size: 20,
+                                    color: darkBlue(),
+                                  ),
+                                  onPressed: () {},
+                                ),
+                              )
+                            : Container()
+                      ]),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                "Leptop",
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                "MacBook Pro",
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                            ],
+                          ),
+                          Text(r"$" + "$index" + ".00")
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              )),
+          staggeredTileBuilder: (int index) =>
+              new StaggeredTile.count(2, index.isEven ? 2 : 1.5),
+          mainAxisSpacing: 2.0,
+          crossAxisSpacing: 2.0,
+        ),
       ),
+      floatingActionButton: isOwner
+          ? FloatingActionButton(
+              heroTag: "add-product",
+              backgroundColor: darkBlue(),
+              child: Icon(Icons.add),
+              onPressed: () {
+                Navigator.pushNamed(context, '/add-product');
+              },
+            )
+          : null,
     );
   }
 
   Widget servicesList() {
-    return Container(
-      color: lightBlue(),
-      padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-      child: ListView.builder(
-        itemBuilder: (context, index) => serviceTile(index),
-        itemCount: 10,
+    return Scaffold(
+      body: Container(
+        color: lightBlue(),
+        padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+        child: ListView.builder(
+          itemBuilder: (context, index) => serviceTile(index),
+          itemCount: 10,
+        ),
       ),
+      floatingActionButton: isOwner
+          ? FloatingActionButton(
+              heroTag: "add-service",
+              backgroundColor: darkBlue(),
+              child: Icon(Icons.add),
+              onPressed: () {},
+            )
+          : null,
     );
   }
 
