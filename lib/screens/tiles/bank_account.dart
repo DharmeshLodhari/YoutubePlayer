@@ -104,7 +104,7 @@ class _AccountBalanceTileState extends State<AccountBalanceTile> {
                   context: context,
                   isValidCallback: () {
                     Navigator.of(context).pushNamed('/dashboard',
-                        arguments: {'dashboardIndex': 4, 'isLocked': false});
+                        arguments: {'dashboardIndex': 5, 'isLocked': false});
                   },
                   cancelCallBack: () {
                     Scaffold.of(context).showSnackBar(SnackBar(

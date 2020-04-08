@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
 
+// ignore: must_be_immutable
 class Profile extends StatefulWidget {
   var arguments;
   Profile({@required this.arguments});
@@ -19,7 +20,6 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
   TabController _tabController;
   int currentIndex = 0;
   CustomerProfile searchedUser;
-  ScrollController _scrollController = new ScrollController();
 
   // this variable will responsible for is the user is owner of the products and add
   // edit button on the product if user is owner
@@ -43,168 +43,104 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
     }
 
     return Scaffold(
-      backgroundColor: lightBlue(),
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: darkBlue(),
-        title: Text('Profile'),
-      ),
-      body: Column(
-        mainAxisSize: MainAxisSize.max,
-        children: <Widget>[
-          userDetails(),
-          Divider(
-            color: darkBlue(),
-          ),
-          tabBar(),
-          Divider(
-            color: darkBlue(),
-          ),
-          tabViews(),
-        ],
-      ),
-    );
-  }
-
-  Widget userDetails() {
-    return Row(
-      children: <Widget>[
-        Expanded(
-          flex: 1,
-          child: Center(
-            child: IconButton(
-              icon: Icon(
-                Icons.call,
-                color: darkBlue(),
-              ),
-              onPressed: () {},
-            ),
-          ),
-        ),
-        Expanded(
-          flex: 2,
-          child: Container(
-            child: Column(
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ClipOval(
-                    child: CachedNetworkImage(
-                      imageUrl: searchedUser.avatar,
-                      height: 100,
-                      width: 100,
-                      colorBlendMode: BlendMode.darken,
-                      fit: BoxFit.cover,
-                      filterQuality: FilterQuality.high,
-                      placeholder: (context, url) => searchedUser.avatar == ""
-                          ? Icon(Icons.person)
-                          : CircularProgressIndicator(
-                              backgroundColor: Colors.white,
-                            ),
+      body: NestedScrollView(
+          headerSliverBuilder: (context, i) {
+            return [
+              SliverAppBar(
+                backgroundColor: darkBlue(),
+                pinned: true,
+                expandedHeight: 220.0,
+                actions: <Widget>[
+                  IconButton(
+                    icon: Icon(
+                      Icons.call,
+                      color: Colors.white,
                     ),
+                    onPressed: () {},
                   ),
-                ),
-                SizedBox(
-                  height: 5,
-                ),
-                Text(
-                  searchedUser.fullName,
-                  style: TextStyle(
-                    color: darkBlue(),
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
+                  IconButton(
+                    icon: Icon(
+                      Icons.message,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {},
                   ),
-                ),
-                Text(
-                  searchedUser.userName,
-                  style: TextStyle(
-                    color: darkBlue(),
-                    fontSize: 14,
-                  ),
-                ),
-                SizedBox(
-                  height: 5,
-                ),
-              ],
-            ),
-          ),
-        ),
-        Expanded(
-          flex: 1,
-          child: Center(
-            child: IconButton(
-              icon: Icon(
-                Icons.message,
-                color: darkBlue(),
+                ],
+                bottom: tabBar(),
+                title: Text(searchedUser.userName),
+                titleSpacing: 0,
+                flexibleSpace: FlexibleSpaceBar(
+                    titlePadding: EdgeInsets.only(bottom: 37),
+                    centerTitle: true,
+                    title: Text(searchedUser.fullName,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20.0,
+                        )),
+                    background: Image.network(
+                      searchedUser.avatar,
+                      fit: BoxFit.cover,
+                    )),
               ),
-              onPressed: () {},
-            ),
-          ),
-        ),
-      ],
+            ];
+          },
+          body: tabViews()),
     );
   }
 
   Widget tabBar() {
-    return Container(
-      color: lightBlue(),
-      child: TabBar(
-        indicatorColor: darkBlue(),
-        onTap: (index) {
-          setState(() {
-            currentIndex = index;
-          });
-        },
-        controller: _tabController,
-        tabs: <Widget>[
-          Material(
-              color: lightBlue(),
-              child: Container(
-                  height: 35,
-                  child: Center(
-                      child: Text(
-                    "Productes",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  )))),
-          Material(
-              color: lightBlue(),
-              child: Container(
-                  height: 35,
-                  child: Center(
-                      child: Text(
-                    "Services",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  )))),
-        ],
-      ),
+    return TabBar(
+      indicatorColor: Colors.white,
+      onTap: (index) {
+        setState(() {
+          currentIndex = index;
+        });
+      },
+      controller: _tabController,
+      tabs: <Widget>[
+        Material(
+            color: Colors.transparent,
+            child: Container(
+                height: 35,
+                child: Center(
+                    child: Text(
+                  "Productes",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                )))),
+        Material(
+            color: Colors.transparent,
+            child: Container(
+                height: 35,
+                child: Center(
+                    child: Text(
+                  "Services",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                )))),
+      ],
     );
   }
 
   Widget tabViews() {
-    return Expanded(
-      child: IndexedStack(
-        index: _tabController.index,
-        children: [
-          productsList(),
-          servicesList(),
-        ],
-      ),
+    return IndexedStack(
+      index: currentIndex,
+      children: [
+        productsList(),
+        servicesList(),
+      ],
     );
   }
 
   Widget productsList() {
     return Container(
       color: lightBlue(),
-      padding: EdgeInsets.fromLTRB(4, 8, 4, 0),
+      padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
       child: StaggeredGridView.countBuilder(
-        controller: _scrollController,
-        scrollDirection: Axis.vertical,
         crossAxisCount: 4,
         itemCount: 200,
         itemBuilder: (BuildContext context, int index) => new Card(
@@ -275,7 +211,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
   Widget servicesList() {
     return Container(
       color: lightBlue(),
-      padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+      padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
       child: ListView.builder(
         itemBuilder: (context, index) => serviceTile(index),
         itemCount: 10,
@@ -316,7 +252,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                 icon: Icon(
                   Icons.edit,
                   color: darkBlue(),
-                ), 
+                ),
                 onPressed: () {},
               )
             : null,
