@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:device_info/device_info.dart';
+import 'package:flutter/cupertino.dart';
 
 Future<Map> getDeviceInfo() async {
   Map data = {};
@@ -19,4 +20,18 @@ Future<Map> getDeviceInfo() async {
     data["device_name"] = androidInfo.display;
   }
   return data;
+}
+
+
+Future<String> getId() async {
+  DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+  if (Platform.isIOS) {
+    IosDeviceInfo iosDeviceInfo = await deviceInfo.iosInfo;
+    debugPrint(iosDeviceInfo.identifierForVendor);
+    return iosDeviceInfo.identifierForVendor; // unique ID on iOS
+  } else {
+    AndroidDeviceInfo androidDeviceInfo = await deviceInfo.androidInfo;
+    debugPrint(androidDeviceInfo.androidId);
+    return androidDeviceInfo.androidId; // unique ID on Android
+  }
 }
