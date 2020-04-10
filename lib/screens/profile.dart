@@ -170,7 +170,15 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                                     size: 20,
                                     color: darkBlue(),
                                   ),
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    //TODO: Navigate to the CurrentProduct
+                                    Navigator.of(context).pushNamed(
+                                      '/edit-product',
+                                      arguments: {
+                                        "productId": 0.toString(),
+                                      },
+                                    );
+                                  },
                                 ),
                               )
                             : Container()
@@ -235,7 +243,9 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
               heroTag: "add-service",
               backgroundColor: darkBlue(),
               child: Icon(Icons.add),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushNamed(context, '/add-service');
+              },
             )
           : null,
     );
@@ -275,7 +285,15 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                   Icons.edit,
                   color: darkBlue(),
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  //TODO: Navigate to the CurrentService
+                  Navigator.of(context).pushNamed(
+                    '/edit-service',
+                    arguments: {
+                      "serviceId": 0.toString(),
+                    },
+                  );
+                },
               )
             : null,
       ),

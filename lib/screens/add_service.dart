@@ -9,27 +9,28 @@ import 'package:toast/toast.dart';
 
 import 'colors.dart';
 
-class AddProduct extends StatefulWidget {
+class AddService extends StatefulWidget {
   @override
-  _AddProductState createState() => _AddProductState();
+  _AddServiceState createState() => _AddServiceState();
 }
 
-class _AddProductState extends State<AddProduct> {
+class _AddServiceState extends State<AddService> {
   final _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
 
   UserBloc userBloc;
-  ProductCategory selectedProductCategory;
+  ProductCategory selectedServiceCategory;
   ProductCondition selectedProductCondition;
 
   int imageCount = 5;
   ScrollController _scrollController = ScrollController();
-  List<File> productImages = List<File>();
-  String productName = "";
-  String productDescription = "";
-  String productCategory = "";
-  String productCondition = "";
-  String productPrice = "";
+  List<File> serviceImages = List<File>();
+  String serviceName = "";
+  String serviceShortDescription = "";
+  String serviceDescription = "";
+  String serviceCategory = "";
+  String serviceCondition = "";
+  String servicePrice = "";
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +44,7 @@ class _AddProductState extends State<AddProduct> {
         appBar: AppBar(
             leading: showBackArrow(),
             automaticallyImplyLeading: Platform.isAndroid ? false : true,
-            title: Center(child: Text("Add Product")),
+            title: Center(child: Text("Add Service")),
             backgroundColor: darkBlue()),
         body: SingleChildScrollView(
           child: Container(
@@ -60,13 +61,15 @@ class _AddProductState extends State<AddProduct> {
                     ),
                     addTitleField(),
                     SizedBox(height: 10),
-                    getProductDescription(),
+                    getServiceShortDescription(),
+                    SizedBox(height: 10),
+                    getServiceDescription(),
                     SizedBox(height: 10),
                     getCategoryField(),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    getProductConditionField(),
+//                    SizedBox(
+//                      height: 10,
+//                    ),
+//                    getProductConditionField(),
                     SizedBox(
                       height: 10,
                     ),
@@ -104,11 +107,11 @@ class _AddProductState extends State<AddProduct> {
       child: ListView.builder(
         controller: _scrollController,
         scrollDirection: Axis.horizontal,
-        itemCount: productImages.length + 1,
+        itemCount: serviceImages.length + 1,
         itemBuilder: (context, index) => Container(
-          child: index != productImages.length
+          child: index != serviceImages.length
               ? showImage(index)
-              : productImages.length != imageCount ? addImageButton() : null,
+              : serviceImages.length != imageCount ? addImageButton() : null,
         ),
       ),
     );
@@ -133,7 +136,7 @@ class _AddProductState extends State<AddProduct> {
         onTap: () {
           ImagePicker.pickImage(source: ImageSource.gallery).then((value) {
             setState(() {
-              productImages.add(value);
+              serviceImages.add(value);
             });
           });
         },
@@ -153,7 +156,7 @@ class _AddProductState extends State<AddProduct> {
             borderRadius: BorderRadius.circular(5),
             image: DecorationImage(
                 image: FileImage(
-                  productImages[index],
+                  serviceImages[index],
                 ),
                 fit: BoxFit.fill),
           ),
@@ -171,7 +174,7 @@ class _AddProductState extends State<AddProduct> {
             ),
             onPressed: () {
               setState(() {
-                productImages.removeAt(index);
+                serviceImages.removeAt(index);
               });
             },
           ),
@@ -192,7 +195,7 @@ class _AddProductState extends State<AddProduct> {
             Icons.card_travel,
             color: darkBlue(),
           ),
-          hintText: "Enter product name",
+          hintText: "Enter service name",
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -205,16 +208,46 @@ class _AddProductState extends State<AddProduct> {
         if (val.isNotEmpty) {
           return null;
         }
-        return "Please Enter Product Name";
+        return "Please Enter Service Name";
       },
       onTap: () async {},
       onChanged: (val) {
-        productName = val;
+        serviceName = val;
       },
     );
   }
 
-  Widget getProductDescription() {
+  Widget getServiceShortDescription() {
+    return TextFormField(
+      cursorColor: darkBlue(),
+      autofocus: false,
+      obscureText: false,
+      decoration: InputDecoration(
+          fillColor: Colors.white,
+          filled: true,
+          hintText: "Short Description",
+          labelStyle: TextStyle(
+            color: Colors.black,
+            fontSize: 16,
+          ),
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(4)),
+              borderSide: BorderSide(
+                  width: 1, color: Colors.white, style: BorderStyle.solid))),
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        return "Short description";
+      },
+      onTap: () async {},
+      onChanged: (val) {
+        serviceShortDescription = val;
+      },
+    );
+  }
+
+  Widget getServiceDescription() {
     return TextFormField(
       cursorColor: darkBlue(),
       autofocus: false,
@@ -225,7 +258,7 @@ class _AddProductState extends State<AddProduct> {
           isDense: true,
           fillColor: Colors.white,
           filled: true,
-          hintText: "Describe your item hear....",
+          hintText: "Describe your service hear....",
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -235,7 +268,7 @@ class _AddProductState extends State<AddProduct> {
               borderSide: BorderSide(
                   width: 1, color: Colors.white, style: BorderStyle.solid))),
       onChanged: (val) {
-        productDescription = val;
+        serviceDescription = val;
       },
     );
   }
@@ -252,11 +285,11 @@ class _AddProductState extends State<AddProduct> {
             color: Colors.transparent,
           ),
           hint: Text("Select Category"),
-          value: selectedProductCategory,
+          value: selectedServiceCategory,
           onChanged: (ProductCategory value) {
             setState(() {
-              selectedProductCategory = value;
-              productCategory = selectedProductCategory.name;
+              selectedServiceCategory = value;
+              serviceCategory = selectedServiceCategory.name;
             });
           },
           items: productCategories.map((ProductCategory category) {
@@ -297,7 +330,7 @@ class _AddProductState extends State<AddProduct> {
           onChanged: (ProductCondition value) {
             setState(() {
               selectedProductCondition = value;
-              productCondition = selectedProductCondition.name;
+              serviceCondition = selectedProductCondition.name;
             });
           },
           items: conditions.map((ProductCondition productCondition) {
@@ -327,7 +360,7 @@ class _AddProductState extends State<AddProduct> {
           ),
           fillColor: Colors.white,
           filled: true,
-          hintText: "Price of the product",
+          hintText: "Price of the Service",
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -339,7 +372,7 @@ class _AddProductState extends State<AddProduct> {
       onChanged: (val) {
         if (val.isNotEmpty) {
           try {
-            productPrice = double.parse(val).toString();
+            servicePrice = double.parse(val).toString();
           } catch (e) {
             Toast.show(e, context);
           }
@@ -377,19 +410,19 @@ class _AddProductState extends State<AddProduct> {
 
   void addProduct() {
     if (_formKey.currentState.validate()) {
-      if (productImages.length >= 1) {
+      if (serviceImages.length >= 1) {
         if (validateDropdown()) {
-          Product product = Product();
-          product.localImages = productImages;
-          product.title = productName;
-          product.description = productDescription;
-          product.category = productCategory;
-          product.condition = productCondition;
-          product.price = productPrice;
+          Service service = Service();
+          service.localImages = serviceImages;
+          service.title = serviceName;
+          service.shortDescription = serviceShortDescription;
+          service.description = serviceDescription;
+          service.category = serviceCategory;
+          service.price = servicePrice;
 
-          //TODO : call addProduct API
-          _auth.addProduct(product).then((value) {
-            Toast.show("Product Added Successfully", context,
+          //TODO : call addService API
+          _auth.addService(service).then((value) {
+            Toast.show("Service Added Successfully", context,
                 textColor: Colors.white, backgroundColor: darkBlue());
             Navigator.pop(context);
           }).catchError((error) {
@@ -398,17 +431,17 @@ class _AddProductState extends State<AddProduct> {
           });
         }
       } else {
-        Toast.show("Please add Image of Product ", context,
+        Toast.show("Please add Image of Service ", context,
             textColor: Colors.white, backgroundColor: darkBlue());
       }
     }
   }
 
   bool validateDropdown() {
-    if (selectedProductCategory != null && selectedProductCondition != null) {
+    if (selectedServiceCategory != null) {
       return true;
     } else {
-      Toast.show("Please Select Product Catagory and Condition", context,
+      Toast.show("Please Select Service Catagory", context,
           backgroundColor: darkBlue(),
           textColor: Colors.white,
           gravity: Toast.CENTER);

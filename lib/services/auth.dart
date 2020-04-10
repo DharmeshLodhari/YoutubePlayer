@@ -9,6 +9,7 @@ import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'package:uuid/uuid.dart';
 
 final String baseUrl = "http://api.slydo.co";
@@ -644,7 +645,9 @@ class AuthService {
     var response;
     try {
       response = await http.patch(url, headers: headers, body: _data);
-    } catch (e) {}
+    } catch (e) {
+      debugPrint("updateAppState : " + e.toString());
+    }
     if (response.statusCode != 200) {
       var jsonData = response.body;
       debugPrint(jsonData);
@@ -745,7 +748,6 @@ class AuthService {
     } else {
       url = next;
     }
-
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
 
@@ -859,34 +861,80 @@ class AuthService {
 
   //Products
 
+  // List Products
+  Future<Map<String, dynamic>> listProductsBySeller(
+      String next, String previous,
+      {String filter}) async {
+    var url = "";
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      url = baseUrl + "/api/v1/messaging/list/" + filter + "/";
+    } else {
+      url = next;
+    }
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      List<PartialMessage> messagesList = [];
+      var jsonData = json.decode(response.body);
+      for (var item in jsonData["results"]) {
+        PartialMessage message = PartialMessage(
+          subtitle: item["subtitle"],
+          subject: item["sender"],
+          id: item["id"],
+          timeStamp: item["time_sent"],
+          isRead: item["is_read"],
+          recipient: item["recipient"],
+          sender: item["sender"],
+          senderAvatar: item["sender_avatar"],
+          recipientAvatar: item["recipient_avatar"],
+          isArchivedByRecipient: item["is_archived_by_recipient"],
+          isStarredByRecipient: item["is_starred_by_recipient"],
+          isArchivedBySender: item["is_archived_by_sender"],
+          isStarredBySender: item["is_starred_by_sender"],
+        );
+        messagesList.add(message);
+      }
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": messagesList
+      };
+      return result;
+    } else if (response.statusCode == 500) {
+      throw "Server Error";
+    } else {
+      throw json.decode(response.body);
+    }
+  }
+
   // addproduct
   Future<bool> addProduct(Product product) async {
     var headers = await getAuthHeaders();
     var url = baseUrl + "/api/v1/products/";
 
-    var imagesPath = Map<String, String>();
-    int index = 0;
-    product.images.forEach((file) {
-      imagesPath["$index"] = file.path;
-      index++;
-    });
-
     //create multipart request for POST or PATCH method
     var request = http.MultipartRequest("POST", Uri.parse(url));
 
-    int index2 = 0;
-    imagesPath.forEach((k, v) async {
+    List<MultipartFile> newList = new List<MultipartFile>();
+    for (int i = 0; i < product.localImages.length; i++) {
       //add fields
-      request.fields["image$k"] = v;
+      request.fields["imagefile_$i"] = product.localImages[i].path;
 
       //create multipart using filepath, string or bytes
-      var multipartFile = await http.MultipartFile.fromPath("image$k", v);
+      var multipartFile = await http.MultipartFile.fromPath(
+          "imagefile_$i", product.localImages[i].path);
 
-      //add multipart to request
-      request.files.add(multipartFile);
-
-      index2++;
-    });
+      //add multipart to newList
+      newList.add(multipartFile);
+    }
+    //add multipart to request
+    request.files.addAll(newList);
 
     headers.forEach((k, v) => request.headers[k] = v);
     var response = await request.send();
@@ -900,28 +948,29 @@ class AuthService {
   }
 
   // edit product
-  Future<User> editProduct(Product product) async {
+  Future<bool> editProduct(Product product) async {
     var headers = await getAuthHeaders();
-    var url = baseUrl + "/api/v1/products/";
+    var url = baseUrl + "/api/v1/products/" + product.id.toString() + "/";
 
-    var document = " ";
-//    var selfie = userPhoto.path;
-    var selfie = " ";
     //create multipart request for POST or PATCH method
     var request = http.MultipartRequest("PATCH", Uri.parse(url));
 
-    //add fields
-    request.fields["document"] = document;
-    request.fields["selfie"] = selfie;
+    if (product.localImages.length > 0) {
+      List<MultipartFile> newList = new List<MultipartFile>();
+      for (int i = 0; i < product.localImages.length; i++) {
+        //add fields
+        request.fields["imagefile_$i"] = product.localImages[i].path;
 
-    //create multipart using filepath, string or bytes
-    var multipartFile1 =
-        await http.MultipartFile.fromPath("document", document);
-    var multipartFile2 = await http.MultipartFile.fromPath("selfie", selfie);
+        //create multipart using filepath, string or bytes
+        var multipartFile = await http.MultipartFile.fromPath(
+            "imagefile_$i", product.localImages[i].path);
 
-    //add multipart to request
-    request.files.add(multipartFile1);
-    request.files.add(multipartFile2);
+        //add multipart to newList
+        newList.add(multipartFile);
+      }
+      //add multipart to request
+      request.files.addAll(newList);
+    }
     headers.forEach((k, v) => request.headers[k] = v);
     var response = await request.send();
 
@@ -929,47 +978,212 @@ class AuthService {
     if (response.statusCode == 200) {
       var jsonData = json.decode(responseBody);
 
-      User user = createUser(
-        jsonData["uuid"],
-        jsonData["url"],
-        jsonData["phone_number"],
-        jsonData["full_name"],
-        jsonData["username"],
-        jsonData["avatar"],
-        jsonData["qr_code"],
-        jsonData["password"],
-        jsonData["default_currency"],
-        jsonData["is_verified"] ?? true,
-      );
-      return user;
+      return true;
     } else {
       throw responseBody;
     }
   }
 
   // Get single product
-  Future<Message> getProduct(String id) async {
+  Future<Product> getProduct(String id) async {
     var url = baseUrl + "/api/v1/products/" + id + "/";
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
     var jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
-      Message message = Message(
-        subject: jsonData["subject"],
-        id: jsonData["id"],
-        body: jsonData["body"],
-        timeStamp: jsonData["time_sent"],
-        isRead: jsonData["is_read"],
-        recipient: jsonData["recipient"],
-        sender: jsonData["sender"],
-        senderAvatar: jsonData["sender_avatar"],
-        recipientAvatar: jsonData["recipient_avatar"],
-        isArchivedByRecipient: jsonData["is_archived_by_recipient"],
-        isStarredByRecipient: jsonData["is_starred_by_recipient"],
-        isArchivedBySender: jsonData["is_archived_by_sender"],
-        isStarredBySender: jsonData["is_starred_by_sender"],
-      );
-      return message;
+      Product product = Product();
+      product.id = jsonData['id'];
+      product.localImages = jsonData['localImages'];
+      product.serverImages = jsonData['serverImages'];
+      product.title = jsonData['title'];
+      product.description = jsonData['description'];
+      product.category = jsonData['category'];
+      product.condition = jsonData['condition'];
+      product.seller = jsonData['seller'];
+      product.price = jsonData['price'];
+
+      return product;
+    } else {
+      throw jsonData;
+    }
+  }
+
+  // delete single product
+  Future<bool> deleteProduct(String id) async {
+    var url = baseUrl + "/api/v1/products/" + id + "/";
+    var headers = await getAuthHeaders();
+    var response = await http.delete(
+      url,
+      headers: headers,
+    );
+    var jsonData = json.decode(response.body);
+    if (response.statusCode == 204) {
+      return true;
+    } else {
+      throw jsonData;
+    }
+  }
+
+  //Service
+
+  // List services
+  Future<Map<String, dynamic>> listServicesByProvider(
+      String next, String previous,
+      {String filter}) async {
+    var url = "";
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      url = baseUrl + "/api/v1/messaging/list/" + filter + "/";
+    } else {
+      url = next;
+    }
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      List<PartialMessage> messagesList = [];
+      var jsonData = json.decode(response.body);
+      for (var item in jsonData["results"]) {
+        PartialMessage message = PartialMessage(
+          subtitle: item["subtitle"],
+          subject: item["sender"],
+          id: item["id"],
+          timeStamp: item["time_sent"],
+          isRead: item["is_read"],
+          recipient: item["recipient"],
+          sender: item["sender"],
+          senderAvatar: item["sender_avatar"],
+          recipientAvatar: item["recipient_avatar"],
+          isArchivedByRecipient: item["is_archived_by_recipient"],
+          isStarredByRecipient: item["is_starred_by_recipient"],
+          isArchivedBySender: item["is_archived_by_sender"],
+          isStarredBySender: item["is_starred_by_sender"],
+        );
+        messagesList.add(message);
+      }
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": messagesList
+      };
+      return result;
+    } else if (response.statusCode == 500) {
+      throw "Server Error";
+    } else {
+      throw json.decode(response.body);
+    }
+  }
+
+  // addService
+  Future<bool> addService(Service service) async {
+    var headers = await getAuthHeaders();
+    var url = baseUrl + "/api/v1/services/";
+
+    //create multipart request for POST or PATCH method
+    var request = http.MultipartRequest("POST", Uri.parse(url));
+
+    List<MultipartFile> newList = new List<MultipartFile>();
+    for (int i = 0; i < service.localImages.length; i++) {
+      //add fields
+      request.fields["imagefile_$i"] = service.localImages[i].path;
+
+      //create multipart using filepath, string or bytes
+      var multipartFile = await http.MultipartFile.fromPath(
+          "imagefile_$i", service.localImages[i].path);
+
+      //add multipart to newList
+      newList.add(multipartFile);
+    }
+    //add multipart to request
+    request.files.addAll(newList);
+
+    headers.forEach((k, v) => request.headers[k] = v);
+    var response = await request.send();
+    var responseBody = await response.stream.bytesToString();
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(responseBody);
+      return true;
+    } else {
+      throw responseBody;
+    }
+  }
+
+// edit service
+  Future<bool> editService(Service service) async {
+    var headers = await getAuthHeaders();
+    var url = baseUrl + "/api/v1/services/";
+
+    //create multipart request for POST or PATCH method
+    var request = http.MultipartRequest("PATCH", Uri.parse(url));
+
+    if (service.localImages.length > 0) {
+      List<MultipartFile> newList = new List<MultipartFile>();
+      for (int i = 0; i < service.localImages.length; i++) {
+        //add fields
+        request.fields["imagefile_$i"] = service.localImages[i].path;
+
+        //create multipart using filepath, string or bytes
+        var multipartFile = await http.MultipartFile.fromPath(
+            "imagefile_$i", service.localImages[i].path);
+
+        //add multipart to newList
+        newList.add(multipartFile);
+      }
+      //add multipart to request
+      request.files.addAll(newList);
+    }
+    headers.forEach((k, v) => request.headers[k] = v);
+    var response = await request.send();
+
+    var responseBody = await response.stream.bytesToString();
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(responseBody);
+
+      return true;
+    } else {
+      throw responseBody;
+    }
+  }
+
+// Get single service
+  Future<Service> getService(String id) async {
+    var url = baseUrl + "/api/v1/services/" + id + "/";
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
+    var jsonData = json.decode(response.body);
+    if (response.statusCode == 200) {
+      Service service = Service();
+      service.id = jsonData['id'];
+      service.localImages = jsonData['localImages'];
+      service.serverImages = jsonData['serverImages'];
+      service.title = jsonData['title'];
+      service.description = jsonData['description'];
+      service.category = jsonData['category'];
+      service.shortDescription = jsonData['shortDescription'];
+      service.seller = jsonData['seller'];
+      service.price = jsonData['price'];
+
+      return service;
+    } else {
+      throw jsonData;
+    }
+  }
+
+  // delete single service
+  Future<bool> deleteService(String id) async {
+    var url = baseUrl + "/api/v1/services/" + id + "/";
+    var headers = await getAuthHeaders();
+    var response = await http.delete(
+      url,
+      headers: headers,
+    );
+    var jsonData = json.decode(response.body);
+    if (response.statusCode == 204) {
+      return true;
     } else {
       throw jsonData;
     }

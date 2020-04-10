@@ -1,6 +1,9 @@
 import 'package:Slydo/screens/add_document.dart';
 import 'package:Slydo/screens/add_product.dart';
+import 'package:Slydo/screens/add_service.dart';
 import 'package:Slydo/screens/dashboard.dart';
+import 'package:Slydo/screens/edit_product.dart';
+import 'package:Slydo/screens/edit_service.dart';
 import 'package:Slydo/screens/explore.dart';
 import 'package:Slydo/screens/forgot_password.dart';
 import 'package:Slydo/screens/forms/add_bank_account.dart';
@@ -84,7 +87,25 @@ class RouteGenerator {
                   arguments: settings.arguments,
                 ));
       case '/add-product':
-        return MaterialPageRoute(builder: (_) => AddProduct());
+        return MaterialPageRoute(
+          builder: (_) => AddProduct(),
+        );
+      case '/edit-product':
+        return MaterialPageRoute(
+          builder: (_) => EditProduct(
+            arguments: settings.arguments,
+          ),
+        );
+      case '/add-service':
+        return MaterialPageRoute(
+          builder: (_) => AddService(),
+        );
+      case '/edit-service':
+        return MaterialPageRoute(
+          builder: (_) => EditService(
+            arguments: settings.arguments,
+          ),
+        );
       case '/compose_message':
         return MaterialPageRoute(
             builder: (_) => ComposeMessage(

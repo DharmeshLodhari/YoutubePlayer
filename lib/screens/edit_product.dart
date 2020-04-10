@@ -1,35 +1,96 @@
 import 'dart:io';
 
-import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/models/store.dart';
+import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:toast/toast.dart';
 
-import 'colors.dart';
+// ignore: must_be_immutable
+class EditProduct extends StatefulWidget {
+  var arguments;
 
-class AddProduct extends StatefulWidget {
+  EditProduct({this.arguments});
   @override
-  _AddProductState createState() => _AddProductState();
+  _EditProductState createState() => _EditProductState(arguments: arguments);
 }
 
-class _AddProductState extends State<AddProduct> {
+class _EditProductState extends State<EditProduct> {
+  var arguments;
+  _EditProductState({this.arguments});
   final _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
 
-  UserBloc userBloc;
-  ProductCategory selectedProductCategory;
-  ProductCondition selectedProductCondition;
+  String productId;
+  Product currentProduct = Product(
+      title: "Xyz",
+      category: "Food",
+      condition: "New",
+      description: "Helloo test",
+      price: "123",
+      seller: "test");
 
   int imageCount = 5;
   ScrollController _scrollController = ScrollController();
-  List<File> productImages = List<File>();
+  List<File> productLocalImages = List<File>();
+  List<String> productImagesFromServer = List<String>();
   String productName = "";
   String productDescription = "";
   String productCategory = "";
   String productCondition = "";
   String productPrice = "";
+  ProductCategory selectedProductCategory;
+  ProductCondition selectedProductCondition;
+
+  @override
+  void initState() {
+    productId = arguments['productId'];
+    fetchProduct();
+
+    // TODO: remove when we got item from server assign this all in fetch method it is fake for designing
+    productName = currentProduct.title;
+    productCategory = currentProduct.category;
+    productCondition = currentProduct.condition;
+    productPrice = currentProduct.price;
+    productDescription = currentProduct.description;
+    productImagesFromServer.add("https://picsum.photos/id/237/200/300");
+    productImagesFromServer.add("https://picsum.photos/id/238/200/300");
+    productImagesFromServer.add("https://picsum.photos/id/239/200/300");
+    productImagesFromServer.add("https://picsum.photos/id/240/200/300");
+    productImagesFromServer.add("https://picsum.photos/id/241/200/300");
+    super.initState();
+  }
+
+  void fetchProduct() {
+    // assigning the dropdown from currentProduct
+    productCategories.forEach((catagory) {
+      if (catagory.name == currentProduct.category) {
+        selectedProductCategory = catagory;
+      }
+    });
+
+    conditions.forEach((condition) {
+      if (condition.name == currentProduct.condition) {
+        selectedProductCondition = condition;
+      }
+    });
+
+    //fetchProductFrom id to edit
+    _auth.getProduct(productId).then((value) {
+      setState(() {
+        currentProduct = value;
+      });
+    }).catchError((error) {
+      Toast.show(
+        error.toString(),
+        context,
+        backgroundColor: darkBlue(),
+        textColor: Colors.white,
+        gravity: Toast.CENTER,
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +104,7 @@ class _AddProductState extends State<AddProduct> {
         appBar: AppBar(
             leading: showBackArrow(),
             automaticallyImplyLeading: Platform.isAndroid ? false : true,
-            title: Center(child: Text("Add Product")),
+            title: Center(child: Text("Edit Product")),
             backgroundColor: darkBlue()),
         body: SingleChildScrollView(
           child: Container(
@@ -54,7 +115,12 @@ class _AddProductState extends State<AddProduct> {
                 child: Column(
                   children: <Widget>[
                     SizedBox(height: 10),
-                    addImages(),
+                    checkImageLimitForServerImage()
+                        ? viewServerImages()
+                        : Container(),
+                    checkImageLimitForLocalImage()
+                        ? addLocalImages()
+                        : Container(),
                     SizedBox(
                       height: 10,
                     ),
@@ -97,19 +163,36 @@ class _AddProductState extends State<AddProduct> {
     }
   }
 
-  Widget addImages() {
+  Widget addLocalImages() {
     return Container(
       height: 100,
       color: lightBlue(),
       child: ListView.builder(
         controller: _scrollController,
         scrollDirection: Axis.horizontal,
-        itemCount: productImages.length + 1,
+        itemCount: productLocalImages.length + 1,
         itemBuilder: (context, index) => Container(
-          child: index != productImages.length
-              ? showImage(index)
-              : productImages.length != imageCount ? addImageButton() : null,
+          child: index != productLocalImages.length
+              ? showLocalImage(index)
+              : productLocalImages.length + productImagesFromServer.length !=
+                      imageCount
+                  ? addImageButton()
+                  : null,
         ),
+      ),
+    );
+  }
+
+  Widget viewServerImages() {
+    return Container(
+      height: 100,
+      color: lightBlue(),
+      child: ListView.builder(
+        controller: _scrollController,
+        scrollDirection: Axis.horizontal,
+        itemCount: productImagesFromServer.length,
+        itemBuilder: (context, index) =>
+            Container(child: showServerImage(index)),
       ),
     );
   }
@@ -133,7 +216,7 @@ class _AddProductState extends State<AddProduct> {
         onTap: () {
           ImagePicker.pickImage(source: ImageSource.gallery).then((value) {
             setState(() {
-              productImages.add(value);
+              productLocalImages.add(value);
             });
           });
         },
@@ -141,7 +224,7 @@ class _AddProductState extends State<AddProduct> {
     );
   }
 
-  Widget showImage(int index) {
+  Widget showLocalImage(int index) {
     return Stack(
       children: <Widget>[
         Container(
@@ -153,7 +236,7 @@ class _AddProductState extends State<AddProduct> {
             borderRadius: BorderRadius.circular(5),
             image: DecorationImage(
                 image: FileImage(
-                  productImages[index],
+                  productLocalImages[index],
                 ),
                 fit: BoxFit.fill),
           ),
@@ -171,7 +254,7 @@ class _AddProductState extends State<AddProduct> {
             ),
             onPressed: () {
               setState(() {
-                productImages.removeAt(index);
+                productLocalImages.removeAt(index);
               });
             },
           ),
@@ -180,11 +263,71 @@ class _AddProductState extends State<AddProduct> {
     );
   }
 
+  Widget showServerImage(int index) {
+    return Stack(
+      children: <Widget>[
+        Container(
+          height: 80,
+          width: 80,
+          margin: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.transparent),
+            borderRadius: BorderRadius.circular(5),
+            image: DecorationImage(
+                image: NetworkImage(
+                  productImagesFromServer[index],
+                ),
+                fit: BoxFit.fill),
+          ),
+        ),
+        Positioned(
+          right: 0,
+          top: 0,
+          child: IconButton(
+            padding: EdgeInsets.only(right: 6, top: 8),
+            alignment: Alignment.topRight,
+            icon: Icon(
+              Icons.close,
+              color: Colors.white,
+              size: 20,
+            ),
+            onPressed: () {
+              setState(() {
+                productImagesFromServer.removeAt(index);
+              });
+            },
+          ),
+        )
+      ],
+    );
+  }
+
+  // decide that serverImage List is need to be show or not
+  bool checkImageLimitForServerImage() {
+    if (productLocalImages.length + productImagesFromServer.length !=
+            imageCount ||
+        productImagesFromServer.length != 0) {
+      return true;
+    }
+    return false;
+  }
+
+  // decide that localImage List is need to be show or not
+  bool checkImageLimitForLocalImage() {
+    if (productLocalImages.length + productImagesFromServer.length !=
+            imageCount ||
+        productLocalImages.length != 0) {
+      return true;
+    }
+    return false;
+  }
+
   Widget addTitleField() {
     return TextFormField(
       cursorColor: darkBlue(),
       autofocus: false,
       obscureText: false,
+      initialValue: currentProduct.title,
       decoration: InputDecoration(
           fillColor: Colors.white,
           filled: true,
@@ -217,6 +360,7 @@ class _AddProductState extends State<AddProduct> {
   Widget getProductDescription() {
     return TextFormField(
       cursorColor: darkBlue(),
+      initialValue: currentProduct.description,
       autofocus: false,
       obscureText: false,
       maxLines: 5,
@@ -319,6 +463,7 @@ class _AddProductState extends State<AddProduct> {
       cursorColor: darkBlue(),
       autofocus: false,
       obscureText: false,
+      initialValue: currentProduct.price,
       keyboardType: TextInputType.number,
       decoration: InputDecoration(
           prefixIcon: Icon(
@@ -367,29 +512,28 @@ class _AddProductState extends State<AddProduct> {
           textColor: Colors.white,
           color: darkBlue(),
           height: 50,
-          child: Text("Add"),
+          child: Text("Update"),
           onPressed: () async {
             FocusScope.of(context).unfocus();
-            addProduct();
+            editProduct();
           }),
     );
   }
 
-  void addProduct() {
+  void editProduct() {
     if (_formKey.currentState.validate()) {
-      if (productImages.length >= 1) {
+      if (productLocalImages.length >= 0) {
         if (validateDropdown()) {
-          Product product = Product();
-          product.localImages = productImages;
-          product.title = productName;
-          product.description = productDescription;
-          product.category = productCategory;
-          product.condition = productCondition;
-          product.price = productPrice;
+          // setting updated value
+          currentProduct.title = productName;
+          currentProduct.description = productDescription;
+          currentProduct.category = productCategory;
+          currentProduct.condition = productCondition;
+          currentProduct.price = productPrice;
 
-          //TODO : call addProduct API
-          _auth.addProduct(product).then((value) {
-            Toast.show("Product Added Successfully", context,
+          //TODO : call editProduct API
+          _auth.editProduct(currentProduct).then((value) {
+            Toast.show("Product Edited Successfully", context,
                 textColor: Colors.white, backgroundColor: darkBlue());
             Navigator.pop(context);
           }).catchError((error) {

@@ -8,7 +8,8 @@ class Product {
   String title;
   String description;
   String price;
-  List<File> images;
+  List<File> localImages;
+  List<String> serverImages;
   String seller;
   String condition;
   String category;
@@ -18,7 +19,8 @@ class Product {
     this.title,
     this.description,
     this.price,
-    this.images,
+    this.localImages,
+    this.serverImages,
     this.seller,
     this.condition,
     this.category,
@@ -28,45 +30,53 @@ class Product {
 class Service {
   int id;
   String title;
-  String shortDescription;
   String description;
-  String image;
+  String price;
+  List<File> localImages;
+  List<String> serverImages;
+  String seller;
+  String shortDescription;
+  String category;
 
   Service({
     this.id,
     this.title,
-    this.shortDescription,
     this.description,
-    this.image,
+    this.price,
+    this.localImages,
+    this.serverImages,
+    this.seller,
+    this.shortDescription,
+    this.category,
   });
 }
 
-class Category {
-  const Category(this.name, this.icon);
+class ProductCategory {
+  const ProductCategory(this.name, this.icon);
   final String name;
   final Icon icon;
 }
 
-List<Category> categories = <Category>[
-  Category(
+List<ProductCategory> productCategories = <ProductCategory>[
+  ProductCategory(
       'Food',
       Icon(
         Icons.fastfood,
         color: darkBlue(),
       )),
-  Category(
+  ProductCategory(
       'Movie & Music',
       Icon(
         Icons.movie,
         color: darkBlue(),
       )),
-  Category(
+  ProductCategory(
       'Motor',
       Icon(
         Icons.directions_car,
         color: darkBlue(),
       )),
-  Category(
+  ProductCategory(
       'Property',
       Icon(
         Icons.home,
