@@ -864,13 +864,13 @@ class AuthService {
   // List Products
   Future<Map<String, dynamic>> listProductsBySeller(
       String next, String previous,
-      {String filter}) async {
+      {String userId}) async {
     var url = "";
     if (next == null) {
       return null;
     }
     if (next == "") {
-      url = baseUrl + "/api/v1/messaging/list/" + filter + "/";
+      url = baseUrl + "/api/v1/products/by-seller/ " + userId + "/";
     } else {
       url = next;
     }
@@ -878,39 +878,70 @@ class AuthService {
     var response = await http.get(url, headers: headers);
 
     if (response.statusCode == 200) {
-      List<PartialMessage> messagesList = [];
+      List<Product> productList = [];
       var jsonData = json.decode(response.body);
       for (var item in jsonData["results"]) {
-        PartialMessage message = PartialMessage(
-          subtitle: item["subtitle"],
-          subject: item["sender"],
-          id: item["id"],
-          timeStamp: item["time_sent"],
-          isRead: item["is_read"],
-          recipient: item["recipient"],
-          sender: item["sender"],
-          senderAvatar: item["sender_avatar"],
-          recipientAvatar: item["recipient_avatar"],
-          isArchivedByRecipient: item["is_archived_by_recipient"],
-          isStarredByRecipient: item["is_starred_by_recipient"],
-          isArchivedBySender: item["is_archived_by_sender"],
-          isStarredBySender: item["is_starred_by_sender"],
-        );
-        messagesList.add(message);
+        Product product = Product();
+        product.id = item['id'];
+        product.localImages = item['localImages'];
+        product.serverImages = item['serverImages'];
+        product.title = item['title'];
+        product.qrCode = item['qr_code'];
+        product.manufacturer = item['manufacturer'];
+        product.isAvailable = item["is_available"];
+        product.availableFrom = item['is_available'];
+        product.description = item['description'];
+        product.category = item['category'];
+        product.condition = item['condition'];
+        product.seller = item['seller'];
+        product.price = item['price'];
+
+        productList.add(product);
       }
 
       Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
-        "results": messagesList
+        "results": productList
       };
       return result;
     } else if (response.statusCode == 500) {
       throw "Server Error";
     } else {
-      throw json.decode(response.body);
+      return fakeProducts();
     }
+  }
+
+  fakeProducts() {
+    // fake data
+
+    List<Product> productList = [];
+    for (int i = 0; i < 50; i++) {
+      Product product = Product();
+      product.id = i;
+      product.localImages = [];
+      product.serverImages = ["https://i.picsum.photos/id/240/200/300.jpg"];
+      product.title = "Mac book";
+      product.qrCode = "Mac book";
+      product.manufacturer = "Mac book";
+      product.isAvailable = true;
+      product.availableFrom = DateTime.now();
+      product.description = "test";
+      product.category = "test";
+      product.condition = "test";
+      product.seller = "test";
+      product.price = "12";
+
+      productList.add(product);
+    }
+    Map<String, dynamic> result = {
+      "count": 50,
+      "next": "test",
+      "previous": "test",
+      "results": productList
+    };
+    return result;
   }
 
   // addproduct
@@ -996,6 +1027,10 @@ class AuthService {
       product.localImages = jsonData['localImages'];
       product.serverImages = jsonData['serverImages'];
       product.title = jsonData['title'];
+      product.qrCode = jsonData['qr_code'];
+      product.manufacturer = jsonData['manufacturer'];
+      product.isAvailable = jsonData["is_available"];
+      product.availableFrom = jsonData['is_available'];
       product.description = jsonData['description'];
       product.category = jsonData['category'];
       product.condition = jsonData['condition'];
