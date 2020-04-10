@@ -10,7 +10,7 @@ class _ExploreTileState extends State<ExploreTile> {
     return Padding(
       padding: EdgeInsets.only(top: 8.0),
       child: Card(
-        margin: EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
+        margin: EdgeInsets.fromLTRB(40.0, 0.0, 40.0, 0.0),
         child: ListTile(
           title: Text(
             "Explore",

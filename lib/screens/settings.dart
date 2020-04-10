@@ -96,7 +96,7 @@ class _SettingsListState extends State<SettingsList> {
                   bankAccountBloc.bankAccount.bankName != null
                       ? displayBankAccountTile(bankAccountBloc)
                       : Container(),
-                  SizedBox(height: 10),
+                  SizedBox(height: 0),
                   userBloc.user.userName == "abiola.rasheed.2"
                       ? ExploreTile()
                       : Container(),
