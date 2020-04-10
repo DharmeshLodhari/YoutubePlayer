@@ -41,17 +41,17 @@ class Product {
       "id": this.id,
       "title": this.title,
       "description": this.description,
-      "shortDescription": this.shortDescription,
+      "short_description": this.shortDescription,
       "price": this.price,
-      "localImages": this.localImages,
-      "serverImages": this.serverImages,
+      "local_images": this.localImages,
+      "server_images": this.serverImages,
       "seller": this.seller,
       "qrCode": this.qrCode,
       "condition": this.condition,
       "category": this.category,
       "manufacturer": this.manufacturer,
-      "isAvailable": this.isAvailable,
-      "availableFrom": this.availableFrom,
+      "is_available": this.isAvailable,
+      "available_from": this.availableFrom,
     };
   }
 }

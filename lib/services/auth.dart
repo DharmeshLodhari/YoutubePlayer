@@ -952,8 +952,10 @@ class AuthService {
     //create multipart request for POST or PATCH method
     var request = http.MultipartRequest("POST", Uri.parse(url));
 
-    var _data = product.toMap();
-    request.fields.addAll(_data);
+    Map<String, String> _data = product.toMap();
+    _data.forEach((k, v) {
+      request.fields[k] = v;
+    });
 
     List<MultipartFile> newList = new List<MultipartFile>();
     for (int i = 0; i < product.localImages.length; i++) {

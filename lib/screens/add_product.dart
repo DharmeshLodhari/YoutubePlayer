@@ -229,7 +229,6 @@ class _AddProductState extends State<AddProduct> {
     );
   }
 
-
   Widget getProductShortDescription() {
     return TextFormField(
       cursorColor: darkBlue(),
@@ -263,7 +262,6 @@ class _AddProductState extends State<AddProduct> {
       },
     );
   }
-
 
   Widget getProductDescription() {
     return TextFormField(
@@ -448,6 +446,7 @@ class _AddProductState extends State<AddProduct> {
                 textColor: Colors.white, backgroundColor: darkBlue());
             Navigator.pop(context);
           }).catchError((error) {
+            debugPrint(error.toString());
             Toast.show(error.toString(), context,
                 textColor: Colors.white, backgroundColor: darkBlue());
           });
