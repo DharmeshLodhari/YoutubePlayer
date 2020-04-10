@@ -28,6 +28,7 @@ class _AddProductState extends State<AddProduct> {
   List<File> productImages = List<File>();
   String productName = "";
   String productDescription = "";
+  String productShortDescription = "";
   String productCategory = "";
   String productCondition = "";
   String productPrice = "";
@@ -63,26 +64,28 @@ class _AddProductState extends State<AddProduct> {
                       height: 10,
                     ),
                     addTitleField(),
-                    SizedBox(height: 10),
-                    getProductDescription(),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    getManufacuturerField(),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    getAmountField(),
                     SizedBox(height: 10),
                     getCategoryField(),
                     SizedBox(
                       height: 10,
                     ),
                     getProductConditionField(),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    getAmountField(),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    getManufacuturerField(),
                     SizedBox(height: 10),
                     getIsAvailableField(),
                     SizedBox(height: 10),
                     getAvailableFromField(),
+                    SizedBox(height: 10),
+                    getProductShortDescription(),
+                    SizedBox(height: 10),
+                    getProductDescription(),
                     SizedBox(height: 10),
                     getSubmitButton(),
                     SizedBox(height: 20),
@@ -204,7 +207,7 @@ class _AddProductState extends State<AddProduct> {
             Icons.card_travel,
             color: darkBlue(),
           ),
-          hintText: "Enter product name",
+          hintText: "Product name",
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -226,6 +229,42 @@ class _AddProductState extends State<AddProduct> {
     );
   }
 
+
+  Widget getProductShortDescription() {
+    return TextFormField(
+      cursorColor: darkBlue(),
+      autofocus: false,
+      obscureText: false,
+      decoration: InputDecoration(
+          fillColor: Colors.white,
+          filled: true,
+          prefixIcon: Icon(
+            Icons.card_travel,
+            color: darkBlue(),
+          ),
+          hintText: "Short Description",
+          labelStyle: TextStyle(
+            color: Colors.black,
+            fontSize: 16,
+          ),
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(4)),
+              borderSide: BorderSide(
+                  width: 1, color: Colors.white, style: BorderStyle.solid))),
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        return "Short Description";
+      },
+      onTap: () async {},
+      onChanged: (val) {
+        productShortDescription = val;
+      },
+    );
+  }
+
+
   Widget getProductDescription() {
     return TextFormField(
       cursorColor: darkBlue(),
@@ -237,7 +276,7 @@ class _AddProductState extends State<AddProduct> {
           isDense: true,
           fillColor: Colors.white,
           filled: true,
-          hintText: "Describe your item hear....",
+          hintText: "Description",
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -263,7 +302,7 @@ class _AddProductState extends State<AddProduct> {
           underline: Divider(
             color: Colors.transparent,
           ),
-          hint: Text("Select Category"),
+          hint: Text("Category"),
           value: selectedProductCategory,
           onChanged: (ProductCategory value) {
             setState(() {
@@ -304,7 +343,7 @@ class _AddProductState extends State<AddProduct> {
             color: Colors.transparent,
           ),
           isExpanded: true,
-          hint: Text("Select item Condition"),
+          hint: Text("Product Condition"),
           value: selectedProductCondition,
           onChanged: (ProductCondition value) {
             setState(() {
@@ -339,7 +378,7 @@ class _AddProductState extends State<AddProduct> {
           ),
           fillColor: Colors.white,
           filled: true,
-          hintText: "Price of the product",
+          hintText: "Price",
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -395,6 +434,7 @@ class _AddProductState extends State<AddProduct> {
           product.localImages = productImages;
           product.title = productName;
           product.description = productDescription;
+          product.shortDescription = productShortDescription;
           product.category = productCategory;
           product.condition = productCondition;
           product.price = productPrice;
@@ -443,7 +483,7 @@ class _AddProductState extends State<AddProduct> {
             Icons.business,
             color: darkBlue(),
           ),
-          hintText: "Enter manufacturer name",
+          hintText: "Manufacturer",
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,

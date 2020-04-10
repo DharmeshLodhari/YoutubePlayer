@@ -7,6 +7,7 @@ class Product {
   int id;
   String title;
   String description;
+  String shortDescription;
   String price;
   List<File> localImages;
   List<String> serverImages;
@@ -22,6 +23,7 @@ class Product {
     this.id,
     this.title,
     this.description,
+    this.shortDescription,
     this.price,
     this.localImages,
     this.serverImages,
