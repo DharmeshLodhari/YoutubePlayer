@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:toast/toast.dart';
@@ -30,6 +31,9 @@ class _AddProductState extends State<AddProduct> {
   String productCategory = "";
   String productCondition = "";
   String productPrice = "";
+  String productManufacturer = "";
+  bool productIsAvailable = false;
+  DateTime productAvailableFrom = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -71,8 +75,17 @@ class _AddProductState extends State<AddProduct> {
                       height: 10,
                     ),
                     getAmountField(),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    getManufacuturerField(),
+                    SizedBox(height: 10),
+                    getIsAvailableField(),
+                    SizedBox(height: 10),
+                    getAvailableFromField(),
                     SizedBox(height: 10),
                     getSubmitButton(),
+                    SizedBox(height: 20),
                   ],
                 ),
               ),
@@ -81,7 +94,6 @@ class _AddProductState extends State<AddProduct> {
         ),
       ),
     );
-    //
   }
 
   Widget showBackArrow() {
@@ -386,6 +398,9 @@ class _AddProductState extends State<AddProduct> {
           product.category = productCategory;
           product.condition = productCondition;
           product.price = productPrice;
+          product.isAvailable = productIsAvailable;
+          product.manufacturer = productManufacturer;
+          productAvailableFrom = productAvailableFrom;
 
           //TODO : call addProduct API
           _auth.addProduct(product).then((value) {
@@ -414,5 +429,107 @@ class _AddProductState extends State<AddProduct> {
           gravity: Toast.CENTER);
       return false;
     }
+  }
+
+  Widget getManufacuturerField() {
+    return TextFormField(
+      cursorColor: darkBlue(),
+      autofocus: false,
+      obscureText: false,
+      decoration: InputDecoration(
+          fillColor: Colors.white,
+          filled: true,
+          prefixIcon: Icon(
+            Icons.business,
+            color: darkBlue(),
+          ),
+          hintText: "Enter manufacturer name",
+          labelStyle: TextStyle(
+            color: Colors.black,
+            fontSize: 16,
+          ),
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(4)),
+              borderSide: BorderSide(
+                  width: 1, color: Colors.white, style: BorderStyle.solid))),
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        return "Please Enter Manufacturer Name";
+      },
+      onTap: () async {},
+      onChanged: (val) {
+        productManufacturer = val;
+      },
+    );
+  }
+
+  Widget getIsAvailableField() {
+    return Row(
+      children: <Widget>[
+        Checkbox(
+          value: productIsAvailable,
+          activeColor: Colors.white,
+          checkColor: darkBlue(),
+          onChanged: (value) {
+            setState(() {
+              productIsAvailable = value;
+            });
+          },
+        ),
+        Text(
+          " is Available? ",
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget getAvailableFromField() {
+    return GestureDetector(
+      onTap: () {
+        showDatePicker(
+          context: context,
+          initialDate: DateTime(
+              DateTime.now().year, DateTime.now().month, DateTime.now().day),
+          firstDate: DateTime(
+              DateTime.now().year, DateTime.now().month, DateTime.now().day),
+          lastDate: DateTime(2101),
+        ).then((value) {
+          setState(() {
+            productAvailableFrom = DateTime(value.year, value.month, value.day);
+          });
+        }).catchError((error) {});
+      },
+      child: Card(
+        child: Container(
+          padding: EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text("Available From"),
+              Row(
+                children: <Widget>[
+                  Icon(Icons.date_range),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Text(
+                    productAvailableFrom.toString().substring(0, 10),
+                    style: TextStyle(
+                      color: darkBlue(),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
