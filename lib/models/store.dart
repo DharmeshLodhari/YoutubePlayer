@@ -35,6 +35,25 @@ class Product {
     this.isAvailable,
     this.availableFrom,
   });
+
+  Map toMap() {
+    return {
+      "id": this.id,
+      "title": this.title,
+      "description": this.description,
+      "shortDescription": this.shortDescription,
+      "price": this.price,
+      "localImages": this.localImages,
+      "serverImages": this.serverImages,
+      "seller": this.seller,
+      "qrCode": this.qrCode,
+      "condition": this.condition,
+      "category": this.category,
+      "manufacturer": this.manufacturer,
+      "isAvailable": this.isAvailable,
+      "availableFrom": this.availableFrom,
+    };
+  }
 }
 
 class Service {
