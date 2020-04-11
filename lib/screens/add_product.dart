@@ -6,6 +6,7 @@ import 'package:Slydo/services/auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:toast/toast.dart';
 
 import 'colors.dart';
@@ -430,7 +431,7 @@ class _AddProductState extends State<AddProduct> {
         if (validateDropdown()) {
           Product product = Product();
           product.localImages = productImages;
-          product.title = productName;
+          product.name = productName;
           product.description = productDescription;
           product.shortDescription = productShortDescription;
           product.category = productCategory;
@@ -438,7 +439,7 @@ class _AddProductState extends State<AddProduct> {
           product.price = productPrice;
           product.isAvailable = productIsAvailable;
           product.manufacturer = productManufacturer;
-          productAvailableFrom = productAvailableFrom;
+          product.availableFrom = productAvailableFrom;
 
           //TODO : call addProduct API
           _auth.addProduct(product).then((value) {

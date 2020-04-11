@@ -4,8 +4,8 @@ import 'package:Slydo/screens/colors.dart';
 import 'package:flutter/material.dart';
 
 class Product {
-  int id;
-  String title;
+  String id;
+  String name;
   String description;
   String shortDescription;
   String price;
@@ -21,7 +21,7 @@ class Product {
 
   Product({
     this.id,
-    this.title,
+    this.name,
     this.description,
     this.shortDescription,
     this.price,
@@ -38,15 +38,10 @@ class Product {
 
   Map toMap() {
     return {
-      "id": this.id,
-      "title": this.title,
+      "name": this.name,
       "description": this.description,
       "short_description": this.shortDescription,
       "price": this.price,
-      "local_images": this.localImages,
-      "server_images": this.serverImages,
-      "seller": this.seller,
-      "qrCode": this.qrCode,
       "condition": this.condition,
       "category": this.category,
       "manufacturer": this.manufacturer,
@@ -54,6 +49,19 @@ class Product {
       "available_from": this.availableFrom,
     };
   }
+
+  List<String> imageDataToList(List<dynamic> pictures){
+    List<String> imageLinks = [];
+    if(pictures.length > 0){
+      for (var data in pictures){
+        imageLinks.add(data["file"]);
+      }
+    }else{
+      imageLinks.add("https://borinhalbich.com/wp-content/uploads/2018/06/placeholder-250x300.png");
+    }
+    return imageLinks;
+  }
+
 }
 
 class Service {

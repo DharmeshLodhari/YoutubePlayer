@@ -68,8 +68,8 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
 
   @override
   void initState() {
-    this.getList();
     searchedUser = arguments['searchedUser'];
+    this.getList();
 
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
@@ -199,79 +199,6 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
             controller: _refreshController,
             onRefresh: _onRefresh,
             child: _buildProductList()),
-//        child: StaggeredGridView.countBuilder(
-//          crossAxisCount: 4,
-//          itemCount: 200,
-//          itemBuilder: (BuildContext context, int index) => new Card(
-//              shape: RoundedRectangleBorder(
-//                borderRadius: BorderRadius.circular(10),
-//              ),
-//              child: ClipRRect(
-//                borderRadius: BorderRadius.circular(10.0),
-//                child: Column(
-//                  children: <Widget>[
-//                    Expanded(
-//                      child: Stack(children: <Widget>[
-//                        CachedNetworkImage(
-//                          width: double.infinity,
-//                          imageUrl:
-//                              "https://i.picsum.photos/id/${index * 10}/200/300.jpg",
-//                          fit: BoxFit.fill,
-//                          filterQuality: FilterQuality.high,
-//                        ),
-//                        isOwner
-//                            ? Positioned(
-//                                right: 0,
-//                                child: IconButton(
-//                                  icon: Icon(
-//                                    Icons.edit,
-//                                    size: 20,
-//                                    color: darkBlue(),
-//                                  ),
-//                                  onPressed: () {
-//                                    //TODO: Navigate to the CurrentProduct
-//                                    Navigator.of(context).pushNamed(
-//                                      '/edit-product',
-//                                      arguments: {
-//                                        "productId": 0.toString(),
-//                                      },
-//                                    );
-//                                  },
-//                                ),
-//                              )
-//                            : Container()
-//                      ]),
-//                    ),
-//                    Padding(
-//                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
-//                      child: Row(
-//                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                        children: <Widget>[
-//                          Column(
-//                            crossAxisAlignment: CrossAxisAlignment.start,
-//                            children: <Widget>[
-//                              Text(
-//                                "Leptop",
-//                                style: TextStyle(fontWeight: FontWeight.bold),
-//                              ),
-//                              Text(
-//                                "MacBook Pro",
-//                                style: TextStyle(color: Colors.grey),
-//                              ),
-//                            ],
-//                          ),
-//                          Text(r"$" + "$index" + ".00")
-//                        ],
-//                      ),
-//                    )
-//                  ],
-//                ),
-//              )),
-//          staggeredTileBuilder: (int index) =>
-//              new StaggeredTile.count(2, index.isEven ? 2 : 1.5),
-//          mainAxisSpacing: 2.0,
-//          crossAxisSpacing: 2.0,
-//        ),
       ),
       floatingActionButton: isOwner
           ? FloatingActionButton(
@@ -311,7 +238,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                             child: Stack(children: <Widget>[
                               CachedNetworkImage(
                                 width: double.infinity,
-                                imageUrl: productList[index].serverImages[0],
+                                imageUrl: getDisplayImage(index, productList),
                                 fit: BoxFit.fill,
                                 filterQuality: FilterQuality.high,
                               ),
@@ -350,12 +277,12 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
                                     Text(
-                                      productList[index].title,
+                                      productList[index].name,
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold),
                                     ),
                                     Text(
-                                      productList[index].title,
+                                      productList[index].name,
                                       style: TextStyle(color: Colors.grey),
                                     ),
                                   ],
@@ -398,7 +325,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
           isLoading = true;
         });
         Map<String, dynamic> result =
-            await _auth.listProductsBySeller(next, previous, userId: "1");
+            await _auth.listProductsBySeller(next, previous, userId: searchedUser.userName);
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
@@ -492,5 +419,9 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
             : null,
       ),
     );
+  }
+
+  String getDisplayImage(int index, List<Product> productList) {
+    return productList[index].serverImages[0];
   }
 }

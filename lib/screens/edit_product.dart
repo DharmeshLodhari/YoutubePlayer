@@ -24,7 +24,7 @@ class _EditProductState extends State<EditProduct> {
 
   String productId;
   Product currentProduct = Product(
-      title: "Xyz",
+      name: "Xyz",
       category: "Food",
       condition: "New",
       description: "Helloo test",
@@ -49,7 +49,7 @@ class _EditProductState extends State<EditProduct> {
     fetchProduct();
 
     // TODO: remove when we got item from server assign this all in fetch method it is fake for designing
-    productName = currentProduct.title;
+    productName = currentProduct.name;
     productCategory = currentProduct.category;
     productCondition = currentProduct.condition;
     productPrice = currentProduct.price;
@@ -327,7 +327,7 @@ class _EditProductState extends State<EditProduct> {
       cursorColor: darkBlue(),
       autofocus: false,
       obscureText: false,
-      initialValue: currentProduct.title,
+      initialValue: currentProduct.name,
       decoration: InputDecoration(
           fillColor: Colors.white,
           filled: true,
@@ -525,7 +525,7 @@ class _EditProductState extends State<EditProduct> {
       if (productLocalImages.length >= 0) {
         if (validateDropdown()) {
           // setting updated value
-          currentProduct.title = productName;
+          currentProduct.name = productName;
           currentProduct.description = productDescription;
           currentProduct.category = productCategory;
           currentProduct.condition = productCondition;

@@ -10,6 +10,7 @@ import 'package:Slydo/models/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
 final String baseUrl = "http://api.slydo.co";
@@ -870,7 +871,7 @@ class AuthService {
       return null;
     }
     if (next == "") {
-      url = baseUrl + "/api/v1/products/by-seller/ " + userId + "/";
+      url = baseUrl + "/api/v1/products/by-seller/" + userId + "/";
     } else {
       url = next;
     }
@@ -884,18 +885,18 @@ class AuthService {
         Product product = Product();
         product.id = item['id'];
         product.localImages = item['localImages'];
-        product.serverImages = item['serverImages'];
-        product.title = item['title'];
+        product.serverImages = product.imageDataToList(item['pictures']);
+        product.name = item['name'];
         product.qrCode = item['qr_code'];
         product.manufacturer = item['manufacturer'];
         product.isAvailable = item["is_available"];
-        product.availableFrom = item['is_available'];
+        product.availableFrom = DateTime.parse(item['available_from']);
         product.description = item['description'];
+        product.shortDescription = item["short_description"];
         product.category = item['category'];
         product.condition = item['condition'];
         product.seller = item['seller'];
-        product.price = item['price'];
-
+        product.price = item['price'].toString();
         productList.add(product);
       }
 
@@ -909,42 +910,25 @@ class AuthService {
     } else if (response.statusCode == 500) {
       throw "Server Error";
     } else {
-      return fakeProducts();
+      List<Product> productList = [];
+      Map<String, dynamic> result = {
+        "count": 0,
+        "next": "test",
+        "previous": "test",
+        "results": productList
+      };
+      return result;
     }
   }
 
-  fakeProducts() {
-    // fake data
-
-    List<Product> productList = [];
-    for (int i = 0; i < 50; i++) {
-      Product product = Product();
-      product.id = i;
-      product.localImages = [];
-      product.serverImages = ["https://i.picsum.photos/id/240/200/300.jpg"];
-      product.title = "Mac book";
-      product.qrCode = "Mac book";
-      product.manufacturer = "Mac book";
-      product.isAvailable = true;
-      product.availableFrom = DateTime.now();
-      product.description = "test";
-      product.category = "test";
-      product.condition = "test";
-      product.seller = "test";
-      product.price = "12";
-
-      productList.add(product);
-    }
-    Map<String, dynamic> result = {
-      "count": 50,
-      "next": "test",
-      "previous": "test",
-      "results": productList
-    };
-    return result;
+  String dateToString(DateTime date) {
+    var formatter = new DateFormat('yyyy-MM-dd');
+    var formatted = formatter.format(date);
+    debugPrint(formatted);
+    return formatted;
   }
 
-  // addproduct
+  // Add Product
   Future<bool> addProduct(Product product) async {
     var headers = await getAuthHeaders();
     var url = baseUrl + "/api/v1/products/";
@@ -952,38 +936,40 @@ class AuthService {
     //create multipart request for POST or PATCH method
     var request = http.MultipartRequest("POST", Uri.parse(url));
 
-    Map<String, String> _data = product.toMap();
-    _data.forEach((k, v) {
-      request.fields[k] = v;
-    });
+    Map<dynamic, dynamic> _data = product.toMap();
+    _data["available_from"] = dateToString(product.availableFrom);
+    _data["image_count"] = product.localImages.length;
 
+    _data.forEach((k, v) {
+      request.fields[k] = v.toString();
+    });
     List<MultipartFile> newList = new List<MultipartFile>();
     for (int i = 0; i < product.localImages.length; i++) {
-      //add fields
+      // Add fields
       request.fields["imagefile_$i"] = product.localImages[i].path;
 
-      //create multipart using filepath, string or bytes
+      // Create multipart using filepath, string or bytes
       var multipartFile = await http.MultipartFile.fromPath(
           "imagefile_$i", product.localImages[i].path);
 
-      //add multipart to newList
+      // Add multipart to newList
       newList.add(multipartFile);
     }
-    //add multipart to request
+
+    // Add multipart to request
     request.files.addAll(newList);
 
     headers.forEach((k, v) => request.headers[k] = v);
     var response = await request.send();
     var responseBody = await response.stream.bytesToString();
-    if (response.statusCode == 200) {
-      var jsonData = json.decode(responseBody);
+    if (response.statusCode == 201) {
       return true;
     } else {
       throw responseBody;
     }
   }
 
-  // edit product
+  // Edit Product
   Future<bool> editProduct(Product product) async {
     var headers = await getAuthHeaders();
     var url = baseUrl + "/api/v1/products/" + product.id.toString() + "/";
@@ -1031,16 +1017,16 @@ class AuthService {
       product.id = jsonData['id'];
       product.localImages = jsonData['localImages'];
       product.serverImages = jsonData['serverImages'];
-      product.title = jsonData['title'];
+      product.name = jsonData['title'];
       product.qrCode = jsonData['qr_code'];
       product.manufacturer = jsonData['manufacturer'];
       product.isAvailable = jsonData["is_available"];
-      product.availableFrom = jsonData['is_available'];
+      product.availableFrom = DateTime.parse(jsonData['available_from']);
       product.description = jsonData['description'];
       product.category = jsonData['category'];
       product.condition = jsonData['condition'];
       product.seller = jsonData['seller'];
-      product.price = jsonData['price'];
+      product.price = jsonData['price'].toString();
 
       return product;
     } else {
