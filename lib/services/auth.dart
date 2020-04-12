@@ -819,6 +819,7 @@ class AuthService {
 
   // it will verify the phone number to  OTP
   Future<String> verifyPhoneNumber(
+      // ignore: non_constant_identifier_names
       String phoneNumber, String OTP, String passwordToken) async {
     var url = baseUrl + "/api/v1/sms/verify";
     var headers = getNonAuthHeader();
@@ -999,8 +1000,6 @@ class AuthService {
 
     var responseBody = await response.stream.bytesToString();
     if (response.statusCode == 200) {
-      var jsonData = json.decode(responseBody);
-
       return true;
     } else {
       throw responseBody;
@@ -1132,7 +1131,6 @@ class AuthService {
     var response = await request.send();
     var responseBody = await response.stream.bytesToString();
     if (response.statusCode == 200) {
-      var jsonData = json.decode(responseBody);
       return true;
     } else {
       throw responseBody;
@@ -1168,8 +1166,6 @@ class AuthService {
 
     var responseBody = await response.stream.bytesToString();
     if (response.statusCode == 200) {
-      var jsonData = json.decode(responseBody);
-
       return true;
     } else {
       throw responseBody;
