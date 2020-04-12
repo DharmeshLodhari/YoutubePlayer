@@ -18,6 +18,7 @@ class Product {
   String manufacturer;
   bool isAvailable;
   DateTime availableFrom;
+  String currency;
 
   Product({
     this.id,
@@ -34,6 +35,7 @@ class Product {
     this.manufacturer,
     this.isAvailable,
     this.availableFrom,
+    this.currency,
   });
 
   Map toMap() {
