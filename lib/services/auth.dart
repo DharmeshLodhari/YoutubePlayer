@@ -862,6 +862,25 @@ class AuthService {
   }
 
   //Products
+  Product createProduct(Map<String, dynamic> item) {
+    Product product = Product();
+    product.id = item['id'];
+    product.localImages = item['localImages'];
+    product.serverImages = product.imageDataToList(item['pictures']);
+    product.name = item['name'];
+    product.qrCode = item['qr_code'];
+    product.manufacturer = item['manufacturer'];
+    product.isAvailable = item["is_available"];
+    product.availableFrom = DateTime.parse(item['available_from']);
+    product.description = item['description'];
+    product.shortDescription = item["short_description"];
+    product.category = item['category'];
+    product.condition = item['condition'];
+    product.seller = item['seller'];
+    product.price = item['price'].toString();
+    product.currency = item["currency"];
+    return product;
+  }
 
   // List Products
   Future<Map<String, dynamic>> listProductsBySeller(
@@ -883,22 +902,7 @@ class AuthService {
       List<Product> productList = [];
       var jsonData = json.decode(response.body);
       for (var item in jsonData["results"]) {
-        Product product = Product();
-        product.id = item['id'];
-        product.localImages = item['localImages'];
-        product.serverImages = product.imageDataToList(item['pictures']);
-        product.name = item['name'];
-        product.qrCode = item['qr_code'];
-        product.manufacturer = item['manufacturer'];
-        product.isAvailable = item["is_available"];
-        product.availableFrom = DateTime.parse(item['available_from']);
-        product.description = item['description'];
-        product.shortDescription = item["short_description"];
-        product.category = item['category'];
-        product.condition = item['condition'];
-        product.seller = item['seller'];
-        product.price = item['price'].toString();
-        product.currency = item["currency"];
+        Product product = createProduct(item);
         productList.add(product);
       }
 
@@ -1013,21 +1017,7 @@ class AuthService {
     var response = await http.get(url, headers: headers);
     var jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
-      Product product = Product();
-      product.id = jsonData['id'];
-      product.localImages = jsonData['localImages'];
-      product.serverImages = jsonData['serverImages'];
-      product.name = jsonData['title'];
-      product.qrCode = jsonData['qr_code'];
-      product.manufacturer = jsonData['manufacturer'];
-      product.isAvailable = jsonData["is_available"];
-      product.availableFrom = DateTime.parse(jsonData['available_from']);
-      product.description = jsonData['description'];
-      product.category = jsonData['category'];
-      product.condition = jsonData['condition'];
-      product.seller = jsonData['seller'];
-      product.price = jsonData['price'].toString();
-
+      Product product = createProduct(jsonData);
       return product;
     } else {
       throw jsonData;
