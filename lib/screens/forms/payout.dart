@@ -263,7 +263,8 @@ class _PayoutState extends State<Payout> {
             "Current Balance",
             style: TextStyle(fontSize: 20),
           ),
-          Text(worldCurrencies[userBloc.user.currency] + accountBalance.toString(),
+          Text(
+            worldCurrencies[userBloc.user.currency] + accountBalance.toString(),
             style: TextStyle(fontSize: 25, color: Colors.white),
           ),
         ],

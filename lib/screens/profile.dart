@@ -243,12 +243,15 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                                   fit: BoxFit.fill,
                                   filterQuality: FilterQuality.high,
                                 ),
-                                  onTap: () {
-                                    Navigator.pushNamed(context, '/product',
-                                        arguments: {"product": productList[index]});
-                                  },
+                                onTap: () {
+                                  Navigator.pushNamed(context, '/product',
+                                      arguments: {
+                                        "product": productList[index]
+                                      });
+                                },
                               ),
-                              isOwner ? Positioned(
+                              isOwner
+                                  ? Positioned(
                                       right: 0,
                                       child: IconButton(
                                         icon: Icon(
@@ -268,7 +271,8 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                                           );
                                         },
                                       ),
-                                    ) : Container()
+                                    )
+                                  : Container()
                             ]),
                           ),
                           Padding(
@@ -328,8 +332,9 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
         setState(() {
           isLoading = true;
         });
-        Map<String, dynamic> result =
-            await _auth.listProductsBySeller(next, previous, userId: searchedUser.userName);
+        Map<String, dynamic> result = await _auth.listProductsBySeller(
+            next, previous,
+            userId: searchedUser.userName);
         count = result['count'];
         next = result['next'];
         previous = result['previous'];

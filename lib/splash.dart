@@ -128,8 +128,8 @@ class _SplashScreenState extends State<SplashScreen> {
                     if (_bankAccount != null) {
                       bankAccountBloc.bankAccount = _bankAccount;
                       if (_user.isVerified == true) {
-                        Navigator.of(context)
-                            .pushNamed('/dashboard', arguments: {'dashboardIndex': 0});
+                        Navigator.of(context).pushNamed('/dashboard',
+                            arguments: {'dashboardIndex': 0});
                       } else {
                         Navigator.of(context).popAndPushNamed('/add-document');
                       }

@@ -147,10 +147,13 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         mainAxisAlignment: MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
-          Text(worldCurrencies[product.currency] + product.price,
+          Text(
+            worldCurrencies[product.currency] + product.price,
             style: TextStyle(fontSize: 16.0, color: Colors.black),
           ),
-          SizedBox(width: 8.0,),
+          SizedBox(
+            width: 8.0,
+          ),
         ],
       ),
     );
@@ -164,7 +167,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           SizedBox(
             width: 12.0,
           ),
-          Text(product.shortDescription,
+          Text(
+            product.shortDescription,
             style: TextStyle(
               color: Colors.grey[500],
             ),
@@ -237,7 +241,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             child: TabBarView(
               controller: tabController,
               children: <Widget>[
-                Text(product.description,
+                Text(
+                  product.description,
                   style: TextStyle(
                     color: Colors.black,
                   ),

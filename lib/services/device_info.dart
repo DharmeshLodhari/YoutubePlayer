@@ -22,7 +22,6 @@ Future<Map> getDeviceInfo() async {
   return data;
 }
 
-
 Future<String> getId() async {
   DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
   if (Platform.isIOS) {

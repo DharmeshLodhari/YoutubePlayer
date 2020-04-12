@@ -52,18 +52,18 @@ class Product {
     };
   }
 
-  List<String> imageDataToList(List<dynamic> pictures){
+  List<String> imageDataToList(List<dynamic> pictures) {
     List<String> imageLinks = [];
-    if(pictures.length > 0){
-      for (var data in pictures){
+    if (pictures.length > 0) {
+      for (var data in pictures) {
         imageLinks.add(data["file"]);
       }
-    }else{
-      imageLinks.add("https://borinhalbich.com/wp-content/uploads/2018/06/placeholder-250x300.png");
+    } else {
+      imageLinks.add(
+          "https://borinhalbich.com/wp-content/uploads/2018/06/placeholder-250x300.png");
     }
     return imageLinks;
   }
-
 }
 
 class Service {
