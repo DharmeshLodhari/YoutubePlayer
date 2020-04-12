@@ -897,6 +897,7 @@ class AuthService {
         product.condition = item['condition'];
         product.seller = item['seller'];
         product.price = item['price'].toString();
+        product.currency = item["currency"];
         productList.add(product);
       }
 
