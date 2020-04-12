@@ -14,6 +14,7 @@ import 'package:Slydo/screens/forms/reset_password.dart';
 import 'package:Slydo/screens/forms/send_payment.dart';
 import 'package:Slydo/screens/forms/signup.dart';
 import 'package:Slydo/screens/payout_transactions.dart';
+import 'package:Slydo/screens/product_detail_page.dart';
 import 'package:Slydo/screens/profile.dart';
 import 'package:Slydo/screens/request_payments_list.dart';
 import 'package:Slydo/screens/scan_qr_code.dart';
@@ -82,10 +83,9 @@ class RouteGenerator {
       case '/search-user':
         return MaterialPageRoute(builder: (_) => SearchUser());
       case '/profile':
-        return MaterialPageRoute(
-            builder: (_) => Profile(
-                  arguments: settings.arguments,
-                ));
+        return MaterialPageRoute(builder: (_) => Profile(arguments: settings.arguments));
+      case '/product':
+        return MaterialPageRoute(builder: (_) => ProductDetailPage(arguments: settings.arguments));
       case '/add-product':
         return MaterialPageRoute(
           builder: (_) => AddProduct(),

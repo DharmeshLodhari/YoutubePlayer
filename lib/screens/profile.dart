@@ -236,14 +236,19 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                         children: <Widget>[
                           Expanded(
                             child: Stack(children: <Widget>[
-                              CachedNetworkImage(
-                                width: double.infinity,
-                                imageUrl: getDisplayImage(index, productList),
-                                fit: BoxFit.fill,
-                                filterQuality: FilterQuality.high,
+                              InkWell(
+                                child: CachedNetworkImage(
+                                  width: double.infinity,
+                                  imageUrl: getDisplayImage(index, productList),
+                                  fit: BoxFit.fill,
+                                  filterQuality: FilterQuality.high,
+                                ),
+                                  onTap: () {
+                                    Navigator.pushNamed(context, '/product',
+                                        arguments: {"product": productList[index]});
+                                  },
                               ),
-                              isOwner
-                                  ? Positioned(
+                              isOwner ? Positioned(
                                       right: 0,
                                       child: IconButton(
                                         icon: Icon(
@@ -263,8 +268,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                                           );
                                         },
                                       ),
-                                    )
-                                  : Container()
+                                    ) : Container()
                             ]),
                           ),
                           Padding(
