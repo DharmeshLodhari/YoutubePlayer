@@ -33,35 +33,71 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
   UserBloc userBloc;
 
   //for refresh controller
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _productScaffoldKey =
+      new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _serviceScaffoldKey =
+      new GlobalKey<ScaffoldState>();
 
   final _auth = AuthService();
-  int count = 0;
-  String next = "";
-  String previous = "";
-  List<Product> productList = [];
-  ScrollController _scrollController = new ScrollController();
-  RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
-  bool isLoading = false;
-  bool noItemInList = false;
 
-  void _onRefresh() async {
+  // this variable responsible for product pagination
+  int productCount = 0;
+  String productNext = "";
+  String productPrevious = "";
+  List<Product> productList = [];
+  ScrollController _productScrollController = new ScrollController();
+  RefreshController _productsRefreshController =
+      RefreshController(initialRefresh: false);
+  bool isProductLoading = false;
+  bool noProductInList = false;
+
+  // this variable responsible for service pagination
+  int serviceCount = 0;
+  String serviceNext = "";
+  String servicePrevious = "";
+  List<Service> serviceList = [];
+  ScrollController _serviceScrollController = new ScrollController();
+  RefreshController _servicesRefreshController =
+      RefreshController(initialRefresh: false);
+  bool isServiceLoading = false;
+  bool noServiceInList = false;
+
+  void _onProductRefresh() async {
     Connectivity().checkConnectivity().then((value) {
       var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
-        count = 0;
-        next = "";
-        previous = "";
+        productCount = 0;
+        productNext = "";
+        productPrevious = "";
         productList = [];
-        debugPrint("Refresh called!!  ");
-        getList();
-        _refreshController.refreshCompleted();
+        debugPrint("Refresh called on products!!  ");
+        getProductList();
+        _productsRefreshController.refreshCompleted();
       } else {
         Toast.show("Internet Connection is not available", context,
             gravity: Toast.BOTTOM, backgroundColor: darkBlue());
-        _refreshController.refreshCompleted();
+        _productsRefreshController.refreshCompleted();
+      }
+    });
+  }
+
+  void _onServiceRefresh() async {
+    Connectivity().checkConnectivity().then((value) {
+      var connectionResult = value;
+      if (connectionResult == ConnectivityResult.wifi ||
+          connectionResult == ConnectivityResult.mobile) {
+        serviceCount = 0;
+        serviceNext = "";
+        servicePrevious = "";
+        serviceList = [];
+        debugPrint("Refresh called on Service!!  ");
+        getProductList();
+        _servicesRefreshController.refreshCompleted();
+      } else {
+        Toast.show("Internet Connection is not available", context,
+            gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+        _servicesRefreshController.refreshCompleted();
       }
     });
   }
@@ -69,12 +105,20 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     searchedUser = arguments['searchedUser'];
-    this.getList();
 
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
-        getList();
+    this.getProductList();
+    _productScrollController.addListener(() {
+      if (_productScrollController.position.pixels ==
+          _productScrollController.position.maxScrollExtent) {
+        getProductList();
+      }
+    });
+
+    this.getServiceList();
+    _serviceScrollController.addListener(() {
+      if (_serviceScrollController.position.pixels ==
+          _serviceScrollController.position.maxScrollExtent) {
+        getServiceList();
       }
     });
 
@@ -186,7 +230,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
 
   Widget productsList() {
     return Scaffold(
-      key: _scaffoldKey,
+      key: _productScaffoldKey,
       body: Container(
         color: lightBlue(),
         padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
@@ -196,8 +240,8 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
               complete: Container(),
               waterDropColor: darkBlue(),
             ),
-            controller: _refreshController,
-            onRefresh: _onRefresh,
+            controller: _productsRefreshController,
+            onRefresh: _onProductRefresh,
             child: _buildProductList()),
       ),
       floatingActionButton: isOwner
@@ -214,17 +258,17 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
   }
 
   Widget _buildProductList() {
-    return noItemInList
+    return noProductInList
         ? NoItemInList(
             msg: "No Products",
           )
         : StaggeredGridView.countBuilder(
-            controller: _scrollController,
+            controller: _productScrollController,
             crossAxisCount: 4,
             itemCount: productList.length + 1,
             itemBuilder: (BuildContext context, int index) {
               if (index == productList.length) {
-                return _buildIndicator();
+                return _buildProductIndicator();
               } else {
                 return Card(
                     shape: RoundedRectangleBorder(
@@ -311,13 +355,13 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
           );
   }
 
-  Widget _buildIndicator() {
+  Widget _buildProductIndicator() {
     return new Padding(
       padding: const EdgeInsets.all(8.0),
       child: new Center(
         child: new Opacity(
-            opacity: isLoading ? 1.0 : 00,
-            child: isLoading
+            opacity: isProductLoading ? 1.0 : 00,
+            child: isProductLoading
                 ? new CircularProgressIndicator(
                     backgroundColor: Colors.white,
                   )
@@ -326,31 +370,31 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
     );
   }
 
-  void getList() async {
-    if (!isLoading) {
-      if (next != null && !isLoading) {
+  void getProductList() async {
+    if (!isProductLoading) {
+      if (productNext != null && !isProductLoading) {
         setState(() {
-          isLoading = true;
+          isProductLoading = true;
         });
         Map<String, dynamic> result = await _auth.listProductsBySeller(
-            next, previous,
+            productNext, productPrevious,
             userId: searchedUser.userName);
-        count = result['count'];
-        next = result['next'];
-        previous = result['previous'];
+        productCount = result['count'];
+        productNext = result['next'];
+        productPrevious = result['previous'];
         var tempList = result['results'];
         setState(() {
-          noItemInList = false;
-          isLoading = false;
+          noProductInList = false;
+          isProductLoading = false;
           productList.addAll(tempList);
         });
       }
       if (productList.isEmpty) {
         setState(() {
-          noItemInList = true;
+          noProductInList = true;
         });
-      } else if (next == null && productList.length > 6) {
-        _scaffoldKey.currentState.showSnackBar(SnackBar(
+      } else if (productNext == null && productList.length > 6) {
+        _productScaffoldKey.currentState.showSnackBar(SnackBar(
           content: Text("Your have reached the bottom of the list"),
           duration: Duration(milliseconds: 500),
         ));
@@ -360,13 +404,19 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
 
   Widget servicesList() {
     return Scaffold(
+      key: _serviceScaffoldKey,
       body: Container(
         color: lightBlue(),
-        padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-        child: ListView.builder(
-          itemBuilder: (context, index) => serviceTile(index),
-          itemCount: 10,
-        ),
+        padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
+        child: SmartRefresher(
+            enablePullDown: true,
+            header: WaterDropHeader(
+              complete: Container(),
+              waterDropColor: darkBlue(),
+            ),
+            controller: _servicesRefreshController,
+            onRefresh: _onServiceRefresh,
+            child: _buildServiceList()),
       ),
       floatingActionButton: isOwner
           ? FloatingActionButton(
@@ -381,6 +431,70 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
     );
   }
 
+  Widget _buildServiceList() {
+    return noServiceInList
+        ? NoItemInList(
+            msg: "No Sevice",
+          )
+        : ListView.builder(
+            controller: _serviceScrollController,
+            itemCount: serviceList.length + 1,
+            itemBuilder: (BuildContext context, int index) {
+              if (index == serviceList.length) {
+                return _buildServiceIndicator();
+              } else {
+                return serviceTile(index);
+              }
+            });
+  }
+
+  Widget _buildServiceIndicator() {
+    return new Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: new Center(
+        child: new Opacity(
+            opacity: isServiceLoading ? 1.0 : 00,
+            child: isServiceLoading
+                ? new CircularProgressIndicator(
+                    backgroundColor: Colors.white,
+                  )
+                : Container()),
+      ),
+    );
+  }
+
+  void getServiceList() async {
+    if (!isServiceLoading) {
+      if (serviceNext != null && !isServiceLoading) {
+        setState(() {
+          isServiceLoading = true;
+        });
+        Map<String, dynamic> result = await _auth.listServicesByProvider(
+            serviceNext, servicePrevious,
+            userId: searchedUser.userName);
+        serviceCount = result['count'];
+        serviceNext = result['next'];
+        servicePrevious = result['previous'];
+        var tempList = result['results'];
+        setState(() {
+          noServiceInList = false;
+          isServiceLoading = false;
+          serviceList.addAll(tempList);
+        });
+      }
+      if (serviceList.isEmpty) {
+        setState(() {
+          noServiceInList = true;
+        });
+      } else if (serviceNext == null && serviceList.length > 6) {
+        _serviceScaffoldKey.currentState.showSnackBar(SnackBar(
+          content: Text("Your have reached the bottom of the list"),
+          duration: Duration(milliseconds: 500),
+        ));
+      }
+    }
+  }
+
   Widget serviceTile(int index) {
     return Card(
       elevation: 4,
@@ -391,7 +505,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
         contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 8),
         leading: ClipOval(
           child: CachedNetworkImage(
-            imageUrl: "https://i.picsum.photos/id/${index * 20}/200/300.jpg",
+            imageUrl: serviceList[index].serverImages[0],
             height: 50,
             width: 50,
             colorBlendMode: BlendMode.darken,
@@ -405,10 +519,16 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
           ),
         ),
         title: Text(
-          "Service $index",
+          serviceList[index].name.length > 20
+              ? serviceList[index].name.substring(0, 20)
+              : serviceList[index].name,
           style: TextStyle(color: darkBlue(), fontWeight: FontWeight.bold),
         ),
-        subtitle: Text("tap to get details"),
+        subtitle: Text(
+          serviceList[index].shortDescription.length > 20
+              ? serviceList[index].shortDescription.substring(0, 20)
+              : serviceList[index].shortDescription,
+        ),
         trailing: isOwner
             ? IconButton(
                 icon: Icon(
@@ -420,7 +540,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                   Navigator.of(context).pushNamed(
                     '/edit-service',
                     arguments: {
-                      "serviceId": 0.toString(),
+                      "serviceId": serviceList[index].id,
                     },
                   );
                 },

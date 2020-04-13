@@ -76,27 +76,70 @@ class Product {
 }
 
 class Service {
-  int id;
-  String title;
+  String id;
+  String name;
   String description;
+  String shortDescription;
   String price;
   List<File> localImages;
   List<String> serverImages;
-  String seller;
-  String shortDescription;
+  String provider;
+  String qrCode;
   String category;
+  bool isAvailable;
+  DateTime availableFrom;
+  String currency;
+  List<dynamic> pictureMap;
 
   Service({
     this.id,
-    this.title,
+    this.name,
     this.description,
+    this.shortDescription,
     this.price,
     this.localImages,
     this.serverImages,
-    this.seller,
-    this.shortDescription,
+    this.provider,
+    this.qrCode,
     this.category,
+    this.isAvailable,
+    this.availableFrom,
+    this.currency,
+    this.pictureMap,
   });
+
+  String getImageId(String imageUrl) {
+    for (var data in this.pictureMap) {
+      if (data['file'] == imageUrl) {
+        return data['id'].toString();
+      }
+    }
+  }
+
+  List<String> imageDataToList(List<dynamic> pictures) {
+    List<String> imageLinks = [];
+    if (pictures.length > 0) {
+      for (var data in pictures) {
+        imageLinks.add(data["file"]);
+      }
+    } else {
+      imageLinks.add(
+          "https://borinhalbich.com/wp-content/uploads/2018/06/placeholder-250x300.png");
+    }
+    return imageLinks;
+  }
+
+  Map toMap() {
+    return {
+      "name": this.name,
+      "description": this.description,
+      "short_description": this.shortDescription,
+      "price": this.price,
+      "category": this.category,
+      "is_available": this.isAvailable,
+      "available_from": this.availableFrom,
+    };
+  }
 }
 
 class ProductCategory {
@@ -301,29 +344,329 @@ List temp = [
   "Window Installer"
 ];
 
-List<ProductCategory> services = <ProductCategory>[
-  ProductCategory(
-      'Food',
+class ServiceCatagory {
+  const ServiceCatagory(this.name, this.icon);
+  final String name;
+  final Icon icon;
+}
+
+List<ServiceCatagory> serviceCategories = <ServiceCatagory>[
+  ServiceCatagory(
+      'Alarms – Security & Fire',
       Icon(
         Icons.fastfood,
         color: darkBlue(),
       )),
-  ProductCategory(
-      'Movie & Music',
+  ServiceCatagory(
+      'Appliance Repairs',
       Icon(
-        Icons.movie,
+        Icons.fastfood,
         color: darkBlue(),
       )),
-  ProductCategory(
-      'Motor',
+  ServiceCatagory(
+      'Architect',
       Icon(
-        Icons.directions_car,
+        Icons.fastfood,
         color: darkBlue(),
       )),
-  ProductCategory(
-      'Property',
+  ServiceCatagory(
+      'Block laye',
       Icon(
-        Icons.home,
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Brick layer',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Builder - General',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Builder - Ground Works',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Builder - House Extensions',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Builder - New Builds',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Building Surveyor',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'CCTV Cameras',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Carpenter/Joiner',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Carpet fitter',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Civil Engineer',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Cleaning Service',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Computer Systems',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Conservatories & Sunrooms',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Curtain maker',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Drain & Sewer Cleaning',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Electrician',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Fencing Contractor',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Fitter/Welder',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Flooring',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Gardening/Landscaping',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Gas Fitter',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'General Work/Miscellaneous Work',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Gutters Fascia & Soffit',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Handyman',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Heating Contractor',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Insulation - Pumped',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Insulation Contractor',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Interior Designer',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Kitchens & Fitted Furniture',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Locks & Locksmiths',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Mechanic',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Painter/Decorator',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Paving Contractor',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Phone Systems',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Plasterer',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Plumber',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Quantity Surveyor',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Removal & Storage',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Roofer',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Slabbing Contractor',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Solar Panels',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Steel Erector',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Stone Mason',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Tiler',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Tree Surgeon',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Underfloor Heating',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Upholsterer',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Window & Door Repairs,Other',
+      Icon(
+        Icons.fastfood,
+        color: darkBlue(),
+      )),
+  ServiceCatagory(
+      'Window Installer',
+      Icon(
+        Icons.fastfood,
         color: darkBlue(),
       )),
 ];

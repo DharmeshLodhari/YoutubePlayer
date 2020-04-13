@@ -19,7 +19,7 @@ class _AddServiceState extends State<AddService> {
   final _formKey = GlobalKey<FormState>();
 
   UserBloc userBloc;
-  ProductCategory selectedServiceCategory;
+  ServiceCatagory selectedServiceCategory;
   ProductCondition selectedProductCondition;
 
   int imageCount = 5;
@@ -31,6 +31,8 @@ class _AddServiceState extends State<AddService> {
   String serviceCategory = "";
   String serviceCondition = "";
   String servicePrice = "";
+  bool serviceIsAvailable = false;
+  DateTime serviceAvailableFrom = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -60,22 +62,23 @@ class _AddServiceState extends State<AddService> {
                       height: 10,
                     ),
                     addTitleField(),
-                    SizedBox(height: 10),
-                    getServiceShortDescription(),
-                    SizedBox(height: 10),
-                    getServiceDescription(),
-                    SizedBox(height: 10),
-                    getCategoryField(),
-//                    SizedBox(
-//                      height: 10,
-//                    ),
-//                    getProductConditionField(),
                     SizedBox(
                       height: 10,
                     ),
                     getAmountField(),
                     SizedBox(height: 10),
+                    getCategoryField(),
+                    SizedBox(height: 10),
+                    getIsAvailableField(),
+                    SizedBox(height: 10),
+                    getAvailableFromField(),
+                    SizedBox(height: 10),
+                    getServiceShortDescription(),
+                    SizedBox(height: 10),
+                    getServiceDescription(),
+                    SizedBox(height: 10),
                     getSubmitButton(),
+                    SizedBox(height: 20),
                   ],
                 ),
               ),
@@ -270,6 +273,12 @@ class _AddServiceState extends State<AddService> {
       onChanged: (val) {
         serviceDescription = val;
       },
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        return "Description Must Not empty";
+      },
     );
   }
 
@@ -279,21 +288,21 @@ class _AddServiceState extends State<AddService> {
       child: Container(
         padding: EdgeInsets.all(8),
         width: double.infinity,
-        child: DropdownButton<ProductCategory>(
+        child: DropdownButton<ServiceCatagory>(
           isExpanded: true,
           underline: Divider(
             color: Colors.transparent,
           ),
           hint: Text("Select Category"),
           value: selectedServiceCategory,
-          onChanged: (ProductCategory value) {
+          onChanged: (ServiceCatagory value) {
             setState(() {
               selectedServiceCategory = value;
               serviceCategory = selectedServiceCategory.name;
             });
           },
-          items: productCategories.map((ProductCategory category) {
-            return DropdownMenuItem<ProductCategory>(
+          items: serviceCategories.map((ServiceCatagory category) {
+            return DropdownMenuItem<ServiceCatagory>(
               value: category,
               child: Row(
                 children: <Widget>[
@@ -308,39 +317,6 @@ class _AddServiceState extends State<AddService> {
                 ],
               ),
             );
-          }).toList(),
-        ),
-      ),
-    );
-  }
-
-  Widget getProductConditionField() {
-    return Card(
-      margin: EdgeInsets.all(0),
-      child: Container(
-        padding: EdgeInsets.only(bottom: 16, right: 8, left: 8),
-        width: double.infinity,
-        child: DropdownButton<ProductCondition>(
-          underline: Divider(
-            color: Colors.transparent,
-          ),
-          isExpanded: true,
-          hint: Text("Select item Condition"),
-          value: selectedProductCondition,
-          onChanged: (ProductCondition value) {
-            setState(() {
-              selectedProductCondition = value;
-              serviceCondition = selectedProductCondition.name;
-            });
-          },
-          items: conditions.map((ProductCondition productCondition) {
-            return DropdownMenuItem<ProductCondition>(
-                value: productCondition,
-                child: ListTile(
-                  dense: true,
-                  title: Text(productCondition.name),
-                  subtitle: Text(productCondition.description),
-                ));
           }).toList(),
         ),
       ),
@@ -403,22 +379,24 @@ class _AddServiceState extends State<AddService> {
           child: Text("Add"),
           onPressed: () async {
             FocusScope.of(context).unfocus();
-            addProduct();
+            addService();
           }),
     );
   }
 
-  void addProduct() {
+  void addService() {
     if (_formKey.currentState.validate()) {
       if (serviceImages.length >= 1) {
         if (validateDropdown()) {
           Service service = Service();
           service.localImages = serviceImages;
-          service.title = serviceName;
+          service.name = serviceName;
           service.shortDescription = serviceShortDescription;
           service.description = serviceDescription;
           service.category = serviceCategory;
           service.price = servicePrice;
+          service.availableFrom = serviceAvailableFrom;
+          service.isAvailable = serviceIsAvailable;
 
           //TODO : call addService API
           _auth.addService(service).then((value) {
@@ -427,7 +405,9 @@ class _AddServiceState extends State<AddService> {
             Navigator.pop(context);
           }).catchError((error) {
             Toast.show(error.toString(), context,
-                textColor: Colors.white, backgroundColor: darkBlue());
+                textColor: Colors.white,
+                backgroundColor: darkBlue(),
+                duration: 5);
           });
         }
       } else {
@@ -447,5 +427,73 @@ class _AddServiceState extends State<AddService> {
           gravity: Toast.CENTER);
       return false;
     }
+  }
+
+  Widget getIsAvailableField() {
+    return Row(
+      children: <Widget>[
+        Checkbox(
+          value: serviceIsAvailable,
+          activeColor: Colors.white,
+          checkColor: darkBlue(),
+          onChanged: (value) {
+            setState(() {
+              serviceIsAvailable = value;
+            });
+          },
+        ),
+        Text(
+          " is Available? ",
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget getAvailableFromField() {
+    return GestureDetector(
+      onTap: () {
+        showDatePicker(
+          context: context,
+          initialDate: DateTime(
+              DateTime.now().year, DateTime.now().month, DateTime.now().day),
+          firstDate: DateTime(
+              DateTime.now().year, DateTime.now().month, DateTime.now().day),
+          lastDate: DateTime(2101),
+        ).then((value) {
+          setState(() {
+            serviceAvailableFrom = DateTime(value.year, value.month, value.day);
+          });
+        }).catchError((error) {});
+      },
+      child: Card(
+        child: Container(
+          padding: EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text("Available From"),
+              Row(
+                children: <Widget>[
+                  Icon(Icons.date_range),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Text(
+                    serviceAvailableFrom.toString().substring(0, 10),
+                    style: TextStyle(
+                      color: darkBlue(),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

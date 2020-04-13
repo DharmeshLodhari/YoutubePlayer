@@ -1071,56 +1071,70 @@ class AuthService {
   }
 
   //Service
+  Service createService(Map<String, dynamic> item) {
+    Service service = Service();
+    service.id = item['id'];
+    service.localImages = item['localImages'];
+    service.serverImages = service.imageDataToList(item['pictures']);
+    service.pictureMap = item['pictures'];
+    service.name = item['name'];
+    service.qrCode = item['qr_code'];
+    service.isAvailable = item["is_available"];
+    service.availableFrom = DateTime.parse(item['available_from']);
+    service.description = item['description'];
+    service.shortDescription = item["short_description"];
+    service.category = item['category'];
+    service.provider = item['provider'];
+    service.price = item['price'].toString();
+    service.currency = item["currency"];
+
+    return service;
+  }
 
   // List services
   Future<Map<String, dynamic>> listServicesByProvider(
       String next, String previous,
-      {String filter}) async {
+      {String userId}) async {
     var url = "";
     if (next == null) {
       return null;
     }
     if (next == "") {
-      url = baseUrl + "/api/v1/messaging/list/" + filter + "/";
+      url = baseUrl + "/api/v1/services/by-provider/" + userId + "/";
     } else {
       url = next;
     }
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
+    debugPrint(response.body);
 
     if (response.statusCode == 200) {
-      List<PartialMessage> messagesList = [];
+      List<Service> serviceList = [];
       var jsonData = json.decode(response.body);
       for (var item in jsonData["results"]) {
-        PartialMessage message = PartialMessage(
-          subtitle: item["subtitle"],
-          subject: item["sender"],
-          id: item["id"],
-          timeStamp: item["time_sent"],
-          isRead: item["is_read"],
-          recipient: item["recipient"],
-          sender: item["sender"],
-          senderAvatar: item["sender_avatar"],
-          recipientAvatar: item["recipient_avatar"],
-          isArchivedByRecipient: item["is_archived_by_recipient"],
-          isStarredByRecipient: item["is_starred_by_recipient"],
-          isArchivedBySender: item["is_archived_by_sender"],
-          isStarredBySender: item["is_starred_by_sender"],
-        );
-        messagesList.add(message);
+        Service service = createService(item);
+        serviceList.add(service);
       }
 
       Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
-        "results": messagesList
+        "results": serviceList
       };
       return result;
     } else if (response.statusCode == 500) {
       throw "Server Error";
     } else {
-      throw json.decode(response.body);
+      List<Service> serviceList = [];
+
+      Map<String, dynamic> result = {
+        "count": 0,
+        "next": "test",
+        "previous": "test",
+        "results": serviceList
+      };
+      return result;
     }
   }
 
@@ -1132,25 +1146,32 @@ class AuthService {
     //create multipart request for POST or PATCH method
     var request = http.MultipartRequest("POST", Uri.parse(url));
 
+    Map<dynamic, dynamic> _data = service.toMap();
+    _data["available_from"] = dateToString(service.availableFrom);
+    _data["image_count"] = service.localImages.length;
+
+    _data.forEach((k, v) {
+      request.fields[k] = v.toString();
+    });
     List<MultipartFile> newList = new List<MultipartFile>();
     for (int i = 0; i < service.localImages.length; i++) {
-      //add fields
+      // Add fields
       request.fields["imagefile_$i"] = service.localImages[i].path;
 
-      //create multipart using filepath, string or bytes
+      // Create multipart using filepath, string or bytes
       var multipartFile = await http.MultipartFile.fromPath(
           "imagefile_$i", service.localImages[i].path);
 
-      //add multipart to newList
+      // Add multipart to newList
       newList.add(multipartFile);
     }
-    //add multipart to request
-    request.files.addAll(newList);
 
+    // Add multipart to request
+    request.files.addAll(newList);
     headers.forEach((k, v) => request.headers[k] = v);
     var response = await request.send();
     var responseBody = await response.stream.bytesToString();
-    if (response.statusCode == 200) {
+    if (response.statusCode == 201) {
       return true;
     } else {
       throw responseBody;
@@ -1199,17 +1220,7 @@ class AuthService {
     var response = await http.get(url, headers: headers);
     var jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
-      Service service = Service();
-      service.id = jsonData['id'];
-      service.localImages = jsonData['localImages'];
-      service.serverImages = jsonData['serverImages'];
-      service.title = jsonData['title'];
-      service.description = jsonData['description'];
-      service.category = jsonData['category'];
-      service.shortDescription = jsonData['shortDescription'];
-      service.seller = jsonData['seller'];
-      service.price = jsonData['price'];
-
+      Service service = createService(jsonData);
       return service;
     } else {
       throw jsonData;

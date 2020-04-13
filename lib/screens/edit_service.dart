@@ -24,12 +24,12 @@ class _EditServiceState extends State<EditService> {
 
   String serviceId;
   Service currentService = Service(
-      title: "Xyz",
+      name: "Xyz",
       category: "Food",
       shortDescription: "shortDescription is mee",
       description: "Helloo test",
       price: "123",
-      seller: "test");
+      provider: "test");
 
   int imageCount = 5;
   ScrollController _scrollController = ScrollController();
@@ -49,7 +49,7 @@ class _EditServiceState extends State<EditService> {
     fetchProduct();
 
     // TODO: remove when we got item from server assign this all in fetch method
-    serviceName = currentService.title;
+    serviceName = currentService.name;
     serviceCategory = currentService.category;
     serviceShortDescription = currentService.shortDescription;
     servicePrice = currentService.price;
@@ -323,7 +323,7 @@ class _EditServiceState extends State<EditService> {
       cursorColor: darkBlue(),
       autofocus: false,
       obscureText: false,
-      initialValue: currentService.title,
+      initialValue: currentService.name,
       decoration: InputDecoration(
           fillColor: Colors.white,
           filled: true,
@@ -550,7 +550,7 @@ class _EditServiceState extends State<EditService> {
       if (serviceLocalImages.length >= 0) {
         if (validateDropdown()) {
           // setting updated value
-          currentService.title = serviceName;
+          currentService.name = serviceName;
           currentService.description = serviceDescription;
           currentService.localImages = serviceLocalImages;
           currentService.serverImages = serviceImagesFromServer;
