@@ -23,13 +23,7 @@ class _EditServiceState extends State<EditService> {
   final _formKey = GlobalKey<FormState>();
 
   String serviceId;
-  Service currentService = Service(
-      name: "Xyz",
-      category: "Food",
-      shortDescription: "shortDescription is mee",
-      description: "Helloo test",
-      price: "123",
-      provider: "test");
+  Service currentService = Service();
 
   int imageCount = 5;
   ScrollController _scrollController = ScrollController();
@@ -40,31 +34,27 @@ class _EditServiceState extends State<EditService> {
   String serviceCategory = "";
   String serviceShortDescription = "";
   String servicePrice = "";
-  ProductCategory selectedServiceCategory;
-  ProductCondition selectedProductCondition;
+  ServiceCatagory selectedServiceCategory;
+  bool serviceIsAvailable = false;
+  DateTime serviceAvailableFrom = DateTime.now();
+
+  //text editing controllers for the edit fields
+  TextEditingController serviceTitleController = TextEditingController();
+  TextEditingController serviceDescriptionController = TextEditingController();
+  TextEditingController serviceShortDescriptionController =
+      TextEditingController();
+  TextEditingController servicePriceController = TextEditingController();
 
   @override
   void initState() {
     serviceId = arguments['serviceId'];
     fetchProduct();
-
-    // TODO: remove when we got item from server assign this all in fetch method
-    serviceName = currentService.name;
-    serviceCategory = currentService.category;
-    serviceShortDescription = currentService.shortDescription;
-    servicePrice = currentService.price;
-    serviceDescription = currentService.description;
-    serviceImagesFromServer.add("https://picsum.photos/id/237/200/300");
-    serviceImagesFromServer.add("https://picsum.photos/id/238/200/300");
-    serviceImagesFromServer.add("https://picsum.photos/id/239/200/300");
-    serviceImagesFromServer.add("https://picsum.photos/id/240/200/300");
-    serviceImagesFromServer.add("https://picsum.photos/id/241/200/300");
     super.initState();
   }
 
   void fetchProduct() {
     // assigning the dropdown
-    productCategories.forEach((catagory) {
+    serviceCategories.forEach((catagory) {
       if (catagory.name == currentService.category) {
         selectedServiceCategory = catagory;
       }
@@ -73,7 +63,30 @@ class _EditServiceState extends State<EditService> {
     //fetchProductFrom id to edit
     _auth.getService(serviceId).then((value) {
       setState(() {
-//        currentService = value;
+        currentService = value;
+        // asssigning to our edit controllers
+
+        serviceTitleController.text = currentService.name;
+        serviceDescriptionController.text = currentService.description;
+        servicePriceController.text = currentService.price;
+        serviceShortDescriptionController.text =
+            currentService.shortDescription;
+
+        serviceImagesFromServer.addAll(currentService.serverImages);
+        serviceName = currentService.name;
+        serviceCategory = currentService.category;
+        servicePrice = currentService.price;
+        serviceDescription = currentService.description;
+        serviceIsAvailable = currentService.isAvailable;
+        serviceAvailableFrom = currentService.availableFrom;
+        serviceShortDescription = currentService.shortDescription;
+
+        // assigning the dropdown from currentProduct
+        serviceCategories.forEach((catagory) {
+          if (catagory.name == currentService.category) {
+            selectedServiceCategory = catagory;
+          }
+        });
       });
     }).catchError((error) {
       Toast.show(
@@ -119,22 +132,23 @@ class _EditServiceState extends State<EditService> {
                       height: 10,
                     ),
                     addTitleField(),
-                    SizedBox(height: 10),
-                    getServiceShortDescription(),
-                    SizedBox(height: 10),
-                    getServiceDescription(),
-                    SizedBox(height: 10),
-                    getCategoryField(),
-//                    SizedBox(
-//                      height: 10,
-//                    ),
-//                    getProductConditionField(),
                     SizedBox(
                       height: 10,
                     ),
                     getAmountField(),
                     SizedBox(height: 10),
+                    getCategoryField(),
+                    SizedBox(height: 10),
+                    getIsAvailableField(),
+                    SizedBox(height: 10),
+                    getAvailableFromField(),
+                    SizedBox(height: 10),
+                    getServiceShortDescription(),
+                    SizedBox(height: 10),
+                    getServiceDescription(),
+                    SizedBox(height: 10),
                     getSubmitButton(),
+                    SizedBox(height: 20),
                   ],
                 ),
               ),
@@ -288,8 +302,16 @@ class _EditServiceState extends State<EditService> {
               size: 20,
             ),
             onPressed: () {
-              setState(() {
-                serviceImagesFromServer.removeAt(index);
+              var imageId =
+                  currentService.getImageId(serviceImagesFromServer[index]);
+              _auth.deleteProductOrServiceImage(imageId).then((value) {
+                if (value) {
+                  setState(() {
+                    serviceImagesFromServer.removeAt(index);
+                  });
+                }
+              }).catchError((error) {
+                debugPrint("ERROR" + error.toString());
               });
             },
           ),
@@ -323,7 +345,7 @@ class _EditServiceState extends State<EditService> {
       cursorColor: darkBlue(),
       autofocus: false,
       obscureText: false,
-      initialValue: currentService.name,
+      controller: serviceTitleController,
       decoration: InputDecoration(
           fillColor: Colors.white,
           filled: true,
@@ -358,6 +380,7 @@ class _EditServiceState extends State<EditService> {
       cursorColor: darkBlue(),
       autofocus: false,
       obscureText: false,
+      controller: serviceShortDescriptionController,
       decoration: InputDecoration(
           fillColor: Colors.white,
           filled: true,
@@ -389,6 +412,7 @@ class _EditServiceState extends State<EditService> {
       autofocus: false,
       obscureText: false,
       maxLines: 5,
+      controller: serviceDescriptionController,
       textCapitalization: TextCapitalization.sentences,
       decoration: InputDecoration(
           isDense: true,
@@ -415,21 +439,21 @@ class _EditServiceState extends State<EditService> {
       child: Container(
         padding: EdgeInsets.all(8),
         width: double.infinity,
-        child: DropdownButton<ProductCategory>(
+        child: DropdownButton<ServiceCatagory>(
           isExpanded: true,
           underline: Divider(
             color: Colors.transparent,
           ),
           hint: Text("Select Category"),
           value: selectedServiceCategory,
-          onChanged: (ProductCategory value) {
+          onChanged: (ServiceCatagory value) {
             setState(() {
               selectedServiceCategory = value;
               serviceCategory = selectedServiceCategory.name;
             });
           },
-          items: productCategories.map((ProductCategory category) {
-            return DropdownMenuItem<ProductCategory>(
+          items: serviceCategories.map((ServiceCatagory category) {
+            return DropdownMenuItem<ServiceCatagory>(
               value: category,
               child: Row(
                 children: <Widget>[
@@ -450,45 +474,12 @@ class _EditServiceState extends State<EditService> {
     );
   }
 
-  Widget getProductConditionField() {
-    return Card(
-      margin: EdgeInsets.all(0),
-      child: Container(
-        padding: EdgeInsets.only(bottom: 16, right: 8, left: 8),
-        width: double.infinity,
-        child: DropdownButton<ProductCondition>(
-          underline: Divider(
-            color: Colors.transparent,
-          ),
-          isExpanded: true,
-          hint: Text("Select item Condition"),
-          value: selectedProductCondition,
-          onChanged: (ProductCondition value) {
-            setState(() {
-              selectedProductCondition = value;
-              serviceShortDescription = selectedProductCondition.name;
-            });
-          },
-          items: conditions.map((ProductCondition productCondition) {
-            return DropdownMenuItem<ProductCondition>(
-                value: productCondition,
-                child: ListTile(
-                  dense: true,
-                  title: Text(productCondition.name),
-                  subtitle: Text(productCondition.description),
-                ));
-          }).toList(),
-        ),
-      ),
-    );
-  }
-
   Widget getAmountField() {
     return TextFormField(
       cursorColor: darkBlue(),
       autofocus: false,
       obscureText: false,
-      initialValue: currentService.price,
+      controller: servicePriceController,
       keyboardType: TextInputType.number,
       decoration: InputDecoration(
           prefixIcon: Icon(
@@ -557,6 +548,8 @@ class _EditServiceState extends State<EditService> {
           currentService.category = serviceCategory;
           currentService.shortDescription = serviceShortDescription;
           currentService.price = servicePrice;
+          currentService.isAvailable = serviceIsAvailable;
+          currentService.availableFrom = serviceAvailableFrom;
 
           //TODO : call editProduct API
           _auth.editService(currentService).then((value) {
@@ -576,7 +569,7 @@ class _EditServiceState extends State<EditService> {
   }
 
   bool validateDropdown() {
-    if (selectedServiceCategory != null && selectedProductCondition != null) {
+    if (selectedServiceCategory != null) {
       return true;
     } else {
       Toast.show("Please Select Service Catagory", context,
@@ -585,5 +578,73 @@ class _EditServiceState extends State<EditService> {
           gravity: Toast.CENTER);
       return false;
     }
+  }
+
+  Widget getIsAvailableField() {
+    return Row(
+      children: <Widget>[
+        Checkbox(
+          value: serviceIsAvailable,
+          activeColor: Colors.white,
+          checkColor: darkBlue(),
+          onChanged: (value) {
+            setState(() {
+              serviceIsAvailable = value;
+            });
+          },
+        ),
+        Text(
+          " is Available? ",
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget getAvailableFromField() {
+    return GestureDetector(
+      onTap: () {
+        showDatePicker(
+          context: context,
+          initialDate: DateTime(
+              DateTime.now().year, DateTime.now().month, DateTime.now().day),
+          firstDate: DateTime(
+              DateTime.now().year, DateTime.now().month, DateTime.now().day),
+          lastDate: DateTime(2101),
+        ).then((value) {
+          setState(() {
+            serviceAvailableFrom = DateTime(value.year, value.month, value.day);
+          });
+        }).catchError((error) {});
+      },
+      child: Card(
+        child: Container(
+          padding: EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text("Available From"),
+              Row(
+                children: <Widget>[
+                  Icon(Icons.date_range),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Text(
+                    serviceAvailableFrom.toString().substring(0, 10),
+                    style: TextStyle(
+                      color: darkBlue(),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

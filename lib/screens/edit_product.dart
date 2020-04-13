@@ -31,15 +31,22 @@ class _EditProductState extends State<EditProduct> {
   List<String> productImagesFromServer = List<String>();
   String productName = "";
   String productDescription = "";
+  String productShortDescription = "";
   String productCategory = "";
   String productCondition = "";
   String productPrice = "";
   ProductCategory selectedProductCategory;
   ProductCondition selectedProductCondition;
+  String productManufacturer = "";
+  bool productIsAvailable = false;
+  DateTime productAvailableFrom = DateTime.now();
 
   //text editing controllers for the edit fields
   TextEditingController productTitleController = TextEditingController();
   TextEditingController productDescriptionController = TextEditingController();
+  TextEditingController productShortDescriptionController =
+      TextEditingController();
+  TextEditingController productManufacturerController = TextEditingController();
   TextEditingController productPriceController = TextEditingController();
 
   @override
@@ -59,6 +66,9 @@ class _EditProductState extends State<EditProduct> {
         productTitleController.text = currentProduct.name;
         productDescriptionController.text = currentProduct.description;
         productPriceController.text = currentProduct.price;
+        productManufacturerController.text = currentProduct.manufacturer;
+        productShortDescriptionController.text =
+            currentProduct.shortDescription;
 
         productImagesFromServer.addAll(currentProduct.serverImages);
         productName = currentProduct.name;
@@ -66,6 +76,10 @@ class _EditProductState extends State<EditProduct> {
         productCondition = currentProduct.condition;
         productPrice = currentProduct.price;
         productDescription = currentProduct.description;
+        productManufacturer = currentProduct.manufacturer;
+        productShortDescription = currentProduct.shortDescription;
+        productIsAvailable = currentProduct.isAvailable;
+        productAvailableFrom = currentProduct.availableFrom;
 
         // assigning the dropdown from currentProduct
         productCategories.forEach((catagory) {
@@ -124,20 +138,31 @@ class _EditProductState extends State<EditProduct> {
                       height: 10,
                     ),
                     addTitleField(),
-                    SizedBox(height: 10),
-                    getProductDescription(),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    getManufacuturerField(),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    getAmountField(),
                     SizedBox(height: 10),
                     getCategoryField(),
                     SizedBox(
                       height: 10,
                     ),
                     getProductConditionField(),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    getAmountField(),
+                    SizedBox(height: 10),
+                    getIsAvailableField(),
+                    SizedBox(height: 10),
+                    getAvailableFromField(),
+                    SizedBox(height: 10),
+                    getProductShortDescription(),
+                    SizedBox(height: 10),
+                    getProductDescription(),
                     SizedBox(height: 10),
                     getSubmitButton(),
+                    SizedBox(height: 20),
                   ],
                 ),
               ),
@@ -294,9 +319,11 @@ class _EditProductState extends State<EditProduct> {
               var imageId =
                   currentProduct.getImageId(productImagesFromServer[index]);
               _auth.deleteProductOrServiceImage(imageId).then((value) {
-                setState(() {
-                  productImagesFromServer.removeAt(index);
-                });
+                if (value) {
+                  setState(() {
+                    productImagesFromServer.removeAt(index);
+                  });
+                }
               }).catchError((error) {
                 debugPrint("ERROR" + error.toString());
               });
@@ -389,6 +416,41 @@ class _EditProductState extends State<EditProduct> {
     );
   }
 
+  Widget getProductShortDescription() {
+    return TextFormField(
+      cursorColor: darkBlue(),
+      autofocus: false,
+      obscureText: false,
+      controller: productShortDescriptionController,
+      decoration: InputDecoration(
+          fillColor: Colors.white,
+          filled: true,
+          prefixIcon: Icon(
+            Icons.card_travel,
+            color: darkBlue(),
+          ),
+          hintText: "Short Description",
+          labelStyle: TextStyle(
+            color: Colors.black,
+            fontSize: 16,
+          ),
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(4)),
+              borderSide: BorderSide(
+                  width: 1, color: Colors.white, style: BorderStyle.solid))),
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        return "Short Description";
+      },
+      onTap: () async {},
+      onChanged: (val) {
+        productShortDescription = val;
+      },
+    );
+  }
+
   Widget getCategoryField() {
     return Card(
       margin: EdgeInsets.all(0),
@@ -427,6 +489,41 @@ class _EditProductState extends State<EditProduct> {
           }).toList(),
         ),
       ),
+    );
+  }
+
+  Widget getManufacuturerField() {
+    return TextFormField(
+      cursorColor: darkBlue(),
+      autofocus: false,
+      obscureText: false,
+      controller: productManufacturerController,
+      decoration: InputDecoration(
+          fillColor: Colors.white,
+          filled: true,
+          prefixIcon: Icon(
+            Icons.business,
+            color: darkBlue(),
+          ),
+          hintText: "Manufacturer",
+          labelStyle: TextStyle(
+            color: Colors.black,
+            fontSize: 16,
+          ),
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(4)),
+              borderSide: BorderSide(
+                  width: 1, color: Colors.white, style: BorderStyle.solid))),
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        return "Please Enter Manufacturer Name";
+      },
+      onTap: () async {},
+      onChanged: (val) {
+        productManufacturer = val;
+      },
     );
   }
 
@@ -537,6 +634,10 @@ class _EditProductState extends State<EditProduct> {
           currentProduct.price = productPrice;
           currentProduct.localImages = productLocalImages;
           currentProduct.serverImages = productImagesFromServer;
+          currentProduct.isAvailable = productIsAvailable;
+          currentProduct.availableFrom = productAvailableFrom;
+          currentProduct.shortDescription = productShortDescription;
+          currentProduct.manufacturer = productManufacturer;
 
           //TODO : call editProduct API
           _auth.editProduct(currentProduct).then((value) {
@@ -565,5 +666,73 @@ class _EditProductState extends State<EditProduct> {
           gravity: Toast.CENTER);
       return false;
     }
+  }
+
+  Widget getIsAvailableField() {
+    return Row(
+      children: <Widget>[
+        Checkbox(
+          value: productIsAvailable,
+          activeColor: Colors.white,
+          checkColor: darkBlue(),
+          onChanged: (value) {
+            setState(() {
+              productIsAvailable = value;
+            });
+          },
+        ),
+        Text(
+          " is Available? ",
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget getAvailableFromField() {
+    return GestureDetector(
+      onTap: () {
+        showDatePicker(
+          context: context,
+          initialDate: DateTime(
+              DateTime.now().year, DateTime.now().month, DateTime.now().day),
+          firstDate: DateTime(
+              DateTime.now().year, DateTime.now().month, DateTime.now().day),
+          lastDate: DateTime(2101),
+        ).then((value) {
+          setState(() {
+            productAvailableFrom = DateTime(value.year, value.month, value.day);
+          });
+        }).catchError((error) {});
+      },
+      child: Card(
+        child: Container(
+          padding: EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text("Available From"),
+              Row(
+                children: <Widget>[
+                  Icon(Icons.date_range),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Text(
+                    productAvailableFrom.toString().substring(0, 10),
+                    style: TextStyle(
+                      color: darkBlue(),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

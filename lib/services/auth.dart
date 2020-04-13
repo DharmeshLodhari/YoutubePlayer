@@ -895,10 +895,10 @@ class AuthService {
       url,
       headers: headers,
     );
-    var jsonData = json.decode(response.body);
     if (response.statusCode == 204) {
       return true;
     } else {
+      var jsonData = json.decode(response.body);
       throw jsonData;
     }
   }
@@ -1181,10 +1181,18 @@ class AuthService {
 // edit service
   Future<bool> editService(Service service) async {
     var headers = await getAuthHeaders();
-    var url = baseUrl + "/api/v1/services/";
+    var url = baseUrl + "/api/v1/services/" + service.id.toString() + "/";
 
     //create multipart request for POST or PATCH method
     var request = http.MultipartRequest("PATCH", Uri.parse(url));
+
+    Map<dynamic, dynamic> _data = service.toMap();
+    _data["available_from"] = dateToString(service.availableFrom);
+    _data["image_count"] = service.localImages.length;
+
+    _data.forEach((k, v) {
+      request.fields[k] = v.toString();
+    });
 
     if (service.localImages.length > 0) {
       List<MultipartFile> newList = new List<MultipartFile>();
