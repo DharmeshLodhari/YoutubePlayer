@@ -23,17 +23,11 @@ class _EditProductState extends State<EditProduct> {
   final _formKey = GlobalKey<FormState>();
 
   String productId;
-  Product currentProduct = Product(
-      name: "Xyz",
-      category: "Food",
-      condition: "New",
-      description: "Helloo test",
-      price: "123",
-      seller: "test");
+  Product currentProduct = Product();
 
   int imageCount = 5;
   ScrollController _scrollController = ScrollController();
-  List<File> productLocalImages = List<File>();
+  List<File> productLocalImages = [];
   List<String> productImagesFromServer = List<String>();
   String productName = "";
   String productDescription = "";
@@ -43,43 +37,48 @@ class _EditProductState extends State<EditProduct> {
   ProductCategory selectedProductCategory;
   ProductCondition selectedProductCondition;
 
+  //text editing controllers for the edit fields
+  TextEditingController productTitleController = TextEditingController();
+  TextEditingController productDescriptionController = TextEditingController();
+  TextEditingController productPriceController = TextEditingController();
+
   @override
   void initState() {
     productId = arguments['productId'];
     fetchProduct();
-
-    // TODO: remove when we got item from server assign this all in fetch method it is fake for designing
-    productName = currentProduct.name;
-    productCategory = currentProduct.category;
-    productCondition = currentProduct.condition;
-    productPrice = currentProduct.price;
-    productDescription = currentProduct.description;
-    productImagesFromServer.add("https://picsum.photos/id/237/200/300");
-    productImagesFromServer.add("https://picsum.photos/id/238/200/300");
-    productImagesFromServer.add("https://picsum.photos/id/239/200/300");
-    productImagesFromServer.add("https://picsum.photos/id/240/200/300");
-    productImagesFromServer.add("https://picsum.photos/id/241/200/300");
     super.initState();
   }
 
-  void fetchProduct() {
-    // assigning the dropdown from currentProduct
-    productCategories.forEach((catagory) {
-      if (catagory.name == currentProduct.category) {
-        selectedProductCategory = catagory;
-      }
-    });
-
-    conditions.forEach((condition) {
-      if (condition.name == currentProduct.condition) {
-        selectedProductCondition = condition;
-      }
-    });
-
+  void fetchProduct() async {
     //fetchProductFrom id to edit
     _auth.getProduct(productId).then((value) {
       setState(() {
         currentProduct = value;
+        // asssigning to our edit controllers
+
+        productTitleController.text = currentProduct.name;
+        productDescriptionController.text = currentProduct.description;
+        productPriceController.text = currentProduct.price;
+
+        productImagesFromServer.addAll(currentProduct.serverImages);
+        productName = currentProduct.name;
+        productCategory = currentProduct.category;
+        productCondition = currentProduct.condition;
+        productPrice = currentProduct.price;
+        productDescription = currentProduct.description;
+
+        // assigning the dropdown from currentProduct
+        productCategories.forEach((catagory) {
+          if (catagory.name == currentProduct.category) {
+            selectedProductCategory = catagory;
+          }
+        });
+
+        conditions.forEach((condition) {
+          if (condition.name == currentProduct.condition) {
+            selectedProductCondition = condition;
+          }
+        });
       });
     }).catchError((error) {
       Toast.show(
@@ -292,8 +291,14 @@ class _EditProductState extends State<EditProduct> {
               size: 20,
             ),
             onPressed: () {
-              setState(() {
-                productImagesFromServer.removeAt(index);
+              var imageId =
+                  currentProduct.getImageId(productImagesFromServer[index]);
+              _auth.deleteProductOrServiceImage(imageId).then((value) {
+                setState(() {
+                  productImagesFromServer.removeAt(index);
+                });
+              }).catchError((error) {
+                debugPrint("ERROR" + error.toString());
               });
             },
           ),
@@ -327,7 +332,7 @@ class _EditProductState extends State<EditProduct> {
       cursorColor: darkBlue(),
       autofocus: false,
       obscureText: false,
-      initialValue: currentProduct.name,
+      controller: productTitleController,
       decoration: InputDecoration(
           fillColor: Colors.white,
           filled: true,
@@ -360,7 +365,7 @@ class _EditProductState extends State<EditProduct> {
   Widget getProductDescription() {
     return TextFormField(
       cursorColor: darkBlue(),
-      initialValue: currentProduct.description,
+      controller: productDescriptionController,
       autofocus: false,
       obscureText: false,
       maxLines: 5,
@@ -463,7 +468,7 @@ class _EditProductState extends State<EditProduct> {
       cursorColor: darkBlue(),
       autofocus: false,
       obscureText: false,
-      initialValue: currentProduct.price,
+      controller: productPriceController,
       keyboardType: TextInputType.number,
       decoration: InputDecoration(
           prefixIcon: Icon(
@@ -530,6 +535,8 @@ class _EditProductState extends State<EditProduct> {
           currentProduct.category = productCategory;
           currentProduct.condition = productCondition;
           currentProduct.price = productPrice;
+          currentProduct.localImages = productLocalImages;
+          currentProduct.serverImages = productImagesFromServer;
 
           //TODO : call editProduct API
           _auth.editProduct(currentProduct).then((value) {

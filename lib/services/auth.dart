@@ -820,7 +820,9 @@ class AuthService {
   // it will verify the phone number to  OTP
   Future<String> verifyPhoneNumber(
       // ignore: non_constant_identifier_names
-      String phoneNumber, String OTP, String passwordToken) async {
+      String phoneNumber,
+      String OTP,
+      String passwordToken) async {
     var url = baseUrl + "/api/v1/sms/verify";
     var headers = getNonAuthHeader();
     var data = {
@@ -867,6 +869,7 @@ class AuthService {
     product.id = item['id'];
     product.localImages = item['localImages'];
     product.serverImages = product.imageDataToList(item['pictures']);
+    product.pictureMap = item['pictures'];
     product.name = item['name'];
     product.qrCode = item['qr_code'];
     product.manufacturer = item['manufacturer'];
@@ -879,7 +882,25 @@ class AuthService {
     product.seller = item['seller'];
     product.price = item['price'].toString();
     product.currency = item["currency"];
+
     return product;
+  }
+
+  // delete product and service image
+
+  Future<bool> deleteProductOrServiceImage(String imageId) async {
+    var url = baseUrl + "/api/v1/images/" + imageId + "/";
+    var headers = await getAuthHeaders();
+    var response = await http.delete(
+      url,
+      headers: headers,
+    );
+    var jsonData = json.decode(response.body);
+    if (response.statusCode == 204) {
+      return true;
+    } else {
+      throw jsonData;
+    }
   }
 
   // List Products
@@ -983,26 +1004,35 @@ class AuthService {
     //create multipart request for POST or PATCH method
     var request = http.MultipartRequest("PATCH", Uri.parse(url));
 
-    if (product.localImages.length > 0) {
-      List<MultipartFile> newList = new List<MultipartFile>();
-      for (int i = 0; i < product.localImages.length; i++) {
-        //add fields
-        request.fields["imagefile_$i"] = product.localImages[i].path;
+    Map<dynamic, dynamic> _data = product.toMap();
+    _data["available_from"] = dateToString(product.availableFrom);
+    _data["image_count"] = product.localImages.length;
 
-        //create multipart using filepath, string or bytes
-        var multipartFile = await http.MultipartFile.fromPath(
-            "imagefile_$i", product.localImages[i].path);
+    _data.forEach((k, v) {
+      request.fields[k] = v.toString();
+    });
+    List<MultipartFile> newList = new List<MultipartFile>();
+    for (int i = 0; i < product.localImages.length; i++) {
+      // Add fields
+      request.fields["imagefile_$i"] = product.localImages[i].path;
 
-        //add multipart to newList
-        newList.add(multipartFile);
-      }
-      //add multipart to request
-      request.files.addAll(newList);
+      // Create multipart using filepath, string or bytes
+      var multipartFile = await http.MultipartFile.fromPath(
+          "imagefile_$i", product.localImages[i].path);
+
+      // Add multipart to newList
+      newList.add(multipartFile);
     }
+
+    // Add multipart to request
+    request.files.addAll(newList);
+
     headers.forEach((k, v) => request.headers[k] = v);
+
     var response = await request.send();
 
     var responseBody = await response.stream.bytesToString();
+    debugPrint(responseBody);
     if (response.statusCode == 200) {
       return true;
     } else {

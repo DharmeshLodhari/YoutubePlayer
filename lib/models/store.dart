@@ -19,24 +19,25 @@ class Product {
   bool isAvailable;
   DateTime availableFrom;
   String currency;
+  List<dynamic> pictureMap;
 
-  Product({
-    this.id,
-    this.name,
-    this.description,
-    this.shortDescription,
-    this.price,
-    this.localImages,
-    this.serverImages,
-    this.seller,
-    this.qrCode,
-    this.condition,
-    this.category,
-    this.manufacturer,
-    this.isAvailable,
-    this.availableFrom,
-    this.currency,
-  });
+  Product(
+      {this.id,
+      this.name,
+      this.description,
+      this.shortDescription,
+      this.price,
+      this.localImages,
+      this.serverImages,
+      this.seller,
+      this.qrCode,
+      this.condition,
+      this.category,
+      this.manufacturer,
+      this.isAvailable,
+      this.availableFrom,
+      this.currency,
+      this.pictureMap});
 
   Map toMap() {
     return {
@@ -50,6 +51,14 @@ class Product {
       "is_available": this.isAvailable,
       "available_from": this.availableFrom,
     };
+  }
+
+  String getImageId(String imageUrl) {
+    for (var data in this.pictureMap) {
+      if (data['file'] == imageUrl) {
+        return data['id'].toString();
+      }
+    }
   }
 
   List<String> imageDataToList(List<dynamic> pictures) {
