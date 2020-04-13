@@ -329,12 +329,20 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
                                     Text(
-                                      productList[index].name,
+                                      productList[index].name.length > 11
+                                          ? productList[index]
+                                              .name
+                                              .substring(0, 11)
+                                          : productList[index].name,
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold),
                                     ),
                                     Text(
-                                      productList[index].name,
+                                      productList[index].name.length > 11
+                                          ? productList[index]
+                                              .name
+                                              .substring(0, 11)
+                                          : productList[index].name,
                                       style: TextStyle(color: Colors.grey),
                                     ),
                                   ],
@@ -536,7 +544,6 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                   color: darkBlue(),
                 ),
                 onPressed: () {
-                  //TODO: Navigate to the CurrentService
                   Navigator.of(context).pushNamed(
                     '/edit-service',
                     arguments: {
@@ -546,6 +553,10 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                 },
               )
             : null,
+        onTap: () {
+          Navigator.of(context).pushNamed('/service-detail',
+              arguments: {"service": serviceList[index]});
+        },
       ),
     );
   }

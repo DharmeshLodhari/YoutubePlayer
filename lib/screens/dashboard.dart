@@ -58,6 +58,7 @@ class _DashboardState extends State<Dashboard> {
         PaymentRequestList(),
         TransactionList(),
         SearchUser(),
+//        AutoCompleteDemo(),
         MessageList(),
         SettingsList(
           arguments: {'isLocked': isLocked},

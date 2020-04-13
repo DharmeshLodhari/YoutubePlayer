@@ -1,39 +1,40 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/models/store.dart';
-import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 
+import 'colors.dart';
+
 // ignore: must_be_immutable
-class ProductDetailPage extends StatefulWidget {
+class ServiceDetailPage extends StatefulWidget {
   var arguments;
-  ProductDetailPage({@required this.arguments});
+  ServiceDetailPage({@required this.arguments});
   @override
-  _ProductDetailPageState createState() =>
-      _ProductDetailPageState(arguments: arguments);
+  _ServiceDetailPageState createState() =>
+      _ServiceDetailPageState(arguments: arguments);
 }
 
-class _ProductDetailPageState extends State<ProductDetailPage>
+class _ServiceDetailPageState extends State<ServiceDetailPage>
     with TickerProviderStateMixin {
   var arguments;
-  _ProductDetailPageState({this.arguments});
+  _ServiceDetailPageState({this.arguments});
+  Service service;
 
   final _auth = AuthService();
-  Product product;
 
   @override
   void initState() {
     setState(() {
-      product = arguments['product'];
+      service = arguments['service'];
     });
-    fetchProduct(product.id.toString());
+    fetchService(service.id.toString());
     super.initState();
   }
 
-  void fetchProduct(String productId) async {
-    _auth.getProduct(productId).then((value) {
+  void fetchService(String serviceId) async {
+    _auth.getService(serviceId).then((value) {
       setState(() {
-        product = value;
+        service = value;
       });
     });
   }
@@ -56,17 +57,17 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         ),
         backgroundColor: darkBlue(),
         title: Text(
-          "PRODUCT DETAIL",
+          "SERVICE DETAIL",
           style: TextStyle(
             color: Colors.white,
           ),
         ),
       ),
-      body: _buildProductDetailsPage(context),
+      body: _buildServiceDetailsPage(context),
     );
   }
 
-  _buildProductDetailsPage(BuildContext context) {
+  _buildServiceDetailsPage(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
 
     return ListView(
@@ -78,8 +79,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                _buildProductImagesWidgets(),
-                _buildProductTitleWidget(),
+                _buildServiceImagesWidgets(),
+                _buildServiceTitleWidget(),
                 SizedBox(height: 12.0),
                 _buildPriceWidgets(),
                 SizedBox(height: 12.0),
@@ -113,9 +114,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     );
   }
 
-  _buildProductImagesWidgets() {
+  _buildServiceImagesWidgets() {
     TabController imagesController =
-        TabController(length: product.serverImages.length, vsync: this);
+        TabController(length: service.serverImages.length, vsync: this);
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -123,12 +124,12 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         height: 250.0,
         child: Center(
           child: DefaultTabController(
-            length: product.serverImages.length,
+            length: service.serverImages.length,
             child: Stack(
               children: <Widget>[
                 TabBarView(
                   controller: imagesController,
-                  children: productPhotos(product),
+                  children: servicePhotos(service),
                 ),
                 Container(
                   alignment: FractionalOffset(0.5, 0.95),
@@ -146,13 +147,13 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     );
   }
 
-  _buildProductTitleWidget() {
+  _buildServiceTitleWidget() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0),
       child: Center(
         child: Text(
           //name,
-          product.name,
+          service.name,
           style: TextStyle(fontSize: 16.0, color: Colors.black),
         ),
       ),
@@ -167,7 +168,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
           Text(
-            worldCurrencies[product.currency] + product.price,
+            worldCurrencies[service.currency] + service.price,
             style: TextStyle(fontSize: 16.0, color: Colors.black),
           ),
           SizedBox(
@@ -187,7 +188,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             width: 12.0,
           ),
           Text(
-            product.shortDescription,
+            service.shortDescription,
             style: TextStyle(
               color: Colors.grey[500],
             ),
@@ -214,7 +215,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 width: 12.0,
               ),
               Text(
-                product.availableFrom.toString(),
+                service.availableFrom.toString(),
                 style: TextStyle(
                   color: Colors.grey[600],
                 ),
@@ -261,7 +262,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               controller: tabController,
               children: <Widget>[
                 Text(
-                  product.description,
+                  service.description,
                   style: TextStyle(
                     color: Colors.black,
                   ),
@@ -280,9 +281,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     );
   }
 
-  List<Widget> productPhotos(Product product) {
+  List<Widget> servicePhotos(Service service) {
     List<Widget> photos = [];
-    for (var url in product.serverImages) {
+    for (var url in service.serverImages) {
       var img = Image.network(url);
       photos.add(img);
     }

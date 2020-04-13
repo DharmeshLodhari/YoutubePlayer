@@ -19,6 +19,7 @@ import 'package:Slydo/screens/profile.dart';
 import 'package:Slydo/screens/request_payments_list.dart';
 import 'package:Slydo/screens/scan_qr_code.dart';
 import 'package:Slydo/screens/search_user.dart';
+import 'package:Slydo/screens/service_detail_page.dart';
 import 'package:Slydo/screens/settings.dart';
 import 'package:Slydo/screens/transactions_list.dart';
 import 'package:Slydo/splash.dart';
@@ -95,6 +96,12 @@ class RouteGenerator {
       case '/edit-product':
         return MaterialPageRoute(
           builder: (_) => EditProduct(
+            arguments: settings.arguments,
+          ),
+        );
+      case '/service-detail':
+        return MaterialPageRoute(
+          builder: (_) => ServiceDetailPage(
             arguments: settings.arguments,
           ),
         );

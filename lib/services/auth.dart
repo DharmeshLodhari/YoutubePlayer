@@ -337,6 +337,22 @@ class AuthService {
     return false;
   }
 
+  User createUserInstance(Map<String, dynamic> item) {
+    User _user = User(
+      uuid: item["uuid"],
+      url: item["url"],
+      phoneNumber: item["phone_number"],
+      fullName: item["full_name"],
+      userName: item["username"],
+      avatar: item["avatar"],
+      qrCode: item["qr_code"],
+      password: item["password"],
+      currency: item["default_currency"],
+      isVerified: item["is_verified"],
+    );
+    return _user;
+  }
+
   // List the users bank accounts
   Future<List<BankAccount>> getBankAccounts() async {
     var url = baseUrl + "/api/v1/transactions/bank-accounts-list";

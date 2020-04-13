@@ -35,6 +35,7 @@ dependencies:
   country_pickers: ^1.2.0
   flutter_staggered_grid_view:
   intl: ^0.16.1
+  autocomplete_textfield: ^1.6.4
 
 flutter_icons:
   android: "launcher_icon"
