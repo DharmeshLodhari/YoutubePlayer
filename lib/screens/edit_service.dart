@@ -530,7 +530,7 @@ class _EditServiceState extends State<EditService> {
             child: MaterialButton(
                 elevation: 4.0,
                 textColor: Colors.white,
-                color: darkBlue(),
+                color: Colors.red,
                 height: 50,
                 child: Text("Delete"),
                 onPressed: () async {
