@@ -12,13 +12,12 @@ import 'package:provider/provider.dart';
 final List<dynamic> services = [];
 CustomerProfile _payee;
 
-class SearchUser extends StatefulWidget {
+class SearchAll extends StatefulWidget {
   @override
-  _SearchUserState createState() => _SearchUserState();
+  _SearchAllState createState() => _SearchAllState();
 }
 
-class _SearchUserState extends State<SearchUser> {
-  bool isSearchBoxOpen = false;
+class _SearchAllState extends State<SearchAll> {
   bool isValidSearch = false;
   TextEditingController searchController;
   String searchedText = "";
@@ -47,8 +46,7 @@ class _SearchUserState extends State<SearchUser> {
 
   @override
   Widget build(BuildContext context) {
-    final GlobalKey<ScaffoldState> _scaffoldSearchKey =
-        GlobalKey<ScaffoldState>();
+    GlobalKey<ScaffoldState> _scaffoldSearchKey = GlobalKey<ScaffoldState>();
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
 
@@ -90,60 +88,57 @@ class _SearchUserState extends State<SearchUser> {
   }
 
   Widget search() {
-    if (!isSearchBoxOpen) {
-      return Center(child: Text("Find users"));
-    } else {
-      return Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          IconButton(
-            icon: Icon(
-              Icons.keyboard,
-              size: 30,
-            ),
-            onPressed: () {
-              if (searchFocus.hasFocus) {
-                FocusScope.of(context).unfocus();
-              } else {
-                FocusScope.of(context).requestFocus(searchFocus);
-              }
-            },
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        IconButton(
+          icon: Icon(
+            Icons.sort,
+            size: 30,
           ),
-          SizedBox(
-            width: 15,
-          ),
-          Expanded(
-            child: Center(
-              child: TextFormField(
-                textAlignVertical: TextAlignVertical.center,
-                style: TextStyle(fontSize: 15),
-                textInputAction: TextInputAction.search,
-                focusNode: searchFocus,
-                controller: searchController,
-                decoration: InputDecoration(
-                  contentPadding: EdgeInsets.all(10),
-                  hintText: "Seach here",
-                  isDense: true,
-                  fillColor: Colors.white,
-                  filled: true,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(25),
-                  ),
+          onPressed: () {
+            if (searchFocus.hasFocus) {
+              FocusScope.of(context).unfocus();
+            } else {
+              FocusScope.of(context).requestFocus(searchFocus);
+            }
+          },
+        ),
+        SizedBox(
+          width: 15,
+        ),
+        Expanded(
+          child: Center(
+            child: TextFormField(
+              textAlignVertical: TextAlignVertical.center,
+              style: TextStyle(fontSize: 15),
+              textInputAction: TextInputAction.search,
+              focusNode: searchFocus,
+              controller: searchController,
+              decoration: InputDecoration(
+                contentPadding: EdgeInsets.all(10),
+                hintText: "Search here",
+                isDense: true,
+                fillColor: Colors.white,
+                filled: true,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(25),
                 ),
-                onFieldSubmitted: (val) async {
-                  searchResult();
-                },
-                onChanged: (value) {
-                  searchedText = value;
-                },
               ),
+              onFieldSubmitted: (val) async {
+                searchResult();
+              },
+              onChanged: (value) {
+                searchedText = value;
+              },
             ),
           ),
-        ],
-      );
-    }
+        ),
+      ],
+    );
+//    }
   }
 
   Widget _threeItemPopup() => PopupMenuButton(
@@ -209,7 +204,9 @@ class _SearchUserState extends State<SearchUser> {
           setState(() {
             searchController.text = "";
             searchedText = "";
-            results.clear();
+            if (results.isNotEmpty) {
+              results = [];
+            }
             if (object != 1) {
               filterValue = object;
             }
@@ -218,15 +215,16 @@ class _SearchUserState extends State<SearchUser> {
       );
 
   void searchResult() async {
-    if (isSearchBoxOpen && searchController.text.length >= 3) {
-//      fetchSearchResult();
-
-      results.clear();
+    if (searchController.text.length >= 3) {
+      setState(() {
+        if (results.isNotEmpty) {
+          results = [];
+        }
+      });
       var url = getSearchUrl(searchedText);
       var searchedResults = await _auth.searchEndpoint(url);
 
       updateSearchResults(searchedResults);
-
       FocusScope.of(context).unfocus();
       setState(() {
         isValidSearch = true;
@@ -235,15 +233,6 @@ class _SearchUserState extends State<SearchUser> {
     if (searchController.text.length < 3) {
       setState(() {
         isValidSearch = false;
-      });
-    }
-    if (isSearchBoxOpen && searchController.text.length == 0) {
-      setState(() {
-        isSearchBoxOpen = false;
-      });
-    } else {
-      setState(() {
-        isSearchBoxOpen = true;
       });
     }
   }
@@ -341,7 +330,6 @@ class _SearchUserState extends State<SearchUser> {
   void handleSlideIsOpenChanged(bool isOpen) {}
 
   String getSearchUrl(String searchedText) {
-    final String baseUrl = "http://api.slydo.co";
     switch (filterValue) {
       case "Users":
         return baseUrl + "/api/v1/search/users/?search=" + searchedText;

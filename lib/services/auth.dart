@@ -1001,7 +1001,7 @@ class AuthService {
 
     // Add multipart to request
     request.files.addAll(newList);
-
+    debugPrint(request.fields.toString());
     headers.forEach((k, v) => request.headers[k] = v);
     var response = await request.send();
     var responseBody = await response.stream.bytesToString();

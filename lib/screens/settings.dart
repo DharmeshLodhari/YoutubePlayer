@@ -114,12 +114,6 @@ class _SettingsListState extends State<SettingsList> {
                       : Container(),
                   slydoBankAccountTile(),
                   SizedBox(height: 20),
-                  IconButton(
-                    icon: Icon(Icons.search),
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/search_user');
-                    },
-                  )
                 ],
               ),
             ),

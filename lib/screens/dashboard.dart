@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/models/notification.dart';
 import 'package:Slydo/screens/messagelist.dart';
-import 'package:Slydo/screens/search_user.dart';
+import 'package:Slydo/screens/search.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/device_info.dart';
 import 'package:Slydo/widget/local_notification.dart';
@@ -57,8 +57,7 @@ class _DashboardState extends State<Dashboard> {
         Home(),
         PaymentRequestList(),
         TransactionList(),
-        SearchUser(),
-//        AutoCompleteDemo(),
+        SearchAll(),
         MessageList(),
         SettingsList(
           arguments: {'isLocked': isLocked},
@@ -145,8 +144,8 @@ class _DashboardState extends State<Dashboard> {
           ),
           BottomNavigationBarItem(
             backgroundColor: lightBlue(),
-            icon: Icon(Icons.supervised_user_circle, color: Colors.white),
-            title: Text('Users',
+            icon: Icon(Icons.search, color: Colors.white),
+            title: Text('Search',
                 style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
           BottomNavigationBarItem(

@@ -18,7 +18,7 @@ import 'package:Slydo/screens/product_detail_page.dart';
 import 'package:Slydo/screens/profile.dart';
 import 'package:Slydo/screens/request_payments_list.dart';
 import 'package:Slydo/screens/scan_qr_code.dart';
-import 'package:Slydo/screens/search_user.dart';
+import 'package:Slydo/screens/search.dart';
 import 'package:Slydo/screens/service_detail_page.dart';
 import 'package:Slydo/screens/settings.dart';
 import 'package:Slydo/screens/transactions_list.dart';
@@ -82,7 +82,7 @@ class RouteGenerator {
       case '/explore':
         return MaterialPageRoute(builder: (_) => ExploreList());
       case '/search-user':
-        return MaterialPageRoute(builder: (_) => SearchUser());
+        return MaterialPageRoute(builder: (_) => SearchAll());
       case '/profile':
         return MaterialPageRoute(
             builder: (_) => Profile(arguments: settings.arguments));
@@ -101,7 +101,7 @@ class RouteGenerator {
         );
       case '/search_user':
         return MaterialPageRoute(
-          builder: (_) => SearchUser(),
+          builder: (_) => SearchAll(),
         );
       case '/service-detail':
         return MaterialPageRoute(
