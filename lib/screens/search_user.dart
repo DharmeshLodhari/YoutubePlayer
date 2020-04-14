@@ -47,7 +47,8 @@ class _SearchUserState extends State<SearchUser> {
 
   @override
   Widget build(BuildContext context) {
-    final key = GlobalKey<ScaffoldState>();
+    final GlobalKey<ScaffoldState> _scaffoldSearchKey =
+        GlobalKey<ScaffoldState>();
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
 
@@ -56,7 +57,7 @@ class _SearchUserState extends State<SearchUser> {
         return true;
       },
       child: Scaffold(
-        key: key,
+        key: _scaffoldSearchKey,
         resizeToAvoidBottomInset: true,
         backgroundColor: lightBlue(),
         appBar: AppBar(
@@ -358,6 +359,7 @@ class _SearchUserState extends State<SearchUser> {
       case "Users":
         searchedResults.forEach((user) {
           setState(() {
+            debugPrint("User : " + user.toString());
             results.add(getUserTile(user));
           });
         });
@@ -365,6 +367,7 @@ class _SearchUserState extends State<SearchUser> {
       case "Products":
         searchedResults.forEach((product) {
           setState(() {
+            debugPrint("product : " + product.toString());
             results.add(getProductTile(product));
           });
         });
@@ -372,6 +375,7 @@ class _SearchUserState extends State<SearchUser> {
       case "Services":
         searchedResults.forEach((service) {
           setState(() {
+            debugPrint("service : " + service.toString());
             results.add(getServiceTile(service));
           });
         });

@@ -99,6 +99,10 @@ class RouteGenerator {
             arguments: settings.arguments,
           ),
         );
+      case '/search_user':
+        return MaterialPageRoute(
+          builder: (_) => SearchUser(),
+        );
       case '/service-detail':
         return MaterialPageRoute(
           builder: (_) => ServiceDetailPage(

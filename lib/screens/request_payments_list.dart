@@ -18,7 +18,8 @@ class PaymentRequestList extends StatefulWidget {
 }
 
 class _PaymentRequestListState extends State<PaymentRequestList> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldPaymentListKey =
+      new GlobalKey<ScaffoldState>();
   final _auth = AuthService();
   SlidableController slidableController;
   int count = 0;
@@ -93,7 +94,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
           return false;
         },
         child: Scaffold(
-          key: _scaffoldKey,
+          key: _scaffoldPaymentListKey,
           backgroundColor: lightBlue(),
           appBar: AppBar(
             automaticallyImplyLeading: false,
@@ -172,7 +173,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
           noItemInList = true;
         });
       } else if (next == null && requestPaymentList.length > 6) {
-        _scaffoldKey.currentState.showSnackBar(SnackBar(
+        _scaffoldPaymentListKey.currentState.showSnackBar(SnackBar(
           content: Text("Your have reached the bottom of the list"),
           duration: Duration(milliseconds: 500),
         ));
@@ -210,7 +211,8 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   void handleSlideIsOpenChanged(bool isOpen) {}
 
   void _showSnackBar(BuildContext context, String text) {
-    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(text)));
+    _scaffoldPaymentListKey.currentState
+        .showSnackBar(SnackBar(content: Text(text)));
   }
 
   List<Widget> listSecondaryActions(PaymentRequest paymentRequest, int index) {
@@ -351,7 +353,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
     ).then<void>((T value) {
       // The value passed to Navigator.pop() or null.
       if (value != null) {
-        _scaffoldKey.currentState.showSnackBar(SnackBar(
+        _scaffoldPaymentListKey.currentState.showSnackBar(SnackBar(
           content: Text('You selected: $value'),
         ));
       }

@@ -16,9 +16,10 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  final GlobalKey<ScaffoldState> _scaffoldHomeKey =
+      new GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
-    final key = GlobalKey<ScaffoldState>();
     final UserBloc userBloc = Provider.of<UserBloc>(context);
 
     return WillPopScope(
@@ -30,6 +31,7 @@ class _HomeState extends State<Home> {
         return false;
       },
       child: Scaffold(
+        key: _scaffoldHomeKey,
         resizeToAvoidBottomInset: true,
         backgroundColor: lightBlue(),
         appBar: AppBar(
@@ -51,7 +53,7 @@ class _HomeState extends State<Home> {
                 child: Column(
                   children: <Widget>[
                     SizedBox(height: 10),
-                    displayUserInfo(key, userBloc),
+                    displayUserInfo(userBloc),
                     SizedBox(height: 30),
                     displayPaymentButtons()
                   ],
@@ -64,7 +66,7 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget displayUserInfo(key, userBloc) {
+  Widget displayUserInfo(userBloc) {
     return Center(
       child: Card(
         semanticContainer: true,

@@ -18,7 +18,8 @@ class MessageList extends StatefulWidget {
 }
 
 class _MessageListState extends State<MessageList> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldMessageKey =
+      new GlobalKey<ScaffoldState>();
   final _auth = AuthService();
   SlidableController slidableController;
   int count = 0;
@@ -96,7 +97,7 @@ class _MessageListState extends State<MessageList> {
           return false;
         },
         child: Scaffold(
-          key: _scaffoldKey,
+          key: _scaffoldMessageKey,
           backgroundColor: lightBlue(),
           appBar: AppBar(
             automaticallyImplyLeading: false,
@@ -260,7 +261,7 @@ class _MessageListState extends State<MessageList> {
           noItemInList = true;
         });
       } else if (next == null && messageList.length > 6) {
-        _scaffoldKey.currentState.showSnackBar(SnackBar(
+        _scaffoldMessageKey.currentState.showSnackBar(SnackBar(
           content: Text("Your have reached the bottom of the list"),
           duration: Duration(milliseconds: 500),
         ));
@@ -275,7 +276,8 @@ class _MessageListState extends State<MessageList> {
   void handleSlideIsOpenChanged(bool isOpen) {}
 
   void _showSnackBar(BuildContext context, String text) {
-    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(text)));
+    _scaffoldMessageKey.currentState
+        .showSnackBar(SnackBar(content: Text(text)));
   }
 
   List<Widget> listActionSlideActions(

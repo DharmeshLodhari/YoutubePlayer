@@ -15,7 +15,8 @@ class TransactionList extends StatefulWidget {
 }
 
 class _TransactionListState extends State<TransactionList> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldTransactionKey =
+      new GlobalKey<ScaffoldState>();
   // Get list of users transactions
   final _auth = AuthService();
   int count = 0;
@@ -86,7 +87,7 @@ class _TransactionListState extends State<TransactionList> {
         return false;
       },
       child: Scaffold(
-        key: _scaffoldKey,
+        key: _scaffoldTransactionKey,
         backgroundColor: lightBlue(),
         appBar: AppBar(
           automaticallyImplyLeading: false,
@@ -163,7 +164,7 @@ class _TransactionListState extends State<TransactionList> {
           noItemInList = true;
         });
       } else if (next == null && transactionList.length > 6) {
-        _scaffoldKey.currentState.showSnackBar(SnackBar(
+        _scaffoldTransactionKey.currentState.showSnackBar(SnackBar(
           content: Text("Your have reached the end of the list"),
           duration: Duration(milliseconds: 500),
         ));

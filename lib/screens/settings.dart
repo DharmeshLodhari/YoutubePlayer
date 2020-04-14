@@ -23,6 +23,8 @@ class SettingsList extends StatefulWidget {
 }
 
 class _SettingsListState extends State<SettingsList> {
+  final GlobalKey<ScaffoldState> _scaffoldSettingKey =
+      new GlobalKey<ScaffoldState>();
   final _auth = AuthService();
   bool _account = false;
   bool isLoading = false;
@@ -62,6 +64,7 @@ class _SettingsListState extends State<SettingsList> {
         return false;
       },
       child: Scaffold(
+        key: _scaffoldSettingKey,
         backgroundColor: lightBlue(),
         appBar: AppBar(
           automaticallyImplyLeading: false,
@@ -111,6 +114,12 @@ class _SettingsListState extends State<SettingsList> {
                       : Container(),
                   slydoBankAccountTile(),
                   SizedBox(height: 20),
+                  IconButton(
+                    icon: Icon(Icons.search),
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/search_user');
+                    },
+                  )
                 ],
               ),
             ),
