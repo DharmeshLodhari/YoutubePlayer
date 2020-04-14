@@ -374,38 +374,6 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                             trailing:
                                 Text(r"$" + "${productList[index].price}" + ""),
                           ),
-//                          Padding(
-//                            padding:
-//                                const EdgeInsets.symmetric(horizontal: 4.0),
-//                            child: Row(
-//                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                              children: <Widget>[
-//                                Column(
-//                                  crossAxisAlignment: CrossAxisAlignment.start,
-//                                  children: <Widget>[
-//                                    Text(
-//                                      productList[index].name.length > 11
-//                                          ? productList[index]
-//                                              .name
-//                                              .substring(0, 11)
-//                                          : productList[index].name,
-//                                      style: TextStyle(
-//                                          fontWeight: FontWeight.bold),
-//                                    ),
-//                                    Text(
-//                                      productList[index].name.length > 11
-//                                          ? productList[index]
-//                                              .name
-//                                              .substring(0, 11)
-//                                          : productList[index].name,
-//                                      style: TextStyle(color: Colors.grey),
-//                                    ),
-//                                  ],
-//                                ),
-//                                Text(r"$" + "${productList[index].price}" + "")
-//                              ],
-//                            ),
-//                          )
                         ],
                       ),
                     ));

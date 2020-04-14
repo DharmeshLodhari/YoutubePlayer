@@ -1,9 +1,12 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:Slydo/screens/colors.dart';
+import 'package:Slydo/screens/tiles/user.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -25,12 +28,10 @@ class _SearchUserState extends State<SearchUser> {
   FocusNode searchFocus;
   List<dynamic> searchedResult;
   CustomerProfileBloc customerProfileBloc;
-  UserBloc userBloc;
   var filterValue = "Users";
 
   final _auth = AuthService();
   SlidableController slidableController;
-  List<Widget> results = [];
 
   @override
   void initState() {
@@ -49,7 +50,6 @@ class _SearchUserState extends State<SearchUser> {
   Widget build(BuildContext context) {
     final key = GlobalKey<ScaffoldState>();
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
-    userBloc = Provider.of<UserBloc>(context);
 
     return WillPopScope(
       onWillPop: () async {
@@ -75,17 +75,63 @@ class _SearchUserState extends State<SearchUser> {
             IconButton(
               icon: const Icon(Icons.search),
               onPressed: searchResult,
-            ),
-            _threeItemPopup(),
+            )
           ],
         ),
         body: Container(
             padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-            child: ListView(
-              children: results,
-            )),
+            child: _getSlidableWithLists(context, getDisplayCard())),
       ),
     );
+  }
+
+  Widget listBuilder() {
+    return isValidSearch
+        ? FutureBuilder(
+            future: fetchSearchResult(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return ListView.builder(
+                    itemCount: snapshot.data.length,
+                    itemBuilder: (BuildContext context, int index) => UserTile(
+                          user: snapshot.data[index],
+                        ));
+              }
+              return LoadingIndicator();
+            })
+        : ListView.builder(
+            itemCount: services.length,
+            itemBuilder: (BuildContext context, int index) =>
+                getServiceList()[index]);
+  }
+
+  List<Widget> getServiceList() {
+    List<Widget> lst = [];
+    services.sort((a, b) => a[0].compareTo(b[0]));
+    for (final service in services) {
+      var card = Padding(
+        padding: EdgeInsets.only(top: 8.0),
+        child: Card(
+          margin: EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
+          child: ListTile(
+            title: Text(service[0],
+                style: TextStyle(
+                    color: darkBlue(),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15)),
+            leading: Icon(
+              service[1],
+              color: darkBlue(),
+            ),
+            onTap: () {
+//              sendAndRetrieveMessage();
+            },
+          ),
+        ),
+      );
+      lst.add(card);
+    }
+    return lst;
   }
 
   Widget search() {
@@ -143,6 +189,42 @@ class _SearchUserState extends State<SearchUser> {
         ],
       );
     }
+  }
+
+  void searchResult() async {
+    if (isSearchBoxOpen && searchController.text.length >= 3) {
+//      fetchSearchResult();
+
+      var customerProfile = await _auth.fetchCustomerProfile(searchedText);
+      setState(() {
+        _payee = customerProfile;
+      });
+
+      FocusScope.of(context).unfocus();
+      setState(() {
+        isValidSearch = true;
+      });
+    }
+    if (searchController.text.length < 3) {
+      setState(() {
+        isValidSearch = false;
+      });
+    }
+    if (isSearchBoxOpen && searchController.text.length == 0) {
+      setState(() {
+        isSearchBoxOpen = false;
+      });
+    } else {
+      setState(() {
+        isSearchBoxOpen = true;
+      });
+    }
+  }
+
+  Future<List> fetchSearchResult() async {
+    //TODO:call your searching API with passing searchedText variable and store your List in searchResult to be displayed
+    // searchedResult = await _auth.listPaymentRequests("","");
+    return searchedResult;
   }
 
   Widget _threeItemPopup() => PopupMenuButton(
@@ -206,46 +288,12 @@ class _SearchUserState extends State<SearchUser> {
         },
         onSelected: (Object object) {
           setState(() {
-            searchController.text = "";
-            searchedText = "";
-            results.clear();
             if (object != 1) {
               filterValue = object;
             }
           });
         },
       );
-
-  void searchResult() async {
-    if (isSearchBoxOpen && searchController.text.length >= 3) {
-//      fetchSearchResult();
-
-      results.clear();
-      var url = getSearchUrl(searchedText);
-      var searchedResults = await _auth.searchEndpoint(url);
-
-      updateSearchResults(searchedResults);
-
-      FocusScope.of(context).unfocus();
-      setState(() {
-        isValidSearch = true;
-      });
-    }
-    if (searchController.text.length < 3) {
-      setState(() {
-        isValidSearch = false;
-      });
-    }
-    if (isSearchBoxOpen && searchController.text.length == 0) {
-      setState(() {
-        isSearchBoxOpen = false;
-      });
-    } else {
-      setState(() {
-        isSearchBoxOpen = true;
-      });
-    }
-  }
 
   Widget getDisplayCard() {
     var avatarImage;
@@ -338,230 +386,6 @@ class _SearchUserState extends State<SearchUser> {
   void handleSlideAnimationChanged(Animation<double> slideAnimation) {}
 
   void handleSlideIsOpenChanged(bool isOpen) {}
-
-  String getSearchUrl(String searchedText) {
-    final String baseUrl = "http://api.slydo.co";
-    switch (filterValue) {
-      case "Users":
-        return baseUrl + "/api/v1/search/users/?search=" + searchedText;
-      case "Products":
-        return baseUrl + "/api/v1/search/products/?search=" + searchedText;
-      case "Services":
-        return baseUrl + "/api/v1/search/services/?search=" + searchedText;
-      default:
-        return baseUrl + "/api/v1/search/users/?search=" + searchedText;
-    }
-  }
-
-  void updateSearchResults(List searchedResults) {
-    switch (filterValue) {
-      case "Users":
-        searchedResults.forEach((user) {
-          setState(() {
-            results.add(getUserTile(user));
-          });
-        });
-        break;
-      case "Products":
-        searchedResults.forEach((product) {
-          setState(() {
-            results.add(getProductTile(product));
-          });
-        });
-        break;
-      case "Services":
-        searchedResults.forEach((service) {
-          setState(() {
-            results.add(getServiceTile(service));
-          });
-        });
-        break;
-    }
-  }
-
-  Widget getUserTile(var object) {
-    _payee = CustomerProfile(
-      avatar: object["avatar"],
-      fullName: object["full_name"],
-      qrCode: object["qr_code"],
-      userName: object["username"],
-    );
-
-    var avatarImage;
-    var qrCodeImage;
-    if (_payee != null) {
-      avatarImage = CachedNetworkImage(
-        imageUrl: object["avatar"],
-        colorBlendMode: BlendMode.darken,
-        fit: BoxFit.fitWidth,
-        filterQuality: FilterQuality.high,
-      );
-      qrCodeImage = CachedNetworkImage(
-        imageUrl: object["qr_code"],
-        colorBlendMode: BlendMode.darken,
-        fit: BoxFit.fitWidth,
-        filterQuality: FilterQuality.high,
-      );
-    }
-
-    Widget tile = Card(
-      semanticContainer: true,
-      child: ListTile(
-        dense: true,
-        title: Text(
-          _payee.fullName,
-          style: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
-        ),
-        subtitle: Text(_payee.userName),
-        leading: avatarImage,
-        trailing: qrCodeImage,
-      ),
-    );
-
-    return _getSlidableWithLists(context, tile);
-  }
-
-  Widget getProductTile(var object) {
-    // Product product = _auth.createProduct(object);
-
-    bool isOwner = false;
-    if (object['seller'] == userBloc.user.userName) {
-      isOwner = true;
-    }
-    return Container(
-      height: 250,
-      width: double.infinity,
-      child: Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(0),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(0),
-            child: Column(
-              children: <Widget>[
-                Expanded(
-                  child: Stack(children: <Widget>[
-                    InkWell(
-                      child: CachedNetworkImage(
-                        width: double.infinity,
-                        imageUrl: object["seller_avatar"],
-                        fit: BoxFit.fill,
-                        filterQuality: FilterQuality.high,
-                      ),
-                      onTap: () {
-                        Navigator.pushNamed(context, '/product',
-                            arguments: {"product": ""});
-                      },
-                    ),
-                    isOwner
-                        ? Positioned(
-                            right: 0,
-                            child: IconButton(
-                              icon: Icon(
-                                Icons.edit,
-                                size: 20,
-                                color: darkBlue(),
-                              ),
-                              onPressed: () {
-                                //TODO: Navigate to the CurrentProduct
-                                Navigator.of(context).pushNamed(
-                                  '/edit-product',
-                                  arguments: {
-                                    "productId": "1",
-                                  },
-                                );
-                              },
-                            ),
-                          )
-                        : Container()
-                  ]),
-                ),
-                ListTile(
-                  contentPadding: EdgeInsets.symmetric(horizontal: 8),
-                  dense: true,
-                  title: Text(
-                    object['name'].length > 11
-                        ? object['name'].substring(0, 11)
-                        : object['name'],
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Text(
-                    object['short_description'].length > 11
-                        ? object['short_description'].substring(0, 11)
-                        : object['short_description'],
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                  trailing: Text(r"$" + "${object['price']}" + ""),
-                ),
-              ],
-            ),
-          )),
-    );
-  }
-
-  Widget getServiceTile(var object) {
-    bool isOwner = false;
-    if (object['seller'] == userBloc.user.userName) {
-      isOwner = true;
-    }
-
-    return Card(
-      elevation: 4,
-      clipBehavior: Clip.antiAliasWithSaveLayer,
-      color: Colors.white,
-      child: ListTile(
-        dense: true,
-        contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 8),
-        leading: ClipOval(
-          child: CachedNetworkImage(
-            imageUrl: object["provider_avatar"],
-            height: 50,
-            width: 50,
-            colorBlendMode: BlendMode.darken,
-            fit: BoxFit.cover,
-            filterQuality: FilterQuality.high,
-            placeholder: (context, url) => object["provider_avatar"] == ""
-                ? Icon(Icons.person)
-                : CircularProgressIndicator(
-                    backgroundColor: Colors.white,
-                  ),
-          ),
-        ),
-        title: Text(
-          object["name"].length > 20
-              ? object["name"].substring(0, 20)
-              : object["name"],
-          style: TextStyle(color: darkBlue(), fontWeight: FontWeight.bold),
-        ),
-        subtitle: Text(
-          object["short_description"].length > 20
-              ? object["short_description"].substring(0, 20)
-              : object["short_description"],
-        ),
-        trailing: isOwner
-            ? IconButton(
-                icon: Icon(
-                  Icons.edit,
-                  color: darkBlue(),
-                ),
-                onPressed: () {
-                  Navigator.of(context).pushNamed(
-                    '/edit-service',
-                    arguments: {
-                      "serviceId": "1",
-                    },
-                  );
-                },
-              )
-            : null,
-        onTap: () {
-          Navigator.of(context)
-              .pushNamed('/service-detail', arguments: {"service": ""});
-        },
-      ),
-    );
-  }
 }
 
 class VerticalListItem extends StatelessWidget {

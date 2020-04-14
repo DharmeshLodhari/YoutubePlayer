@@ -1267,4 +1267,64 @@ class AuthService {
       throw jsonData;
     }
   }
+
+  //search
+
+  // List the searched item
+  Future<List<dynamic>> searchEndpoint(String url) async {
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
+
+    debugPrint(response.statusCode.toString());
+    debugPrint(response.body);
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+      var data = jsonData['results'];
+      return data;
+    } else {
+      List<Map> itemSearched = [
+        {
+          "full_name": "John John",
+          "username": "john.john.2",
+          "avatar":
+              "http://127.0.0.1:8080/api/v1/media/customer/avatar/me_DN78oka.jpeg",
+          "qr_code":
+              "http://127.0.0.1:8080/api/v1/media/customer/qr-code/8e30ddd4c78744389d8714e564473309.png"
+        },
+        {
+          "full_name": "John John",
+          "username": "john.john",
+          "avatar":
+              "http://127.0.0.1:8080/api/v1/media/customer/avatar/terry_xQfxdyC.jpeg",
+          "qr_code":
+              "http://127.0.0.1:8080/api/v1/media/customer/qr-code/a8a42897b6d04b15b081b7cbcea15809.png"
+        },
+        {
+          "full_name": "Abiola Rasheed",
+          "username": "abiola.rasheed.2",
+          "avatar":
+              "http://127.0.0.1:8080/api/v1/media/customer/avatar/ra_tvVjzud.jpeg",
+          "qr_code":
+              "http://127.0.0.1:8080/api/v1/media/customer/qr-code/e4c0e4414add41f59a3c676defb4c9d3.png"
+        },
+        {
+          "full_name": "Alex Rasheed",
+          "username": "alex.rasheed.2",
+          "avatar":
+              "http://127.0.0.1:8080/api/v1/media/customer/avatar/me_9c9uSF2.jpeg",
+          "qr_code":
+              "http://127.0.0.1:8080/api/v1/media/customer/qr-code/2b439ab4d0b343aab8360d6e38f6e83a.png"
+        },
+        {
+          "full_name": "John John",
+          "username": "john.john.1",
+          "avatar":
+              "http://127.0.0.1:8080/api/v1/media/customer/avatar/me_u7oa58E.jpeg",
+          "qr_code":
+              "http://127.0.0.1:8080/api/v1/media/customer/qr-code/fbed7a1dcada4da3ab23f0ae92846722.png"
+        }
+      ];
+      return itemSearched;
+    }
+  }
 }
