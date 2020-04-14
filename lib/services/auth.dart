@@ -1078,10 +1078,11 @@ class AuthService {
       url,
       headers: headers,
     );
-    var jsonData = json.decode(response.body);
+
     if (response.statusCode == 204) {
       return true;
     } else {
+      var jsonData = json.decode(response.body);
       throw jsonData;
     }
   }

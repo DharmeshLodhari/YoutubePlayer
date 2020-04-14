@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/screens/tiles/user.dart';
@@ -9,6 +10,7 @@ import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:provider/provider.dart';
 
 final List<dynamic> services = [];
 CustomerProfile _payee;
@@ -25,6 +27,7 @@ class _SearchUserState extends State<SearchUser> {
   String searchedText = "";
   FocusNode searchFocus;
   List<dynamic> searchedResult;
+  CustomerProfileBloc customerProfileBloc;
 
   final _auth = AuthService();
   SlidableController slidableController;
@@ -45,6 +48,7 @@ class _SearchUserState extends State<SearchUser> {
   @override
   Widget build(BuildContext context) {
     final key = GlobalKey<ScaffoldState>();
+    customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
 
     return WillPopScope(
       onWillPop: () async {
@@ -280,7 +284,13 @@ class _SearchUserState extends State<SearchUser> {
           color: Colors.green,
           icon: Icons.send,
           onTap: () async {
-            Navigator.pushNamed(context, '/payout');
+            customerProfileBloc.customer =
+                await _auth.fetchCustomerProfile(_payee.userName);
+            Navigator.of(context).pushNamed('/send-payment',
+                arguments: <String, bool>{
+                  'isFromProfile': false,
+                  'isRequest': false
+                });
           }),
     ];
   }
@@ -291,8 +301,14 @@ class _SearchUserState extends State<SearchUser> {
         caption: 'Request',
         color: Colors.green,
         icon: Icons.event_note,
-        onTap: () {
-          Navigator.pushNamed(context, '/payout-list');
+        onTap: () async {
+          customerProfileBloc.customer =
+              await _auth.fetchCustomerProfile(_payee.userName);
+          Navigator.of(context).pushNamed('/request-payment',
+              arguments: <String, bool>{
+                'isFromProfile': false,
+                'isRequest': true
+              });
         },
       ),
     ];

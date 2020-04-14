@@ -257,22 +257,30 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
           ),
           Container(
             padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
-            height: 60.0,
+            height: 200.0,
             child: TabBarView(
               controller: tabController,
               children: <Widget>[
-                Text(
-                  service.description,
-                  style: TextStyle(
-                    color: Colors.black,
-                  ),
+                ListView(
+                  children: [
+                    Text(
+                      service.description,
+                      style: TextStyle(
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
                 ),
-                Text(
-                  "Coming soon!",
-                  style: TextStyle(
-                    color: Colors.black,
-                  ),
-                )
+                ListView(
+                  children: [
+                    Text(
+                      "Coming Soon !",
+                      style: TextStyle(
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),

@@ -31,6 +31,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
   // edit button on the product if user is owner
   bool isOwner = false;
   UserBloc userBloc;
+  double top;
 
   //for refresh controller
   final GlobalKey<ScaffoldState> _productScaffoldKey =
@@ -139,40 +140,76 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
           headerSliverBuilder: (context, i) {
             return [
               SliverAppBar(
-                backgroundColor: darkBlue(),
-                pinned: true,
-                expandedHeight: 220.0,
-                actions: <Widget>[
-                  IconButton(
-                    icon: Icon(
-                      Icons.call,
-                      color: Colors.white,
+                  backgroundColor: darkBlue(),
+                  pinned: true,
+                  expandedHeight: 220.0,
+                  actions: <Widget>[
+                    IconButton(
+                      icon: Icon(
+                        Icons.call,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {},
                     ),
-                    onPressed: () {},
-                  ),
-                  IconButton(
-                    icon: Icon(
-                      Icons.message,
-                      color: Colors.white,
+                    IconButton(
+                      icon: Icon(
+                        Icons.message,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {},
                     ),
-                    onPressed: () {},
+                  ],
+//                bottom: tabBar(),
+                  title: Text(searchedUser.userName),
+                  titleSpacing: 0,
+                  flexibleSpace: FlexibleSpaceBar(
+                      centerTitle: true,
+                      title: Text(searchedUser.fullName,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20.0,
+                          )),
+                      background: Image.network(
+                        searchedUser.avatar,
+                        fit: BoxFit.cover,
+                      ))),
+              SliverPersistentHeader(
+                delegate: _SliverAppBarDelegate(
+                  TabBar(
+                    onTap: (index) {
+                      setState(() {
+                        currentIndex = index;
+                      });
+                    },
+                    indicatorColor: Colors.white,
+                    controller: _tabController,
+                    tabs: [
+                      Material(
+                          color: darkBlue(),
+                          child: Container(
+                              child: Center(
+                                  child: Text(
+                            "Productes",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )))),
+                      Material(
+                          color: darkBlue(),
+                          child: Container(
+                              child: Center(
+                                  child: Text(
+                            "Services",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )))),
+                    ],
                   ),
-                ],
-                bottom: tabBar(),
-                title: Text(searchedUser.userName),
-                titleSpacing: 0,
-                flexibleSpace: FlexibleSpaceBar(
-                    titlePadding: EdgeInsets.only(bottom: 37),
-                    centerTitle: true,
-                    title: Text(searchedUser.fullName,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20.0,
-                        )),
-                    background: Image.network(
-                      searchedUser.avatar,
-                      fit: BoxFit.cover,
-                    )),
+                ),
+                pinned: false,
               ),
             ];
           },
@@ -264,7 +301,8 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
           )
         : StaggeredGridView.countBuilder(
             controller: _productScrollController,
-            crossAxisCount: 4,
+            crossAxisCount: 2,
+            shrinkWrap: true,
             itemCount: productList.length + 1,
             itemBuilder: (BuildContext context, int index) {
               if (index == productList.length) {
@@ -272,10 +310,10 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
               } else {
                 return Card(
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(0),
                     ),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10.0),
+                      borderRadius: BorderRadius.circular(0),
                       child: Column(
                         children: <Widget>[
                           Expanded(
@@ -319,47 +357,62 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                                   : Container()
                             ]),
                           ),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 4.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Text(
-                                      productList[index].name.length > 11
-                                          ? productList[index]
-                                              .name
-                                              .substring(0, 11)
-                                          : productList[index].name,
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    Text(
-                                      productList[index].name.length > 11
-                                          ? productList[index]
-                                              .name
-                                              .substring(0, 11)
-                                          : productList[index].name,
-                                      style: TextStyle(color: Colors.grey),
-                                    ),
-                                  ],
-                                ),
-                                Text(r"$" + "${productList[index].price}" + "")
-                              ],
+                          ListTile(
+                            dense: true,
+                            title: Text(
+                              productList[index].name.length > 11
+                                  ? productList[index].name.substring(0, 11)
+                                  : productList[index].name,
+                              style: TextStyle(fontWeight: FontWeight.bold),
                             ),
-                          )
+                            subtitle: Text(
+                              productList[index].name.length > 11
+                                  ? productList[index].name.substring(0, 11)
+                                  : productList[index].name,
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                            trailing:
+                                Text(r"$" + "${productList[index].price}" + ""),
+                          ),
+//                          Padding(
+//                            padding:
+//                                const EdgeInsets.symmetric(horizontal: 4.0),
+//                            child: Row(
+//                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                              children: <Widget>[
+//                                Column(
+//                                  crossAxisAlignment: CrossAxisAlignment.start,
+//                                  children: <Widget>[
+//                                    Text(
+//                                      productList[index].name.length > 11
+//                                          ? productList[index]
+//                                              .name
+//                                              .substring(0, 11)
+//                                          : productList[index].name,
+//                                      style: TextStyle(
+//                                          fontWeight: FontWeight.bold),
+//                                    ),
+//                                    Text(
+//                                      productList[index].name.length > 11
+//                                          ? productList[index]
+//                                              .name
+//                                              .substring(0, 11)
+//                                          : productList[index].name,
+//                                      style: TextStyle(color: Colors.grey),
+//                                    ),
+//                                  ],
+//                                ),
+//                                Text(r"$" + "${productList[index].price}" + "")
+//                              ],
+//                            ),
+//                          )
                         ],
                       ),
                     ));
               }
             },
             staggeredTileBuilder: (int index) =>
-                new StaggeredTile.count(2, index.isEven ? 2 : 1.5),
-            mainAxisSpacing: 2.0,
-            crossAxisSpacing: 2.0,
+                new StaggeredTile.count(2, 1.5),
           );
   }
 
@@ -563,5 +616,30 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
 
   String getDisplayImage(int index, List<Product> productList) {
     return productList[index].serverImages[0];
+  }
+}
+
+class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
+  _SliverAppBarDelegate(this._tabBar);
+
+  final TabBar _tabBar;
+
+  @override
+  double get minExtent => _tabBar.preferredSize.height;
+  @override
+  double get maxExtent => _tabBar.preferredSize.height;
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return new Container(
+      color: darkBlue(),
+      child: _tabBar,
+    );
+  }
+
+  @override
+  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
+    return false;
   }
 }

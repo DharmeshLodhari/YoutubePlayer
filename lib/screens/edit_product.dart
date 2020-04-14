@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/widget/delete_product_and_service_confirm_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:toast/toast.dart';
@@ -608,17 +609,38 @@ class _EditProductState extends State<EditProduct> {
 
   Widget getSubmitButton() {
     return ButtonTheme(
-      minWidth: double.infinity,
-      child: MaterialButton(
-          elevation: 4.0,
-          textColor: Colors.white,
-          color: darkBlue(),
-          height: 50,
-          child: Text("Update"),
-          onPressed: () async {
-            FocusScope.of(context).unfocus();
-            editProduct();
-          }),
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: MaterialButton(
+                elevation: 4.0,
+                textColor: Colors.white,
+                color: Colors.red,
+                height: 50,
+                child: Text("Delete"),
+                onPressed: () async {
+                  FocusScope.of(context).unfocus();
+                  deleteProduct();
+//                  editProduct();
+                }),
+          ),
+          SizedBox(
+            width: 8,
+          ),
+          Expanded(
+            child: MaterialButton(
+                elevation: 4.0,
+                textColor: Colors.white,
+                color: darkBlue(),
+                height: 50,
+                child: Text("Update"),
+                onPressed: () async {
+                  FocusScope.of(context).unfocus();
+                  editProduct();
+                }),
+          ),
+        ],
+      ),
     );
   }
 
@@ -734,5 +756,29 @@ class _EditProductState extends State<EditProduct> {
         ),
       ),
     );
+  }
+
+  void deleteProduct() async {
+    bool result = await showDialog(
+      context: context,
+      builder: (context) => ConfirmDelete(),
+    );
+    if (result) {
+      _auth.deleteProduct(currentProduct.id).then((value) {
+        Navigator.pop(context);
+        Toast.show(
+          "Product deleted Successfully !! ",
+          context,
+          backgroundColor: darkBlue(),
+          textColor: Colors.white,
+          duration: 3,
+        );
+      }).catchError((error) {
+        Toast.show(error.toString(), context,
+            backgroundColor: darkBlue(),
+            textColor: Colors.white,
+            duration: Toast.LENGTH_LONG);
+      });
+    }
   }
 }

@@ -398,11 +398,15 @@ class _AddServiceState extends State<AddService> {
           service.availableFrom = serviceAvailableFrom;
           service.isAvailable = serviceIsAvailable;
 
-          //TODO : call addService API
           _auth.addService(service).then((value) {
-            Toast.show("Service Added Successfully", context,
-                textColor: Colors.white, backgroundColor: darkBlue());
             Navigator.pop(context);
+            Toast.show(
+              "Service Added Successfully",
+              context,
+              textColor: Colors.white,
+              backgroundColor: darkBlue(),
+              duration: 3,
+            );
           }).catchError((error) {
             Toast.show(error.toString(), context,
                 textColor: Colors.white,

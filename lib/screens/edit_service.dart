@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/widget/delete_product_and_service_confirm_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:toast/toast.dart';
@@ -523,16 +524,37 @@ class _EditServiceState extends State<EditService> {
   Widget getSubmitButton() {
     return ButtonTheme(
       minWidth: double.infinity,
-      child: MaterialButton(
-          elevation: 4.0,
-          textColor: Colors.white,
-          color: darkBlue(),
-          height: 50,
-          child: Text("Update"),
-          onPressed: () async {
-            FocusScope.of(context).unfocus();
-            editProduct();
-          }),
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: MaterialButton(
+                elevation: 4.0,
+                textColor: Colors.white,
+                color: darkBlue(),
+                height: 50,
+                child: Text("Delete"),
+                onPressed: () async {
+                  FocusScope.of(context).unfocus();
+                  deleteProduct();
+                }),
+          ),
+          SizedBox(
+            width: 8,
+          ),
+          Expanded(
+            child: MaterialButton(
+                elevation: 4.0,
+                textColor: Colors.white,
+                color: darkBlue(),
+                height: 50,
+                child: Text("Update"),
+                onPressed: () async {
+                  FocusScope.of(context).unfocus();
+                  editProduct();
+                }),
+          ),
+        ],
+      ),
     );
   }
 
@@ -646,5 +668,29 @@ class _EditServiceState extends State<EditService> {
         ),
       ),
     );
+  }
+
+  void deleteProduct() async {
+    bool result = await showDialog(
+      context: context,
+      builder: (context) => ConfirmDelete(),
+    );
+    if (result) {
+      _auth.deleteService(currentService.id).then((value) {
+        Navigator.pop(context);
+        Toast.show(
+          "Service deleted Successfully !! ",
+          context,
+          backgroundColor: darkBlue(),
+          textColor: Colors.white,
+          duration: 3,
+        );
+      }).catchError((error) {
+        Toast.show(error.toString(), context,
+            backgroundColor: darkBlue(),
+            textColor: Colors.white,
+            duration: Toast.LENGTH_LONG);
+      });
+    }
   }
 }

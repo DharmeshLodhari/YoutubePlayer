@@ -6,7 +6,6 @@ import 'package:Slydo/services/auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 import 'package:toast/toast.dart';
 
 import 'colors.dart';
@@ -441,11 +440,15 @@ class _AddProductState extends State<AddProduct> {
           product.manufacturer = productManufacturer;
           product.availableFrom = productAvailableFrom;
 
-          //TODO : call addProduct API
           _auth.addProduct(product).then((value) {
-            Toast.show("Product Added Successfully", context,
-                textColor: Colors.white, backgroundColor: darkBlue());
             Navigator.pop(context);
+            Toast.show(
+              "Product Added Successfully",
+              context,
+              textColor: Colors.white,
+              backgroundColor: darkBlue(),
+              duration: 3,
+            );
           }).catchError((error) {
             debugPrint(error.toString());
             Toast.show(error.toString(), context,
