@@ -112,6 +112,10 @@ class _SettingsListState extends State<SettingsList> {
                   userBloc.user.userName == "abiola.rasheed.2"
                       ? SizedBox(height: 10)
                       : Container(),
+                  serviceTile(),
+                  SizedBox(height: 10),
+                  productTile(),
+                  SizedBox(height: 10),
                   slydoBankAccountTile(),
                   SizedBox(height: 20),
                 ],
@@ -277,6 +281,48 @@ class _SettingsListState extends State<SettingsList> {
         accountBalance = spendableBalance.toString();
       });
     });
+  }
+
+  Widget serviceTile() {
+    return Card(
+      margin: EdgeInsets.fromLTRB(40.0, 0.0, 40.0, 0.0),
+      child: ListTile(
+        title: Text(
+          "Add Servics",
+          style: TextStyle(
+              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+        ),
+        leading: Icon(
+          Icons.settings,
+          color: Colors.black,
+          size: 45,
+        ),
+        onTap: () {
+          Navigator.pushNamed(context, '/add-service');
+        },
+      ),
+    );
+  }
+
+  Widget productTile() {
+    return Card(
+      margin: EdgeInsets.fromLTRB(40.0, 0.0, 40.0, 0.0),
+      child: ListTile(
+        title: Text(
+          "Add Product",
+          style: TextStyle(
+              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+        ),
+        leading: Icon(
+          Icons.shopping_basket,
+          color: Colors.black,
+          size: 45,
+        ),
+        onTap: () {
+          Navigator.pushNamed(context, '/add-product');
+        },
+      ),
+    );
   }
 
   Widget slydoBankAccountTile() {

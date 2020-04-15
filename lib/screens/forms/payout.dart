@@ -201,7 +201,7 @@ class _PayoutState extends State<Payout> {
                 try {
                   var data = {
                     "amount": amount,
-                    "currency": r"$",
+                    "currency": userBloc.user.currency,
                   };
                   PasscodePopup(
                       context: context,

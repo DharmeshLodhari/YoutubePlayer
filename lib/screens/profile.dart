@@ -1,3 +1,4 @@
+import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/models/user.dart';
@@ -371,8 +372,10 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                                   : productList[index].name,
                               style: TextStyle(color: Colors.grey),
                             ),
-                            trailing:
-                                Text(r"$" + "${productList[index].price}" + ""),
+                            trailing: Text(
+                                worldCurrencies[productList[index].currency] +
+                                    "${productList[index].price}" +
+                                    ""),
                           ),
                         ],
                       ),

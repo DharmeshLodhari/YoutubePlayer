@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:Slydo/screens/colors.dart';
@@ -484,7 +485,9 @@ class _SearchAllState extends State<SearchAll> {
                         : object['short_description'],
                     style: TextStyle(color: Colors.grey),
                   ),
-                  trailing: Text(r"$" + "${object['price']}" + ""),
+                  trailing: Text(worldCurrencies[object["currency"]] +
+                      "${object['price']}" +
+                      ""),
                 ),
               ],
             ),
