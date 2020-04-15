@@ -107,6 +107,10 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     searchedUser = arguments['searchedUser'];
+    debugPrint(searchedUser.fullName);
+    debugPrint(searchedUser.userName);
+    debugPrint(searchedUser.qrCode);
+    debugPrint(searchedUser.avatar);
 
     this.getProductList();
     _productScrollController.addListener(() {
@@ -157,7 +161,13 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                         Icons.message,
                         color: Colors.white,
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.of(context)
+                            .pushNamed('/compose_message', arguments: {
+                          'recipient': searchedUser.userName,
+                          'subject': "",
+                        });
+                      },
                     ),
                   ],
 //                bottom: tabBar(),

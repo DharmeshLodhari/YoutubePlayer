@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/services/auth.dart';
@@ -194,10 +195,6 @@ class _AddServiceState extends State<AddService> {
       decoration: InputDecoration(
           fillColor: Colors.white,
           filled: true,
-          prefixIcon: Icon(
-            Icons.card_travel,
-            color: darkBlue(),
-          ),
           hintText: "Enter service name",
           labelStyle: TextStyle(
             color: Colors.black,
@@ -304,17 +301,9 @@ class _AddServiceState extends State<AddService> {
           items: serviceCategories.map((ServiceCatagory category) {
             return DropdownMenuItem<ServiceCatagory>(
               value: category,
-              child: Row(
-                children: <Widget>[
-                  category.icon,
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Text(
-                    category.name,
-                    style: TextStyle(color: Colors.black),
-                  ),
-                ],
+              child: Text(
+                category.name,
+                style: TextStyle(color: Colors.black),
               ),
             );
           }).toList(),
@@ -330,9 +319,19 @@ class _AddServiceState extends State<AddService> {
       obscureText: false,
       keyboardType: TextInputType.number,
       decoration: InputDecoration(
-          prefixIcon: Icon(
-            Icons.attach_money,
-            color: darkBlue(),
+          prefix: Container(
+            margin: EdgeInsets.only(right: 10, left: 4),
+            width: 22,
+            child: Center(
+              child: Text(
+                worldCurrencies[userBloc.user.currency],
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey[600]),
+              ),
+            ),
           ),
           fillColor: Colors.white,
           filled: true,

@@ -1,8 +1,3 @@
-//TODO: allow user to type recevierName like we do in payment request
-//TODO: allow user to input body
-//TODO: allow user to click send button
-//TODO: inputs {recipient, subject, body, submitButton }
-
 import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
@@ -306,13 +301,14 @@ class _ComposeMessageState extends State<ComposeMessage> {
 
   Widget getSubjectField() {
     return TextFormField(
-      enabled: isReplayMessage ? false : true,
+      enabled: isReplayMessage && _subjectController.text != "" ? false : true,
       cursorColor: darkBlue(),
       controller: _subjectController,
       autofocus: false,
       obscureText: false,
       decoration: InputDecoration(
-        prefixText: isReplayMessage ? "Re:" : "",
+        prefixText:
+            isReplayMessage && _subjectController.text != "" ? "Re:" : "",
         prefixIcon: Icon(Icons.subject),
         fillColor: Colors.white,
         filled: true,

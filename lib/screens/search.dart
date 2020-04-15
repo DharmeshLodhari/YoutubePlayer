@@ -1,13 +1,17 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/models/auto_complete.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 final List<dynamic> services = [];
@@ -32,8 +36,15 @@ class _SearchAllState extends State<SearchAll> {
   SlidableController slidableController;
   List<Widget> results = [];
 
+  // this variables are for the autocomplete
+  bool loading = true;
+  List<SearchedUser> users = List<SearchedUser>();
+  AutoCompleteTextField searchedAutoCompleteTextField;
+  GlobalKey<AutoCompleteTextFieldState<SearchedUser>> autoTextFieldKey =
+      GlobalKey();
   @override
   void initState() {
+    getAutoCompleteUser();
     searchController = TextEditingController();
     searchFocus = FocusNode();
 
@@ -57,8 +68,8 @@ class _SearchAllState extends State<SearchAll> {
       },
       child: Scaffold(
         key: _scaffoldSearchKey,
-        resizeToAvoidBottomInset: true,
         backgroundColor: lightBlue(),
+        resizeToAvoidBottomInset: true,
         appBar: AppBar(
           automaticallyImplyLeading: Platform.isAndroid ? false : true,
           backgroundColor: darkBlue(),
@@ -79,11 +90,48 @@ class _SearchAllState extends State<SearchAll> {
             _threeItemPopup(),
           ],
         ),
-        body: Container(
-            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-            child: ListView(
-              children: results,
-            )),
+        body: Column(
+          children: <Widget>[
+            loading
+                ? CircularProgressIndicator(
+                    backgroundColor: Colors.white,
+                  )
+                : searchedAutoCompleteTextField =
+                    AutoCompleteTextField<SearchedUser>(
+                    key: autoTextFieldKey,
+                    suggestions: users,
+                    style: TextStyle(color: Colors.black, fontSize: 16),
+                    itemFilter: (item, query) {
+                      return item.name
+                          .toLowerCase()
+                          .startsWith(query.toLowerCase());
+                    },
+                    itemSorter: (a, b) {
+                      return a.name.compareTo(b.name);
+                    },
+                    itemSubmitted: (item) {},
+                    itemBuilder: (context, item) {
+                      return ListTile(
+                        title: Text(item.name),
+                        subtitle: Text(item.userName),
+                        onTap: () {
+                          setState(() {
+                            searchedAutoCompleteTextField
+                                .textField.controller.text = item.name;
+                          });
+                        },
+                      );
+                    },
+                  ),
+            Expanded(
+              child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  child: ListView(
+                    children: results,
+                  )),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -144,7 +192,7 @@ class _SearchAllState extends State<SearchAll> {
 
   Widget _threeItemPopup() => PopupMenuButton(
         padding: EdgeInsets.all(0),
-        captureInheritedThemes: true,
+        captureInheritedThemes: false,
         itemBuilder: (context) {
           var list = List<PopupMenuEntry<Object>>();
           list.add(
@@ -202,16 +250,20 @@ class _SearchAllState extends State<SearchAll> {
           return list;
         },
         onSelected: (Object object) {
-          setState(() {
-            searchController.text = "";
-            searchedText = "";
-            if (results.isNotEmpty) {
-              results = [];
-            }
-            if (object != 1) {
-              filterValue = object;
-            }
-          });
+          if (mounted) {
+            setState(() {
+              searchController.text = "";
+              searchedText = "";
+              if (results.isNotEmpty) {
+                results = [];
+              }
+              if (object != 1) {
+                filterValue = object;
+              }
+            });
+          } else {
+            debugPrint("Not Mounted");
+          }
         },
       );
 
@@ -276,19 +328,20 @@ class _SearchAllState extends State<SearchAll> {
           );
   }
 
-  Widget _getSlidableWithLists(BuildContext context, Widget searchCard) {
+  Widget _getSlidableWithLists(
+      BuildContext context, Widget searchCard, CustomerProfile user) {
     return Slidable(
       controller: slidableController,
       direction: Axis.horizontal,
       actionPane: SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
-      child: VerticalListItem(searchCard),
-      actions: listActionSlideActions(),
-      secondaryActions: listSecondaryActions(),
+      child: VerticalListItem(searchCard, user),
+      actions: listActionSlideActions(user),
+      secondaryActions: listSecondaryActions(user),
     );
   }
 
-  List<Widget> listSecondaryActions() {
+  List<Widget> listSecondaryActions(CustomerProfile user) {
     String caption = 'Send';
     return [
       IconSlideAction(
@@ -297,7 +350,7 @@ class _SearchAllState extends State<SearchAll> {
           icon: Icons.send,
           onTap: () async {
             customerProfileBloc.customer =
-                await _auth.fetchCustomerProfile(_payee.userName);
+                await _auth.fetchCustomerProfile(user.userName);
             Navigator.of(context).pushNamed('/send-payment',
                 arguments: <String, bool>{
                   'isFromProfile': false,
@@ -307,7 +360,7 @@ class _SearchAllState extends State<SearchAll> {
     ];
   }
 
-  List<Widget> listActionSlideActions() {
+  List<Widget> listActionSlideActions(CustomerProfile user) {
     return [
       IconSlideAction(
         caption: 'Request',
@@ -315,7 +368,7 @@ class _SearchAllState extends State<SearchAll> {
         icon: Icons.event_note,
         onTap: () async {
           customerProfileBloc.customer =
-              await _auth.fetchCustomerProfile(_payee.userName);
+              await _auth.fetchCustomerProfile(user.userName);
           Navigator.of(context).pushNamed('/request-payment',
               arguments: <String, bool>{
                 'isFromProfile': false,
@@ -373,46 +426,42 @@ class _SearchAllState extends State<SearchAll> {
   }
 
   Widget getUserTile(var object) {
-    _payee = CustomerProfile(
+    var user = CustomerProfile(
       avatar: object["avatar"],
       fullName: object["full_name"],
       qrCode: object["qr_code"],
       userName: object["username"],
     );
 
-    var avatarImage;
-    var qrCodeImage;
-    if (_payee != null) {
-      avatarImage = CachedNetworkImage(
-        imageUrl: object["avatar"],
-        colorBlendMode: BlendMode.darken,
-        fit: BoxFit.fitWidth,
-        filterQuality: FilterQuality.high,
-      );
-      qrCodeImage = CachedNetworkImage(
-        imageUrl: object["qr_code"],
-        colorBlendMode: BlendMode.darken,
-        fit: BoxFit.fitWidth,
-        filterQuality: FilterQuality.high,
-      );
-    }
+    var avatarImage = CachedNetworkImage(
+      imageUrl: user.avatar,
+      colorBlendMode: BlendMode.darken,
+      fit: BoxFit.fitWidth,
+      filterQuality: FilterQuality.high,
+    );
+    var qrCodeImage = CachedNetworkImage(
+      imageUrl: user.qrCode,
+      colorBlendMode: BlendMode.darken,
+      fit: BoxFit.fitWidth,
+      filterQuality: FilterQuality.high,
+    );
 
     Widget tile = Card(
       semanticContainer: true,
       child: ListTile(
         dense: true,
         title: Text(
-          _payee.fullName,
+          user.fullName,
           style: TextStyle(
               color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
         ),
-        subtitle: Text(_payee.userName),
+        subtitle: Text(user.userName),
         leading: avatarImage,
         trailing: qrCodeImage,
       ),
     );
 
-    return _getSlidableWithLists(context, tile);
+    return _getSlidableWithLists(context, tile, user);
   }
 
   Widget getProductTile(var object) {
@@ -557,18 +606,45 @@ class _SearchAllState extends State<SearchAll> {
       ),
     );
   }
+
+  void getAutoCompleteUser() async {
+    try {
+      final response =
+          await http.get("https://jsonplaceholder.typicode.com/users");
+      if (response.statusCode == 200) {
+        users = loadUsers(response.body);
+        debugPrint("length of the user : " + users.length.toString());
+        setState(() {
+          loading = false;
+        });
+      } else {
+        debugPrint("error in getting user.");
+      }
+    } catch (error) {
+      debugPrint(error.toString());
+    }
+  }
+
+  static List<SearchedUser> loadUsers(String jsonString) {
+    final parsed = json.decode(jsonString).cast<Map<String, dynamic>>();
+    return parsed
+        .map<SearchedUser>((json) => SearchedUser.fromJson(json))
+        .toList();
+  }
 }
 
+// ignore: must_be_immutable
 class VerticalListItem extends StatelessWidget {
-  VerticalListItem(this.child);
+  VerticalListItem(this.child, this.user);
   final Widget child;
+  CustomerProfile user;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         Navigator.pushNamed(context, '/profile',
-            arguments: {"searchedUser": _payee});
+            arguments: {"searchedUser": user});
       },
       child: Container(
         color: lightBlue(),
