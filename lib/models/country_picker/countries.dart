@@ -1,5 +1,7 @@
 import 'country.dart';
 
+// to add a new country please enable it by uncomment it
+
 final List<Country> countryList = [
   Country(
     isoCode: "IE",

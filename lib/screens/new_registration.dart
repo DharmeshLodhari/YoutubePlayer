@@ -216,9 +216,11 @@ class _RegistrationState extends State<Registration> {
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.fromLTRB(8.0, 8.0, 0, 0),
-            child: Text(
-              "Select Your Country",
-              style: TextStyle(color: darkBlue()),
+            child: Center(
+              child: Text(
+                "Select Your Country",
+                style: TextStyle(color: darkBlue()),
+              ),
             ),
           ),
           ListTile(
