@@ -1,16 +1,9 @@
-//TODO: first page select the country
-//TODO: Second page Enter the PhoneNumber and registration data
-//TODO: third page user can Upload with onfido
-//TODO: fourth page Registration Button
-//TODO: fifth page enter verification code
-//TODO: LOGGED the user in after registration
-
 import 'dart:io';
 
+import 'package:Slydo/models/country_picker/country.dart';
+import 'package:Slydo/models/country_picker/country_picker_dialog.dart';
+import 'package:Slydo/models/country_picker/utils.dart';
 import 'package:Slydo/services/auth.dart';
-import 'package:country_pickers/country.dart';
-import 'package:country_pickers/country_picker_dialog.dart';
-import 'package:country_pickers/utils/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -238,15 +231,17 @@ class _RegistrationState extends State<Registration> {
     );
   }
 
-  Widget _buildDialogItem(Country country) => Row(
-        children: <Widget>[
-          CountryPickerUtils.getDefaultFlagImage(country),
-          SizedBox(width: 8.0),
-          Text("+${country.phoneCode}"),
-          SizedBox(width: 8.0),
-          Flexible(child: Text(country.name))
-        ],
-      );
+  Widget _buildDialogItem(Country country) {
+    return Row(
+      children: <Widget>[
+        CountryPickerUtils.getDefaultFlagImage(country),
+        SizedBox(width: 8.0),
+        Text("+${country.phoneCode}"),
+        SizedBox(width: 8.0),
+        Flexible(child: Text(country.name))
+      ],
+    );
+  }
 
   void _openCountryPickerDialog() => showDialog(
         context: context,
@@ -261,11 +256,6 @@ class _RegistrationState extends State<Registration> {
             onValuePicked: (Country country) =>
                 setState(() => _selectedDialogCountry = country),
             itemBuilder: _buildDialogItem,
-            priorityList: [
-              CountryPickerUtils.getCountryByIsoCode('IE'),
-              CountryPickerUtils.getCountryByIsoCode('NG'),
-              CountryPickerUtils.getCountryByIsoCode('GB-ENG'),
-            ],
           ),
         ),
       );

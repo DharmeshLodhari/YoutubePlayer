@@ -893,7 +893,7 @@ class AuthService {
     product.availableFrom = DateTime.parse(item['available_from']);
     product.description = item['description'];
     product.shortDescription = item["short_description"];
-    product.category = item['category'];
+    product.category = item['category'].toString();
     product.condition = item['condition'];
     product.seller = item['seller'];
     product.price = item['price'].toString();

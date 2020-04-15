@@ -78,6 +78,7 @@ class _EditProductState extends State<EditProduct> {
         productImagesFromServer.addAll(currentProduct.serverImages);
         productName = currentProduct.name;
         productCategory = currentProduct.category;
+        debugPrint("product catagory : " + currentProduct.category);
         productCondition = currentProduct.condition;
         productPrice = currentProduct.price;
         productDescription = currentProduct.description;

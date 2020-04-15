@@ -252,7 +252,7 @@ List<ProductCategory> productCategories = <ProductCategory>[
         color: darkBlue(),
       )),
   ProductCategory(
-      'Women’s Fashion',
+      "Women’s Fashion",
       Icon(
         Icons.home,
         color: darkBlue(),

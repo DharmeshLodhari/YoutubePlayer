@@ -32,7 +32,6 @@ dependencies:
   connectivity:
   flutter_local_notifications: ^0.6.0
   uuid: ^2.0.4
-  country_pickers: ^1.2.0
   flutter_staggered_grid_view:
   intl: ^0.16.1
   autocomplete_textfield: ^1.7.3

@@ -1,7 +1,3 @@
-//TODO: first page take phone number and verify OTP and submit Button
-//TODO: Second Screen registration screen with disabled phone number take password and register Button
-//TODO: Third page add Document
-
 import 'dart:io';
 
 import 'package:Slydo/screens/colors.dart';

@@ -47,7 +47,7 @@ class _SearchAllState extends State<SearchAll> {
 
   //popupmenu variables
   PopupMenu menu;
-  GlobalKey btnKey = GlobalKey();
+  GlobalKey popupMenuBtnKey = GlobalKey();
 
   @override
   void initState() {
@@ -98,7 +98,7 @@ class _SearchAllState extends State<SearchAll> {
       onDismiss: onDismiss,
       maxColumn: 4,
     );
-    menu.show(widgetKey: btnKey);
+    menu.show(widgetKey: popupMenuBtnKey);
   }
 
   void stateChanged(bool isShow) {
@@ -150,9 +150,8 @@ class _SearchAllState extends State<SearchAll> {
               icon: const Icon(Icons.search),
               onPressed: searchResult,
             ),
-//            _threeItemPopup(),
             IconButton(
-              key: btnKey,
+              key: popupMenuBtnKey,
               icon: Icon(
                 Icons.more_vert,
                 color: Colors.white,
@@ -263,83 +262,6 @@ class _SearchAllState extends State<SearchAll> {
     );
 //    }
   }
-
-  Widget _threeItemPopup() => PopupMenuButton(
-        padding: EdgeInsets.all(0),
-        captureInheritedThemes: false,
-        itemBuilder: (context) {
-          var list = List<PopupMenuEntry<Object>>();
-          list.add(
-            PopupMenuItem(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text("Filter"),
-                  Icon(
-                    Icons.sort,
-                    color: Colors.black,
-                  )
-                ],
-              ),
-              value: 1,
-            ),
-          );
-          list.add(
-            PopupMenuDivider(
-              height: 10,
-            ),
-          );
-          list.add(
-            CheckedPopupMenuItem(
-              child: Text(
-                "Users",
-                style: TextStyle(color: Colors.black),
-              ),
-              value: "Users",
-              checked: filterValue == "Users" ? true : false,
-            ),
-          );
-          list.add(
-            CheckedPopupMenuItem(
-              child: Text(
-                "Products",
-                style: TextStyle(color: Colors.black),
-              ),
-              value: "Products",
-              checked: filterValue == "Products" ? true : false,
-            ),
-          );
-
-          list.add(
-            CheckedPopupMenuItem(
-              child: Text(
-                "Services",
-                style: TextStyle(color: Colors.black),
-              ),
-              value: "Services",
-              checked: filterValue == "Services" ? true : false,
-            ),
-          );
-
-          return list;
-        },
-        onSelected: (Object object) {
-          if (mounted) {
-            setState(() {
-              searchController.text = "";
-              searchedText = "";
-              if (results.isNotEmpty) {
-                results = [];
-              }
-              if (object != 1) {
-                filterValue = object;
-              }
-            });
-          } else {
-            debugPrint("Not Mounted");
-          }
-        },
-      );
 
   void searchResult() async {
     if (searchController.text.length >= 3) {
@@ -543,15 +465,16 @@ class _SearchAllState extends State<SearchAll> {
     product.name = object['name'];
     product.id = object['id'];
     product.shortDescription = object['short_description'];
+    product.description = "";
     product.condition = object['condition'];
     product.currency = object['currency'];
     product.price = object['price'].toString();
-//    product.availableFrom = object['available_from'];
+    product.availableFrom = DateTime.parse(object['available_from']);
     product.isAvailable = object['is_available'];
     product.qrCode = object['qr_code'];
     product.seller = object['seller'];
     product.manufacturer = object['manufacturer'];
-    product.serverImages = [object['cover']];
+    product.serverImages = [];
 
     bool isOwner = false;
     if (object['seller'] == userBloc.user.userName) {
@@ -592,11 +515,10 @@ class _SearchAllState extends State<SearchAll> {
                                 color: darkBlue(),
                               ),
                               onPressed: () {
-                                //TODO: Navigate to the CurrentProduct
                                 Navigator.of(context).pushNamed(
                                   '/edit-product',
                                   arguments: {
-                                    "product": product,
+                                    "productId": product.id,
                                   },
                                 );
                               },
@@ -645,8 +567,21 @@ class _SearchAllState extends State<SearchAll> {
   }
 
   Widget getServiceTile(var object) {
+    Service service = Service();
+    service.name = object['name'];
+    service.id = object['id'];
+    service.shortDescription = object['short_description'];
+    service.currency = object['currency'];
+    service.price = object['price'].toString();
+    service.isAvailable = object['is_available'];
+    service.qrCode = object['qr_code'];
+    service.provider = object['provider'];
+    service.serverImages = [];
+    service.currency = "NGN";
+    service.description = "";
+
     bool isOwner = false;
-    if (object['seller'] == userBloc.user.userName) {
+    if (object['provider'] == userBloc.user.userName) {
       isOwner = true;
     }
 
@@ -693,7 +628,7 @@ class _SearchAllState extends State<SearchAll> {
                   Navigator.of(context).pushNamed(
                     '/edit-service',
                     arguments: {
-                      "serviceId": "1",
+                      "serviceId": service.id,
                     },
                   );
                 },
@@ -701,7 +636,7 @@ class _SearchAllState extends State<SearchAll> {
             : null,
         onTap: () {
           Navigator.of(context)
-              .pushNamed('/service-detail', arguments: {"service": ""});
+              .pushNamed('/service-detail', arguments: {"service": service});
         },
       ),
     );
