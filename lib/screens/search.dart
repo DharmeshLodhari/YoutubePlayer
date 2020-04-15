@@ -520,24 +520,38 @@ class _SearchAllState extends State<SearchAll> {
                   ]),
                 ),
                 ListTile(
-                  contentPadding: EdgeInsets.symmetric(horizontal: 8),
-                  dense: true,
-                  title: Text(
-                    object['name'].length > 11
-                        ? object['name'].substring(0, 11)
-                        : object['name'],
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Text(
-                    object['short_description'].length > 11
-                        ? object['short_description'].substring(0, 11)
-                        : object['short_description'],
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                  trailing: Text(worldCurrencies[object["currency"]] +
-                      "${object['price']}" +
-                      ""),
-                ),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 8),
+                    dense: true,
+                    title: Text(
+                      object['name'].length > 30
+                          ? object['name'].substring(0, 30)
+                          : object['name'],
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
+                    subtitle: Text(
+                      object['short_description'].length > 30
+                          ? object['short_description'].substring(0, 30)
+                          : object['short_description'],
+                      style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500),
+                    ),
+                    trailing: RichText(
+                      text: TextSpan(children: [
+                        TextSpan(
+                            text: worldCurrencies[object["currency"]],
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18)),
+                        TextSpan(text: " "),
+                        TextSpan(
+                            text: object['price'].toString(),
+                            style: TextStyle(color: Colors.black))
+                      ]),
+                    )),
               ],
             ),
           )),

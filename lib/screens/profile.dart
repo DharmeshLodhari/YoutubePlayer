@@ -359,24 +359,41 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                             ]),
                           ),
                           ListTile(
-                            dense: true,
-                            title: Text(
-                              productList[index].name.length > 11
-                                  ? productList[index].name.substring(0, 11)
-                                  : productList[index].name,
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            subtitle: Text(
-                              productList[index].name.length > 11
-                                  ? productList[index].name.substring(0, 11)
-                                  : productList[index].name,
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                            trailing: Text(
-                                worldCurrencies[productList[index].currency] +
-                                    "${productList[index].price}" +
-                                    ""),
-                          ),
+                              dense: true,
+                              title: Text(
+                                productList[index].name.length > 35
+                                    ? productList[index].name.substring(0, 35)
+                                    : productList[index].name,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 15),
+                              ),
+                              subtitle: Text(
+                                productList[index].shortDescription.length > 35
+                                    ? productList[index]
+                                        .shortDescription
+                                        .substring(0, 35)
+                                    : productList[index].shortDescription,
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              trailing: RichText(
+                                text: TextSpan(children: [
+                                  TextSpan(
+                                      text: worldCurrencies[
+                                          productList[index].currency],
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18)),
+                                  TextSpan(text: " "),
+                                  TextSpan(
+                                      text: productList[index].price.toString(),
+                                      style: TextStyle(color: Colors.black))
+                                ]),
+                              )),
                         ],
                       ),
                     ));

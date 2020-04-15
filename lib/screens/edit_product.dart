@@ -562,9 +562,8 @@ class _EditProductState extends State<EditProduct> {
       controller: productPriceController,
       keyboardType: TextInputType.number,
       decoration: InputDecoration(
-          prefix: Container(
-            margin: EdgeInsets.only(right: 10, left: 4),
-            width: 22,
+          prefixIcon: Container(
+            width: 20,
             child: Center(
               child: Text(
                 worldCurrencies[userBloc.user.currency],
