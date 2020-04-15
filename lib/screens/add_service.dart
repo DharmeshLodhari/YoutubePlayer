@@ -6,6 +6,7 @@ import 'package:Slydo/models/store.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
 import 'colors.dart';
@@ -37,6 +38,7 @@ class _AddServiceState extends State<AddService> {
 
   @override
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
     return WillPopScope(
       onWillPop: () async {
         return true;

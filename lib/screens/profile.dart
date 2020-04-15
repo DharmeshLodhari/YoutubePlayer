@@ -292,16 +292,6 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
             onRefresh: _onProductRefresh,
             child: _buildProductList()),
       ),
-      floatingActionButton: isOwner
-          ? FloatingActionButton(
-              heroTag: "add-product",
-              backgroundColor: darkBlue(),
-              child: Icon(Icons.add),
-              onPressed: () {
-                Navigator.pushNamed(context, '/add-product');
-              },
-            )
-          : null,
     );
   }
 
@@ -460,16 +450,6 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
             onRefresh: _onServiceRefresh,
             child: _buildServiceList()),
       ),
-      floatingActionButton: isOwner
-          ? FloatingActionButton(
-              heroTag: "add-service",
-              backgroundColor: darkBlue(),
-              child: Icon(Icons.add),
-              onPressed: () {
-                Navigator.pushNamed(context, '/add-service');
-              },
-            )
-          : null,
     );
   }
 
