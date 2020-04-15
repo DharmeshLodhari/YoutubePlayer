@@ -1,11 +1,11 @@
-import 'package:Slydo/screens/add_document.dart';
-import 'package:Slydo/screens/add_product.dart';
-import 'package:Slydo/screens/add_service.dart';
+import 'package:Slydo/screens/forms/add_document.dart';
+import 'package:Slydo/screens/forms/add_product.dart';
+import 'package:Slydo/screens/forms/add_service.dart';
 import 'package:Slydo/screens/dashboard.dart';
-import 'package:Slydo/screens/edit_product.dart';
-import 'package:Slydo/screens/edit_service.dart';
+import 'package:Slydo/screens/forms/edit_product.dart';
+import 'package:Slydo/screens/forms/edit_service.dart';
 import 'package:Slydo/screens/explore.dart';
-import 'package:Slydo/screens/forgot_password.dart';
+import 'package:Slydo/screens/forms/forgot_password.dart';
 import 'package:Slydo/screens/forms/add_bank_account.dart';
 import 'package:Slydo/screens/forms/compose_message.dart';
 import 'package:Slydo/screens/forms/login.dart';
@@ -30,7 +30,7 @@ import 'detailed_message.dart';
 import 'forms/payout.dart';
 import 'home.dart';
 import 'index.dart';
-import 'new_registration.dart';
+import 'forms/registration.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {

@@ -4,105 +4,39 @@ import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/services/auth.dart';
-import 'package:Slydo/widget/delete_product_and_service_confirm_alert.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
-import 'colors.dart';
+import '../colors.dart';
 
-// ignore: must_be_immutable
-class EditService extends StatefulWidget {
-  var arguments;
-  EditService({this.arguments});
+class AddProduct extends StatefulWidget {
   @override
-  _EditServiceState createState() => _EditServiceState(arguments: arguments);
+  _AddProductState createState() => _AddProductState();
 }
 
-class _EditServiceState extends State<EditService> {
-  var arguments;
-  _EditServiceState({this.arguments});
+class _AddProductState extends State<AddProduct> {
   final _auth = AuthService();
-  UserBloc userBloc;
   final _formKey = GlobalKey<FormState>();
 
-  String serviceId;
-  Service currentService = Service();
+  UserBloc userBloc;
+  ProductCategory selectedProductCategory;
+  ProductCondition selectedProductCondition;
 
   int imageCount = 5;
   ScrollController _scrollController = ScrollController();
-  List<File> serviceLocalImages = List<File>();
-  List<String> serviceImagesFromServer = List<String>();
-  String serviceName = "";
-  String serviceDescription = "";
-  String serviceCategory = "";
-  String serviceShortDescription = "";
-  String servicePrice = "";
-  ServiceCatagory selectedServiceCategory;
-  bool serviceIsAvailable = false;
-  DateTime serviceAvailableFrom = DateTime.now();
-
-  //text editing controllers for the edit fields
-  TextEditingController serviceTitleController = TextEditingController();
-  TextEditingController serviceDescriptionController = TextEditingController();
-  TextEditingController serviceShortDescriptionController =
-      TextEditingController();
-  TextEditingController servicePriceController = TextEditingController();
-
-  @override
-  void initState() {
-    serviceId = arguments['serviceId'];
-    fetchProduct();
-    super.initState();
-  }
-
-  void fetchProduct() {
-    // assigning the dropdown
-    serviceCategories.forEach((catagory) {
-      if (catagory.name == currentService.category) {
-        selectedServiceCategory = catagory;
-      }
-    });
-
-    //fetchProductFrom id to edit
-    _auth.getService(serviceId).then((value) {
-      setState(() {
-        currentService = value;
-        // asssigning to our edit controllers
-
-        serviceTitleController.text = currentService.name;
-        serviceDescriptionController.text = currentService.description;
-        servicePriceController.text = currentService.price;
-        serviceShortDescriptionController.text =
-            currentService.shortDescription;
-
-        serviceImagesFromServer.addAll(currentService.serverImages);
-        serviceName = currentService.name;
-        serviceCategory = currentService.category;
-        servicePrice = currentService.price;
-        serviceDescription = currentService.description;
-        serviceIsAvailable = currentService.isAvailable;
-        serviceAvailableFrom = currentService.availableFrom;
-        serviceShortDescription = currentService.shortDescription;
-
-        // assigning the dropdown from currentProduct
-        serviceCategories.forEach((catagory) {
-          if (catagory.name == currentService.category) {
-            selectedServiceCategory = catagory;
-          }
-        });
-      });
-    }).catchError((error) {
-      Toast.show(
-        error.toString(),
-        context,
-        backgroundColor: darkBlue(),
-        textColor: Colors.white,
-        gravity: Toast.CENTER,
-      );
-    });
-  }
+  List<File> productImages = List<File>();
+  String productName = "";
+  String productDescription = "";
+  String productShortDescription = "";
+  String productCategory = "";
+  String productCondition = "";
+  String productPrice = "";
+  String productManufacturer = "";
+  bool productIsAvailable = false;
+  DateTime productAvailableFrom = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -117,7 +51,7 @@ class _EditServiceState extends State<EditService> {
         appBar: AppBar(
             leading: showBackArrow(),
             automaticallyImplyLeading: Platform.isAndroid ? false : true,
-            title: Center(child: Text("Edit Service")),
+            title: Center(child: Text("Add Product")),
             backgroundColor: darkBlue()),
         body: SingleChildScrollView(
           child: Container(
@@ -128,12 +62,7 @@ class _EditServiceState extends State<EditService> {
                 child: Column(
                   children: <Widget>[
                     SizedBox(height: 10),
-                    checkImageLimitForServerImage()
-                        ? viewServerImages()
-                        : Container(),
-                    checkImageLimitForLocalImage()
-                        ? addLocalImages()
-                        : Container(),
+                    addImages(),
                     SizedBox(
                       height: 10,
                     ),
@@ -141,17 +70,25 @@ class _EditServiceState extends State<EditService> {
                     SizedBox(
                       height: 10,
                     ),
+                    getManufacturerField(),
+                    SizedBox(
+                      height: 10,
+                    ),
                     getAmountField(),
                     SizedBox(height: 10),
                     getCategoryField(),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    getProductConditionField(),
                     SizedBox(height: 10),
                     getIsAvailableField(),
                     SizedBox(height: 10),
                     getAvailableFromField(),
                     SizedBox(height: 10),
-                    getServiceShortDescription(),
+                    getProductShortDescription(),
                     SizedBox(height: 10),
-                    getServiceDescription(),
+                    getProductDescription(),
                     SizedBox(height: 10),
                     getSubmitButton(),
                     SizedBox(height: 20),
@@ -163,7 +100,6 @@ class _EditServiceState extends State<EditService> {
         ),
       ),
     );
-    //
   }
 
   Widget showBackArrow() {
@@ -179,36 +115,19 @@ class _EditServiceState extends State<EditService> {
     }
   }
 
-  Widget addLocalImages() {
+  Widget addImages() {
     return Container(
       height: 100,
       color: lightBlue(),
       child: ListView.builder(
         controller: _scrollController,
         scrollDirection: Axis.horizontal,
-        itemCount: serviceLocalImages.length + 1,
+        itemCount: productImages.length + 1,
         itemBuilder: (context, index) => Container(
-          child: index != serviceLocalImages.length
-              ? showLocalImage(index)
-              : serviceLocalImages.length + serviceImagesFromServer.length !=
-                      imageCount
-                  ? addImageButton()
-                  : null,
+          child: index != productImages.length
+              ? showImage(index)
+              : productImages.length != imageCount ? addImageButton() : null,
         ),
-      ),
-    );
-  }
-
-  Widget viewServerImages() {
-    return Container(
-      height: 100,
-      color: lightBlue(),
-      child: ListView.builder(
-        controller: _scrollController,
-        scrollDirection: Axis.horizontal,
-        itemCount: serviceImagesFromServer.length,
-        itemBuilder: (context, index) =>
-            Container(child: showServerImage(index)),
       ),
     );
   }
@@ -232,7 +151,7 @@ class _EditServiceState extends State<EditService> {
         onTap: () {
           ImagePicker.pickImage(source: ImageSource.gallery).then((value) {
             setState(() {
-              serviceLocalImages.add(value);
+              productImages.add(value);
             });
           });
         },
@@ -240,7 +159,7 @@ class _EditServiceState extends State<EditService> {
     );
   }
 
-  Widget showLocalImage(int index) {
+  Widget showImage(int index) {
     return Stack(
       children: <Widget>[
         Container(
@@ -252,7 +171,7 @@ class _EditServiceState extends State<EditService> {
             borderRadius: BorderRadius.circular(5),
             image: DecorationImage(
                 image: FileImage(
-                  serviceLocalImages[index],
+                  productImages[index],
                 ),
                 fit: BoxFit.fill),
           ),
@@ -270,80 +189,13 @@ class _EditServiceState extends State<EditService> {
             ),
             onPressed: () {
               setState(() {
-                serviceLocalImages.removeAt(index);
+                productImages.removeAt(index);
               });
             },
           ),
         )
       ],
     );
-  }
-
-  Widget showServerImage(int index) {
-    return Stack(
-      children: <Widget>[
-        Container(
-          height: 80,
-          width: 80,
-          margin: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.transparent),
-            borderRadius: BorderRadius.circular(5),
-            image: DecorationImage(
-                image: NetworkImage(
-                  serviceImagesFromServer[index],
-                ),
-                fit: BoxFit.fill),
-          ),
-        ),
-        Positioned(
-          right: 0,
-          top: 0,
-          child: IconButton(
-            padding: EdgeInsets.only(right: 6, top: 8),
-            alignment: Alignment.topRight,
-            icon: Icon(
-              Icons.close,
-              color: Colors.white,
-              size: 20,
-            ),
-            onPressed: () {
-              var imageId =
-                  currentService.getImageId(serviceImagesFromServer[index]);
-              _auth.deleteProductOrServiceImage(imageId).then((value) {
-                if (value) {
-                  setState(() {
-                    serviceImagesFromServer.removeAt(index);
-                  });
-                }
-              }).catchError((error) {
-                debugPrint("ERROR" + error.toString());
-              });
-            },
-          ),
-        )
-      ],
-    );
-  }
-
-  // decide that serverImage List is need to be show or not
-  bool checkImageLimitForServerImage() {
-    if (serviceLocalImages.length + serviceImagesFromServer.length !=
-            imageCount ||
-        serviceImagesFromServer.length != 0) {
-      return true;
-    }
-    return false;
-  }
-
-  // decide that localImage List is need to be show or not
-  bool checkImageLimitForLocalImage() {
-    if (serviceLocalImages.length + serviceImagesFromServer.length !=
-            imageCount ||
-        serviceLocalImages.length != 0) {
-      return true;
-    }
-    return false;
   }
 
   Widget addTitleField() {
@@ -351,11 +203,10 @@ class _EditServiceState extends State<EditService> {
       cursorColor: darkBlue(),
       autofocus: false,
       obscureText: false,
-      controller: serviceTitleController,
       decoration: InputDecoration(
           fillColor: Colors.white,
           filled: true,
-          hintText: "Enter product name",
+          hintText: "Product name",
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -372,17 +223,16 @@ class _EditServiceState extends State<EditService> {
       },
       onTap: () async {},
       onChanged: (val) {
-        serviceName = val;
+        productName = val;
       },
     );
   }
 
-  Widget getServiceShortDescription() {
+  Widget getProductShortDescription() {
     return TextFormField(
       cursorColor: darkBlue(),
       autofocus: false,
       obscureText: false,
-      controller: serviceShortDescriptionController,
       decoration: InputDecoration(
           fillColor: Colors.white,
           filled: true,
@@ -399,28 +249,27 @@ class _EditServiceState extends State<EditService> {
         if (val.isNotEmpty) {
           return null;
         }
-        return "add Short description";
+        return "Short Description";
       },
       onTap: () async {},
       onChanged: (val) {
-        serviceShortDescription = val;
+        productShortDescription = val;
       },
     );
   }
 
-  Widget getServiceDescription() {
+  Widget getProductDescription() {
     return TextFormField(
       cursorColor: darkBlue(),
       autofocus: false,
       obscureText: false,
       maxLines: 5,
-      controller: serviceDescriptionController,
       textCapitalization: TextCapitalization.sentences,
       decoration: InputDecoration(
           isDense: true,
           fillColor: Colors.white,
           filled: true,
-          hintText: "Describe your service hear....",
+          hintText: "Description",
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -430,7 +279,7 @@ class _EditServiceState extends State<EditService> {
               borderSide: BorderSide(
                   width: 1, color: Colors.white, style: BorderStyle.solid))),
       onChanged: (val) {
-        serviceDescription = val;
+        productDescription = val;
       },
     );
   }
@@ -441,21 +290,21 @@ class _EditServiceState extends State<EditService> {
       child: Container(
         padding: EdgeInsets.all(8),
         width: double.infinity,
-        child: DropdownButton<ServiceCatagory>(
+        child: DropdownButton<ProductCategory>(
           isExpanded: true,
           underline: Divider(
             color: Colors.transparent,
           ),
-          hint: Text("Select Category"),
-          value: selectedServiceCategory,
-          onChanged: (ServiceCatagory value) {
+          hint: Text("Category"),
+          value: selectedProductCategory,
+          onChanged: (ProductCategory value) {
             setState(() {
-              selectedServiceCategory = value;
-              serviceCategory = selectedServiceCategory.name;
+              selectedProductCategory = value;
+              productCategory = selectedProductCategory.name;
             });
           },
-          items: serviceCategories.map((ServiceCatagory category) {
-            return DropdownMenuItem<ServiceCatagory>(
+          items: productCategories.map((ProductCategory category) {
+            return DropdownMenuItem<ProductCategory>(
               value: category,
               child: Text(
                 category.name,
@@ -468,12 +317,44 @@ class _EditServiceState extends State<EditService> {
     );
   }
 
+  Widget getProductConditionField() {
+    return Card(
+      margin: EdgeInsets.all(0),
+      child: Container(
+        padding: EdgeInsets.only(bottom: 16, right: 8, left: 8),
+        width: double.infinity,
+        child: DropdownButton<ProductCondition>(
+          underline: Divider(
+            color: Colors.transparent,
+          ),
+          isExpanded: true,
+          hint: Text("Product Condition"),
+          value: selectedProductCondition,
+          onChanged: (ProductCondition value) {
+            setState(() {
+              selectedProductCondition = value;
+              productCondition = selectedProductCondition.name;
+            });
+          },
+          items: conditions.map((ProductCondition productCondition) {
+            return DropdownMenuItem<ProductCondition>(
+                value: productCondition,
+                child: ListTile(
+                  dense: true,
+                  title: Text(productCondition.name),
+                  subtitle: Text(productCondition.description),
+                ));
+          }).toList(),
+        ),
+      ),
+    );
+  }
+
   Widget getAmountField() {
     return TextFormField(
       cursorColor: darkBlue(),
       autofocus: false,
       obscureText: false,
-      controller: servicePriceController,
       keyboardType: TextInputType.number,
       decoration: InputDecoration(
           prefixIcon: Container(
@@ -491,7 +372,7 @@ class _EditServiceState extends State<EditService> {
           ),
           fillColor: Colors.white,
           filled: true,
-          hintText: "Price of the product",
+          hintText: "Price",
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -503,7 +384,7 @@ class _EditServiceState extends State<EditService> {
       onChanged: (val) {
         if (val.isNotEmpty) {
           try {
-            servicePrice = double.parse(val).toString();
+            productPrice = double.parse(val).toString();
           } catch (e) {
             Toast.show(e, context);
           }
@@ -526,77 +407,62 @@ class _EditServiceState extends State<EditService> {
   Widget getSubmitButton() {
     return ButtonTheme(
       minWidth: double.infinity,
-      child: Row(
-        children: <Widget>[
-          Expanded(
-            child: MaterialButton(
-                elevation: 4.0,
-                textColor: Colors.white,
-                color: Colors.red,
-                height: 50,
-                child: Text("Delete"),
-                onPressed: () async {
-                  FocusScope.of(context).unfocus();
-                  deleteProduct();
-                }),
-          ),
-          SizedBox(
-            width: 8,
-          ),
-          Expanded(
-            child: MaterialButton(
-                elevation: 4.0,
-                textColor: Colors.white,
-                color: darkBlue(),
-                height: 50,
-                child: Text("Update"),
-                onPressed: () async {
-                  FocusScope.of(context).unfocus();
-                  editProduct();
-                }),
-          ),
-        ],
-      ),
+      child: MaterialButton(
+          elevation: 4.0,
+          textColor: Colors.white,
+          color: darkBlue(),
+          height: 50,
+          child: Text("Add"),
+          onPressed: () async {
+            FocusScope.of(context).unfocus();
+            addProduct();
+          }),
     );
   }
 
-  void editProduct() {
+  void addProduct() {
     if (_formKey.currentState.validate()) {
-      if (serviceLocalImages.length >= 0) {
+      if (productImages.length >= 1) {
         if (validateDropdown()) {
-          // setting updated value
-          currentService.name = serviceName;
-          currentService.description = serviceDescription;
-          currentService.localImages = serviceLocalImages;
-          currentService.serverImages = serviceImagesFromServer;
-          currentService.category = serviceCategory;
-          currentService.shortDescription = serviceShortDescription;
-          currentService.price = servicePrice;
-          currentService.isAvailable = serviceIsAvailable;
-          currentService.availableFrom = serviceAvailableFrom;
+          Product product = Product();
+          product.localImages = productImages;
+          product.name = productName;
+          product.description = productDescription;
+          product.shortDescription = productShortDescription;
+          product.category = productCategory;
+          product.condition = productCondition;
+          product.price = productPrice;
+          product.isAvailable = productIsAvailable;
+          product.manufacturer = productManufacturer;
+          product.availableFrom = productAvailableFrom;
 
-          //TODO : call editProduct API
-          _auth.editService(currentService).then((value) {
-            Toast.show("Service Edited Successfully", context,
-                textColor: Colors.white, backgroundColor: darkBlue());
+          _auth.addProduct(product).then((value) {
             Navigator.pop(context);
+            Toast.show(
+              "Product Added Successfully",
+              context,
+              textColor: Colors.white,
+              backgroundColor: darkBlue(),
+              duration: 3,
+            );
           }).catchError((error) {
+            debugPrint(error.toString());
             Toast.show(error.toString(), context,
                 textColor: Colors.white, backgroundColor: darkBlue());
           });
         }
       } else {
-        Toast.show("Please add Image of Service ", context,
+        Toast.show("Please add Image of Product ", context,
             textColor: Colors.white, backgroundColor: darkBlue());
       }
     }
   }
 
   bool validateDropdown() {
-    if (selectedServiceCategory != null) {
+    if (selectedProductCategory != null && selectedProductCondition != null) {
       return true;
     } else {
-      Toast.show("Please Select Service Catagory", context,
+      Toast.show("Please Select Product Catagory and Condition", context,
           backgroundColor: darkBlue(),
           textColor: Colors.white,
           gravity: Toast.CENTER);
@@ -604,16 +470,46 @@ class _EditServiceState extends State<EditService> {
     }
   }
 
+  Widget getManufacturerField() {
+    return TextFormField(
+      cursorColor: darkBlue(),
+      autofocus: false,
+      obscureText: false,
+      decoration: InputDecoration(
+          fillColor: Colors.white,
+          filled: true,
+          hintText: "Manufacturer",
+          labelStyle: TextStyle(
+            color: Colors.black,
+            fontSize: 16,
+          ),
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(4)),
+              borderSide: BorderSide(
+                  width: 1, color: Colors.white, style: BorderStyle.solid))),
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        return "Please Enter Manufacturer Name";
+      },
+      onTap: () async {},
+      onChanged: (val) {
+        productManufacturer = val;
+      },
+    );
+  }
+
   Widget getIsAvailableField() {
     return Row(
       children: <Widget>[
         Checkbox(
-          value: serviceIsAvailable,
+          value: productIsAvailable,
           activeColor: Colors.white,
           checkColor: darkBlue(),
           onChanged: (value) {
             setState(() {
-              serviceIsAvailable = value;
+              productIsAvailable = value;
             });
           },
         ),
@@ -639,7 +535,7 @@ class _EditServiceState extends State<EditService> {
           lastDate: DateTime(2101),
         ).then((value) {
           setState(() {
-            serviceAvailableFrom = DateTime(value.year, value.month, value.day);
+            productAvailableFrom = DateTime(value.year, value.month, value.day);
           });
         }).catchError((error) {});
       },
@@ -657,7 +553,7 @@ class _EditServiceState extends State<EditService> {
                     width: 10,
                   ),
                   Text(
-                    serviceAvailableFrom.toString().substring(0, 10),
+                    productAvailableFrom.toString().substring(0, 10),
                     style: TextStyle(
                       color: darkBlue(),
                       fontWeight: FontWeight.bold,
@@ -670,29 +566,5 @@ class _EditServiceState extends State<EditService> {
         ),
       ),
     );
-  }
-
-  void deleteProduct() async {
-    bool result = await showDialog(
-      context: context,
-      builder: (context) => ConfirmDelete(),
-    );
-    if (result) {
-      _auth.deleteService(currentService.id).then((value) {
-        Navigator.pop(context);
-        Toast.show(
-          "Service deleted Successfully !! ",
-          context,
-          backgroundColor: darkBlue(),
-          textColor: Colors.white,
-          duration: 3,
-        );
-      }).catchError((error) {
-        Toast.show(error.toString(), context,
-            backgroundColor: darkBlue(),
-            textColor: Colors.white,
-            duration: Toast.LENGTH_LONG);
-      });
-    }
   }
 }

@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 
-import 'colors.dart';
+import '../colors.dart';
 
 class ForgotPassword extends StatefulWidget {
   @override

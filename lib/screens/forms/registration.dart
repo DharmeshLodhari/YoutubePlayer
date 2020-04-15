@@ -7,7 +7,7 @@ import 'package:Slydo/services/auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'colors.dart';
+import '../colors.dart';
 
 class Registration extends StatefulWidget {
   @override
