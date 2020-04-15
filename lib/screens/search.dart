@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/models/auto_complete.dart';
+import 'package:Slydo/models/store.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
@@ -12,6 +13,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:http/http.dart' as http;
+import 'package:popup_menu/popup_menu.dart';
 import 'package:provider/provider.dart';
 
 final List<dynamic> services = [];
@@ -42,6 +44,11 @@ class _SearchAllState extends State<SearchAll> {
   AutoCompleteTextField searchedAutoCompleteTextField;
   GlobalKey<AutoCompleteTextFieldState<SearchedUser>> autoTextFieldKey =
       GlobalKey();
+
+  //popupmenu variables
+  PopupMenu menu;
+  GlobalKey btnKey = GlobalKey();
+
   @override
   void initState() {
     getAutoCompleteUser();
@@ -56,8 +63,64 @@ class _SearchAllState extends State<SearchAll> {
     super.initState();
   }
 
+  void popupmenu() {
+    menu = PopupMenu(
+      items: [
+        MenuItem(
+            textStyle: filterValue == 'Users'
+                ? TextStyle(color: lightBlue(), fontSize: 10)
+                : TextStyle(color: Colors.white, fontSize: 10),
+            title: 'Users',
+            image: Icon(
+              Icons.supervised_user_circle,
+              color: filterValue == 'Users' ? lightBlue() : Colors.white,
+            )),
+        MenuItem(
+            textStyle: filterValue == 'Products'
+                ? TextStyle(color: lightBlue(), fontSize: 10)
+                : TextStyle(color: Colors.white, fontSize: 10),
+            title: 'Products',
+            image: Icon(
+              Icons.computer,
+              color: filterValue == 'Products' ? lightBlue() : Colors.white,
+            )),
+        MenuItem(
+            textStyle: filterValue == 'Services'
+                ? TextStyle(color: lightBlue(), fontSize: 10)
+                : TextStyle(color: Colors.white, fontSize: 10),
+            title: 'Services',
+            image: Icon(
+              Icons.burst_mode,
+              color: filterValue == 'Services' ? lightBlue() : Colors.white,
+            )),
+      ],
+      onClickMenu: onClickMenu,
+      onDismiss: onDismiss,
+      maxColumn: 4,
+    );
+    menu.show(widgetKey: btnKey);
+  }
+
+  void stateChanged(bool isShow) {
+    debugPrint('menu is ${isShow ? 'showing' : 'closed'}');
+  }
+
+  void onClickMenu(MenuItemProvider item) {
+    setState(() {
+      searchController.text = "";
+      searchedText = "";
+      results.clear();
+      filterValue = item.menuTitle;
+    });
+  }
+
+  void onDismiss() {
+    debugPrint('Menu is dismiss');
+  }
+
   @override
   Widget build(BuildContext context) {
+    PopupMenu.context = context;
     GlobalKey<ScaffoldState> _scaffoldSearchKey = GlobalKey<ScaffoldState>();
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
@@ -87,7 +150,17 @@ class _SearchAllState extends State<SearchAll> {
               icon: const Icon(Icons.search),
               onPressed: searchResult,
             ),
-            _threeItemPopup(),
+//            _threeItemPopup(),
+            IconButton(
+              key: btnKey,
+              icon: Icon(
+                Icons.more_vert,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                popupmenu();
+              },
+            )
           ],
         ),
         body: Column(
@@ -118,6 +191,7 @@ class _SearchAllState extends State<SearchAll> {
                           setState(() {
                             searchedAutoCompleteTextField
                                 .textField.controller.text = item.name;
+                            FocusScope.of(context).unfocus();
                           });
                         },
                       );
@@ -465,7 +539,19 @@ class _SearchAllState extends State<SearchAll> {
   }
 
   Widget getProductTile(var object) {
-    // Product product = _auth.createProduct(object);
+    Product product = Product();
+    product.name = object['name'];
+    product.id = object['id'];
+    product.shortDescription = object['short_description'];
+    product.condition = object['condition'];
+    product.currency = object['currency'];
+    product.price = object['price'].toString();
+//    product.availableFrom = object['available_from'];
+    product.isAvailable = object['is_available'];
+    product.qrCode = object['qr_code'];
+    product.seller = object['seller'];
+    product.manufacturer = object['manufacturer'];
+    product.serverImages = [object['cover']];
 
     bool isOwner = false;
     if (object['seller'] == userBloc.user.userName) {
@@ -493,7 +579,7 @@ class _SearchAllState extends State<SearchAll> {
                       ),
                       onTap: () {
                         Navigator.pushNamed(context, '/product',
-                            arguments: {"product": ""});
+                            arguments: {"product": product});
                       },
                     ),
                     isOwner
@@ -510,7 +596,7 @@ class _SearchAllState extends State<SearchAll> {
                                 Navigator.of(context).pushNamed(
                                   '/edit-product',
                                   arguments: {
-                                    "productId": "1",
+                                    "product": product,
                                   },
                                 );
                               },

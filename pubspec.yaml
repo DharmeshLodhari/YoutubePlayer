@@ -36,6 +36,7 @@ dependencies:
   flutter_staggered_grid_view:
   intl: ^0.16.1
   autocomplete_textfield: ^1.7.3
+  popup_menu: ^1.0.5
 
 flutter_icons:
   android: "launcher_icon"
