@@ -147,7 +147,7 @@ class _EditProductState extends State<EditProduct> {
                     SizedBox(
                       height: 10,
                     ),
-                    getManufacuturerField(),
+                    getManufacturerField(),
                     SizedBox(
                       height: 10,
                     ),
@@ -427,10 +427,6 @@ class _EditProductState extends State<EditProduct> {
       decoration: InputDecoration(
           fillColor: Colors.white,
           filled: true,
-          prefixIcon: Icon(
-            Icons.card_travel,
-            color: darkBlue(),
-          ),
           hintText: "Short Description",
           labelStyle: TextStyle(
             color: Colors.black,
@@ -486,7 +482,7 @@ class _EditProductState extends State<EditProduct> {
     );
   }
 
-  Widget getManufacuturerField() {
+  Widget getManufacturerField() {
     return TextFormField(
       cursorColor: darkBlue(),
       autofocus: false,
@@ -495,10 +491,6 @@ class _EditProductState extends State<EditProduct> {
       decoration: InputDecoration(
           fillColor: Colors.white,
           filled: true,
-          prefixIcon: Icon(
-            Icons.business,
-            color: darkBlue(),
-          ),
           hintText: "Manufacturer",
           labelStyle: TextStyle(
             color: Colors.black,
