@@ -28,12 +28,11 @@ class _SearchAllState extends State<SearchAll> {
   bool isValidSearch = false;
   TextEditingController searchController;
   String searchedText = "";
-  FocusNode searchFocus = FocusNode();
+  FocusNode searchFocus;
   List<dynamic> searchedResult;
   CustomerProfileBloc customerProfileBloc;
   UserBloc userBloc;
-  static var filterValue = "Users";
-  String hint = "Find Users";
+  var filterValue = "Users";
 
   final _auth = AuthService();
   SlidableController slidableController;
@@ -54,6 +53,7 @@ class _SearchAllState extends State<SearchAll> {
   void initState() {
     getAutoCompleteUser();
     searchController = TextEditingController();
+    searchFocus = FocusNode();
 
     slidableController = SlidableController(
       onSlideAnimationChanged: handleSlideAnimationChanged,
@@ -111,7 +111,6 @@ class _SearchAllState extends State<SearchAll> {
       searchedText = "";
       results.clear();
       filterValue = item.menuTitle;
-      hint = "Find $filterValue";
     });
   }
 
@@ -137,27 +136,20 @@ class _SearchAllState extends State<SearchAll> {
         appBar: AppBar(
           automaticallyImplyLeading: Platform.isAndroid ? false : true,
           backgroundColor: darkBlue(),
-          leading: !Platform.isAndroid
-              ? IconButton(
-                  icon: Icon(
-                    Icons.sort,
-                    size: 30,
-                  ),
-                  onPressed: () {
-                    if (searchFocus.hasFocus) {
-                      FocusScope.of(context).unfocus();
-                    } else {
-                      FocusScope.of(context).requestFocus(searchFocus);
-                    }
-                  },
-                )
-              : null,
-          title: search(),
+          title: AnimatedSwitcher(
+            duration: Duration(milliseconds: 500),
+            transitionBuilder: (Widget child, Animation<double> animation) =>
+                ScaleTransition(
+              child: child,
+              scale: animation,
+            ),
+            child: search(),
+          ),
           actions: <Widget>[
-//            IconButton(
-//              icon: const Icon(Icons.search),
-//              onPressed: searchResult,
-//            ),
+            IconButton(
+              icon: const Icon(Icons.search),
+              onPressed: searchResult,
+            ),
             IconButton(
               key: popupMenuBtnKey,
               icon: Icon(
@@ -172,38 +164,38 @@ class _SearchAllState extends State<SearchAll> {
         ),
         body: Column(
           children: <Widget>[
-//            loading
-//                ? CircularProgressIndicator(
-//                    backgroundColor: Colors.white,
-//                  )
-//                : searchedAutoCompleteTextField =
-//                    AutoCompleteTextField<SearchedUser>(
-//                    key: autoTextFieldKey,
-//                    suggestions: users,
-//                    style: TextStyle(color: Colors.black, fontSize: 16),
-//                    itemFilter: (item, query) {
-//                      return item.name
-//                          .toLowerCase()
-//                          .startsWith(query.toLowerCase());
-//                    },
-//                    itemSorter: (a, b) {
-//                      return a.name.compareTo(b.name);
-//                    },
-//                    itemSubmitted: (item) {},
-//                    itemBuilder: (context, item) {
-//                      return ListTile(
-//                        title: Text(item.name),
-//                        subtitle: Text(item.userName),
-//                        onTap: () {
-//                          setState(() {
-//                            searchedAutoCompleteTextField
-//                                .textField.controller.text = item.name;
-//                            FocusScope.of(context).unfocus();
-//                          });
-//                        },
-//                      );
-//                    },
-//                  ),
+            loading
+                ? CircularProgressIndicator(
+                    backgroundColor: Colors.white,
+                  )
+                : searchedAutoCompleteTextField =
+                    AutoCompleteTextField<SearchedUser>(
+                    key: autoTextFieldKey,
+                    suggestions: users,
+                    style: TextStyle(color: Colors.black, fontSize: 16),
+                    itemFilter: (item, query) {
+                      return item.name
+                          .toLowerCase()
+                          .startsWith(query.toLowerCase());
+                    },
+                    itemSorter: (a, b) {
+                      return a.name.compareTo(b.name);
+                    },
+                    itemSubmitted: (item) {},
+                    itemBuilder: (context, item) {
+                      return ListTile(
+                        title: Text(item.name),
+                        subtitle: Text(item.userName),
+                        onTap: () {
+                          setState(() {
+                            searchedAutoCompleteTextField
+                                .textField.controller.text = item.name;
+                            FocusScope.of(context).unfocus();
+                          });
+                        },
+                      );
+                    },
+                  ),
             Expanded(
               child: Container(
                   padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
@@ -218,39 +210,42 @@ class _SearchAllState extends State<SearchAll> {
   }
 
   Widget search() {
-    return TextFormField(
-      textAlignVertical: TextAlignVertical.center,
-      style: TextStyle(fontSize: 15),
-      textInputAction: TextInputAction.search,
-      focusNode: searchFocus,
-      controller: searchController,
-      decoration: InputDecoration(
-        contentPadding: EdgeInsets.all(10),
-        hintText: hint,
-        isDense: true,
-        enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: Colors.white,
-            width: 1,
-          ),
-          borderRadius: BorderRadius.circular(6),
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        SizedBox(
+          width: 15,
         ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: darkBlue(),
-            width: 1,
+        Expanded(
+          child: Center(
+            child: TextFormField(
+              textAlignVertical: TextAlignVertical.center,
+              style: TextStyle(fontSize: 15),
+              textInputAction: TextInputAction.search,
+              focusNode: searchFocus,
+              controller: searchController,
+              decoration: InputDecoration(
+                contentPadding: EdgeInsets.all(10),
+                hintText: "Search here",
+                isDense: true,
+                fillColor: Colors.white,
+                filled: true,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(25),
+                ),
+              ),
+              onFieldSubmitted: (val) async {
+                searchResult();
+              },
+              onChanged: (value) {
+                searchedText = value;
+              },
+            ),
           ),
-          borderRadius: BorderRadius.circular(6),
         ),
-        fillColor: Colors.white,
-        filled: true,
-      ),
-      onFieldSubmitted: (val) async {
-        searchResult();
-      },
-      onChanged: (value) {
-        searchedText = value;
-      },
+      ],
     );
 //    }
   }
