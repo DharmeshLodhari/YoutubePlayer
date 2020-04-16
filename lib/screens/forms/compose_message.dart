@@ -34,6 +34,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
   UserBloc userBloc;
   CustomerProfileBloc customerProfileBloc;
   String subject = "";
+  bool subjectNeedReplayAtPrefix = true;
   String message = "";
   String errorMessage = "";
   String recipient;
@@ -53,6 +54,10 @@ class _ComposeMessageState extends State<ComposeMessage> {
       recipient = arguments['recipient'];
       _recipientController.text = recipient;
       subject = arguments['subject'];
+      if (subject == "") {
+        subjectNeedReplayAtPrefix = false;
+      }
+
       _subjectController.text = subject;
       fetchCustomer();
     }
@@ -301,14 +306,14 @@ class _ComposeMessageState extends State<ComposeMessage> {
 
   Widget getSubjectField() {
     return TextFormField(
-      enabled: isReplayMessage && _subjectController.text != "" ? false : true,
+      enabled: isReplayMessage && subjectNeedReplayAtPrefix ? false : true,
       cursorColor: darkBlue(),
       controller: _subjectController,
       autofocus: false,
       obscureText: false,
       decoration: InputDecoration(
         prefixText:
-            isReplayMessage && _subjectController.text != "" ? "Re:" : "",
+            isReplayMessage ? subjectNeedReplayAtPrefix ? "Re:" : "" : "",
         prefixIcon: Icon(Icons.subject),
         fillColor: Colors.white,
         filled: true,
