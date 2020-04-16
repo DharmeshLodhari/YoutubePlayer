@@ -75,7 +75,7 @@ class DatabaseHelper {
   Future<int> deleteUsers() async {
     var dbClient = await db;
     int res = await dbClient.delete("User");
-    debugPrint("User deleted");
+    debugPrint("User deleted from db");
     return res;
   }
 
@@ -91,28 +91,37 @@ class DatabaseHelper {
     // Get the user
     var dbClient = await db;
     var res = await dbClient.query("User");
-    List<User> users = [];
+//    List<User> users = [];
 
-    for (var obj in res) {
-      var u = User(
-        uuid: obj["uuid"],
-        url: obj["url"],
-        phoneNumber: obj["phoneNumber"],
-        fullName: obj["fullName"],
-        userName: obj["userName"],
-        avatar: obj["avatar"],
-        qrCode: obj["qrCode"],
-        password: obj["password"],
-        isVerified: obj["is_verified"],
-      );
-      users.add(u);
-    }
+    var obj = res.first;
+    var user = User(
+      uuid: obj["uuid"],
+      url: obj["url"],
+      phoneNumber: obj["phoneNumber"],
+      fullName: obj["fullName"],
+      userName: obj["userName"],
+      avatar: obj["avatar"],
+      qrCode: obj["qrCode"],
+      password: obj["password"],
+      isVerified: obj["is_verified"],
+    );
 
-    try {
-      return users[0];
-    } catch (e) {
-      return null;
-    }
+//    for (var obj in res) {
+//      var u = User(
+//        uuid: obj["uuid"],
+//        url: obj["url"],
+//        phoneNumber: obj["phoneNumber"],
+//        fullName: obj["fullName"],
+//        userName: obj["userName"],
+//        avatar: obj["avatar"],
+//        qrCode: obj["qrCode"],
+//        password: obj["password"],
+//        isVerified: obj["is_verified"],
+//      );
+//      users.add(u);
+//    }
+
+    return user;
   }
 
   // Jwt operations

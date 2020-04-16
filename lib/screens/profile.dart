@@ -448,6 +448,11 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
           duration: Duration(milliseconds: 500),
         ));
       }
+    } else {
+      setState(() {
+        isProductLoading = false;
+        getProductList();
+      });
     }
   }
 
@@ -531,6 +536,11 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
           duration: Duration(milliseconds: 500),
         ));
       }
+    } else {
+      setState(() {
+        isServiceLoading = false;
+        getServiceList();
+      });
     }
   }
 

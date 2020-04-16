@@ -266,6 +266,11 @@ class _MessageListState extends State<MessageList> {
           duration: Duration(milliseconds: 500),
         ));
       }
+    } else {
+      setState(() {
+        isLoading = false;
+        getList();
+      });
     }
   }
 

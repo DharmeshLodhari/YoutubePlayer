@@ -178,6 +178,11 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
           duration: Duration(milliseconds: 500),
         ));
       }
+    } else {
+      setState(() {
+        isLoading = false;
+        getList();
+      });
     }
   }
 

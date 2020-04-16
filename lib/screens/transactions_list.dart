@@ -169,6 +169,11 @@ class _TransactionListState extends State<TransactionList> {
           duration: Duration(milliseconds: 500),
         ));
       }
+    } else {
+      setState(() {
+        isLoading = false;
+        getList();
+      });
     }
   }
 }

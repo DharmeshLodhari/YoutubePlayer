@@ -21,7 +21,7 @@ class AuthService {
   DatabaseHelper _db = DatabaseHelper();
 
   // This function creates a user object from named args passed in
-  User createUser(
+  Future<User> createUser(
     String uuid,
     String url,
     String phoneNumber,
@@ -32,7 +32,7 @@ class AuthService {
     String password,
     String currency,
     bool isVerified,
-  ) {
+  ) async {
     // Create user instance
     User _user = User(
       uuid: uuid,
@@ -46,8 +46,7 @@ class AuthService {
       currency: currency,
       isVerified: isVerified,
     );
-
-    _db.saveUser(_user);
+    await _db.saveUser(_user);
     return _user;
   }
 
@@ -94,13 +93,13 @@ class AuthService {
           baseUrl + "/api/v1/user/customer/" + jsonData["username"];
 
       // Delete user from db if one exist
-      deleteUsers();
+      await deleteUsers();
 
       // Delete jwt from db if one exist
-      deleteJwt();
+      await deleteJwt();
 
       // Save user to database
-      User user = createUser(
+      User user = await createUser(
         jsonData["uuid"],
         jsonData["url"],
         jsonData["phone_number"],
@@ -113,7 +112,7 @@ class AuthService {
         jsonData["is_verified"] ?? false,
       );
 
-      _db.saveJwt(data);
+      await _db.saveJwt(data);
 
       return user;
     }
@@ -177,10 +176,10 @@ class AuthService {
     if (hasTokenExpired(expirationTime)) {
       debugPrint("Token Expired getting new one");
       User _user = await getUser();
-      authenticate(_user.phoneNumber, _user.password).then((value) async {
-        tokenData = await _db.getJwt(); // get new token now
-      });
+      User newUser = await authenticate(_user.phoneNumber, _user.password);
+      tokenData = await _db.getJwt(); // get new token now
     }
+
     String bearer = "Bearer " + tokenData["access"];
     var uuid = Uuid();
     var transactionId = uuid.v4();
@@ -299,7 +298,7 @@ class AuthService {
       if (response.statusCode == 200) {
         var jsonData = json.decode(responseBody);
 
-        User user = createUser(
+        User user = await createUser(
           jsonData["uuid"],
           jsonData["url"],
           jsonData["phone_number"],

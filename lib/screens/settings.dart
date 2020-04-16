@@ -1,7 +1,6 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/screens/colors.dart';
-import 'package:Slydo/screens/searchbar.dart';
 import 'package:Slydo/screens/tiles/bank_account.dart';
 import 'package:Slydo/screens/tiles/explore.dart';
 import 'package:Slydo/services/auth.dart';
@@ -119,13 +118,6 @@ class _SettingsListState extends State<SettingsList> {
                   SizedBox(height: 10),
                   slydoBankAccountTile(),
                   SizedBox(height: 20),
-                  IconButton(
-                    icon: Icon(Icons.search),
-                    onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => Home()));
-                    },
-                  )
                 ],
               ),
             ),

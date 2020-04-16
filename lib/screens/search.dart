@@ -307,6 +307,11 @@ class _SearchAllState extends State<SearchAll> {
           duration: Duration(milliseconds: 500),
         ));
       }
+    } else {
+      setState(() {
+        isLoading = false;
+        getList();
+      });
     }
   }
 
@@ -314,7 +319,6 @@ class _SearchAllState extends State<SearchAll> {
     switch (filterValue) {
       case "Users":
         return getUserTile(result);
-
         break;
       case "Products":
         return getProductTile(result);
@@ -354,7 +358,6 @@ class _SearchAllState extends State<SearchAll> {
         filled: true,
       ),
       onFieldSubmitted: (val) async {
-//        searchResult();
         count = 0;
         next = "";
         previous = "";
@@ -365,68 +368,6 @@ class _SearchAllState extends State<SearchAll> {
         searchedText = value;
       },
     );
-//    }
-  }
-
-  void searchResult() async {
-    if (searchController.text.length >= 3) {
-      setState(() {
-        if (results.isNotEmpty) {
-          results = [];
-        }
-      });
-      var url = getSearchUrl(searchedText);
-      var searchedResults = await _auth.searchEndpoint(url);
-
-      updateSearchResults(searchedResults);
-      FocusScope.of(context).unfocus();
-      setState(() {
-        isValidSearch = true;
-      });
-    }
-    if (searchController.text.length < 3) {
-      setState(() {
-        isValidSearch = false;
-      });
-    }
-  }
-
-  Widget getDisplayCard() {
-    var avatarImage;
-    var qrCodeImage;
-    if (_payee != null) {
-      avatarImage = CachedNetworkImage(
-        imageUrl: _payee.avatar,
-        colorBlendMode: BlendMode.darken,
-        fit: BoxFit.fitWidth,
-        filterQuality: FilterQuality.high,
-      );
-      qrCodeImage = CachedNetworkImage(
-        imageUrl: _payee.qrCode,
-        colorBlendMode: BlendMode.darken,
-        fit: BoxFit.fitWidth,
-        filterQuality: FilterQuality.high,
-      );
-    }
-
-    return _payee == null
-        ? Container()
-        : Card(
-            semanticContainer: true,
-            child: ListTile(
-              dense: true,
-              title: Text(
-                _payee.fullName,
-                style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15),
-              ),
-              subtitle: Text(_payee.userName),
-              leading: avatarImage,
-              trailing: qrCodeImage,
-            ),
-          );
   }
 
   Widget _getSlidableWithLists(
@@ -497,37 +438,7 @@ class _SearchAllState extends State<SearchAll> {
     }
   }
 
-  void updateSearchResults(List searchedResults) {
-    switch (filterValue) {
-      case "Users":
-        searchedResults.forEach((user) {
-          setState(() {
-            debugPrint("User : " + user.toString());
-            results.add(getUserTile(user));
-          });
-        });
-        break;
-      case "Products":
-        searchedResults.forEach((product) {
-          setState(() {
-            debugPrint("product : " + product.toString());
-            results.add(getProductTile(product));
-          });
-        });
-        break;
-      case "Services":
-        searchedResults.forEach((service) {
-          setState(() {
-            debugPrint("service : " + service.toString());
-            results.add(getServiceTile(service));
-          });
-        });
-        break;
-    }
-  }
-
   Widget getUserTile(var object) {
-    debugPrint(object.toString());
     var user = CustomerProfile(
       avatar: object["avatar"],
       fullName: object["full_name"],
