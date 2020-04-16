@@ -106,7 +106,9 @@ class _QRCodeViewState extends State<QRCodeView> {
     controller.scannedDataStream.listen((scanData) async {
       //if we get a text that belongs to us then we process it
       if (scanData != null) {
-        if (scanData.startsWith(baseUrl) || scanData.startsWith(localHostUrl)) {
+        if (scanData.startsWith(SecureBaseUrl) ||
+            scanData.startsWith(baseUrl) ||
+            scanData.startsWith(localHostUrl)) {
           var scanDataList = scanData.split('/');
           scanDataList.removeWhere((value) => value == "");
           var recipient = scanDataList.last;
