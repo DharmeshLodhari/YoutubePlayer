@@ -32,7 +32,7 @@ class _TransactionListState extends State<TransactionList> {
 
   @override
   void initState() {
-    this.getList();
+    getList();
 
     super.initState();
     _scrollController.addListener(() {

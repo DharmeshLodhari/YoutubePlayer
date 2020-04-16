@@ -69,12 +69,6 @@ class _SearchAllState extends State<SearchAll> {
       onSlideAnimationChanged: handleSlideAnimationChanged,
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
     );
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
-        getList();
-      }
-    });
 
     super.initState();
   }
@@ -125,11 +119,7 @@ class _SearchAllState extends State<SearchAll> {
     setState(() {
       searchController.text = "";
       searchedText = "";
-      count = 0;
-      next = "";
-      previous = "";
       results.clear();
-      noItemInList = false;
       filterValue = item.menuTitle;
       hint = "Find $filterValue";
     });
@@ -191,10 +181,8 @@ class _SearchAllState extends State<SearchAll> {
             )
           ],
         ),
-        body: Container(
-          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-          child: Column(
-            children: <Widget>[
+        body: Column(
+          children: <Widget>[
 //            loading
 //                ? CircularProgressIndicator(
 //                    backgroundColor: Colors.white,
@@ -227,18 +215,17 @@ class _SearchAllState extends State<SearchAll> {
 //                      );
 //                    },
 //                  ),
+            Expanded(
+              child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  child: ListView(
+                    children: results,
+                  )),
+            ),
 //            Expanded(
-//              child: Container(
-//                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-//                  child: ListView(
-//                    children: results,
-//                  )),
+//              child: _buildResultList(),
 //            ),
-              Expanded(
-                child: _buildResultList(),
-              ),
-            ],
-          ),
+          ],
         ),
       ),
     );
@@ -247,7 +234,7 @@ class _SearchAllState extends State<SearchAll> {
   Widget _buildResultList() {
     return noItemInList
         ? NoItemInList(
-            msg: "Sorry No $filterValue found",
+            msg: "Transaction history empty",
           )
         : ListView.builder(
             //+1 for progressbar
@@ -256,7 +243,7 @@ class _SearchAllState extends State<SearchAll> {
               if (index == results.length) {
                 return _buildIndicator();
               } else {
-                return results[index];
+                return getResultTile(results[index]);
               }
             },
             controller: _scrollController,
@@ -283,18 +270,15 @@ class _SearchAllState extends State<SearchAll> {
         setState(() {
           isLoading = true;
         });
-        Map<String, dynamic> result = await _auth.searchEndpointPagination(
-            getSearchUrl(searchedText), next, previous);
+        Map<String, dynamic> result =
+            await _auth.getTransactions(next, previous);
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        List tempList = result['results'];
-        debugPrint(tempList.toString());
+        var tempList = result['results'];
         setState(() {
           isLoading = false;
-          tempList.forEach((result) {
-            results.add(getResultTile(result));
-          });
+          results.addAll(tempList);
         });
       }
       if (results.isEmpty) {
@@ -354,12 +338,7 @@ class _SearchAllState extends State<SearchAll> {
         filled: true,
       ),
       onFieldSubmitted: (val) async {
-//        searchResult();
-        count = 0;
-        next = "";
-        previous = "";
-        results = [];
-        getList();
+        searchResult();
       },
       onChanged: (value) {
         searchedText = value;
@@ -527,7 +506,6 @@ class _SearchAllState extends State<SearchAll> {
   }
 
   Widget getUserTile(var object) {
-    debugPrint(object.toString());
     var user = CustomerProfile(
       avatar: object["avatar"],
       fullName: object["full_name"],
