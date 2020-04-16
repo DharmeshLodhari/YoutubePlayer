@@ -50,6 +50,11 @@ class AuthService {
     return _user;
   }
 
+  int getEpochTime(DateTime time) {
+    var ms = time.millisecondsSinceEpoch;
+    return (ms / 1000).round();
+  }
+
   // Log user in if credentials are correct
   Future<User> authenticate(String phoneNumber, String password) async {
     // This method will pass the user name and password to the backend server
@@ -62,43 +67,40 @@ class AuthService {
     var uuid = Uuid();
     var transactionId = uuid.v4();
     var headers = {
-//      "Content-type": "application/json",
       "TransactionId": transactionId,
       "DeviceType": Platform.isAndroid ? "Android" : "IOS",
       "User-Agent": "Slydo-Mobile",
     };
+    // Because the jwt expires every 5 minutes we will take note of the time they
+    // where  created and the use that to compute the expiration time of the
+    // token. So that we will only use the token if its still valid.
+    // We play safe and use 4 minutes
+    DateTime now = DateTime.now();
+    int expirationTime =
+        getEpochTime(now.add(Duration(seconds: 220))); // 3.66667 Minute
     Map _body = {"password": password, "phone_number": phoneNumber};
+
     var response = await http.post(url, body: _body, headers: headers);
     if (response.statusCode == 200) {
-      // Because the jwt expires every 5 minutes we will take note of the time they
-      // where  created and the use that to compute the expiration time of the
-      // token. So that we will only use the token if its still valid.
-      // We play safe and use 4 minutes
-      DateTime now = DateTime.now();
-      DateTime expirationTime = now.add(Duration(seconds: 240)); // 4 Minute
-
       Map<String, String> data = {};
       var jsonResponse = json.decode(response.body);
-      var jsonData = jsonResponse["user"];
-
-      // Get `access` and `refresh` Tokens from response
-      data["access"] = jsonResponse["access"];
+      data["access"] = jsonResponse[
+          "access"]; // Get `access` and `refresh` Tokens from response
       data["refresh"] = jsonResponse["refresh"];
-
-      // Convert DateTime object to string before passing it in.
-      data["expiration"] = expirationTime.toString();
-
-      jsonData["password"] = password;
-      jsonData["url"] =
-          baseUrl + "/api/v1/user/customer/" + jsonData["username"];
-
-      // Delete user from db if one exist
-      await deleteUsers();
+      data["expiration"] =
+          expirationTime.toString(); // Convert expirationTime int to string .
 
       // Delete jwt from db if one exist
       await deleteJwt();
+      await _db.saveJwt(data);
 
       // Save user to database
+      var jsonData = jsonResponse["user"];
+      jsonData["password"] = password;
+      jsonData["url"] =
+          baseUrl + "/api/v1/user/customer/" + jsonData["username"];
+      // Delete user from db if one exist
+      await deleteUsers();
       User user = await createUser(
         jsonData["uuid"],
         jsonData["url"],
@@ -111,8 +113,6 @@ class AuthService {
         jsonData["default_currency"],
         jsonData["is_verified"] ?? false,
       );
-
-      await _db.saveJwt(data);
 
       return user;
     }
@@ -156,11 +156,12 @@ class AuthService {
   }
 
   // Check if token has expired
-  bool hasTokenExpired(String expirationTime) {
+  bool hasTokenExpired(String expirationTimeString) {
     // Will return false if token is still valid and true if token is no longer useful
-    DateTime now = DateTime.now();
-    DateTime tokenExpirationTime = DateTime.parse(expirationTime);
-    return now.isAfter(tokenExpirationTime);
+
+    int expirationTime = int.parse(expirationTimeString);
+    int now = getEpochTime(DateTime.now());
+    return now >= expirationTime;
   }
 
   // Get jwt
@@ -176,7 +177,7 @@ class AuthService {
     if (hasTokenExpired(expirationTime)) {
       debugPrint("Token Expired getting new one");
       User _user = await getUser();
-      User newUser = await authenticate(_user.phoneNumber, _user.password);
+      await authenticate(_user.phoneNumber, _user.password);
       tokenData = await _db.getJwt(); // get new token now
     }
 
@@ -210,9 +211,8 @@ class AuthService {
       "User-Agent": "Slydo-Mobile",
     };
     var response = await http.get(url, headers: headers);
-
+    var jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
-      var jsonData = json.decode(response.body);
       CustomerProfile customerProfile = CustomerProfile(
         fullName: jsonData["full_name"],
         userName: jsonData["username"],
@@ -221,7 +221,7 @@ class AuthService {
       );
       return customerProfile;
     } else {
-      debugPrint("Can't get https.");
+      debugPrint(jsonData.toString());
       return null;
     }
   }
