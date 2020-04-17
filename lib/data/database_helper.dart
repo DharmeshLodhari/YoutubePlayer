@@ -105,22 +105,6 @@ class DatabaseHelper {
       password: obj["password"],
       isVerified: obj["is_verified"],
     );
-
-//    for (var obj in res) {
-//      var u = User(
-//        uuid: obj["uuid"],
-//        url: obj["url"],
-//        phoneNumber: obj["phoneNumber"],
-//        fullName: obj["fullName"],
-//        userName: obj["userName"],
-//        avatar: obj["avatar"],
-//        qrCode: obj["qrCode"],
-//        password: obj["password"],
-//        isVerified: obj["is_verified"],
-//      );
-//      users.add(u);
-//    }
-
     return user;
   }
 
@@ -190,7 +174,7 @@ class DatabaseHelper {
   Future<int> saveDevice(Map<String, dynamic> data) async {
     var dbClient = await db;
     try {
-      dbClient.delete("Device");
+      await dbClient.delete("Device");
     } catch (e) {}
     int res = await dbClient.insert("Device", data);
     return res;
