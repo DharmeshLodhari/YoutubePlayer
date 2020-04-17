@@ -9,6 +9,7 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
@@ -31,9 +32,32 @@ class _SettingsListState extends State<SettingsList> {
   String accountBalance = "";
   bool isLocked;
   var arguments;
+  PackageInfo _packageInfo = PackageInfo(
+  appName: 'Unknown',
+  packageName: 'Unknown',
+  version: 'Unknown',
+  buildNumber: 'Unknown',
+  );
   SlidableController slidableController;
 
   _SettingsListState({this.arguments});
+
+  Future<void> _initPackageInfo() async {
+    final PackageInfo info = await PackageInfo.fromPlatform();
+    setState(() {
+      _packageInfo = info;
+    });
+  }
+
+  Widget _infoTile() {
+    return Card(
+      margin: EdgeInsets.symmetric(horizontal: 40),
+      child: ListTile(
+        title: Text('App version: ' +  _packageInfo.version),
+        subtitle: Text('Build number: '+ _packageInfo.buildNumber),
+      ),
+    );
+  }
 
   @override
   void initState() {
@@ -49,6 +73,7 @@ class _SettingsListState extends State<SettingsList> {
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
     );
 
+    _initPackageInfo();
     super.initState();
   }
 
@@ -117,6 +142,8 @@ class _SettingsListState extends State<SettingsList> {
                   productTile(),
                   SizedBox(height: 10),
                   slydoBankAccountTile(),
+                  SizedBox(height: 10),
+                  _infoTile(),
                   SizedBox(height: 20),
                 ],
               ),
