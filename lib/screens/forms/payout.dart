@@ -186,9 +186,7 @@ class _PayoutState extends State<Payout> {
             child: Text("Submit"),
             onPressed: () async {
               //for closing the keypad if it is open
-              if (FocusScope.of(context).hasFocus) {
-                FocusScope.of(context).unfocus();
-              }
+              FocusScope.of(context).unfocus();
 
               if (_formKey.currentState.validate()) {
                 try {

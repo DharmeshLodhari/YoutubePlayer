@@ -10,10 +10,10 @@ class PayoutTile extends StatelessWidget {
   //TODO: amount, payout date time, status
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(top: 8.0),
-      child: Card(
-        margin: EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
+    return Card(
+      margin: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 1),
         child: ListTile(
             leading: ClipOval(
               child: CachedNetworkImage(
@@ -35,18 +35,7 @@ class PayoutTile extends StatelessWidget {
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
                     fontSize: 15)),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                Text(
-                  getTime(payout.timeStamp),
-                  style: TextStyle(
-                    color: Colors.grey[400],
-                  ),
-                ),
-              ],
-            ),
+            subtitle: getDateTime(),
             trailing: Text(
               worldCurrencies[payout.currency] + ' ' + payout.amount.toString(),
               style: TextStyle(
@@ -68,9 +57,21 @@ class PayoutTile extends StatelessWidget {
     }
   }
 
-  String getTime(String timeStamp) {
-    String date = timeStamp.substring(0, 10);
-    String time = timeStamp.substring(11, 16);
-    return date + " " + time;
+  Widget getDateTime() {
+    DateTime dateTime = DateTime.parse(payout.timeStamp);
+
+    return Row(
+      children: <Widget>[
+        Text(
+          "Date: ${dateTime.day}/${dateTime.month}/${dateTime.year}",
+          style: TextStyle(fontSize: 10, color: Colors.grey[600]),
+        ),
+        SizedBox(
+          width: 15,
+        ),
+        Text("Time: ${dateTime.hour}:${dateTime.minute}",
+            style: TextStyle(fontSize: 10, color: Colors.grey[600])),
+      ],
+    );
   }
 }

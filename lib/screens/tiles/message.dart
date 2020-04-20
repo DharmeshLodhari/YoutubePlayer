@@ -24,9 +24,9 @@ class _MessageTileState extends State<MessageTile> {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
     return Card(
-      margin: EdgeInsets.symmetric(vertical: 4.0, horizontal: 20),
+      margin: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 2),
+        padding: EdgeInsets.symmetric(vertical: 8),
         child: ListTile(
             leading: getLeading(),
             title: getTitle(),
@@ -70,57 +70,54 @@ class _MessageTileState extends State<MessageTile> {
     // we are showing and modifying star icon by message's isStarredByRecipient property and if it sender then
     // we are showing and modifying star icon by message's isStarredBySender property
     bool isRecipient = userBloc.user.userName == partialMessage.recipient;
-    return Column(
-      children: <Widget>[
-        Expanded(
-          child: Text(
-            partialMessage.timeStamp,
-            style: TextStyle(
-                color: Colors.grey, fontWeight: FontWeight.bold, fontSize: 15),
-          ),
-        ),
-        Expanded(
-            flex: 2,
-            child: IconButton(
-              icon: isRecipient
-                  ? partialMessage.isStarredByRecipient
-                      ? Icon(
-                          Icons.star,
-                          color: Colors.orangeAccent,
-                        )
-                      : Icon(Icons.star_border)
-                  : partialMessage.isStarredBySender
-                      ? Icon(
-                          Icons.star,
-                          color: Colors.orangeAccent,
-                        )
-                      : Icon(Icons.star_border),
-              onPressed: () async {
-                var action = isRecipient
-                    ? partialMessage.isStarredByRecipient ? "unstar" : "star"
-                    : partialMessage.isStarredBySender ? "unstar" : "star";
-                await _auth.updateMessage(partialMessage.id, action);
-                setState(() {
-                  if (isRecipient) {
-                    partialMessage.isStarredByRecipient =
-                        partialMessage.isStarredByRecipient ? false : true;
-                  } else {
-                    partialMessage.isStarredBySender =
-                        partialMessage.isStarredBySender ? false : true;
-                  }
-                });
-              },
-            )),
-      ],
+    return IconButton(
+      icon: isRecipient
+          ? partialMessage.isStarredByRecipient
+              ? Icon(
+                  Icons.star,
+                  color: Colors.orangeAccent,
+                )
+              : Icon(Icons.star_border)
+          : partialMessage.isStarredBySender
+              ? Icon(
+                  Icons.star,
+                  color: Colors.orangeAccent,
+                )
+              : Icon(Icons.star_border),
+      onPressed: () async {
+        var action = isRecipient
+            ? partialMessage.isStarredByRecipient ? "unstar" : "star"
+            : partialMessage.isStarredBySender ? "unstar" : "star";
+        await _auth.updateMessage(partialMessage.id, action);
+        setState(() {
+          if (isRecipient) {
+            partialMessage.isStarredByRecipient =
+                partialMessage.isStarredByRecipient ? false : true;
+          } else {
+            partialMessage.isStarredBySender =
+                partialMessage.isStarredBySender ? false : true;
+          }
+        });
+      },
     );
   }
 
   Widget getSubtitle() {
-    return Text(
-      partialMessage.subtitle,
-      style: TextStyle(
-        color: Colors.grey[600],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          partialMessage.subtitle,
+          style: TextStyle(
+            color: Colors.grey[600],
+          ),
+        ),
+        SizedBox(height: 2,),
+        Text(
+          partialMessage.timeStamp,
+          style: TextStyle(color: Colors.grey, fontSize: 10),
+        ),
+      ],
     );
   }
 }

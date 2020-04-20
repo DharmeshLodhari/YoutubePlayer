@@ -3,6 +3,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/services/device_info.dart';
 import 'package:Slydo/services/location_service.dart';
 import 'package:Slydo/widget/passcodePopup.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -333,8 +334,10 @@ class _SendPaymentState extends State<SendPayment> {
             if (isValidPayee && _formKey.currentState.validate()) {
               // Todo: Add a try block here and stop user from continuing if they deny location permission
               var userLocation;
+              Map deviceData;
               try {
                 userLocation = await locationService.getLocation();
+                deviceData = await getDeviceInfo();
                 var data = {
                   "from_customer": userBloc.user.userName,
                   "to_customer": recipient,
@@ -345,6 +348,7 @@ class _SendPaymentState extends State<SendPayment> {
                   "description": reference,
                   "latitude": userLocation.latitude,
                   "longitude": userLocation.longitude,
+                  "deviceData": deviceData
                 };
 
                 PasscodePopup(
