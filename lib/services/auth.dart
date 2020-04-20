@@ -180,6 +180,10 @@ class AuthService {
       await authenticate(_user.phoneNumber, _user.password);
       tokenData = await _db.getJwt(); // get new token now
     }
+//    final locationService = LocationService();
+//    var userLocation = await locationService.getLocation();
+//    debugPrint(userLocation.latitude.toString());
+//    debugPrint(userLocation.longitude.toString());
 
     String bearer = "Bearer " + tokenData["access"];
     var uuid = Uuid();

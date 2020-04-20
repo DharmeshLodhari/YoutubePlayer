@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/models/user.dart';
@@ -137,17 +135,13 @@ class _RequestPaymentState extends State<RequestPayment> {
   }
 
   Widget showBackArrow() {
-    if (Platform.isAndroid) {
-      return Text("");
-    } else {
-      return IconButton(
-        icon: Icon(Icons.arrow_back_ios),
-        onPressed: () {
-          _payee = null;
-          Navigator.pop(context);
-        },
-      );
-    }
+    return IconButton(
+      icon: Icon(Icons.arrow_back_ios),
+      onPressed: () {
+        _payee = null;
+        Navigator.pop(context);
+      },
+    );
   }
 
   Widget displayQRCodeButton() {

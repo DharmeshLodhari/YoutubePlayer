@@ -5,8 +5,6 @@
 //TODO: allow user to click send button
 //TODO: inputs {recipient, subject, body, submitButton }
 
-import 'dart:io';
-
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/models/message.dart';
 import 'package:Slydo/screens/colors.dart';
@@ -49,21 +47,12 @@ class _DetailedMessageState extends State<DetailedMessage> {
   }
 
   Widget showBackArrow() {
-    if (Platform.isAndroid) {
-      return IconButton(
-        icon: Icon(Icons.arrow_back_ios),
-        onPressed: () {
-          Navigator.pop(context);
-        },
-      );
-    } else {
-      return IconButton(
-        icon: Icon(Icons.arrow_back_ios),
-        onPressed: () {
-          Navigator.pop(context);
-        },
-      );
-    }
+    return IconButton(
+      icon: Icon(Icons.arrow_back_ios),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
   }
 
   @override

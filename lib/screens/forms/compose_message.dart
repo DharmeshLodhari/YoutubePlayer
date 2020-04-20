@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:Slydo/screens/colors.dart';
@@ -208,21 +206,12 @@ class _ComposeMessageState extends State<ComposeMessage> {
   }
 
   Widget showBackArrow() {
-    if (Platform.isAndroid) {
-      return IconButton(
-        icon: Icon(Icons.arrow_back_ios),
-        onPressed: () {
-          Navigator.pop(context);
-        },
-      );
-    } else {
-      return IconButton(
-        icon: Icon(Icons.arrow_back_ios),
-        onPressed: () {
-          Navigator.pop(context);
-        },
-      );
-    }
+    return IconButton(
+      icon: Icon(Icons.arrow_back_ios),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
   }
 
   Widget getDisplayCard() {

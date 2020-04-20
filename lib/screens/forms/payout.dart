@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/colors.dart';
@@ -82,16 +80,12 @@ class _PayoutState extends State<Payout> {
   }
 
   Widget showBackArrow() {
-    if (Platform.isAndroid) {
-      return Text("");
-    } else {
-      return IconButton(
-        icon: Icon(Icons.arrow_back_ios),
-        onPressed: () {
-          Navigator.pop(context);
-        },
-      );
-    }
+    return IconButton(
+      icon: Icon(Icons.arrow_back_ios),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
   }
 
   Widget getUserBankAccount() {

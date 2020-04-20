@@ -166,16 +166,12 @@ class _EditServiceState extends State<EditService> {
   }
 
   Widget showBackArrow() {
-    if (Platform.isAndroid) {
-      return Text("");
-    } else {
-      return IconButton(
-        icon: Icon(Icons.arrow_back_ios),
-        onPressed: () {
-          Navigator.pop(context);
-        },
-      );
-    }
+    return IconButton(
+      icon: Icon(Icons.arrow_back_ios),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
   }
 
   Widget addLocalImages() {
