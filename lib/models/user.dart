@@ -1,3 +1,5 @@
+import 'package:Slydo/models/store.dart';
+
 class User {
   String uuid;
   String url;
@@ -8,7 +10,10 @@ class User {
   String qrCode;
   String password;
   String currency;
+  String type;
   bool isVerified;
+  final Setting setting =
+      Setting(enableService: false, enableProduct: false, enableExplore: false);
 
   // Pass in as named parameter in constructor
   User({
@@ -21,6 +26,7 @@ class User {
     this.qrCode,
     this.password,
     this.currency = "€",
+    this.type = "user",
     this.isVerified = false,
   });
 
@@ -81,6 +87,7 @@ class CustomerProfile {
   String userName;
   String avatar;
   String qrCode;
+  String type;
 
   // Pass in as named parameter in constructor
   CustomerProfile({
@@ -88,6 +95,7 @@ class CustomerProfile {
     this.userName,
     this.avatar,
     this.qrCode,
+    this.type = "user",
   });
 
   CustomerProfile.map(dynamic obj) {
@@ -95,6 +103,7 @@ class CustomerProfile {
     this.fullName = obj["fullName"];
     this.avatar = obj["avatar"];
     this.qrCode = obj["qrCode"];
+    this.type = obj['type'] ?? 'user';
   }
 
   Map<String, dynamic> toMap() {
@@ -103,6 +112,7 @@ class CustomerProfile {
     map["userName"] = userName;
     map["avatar"] = avatar;
     map["qrCode"] = qrCode;
+    map["type"] = type;
     return map;
   }
 }

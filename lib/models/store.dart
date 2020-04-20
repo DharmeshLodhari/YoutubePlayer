@@ -670,3 +670,12 @@ List<ServiceCatagory> serviceCategories = <ServiceCatagory>[
         color: darkBlue(),
       )),
 ];
+
+//setting
+class Setting {
+  bool enableProduct;
+  bool enableService;
+  bool enableExplore;
+
+  Setting({this.enableProduct, this.enableService, this.enableExplore});
+}

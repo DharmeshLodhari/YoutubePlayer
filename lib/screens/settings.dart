@@ -33,10 +33,10 @@ class _SettingsListState extends State<SettingsList> {
   bool isLocked;
   var arguments;
   PackageInfo _packageInfo = PackageInfo(
-  appName: 'Unknown',
-  packageName: 'Unknown',
-  version: 'Unknown',
-  buildNumber: 'Unknown',
+    appName: 'Unknown',
+    packageName: 'Unknown',
+    version: 'Unknown',
+    buildNumber: 'Unknown',
   );
   SlidableController slidableController;
 
@@ -50,11 +50,18 @@ class _SettingsListState extends State<SettingsList> {
   }
 
   Widget _infoTile() {
-    return Card(
-      margin: EdgeInsets.symmetric(horizontal: 40),
-      child: ListTile(
-        title: Text('App version: ' +  _packageInfo.version),
-        subtitle: Text('Build number: '+ _packageInfo.buildNumber),
+    return Container(
+      color: Colors.transparent,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Text(
+            'App version: ' + _packageInfo.version,
+            style: TextStyle(color: Colors.white),
+          ),
+          Text('Build number: ' + _packageInfo.buildNumber,
+              style: TextStyle(color: Colors.white)),
+        ],
       ),
     );
   }
@@ -124,27 +131,30 @@ class _SettingsListState extends State<SettingsList> {
                   bankAccountBloc.bankAccount.bankName != null
                       ? displayBankAccountTile(bankAccountBloc)
                       : Container(),
-                  userBloc.user.userName == "abiola.rasheed.2"
+                  userBloc.user.setting.enableExplore
                       ? SizedBox(
                           height: 0,
                         )
                       : SizedBox(
                           height: 10,
                         ),
-                  userBloc.user.userName == "abiola.rasheed.2"
+                  userBloc.user.setting.enableExplore
                       ? ExploreTile()
                       : Container(),
-                  userBloc.user.userName == "abiola.rasheed.2"
+                  userBloc.user.setting.enableExplore
                       ? SizedBox(height: 10)
                       : Container(),
-                  serviceTile(),
-                  SizedBox(height: 10),
-                  productTile(),
-                  SizedBox(height: 10),
+                  userBloc.user.type != 'user' ? serviceTile() : Container(),
+                  userBloc.user.type != 'user'
+                      ? SizedBox(height: 10)
+                      : Container(),
+                  userBloc.user.type != 'user' ? productTile() : Container(),
+                  userBloc.user.type != 'user'
+                      ? SizedBox(height: 10)
+                      : Container(),
                   slydoBankAccountTile(),
-                  SizedBox(height: 10),
+                  SizedBox(height: 25),
                   _infoTile(),
-                  SizedBox(height: 20),
                 ],
               ),
             ),
@@ -212,8 +222,12 @@ class _SettingsListState extends State<SettingsList> {
         ),
         onTap: () {
           _auth.fetchCustomerProfile(userBloc.user.userName).then((user) {
-            Navigator.pushNamed(context, '/profile',
-                arguments: {"searchedUser": user});
+            if (user.type != 'user') {
+              {
+                Navigator.pushNamed(context, '/profile',
+                    arguments: {"searchedUser": user});
+              }
+            }
           });
         },
       ),
@@ -380,8 +394,14 @@ class _SettingsListState extends State<SettingsList> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text("Account Number: 12345"),
-            Text("Name : Slydo Private ltd "),
+            Text(
+              "Account: 0123456789",
+              style: TextStyle(fontSize: 11),
+            ),
+            Text(
+              "Name : Slydo Private ltd",
+              style: TextStyle(fontSize: 11),
+            ),
           ],
         ),
         trailing: IconButton(

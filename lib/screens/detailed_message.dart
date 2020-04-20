@@ -92,6 +92,7 @@ class _DetailedMessageState extends State<DetailedMessage> {
                 child: Container(
                   padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
                       SizedBox(height: 10),
                       displayMessageInfo(),
@@ -139,7 +140,7 @@ class _DetailedMessageState extends State<DetailedMessage> {
 //        contentPadding: EdgeInsets.symmetric(horizontal: 15),
         leading: getLeading(),
         title: getSender(),
-        subtitle: Text("to: ${message.recipient}"),
+        subtitle: getRecipientWidget(),
         trailing: Container(
           width: 100,
           child: Row(
@@ -149,6 +150,11 @@ class _DetailedMessageState extends State<DetailedMessage> {
         ),
       ),
     );
+  }
+
+  Widget getRecipientWidget() {
+    return Text(
+        "to: ${message.recipient.length > 15 ? message.recipient.substring(0, 15) : message.recipient}");
   }
 
   getLeading() {
@@ -261,6 +267,7 @@ class _DetailedMessageState extends State<DetailedMessage> {
   displayMessageInfo() {
     return Card(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           displaySubject(),
           displaySenderInfo(),
@@ -274,7 +281,7 @@ class _DetailedMessageState extends State<DetailedMessage> {
     return Padding(
       padding: const EdgeInsets.all(35.0),
       child: RichText(
-        textAlign: TextAlign.justify,
+        textAlign: TextAlign.left,
         text: TextSpan(
           text: message.body,
           style: TextStyle(color: Colors.black, fontSize: 16),

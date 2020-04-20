@@ -81,16 +81,29 @@ class _SearchAllState extends State<SearchAll> {
 
   void popupmenu() {
     menu = PopupMenu(
-      items: [
-        MenuItem(
-            textStyle: filterValue == 'Users'
-                ? TextStyle(color: lightBlue(), fontSize: 10)
-                : TextStyle(color: Colors.white, fontSize: 10),
-            title: 'Users',
-            image: Icon(
-              Icons.supervised_user_circle,
-              color: filterValue == 'Users' ? lightBlue() : Colors.white,
-            )),
+      items: getMenuItems(),
+      onClickMenu: onClickMenu,
+      onDismiss: onDismiss,
+      maxColumn: 4,
+    );
+    menu.show(widgetKey: popupMenuBtnKey);
+  }
+
+  List<MenuItem> getMenuItems() {
+    var menuItems = [
+      MenuItem(
+          textStyle: filterValue == 'Users'
+              ? TextStyle(color: lightBlue(), fontSize: 10)
+              : TextStyle(color: Colors.white, fontSize: 10),
+          title: 'Users',
+          image: Icon(
+            Icons.supervised_user_circle,
+            color: filterValue == 'Users' ? lightBlue() : Colors.white,
+          )),
+    ];
+
+    if (userBloc.user.setting.enableProduct) {
+      menuItems.add(
         MenuItem(
             textStyle: filterValue == 'Products'
                 ? TextStyle(color: lightBlue(), fontSize: 10)
@@ -100,6 +113,10 @@ class _SearchAllState extends State<SearchAll> {
               Icons.computer,
               color: filterValue == 'Products' ? lightBlue() : Colors.white,
             )),
+      );
+    }
+    if (userBloc.user.setting.enableService) {
+      menuItems.add(
         MenuItem(
             textStyle: filterValue == 'Services'
                 ? TextStyle(color: lightBlue(), fontSize: 10)
@@ -109,12 +126,9 @@ class _SearchAllState extends State<SearchAll> {
               Icons.burst_mode,
               color: filterValue == 'Services' ? lightBlue() : Colors.white,
             )),
-      ],
-      onClickMenu: onClickMenu,
-      onDismiss: onDismiss,
-      maxColumn: 4,
-    );
-    menu.show(widgetKey: popupMenuBtnKey);
+      );
+    }
+    return menuItems;
   }
 
   void stateChanged(bool isShow) {
@@ -195,45 +209,6 @@ class _SearchAllState extends State<SearchAll> {
           padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
           child: Column(
             children: <Widget>[
-//            loading
-//                ? CircularProgressIndicator(
-//                    backgroundColor: Colors.white,
-//                  )
-//                : searchedAutoCompleteTextField =
-//                    AutoCompleteTextField<SearchedUser>(
-//                    key: autoTextFieldKey,
-//                    suggestions: users,
-//                    style: TextStyle(color: Colors.black, fontSize: 16),
-//                    itemFilter: (item, query) {
-//                      return item.name
-//                          .toLowerCase()
-//                          .startsWith(query.toLowerCase());
-//                    },
-//                    itemSorter: (a, b) {
-//                      return a.name.compareTo(b.name);
-//                    },
-//                    itemSubmitted: (item) {},
-//                    itemBuilder: (context, item) {
-//                      return ListTile(
-//                        title: Text(item.name),
-//                        subtitle: Text(item.userName),
-//                        onTap: () {
-//                          setState(() {
-//                            searchedAutoCompleteTextField
-//                                .textField.controller.text = item.name;
-//                            FocusScope.of(context).unfocus();
-//                          });
-//                        },
-//                      );
-//                    },
-//                  ),
-//            Expanded(
-//              child: Container(
-//                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-//                  child: ListView(
-//                    children: results,
-//                  )),
-//            ),
               Expanded(
                 child: _buildResultList(),
               ),
@@ -440,11 +415,11 @@ class _SearchAllState extends State<SearchAll> {
 
   Widget getUserTile(var object) {
     var user = CustomerProfile(
-      avatar: object["avatar"],
-      fullName: object["full_name"],
-      qrCode: object["qr_code"],
-      userName: object["username"],
-    );
+        avatar: object["avatar"],
+        fullName: object["full_name"],
+        qrCode: object["qr_code"],
+        userName: object["username"],
+        type: object['type'] ?? 'user');
 
     var avatarImage = CachedNetworkImage(
       imageUrl: user.avatar,
@@ -695,8 +670,10 @@ class VerticalListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, '/profile',
-            arguments: {"searchedUser": user});
+        if (user.type != 'user') {
+          Navigator.pushNamed(context, '/profile',
+              arguments: {"searchedUser": user});
+        }
       },
       child: Container(
         color: lightBlue(),

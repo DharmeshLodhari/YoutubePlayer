@@ -471,6 +471,7 @@ class AuthService {
               payee: payee,
               avatar: avatar,
               currency: item['currency'],
+              createdAt: item['created_at'],
               amount: item['amount'],
               isCredit: isCredit);
           paymentRequests.add(paymentRequest);
@@ -535,6 +536,7 @@ class AuthService {
               payee: payee,
               avatar: avatar,
               currency: item['currency'],
+              createdAt: item['created_at'],
               amount: item['amount'],
               isCredit: isCredit);
           transactions.add(transaction);

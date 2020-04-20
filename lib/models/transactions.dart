@@ -20,6 +20,7 @@ class Transaction {
   String payee;
   String avatar;
   String currency;
+  String createdAt;
   int amount;
   bool isCredit;
 
@@ -31,6 +32,7 @@ class Transaction {
       this.payee,
       this.avatar,
       this.currency,
+      this.createdAt,
       this.amount,
       this.isCredit});
 }
@@ -42,6 +44,7 @@ class PaymentRequest {
   String payee;
   String avatar;
   String currency;
+  String createdAt;
   int amount;
   bool isCredit;
 
@@ -52,6 +55,7 @@ class PaymentRequest {
       this.description,
       this.payee,
       this.avatar,
+      this.createdAt,
       this.currency,
       this.amount,
       this.isCredit});
