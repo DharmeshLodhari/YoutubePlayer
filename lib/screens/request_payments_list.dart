@@ -121,19 +121,22 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         ? NoItemInList(
             msg: "No Pending Payment Request.",
           )
-        : ListView.builder(
-            //+1 for progressbar
-            itemCount: requestPaymentList.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == requestPaymentList.length) {
-                return _buildIndicator();
-              } else {
-                return _getSlidableWithLists(
-                    context, requestPaymentList[index], index);
-              }
-            },
-            controller: _scrollController,
-          );
+        : Container(
+      padding: EdgeInsets.symmetric(vertical: 4),
+          child: ListView.builder(
+              //+1 for progressbar
+              itemCount: requestPaymentList.length + 1,
+              itemBuilder: (BuildContext context, int index) {
+                if (index == requestPaymentList.length) {
+                  return _buildIndicator();
+                } else {
+                  return _getSlidableWithLists(
+                      context, requestPaymentList[index], index);
+                }
+              },
+              controller: _scrollController,
+            ),
+        );
   }
 
   Widget _buildIndicator() {

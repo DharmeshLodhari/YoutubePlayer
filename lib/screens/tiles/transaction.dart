@@ -11,19 +11,21 @@ class PaymentRequestTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(top: 8.0),
-      child: Card(
-        margin: EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
-        child: Column(
-          children: <Widget>[
-            ListTile(
+    return Card(
+      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+      child: Column(
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 8),
+            child: ListTile(
                 leading: getLeading(),
                 title: getTitle(),
-                trailing: getTrailing(),
+                trailing: paymentRequest.amount.toString().length > 6
+                    ? null
+                    : getTrailing(),
                 subtitle: getSubtitle()),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -77,6 +79,9 @@ class PaymentRequestTile extends StatelessWidget {
         SizedBox(
           height: 2,
         ),
+        paymentRequest.amount.toString().length > 6
+            ? getTrailing()
+            : Container(),
         getDateTime()
       ],
     );
@@ -110,42 +115,16 @@ class TransactionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    return Padding(
-      padding: EdgeInsets.only(top: 8.0),
-      child: Card(
-        margin: EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
+    return Card(
+      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 8),
         child: ListTile(
-          title: Text(
-            transaction.payee,
-            style: TextStyle(
-                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
-          ),
+          title: getTitle(),
           subtitle: getSubTitle(),
-          leading: ClipOval(
-            child: CachedNetworkImage(
-              imageUrl: transaction.avatar,
-              height: 50,
-              width: 50,
-              colorBlendMode: BlendMode.darken,
-              fit: BoxFit.cover,
-              filterQuality: FilterQuality.high,
-              placeholder: (context, url) => transaction.avatar == ""
-                  ? Icon(Icons.person)
-                  : CircularProgressIndicator(
-                      backgroundColor: Colors.white,
-                    ),
-            ),
-          ),
-          trailing: Text(
-            worldCurrencies[transaction.currency] +
-                ' ' +
-                transaction.amount.toString(),
-            style: TextStyle(
-                color:
-                    transaction.isCredit ? Colors.green[400] : Colors.grey[600],
-                fontWeight: FontWeight.bold,
-                fontSize: 15),
-          ),
+          leading: getLeading(),
+          trailing:
+              transaction.amount.toString().length > 6 ? null : getAmount(),
           onTap: () {
             if (userBloc.user.setting.enableTransactionDetailPage) {
               //TODO:NAVIGATE to Transaction detailPage
@@ -156,15 +135,55 @@ class TransactionTile extends StatelessWidget {
     );
   }
 
+  Widget getTitle() {
+    return Text(
+      "${transaction.payee.length > 17 ? transaction.payee.substring(0, 17) : transaction.payee}",
+      style: TextStyle(
+          color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+    );
+  }
+
+  Widget getLeading() {
+    return ClipOval(
+      child: CachedNetworkImage(
+        imageUrl: transaction.avatar,
+        height: 50,
+        width: 50,
+        colorBlendMode: BlendMode.darken,
+        fit: BoxFit.cover,
+        filterQuality: FilterQuality.high,
+        placeholder: (context, url) => transaction.avatar == ""
+            ? Icon(Icons.person)
+            : CircularProgressIndicator(
+                backgroundColor: Colors.white,
+              ),
+      ),
+    );
+  }
+
+  Widget getAmount() {
+    return Text(
+      worldCurrencies[transaction.currency] +
+          ' ' +
+          transaction.amount.toString(),
+      style: TextStyle(
+          color: transaction.isCredit ? Colors.green[400] : Colors.grey[600],
+          fontWeight: FontWeight.bold,
+          fontSize: 15),
+    );
+  }
+
   Widget getSubTitle() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(transaction.description),
+        Text(
+            "${transaction.description.length > 20 ? transaction.description.substring(0, 20) : transaction.description}"),
         SizedBox(
           height: 2,
         ),
-        getDateTime()
+        transaction.amount.toString().length > 6 ? getAmount() : Container(),
+        getDateTime(),
       ],
     );
   }

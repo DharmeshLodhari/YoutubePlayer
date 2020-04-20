@@ -23,19 +23,15 @@ class _MessageTileState extends State<MessageTile> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 4.0),
-      child: Card(
-        margin: EdgeInsets.symmetric(vertical: 4.0, horizontal: 20),
-        child: Column(
-          children: <Widget>[
-            ListTile(
-                leading: getLeading(),
-                title: getTitle(),
-                trailing: getTrailing(),
-                subtitle: getSubtitle()),
-          ],
-        ),
+    return Card(
+      margin: EdgeInsets.symmetric(vertical: 4.0, horizontal: 20),
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 2),
+        child: ListTile(
+            leading: getLeading(),
+            title: getTitle(),
+            trailing: getTrailing(),
+            subtitle: getSubtitle()),
       ),
     );
   }
