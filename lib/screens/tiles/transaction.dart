@@ -88,19 +88,20 @@ class PaymentRequestTile extends StatelessWidget {
     return Row(
       children: <Widget>[
         Text(
-          " ${requestTime.day}/${requestTime.month}/${requestTime.year}",
-          style: TextStyle(fontSize: 10),
+          "Date: ${requestTime.day}/${requestTime.month}/${requestTime.year}",
+          style: TextStyle(fontSize: 10, color: Colors.grey[600]),
         ),
         SizedBox(
-          width: 10,
+          width: 15,
         ),
-        Text("${requestTime.hour}:${requestTime.minute}",
-            style: TextStyle(fontSize: 10)),
+        Text("Time: ${requestTime.hour}:${requestTime.minute}",
+            style: TextStyle(fontSize: 10, color: Colors.grey[600])),
       ],
     );
   }
 }
 
+// ignore: must_be_immutable
 class TransactionTile extends StatelessWidget {
   UserBloc userBloc;
   final Transaction transaction;
@@ -174,14 +175,14 @@ class TransactionTile extends StatelessWidget {
     return Row(
       children: <Widget>[
         Text(
-          " ${transactionTime.day}/${transactionTime.month}/${transactionTime.year}",
-          style: TextStyle(fontSize: 10),
+          "Date: ${transactionTime.day}/${transactionTime.month}/${transactionTime.year}",
+          style: TextStyle(fontSize: 10, color: Colors.grey[600]),
         ),
         SizedBox(
-          width: 10,
+          width: 15,
         ),
-        Text("${transactionTime.hour}:${transactionTime.minute}",
-            style: TextStyle(fontSize: 10)),
+        Text("Time: ${transactionTime.hour}:${transactionTime.minute}",
+            style: TextStyle(fontSize: 10, color: Colors.grey[600])),
       ],
     );
   }
