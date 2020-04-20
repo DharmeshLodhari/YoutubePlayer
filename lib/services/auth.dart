@@ -7,11 +7,15 @@ import 'package:Slydo/models/payout.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/models/user.dart';
+import 'package:Slydo/services/device_info.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:get_ip/get_ip.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
+
+import 'location_service.dart';
 
 final String baseUrl = "http://api.slydo.co";
 final String SecureBaseUrl = "https://api.slydo.co";
@@ -19,6 +23,10 @@ final String localHostUrl = "https://127.0.0.1:8080";
 
 class AuthService {
   DatabaseHelper _db = DatabaseHelper();
+  final locationService = LocationService();
+  static UserLocation userLocation;
+  static String ipAddress;
+  static Map deviceData;
 
   // This function creates a user object from named args passed in
   Future<User> createUser(
@@ -71,6 +79,13 @@ class AuthService {
       "DeviceType": Platform.isAndroid ? "Android" : "IOS",
       "User-Agent": "Slydo-Mobile",
     };
+
+    if (userLocation == null || ipAddress == null || deviceData == null) {
+      userLocation = await locationService.getLocation();
+      ipAddress = await GetIp.ipAddress;
+      deviceData = await getDeviceInfo();
+    }
+
     // Because the jwt expires every 5 minutes we will take note of the time they
     // where  created and the use that to compute the expiration time of the
     // token. So that we will only use the token if its still valid.
@@ -175,15 +190,23 @@ class AuthService {
 
     // Authenticate again if token has expired
     if (hasTokenExpired(expirationTime)) {
+      // renew the userLocation when token expire
+      userLocation = await locationService.getLocation();
+      ipAddress = await GetIp.ipAddress;
+      deviceData = await getDeviceInfo();
+
       debugPrint("Token Expired getting new one");
       User _user = await getUser();
       await authenticate(_user.phoneNumber, _user.password);
       tokenData = await _db.getJwt(); // get new token now
     }
-//    final locationService = LocationService();
-//    var userLocation = await locationService.getLocation();
-//    debugPrint(userLocation.latitude.toString());
-//    debugPrint(userLocation.longitude.toString());
+
+    // if userLocation is not available then we get user location
+    if (userLocation == null || ipAddress == null || deviceData == null) {
+      userLocation = await locationService.getLocation();
+      ipAddress = await GetIp.ipAddress;
+      deviceData = await getDeviceInfo();
+    }
 
     String bearer = "Bearer " + tokenData["access"];
     var uuid = Uuid();
@@ -194,6 +217,10 @@ class AuthService {
       "TransactionId": transactionId,
       "DeviceType": Platform.isAndroid ? "Android" : "IOS",
       "User-Agent": "Slydo-Mobile",
+      "X-Device-Location-Latitude": userLocation.latitude.toString(),
+      "X-Device-Location-Longitude": userLocation.longitude.toString(),
+      "X-Device-IpAddress": ipAddress,
+      "X-Device-DeviceId": deviceData['deviceId'].toString()
     };
     return headers;
   }
