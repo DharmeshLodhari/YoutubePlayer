@@ -1,7 +1,9 @@
 import 'package:Slydo/data/currency.dart';
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class PaymentRequestTile extends StatelessWidget {
   final PaymentRequest paymentRequest;
@@ -100,50 +102,55 @@ class PaymentRequestTile extends StatelessWidget {
 }
 
 class TransactionTile extends StatelessWidget {
+  UserBloc userBloc;
   final Transaction transaction;
   TransactionTile({this.transaction});
 
   @override
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
     return Padding(
       padding: EdgeInsets.only(top: 8.0),
       child: Card(
         margin: EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),
         child: ListTile(
-            title: Text(
-              transaction.payee,
-              style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15),
+          title: Text(
+            transaction.payee,
+            style: TextStyle(
+                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+          ),
+          subtitle: getSubTitle(),
+          leading: ClipOval(
+            child: CachedNetworkImage(
+              imageUrl: transaction.avatar,
+              height: 50,
+              width: 50,
+              colorBlendMode: BlendMode.darken,
+              fit: BoxFit.cover,
+              filterQuality: FilterQuality.high,
+              placeholder: (context, url) => transaction.avatar == ""
+                  ? Icon(Icons.person)
+                  : CircularProgressIndicator(
+                      backgroundColor: Colors.white,
+                    ),
             ),
-            subtitle: getSubTitle(),
-            leading: ClipOval(
-              child: CachedNetworkImage(
-                imageUrl: transaction.avatar,
-                height: 50,
-                width: 50,
-                colorBlendMode: BlendMode.darken,
-                fit: BoxFit.cover,
-                filterQuality: FilterQuality.high,
-                placeholder: (context, url) => transaction.avatar == ""
-                    ? Icon(Icons.person)
-                    : CircularProgressIndicator(
-                        backgroundColor: Colors.white,
-                      ),
-              ),
-            ),
-            trailing: Text(
-              worldCurrencies[transaction.currency] +
-                  ' ' +
-                  transaction.amount.toString(),
-              style: TextStyle(
-                  color: transaction.isCredit
-                      ? Colors.green[400]
-                      : Colors.grey[600],
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15),
-            )),
+          ),
+          trailing: Text(
+            worldCurrencies[transaction.currency] +
+                ' ' +
+                transaction.amount.toString(),
+            style: TextStyle(
+                color:
+                    transaction.isCredit ? Colors.green[400] : Colors.grey[600],
+                fontWeight: FontWeight.bold,
+                fontSize: 15),
+          ),
+          onTap: () {
+            if (userBloc.user.setting.enableTransactionDetailPage) {
+              //TODO:NAVIGATE to Transaction detailPage
+            }
+          },
+        ),
       ),
     );
   }

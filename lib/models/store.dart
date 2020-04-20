@@ -676,6 +676,11 @@ class Setting {
   bool enableProduct;
   bool enableService;
   bool enableExplore;
+  bool enableTransactionDetailPage;
 
-  Setting({this.enableProduct, this.enableService, this.enableExplore});
+  Setting(
+      {this.enableProduct,
+      this.enableService,
+      this.enableExplore,
+      this.enableTransactionDetailPage});
 }

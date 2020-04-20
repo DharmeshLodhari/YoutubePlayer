@@ -12,8 +12,11 @@ class User {
   String currency;
   String type;
   bool isVerified;
-  final Setting setting =
-      Setting(enableService: false, enableProduct: false, enableExplore: false);
+  final Setting setting = Setting(
+      enableService: false,
+      enableProduct: false,
+      enableExplore: false,
+      enableTransactionDetailPage: false);
 
   // Pass in as named parameter in constructor
   User({
