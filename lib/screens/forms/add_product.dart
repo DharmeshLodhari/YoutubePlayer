@@ -50,7 +50,6 @@ class _AddProductState extends State<AddProduct> {
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
             leading: showBackArrow(),
-            automaticallyImplyLeading: Platform.isAndroid ? false : true,
             title: Center(child: Text("Add Product")),
             backgroundColor: darkBlue()),
         body: SingleChildScrollView(

@@ -88,7 +88,6 @@ class _SendPaymentState extends State<SendPayment> {
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
             leading: showBackArrow(),
-            automaticallyImplyLeading: Platform.isAndroid ? false : true,
             title: Center(child: Text("Send a Payment")),
             backgroundColor: darkBlue()),
         body: SingleChildScrollView(

@@ -48,7 +48,6 @@ class _AddServiceState extends State<AddService> {
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
             leading: showBackArrow(),
-            automaticallyImplyLeading: Platform.isAndroid ? false : true,
             title: Center(child: Text("Add Service")),
             backgroundColor: darkBlue()),
         body: SingleChildScrollView(

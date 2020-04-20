@@ -28,7 +28,6 @@ class _ForgotPasswordState extends State<ForgotPassword> {
             backgroundColor: lightBlue(),
             resizeToAvoidBottomInset: true,
             appBar: AppBar(
-                automaticallyImplyLeading: Platform.isAndroid ? false : true,
                 title: Center(child: Text("Forgot Password")),
                 backgroundColor: darkBlue()),
             body: SingleChildScrollView(

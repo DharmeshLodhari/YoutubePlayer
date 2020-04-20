@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/tiles/payout_tile.dart';
 import 'package:Slydo/services/auth.dart';
@@ -93,7 +91,6 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
         key: _scaffoldKey,
         backgroundColor: lightBlue(),
         appBar: AppBar(
-          automaticallyImplyLeading: Platform.isAndroid ? false : true,
           backgroundColor: darkBlue(),
           title: Text('Bank Payout'),
         ),

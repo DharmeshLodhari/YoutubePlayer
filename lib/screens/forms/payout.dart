@@ -51,7 +51,6 @@ class _PayoutState extends State<Payout> {
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
             leading: showBackArrow(),
-            automaticallyImplyLeading: Platform.isAndroid ? false : true,
             title: Center(child: Text("Payout")),
             backgroundColor: darkBlue()),
         body: SingleChildScrollView(

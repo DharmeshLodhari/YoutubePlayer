@@ -79,7 +79,6 @@ class _DetailedMessageState extends State<DetailedMessage> {
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
             leading: showBackArrow(),
-            automaticallyImplyLeading: Platform.isAndroid ? false : true,
             title: Center(child: Text("Message")),
             backgroundColor: darkBlue()),
         body: isLoading

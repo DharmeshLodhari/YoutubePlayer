@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 
@@ -43,7 +41,6 @@ class _ResetPasswordState extends State<ResetPassword> {
             backgroundColor: lightBlue(),
             resizeToAvoidBottomInset: true,
             appBar: AppBar(
-                automaticallyImplyLeading: Platform.isAndroid ? false : true,
                 title: Center(child: Text("Reset Password")),
                 backgroundColor: darkBlue()),
             body: SingleChildScrollView(

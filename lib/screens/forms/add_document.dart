@@ -46,7 +46,6 @@ class _AddDocumentState extends State<AddDocument> {
       appBar: AppBar(
         backgroundColor: darkBlue(),
         title: Text("Verify Yourself"),
-        automaticallyImplyLeading: Platform.isAndroid ? false : true,
       ),
       body: Column(
         children: <Widget>[

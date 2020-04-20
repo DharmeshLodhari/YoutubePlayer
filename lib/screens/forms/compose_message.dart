@@ -115,7 +115,6 @@ class _ComposeMessageState extends State<ComposeMessage> {
         appBar: AppBar(
             leading: showBackArrow(),
             actions: <Widget>[sendMessage()],
-            automaticallyImplyLeading: Platform.isAndroid ? false : true,
             title: Center(child: Text("Compose Message")),
             backgroundColor: darkBlue()),
         body: SingleChildScrollView(

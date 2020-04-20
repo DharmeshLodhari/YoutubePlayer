@@ -116,7 +116,6 @@ class _EditServiceState extends State<EditService> {
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
             leading: showBackArrow(),
-            automaticallyImplyLeading: Platform.isAndroid ? false : true,
             title: Center(child: Text("Edit Service")),
             backgroundColor: darkBlue()),
         body: SingleChildScrollView(

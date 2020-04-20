@@ -98,7 +98,6 @@ class _RequestPaymentState extends State<RequestPayment> {
               displayQRCodeButton(),
             ],
             leading: showBackArrow(),
-            automaticallyImplyLeading: Platform.isAndroid ? false : true,
             title: Center(child: Text("Request Payment")),
             backgroundColor: darkBlue()),
         body: SingleChildScrollView(

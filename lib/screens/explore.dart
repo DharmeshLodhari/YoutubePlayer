@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/screens/tiles/user.dart';
@@ -58,7 +57,6 @@ class _ExploreListState extends State<ExploreList> {
         resizeToAvoidBottomInset: true,
         backgroundColor: lightBlue(),
         appBar: AppBar(
-          automaticallyImplyLeading: Platform.isAndroid ? false : true,
           backgroundColor: darkBlue(),
           title: AnimatedSwitcher(
             duration: Duration(milliseconds: 500),

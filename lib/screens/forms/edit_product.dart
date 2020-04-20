@@ -123,7 +123,6 @@ class _EditProductState extends State<EditProduct> {
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
             leading: showBackArrow(),
-            automaticallyImplyLeading: Platform.isAndroid ? false : true,
             title: Center(child: Text("Edit Product")),
             backgroundColor: darkBlue()),
         body: SingleChildScrollView(

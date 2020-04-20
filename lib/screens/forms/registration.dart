@@ -42,7 +42,6 @@ class _RegistrationState extends State<Registration> {
             backgroundColor: lightBlue(),
             resizeToAvoidBottomInset: true,
             appBar: AppBar(
-                automaticallyImplyLeading: Platform.isAndroid ? false : true,
                 title: Center(child: Text("Sign Up")),
                 backgroundColor: darkBlue()),
             body: SingleChildScrollView(
