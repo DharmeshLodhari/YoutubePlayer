@@ -222,8 +222,8 @@ class _TransactionDetailState extends State<TransactionDetail> {
       );
     }
     return Container(
-      color: Colors.grey[600],
-      height: 200,
+      color: Colors.grey[400],
+      height: 250,
       width: double.infinity,
     );
   }
