@@ -190,15 +190,16 @@ class _IndexState extends State<Index> {
               SizedBox(height: 20),
               Text('An easy way to accept \n and receive payments.',
                   style: TextStyle(color: Colors.white, fontSize: 20)),
-              SizedBox(height: 20),
-              loginButton(),
-              SizedBox(height: 10),
-              Text(
-                'or',
-                style: TextStyle(color: Colors.white, fontSize: 20),
-              ),
-              SizedBox(height: 10),
-              registerButton(),
+              Expanded(child: SizedBox(height: 20)),
+              Expanded(
+                child: Row(
+                  children: <Widget>[
+                    Expanded(flex: 3, child: loginButton()),
+                    Expanded(flex: 1, child: SizedBox(height: 10)),
+                    Expanded(flex: 3, child: registerButton()),
+                  ],
+                ),
+              )
             ],
           ),
         ),
@@ -209,7 +210,7 @@ class _IndexState extends State<Index> {
   Widget loginButton() {
     return ButtonTheme(
       child: MaterialButton(
-        minWidth: double.infinity,
+        minWidth: 300,
         onPressed: () {
           Navigator.of(context).pushNamed('/login');
         },
@@ -224,7 +225,7 @@ class _IndexState extends State<Index> {
   Widget registerButton() {
     return ButtonTheme(
       child: MaterialButton(
-        minWidth: double.infinity,
+        minWidth: 300,
         onPressed: () {
           Navigator.of(context).pushNamed('/new-registration');
         },

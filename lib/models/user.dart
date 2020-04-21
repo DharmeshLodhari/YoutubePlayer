@@ -13,8 +13,8 @@ class User {
   String type;
   bool isVerified;
   final Setting setting = Setting(
-      enableService: true,
-      enableProduct: true,
+      enableService: false,
+      enableProduct: false,
       enableExplore: false,
       enableTransactionDetailPage: true);
 

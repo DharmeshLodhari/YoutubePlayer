@@ -114,7 +114,7 @@ class _UserLoginState extends State<UserLogin> {
         color: Colors.transparent,
       ),
       child: Image.asset(
-        'assets/images/slydo.png',
+        'assets/images/icon2.png',
         fit: BoxFit.cover,
       ),
     );
