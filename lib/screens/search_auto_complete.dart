@@ -182,7 +182,7 @@ class _SearchTestState extends State<SearchTest> {
                   width: 4,
                 ),
               ),
-              Expanded(flex: 7, child: search()),
+              Expanded(flex: 7, child: autoComplete()),
             ],
           ),
           automaticallyImplyLeading: false,
@@ -269,6 +269,7 @@ class _SearchTestState extends State<SearchTest> {
           tempList.forEach((result) {
             results.add(getResultTile(result));
           });
+          FocusScope.of(context).requestFocus(searchFocus);
         });
       }
       if (results.isEmpty) {
@@ -308,6 +309,7 @@ class _SearchTestState extends State<SearchTest> {
       textAlignVertical: TextAlignVertical.center,
       style: TextStyle(fontSize: 15),
       textInputAction: TextInputAction.search,
+      focusNode: searchFocus,
       controller: searchController,
       decoration: InputDecoration(
         contentPadding: EdgeInsets.all(10),
@@ -339,16 +341,6 @@ class _SearchTestState extends State<SearchTest> {
       },
       onChanged: (value) {
         searchedText = value;
-        if (value.length > 4) {
-          setState(() {
-            noItemInList = false;
-            count = 0;
-            next = "";
-            previous = "";
-            results = [];
-          });
-          getList();
-        }
       },
     );
   }
@@ -649,8 +641,11 @@ class _SearchTestState extends State<SearchTest> {
       String url = getSearchUrl(autoCompleteSearchText);
       debugPrint(url);
       var result = await _auth.searchEndpoint(url);
-
-      loadUsers(result);
+      next = result['next'];
+      count = result['count'];
+      previous = result['count'];
+      var data = result['data'];
+      loadUsers(data);
 
       debugPrint("length of the user : " + users.length.toString());
     } catch (error) {

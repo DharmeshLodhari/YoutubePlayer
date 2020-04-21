@@ -24,7 +24,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
   TextEditingController _subjectController = TextEditingController();
   FocusNode _recipientFocus = FocusNode();
 
-  bool isValidPayee = false;
+  bool isValidRecipient = false;
   bool isReplayMessage = false;
   final _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
@@ -67,7 +67,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
     var customerProfile = await _auth.fetchCustomerProfile(recipient);
     setState(() {
       _payee = customerProfile;
-      isValidPayee = _payee.userName != userBloc.user.userName;
+      isValidRecipient = _payee.userName != userBloc.user.userName;
     });
   }
 
@@ -154,10 +154,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
     return IconButton(
         icon: Icon(Icons.send),
         onPressed: () {
-          if (FocusScope.of(context).hasFocus) {
-            FocusScope.of(context).unfocus();
-          }
-          if (!isValidPayee) {
+          if (!isValidRecipient) {
             setState(() {
               errorMessage = "Invalid recipient";
               return;
@@ -168,7 +165,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
               return;
             });
           } else if (recipient == _payee.userName) {
-            if (!isValidPayee) {
+            if (!isValidRecipient) {
               setState(() {
                 errorMessage = "Invalid recipient";
                 return;
@@ -326,7 +323,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
           var customerProfile = await _auth.fetchCustomerProfile(recipient);
           setState(() {
             _payee = customerProfile;
-            isValidPayee = _payee.userName != userBloc.user.userName;
+            isValidRecipient = _payee.userName != userBloc.user.userName;
           });
         }
       },

@@ -1278,7 +1278,7 @@ class AuthService {
   //search
 
   // List the searched item
-  Future<List<dynamic>> searchEndpoint(String url) async {
+  Future<Map<String, dynamic>> searchEndpoint(String url) async {
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
 
@@ -1286,8 +1286,13 @@ class AuthService {
     debugPrint(response.body);
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
-      var data = jsonData['results'];
-      return data;
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": jsonData["results"],
+      };
+      return result;
     } else {
       var jsonData = json.decode(response.body);
       throw jsonData;

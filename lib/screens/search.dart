@@ -171,7 +171,17 @@ class _SearchAllState extends State<SearchAll> {
         appBar: AppBar(
           automaticallyImplyLeading: false,
           backgroundColor: darkBlue(),
-          title: search(),
+          title: Row(
+            children: <Widget>[
+              Expanded(
+                flex: 1,
+                child: SizedBox(
+                  width: 4,
+                ),
+              ),
+              Expanded(flex: 7, child: search()),
+            ],
+          ),
           actions: <Widget>[
             IconButton(
               key: popupMenuBtnKey,

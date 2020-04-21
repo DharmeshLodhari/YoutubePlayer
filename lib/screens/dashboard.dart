@@ -88,7 +88,7 @@ class _DashboardState extends State<Dashboard> {
     // icon: null, badge: null, sound: null, link: null, tag: null, dir: auto,
     // actions: /detail_message/40892023-fa43-4652-b3eb-fd584f6530e9}
 
-    print("payload : $payload");
+    debugPrint("payload : $payload");
     if (payload == "/request-payment") {
       Navigator.of(context).pushNamed('/dashboard', arguments: {
         'dashboardIndex': 1,
@@ -200,7 +200,7 @@ class _DashboardState extends State<Dashboard> {
     _firebaseMessaging.configure(
       // onMessage will be called when App is running and also app is in foreground
       onMessage: (Map<String, dynamic> message) async {
-        print("onMessage: $message");
+        debugPrint("onMessage: $message");
         // creating notification from server payload
         var notification = getAndroidNotification(message);
         // it will show notification
@@ -212,7 +212,7 @@ class _DashboardState extends State<Dashboard> {
 
       // onLaunch will be called when App is not running
       onLaunch: (Map<String, dynamic> message) async {
-        print("onLaunch: $message");
+        debugPrint("onLaunch: $message");
         // creating notification from server payload
         var notification = getAndroidNotification(message);
         // it will show notification
@@ -223,7 +223,7 @@ class _DashboardState extends State<Dashboard> {
       },
       // onResume will be called when App is running and it is in background
       onResume: (Map<String, dynamic> message) async {
-        print("onResume: $message");
+        debugPrint("onResume: $message");
         // creating notification from server payload
         var notification = getAndroidNotification(message);
         // it will show notification
@@ -247,7 +247,7 @@ class _DashboardState extends State<Dashboard> {
     notification["tag"] = message['data']['tag'];
     notification["dir"] = message['data']['dir'];
     notification["actions"] = message['data']['actions'];
-    print("notification from android getnotification $notification");
+    debugPrint("notification from android getnotification $notification");
     return notification;
   }
 }

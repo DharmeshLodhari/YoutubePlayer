@@ -4,6 +4,7 @@ import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:maps_launcher/maps_launcher.dart';
 import 'package:provider/provider.dart';
 
 import 'colors.dart';
@@ -55,9 +56,19 @@ class _TransactionDetailState extends State<TransactionDetail> {
         backgroundColor: lightBlue(),
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
-            leading: showBackArrow(),
-            title: Center(child: Text("Transaction")),
-            backgroundColor: darkBlue()),
+          leading: showBackArrow(),
+          title: Center(child: Text("Transaction")),
+          backgroundColor: darkBlue(),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(
+                Icons.location_on,
+                color: Colors.white,
+              ),
+              onPressed: transaction.latitude != "" ? goToMap : () {},
+            )
+          ],
+        ),
         body: SingleChildScrollView(
           child: Container(
             padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
@@ -165,7 +176,6 @@ class _TransactionDetailState extends State<TransactionDetail> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          displayMap(),
           displaySenderInfo(),
           displayBodyOfTransaction(),
         ],
@@ -212,22 +222,6 @@ class _TransactionDetailState extends State<TransactionDetail> {
     );
   }
 
-  Widget displayMap() {
-    if (transaction.longitude != "" && transaction.latitude != "") {
-      return Image.asset(
-        "assets/images/GoogleMapTA.jpg",
-        height: 250,
-        width: double.infinity,
-        fit: BoxFit.cover,
-      );
-    }
-    return Container(
-      color: Colors.grey[400],
-      height: 250,
-      width: double.infinity,
-    );
-  }
-
   Widget detailTile(Icon icon, String title, String subtitle) {
     return Container(
       child: ListTile(
@@ -245,5 +239,10 @@ class _TransactionDetailState extends State<TransactionDetail> {
         ),
       ),
     );
+  }
+
+  void goToMap() {
+    MapsLauncher.launchCoordinates(double.parse(transaction.latitude),
+        double.parse(transaction.longitude));
   }
 }
