@@ -155,6 +155,13 @@ class _SettingsListState extends State<SettingsList> {
                   slydoBankAccountTile(),
                   SizedBox(height: 25),
                   _infoTile(),
+                  IconButton(
+                    icon: Icon(Icons.search),
+                    color: Colors.white,
+                    onPressed: () {
+                      Navigator.pushNamed(context, "/search-auto");
+                    },
+                  )
                 ],
               ),
             ),

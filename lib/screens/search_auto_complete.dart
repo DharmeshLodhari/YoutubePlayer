@@ -12,9 +12,6 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:popup_menu/popup_menu.dart';
 import 'package:provider/provider.dart';
 
-final List<dynamic> services = [];
-CustomerProfile _payee;
-
 class SearchTest extends StatefulWidget {
   @override
   _SearchTestState createState() => _SearchTestState();
@@ -22,15 +19,13 @@ class SearchTest extends StatefulWidget {
 
 class _SearchTestState extends State<SearchTest> {
   bool isValidSearch = false;
-  TextEditingController searchController;
-  String searchedText = "";
   String autoCompleteSearchText = "";
-  FocusNode searchFocus = FocusNode();
+
   List<dynamic> searchedResult;
   CustomerProfileBloc customerProfileBloc;
   UserBloc userBloc;
   static var filterValue = "Users";
-  String hint = "Find Users";
+  String hint = "Search hear";
 
   final _auth = AuthService();
   SlidableController slidableController;
@@ -39,7 +34,6 @@ class _SearchTestState extends State<SearchTest> {
   // this variables are for the autocomplete
   bool loading = true;
   List<dynamic> users = List<dynamic>();
-  AutoCompleteTextField searchedAutoCompleteTextField;
   GlobalKey<AutoCompleteTextFieldState<dynamic>> autoTextFieldKey = GlobalKey();
   TextEditingController autoCompleteTextController = TextEditingController();
 
@@ -58,8 +52,6 @@ class _SearchTestState extends State<SearchTest> {
 
   @override
   void initState() {
-    searchController = TextEditingController();
-
     slidableController = SlidableController(
       onSlideAnimationChanged: handleSlideAnimationChanged,
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
@@ -67,7 +59,9 @@ class _SearchTestState extends State<SearchTest> {
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
-        getList();
+        if (next != null) {
+          getList();
+        }
       }
     });
 
@@ -139,16 +133,13 @@ class _SearchTestState extends State<SearchTest> {
 
   void onClickMenu(MenuItemProvider item) {
     setState(() {
-      searchController.text = "";
       autoCompleteTextController.text = "";
-      searchedText = "";
       count = 0;
       next = "";
       previous = "";
       results.clear();
       noItemInList = false;
       filterValue = item.menuTitle;
-      hint = "Find $filterValue";
     });
   }
 
@@ -258,18 +249,16 @@ class _SearchTestState extends State<SearchTest> {
           isLoading = true;
         });
         Map<String, dynamic> result = await _auth.searchEndpointPagination(
-            getSearchUrl(searchedText), next, previous);
+            getSearchUrl(autoCompleteTextController.text), next, previous);
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
         List tempList = result['results'];
-        debugPrint(tempList.toString());
         setState(() {
           isLoading = false;
           tempList.forEach((result) {
             results.add(getResultTile(result));
           });
-          FocusScope.of(context).requestFocus(searchFocus);
         });
       }
       if (results.isEmpty) {
@@ -302,47 +291,6 @@ class _SearchTestState extends State<SearchTest> {
         return getServiceTile(result);
         break;
     }
-  }
-
-  Widget search() {
-    return TextFormField(
-      textAlignVertical: TextAlignVertical.center,
-      style: TextStyle(fontSize: 15),
-      textInputAction: TextInputAction.search,
-      focusNode: searchFocus,
-      controller: searchController,
-      decoration: InputDecoration(
-        contentPadding: EdgeInsets.all(10),
-        hintText: hint,
-        isDense: true,
-        enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: Colors.white,
-            width: 1,
-          ),
-          borderRadius: BorderRadius.circular(6),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: darkBlue(),
-            width: 1,
-          ),
-          borderRadius: BorderRadius.circular(6),
-        ),
-        fillColor: Colors.white,
-        filled: true,
-      ),
-      onFieldSubmitted: (val) async {
-        count = 0;
-        next = "";
-        previous = "";
-        results = [];
-        getList();
-      },
-      onChanged: (value) {
-        searchedText = value;
-      },
-    );
   }
 
   Widget _getSlidableWithLists(
@@ -635,19 +583,22 @@ class _SearchTestState extends State<SearchTest> {
   }
 
   void getAutoCompleteUser() async {
+    debugPrint("getAutoComplete called!!");
     try {
-      debugPrint("auto complete user called");
-      results.clear();
+      setState(() {
+        results = [];
+      });
+
       String url = getSearchUrl(autoCompleteSearchText);
-      debugPrint(url);
       var result = await _auth.searchEndpoint(url);
+
       next = result['next'];
       count = result['count'];
-      previous = result['count'];
-      var data = result['data'];
-      loadUsers(data);
+      previous = result['previous'];
+      var data = result['results'];
 
-      debugPrint("length of the user : " + users.length.toString());
+      loadUsers(data);
+      debugPrint("length of the items : " + data.length.toString());
     } catch (error) {
       debugPrint(error.toString());
     }
@@ -658,6 +609,9 @@ class _SearchTestState extends State<SearchTest> {
       case "Users":
         data.forEach((item) {
           setState(() {
+            if (data.isNotEmpty) {
+              noItemInList = false;
+            }
             results.add(getUserTile(item));
           });
         });
@@ -665,6 +619,9 @@ class _SearchTestState extends State<SearchTest> {
       case "Products":
         data.forEach((item) {
           setState(() {
+            if (data.isNotEmpty) {
+              noItemInList = false;
+            }
             results.add(getProductTile(item));
           });
         });
@@ -672,6 +629,9 @@ class _SearchTestState extends State<SearchTest> {
       case "Services":
         data.forEach((item) {
           setState(() {
+            if (data.isNotEmpty) {
+              noItemInList = false;
+            }
             results.add(getServiceTile(item));
           });
         });
@@ -680,11 +640,22 @@ class _SearchTestState extends State<SearchTest> {
   }
 
   Widget autoComplete() {
-    return searchedAutoCompleteTextField = AutoCompleteTextField<dynamic>(
+    return AutoCompleteTextField<dynamic>(
       controller: autoCompleteTextController,
+      textSubmitted: (val) {
+        if (next != null) {
+          setState(() {
+            count = 0;
+            next = "";
+            previous = "";
+            results = [];
+          });
+          getList();
+        }
+      },
       key: autoTextFieldKey,
       suggestions: users,
-      textChanged: (val) {},
+      clearOnSubmit: true,
       decoration: InputDecoration(
         contentPadding: EdgeInsets.all(10),
         hintText: hint,
@@ -736,7 +707,6 @@ class _SearchTestState extends State<SearchTest> {
             break;
         }
       },
-      itemSubmitted: (item) {},
       // ignore: missing_return
       itemBuilder: (context, item) {
         switch (filterValue) {

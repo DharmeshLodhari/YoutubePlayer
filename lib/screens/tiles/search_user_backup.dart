@@ -215,13 +215,6 @@ class _SearchAllState extends State<SearchAll> {
                       );
                     },
                   ),
-//            Expanded(
-//              child: Container(
-//                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-//                  child: ListView(
-//                    children: results,
-//                  )),
-//            ),
             Expanded(
               child: _buildResultList(),
             ),
@@ -476,7 +469,8 @@ class _SearchAllState extends State<SearchAll> {
     }
   }
 
-  void updateSearchResults(List searchedResults) {
+  void updateSearchResults(Map<String, dynamic> result) {
+    List searchedResults = result['results'];
     switch (filterValue) {
       case "Users":
         searchedResults.forEach((user) {

@@ -13,9 +13,9 @@ class User {
   String type;
   bool isVerified;
   final Setting setting = Setting(
-      enableService: false,
-      enableProduct: false,
-      enableExplore: false,
+      enableService: true,
+      enableProduct: true,
+      enableExplore: true,
       enableTransactionDetailPage: true);
 
   // Pass in as named parameter in constructor
