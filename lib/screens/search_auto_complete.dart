@@ -182,7 +182,7 @@ class _SearchTestState extends State<SearchTest> {
                   width: 4,
                 ),
               ),
-              Expanded(flex: 7, child: autoComplete()),
+              Expanded(flex: 7, child: search()),
             ],
           ),
           automaticallyImplyLeading: false,
@@ -308,7 +308,6 @@ class _SearchTestState extends State<SearchTest> {
       textAlignVertical: TextAlignVertical.center,
       style: TextStyle(fontSize: 15),
       textInputAction: TextInputAction.search,
-      focusNode: searchFocus,
       controller: searchController,
       decoration: InputDecoration(
         contentPadding: EdgeInsets.all(10),
@@ -340,6 +339,16 @@ class _SearchTestState extends State<SearchTest> {
       },
       onChanged: (value) {
         searchedText = value;
+        if (value.length > 4) {
+          setState(() {
+            noItemInList = false;
+            count = 0;
+            next = "";
+            previous = "";
+            results = [];
+          });
+          getList();
+        }
       },
     );
   }
@@ -680,6 +689,7 @@ class _SearchTestState extends State<SearchTest> {
       controller: autoCompleteTextController,
       key: autoTextFieldKey,
       suggestions: users,
+      textChanged: (val) {},
       decoration: InputDecoration(
         contentPadding: EdgeInsets.all(10),
         hintText: hint,
