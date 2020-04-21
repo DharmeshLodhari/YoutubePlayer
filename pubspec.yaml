@@ -37,7 +37,6 @@ dependencies:
   popup_menu: ^1.0.5
   flappy_search_bar: ^1.7.2
   package_info: ^0.4.0+16
-  get_ip: ^0.4.0
 
 flutter_icons:
   android: "launcher_icon"
