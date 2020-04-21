@@ -1,13 +1,13 @@
+import 'package:Slydo/screens/dashboard.dart';
+import 'package:Slydo/screens/explore.dart';
+import 'package:Slydo/screens/forms/add_bank_account.dart';
 import 'package:Slydo/screens/forms/add_document.dart';
 import 'package:Slydo/screens/forms/add_product.dart';
 import 'package:Slydo/screens/forms/add_service.dart';
-import 'package:Slydo/screens/dashboard.dart';
+import 'package:Slydo/screens/forms/compose_message.dart';
 import 'package:Slydo/screens/forms/edit_product.dart';
 import 'package:Slydo/screens/forms/edit_service.dart';
-import 'package:Slydo/screens/explore.dart';
 import 'package:Slydo/screens/forms/forgot_password.dart';
-import 'package:Slydo/screens/forms/add_bank_account.dart';
-import 'package:Slydo/screens/forms/compose_message.dart';
 import 'package:Slydo/screens/forms/login.dart';
 import 'package:Slydo/screens/forms/request_payment.dart';
 import 'package:Slydo/screens/forms/reset_password.dart';
@@ -19,8 +19,10 @@ import 'package:Slydo/screens/profile.dart';
 import 'package:Slydo/screens/request_payments_list.dart';
 import 'package:Slydo/screens/scan_qr_code.dart';
 import 'package:Slydo/screens/search.dart';
+import 'package:Slydo/screens/search_auto_complete.dart';
 import 'package:Slydo/screens/service_detail_page.dart';
 import 'package:Slydo/screens/settings.dart';
+import 'package:Slydo/screens/transaction_detail_page.dart';
 import 'package:Slydo/screens/transactions_list.dart';
 import 'package:Slydo/splash.dart';
 import 'package:Slydo/widget/resultReturningPasswordPopup.dart';
@@ -28,9 +30,9 @@ import 'package:flutter/material.dart';
 
 import 'detailed_message.dart';
 import 'forms/payout.dart';
+import 'forms/registration.dart';
 import 'home.dart';
 import 'index.dart';
-import 'forms/registration.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -65,6 +67,11 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => PaymentRequestList());
       case '/transactions':
         return MaterialPageRoute(builder: (_) => TransactionList());
+      case '/transaction-detail':
+        return MaterialPageRoute(
+            builder: (_) => TransactionDetail(
+                  arguments: settings.arguments,
+                ));
       case '/settings':
         return MaterialPageRoute(builder: (_) => SettingsList());
       case '/add-account':
@@ -83,6 +90,8 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => ExploreList());
       case '/search-user':
         return MaterialPageRoute(builder: (_) => SearchAll());
+      case '/search-auto':
+        return MaterialPageRoute(builder: (_) => SearchTest());
       case '/profile':
         return MaterialPageRoute(
             builder: (_) => Profile(arguments: settings.arguments));

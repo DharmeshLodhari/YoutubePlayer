@@ -21,6 +21,10 @@ class Transaction {
   String avatar;
   String currency;
   String createdAt;
+  String category;
+  String note;
+  String latitude;
+  String longitude;
   int amount;
   bool isCredit;
 
@@ -33,6 +37,10 @@ class Transaction {
       this.avatar,
       this.currency,
       this.createdAt,
+      this.category,
+      this.note,
+      this.latitude,
+      this.longitude,
       this.amount,
       this.isCredit});
 }

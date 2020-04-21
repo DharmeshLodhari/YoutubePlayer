@@ -112,22 +112,20 @@ class _TransactionListState extends State<TransactionList> {
         ? NoItemInList(
             msg: "Transaction history empty",
           )
-        : Container(
+        : ListView.builder(
             padding: EdgeInsets.symmetric(vertical: 4),
-            child: ListView.builder(
-              //+1 for progressbar
-              itemCount: transactionList.length + 1,
-              itemBuilder: (BuildContext context, int index) {
-                if (index == transactionList.length) {
-                  return _buildIndicator();
-                } else {
-                  return TransactionTile(
-                    transaction: transactionList[index],
-                  );
-                }
-              },
-              controller: _scrollController,
-            ),
+            //+1 for progressbar
+            itemCount: transactionList.length + 1,
+            itemBuilder: (BuildContext context, int index) {
+              if (index == transactionList.length) {
+                return _buildIndicator();
+              } else {
+                return TransactionTile(
+                  transaction: transactionList[index],
+                );
+              }
+            },
+            controller: _scrollController,
           );
   }
 

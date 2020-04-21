@@ -1,8 +1,5 @@
-import 'dart:convert';
-
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/models/auto_complete.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:Slydo/screens/colors.dart';
@@ -12,22 +9,22 @@ import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:http/http.dart' as http;
 import 'package:popup_menu/popup_menu.dart';
 import 'package:provider/provider.dart';
 
 final List<dynamic> services = [];
 CustomerProfile _payee;
 
-class SearchAll extends StatefulWidget {
+class SearchTest extends StatefulWidget {
   @override
-  _SearchAllState createState() => _SearchAllState();
+  _SearchTestState createState() => _SearchTestState();
 }
 
-class _SearchAllState extends State<SearchAll> {
+class _SearchTestState extends State<SearchTest> {
   bool isValidSearch = false;
   TextEditingController searchController;
   String searchedText = "";
+  String autoCompleteSearchText = "";
   FocusNode searchFocus = FocusNode();
   List<dynamic> searchedResult;
   CustomerProfileBloc customerProfileBloc;
@@ -41,10 +38,10 @@ class _SearchAllState extends State<SearchAll> {
 
   // this variables are for the autocomplete
   bool loading = true;
-  List<SearchedUser> users = List<SearchedUser>();
+  List<dynamic> users = List<dynamic>();
   AutoCompleteTextField searchedAutoCompleteTextField;
-  GlobalKey<AutoCompleteTextFieldState<SearchedUser>> autoTextFieldKey =
-      GlobalKey();
+  GlobalKey<AutoCompleteTextFieldState<dynamic>> autoTextFieldKey = GlobalKey();
+  TextEditingController autoCompleteTextController = TextEditingController();
 
   //popupmenu variables
   PopupMenu menu;
@@ -61,7 +58,6 @@ class _SearchAllState extends State<SearchAll> {
 
   @override
   void initState() {
-    getAutoCompleteUser();
     searchController = TextEditingController();
 
     slidableController = SlidableController(
@@ -72,6 +68,13 @@ class _SearchAllState extends State<SearchAll> {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
         getList();
+      }
+    });
+
+    autoCompleteTextController.addListener(() {
+      if (autoCompleteTextController.text.length >= 5) {
+        autoCompleteSearchText = autoCompleteTextController.text;
+        getAutoCompleteUser();
       }
     });
 
@@ -137,6 +140,7 @@ class _SearchAllState extends State<SearchAll> {
   void onClickMenu(MenuItemProvider item) {
     setState(() {
       searchController.text = "";
+      autoCompleteTextController.text = "";
       searchedText = "";
       count = 0;
       next = "";
@@ -169,9 +173,19 @@ class _SearchAllState extends State<SearchAll> {
         backgroundColor: lightBlue(),
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
-          automaticallyImplyLeading: false,
           backgroundColor: darkBlue(),
-          title: search(),
+          title: Row(
+            children: <Widget>[
+              Expanded(
+                flex: 1,
+                child: SizedBox(
+                  width: 4,
+                ),
+              ),
+              Expanded(flex: 7, child: autoComplete()),
+            ],
+          ),
+          automaticallyImplyLeading: false,
           actions: <Widget>[
             IconButton(
               key: popupMenuBtnKey,
@@ -207,11 +221,16 @@ class _SearchAllState extends State<SearchAll> {
         : ListView.builder(
             //+1 for progressbar
             itemCount: results.length + 1,
+            // ignore: missing_return
             itemBuilder: (BuildContext context, int index) {
               if (index == results.length) {
                 return _buildIndicator();
               } else {
-                return results[index];
+                try {
+                  return results[index];
+                } catch (error) {
+                  debugPrint(error);
+                }
               }
             },
             controller: _scrollController,
@@ -616,27 +635,118 @@ class _SearchAllState extends State<SearchAll> {
 
   void getAutoCompleteUser() async {
     try {
-      final response =
-          await http.get("https://jsonplaceholder.typicode.com/users");
-      if (response.statusCode == 200) {
-        users = loadUsers(response.body);
-        debugPrint("length of the user : " + users.length.toString());
-        setState(() {
-          loading = false;
-        });
-      } else {
-        debugPrint("error in getting user.");
-      }
+      debugPrint("auto complete user called");
+      results.clear();
+      String url = getSearchUrl(autoCompleteSearchText);
+      debugPrint(url);
+      var result = await _auth.searchEndpoint(url);
+
+      loadUsers(result);
+
+      debugPrint("length of the user : " + users.length.toString());
     } catch (error) {
       debugPrint(error.toString());
     }
   }
 
-  static List<SearchedUser> loadUsers(String jsonString) {
-    final parsed = json.decode(jsonString).cast<Map<String, dynamic>>();
-    return parsed
-        .map<SearchedUser>((json) => SearchedUser.fromJson(json))
-        .toList();
+  void loadUsers(List data) {
+    switch (filterValue) {
+      case "Users":
+        data.forEach((item) {
+          setState(() {
+            results.add(getUserTile(item));
+          });
+        });
+        break;
+      case "Products":
+        data.forEach((item) {
+          setState(() {
+            results.add(getProductTile(item));
+          });
+        });
+        break;
+      case "Services":
+        data.forEach((item) {
+          setState(() {
+            results.add(getServiceTile(item));
+          });
+        });
+        break;
+    }
+  }
+
+  Widget autoComplete() {
+    return searchedAutoCompleteTextField = AutoCompleteTextField<dynamic>(
+      controller: autoCompleteTextController,
+      key: autoTextFieldKey,
+      suggestions: users,
+      decoration: InputDecoration(
+        contentPadding: EdgeInsets.all(10),
+        hintText: hint,
+        isDense: true,
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(
+            color: Colors.white,
+            width: 1,
+          ),
+          borderRadius: BorderRadius.circular(6),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(
+            color: darkBlue(),
+            width: 1,
+          ),
+          borderRadius: BorderRadius.circular(6),
+        ),
+        fillColor: Colors.white,
+        filled: true,
+      ),
+      style: TextStyle(color: Colors.black, fontSize: 16),
+
+      // ignore: missing_return
+      itemFilter: (item, query) {
+        switch (filterValue) {
+          case "Users":
+            return item.userName.toLowerCase().startsWith(query.toLowerCase());
+            break;
+          case "Products":
+            return item.name.toLowerCase().startsWith(query.toLowerCase());
+            break;
+          case "Services":
+            return item.name.toLowerCase().startsWith(query.toLowerCase());
+            break;
+        }
+      },
+      // ignore: missing_return
+      itemSorter: (a, b) {
+        switch (filterValue) {
+          case "Users":
+            return a.userName.compareTo(b.userName);
+            break;
+          case "Products":
+            return a.name.compareTo(b.name);
+            break;
+          case "Services":
+            return a.name.compareTo(b.name);
+            break;
+        }
+      },
+      itemSubmitted: (item) {},
+      // ignore: missing_return
+      itemBuilder: (context, item) {
+        switch (filterValue) {
+          case "Users":
+            return getUserTile(item);
+            break;
+          case "Products":
+            return getProductTile(item);
+            break;
+          case "Services":
+            return getServiceTile(item);
+            break;
+        }
+      },
+    );
   }
 }
 

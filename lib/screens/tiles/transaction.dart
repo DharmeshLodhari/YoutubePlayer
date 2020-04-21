@@ -126,9 +126,10 @@ class TransactionTile extends StatelessWidget {
           trailing:
               transaction.amount.toString().length > 6 ? null : getAmount(),
           onTap: () {
-            if (userBloc.user.setting.enableTransactionDetailPage) {
-              //TODO:NAVIGATE to Transaction detailPage
-            }
+//            if (userBloc.user.setting.enableTransactionDetailPage) {
+            Navigator.of(context).pushNamed('/transaction-detail',
+                arguments: {'transaction': transaction});
+//            }
           },
         ),
       ),

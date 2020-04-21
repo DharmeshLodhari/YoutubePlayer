@@ -538,6 +538,10 @@ class AuthService {
               avatar: avatar,
               currency: item['currency'],
               createdAt: item['created_at'],
+              category: item['category'],
+              note: item['notes'],
+              latitude: item['latitude'] ?? "23.0225",
+              longitude: item['longitude'] ?? "72.5714",
               amount: item['amount'],
               isCredit: isCredit);
           transactions.add(transaction);

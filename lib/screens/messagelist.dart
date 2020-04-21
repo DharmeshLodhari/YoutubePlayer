@@ -208,21 +208,19 @@ class _MessageListState extends State<MessageList> {
         ? NoItemInList(
             msg: "No Messages",
           )
-        : Container(
+        : ListView.builder(
             padding: EdgeInsets.symmetric(vertical: 4),
-            child: ListView.builder(
-              //+1 for progressbar
-              itemCount: messageList.length + 1,
-              itemBuilder: (BuildContext context, int index) {
-                if (index == messageList.length) {
-                  return _buildIndicator();
-                } else {
-                  return _getSlidableWithLists(
-                      context, messageList[index], index);
-                }
-              },
-              controller: _scrollController,
-            ),
+            //+1 for progressbar
+            itemCount: messageList.length + 1,
+            itemBuilder: (BuildContext context, int index) {
+              if (index == messageList.length) {
+                return _buildIndicator();
+              } else {
+                return _getSlidableWithLists(
+                    context, messageList[index], index);
+              }
+            },
+            controller: _scrollController,
           );
   }
 

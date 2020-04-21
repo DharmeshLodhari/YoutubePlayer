@@ -16,7 +16,7 @@ class User {
       enableService: false,
       enableProduct: false,
       enableExplore: false,
-      enableTransactionDetailPage: false);
+      enableTransactionDetailPage: true);
 
   // Pass in as named parameter in constructor
   User({
