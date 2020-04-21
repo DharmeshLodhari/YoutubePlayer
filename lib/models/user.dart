@@ -15,7 +15,7 @@ class User {
   final Setting setting = Setting(
       enableService: true,
       enableProduct: true,
-      enableExplore: true,
+      enableExplore: false,
       enableTransactionDetailPage: true);
 
   // Pass in as named parameter in constructor

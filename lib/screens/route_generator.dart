@@ -91,7 +91,7 @@ class RouteGenerator {
       case '/search-user':
         return MaterialPageRoute(builder: (_) => SearchAll());
       case '/search-auto':
-        return MaterialPageRoute(builder: (_) => SearchTest());
+        return MaterialPageRoute(builder: (_) => SearchAutoComplete());
       case '/profile':
         return MaterialPageRoute(
             builder: (_) => Profile(arguments: settings.arguments));

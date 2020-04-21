@@ -12,12 +12,12 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:popup_menu/popup_menu.dart';
 import 'package:provider/provider.dart';
 
-class SearchTest extends StatefulWidget {
+class SearchAutoComplete extends StatefulWidget {
   @override
-  _SearchTestState createState() => _SearchTestState();
+  _SearchAutoCompleteState createState() => _SearchAutoCompleteState();
 }
 
-class _SearchTestState extends State<SearchTest> {
+class _SearchAutoCompleteState extends State<SearchAutoComplete> {
   bool isValidSearch = false;
   String autoCompleteSearchText = "";
 
@@ -25,7 +25,7 @@ class _SearchTestState extends State<SearchTest> {
   CustomerProfileBloc customerProfileBloc;
   UserBloc userBloc;
   static var filterValue = "Users";
-  String hint = "Search hear";
+  String hint = "Search User";
 
   final _auth = AuthService();
   SlidableController slidableController;
@@ -40,7 +40,7 @@ class _SearchTestState extends State<SearchTest> {
   //popupmenu variables
   PopupMenu menu;
   GlobalKey popupMenuBtnKey = GlobalKey();
-  GlobalKey<ScaffoldState> _scaffoldSearchKey;
+  GlobalKey<ScaffoldState> _scaffoldSearchKey = GlobalKey<ScaffoldState>();
 
   //pagination variables
   int count = 0;
@@ -140,6 +140,7 @@ class _SearchTestState extends State<SearchTest> {
       results.clear();
       noItemInList = false;
       filterValue = item.menuTitle;
+      hint = "Find $filterValue";
     });
   }
 
@@ -149,7 +150,6 @@ class _SearchTestState extends State<SearchTest> {
 
   @override
   Widget build(BuildContext context) {
-    _scaffoldSearchKey = GlobalKey<ScaffoldState>();
     PopupMenu.context = context;
 
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);

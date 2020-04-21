@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/models/notification.dart';
 import 'package:Slydo/screens/messagelist.dart';
-import 'package:Slydo/screens/search.dart';
+import 'package:Slydo/screens/search_auto_complete.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/device_info.dart';
 import 'package:Slydo/widget/local_notification.dart';
@@ -57,7 +57,7 @@ class _DashboardState extends State<Dashboard> {
         Home(),
         PaymentRequestList(),
         TransactionList(),
-        SearchAll(),
+        SearchAutoComplete(),
         MessageList(),
         SettingsList(
           arguments: {'isLocked': isLocked},
