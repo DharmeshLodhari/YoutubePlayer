@@ -375,12 +375,6 @@ class _SearchAutoCompleteState extends State<SearchAutoComplete> {
       fit: BoxFit.fitWidth,
       filterQuality: FilterQuality.high,
     );
-    var qrCodeImage = CachedNetworkImage(
-      imageUrl: user.qrCode,
-      colorBlendMode: BlendMode.darken,
-      fit: BoxFit.fitWidth,
-      filterQuality: FilterQuality.high,
-    );
 
     Widget tile = Card(
       semanticContainer: true,
@@ -393,7 +387,6 @@ class _SearchAutoCompleteState extends State<SearchAutoComplete> {
         ),
         subtitle: Text(user.userName),
         leading: avatarImage,
-        trailing: qrCodeImage,
       ),
     );
 

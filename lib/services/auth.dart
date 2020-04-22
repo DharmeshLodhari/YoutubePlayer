@@ -365,7 +365,6 @@ class AuthService {
 
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
-      debugPrint(jsonData.toString());
       List<BankAccount> accounts = [];
       for (var item in jsonData['results']) {
         if (item['is_default'] == true) {
@@ -386,6 +385,52 @@ class AuthService {
     } else {
       throw "Can't get https.";
     }
+  }
+
+  // delete single bankaccount
+  Future<bool> deleteBankAccount(String id) async {
+    var url = baseUrl + "/api/v1/transactions/bank-accounts-list/" + id + "/";
+    var headers = await getAuthHeaders();
+    var response = await http.delete(
+      url,
+      headers: headers,
+    );
+    var jsonData = json.decode(response.body);
+    if (response.statusCode == 204) {
+      return true;
+    } else {
+      throw jsonData;
+    }
+  }
+
+  Future<bool> addBankAccount(Map data) async {
+    var url = baseUrl + "/api/v1/transactions/add-bank-account/";
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await http.post(url, headers: headers, body: _data);
+    return response.statusCode == 201;
+  }
+
+  // update bank account information
+  Future<bool> updateBankAccount(Map data) async {
+    var url = baseUrl +
+        "/api/v1/transactions/bank-accounts-list/" +
+        data['uuid'] +
+        "/";
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response;
+    try {
+      response = await http.patch(url, headers: headers, body: _data);
+    } catch (e) {
+      debugPrint("update bank account : " + e.toString());
+    }
+    debugPrint(response.statusCode.toString());
+    if (response.statusCode != 200) {
+      var jsonData = response.body;
+      debugPrint(jsonData);
+    }
+    return response.statusCode == 200;
   }
 
   // List the users bank accounts with pagination
@@ -678,16 +723,7 @@ class AuthService {
     }
   }
 
-  // TODO: Marge with makePayment
-  //Send payment to backend
-  Future<bool> addBankAccount(Map data) async {
-    var url = baseUrl + "/api/v1/transactions/add-bank-account/";
-    var headers = await getAuthHeaders();
-    var _data = jsonEncode(data);
-    var response = await http.post(url, headers: headers, body: _data);
-    return response.statusCode == 201;
-  }
-
+  //register device
   Future<bool> registerDevice(Map data) async {
     var url = baseUrl + "/api/v1/notification/register-device/";
     var headers = await getAuthHeaders();

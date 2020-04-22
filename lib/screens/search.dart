@@ -417,12 +417,6 @@ class _SearchAllState extends State<SearchAll> {
       fit: BoxFit.fitWidth,
       filterQuality: FilterQuality.high,
     );
-    var qrCodeImage = CachedNetworkImage(
-      imageUrl: user.qrCode,
-      colorBlendMode: BlendMode.darken,
-      fit: BoxFit.fitWidth,
-      filterQuality: FilterQuality.high,
-    );
 
     Widget tile = Card(
       semanticContainer: true,
@@ -435,7 +429,6 @@ class _SearchAllState extends State<SearchAll> {
         ),
         subtitle: Text(user.userName),
         leading: avatarImage,
-        trailing: qrCodeImage,
       ),
     );
 

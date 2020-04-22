@@ -1,6 +1,7 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/models/transactions.dart';
+import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/widget/passcodePopup.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -42,7 +43,11 @@ class _BankAccountTileState extends State<BankAccountTile> {
             fit: BoxFit.cover,
             filterQuality: FilterQuality.high,
             placeholder: (context, url) => widget.account.bankAvatar == ""
-                ? Icon(Icons.account_balance)
+                ? Icon(
+                    Icons.account_balance,
+                    size: 45,
+                    color: darkBlue(),
+                  )
                 : CircularProgressIndicator(
                     backgroundColor: Colors.white,
                   ),

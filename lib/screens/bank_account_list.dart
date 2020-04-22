@@ -1,3 +1,4 @@
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/widget/noItemInList.dart';
@@ -5,6 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:toast/toast.dart';
 
@@ -20,6 +22,7 @@ class _BankAccountListState extends State<BankAccountList> {
 
   // Get list of users bank account
   final _auth = AuthService();
+  UserBloc userBloc;
   int count = 0;
   String next = "";
   String previous = "";
@@ -75,6 +78,7 @@ class _BankAccountListState extends State<BankAccountList> {
 
   @override
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
     return WillPopScope(
       onWillPop: () async {
         Navigator.pop(context);
@@ -187,7 +191,7 @@ class _BankAccountListState extends State<BankAccountList> {
 
   Widget bankAccountTile({BankAccount account}) {
     return Card(
-      margin: EdgeInsets.symmetric(horizontal: 40, vertical: 4),
+      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 4),
       child: ListTile(
         dense: true,
         title: getTitle(account: account),
@@ -204,6 +208,7 @@ class _BankAccountListState extends State<BankAccountList> {
                 ? Icon(
                     Icons.account_balance,
                     size: 45,
+                    color: darkBlue(),
                   )
                 : CircularProgressIndicator(
                     backgroundColor: Colors.white,
@@ -223,8 +228,8 @@ class _BankAccountListState extends State<BankAccountList> {
             height: 8,
           ),
           Text(
-            account.bankName.length >= 20
-                ? account.bankName.substring(0, 20)
+            account.bankName.length >= 30
+                ? account.bankName.substring(0, 30)
                 : account.bankName,
             style: TextStyle(
                 color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
@@ -287,30 +292,104 @@ class _BankAccountListState extends State<BankAccountList> {
           caption: caption,
           color: Colors.red,
           icon: Icons.delete,
-          onTap: () async {
-            //TODO: CALL DELETE BANK ACCOUNT API
-            _onRefresh();
+          onTap: () {
+            deleteBankAccount(account);
           }),
     ];
+  }
+
+  void deleteBankAccount(BankAccount account) {
+    {
+      if (bankAccountList.length == 1) {
+        Toast.show(
+          "You can not delete only bank account",
+          context,
+          backgroundColor: darkBlue(),
+          textColor: Colors.white,
+        );
+      } else {
+        _auth.deleteBankAccount(account.uuid).then((value) {
+          if (value) {
+            Toast.show(
+              "Account deleted successfully !!",
+              context,
+              backgroundColor: darkBlue(),
+              textColor: Colors.white,
+            );
+            _onRefresh();
+          } else {
+            Toast.show(
+              "Account is Not deleted !!",
+              context,
+              backgroundColor: darkBlue(),
+              textColor: Colors.white,
+            );
+          }
+        }).catchError((error) {
+          Toast.show(
+            error.toString(),
+            context,
+            backgroundColor: darkBlue(),
+            textColor: Colors.white,
+          );
+        });
+      }
+    }
   }
 
   List<Widget> listActionSlideActions({BankAccount account}) {
     return [
       IconSlideAction(
-          caption: account.isDefault ? 'Default' : "Make default",
-          color: Colors.green,
-          icon: Icons.device_hub,
-          onTap: account.isDefault
-              ? () {
-                  Toast.show(
-                      "This Account is Alerady Default Account ", context,
-                      textColor: Colors.white, backgroundColor: darkBlue());
-                }
-              : () {
-                  //TODO: CALL MAKE DEFAULT BANK ACCOUNT API
-                  _onRefresh();
-                }),
+        caption: account.isDefault ? 'Default' : "Make default",
+        color: Colors.green,
+        icon: Icons.device_hub,
+        onTap: account.isDefault
+            ? () {
+                Toast.show("This Account is Alerady Default Account ", context,
+                    textColor: Colors.white, backgroundColor: darkBlue());
+              }
+            : () {
+                updateBankAccount(account);
+              },
+      ),
     ];
+  }
+
+  void updateBankAccount(BankAccount account) {
+    Map data = {
+      "uuid": account.uuid,
+      "customer_username": userBloc.user.userName,
+      "bank": account.bankName,
+      "account_name": account.accountName,
+      "account_number": account.accountNumber,
+      "is_default": true,
+    };
+    _auth.updateBankAccount(data).then((value) {
+      if (value) {
+        Toast.show(
+          "Account updated successfully !!",
+          context,
+          backgroundColor: darkBlue(),
+          textColor: Colors.white,
+        );
+        _onRefresh();
+      } else {
+        Toast.show(
+          "Account is not updated!!",
+          context,
+          backgroundColor: darkBlue(),
+          textColor: Colors.white,
+        );
+      }
+    }).catchError((error) {
+      Toast.show(
+        error.toString(),
+        context,
+        backgroundColor: darkBlue(),
+        textColor: Colors.white,
+      );
+    });
+    _onRefresh();
   }
 
   void handleSlideAnimationChanged(Animation<double> slideAnimation) {}
