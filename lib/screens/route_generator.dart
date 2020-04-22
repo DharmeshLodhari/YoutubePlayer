@@ -1,3 +1,4 @@
+import 'package:Slydo/screens/bank_account_list.dart';
 import 'package:Slydo/screens/dashboard.dart';
 import 'package:Slydo/screens/explore.dart';
 import 'package:Slydo/screens/forms/add_bank_account.dart';
@@ -143,6 +144,8 @@ class RouteGenerator {
             builder: (_) => ResultReturningPasswordPopup());
       case '/add-bank-account':
         return MaterialPageRoute(builder: (_) => AddAccount());
+      case '/bank-account-list':
+        return MaterialPageRoute(builder: (_) => BankAccountList());
       case '/scan-qr':
         return MaterialPageRoute(
             builder: (_) => QRCodeView(

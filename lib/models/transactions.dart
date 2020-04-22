@@ -4,13 +4,16 @@ class BankAccount {
   String bankName;
   String accountName;
   int accountNumber;
+  bool isDefault;
 
-  BankAccount(
-      {this.uuid,
-      this.bankAvatar,
-      this.bankName,
-      this.accountName,
-      this.accountNumber});
+  BankAccount({
+    this.uuid,
+    this.bankAvatar,
+    this.bankName,
+    this.accountName,
+    this.accountNumber,
+    this.isDefault,
+  });
 }
 
 class Transaction {

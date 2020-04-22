@@ -45,9 +45,18 @@ class DatabaseHelper {
   // Create this database tables when we initialize app
   void _onCreate(Database db, int version) async {
     // Create the user table
-    await db.execute(
-        "CREATE TABLE User(uuid TEXT PRIMARY KEY, fullName TEXT, userName TEXT, "
-        "phoneNumber TEXT, password TEXT, avatar TEXT, qrCode TEXT, url TEXT, currency TEXT)");
+    await db.execute("""CREATE TABLE "User" (
+        "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
+        "uuid"	TEXT,
+        "fullName"	TEXT,
+        "userName"	TEXT,
+        "phoneNumber"	TEXT,
+        "password"	TEXT,
+        "avatar"	TEXT,
+        "qrCode"	TEXT,
+        "url"	TEXT,
+        "currency"	TEXT
+    );""");
 
     // Create the jwt table
     await db.execute(

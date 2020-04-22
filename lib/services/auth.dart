@@ -46,6 +46,9 @@ class AuthService {
       currency: currency,
       isVerified: isVerified,
     );
+    //delete old user if exist
+    await _db.deleteUsers();
+
     await _db.saveUser(_user);
     return _user;
   }
@@ -362,6 +365,7 @@ class AuthService {
 
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
+      debugPrint(jsonData.toString());
       List<BankAccount> accounts = [];
       for (var item in jsonData['results']) {
         if (item['is_default'] == true) {
@@ -379,6 +383,52 @@ class AuthService {
         }
       }
       return accounts;
+    } else {
+      throw "Can't get https.";
+    }
+  }
+
+  // List the users bank accounts with pagination
+  Future<Map<String, dynamic>> getBankAccountsPagination(
+      String next, String previous) async {
+    var url = "";
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      url = baseUrl + "/api/v1/transactions/bank-accounts-list";
+    } else {
+      url = next;
+    }
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+      debugPrint(jsonData.toString());
+      List<BankAccount> accounts = [];
+      for (var item in jsonData['results']) {
+        var bank = item["bank"];
+        var logoUrl = item["bank"]['logo_url'];
+        item["bank"]['logo_url'] = logoUrl;
+
+        BankAccount account = BankAccount(
+          bankAvatar: item["bank"]['logo_url'],
+          uuid: item['id'].toString(),
+          bankName: bank['short_name'],
+          accountName: item['account_name'],
+          accountNumber: item['account_number'],
+          isDefault: item['is_default'],
+        );
+        accounts.add(account);
+      }
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": accounts
+      };
+      return result;
     } else {
       throw "Can't get https.";
     }
