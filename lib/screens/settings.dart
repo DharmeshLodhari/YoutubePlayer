@@ -180,8 +180,8 @@ class _SettingsListState extends State<SettingsList> {
             Text(userBloc.user.userName + "\n" + userBloc.user.phoneNumber),
         leading: isLoading
             ? Container(
-                height: 45,
-                width: 45,
+                height: 50,
+                width: 50,
                 child: CircularProgressIndicator(
                   backgroundColor: Colors.white,
                 ),
