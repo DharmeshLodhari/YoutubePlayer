@@ -25,7 +25,7 @@ class _BankAccountTileState extends State<BankAccountTile> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.symmetric(horizontal: 40),
+      margin: EdgeInsets.symmetric(horizontal: 20),
       child: ListTile(
         title: Text(
           widget.account.bankName,
@@ -91,7 +91,7 @@ class _AccountBalanceTileState extends State<AccountBalanceTile> {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
     return Card(
-      margin: EdgeInsets.symmetric(horizontal: 40),
+      margin: EdgeInsets.symmetric(horizontal: 20),
       child: ListTile(
         title: Text(
           'Account Balance',

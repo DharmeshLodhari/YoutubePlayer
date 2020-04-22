@@ -168,7 +168,7 @@ class _SettingsListState extends State<SettingsList> {
   Widget displayProfileTile() {
     final UserBloc userBloc = Provider.of<UserBloc>(context);
     return Card(
-      margin: EdgeInsets.symmetric(horizontal: 40),
+      margin: EdgeInsets.symmetric(horizontal: 20),
       child: ListTile(
         title: Text(
           userBloc.user.fullName,
@@ -374,7 +374,7 @@ class _SettingsListState extends State<SettingsList> {
 
   Widget slydoBankAccountTile() {
     return Card(
-      margin: EdgeInsets.symmetric(horizontal: 40),
+      margin: EdgeInsets.symmetric(horizontal: 20),
       color: Colors.white,
       child: ListTile(
         isThreeLine: true,
