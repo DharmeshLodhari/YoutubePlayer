@@ -1,15 +1,13 @@
 import 'dart:io';
 
 import 'package:Slydo/data/database_helper.dart';
-import 'package:Slydo/models/notification.dart';
 import 'package:Slydo/screens/messagelist.dart';
 import 'package:Slydo/screens/search_auto_complete.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/device_info.dart';
-import 'package:Slydo/widget/local_notification.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import '../screens/colors.dart';
 import 'home.dart';
@@ -34,8 +32,6 @@ class _DashboardState extends State<Dashboard> {
   List<Widget> screens;
   final _auth = AuthService();
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
-  final List<PushNotification> notifications = [];
-  final localNotifications = FlutterLocalNotificationsPlugin();
   _DashboardState({this.arguments});
 
   // creating a instance of the databaseHelper
@@ -65,23 +61,12 @@ class _DashboardState extends State<Dashboard> {
       ];
     });
 
-    final settingsAndroid = AndroidInitializationSettings(
-      'app_icon',
-    );
-    final settingsIOS = IOSInitializationSettings(
-        onDidReceiveLocalNotification: (id, title, body, payload) =>
-            onSelectNotification(payload));
-
-    localNotifications.initialize(
-        InitializationSettings(settingsAndroid, settingsIOS),
-        onSelectNotification: onSelectNotification);
-
     setupNotification();
     super.initState();
   }
 
   // ignore: missing_return
-  Future onSelectNotification(String payload) {
+  void onSelectNotification(String payload) {
     // example of notification response
     // {body: abiola.rasheed.2 sent you a message,
     // title: You've Got Mail, vibrate: [200,100,200,100,200,100,400],
@@ -104,6 +89,11 @@ class _DashboardState extends State<Dashboard> {
         'id': idOfMessage,
       });
     }
+  }
+
+  void _navigateToItemDetail(Map<String, dynamic> notification) async {
+    debugPrint("naviagate function is callled");
+    onSelectNotification(notification['actions']);
   }
 
   @override
@@ -173,7 +163,7 @@ class _DashboardState extends State<Dashboard> {
 
   void setupNotification() async {
     var data = await getDeviceInfo();
-    _firebaseMessaging.getToken().then((String token) {
+    _firebaseMessaging.getToken().then((String token) async {
       data["token"] = token;
 
       // this piece of code convert Map<dynamic,dynamic> data to Map<String,String> tempData
@@ -185,11 +175,14 @@ class _DashboardState extends State<Dashboard> {
       tempData['deviceId'] = data['device_id'];
       tempData['deviceName'] = data['device_name'];
 
+      // delete device info to database
+      await _db.deleteDevice();
+
       // save device info to database
-      _db.saveDevice(tempData);
+      await _db.saveDevice(tempData);
 
       // register device with the backend
-      _auth.registerDevice(data);
+      await _auth.registerDevice(data);
     });
 
     if (Platform.isIOS) {
@@ -203,11 +196,18 @@ class _DashboardState extends State<Dashboard> {
         debugPrint("onMessage: $message");
         // creating notification from server payload
         var notification = getAndroidNotification(message);
-        // it will show notification
-        showOngoingNotification(localNotifications,
-            title: notification['title'],
-            body: notification['body'],
-            payload: notification['actions']);
+
+        debugPrint("Notification From onMessage:  $notification");
+
+        // show the notification in the dialog
+        showCuperDialog<String>(
+          context: context,
+          notification: notification,
+          child: CupertinoDessertDialog(
+            title: Text(notification['title'].toString()),
+            content: Text(notification['body'].toString()),
+          ),
+        );
       },
 
       // onLaunch will be called when App is not running
@@ -215,27 +215,41 @@ class _DashboardState extends State<Dashboard> {
         debugPrint("onLaunch: $message");
         // creating notification from server payload
         var notification = getAndroidNotification(message);
-        // it will show notification
-        showOngoingNotification(localNotifications,
-            title: notification['title'],
-            body: notification['body'],
-            payload: notification['actions']);
+
+        debugPrint("Notification From onLaunch:  $notification");
+
+        //navigate to the particular screen
+        _navigateToItemDetail(notification);
       },
       // onResume will be called when App is running and it is in background
       onResume: (Map<String, dynamic> message) async {
         debugPrint("onResume: $message");
         // creating notification from server payload
         var notification = getAndroidNotification(message);
-        // it will show notification
-        showOngoingNotification(localNotifications,
-            title: notification['title'],
-            body: notification['body'],
-            payload: notification['actions']);
+
+        debugPrint("Notification From OnResume:  $notification");
+
+        //navigate to the particular screen
+        _navigateToItemDetail(notification);
       },
     );
   }
 
-  getAndroidNotification(Map<String, dynamic> message) {
+  void showCuperDialog<T>(
+      {BuildContext context, Map<String, dynamic> notification, Widget child}) {
+    showCupertinoDialog<T>(
+      context: context,
+      builder: (BuildContext context) => child,
+    ).then((T value) {
+      if (value != null) {
+        if (value == "Navigate") {
+          _navigateToItemDetail(notification);
+        }
+      }
+    });
+  }
+
+  Map<String, dynamic> getAndroidNotification(Map<String, dynamic> message) {
     Map<String, dynamic> notification = {};
     notification["body"] = message['notification']['body'];
     notification["title"] = message['notification']['title'];
@@ -249,5 +263,58 @@ class _DashboardState extends State<Dashboard> {
     notification["actions"] = message['data']['actions'];
     debugPrint("notification from android getnotification $notification");
     return notification;
+  }
+
+  var note = '''
+  {
+    notification: 
+    {
+      title: Payment Received,
+      body: NGN1: Received from pankaj.sakariya
+    },
+    data:
+    {
+      click_action: FLUTTER_NOTIFICATION_CLICK,
+      actions: /transaction,
+      dir: auto,
+      vibrate: [200,100,200,100,200,100,400],
+      icon : xyz,
+      badge : xyz,
+      sound : xyz,
+      link : xyz,
+      tag : xyz, 
+     }
+  }
+  ''';
+}
+
+class CupertinoDessertDialog extends StatelessWidget {
+  const CupertinoDessertDialog({Key key, this.title, this.content})
+      : super(key: key);
+
+  final Widget title;
+  final Widget content;
+
+  @override
+  Widget build(BuildContext context) {
+    return CupertinoAlertDialog(
+      title: title,
+      content: content,
+      actions: <Widget>[
+        CupertinoDialogAction(
+          child: const Text('Navigate to the page'),
+          onPressed: () {
+            Navigator.pop(context, 'Navigate');
+          },
+        ),
+        CupertinoDialogAction(
+          child: const Text('Cancel'),
+          isDestructiveAction: true,
+          onPressed: () {
+            Navigator.pop(context, 'Cancel');
+          },
+        ),
+      ],
+    );
   }
 }
