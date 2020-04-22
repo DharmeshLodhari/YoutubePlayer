@@ -19,6 +19,7 @@ class SearchAutoComplete extends StatefulWidget {
 
 class _SearchAutoCompleteState extends State<SearchAutoComplete> {
   bool isValidSearch = false;
+  bool isSearchIsEmpty = true;
   String autoCompleteSearchText = "";
 
   List<dynamic> searchedResult;
@@ -69,6 +70,11 @@ class _SearchAutoCompleteState extends State<SearchAutoComplete> {
       if (autoCompleteTextController.text.length >= 5) {
         autoCompleteSearchText = autoCompleteTextController.text;
         getAutoCompleteUser();
+      }
+      if (results.isNotEmpty || autoCompleteTextController.text.length != 0) {
+        setState(() {
+          isSearchIsEmpty = false;
+        });
       }
     });
 
@@ -205,27 +211,31 @@ class _SearchAutoCompleteState extends State<SearchAutoComplete> {
   }
 
   Widget _buildResultList() {
-    return noItemInList
+    return isSearchIsEmpty
         ? NoItemInList(
-            msg: "Sorry No $filterValue found",
+            msg: "Please type something to get results",
           )
-        : ListView.builder(
-            //+1 for progressbar
-            itemCount: results.length + 1,
-            // ignore: missing_return
-            itemBuilder: (BuildContext context, int index) {
-              if (index == results.length) {
-                return _buildIndicator();
-              } else {
-                try {
-                  return results[index];
-                } catch (error) {
-                  debugPrint(error);
-                }
-              }
-            },
-            controller: _scrollController,
-          );
+        : noItemInList
+            ? NoItemInList(
+                msg: "Sorry No $filterValue found",
+              )
+            : ListView.builder(
+                //+1 for progressbar
+                itemCount: results.length + 1,
+                // ignore: missing_return
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == results.length) {
+                    return _buildIndicator();
+                  } else {
+                    try {
+                      return results[index];
+                    } catch (error) {
+                      debugPrint(error);
+                    }
+                  }
+                },
+                controller: _scrollController,
+              );
   }
 
   Widget _buildIndicator() {
