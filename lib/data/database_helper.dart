@@ -59,12 +59,24 @@ class DatabaseHelper {
     );""");
 
     // Create the jwt table
-    await db.execute(
-        "CREATE TABLE Jwt(access TEXT PRIMARY KEY, refresh TEXT, expiration TEXT)");
+    await db.execute('''CREATE TABLE "Jwt" (
+                "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
+                "access"	TEXT,
+                "refresh"	TEXT,
+                "expiration"	TEXT
+            );
+    ''');
 
     // Create the device table
-    await db.execute(
-        "CREATE TABLE Device(firebaseToken TEXT PRIMARY KEY, type TEXT, mode TEXT, deviceId TEXT, deviceName TEXT)");
+    await db.execute('''CREATE TABLE "Device" (
+                "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
+                "firebaseToken"	TEXT,
+                "type"	TEXT,
+                "mode"	TEXT,
+                "deviceId"	TEXT,
+                "deviceName"	TEXT
+             );
+      ''');
   }
 
   // Close connect to the db
@@ -109,7 +121,7 @@ class DatabaseHelper {
     var res = await dbClient.query("User");
 //    List<User> users = [];
 
-    var obj = res.first;
+    var obj = res[0];
     var user = User(
       uuid: obj["uuid"],
       url: obj["url"],
