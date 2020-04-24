@@ -462,9 +462,10 @@ class _UserLoginState extends State<UserLogin> {
           actionTwo: "CANCEL",
           type: AlertType.none,
         );
-
         if (result) {
           _navigateToItemDetail(notification);
+        } else {
+          Navigator.pop(context);
         }
       },
 
