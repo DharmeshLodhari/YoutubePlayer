@@ -20,6 +20,7 @@ Future<bool> showDialogBox(
     ),
     buttons: [
       DialogButton(
+        radius: BorderRadius.circular(2),
         child: Text(
           actionOne,
           style: TextStyle(color: Colors.white, fontSize: 20),
@@ -28,6 +29,7 @@ Future<bool> showDialogBox(
         color: Color.fromRGBO(13, 27, 70, 1.0),
       ),
       DialogButton(
+        radius: BorderRadius.circular(2),
         child: Text(
           actionTwo,
           style: TextStyle(color: Colors.white, fontSize: 20),
