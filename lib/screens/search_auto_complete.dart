@@ -163,7 +163,9 @@ class _SearchAutoCompleteState extends State<SearchAutoComplete> {
 
     return WillPopScope(
       onWillPop: () async {
-        return true;
+        Navigator.pop(context);
+        Navigator.pushNamed(context, '/dashboard');
+        return false;
       },
       child: Scaffold(
         key: _scaffoldSearchKey,

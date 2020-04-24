@@ -1,14 +1,14 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/widget/dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:toast/toast.dart';
-
-import '../widget/exit_alert_dialog.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -24,10 +24,17 @@ class _HomeState extends State<Home> {
 
     return WillPopScope(
       onWillPop: () async {
-        showDialog(
+        bool result = await showDialogBox(
           context: context,
-          builder: (context) => ExitAlertDialog(),
+          title: "Exit",
+          description: "Are You Sure Want To Exit?",
+          actionOne: "Yes",
+          actionTwo: "No",
+          type: AlertType.none,
         );
+        if (result) {
+          SystemChannels.platform.invokeMethod<void>('SystemNavigator.pop');
+        }
         return false;
       },
       child: Scaffold(
@@ -215,19 +222,21 @@ class _HomeState extends State<Home> {
   Widget displayUserAvatar(userBloc) {
     return Padding(
       padding: const EdgeInsets.all(10.0),
-      child: ClipOval(
-        child: CachedNetworkImage(
-          imageUrl: userBloc.user.avatar,
-          height: 40,
-          width: 40,
-          colorBlendMode: BlendMode.darken,
-          fit: BoxFit.cover,
-          filterQuality: FilterQuality.high,
-          placeholder: (context, url) => userBloc.user.avatar == ""
-              ? Icon(Icons.person)
-              : CircularProgressIndicator(
-                  backgroundColor: Colors.white,
-                ),
+      child: GestureDetector(
+        child: ClipOval(
+          child: CachedNetworkImage(
+            imageUrl: userBloc.user.avatar,
+            height: 40,
+            width: 40,
+            colorBlendMode: BlendMode.darken,
+            fit: BoxFit.cover,
+            filterQuality: FilterQuality.high,
+            placeholder: (context, url) => userBloc.user.avatar == ""
+                ? Icon(Icons.person)
+                : CircularProgressIndicator(
+                    backgroundColor: Colors.white,
+                  ),
+          ),
         ),
       ),
     );

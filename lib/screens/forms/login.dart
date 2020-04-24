@@ -7,10 +7,12 @@ import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/device_info.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/dialog.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
 
@@ -452,14 +454,18 @@ class _UserLoginState extends State<UserLogin> {
         debugPrint("Notification From onMessage:  $notification");
 
         // show the notification in the dialog
-        showCuperDialog<String>(
+        bool result = await showDialogBox(
           context: context,
-          notification: notification,
-          child: CupertinoDessertDialog(
-            title: Text(notification['title'].toString()),
-            content: Text(notification['body'].toString()),
-          ),
+          title: notification['title'],
+          description: notification['body'],
+          actionOne: "NAVIGATE",
+          actionTwo: "CANCEL",
+          type: AlertType.none,
         );
+
+        if (result) {
+          _navigateToItemDetail(notification);
+        }
       },
 
       // onLaunch will be called when App is not running
@@ -515,36 +521,5 @@ class _UserLoginState extends State<UserLogin> {
     notification["actions"] = message['data']['actions'];
     debugPrint("notification from android getnotification $notification");
     return notification;
-  }
-}
-
-class CupertinoDessertDialog extends StatelessWidget {
-  const CupertinoDessertDialog({Key key, this.title, this.content})
-      : super(key: key);
-
-  final Widget title;
-  final Widget content;
-
-  @override
-  Widget build(BuildContext context) {
-    return CupertinoAlertDialog(
-      title: title,
-      content: content,
-      actions: <Widget>[
-        CupertinoDialogAction(
-          child: const Text('Navigate to the page'),
-          onPressed: () {
-            Navigator.pop(context, 'Navigate');
-          },
-        ),
-        CupertinoDialogAction(
-          child: const Text('Cancel'),
-          isDestructiveAction: true,
-          onPressed: () {
-            Navigator.pop(context, 'Cancel');
-          },
-        ),
-      ],
-    );
   }
 }

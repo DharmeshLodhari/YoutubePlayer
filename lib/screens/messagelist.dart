@@ -3,6 +3,7 @@ import 'package:Slydo/models/message.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/screens/tiles/message.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
@@ -10,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:toast/toast.dart';
 
 class MessageList extends StatefulWidget {
@@ -367,52 +369,30 @@ class _MessageListState extends State<MessageList> {
         ));
   }
 
-  void deleteMessage(PartialMessage partialMessage, int index) {
-    showDialog(
+  void deleteMessage(PartialMessage partialMessage, int index) async {
+    bool result = await showDialogBox(
       context: context,
-      child: AlertDialog(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(15.0))),
-        content: Text('Are you sure want to delete this Message?',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-            )),
-        actions: <Widget>[
-          FlatButton(
-            child: const Text('YES'),
-            color: darkBlue(),
-            onPressed: () async {
-              // call delete message _auth method
-              bool done = await _auth.deleteMessage(messageList[index].id);
-              if (done) {
-                Navigator.pop(context);
-                _showSnackBar(context, "Message is deleted successfully!!");
-                setState(() {
-                  messageList.removeAt(index);
-                  if (messageList.length <= 9) {
-                    getList();
-                  }
-                });
-              } else {
-                Navigator.pop(context);
-                _showSnackBar(context, "Error");
-              }
-            },
-          ),
-          FlatButton(
-            color: darkBlue(),
-            child: const Text(
-              'NO',
-              style: TextStyle(fontWeight: FontWeight.w400),
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-        ],
-      ),
+      title: "Delete",
+      description: "Are you sure want to delete this Message?",
+      actionOne: "YES",
+      actionTwo: "CANCEL",
+      type: AlertType.warning,
     );
+    if (result) {
+      // call delete message _auth method
+      bool done = await _auth.deleteMessage(messageList[index].id);
+      if (done) {
+        _showSnackBar(context, "Message is deleted successfully!!");
+        setState(() {
+          messageList.removeAt(index);
+          if (messageList.length <= 9) {
+            getList();
+          }
+        });
+      } else {
+        _showSnackBar(context, "Error");
+      }
+    }
   }
 
   Widget _getSlidableWithLists(

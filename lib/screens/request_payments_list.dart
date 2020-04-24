@@ -3,6 +3,7 @@ import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/screens/tiles/transaction.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
@@ -10,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:toast/toast.dart';
 
 class PaymentRequestList extends StatefulWidget {
@@ -301,69 +303,30 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
     );
   }
 
-  void rejectPaymentRequestAlert(PaymentRequest paymentRequest, int index) {
-    showDialog(
+  Future<void> rejectPaymentRequestAlert(
+      PaymentRequest paymentRequest, int index) async {
+    bool result = await showDialogBox(
       context: context,
-      child: AlertDialog(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(15.0))),
-        content: Text('Are you sure want to reject this request?',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-            )),
-        actions: <Widget>[
-          FlatButton(
-            child: const Text('YES'),
-            color: darkBlue(),
-            onPressed: () async {
-              bool done = await _auth.rejectPaymentRequests(paymentRequest);
-              if (done) {
-                Navigator.pop(context);
-                _showSnackBar(context, "Payment Request Rejected !!");
-                setState(() {
-                  requestPaymentList.removeAt(index);
-                  if (requestPaymentList.length <= 9) {
-                    getList();
-                  }
-                });
-              } else {
-                Navigator.pop(context);
-                _showSnackBar(context, "Error");
-              }
-            },
-          ),
-          FlatButton(
-            color: darkBlue(),
-            child: const Text(
-              'NO',
-              style: TextStyle(fontWeight: FontWeight.w400),
-            ),
-            onPressed: () {
-              setState(() {
-                //requestPaymentList.insert(index, paymentRequest);
-              });
-
-              Navigator.pop(context);
-            },
-          ),
-        ],
-      ),
+      title: "Reject",
+      description: "Are you sure want to reject this request?",
+      actionOne: "YES",
+      actionTwo: "NO",
+      type: AlertType.warning,
     );
-  }
-
-  void showMaterialDialog<T>({BuildContext context, Widget child}) {
-    showDialog<T>(
-      context: context,
-      builder: (BuildContext context) => child,
-    ).then<void>((T value) {
-      // The value passed to Navigator.pop() or null.
-      if (value != null) {
-        _scaffoldPaymentListKey.currentState.showSnackBar(SnackBar(
-          content: Text('You selected: $value'),
-        ));
+    if (result) {
+      bool done = await _auth.rejectPaymentRequests(paymentRequest);
+      if (done) {
+        _showSnackBar(context, "Payment Request Rejected !!");
+        setState(() {
+          requestPaymentList.removeAt(index);
+          if (requestPaymentList.length <= 9) {
+            getList();
+          }
+        });
+      } else {
+        _showSnackBar(context, "Error");
       }
-    });
+    }
   }
 
   Widget _getSlidableWithLists(
