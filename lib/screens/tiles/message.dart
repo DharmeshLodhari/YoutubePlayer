@@ -1,4 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/message.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -86,8 +87,12 @@ class _MessageTileState extends State<MessageTile> {
               : Icon(Icons.star_border),
       onPressed: () async {
         var action = isRecipient
-            ? partialMessage.isStarredByRecipient ? "unstar" : "star"
-            : partialMessage.isStarredBySender ? "unstar" : "star";
+            ? partialMessage.isStarredByRecipient
+                ? AppLocalization.of(context).unstar
+                : AppLocalization.of(context).star
+            : partialMessage.isStarredBySender
+                ? AppLocalization.of(context).unstar
+                : AppLocalization.of(context).star;
         await _auth.updateMessage(partialMessage.id, action);
         setState(() {
           if (isRecipient) {
@@ -112,7 +117,9 @@ class _MessageTileState extends State<MessageTile> {
             color: Colors.grey[600],
           ),
         ),
-        SizedBox(height: 2,),
+        SizedBox(
+          height: 2,
+        ),
         Text(
           partialMessage.timeStamp,
           style: TextStyle(color: Colors.grey, fontSize: 10),

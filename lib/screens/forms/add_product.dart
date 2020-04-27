@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -50,7 +51,7 @@ class _AddProductState extends State<AddProduct> {
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
             leading: showBackArrow(),
-            title: Center(child: Text("Add Product")),
+            title: Center(child: Text(AppLocalization.of(context).addProduct)),
             backgroundColor: darkBlue()),
         body: SingleChildScrollView(
           child: Container(
@@ -140,7 +141,7 @@ class _AddProductState extends State<AddProduct> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Icon(Icons.add),
-            Text("Add Image"),
+            Text(AppLocalization.of(context).addImage),
           ],
         ),
         onTap: () {
@@ -201,7 +202,7 @@ class _AddProductState extends State<AddProduct> {
       decoration: InputDecoration(
           fillColor: Colors.white,
           filled: true,
-          hintText: "Product name",
+          hintText: AppLocalization.of(context).productName,
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -214,7 +215,7 @@ class _AddProductState extends State<AddProduct> {
         if (val.isNotEmpty) {
           return null;
         }
-        return "Please Enter Product Name";
+        return AppLocalization.of(context).pleaseEnterProductName;
       },
       onTap: () async {},
       onChanged: (val) {
@@ -244,7 +245,7 @@ class _AddProductState extends State<AddProduct> {
         if (val.isNotEmpty) {
           return null;
         }
-        return "Short Description";
+        return AppLocalization.of(context).shortDescription;
       },
       onTap: () async {},
       onChanged: (val) {
@@ -264,7 +265,7 @@ class _AddProductState extends State<AddProduct> {
           isDense: true,
           fillColor: Colors.white,
           filled: true,
-          hintText: "Description",
+          hintText: AppLocalization.of(context).description,
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -290,7 +291,7 @@ class _AddProductState extends State<AddProduct> {
           underline: Divider(
             color: Colors.transparent,
           ),
-          hint: Text("Category"),
+          hint: Text(AppLocalization.of(context).category),
           value: selectedProductCategory,
           onChanged: (ProductCategory value) {
             setState(() {
@@ -323,7 +324,7 @@ class _AddProductState extends State<AddProduct> {
             color: Colors.transparent,
           ),
           isExpanded: true,
-          hint: Text("Product Condition"),
+          hint: Text(AppLocalization.of(context).productCondition),
           value: selectedProductCondition,
           onChanged: (ProductCondition value) {
             setState(() {
@@ -367,7 +368,7 @@ class _AddProductState extends State<AddProduct> {
           ),
           fillColor: Colors.white,
           filled: true,
-          hintText: "Price",
+          hintText: AppLocalization.of(context).price,
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -391,10 +392,10 @@ class _AddProductState extends State<AddProduct> {
             double.parse(val);
             return null;
           } catch (e) {
-            return "Please Enter Valid amount";
+            return AppLocalization.of(context).invalidAmount;
           }
         }
-        return "Please Enter Valid amount";
+        return AppLocalization.of(context).pleaseEnterValidAmout;
       },
     );
   }
@@ -407,7 +408,7 @@ class _AddProductState extends State<AddProduct> {
           textColor: Colors.white,
           color: darkBlue(),
           height: 50,
-          child: Text("Add"),
+          child: Text(AppLocalization.of(context).add),
           onPressed: () async {
             FocusScope.of(context).unfocus();
             addProduct();
@@ -434,7 +435,7 @@ class _AddProductState extends State<AddProduct> {
           _auth.addProduct(product).then((value) {
             Navigator.pop(context);
             Toast.show(
-              "Product Added Successfully",
+              AppLocalization.of(context).productAddedSuccessfully,
               context,
               textColor: Colors.white,
               backgroundColor: darkBlue(),
@@ -447,7 +448,7 @@ class _AddProductState extends State<AddProduct> {
           });
         }
       } else {
-        Toast.show("Please add Image of Product ", context,
+        Toast.show(AppLocalization.of(context).pleaseAddImage, context,
             textColor: Colors.white, backgroundColor: darkBlue());
       }
     }
@@ -457,7 +458,9 @@ class _AddProductState extends State<AddProduct> {
     if (selectedProductCategory != null && selectedProductCondition != null) {
       return true;
     } else {
-      Toast.show("Please Select Product Catagory and Condition", context,
+      Toast.show(
+          AppLocalization.of(context).pleaseSelectProductCategoryAndCondition,
+          context,
           backgroundColor: darkBlue(),
           textColor: Colors.white,
           gravity: Toast.CENTER);
@@ -473,7 +476,7 @@ class _AddProductState extends State<AddProduct> {
       decoration: InputDecoration(
           fillColor: Colors.white,
           filled: true,
-          hintText: "Manufacturer",
+          hintText: AppLocalization.of(context).manufacturer,
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -486,7 +489,7 @@ class _AddProductState extends State<AddProduct> {
         if (val.isNotEmpty) {
           return null;
         }
-        return "Please Enter Manufacturer Name";
+        return AppLocalization.of(context).pleaseEnterManufacturerName;
       },
       onTap: () async {},
       onChanged: (val) {
@@ -509,7 +512,7 @@ class _AddProductState extends State<AddProduct> {
           },
         ),
         Text(
-          " is Available? ",
+          AppLocalization.of(context).isAvailable + " ? ",
           style: TextStyle(
             color: Colors.white,
           ),
@@ -540,7 +543,7 @@ class _AddProductState extends State<AddProduct> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text("Available From"),
+              Text(AppLocalization.of(context).availabeFrom),
               Row(
                 children: <Widget>[
                   Icon(Icons.date_range),

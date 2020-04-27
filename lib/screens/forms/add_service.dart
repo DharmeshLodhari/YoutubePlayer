@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
@@ -48,7 +49,7 @@ class _AddServiceState extends State<AddService> {
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
             leading: showBackArrow(),
-            title: Center(child: Text("Add Service")),
+            title: Center(child: Text(AppLocalization.of(context).addService)),
             backgroundColor: darkBlue()),
         body: SingleChildScrollView(
           child: Container(
@@ -131,7 +132,7 @@ class _AddServiceState extends State<AddService> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Icon(Icons.add),
-            Text("Add Image"),
+            Text(AppLocalization.of(context).addImage),
           ],
         ),
         onTap: () {
@@ -192,7 +193,7 @@ class _AddServiceState extends State<AddService> {
       decoration: InputDecoration(
           fillColor: Colors.white,
           filled: true,
-          hintText: "Enter service name",
+          hintText: AppLocalization.of(context).enterServiceName,
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -205,7 +206,7 @@ class _AddServiceState extends State<AddService> {
         if (val.isNotEmpty) {
           return null;
         }
-        return "Please Enter Service Name";
+        return AppLocalization.of(context).pleaseEnterServiceName;
       },
       onTap: () async {},
       onChanged: (val) {
@@ -222,7 +223,7 @@ class _AddServiceState extends State<AddService> {
       decoration: InputDecoration(
           fillColor: Colors.white,
           filled: true,
-          hintText: "Short Description",
+          hintText: AppLocalization.of(context).shortDescription,
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -235,7 +236,7 @@ class _AddServiceState extends State<AddService> {
         if (val.isNotEmpty) {
           return null;
         }
-        return "Short description";
+        return AppLocalization.of(context).shortDescription;
       },
       onTap: () async {},
       onChanged: (val) {
@@ -255,7 +256,7 @@ class _AddServiceState extends State<AddService> {
           isDense: true,
           fillColor: Colors.white,
           filled: true,
-          hintText: "Describe your service hear....",
+          hintText: AppLocalization.of(context).describeYourServiceHere,
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -271,7 +272,7 @@ class _AddServiceState extends State<AddService> {
         if (val.isNotEmpty) {
           return null;
         }
-        return "Description Must Not empty";
+        return AppLocalization.of(context).descriptionMustNotEmpty;
       },
     );
   }
@@ -287,7 +288,7 @@ class _AddServiceState extends State<AddService> {
           underline: Divider(
             color: Colors.transparent,
           ),
-          hint: Text("Select Category"),
+          hint: Text(AppLocalization.of(context).selectCategory),
           value: selectedServiceCategory,
           onChanged: (ServiceCatagory value) {
             setState(() {
@@ -331,7 +332,7 @@ class _AddServiceState extends State<AddService> {
           ),
           fillColor: Colors.white,
           filled: true,
-          hintText: "Price of the Service",
+          hintText: AppLocalization.of(context).priceOfService,
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -355,10 +356,10 @@ class _AddServiceState extends State<AddService> {
             double.parse(val);
             return null;
           } catch (e) {
-            return "Please Enter Valid amount";
+            return AppLocalization.of(context).invalidAmount;
           }
         }
-        return "Please Enter Valid amount";
+        return AppLocalization.of(context).invalidAmount;
       },
     );
   }
@@ -371,7 +372,7 @@ class _AddServiceState extends State<AddService> {
           textColor: Colors.white,
           color: darkBlue(),
           height: 50,
-          child: Text("Add"),
+          child: Text(AppLocalization.of(context).add),
           onPressed: () async {
             FocusScope.of(context).unfocus();
             addService();
@@ -396,7 +397,7 @@ class _AddServiceState extends State<AddService> {
           _auth.addService(service).then((value) {
             Navigator.pop(context);
             Toast.show(
-              "Service Added Successfully",
+              AppLocalization.of(context).serviceAddedSuccessfully,
               context,
               textColor: Colors.white,
               backgroundColor: darkBlue(),
@@ -410,7 +411,7 @@ class _AddServiceState extends State<AddService> {
           });
         }
       } else {
-        Toast.show("Please add Image of Service ", context,
+        Toast.show(AppLocalization.of(context).pleaseAddImage, context,
             textColor: Colors.white, backgroundColor: darkBlue());
       }
     }
@@ -420,7 +421,7 @@ class _AddServiceState extends State<AddService> {
     if (selectedServiceCategory != null) {
       return true;
     } else {
-      Toast.show("Please Select Service Catagory", context,
+      Toast.show(AppLocalization.of(context).selectCategory, context,
           backgroundColor: darkBlue(),
           textColor: Colors.white,
           gravity: Toast.CENTER);
@@ -442,7 +443,7 @@ class _AddServiceState extends State<AddService> {
           },
         ),
         Text(
-          " is Available? ",
+          AppLocalization.of(context).isAvailable + " ? ",
           style: TextStyle(
             color: Colors.white,
           ),
@@ -473,7 +474,7 @@ class _AddServiceState extends State<AddService> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text("Available From"),
+              Text(AppLocalization.of(context).availabeFrom),
               Row(
                 children: <Widget>[
                   Icon(Icons.date_range),

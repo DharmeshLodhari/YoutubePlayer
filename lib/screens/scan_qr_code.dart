@@ -1,4 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
@@ -91,7 +92,8 @@ class _QRCodeViewState extends State<QRCodeView> {
           controller.flipCamera();
         }
       },
-      child: Text('Flip', style: TextStyle(fontSize: 20)),
+      child: Text(AppLocalization.of(context).flip,
+          style: TextStyle(fontSize: 20)),
     );
   }
 

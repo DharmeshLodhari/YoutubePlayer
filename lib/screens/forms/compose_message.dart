@@ -1,4 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
@@ -113,7 +114,8 @@ class _ComposeMessageState extends State<ComposeMessage> {
         appBar: AppBar(
             leading: showBackArrow(),
             actions: <Widget>[sendMessage()],
-            title: Center(child: Text("Compose Message")),
+            title:
+                Center(child: Text(AppLocalization.of(context).composeMessage)),
             backgroundColor: darkBlue()),
         body: SingleChildScrollView(
           child: Container(
@@ -156,18 +158,18 @@ class _ComposeMessageState extends State<ComposeMessage> {
         onPressed: () {
           if (!isValidRecipient) {
             setState(() {
-              errorMessage = "Invalid recipient";
+              errorMessage = AppLocalization.of(context).invalidRecipient;
               return;
             });
           } else if (recipient == userBloc.user.userName) {
             setState(() {
-              errorMessage = "Invalid recipient";
+              errorMessage = AppLocalization.of(context).invalidRecipient;
               return;
             });
           } else if (recipient == _payee.userName) {
             if (!isValidRecipient) {
               setState(() {
-                errorMessage = "Invalid recipient";
+                errorMessage = AppLocalization.of(context).invalidRecipient;
                 return;
               });
             }
@@ -193,7 +195,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
               }
             }
           } else {
-            var msg = "Invalid recipient";
+            var msg = AppLocalization.of(context).invalidRecipient;
             Toast.show(msg, context,
                 gravity: Toast.CENTER,
                 backgroundColor: darkBlue(),
@@ -258,7 +260,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
       cursorColor: darkBlue(),
       validator: (value) {
         if (value != _payee.userName) {
-          return "Enter Valid Recipient";
+          return AppLocalization.of(context).invalidRecipient;
         }
         return null;
       },
@@ -268,7 +270,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
           prefixIcon: Icon(Icons.person),
           fillColor: Colors.white,
           filled: true,
-          hintText: "Recipient",
+          hintText: AppLocalization.of(context).recipient,
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -302,7 +304,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
         prefixIcon: Icon(Icons.subject),
         fillColor: Colors.white,
         filled: true,
-        hintText: "Subject",
+        hintText: AppLocalization.of(context).subject,
         labelStyle: TextStyle(
           color: Colors.black,
           fontSize: 16,
@@ -346,7 +348,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
           isDense: true,
           fillColor: Colors.white,
           filled: true,
-          hintText: "Type your message here....",
+          hintText: AppLocalization.of(context).typeYourMsgHere,
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,

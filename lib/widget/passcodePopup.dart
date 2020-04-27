@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:passcode_screen/keyboard.dart';
 import 'package:passcode_screen/passcode_screen.dart';
@@ -23,10 +24,10 @@ class PasscodePopup {
     showDialog(
         context: context,
         builder: (context) => PasscodeScreen(
-              title: "Enter Passcode",
+              title: AppLocalization.of(context).enterPassCode,
               passwordEnteredCallback: _onPasscodeEntered,
-              cancelLocalizedText: 'Cancel',
-              deleteLocalizedText: 'Delete',
+              cancelLocalizedText: AppLocalization.of(context).cancel,
+              deleteLocalizedText: AppLocalization.of(context).delete,
               shouldTriggerVerification: _verificationNotifier.stream,
               passwordDigits: 4,
               isValidCallback: isValidCallback,

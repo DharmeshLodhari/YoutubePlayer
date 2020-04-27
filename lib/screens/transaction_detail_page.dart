@@ -1,5 +1,6 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -57,7 +58,7 @@ class _TransactionDetailState extends State<TransactionDetail> {
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
           leading: showBackArrow(),
-          title: Center(child: Text("Transaction")),
+          title: Center(child: Text(AppLocalization.of(context).transaction)),
           backgroundColor: darkBlue(),
           actions: <Widget>[
             IconButton(
@@ -113,13 +114,16 @@ class _TransactionDetailState extends State<TransactionDetail> {
         Row(
           children: <Widget>[
             Text(
-              "Date: ${transactionTime.day}/${transactionTime.month}/${transactionTime.year}",
+              AppLocalization.of(context).date +
+                  ": ${transactionTime.day}/${transactionTime.month}/${transactionTime.year}",
               style: TextStyle(fontSize: 10, color: Colors.grey[600]),
             ),
             SizedBox(
               width: 15,
             ),
-            Text("Time: ${transactionTime.hour}:${transactionTime.minute}",
+            Text(
+                AppLocalization.of(context).time +
+                    ": ${transactionTime.hour}:${transactionTime.minute}",
                 style: TextStyle(fontSize: 10, color: Colors.grey[600])),
           ],
         ),
@@ -196,23 +200,26 @@ class _TransactionDetailState extends State<TransactionDetail> {
             color: Colors.grey[600],
             height: 1,
           ),
-          detailTile(Icon(Icons.timer), "Status", transaction.status),
+          detailTile(Icon(Icons.timer), AppLocalization.of(context).status,
+              transaction.status),
           Divider(
             color: Colors.grey[600],
             height: 1,
           ),
-          detailTile(Icon(Icons.category), "Category", transaction.category),
+          detailTile(Icon(Icons.category), AppLocalization.of(context).category,
+              transaction.category),
           Divider(
             color: Colors.grey[600],
             height: 1,
           ),
-          detailTile(Icon(Icons.note), "Note", transaction.note),
+          detailTile(Icon(Icons.note), AppLocalization.of(context).note,
+              transaction.note),
           Divider(
             color: Colors.grey[600],
             height: 1,
           ),
-          detailTile(
-              Icon(Icons.description), "Description", transaction.description),
+          detailTile(Icon(Icons.description),
+              AppLocalization.of(context).description, transaction.description),
           Divider(
             color: Colors.grey[600],
             height: 1,

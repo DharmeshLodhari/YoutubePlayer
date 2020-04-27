@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +40,7 @@ class _SignUpState extends State<SignUp> {
         backgroundColor: lightBlue(),
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
-          title: Text('Sign up'),
+          title: Text(AppLocalization.of(context).signUp),
           backgroundColor: darkBlue(),
           elevation: 0.0,
         ),
@@ -60,7 +61,8 @@ class _SignUpState extends State<SignUp> {
                   Container(
                     child: Align(
                         alignment: Alignment.centerLeft,
-                        child: Text('Use 4 Digit Number')),
+                        child: Text(
+                            AppLocalization.of(context).useFourDigitNumber)),
                   ),
                   SizedBox(height: 10),
                   getPassword1Field(),
@@ -68,8 +70,7 @@ class _SignUpState extends State<SignUp> {
                   getPassword2Field(),
                   SizedBox(height: 10),
                   Container(
-                    child: Text(
-                        'By clicking Register you are agreeing to the Terms and Conditions.'),
+                    child: Text(AppLocalization.of(context).termsAndCondition),
                   ),
                   SizedBox(height: 10),
                   getSubmitButton(),
@@ -94,7 +95,7 @@ class _SignUpState extends State<SignUp> {
             Icon(Platform.isAndroid ? Icons.phone_android : Icons.phone_iphone),
         fillColor: Colors.white,
         filled: true,
-        hintText: "Phone Number",
+        hintText: AppLocalization.of(context).enterYourPhoneNumber,
         labelStyle: TextStyle(
           color: darkBlue(),
           fontSize: 16,
@@ -109,7 +110,7 @@ class _SignUpState extends State<SignUp> {
         if (val.isNotEmpty && val.length == 13) {
           return null;
         }
-        return "Invalid phone number";
+        return AppLocalization.of(context).invalidPhoneNumber;
       },
     );
   }
@@ -122,7 +123,7 @@ class _SignUpState extends State<SignUp> {
         prefixIcon: Icon(Icons.person),
         fillColor: Colors.white,
         filled: true,
-        hintText: "Full Name",
+        hintText: AppLocalization.of(context).fullName,
         labelStyle: TextStyle(
           color: darkBlue(),
           fontSize: 16,
@@ -138,8 +139,9 @@ class _SignUpState extends State<SignUp> {
           ),
         ),
       ),
-      validator: (val) =>
-          val.length < 5 ? "Enter a valid name matching account number." : null,
+      validator: (val) => val.length < 5
+          ? AppLocalization.of(context).enterValidNameMatchingAccountNumber
+          : null,
       onChanged: (val) {
         setState(() {
           fullName = val.trim();
@@ -159,7 +161,7 @@ class _SignUpState extends State<SignUp> {
         prefixIcon: Icon(Icons.lock),
         fillColor: Colors.white,
         filled: true,
-        hintText: "Password",
+        hintText: AppLocalization.of(context).password,
         labelStyle: TextStyle(
           color: darkBlue(),
           fontSize: 16,
@@ -175,7 +177,8 @@ class _SignUpState extends State<SignUp> {
           ),
         ),
       ),
-      validator: (val) => val.length != 4 ? "Enter a valid Password." : null,
+      validator: (val) =>
+          val.length != 4 ? AppLocalization.of(context).invalidPassword : null,
       onChanged: (val) {
         setState(() {
           password1 = val.trim();
@@ -195,7 +198,7 @@ class _SignUpState extends State<SignUp> {
         prefixIcon: Icon(Icons.lock),
         fillColor: Colors.white,
         filled: true,
-        hintText: "Confirm Password",
+        hintText: AppLocalization.of(context).confirmPassword,
         labelStyle: TextStyle(
           color: Colors.black,
           fontSize: 16,
@@ -213,9 +216,9 @@ class _SignUpState extends State<SignUp> {
       ),
       validator: (val) {
         if (val.length != 4) {
-          return "Enter a valid Password.";
+          return AppLocalization.of(context).invalidPassword;
         } else if (val != password1) {
-          return "Password MissMatch";
+          return AppLocalization.of(context).passwordMismatch;
         }
         return null;
       },
@@ -260,7 +263,7 @@ class _SignUpState extends State<SignUp> {
               }
             });
           } else {
-            var msg = "Invalid Details !!";
+            var msg = AppLocalization.of(context).invalidDetails;
             Toast.show(msg, context,
                 gravity: Toast.BOTTOM,
                 backgroundColor: darkBlue(),
@@ -270,7 +273,7 @@ class _SignUpState extends State<SignUp> {
         textColor: Colors.white,
         color: darkBlue(),
         height: 50,
-        child: Text("Register"),
+        child: Text(AppLocalization.of(context).register),
       ),
     );
   }

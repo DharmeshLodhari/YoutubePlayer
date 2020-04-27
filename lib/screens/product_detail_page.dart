@@ -1,4 +1,5 @@
 import 'package:Slydo/data/currency.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
@@ -56,7 +57,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         ),
         backgroundColor: darkBlue(),
         title: Text(
-          "PRODUCT DETAIL",
+          AppLocalization.of(context).productDetail,
           style: TextStyle(
             color: Colors.white,
           ),
@@ -238,7 +239,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             tabs: <Widget>[
               Tab(
                 child: Text(
-                  "DETAILS",
+                  AppLocalization.of(context).details,
                   style: TextStyle(
                     color: Colors.black,
                   ),
@@ -246,7 +247,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               ),
               Tab(
                 child: Text(
-                  "Seller Other Products",
+                  AppLocalization.of(context).sellersOtherProduct,
                   style: TextStyle(
                     color: Colors.black,
                   ),
@@ -273,7 +274,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 ListView(
                   children: <Widget>[
                     Text(
-                      "Coming Soon!",
+                      AppLocalization.of(context).comingSoon,
                       style: TextStyle(
                         color: Colors.black,
                       ),

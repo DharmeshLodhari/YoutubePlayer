@@ -1,9 +1,12 @@
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/colors.dart';
+import 'package:Slydo/widget/dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:introduction_screen/introduction_screen.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
-import '../widget/exit_alert_dialog.dart';
 import 'colors.dart';
 
 // ignore: must_be_immutable
@@ -35,14 +38,14 @@ class _IndexState extends State<Index> {
             contentPadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
             descriptionPadding: EdgeInsets.fromLTRB(20, 30, 20, 0)),
         titleWidget: Text(
-          "Scan QR Code",
+          AppLocalization.of(context).scanQrCode,
           style: TextStyle(
               fontSize: 25, fontWeight: FontWeight.bold, color: Colors.white),
         ),
         bodyWidget: Column(
           children: <Widget>[
             Text(
-              "Slydo allows you to send and receive\npayments instantly in Africa",
+              AppLocalization.of(context).introMsg1,
               textAlign: TextAlign.center,
               style: TextStyle(
                   fontSize: 18,
@@ -67,14 +70,14 @@ class _IndexState extends State<Index> {
             contentPadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
             descriptionPadding: EdgeInsets.fromLTRB(20, 30, 20, 0)),
         titleWidget: Text(
-          "Send Payment",
+          AppLocalization.of(context).sendPayment,
           style: TextStyle(
               fontSize: 25, fontWeight: FontWeight.bold, color: Colors.white),
         ),
         bodyWidget: Column(
           children: <Widget>[
             Text(
-              "Slydo allows you to send and receive\npayments instantly in Africa",
+              AppLocalization.of(context).introMsg2,
               textAlign: TextAlign.center,
               style: TextStyle(
                   fontSize: 18,
@@ -99,14 +102,14 @@ class _IndexState extends State<Index> {
             contentPadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
             descriptionPadding: EdgeInsets.fromLTRB(20, 30, 20, 0)),
         titleWidget: Text(
-          "View transactions",
+          AppLocalization.of(context).viewTransactions,
           style: TextStyle(
               fontSize: 25, fontWeight: FontWeight.bold, color: Colors.white),
         ),
         bodyWidget: Column(
           children: <Widget>[
             Text(
-              "Slydo allows you to send and receive\npayments instantly in Africa",
+              AppLocalization.of(context).introMsg2,
               textAlign: TextAlign.center,
               style: TextStyle(
                   fontSize: 18,
@@ -131,14 +134,14 @@ class _IndexState extends State<Index> {
             contentPadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
             descriptionPadding: EdgeInsets.fromLTRB(20, 30, 20, 0)),
         titleWidget: Text(
-          "View transactions",
+          AppLocalization.of(context).viewTransactions,
           style: TextStyle(
               fontSize: 25, fontWeight: FontWeight.bold, color: Colors.white),
         ),
         bodyWidget: Column(
           children: <Widget>[
             Text(
-              "Slydo allows you to send and receive\npayments instantly in Africa",
+              AppLocalization.of(context).introMsg2,
               textAlign: TextAlign.center,
               style: TextStyle(
                   fontSize: 18,
@@ -163,11 +166,17 @@ class _IndexState extends State<Index> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        showDialog(
+        bool result = await showDialogBox(
           context: context,
-          builder: (context) => ExitAlertDialog(),
+          title: AppLocalization.of(context).exit,
+          description: AppLocalization.of(context).areYouSureWantToExit,
+          actionOne: AppLocalization.of(context).yes,
+          actionTwo: AppLocalization.of(context).no,
+          type: AlertType.none,
         );
-
+        if (result) {
+          SystemChannels.platform.invokeMethod<void>('SystemNavigator.pop');
+        }
         return false;
       },
       child: Scaffold(
@@ -188,7 +197,9 @@ class _IndexState extends State<Index> {
               SizedBox(height: 100),
               showHomeBackground(),
               SizedBox(height: 20),
-              Text('An easy way to accept \n and receive payments.',
+              Text(
+                  AppLocalization.of(context)
+                      .anEasyWayToAcceptAndReceivePayment,
                   style: TextStyle(color: Colors.white, fontSize: 20)),
               Expanded(child: SizedBox(height: 20)),
               Expanded(
@@ -217,7 +228,7 @@ class _IndexState extends State<Index> {
         textColor: Colors.white,
         color: darkBlue(),
         height: 50,
-        child: Text("Log In"),
+        child: Text(AppLocalization.of(context).login),
       ),
     );
   }
@@ -232,7 +243,7 @@ class _IndexState extends State<Index> {
         textColor: Colors.white,
         color: darkBlue(),
         height: 50,
-        child: Text("Register"),
+        child: Text(AppLocalization.of(context).register),
       ),
     );
   }
@@ -250,9 +261,9 @@ class _IndexState extends State<Index> {
     return IntroductionScreen(
       initialPage: currentIndex,
       showSkipButton: true,
-      skip: const Text("Skip",
+      skip: Text(AppLocalization.of(context).skip,
           style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white)),
-      done: const Text("Done",
+      done: Text(AppLocalization.of(context).done,
           style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white)),
       dotsDecorator: DotsDecorator(
           size: const Size.square(10.0),

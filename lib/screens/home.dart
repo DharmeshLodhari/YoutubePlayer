@@ -1,4 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/widget/dialog.dart';
@@ -26,10 +27,10 @@ class _HomeState extends State<Home> {
       onWillPop: () async {
         bool result = await showDialogBox(
           context: context,
-          title: "Exit",
-          description: "Are You Sure Want To Exit?",
-          actionOne: "Yes",
-          actionTwo: "No",
+          title: AppLocalization.of(context).exit,
+          description: AppLocalization.of(context).areYouSureWantToExit,
+          actionOne: AppLocalization.of(context).yes,
+          actionTwo: AppLocalization.of(context).no,
           type: AlertType.none,
         );
         if (result) {
@@ -44,7 +45,7 @@ class _HomeState extends State<Home> {
         appBar: AppBar(
           automaticallyImplyLeading: false,
           backgroundColor: darkBlue(),
-          title: Center(child: Text("Home")),
+          title: Center(child: Text(AppLocalization.of(context).home)),
           leading: displayUserAvatar(userBloc),
           actions: <Widget>[
             displayQRCodeButton(),
@@ -106,13 +107,13 @@ class _HomeState extends State<Home> {
                           text: baseUrl +
                               "/api/v1/customer/" +
                               userBloc.user.userName));
-                      Toast.show("Copied!", context,
+                      Toast.show(AppLocalization.of(context).copied, context,
                           gravity: Toast.CENTER,
                           duration: Toast.LENGTH_LONG,
                           backgroundColor: darkBlue());
                     },
                     icon: Icon(Icons.content_copy, color: Colors.black),
-                    label: Text('Copy Url',
+                    label: Text(AppLocalization.of(context).copyUrl,
                         style: TextStyle(color: Colors.black, fontSize: 14))),
               ],
             ),
@@ -144,15 +145,18 @@ class _HomeState extends State<Home> {
                           });
                     } else {
                       Toast.show(
-                          "Internet Connection is not available", context,
-                          gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+                          AppLocalization.of(context)
+                              .internetConnectionNotAvailable,
+                          context,
+                          gravity: Toast.BOTTOM,
+                          backgroundColor: darkBlue());
                     }
                   });
                 },
                 textColor: Colors.white,
                 color: darkBlue(),
                 height: 50,
-                child: Text("Request"),
+                child: Text(AppLocalization.of(context).request),
               ),
             ),
           ),
@@ -174,16 +178,19 @@ class _HomeState extends State<Home> {
                           arguments: <String, bool>{'isFromProfile': true});
                     } else {
                       Toast.show(
-                          "Internet Connection is not available", context,
-                          gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+                          AppLocalization.of(context)
+                              .internetConnectionNotAvailable,
+                          context,
+                          gravity: Toast.BOTTOM,
+                          backgroundColor: darkBlue());
                     }
                   });
                 },
                 textColor: Colors.white,
                 color: darkBlue(),
                 height: 50,
-                child: Text(
-                    "Send"), // change this to make payment request button to
+                child: Text(AppLocalization.of(context)
+                    .send), // change this to make payment request button to
               ),
             ),
           ),
@@ -204,8 +211,11 @@ class _HomeState extends State<Home> {
               Navigator.of(context)
                   .pushNamed('/scan-qr', arguments: {'isRequest': false});
             } else {
-              Toast.show("Internet Connection is not available", context,
-                  gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+              Toast.show(
+                  AppLocalization.of(context).internetConnectionNotAvailable,
+                  context,
+                  gravity: Toast.BOTTOM,
+                  backgroundColor: darkBlue());
             }
           });
         },

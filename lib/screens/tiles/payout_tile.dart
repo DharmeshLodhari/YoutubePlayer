@@ -1,4 +1,5 @@
 import 'package:Slydo/data/currency.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/payout.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +36,7 @@ class PayoutTile extends StatelessWidget {
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
                     fontSize: 15)),
-            subtitle: getDateTime(),
+            subtitle: getDateTime(context),
             trailing: Text(
               worldCurrencies[payout.currency] + ' ' + payout.amount.toString(),
               style: TextStyle(
@@ -57,19 +58,22 @@ class PayoutTile extends StatelessWidget {
     }
   }
 
-  Widget getDateTime() {
+  Widget getDateTime(BuildContext context) {
     DateTime dateTime = DateTime.parse(payout.timeStamp);
 
     return Row(
       children: <Widget>[
         Text(
-          "Date: ${dateTime.day}/${dateTime.month}/${dateTime.year}",
+          AppLocalization.of(context).date +
+              ": ${dateTime.day}/${dateTime.month}/${dateTime.year}",
           style: TextStyle(fontSize: 10, color: Colors.grey[600]),
         ),
         SizedBox(
           width: 15,
         ),
-        Text("Time: ${dateTime.hour}:${dateTime.minute}",
+        Text(
+            AppLocalization.of(context).time +
+                ": ${dateTime.hour}:${dateTime.minute}",
             style: TextStyle(fontSize: 10, color: Colors.grey[600])),
       ],
     );

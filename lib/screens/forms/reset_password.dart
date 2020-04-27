@@ -1,3 +1,4 @@
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 
@@ -41,7 +42,8 @@ class _ResetPasswordState extends State<ResetPassword> {
             backgroundColor: lightBlue(),
             resizeToAvoidBottomInset: true,
             appBar: AppBar(
-                title: Center(child: Text("Reset Password")),
+                title: Center(
+                    child: Text(AppLocalization.of(context).resetPassword)),
                 backgroundColor: darkBlue()),
             body: SingleChildScrollView(
               padding: EdgeInsets.symmetric(vertical: 40.0, horizontal: 40.0),
@@ -78,7 +80,7 @@ class _ResetPasswordState extends State<ResetPassword> {
           prefixIcon: Icon(Icons.dialpad),
           fillColor: Colors.white,
           filled: true,
-          hintText: "New Password",
+          hintText: AppLocalization.of(context).newPassword,
           labelStyle: TextStyle(
             color: darkBlue(),
             fontSize: 16,
@@ -89,9 +91,9 @@ class _ResetPasswordState extends State<ResetPassword> {
                   width: 1, color: Colors.white, style: BorderStyle.solid))),
       validator: (val) {
         if (val.isEmpty) {
-          return "Password Should Not Empty";
+          return AppLocalization.of(context).passwordShouldNotEmpty;
         } else if (val.length != 4) {
-          return "Password Must Be Of 4 Digit";
+          return AppLocalization.of(context).passwordMustBeOfFourDigit;
         }
         return null;
       },
@@ -113,7 +115,7 @@ class _ResetPasswordState extends State<ResetPassword> {
           prefixIcon: Icon(Icons.dialpad),
           fillColor: Colors.white,
           filled: true,
-          hintText: "Confirm Password",
+          hintText: AppLocalization.of(context).confirmPassword,
           labelStyle: TextStyle(
             color: darkBlue(),
             fontSize: 16,
@@ -124,11 +126,11 @@ class _ResetPasswordState extends State<ResetPassword> {
                   width: 1, color: Colors.white, style: BorderStyle.solid))),
       validator: (val) {
         if (val.isEmpty) {
-          return "Password Should Not Empty";
+          return AppLocalization.of(context).passwordShouldNotEmpty;
         } else if (val.length != 4) {
-          return "Password Must Be Of 4 Digit";
+          return AppLocalization.of(context).passwordMustBeOfFourDigit;
         } else if (newPassword != confirmPassword) {
-          return "Password Mismatch";
+          return AppLocalization.of(context).passwordMismatch;
         }
         return null;
       },
@@ -146,7 +148,7 @@ class _ResetPasswordState extends State<ResetPassword> {
         textColor: Colors.white,
         color: darkBlue(),
         height: 50,
-        child: Text("Reset Password"),
+        child: Text(AppLocalization.of(context).resetPassword),
       ),
     );
   }

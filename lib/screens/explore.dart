@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/screens/tiles/user.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -130,7 +131,7 @@ class _ExploreListState extends State<ExploreList> {
 
   Widget search() {
     if (!isSearchBoxOpen) {
-      return Center(child: Text("Explore"));
+      return Center(child: Text(AppLocalization.of(context).explore));
     } else {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.center,

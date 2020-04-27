@@ -1,5 +1,6 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +24,7 @@ class PaymentRequestTile extends StatelessWidget {
                 trailing: paymentRequest.amount.toString().length > 6
                     ? null
                     : getTrailing(),
-                subtitle: getSubtitle()),
+                subtitle: getSubtitle(context)),
           ),
         ],
       ),
@@ -68,7 +69,7 @@ class PaymentRequestTile extends StatelessWidget {
     );
   }
 
-  Widget getSubtitle() {
+  Widget getSubtitle(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -82,24 +83,27 @@ class PaymentRequestTile extends StatelessWidget {
         paymentRequest.amount.toString().length > 6
             ? getTrailing()
             : Container(),
-        getDateTime()
+        getDateTime(context)
       ],
     );
   }
 
-  Widget getDateTime() {
+  Widget getDateTime(BuildContext context) {
     DateTime requestTime = DateTime.parse(paymentRequest.createdAt);
 
     return Row(
       children: <Widget>[
         Text(
-          "Date: ${requestTime.day}/${requestTime.month}/${requestTime.year}",
+          AppLocalization.of(context).date +
+              ": ${requestTime.day}/${requestTime.month}/${requestTime.year}",
           style: TextStyle(fontSize: 10, color: Colors.grey[600]),
         ),
         SizedBox(
           width: 15,
         ),
-        Text("Time: ${requestTime.hour}:${requestTime.minute}",
+        Text(
+            AppLocalization.of(context).time +
+                ": ${requestTime.hour}:${requestTime.minute}",
             style: TextStyle(fontSize: 10, color: Colors.grey[600])),
       ],
     );
@@ -121,7 +125,7 @@ class TransactionTile extends StatelessWidget {
         padding: EdgeInsets.symmetric(vertical: 8),
         child: ListTile(
           title: getTitle(),
-          subtitle: getSubTitle(),
+          subtitle: getSubTitle(context),
           leading: getLeading(),
           trailing:
               transaction.amount.toString().length > 6 ? null : getAmount(),
@@ -174,7 +178,7 @@ class TransactionTile extends StatelessWidget {
     );
   }
 
-  Widget getSubTitle() {
+  Widget getSubTitle(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -184,24 +188,27 @@ class TransactionTile extends StatelessWidget {
           height: 2,
         ),
         transaction.amount.toString().length > 6 ? getAmount() : Container(),
-        getDateTime(),
+        getDateTime(context),
       ],
     );
   }
 
-  Widget getDateTime() {
+  Widget getDateTime(BuildContext context) {
     DateTime transactionTime = DateTime.parse(transaction.createdAt);
 
     return Row(
       children: <Widget>[
         Text(
-          "Date: ${transactionTime.day}/${transactionTime.month}/${transactionTime.year}",
+          AppLocalization.of(context).date +
+              ": ${transactionTime.day}/${transactionTime.month}/${transactionTime.year}",
           style: TextStyle(fontSize: 10, color: Colors.grey[600]),
         ),
         SizedBox(
           width: 15,
         ),
-        Text("Time: ${transactionTime.hour}:${transactionTime.minute}",
+        Text(
+            AppLocalization.of(context).time +
+                ": ${transactionTime.hour}:${transactionTime.minute}",
             style: TextStyle(fontSize: 10, color: Colors.grey[600])),
       ],
     );

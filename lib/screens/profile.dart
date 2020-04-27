@@ -1,5 +1,6 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:Slydo/screens/colors.dart';
@@ -77,7 +78,8 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
         getProductList();
         _productsRefreshController.refreshCompleted();
       } else {
-        Toast.show("Internet Connection is not available", context,
+        Toast.show(
+            AppLocalization.of(context).internetConnectionNotAvailable, context,
             gravity: Toast.BOTTOM, backgroundColor: darkBlue());
         _productsRefreshController.refreshCompleted();
       }
@@ -97,7 +99,8 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
         getProductList();
         _servicesRefreshController.refreshCompleted();
       } else {
-        Toast.show("Internet Connection is not available", context,
+        Toast.show(
+            AppLocalization.of(context).internetConnectionNotAvailable, context,
             gravity: Toast.BOTTOM, backgroundColor: darkBlue());
         _servicesRefreshController.refreshCompleted();
       }
@@ -200,7 +203,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                           child: Container(
                               child: Center(
                                   child: Text(
-                            "Productes",
+                            AppLocalization.of(context).products,
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -211,7 +214,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                           child: Container(
                               child: Center(
                                   child: Text(
-                            "Services",
+                            AppLocalization.of(context).services,
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -244,7 +247,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                 height: 35,
                 child: Center(
                     child: Text(
-                  "Productes",
+                  AppLocalization.of(context).products,
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -256,7 +259,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                 height: 35,
                 child: Center(
                     child: Text(
-                  "Services",
+                  AppLocalization.of(context).services,
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -298,7 +301,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
   Widget _buildProductList() {
     return noProductInList
         ? NoItemInList(
-            msg: "No Products",
+            msg: AppLocalization.of(context).noProducts,
           )
         : StaggeredGridView.countBuilder(
             controller: _productScrollController,
@@ -343,7 +346,6 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                                           color: darkBlue(),
                                         ),
                                         onPressed: () {
-                                          //TODO: Navigate to the CurrentProduct
                                           Navigator.of(context).pushNamed(
                                             '/edit-product',
                                             arguments: {
@@ -444,7 +446,8 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
         });
       } else if (productNext == null && productList.length > 6) {
         _productScaffoldKey.currentState.showSnackBar(SnackBar(
-          content: Text("Your have reached the bottom of the list"),
+          content:
+              Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
         ));
       }
@@ -478,7 +481,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
   Widget _buildServiceList() {
     return noServiceInList
         ? NoItemInList(
-            msg: "No Sevice",
+            msg: AppLocalization.of(context).noServices,
           )
         : ListView.builder(
             controller: _serviceScrollController,
@@ -532,7 +535,8 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
         });
       } else if (serviceNext == null && serviceList.length > 6) {
         _serviceScaffoldKey.currentState.showSnackBar(SnackBar(
-          content: Text("Your have reached the bottom of the list"),
+          content:
+              Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
         ));
       }

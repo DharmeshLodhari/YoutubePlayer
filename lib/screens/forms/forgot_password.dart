@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 
@@ -28,7 +29,8 @@ class _ForgotPasswordState extends State<ForgotPassword> {
             backgroundColor: lightBlue(),
             resizeToAvoidBottomInset: true,
             appBar: AppBar(
-                title: Center(child: Text("Forgot Password")),
+                title: Center(
+                    child: Text(AppLocalization.of(context).forgotPassword)),
                 backgroundColor: darkBlue()),
             body: SingleChildScrollView(
               padding: EdgeInsets.symmetric(vertical: 40.0, horizontal: 40.0),
@@ -66,7 +68,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
               Platform.isAndroid ? Icons.phone_android : Icons.phone_iphone),
           fillColor: Colors.white,
           filled: true,
-          hintText: "Enter Your Phone Number",
+          hintText: AppLocalization.of(context).enterYourPhoneNumber,
           labelStyle: TextStyle(
             color: darkBlue(),
             fontSize: 16,
@@ -79,7 +81,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         if (val.isNotEmpty && val.length == 13) {
           return null;
         }
-        return "Invalid phone number";
+        return AppLocalization.of(context).invalidPhoneNumber;
       },
       onChanged: (val) {
         phoneNumber = val;
@@ -97,7 +99,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
           prefixIcon: Icon(Icons.dialpad),
           fillColor: Colors.white,
           filled: true,
-          hintText: "Enter Your OTP Here",
+          hintText: AppLocalization.of(context).enterYourOtpHere,
           labelStyle: TextStyle(
             color: darkBlue(),
             fontSize: 16,
@@ -108,9 +110,9 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                   width: 1, color: Colors.white, style: BorderStyle.solid))),
       validator: (val) {
         if (val.isEmpty) {
-          return "Please Enter OTP";
+          return AppLocalization.of(context).pleaseEnterOtp;
         } else if (val.length != 6 || val != sentOTP) {
-          return "Invalid OTP";
+          return AppLocalization.of(context).invalidOtp;
         }
         return null;
       },
@@ -128,7 +130,9 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         textColor: Colors.white,
         color: darkBlue(),
         height: 50,
-        child: Text(isOTPSent ? "Verify OTP" : "Continue"),
+        child: Text(isOTPSent
+            ? AppLocalization.of(context).verifyOtp
+            : AppLocalization.of(context).continueMsg),
       ),
     );
   }

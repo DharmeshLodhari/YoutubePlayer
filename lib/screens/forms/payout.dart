@@ -1,5 +1,6 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/widget/passcodePopup.dart';
@@ -49,7 +50,7 @@ class _PayoutState extends State<Payout> {
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
             leading: showBackArrow(),
-            title: Center(child: Text("Payout")),
+            title: Center(child: Text(AppLocalization.of(context).payout)),
             backgroundColor: darkBlue()),
         body: SingleChildScrollView(
           child: Container(
@@ -146,7 +147,7 @@ class _PayoutState extends State<Payout> {
                 ),
               ),
             ),
-            hintText: "Enter Amount",
+            hintText: AppLocalization.of(context).enterAmount,
             labelStyle: TextStyle(
               color: Colors.black,
               fontSize: 16,
@@ -162,7 +163,7 @@ class _PayoutState extends State<Payout> {
               return null;
             } catch (e) {}
           }
-          return "Invalid amount";
+          return AppLocalization.of(context).invalidAmount;
         },
         onChanged: (val) {
           setState(() {
@@ -183,7 +184,7 @@ class _PayoutState extends State<Payout> {
             textColor: Colors.white,
             color: darkBlue(),
             height: 50,
-            child: Text("Submit"),
+            child: Text(AppLocalization.of(context).submitButton),
             onPressed: () async {
               //for closing the keypad if it is open
               FocusScope.of(context).unfocus();
@@ -210,7 +211,7 @@ class _PayoutState extends State<Payout> {
                             Navigator.pop(context);
                             setState(() {
                               errorMessage =
-                                  "Server Error please try after some time !";
+                                  AppLocalization.of(context).serverError;
                               Toast.show(errorMessage, context,
                                   gravity: Toast.TOP,
                                   backgroundColor: darkBlue(),
@@ -219,7 +220,8 @@ class _PayoutState extends State<Payout> {
                           } else {
                             Navigator.pop(context);
                             setState(() {
-                              errorMessage = "Something went wrong  !!";
+                              errorMessage = AppLocalization.of(context)
+                                  .somethingWentWrong;
                               Toast.show(errorMessage, context,
                                   gravity: Toast.TOP,
                                   backgroundColor: darkBlue(),
@@ -230,7 +232,8 @@ class _PayoutState extends State<Payout> {
                       },
                       cancelCallBack: () {
                         Scaffold.of(context).showSnackBar(SnackBar(
-                          content: Text("Wrong Password !!"),
+                          content:
+                              Text(AppLocalization.of(context).invalidPassword),
                         ));
                       });
                 } catch (e) {
@@ -258,7 +261,7 @@ class _PayoutState extends State<Payout> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 40),
       child: Text(
-        "you are about to transfer money into your bank account",
+        AppLocalization.of(context).noteForUser,
         style: TextStyle(
             fontSize: 13, color: Colors.white, fontWeight: FontWeight.w600),
       ),

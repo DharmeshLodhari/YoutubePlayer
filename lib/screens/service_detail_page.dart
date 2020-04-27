@@ -1,4 +1,5 @@
 import 'package:Slydo/data/currency.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
@@ -57,7 +58,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         ),
         backgroundColor: darkBlue(),
         title: Text(
-          "SERVICE DETAIL",
+          AppLocalization.of(context).serviceDetail,
           style: TextStyle(
             color: Colors.white,
           ),
@@ -239,7 +240,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
             tabs: <Widget>[
               Tab(
                 child: Text(
-                  "DETAILS",
+                  AppLocalization.of(context).details,
                   style: TextStyle(
                     color: Colors.black,
                   ),
@@ -247,7 +248,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
               ),
               Tab(
                 child: Text(
-                  "Seller Other Products",
+                  AppLocalization.of(context).sellersOtherServices,
                   style: TextStyle(
                     color: Colors.black,
                   ),
@@ -274,7 +275,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                 ListView(
                   children: [
                     Text(
-                      "Coming Soon !",
+                      AppLocalization.of(context).comingSoon,
                       style: TextStyle(
                         color: Colors.black,
                       ),

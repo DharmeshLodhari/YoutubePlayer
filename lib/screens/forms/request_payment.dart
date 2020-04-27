@@ -1,5 +1,6 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
@@ -96,7 +97,8 @@ class _RequestPaymentState extends State<RequestPayment> {
               displayQRCodeButton(),
             ],
             leading: showBackArrow(),
-            title: Center(child: Text("Request Payment")),
+            title:
+                Center(child: Text(AppLocalization.of(context).requestPayment)),
             backgroundColor: darkBlue()),
         body: SingleChildScrollView(
           child: Container(
@@ -212,7 +214,7 @@ class _RequestPaymentState extends State<RequestPayment> {
       cursorColor: darkBlue(),
       validator: (value) {
         if (!isFromProfile && value != _payee.userName) {
-          return "Enter Valid Recipient";
+          return AppLocalization.of(context).invalidRecipient;
         }
         return null;
       },
@@ -223,7 +225,7 @@ class _RequestPaymentState extends State<RequestPayment> {
           prefixIcon: Icon(Icons.person),
           fillColor: Colors.white,
           filled: true,
-          hintText: "Recipient",
+          hintText: AppLocalization.of(context).recipient,
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -268,7 +270,7 @@ class _RequestPaymentState extends State<RequestPayment> {
               ),
             ),
           ),
-          hintText: "Enter Amount",
+          hintText: AppLocalization.of(context).enterAmount,
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -284,7 +286,7 @@ class _RequestPaymentState extends State<RequestPayment> {
             return null;
           } catch (e) {}
         }
-        return "Invalid amount";
+        return AppLocalization.of(context).invalidAmount;
       },
       onTap: () async {
         if (recipient != null) {
@@ -313,7 +315,7 @@ class _RequestPaymentState extends State<RequestPayment> {
           prefixIcon: Icon(Icons.note),
           fillColor: Colors.white,
           filled: true,
-          hintText: "Reference",
+          hintText: AppLocalization.of(context).reference,
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -340,7 +342,7 @@ class _RequestPaymentState extends State<RequestPayment> {
 
           if (!isValidPayee) {
             setState(() {
-              errorMessage = "Invalid recipient";
+              errorMessage = AppLocalization.of(context).invalidRecipient;
               return;
             });
           }
@@ -348,7 +350,7 @@ class _RequestPaymentState extends State<RequestPayment> {
           if (recipient == _payee.userName) {
             if (!isValidPayee) {
               setState(() {
-                errorMessage = "Invalid recipient";
+                errorMessage = AppLocalization.of(context).invalidRecipient;
                 return;
               });
             }
@@ -385,14 +387,16 @@ class _RequestPaymentState extends State<RequestPayment> {
                               arguments: {'dashboardIndex': 1});
                         } else if (!value) {
                           Navigator.pop(context);
-                          Toast.show("Request Not Send ", context,
+                          Toast.show(AppLocalization.of(context).requestNotSend,
+                              context,
                               gravity: Toast.TOP,
                               backgroundColor: darkBlue(),
                               textColor: Colors.white);
                         } else {
                           Navigator.pop(context);
                           setState(() {
-                            errorMessage = "Wrong Password !!";
+                            errorMessage =
+                                AppLocalization.of(context).invalidPassword;
                             Toast.show(errorMessage, context,
                                 gravity: Toast.TOP,
                                 backgroundColor: darkBlue(),
@@ -403,7 +407,8 @@ class _RequestPaymentState extends State<RequestPayment> {
                     },
                     cancelCallBack: () {
                       Scaffold.of(context).showSnackBar(SnackBar(
-                        content: Text("Wrong Password !!"),
+                        content:
+                            Text(AppLocalization.of(context).invalidPassword),
                       ));
                     });
               } catch (e) {
@@ -413,7 +418,7 @@ class _RequestPaymentState extends State<RequestPayment> {
               }
             }
           } else {
-            var msg = "Invalid recipient";
+            var msg = AppLocalization.of(context).invalidRecipient;
             Toast.show(msg, context,
                 gravity: Toast.CENTER,
                 backgroundColor: darkBlue(),
@@ -423,7 +428,7 @@ class _RequestPaymentState extends State<RequestPayment> {
         textColor: Colors.white,
         color: darkBlue(),
         height: 50,
-        child: Text("Request Payment"),
+        child: Text(AppLocalization.of(context).requestPayment),
       ),
     );
   }

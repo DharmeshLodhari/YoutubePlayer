@@ -1,4 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/screens/tiles/bank_account.dart';
@@ -56,10 +57,15 @@ class _SettingsListState extends State<SettingsList> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Text(
-            'App version: ' + _packageInfo.version,
+            AppLocalization.of(context).appVersion +
+                ': ' +
+                _packageInfo.version,
             style: TextStyle(color: Colors.white),
           ),
-          Text('Build number: ' + _packageInfo.buildNumber,
+          Text(
+              AppLocalization.of(context).buildnumber +
+                  ': ' +
+                  _packageInfo.buildNumber,
               style: TextStyle(color: Colors.white)),
         ],
       ),
@@ -101,14 +107,14 @@ class _SettingsListState extends State<SettingsList> {
         appBar: AppBar(
           automaticallyImplyLeading: false,
           backgroundColor: darkBlue(),
-          title: Text('Settings'),
+          title: Text(AppLocalization.of(context).settings),
           actions: <Widget>[
             IconButton(
               icon: Icon(Icons.power_settings_new, color: Colors.white),
               onPressed: () {
                 logoutUser(bankAccountBloc);
               },
-              tooltip: "Logout",
+              tooltip: AppLocalization.of(context).logout,
             ),
           ],
         ),
@@ -206,7 +212,7 @@ class _SettingsListState extends State<SettingsList> {
             Icons.mode_edit,
             color: darkBlue(),
           ),
-          tooltip: "Edit Profile",
+          tooltip: AppLocalization.of(context).editProfile,
           onPressed: () {
             Connectivity().checkConnectivity().then((value) {
               var connectionResult = value;
@@ -214,8 +220,11 @@ class _SettingsListState extends State<SettingsList> {
                   connectionResult == ConnectivityResult.mobile) {
                 pickImage(userBloc);
               } else {
-                Toast.show("Internet Connection is not available", context,
-                    gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+                Toast.show(
+                    AppLocalization.of(context).internetConnectionNotAvailable,
+                    context,
+                    gravity: Toast.BOTTOM,
+                    backgroundColor: darkBlue());
               }
             });
           },
@@ -252,7 +261,7 @@ class _SettingsListState extends State<SettingsList> {
       onPressed: () {
         Navigator.of(context).pushNamed('/add-account');
       },
-      tooltip: 'Add Account',
+      tooltip: AppLocalization.of(context).addAccount,
       child: Icon(Icons.add),
     );
   }
@@ -261,14 +270,14 @@ class _SettingsListState extends State<SettingsList> {
     final imageSource = await showDialog<ImageSource>(
         context: context,
         builder: (context) => AlertDialog(
-              title: Text("Select the image source"),
+              title: Text(AppLocalization.of(context).selectTheImageSource),
               actions: <Widget>[
                 MaterialButton(
-                  child: Text("Camera"),
+                  child: Text(AppLocalization.of(context).camera),
                   onPressed: () => Navigator.pop(context, ImageSource.camera),
                 ),
                 MaterialButton(
-                  child: Text("Gallery"),
+                  child: Text(AppLocalization.of(context).gallary),
                   onPressed: () => Navigator.pop(context, ImageSource.gallery),
                 )
               ],
@@ -335,7 +344,7 @@ class _SettingsListState extends State<SettingsList> {
       margin: EdgeInsets.fromLTRB(40.0, 0.0, 40.0, 0.0),
       child: ListTile(
         title: Text(
-          "Add Servics",
+          AppLocalization.of(context).addServices,
           style: TextStyle(
               color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
         ),
@@ -356,7 +365,7 @@ class _SettingsListState extends State<SettingsList> {
       margin: EdgeInsets.fromLTRB(40.0, 0.0, 40.0, 0.0),
       child: ListTile(
         title: Text(
-          "Add Product",
+          AppLocalization.of(context).addProducts,
           style: TextStyle(
               color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
         ),
@@ -386,7 +395,7 @@ class _SettingsListState extends State<SettingsList> {
           width: 45,
         )),
         title: Text(
-          "Bank Name: GTB",
+          AppLocalization.of(context).bankName + ": GTB",
           style: TextStyle(
               color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
         ),
@@ -395,11 +404,11 @@ class _SettingsListState extends State<SettingsList> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Text(
-              "Account: 0123456789",
+              AppLocalization.of(context).account + ": 0123456789",
               style: TextStyle(fontSize: 11),
             ),
             Text(
-              "Name : Slydo Private ltd",
+              AppLocalization.of(context).name + ": Slydo Private ltd",
               style: TextStyle(fontSize: 11),
             ),
           ],
@@ -426,7 +435,7 @@ class _SettingsListState extends State<SettingsList> {
   }
 
   List<Widget> listSecondaryActions() {
-    String caption = 'payout';
+    String caption = AppLocalization.of(context).payout;
     return [
       IconSlideAction(
           caption: caption,
@@ -441,7 +450,7 @@ class _SettingsListState extends State<SettingsList> {
   List<Widget> listActionSlideActions() {
     return [
       IconSlideAction(
-        caption: 'payout list',
+        caption: AppLocalization.of(context).payoutList,
         color: Colors.green,
         icon: Icons.event_note,
         onTap: () {

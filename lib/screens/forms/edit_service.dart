@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/widget/delete_product_and_service_confirm_alert.dart';
@@ -116,7 +117,7 @@ class _EditServiceState extends State<EditService> {
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
             leading: showBackArrow(),
-            title: Center(child: Text("Edit Service")),
+            title: Center(child: Text(AppLocalization.of(context).editService)),
             backgroundColor: darkBlue()),
         body: SingleChildScrollView(
           child: Container(
@@ -221,7 +222,7 @@ class _EditServiceState extends State<EditService> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Icon(Icons.add),
-            Text("Add Image"),
+            Text(AppLocalization.of(context).addImage),
           ],
         ),
         onTap: () {
@@ -350,7 +351,7 @@ class _EditServiceState extends State<EditService> {
       decoration: InputDecoration(
           fillColor: Colors.white,
           filled: true,
-          hintText: "Enter product name",
+          hintText: AppLocalization.of(context).enterServiceName,
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -363,7 +364,7 @@ class _EditServiceState extends State<EditService> {
         if (val.isNotEmpty) {
           return null;
         }
-        return "Please Enter Product Name";
+        return AppLocalization.of(context).pleaseEnterServiceName;
       },
       onTap: () async {},
       onChanged: (val) {
@@ -381,7 +382,7 @@ class _EditServiceState extends State<EditService> {
       decoration: InputDecoration(
           fillColor: Colors.white,
           filled: true,
-          hintText: "Short Description",
+          hintText: AppLocalization.of(context).shortDescription,
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -394,7 +395,7 @@ class _EditServiceState extends State<EditService> {
         if (val.isNotEmpty) {
           return null;
         }
-        return "add Short description";
+        return AppLocalization.of(context).shortDescription;
       },
       onTap: () async {},
       onChanged: (val) {
@@ -415,7 +416,7 @@ class _EditServiceState extends State<EditService> {
           isDense: true,
           fillColor: Colors.white,
           filled: true,
-          hintText: "Describe your service hear....",
+          hintText: AppLocalization.of(context).describeYourServiceHere,
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -441,7 +442,7 @@ class _EditServiceState extends State<EditService> {
           underline: Divider(
             color: Colors.transparent,
           ),
-          hint: Text("Select Category"),
+          hint: Text(AppLocalization.of(context).selectCategory),
           value: selectedServiceCategory,
           onChanged: (ServiceCatagory value) {
             setState(() {
@@ -486,7 +487,7 @@ class _EditServiceState extends State<EditService> {
           ),
           fillColor: Colors.white,
           filled: true,
-          hintText: "Price of the product",
+          hintText: AppLocalization.of(context).priceOfService,
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -510,10 +511,10 @@ class _EditServiceState extends State<EditService> {
             double.parse(val);
             return null;
           } catch (e) {
-            return "Please Enter Valid amount";
+            return AppLocalization.of(context).invalidAmount;
           }
         }
-        return "Please Enter Valid amount";
+        return AppLocalization.of(context).invalidAmount;
       },
     );
   }
@@ -529,7 +530,7 @@ class _EditServiceState extends State<EditService> {
                 textColor: Colors.white,
                 color: Colors.red,
                 height: 50,
-                child: Text("Delete"),
+                child: Text(AppLocalization.of(context).delete),
                 onPressed: () async {
                   FocusScope.of(context).unfocus();
                   deleteProduct();
@@ -544,7 +545,7 @@ class _EditServiceState extends State<EditService> {
                 textColor: Colors.white,
                 color: darkBlue(),
                 height: 50,
-                child: Text("Update"),
+                child: Text(AppLocalization.of(context).update),
                 onPressed: () async {
                   FocusScope.of(context).unfocus();
                   editProduct();
@@ -570,9 +571,9 @@ class _EditServiceState extends State<EditService> {
           currentService.isAvailable = serviceIsAvailable;
           currentService.availableFrom = serviceAvailableFrom;
 
-          //TODO : call editProduct API
           _auth.editService(currentService).then((value) {
-            Toast.show("Service Edited Successfully", context,
+            Toast.show(
+                AppLocalization.of(context).serviceEditedSuccessfully, context,
                 textColor: Colors.white, backgroundColor: darkBlue());
             Navigator.pop(context);
           }).catchError((error) {
@@ -581,7 +582,7 @@ class _EditServiceState extends State<EditService> {
           });
         }
       } else {
-        Toast.show("Please add Image of Service ", context,
+        Toast.show(AppLocalization.of(context).pleaseAddImage, context,
             textColor: Colors.white, backgroundColor: darkBlue());
       }
     }
@@ -591,7 +592,7 @@ class _EditServiceState extends State<EditService> {
     if (selectedServiceCategory != null) {
       return true;
     } else {
-      Toast.show("Please Select Service Catagory", context,
+      Toast.show(AppLocalization.of(context).selectCategory, context,
           backgroundColor: darkBlue(),
           textColor: Colors.white,
           gravity: Toast.CENTER);
@@ -613,7 +614,7 @@ class _EditServiceState extends State<EditService> {
           },
         ),
         Text(
-          " is Available? ",
+          AppLocalization.of(context).isAvailable + " ? ",
           style: TextStyle(
             color: Colors.white,
           ),
@@ -644,7 +645,7 @@ class _EditServiceState extends State<EditService> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text("Available From"),
+              Text(AppLocalization.of(context).availabeFrom),
               Row(
                 children: <Widget>[
                   Icon(Icons.date_range),
@@ -676,7 +677,7 @@ class _EditServiceState extends State<EditService> {
       _auth.deleteService(currentService.id).then((value) {
         Navigator.pop(context);
         Toast.show(
-          "Service deleted Successfully !! ",
+          AppLocalization.of(context).serviceDeletedSuccessfully,
           context,
           backgroundColor: darkBlue(),
           textColor: Colors.white,

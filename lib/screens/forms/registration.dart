@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/country_picker/country.dart';
 import 'package:Slydo/models/country_picker/country_picker_dialog.dart';
 import 'package:Slydo/models/country_picker/utils.dart';
@@ -42,7 +43,7 @@ class _RegistrationState extends State<Registration> {
             backgroundColor: lightBlue(),
             resizeToAvoidBottomInset: true,
             appBar: AppBar(
-                title: Center(child: Text("Sign Up")),
+                title: Center(child: Text(AppLocalization.of(context).signUp)),
                 backgroundColor: darkBlue()),
             body: SingleChildScrollView(
               padding: EdgeInsets.symmetric(vertical: 40.0, horizontal: 40.0),
@@ -85,7 +86,7 @@ class _RegistrationState extends State<Registration> {
           fillColor: Colors.white,
           filled: true,
           prefixText: "+" + _selectedDialogCountry.phoneCode,
-          hintText: "Enter Your Phone Number",
+          hintText: AppLocalization.of(context).enterYourPhoneNumber,
           labelStyle: TextStyle(
             color: darkBlue(),
             fontSize: 16,
@@ -99,7 +100,7 @@ class _RegistrationState extends State<Registration> {
           return null;
         }
         if (val.startsWith("0")) {
-          return "Invalid phone number";
+          return AppLocalization.of(context).invalidPhoneNumber;
         }
         if (val.contains('+') ||
             val.contains('-') ||
@@ -112,9 +113,9 @@ class _RegistrationState extends State<Registration> {
             val.contains('/') ||
             val.contains('N') ||
             val.contains(' ')) {
-          return "Invalid phone number";
+          return AppLocalization.of(context).invalidPhoneNumber;
         }
-        return "Invalid phone number";
+        return AppLocalization.of(context).invalidPhoneNumber;
       },
       onChanged: (val) {
         enteredPhoneNumber = val;
@@ -132,7 +133,7 @@ class _RegistrationState extends State<Registration> {
           prefixIcon: Icon(Icons.dialpad),
           fillColor: Colors.white,
           filled: true,
-          hintText: "Enter Your OTP Here",
+          hintText: AppLocalization.of(context).enterYourOtpHere,
           labelStyle: TextStyle(
             color: darkBlue(),
             fontSize: 16,
@@ -143,9 +144,9 @@ class _RegistrationState extends State<Registration> {
                   width: 1, color: Colors.white, style: BorderStyle.solid))),
       validator: (val) {
         if (val.isEmpty) {
-          return "Please Enter OTP";
+          return AppLocalization.of(context).pleaseEnterOtp;
         } else if (val.length != 6 || val != sentOTP) {
-          return "Invalid OTP";
+          return AppLocalization.of(context).invalidOtp;
         }
         return null;
       },
@@ -163,7 +164,9 @@ class _RegistrationState extends State<Registration> {
         textColor: Colors.white,
         color: darkBlue(),
         height: 50,
-        child: Text(isOTPSent ? "Verify OTP" : "Continue"),
+        child: Text(isOTPSent
+            ? AppLocalization.of(context).verifyOtp
+            : AppLocalization.of(context).continueMsg),
       ),
     );
   }
@@ -217,7 +220,7 @@ class _RegistrationState extends State<Registration> {
             padding: const EdgeInsets.fromLTRB(8.0, 8.0, 0, 0),
             child: Center(
               child: Text(
-                "Select Your Country",
+                AppLocalization.of(context).selectYourCountry,
                 style: TextStyle(color: darkBlue()),
               ),
             ),
@@ -251,9 +254,10 @@ class _RegistrationState extends State<Registration> {
           child: CountryPickerDialog(
             titlePadding: EdgeInsets.all(8.0),
             searchCursorColor: Colors.pinkAccent,
-            searchInputDecoration: InputDecoration(hintText: 'Search...'),
+            searchInputDecoration:
+                InputDecoration(hintText: AppLocalization.of(context).search),
             isSearchable: true,
-            title: Text('Select your phone code'),
+            title: Text(AppLocalization.of(context).selectYourPhoneCode),
             onValuePicked: (Country country) =>
                 setState(() => _selectedDialogCountry = country),
             itemBuilder: _buildDialogItem,

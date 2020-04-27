@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
@@ -123,7 +124,7 @@ class _EditProductState extends State<EditProduct> {
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
             leading: showBackArrow(),
-            title: Center(child: Text("Edit Product")),
+            title: Center(child: Text(AppLocalization.of(context).editProduct)),
             backgroundColor: darkBlue()),
         body: SingleChildScrollView(
           child: Container(
@@ -236,7 +237,7 @@ class _EditProductState extends State<EditProduct> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Icon(Icons.add),
-            Text("Add Image"),
+            Text(AppLocalization.of(context).addImage),
           ],
         ),
         onTap: () {
@@ -365,7 +366,7 @@ class _EditProductState extends State<EditProduct> {
       decoration: InputDecoration(
           fillColor: Colors.white,
           filled: true,
-          hintText: "Enter product name",
+          hintText: AppLocalization.of(context).productName,
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -378,7 +379,7 @@ class _EditProductState extends State<EditProduct> {
         if (val.isNotEmpty) {
           return null;
         }
-        return "Please Enter Product Name";
+        return AppLocalization.of(context).pleaseEnterProductName;
       },
       onTap: () async {},
       onChanged: (val) {
@@ -399,7 +400,7 @@ class _EditProductState extends State<EditProduct> {
           isDense: true,
           fillColor: Colors.white,
           filled: true,
-          hintText: "Describe your item hear....",
+          hintText: AppLocalization.of(context).description,
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -423,7 +424,7 @@ class _EditProductState extends State<EditProduct> {
       decoration: InputDecoration(
           fillColor: Colors.white,
           filled: true,
-          hintText: "Short Description",
+          hintText: AppLocalization.of(context).shortDescription,
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -436,7 +437,7 @@ class _EditProductState extends State<EditProduct> {
         if (val.isNotEmpty) {
           return null;
         }
-        return "Short Description";
+        return AppLocalization.of(context).shortDescription;
       },
       onTap: () async {},
       onChanged: (val) {
@@ -456,7 +457,7 @@ class _EditProductState extends State<EditProduct> {
           underline: Divider(
             color: Colors.transparent,
           ),
-          hint: Text("Select Category"),
+          hint: Text(AppLocalization.of(context).selectCategory),
           value: selectedProductCategory,
           onChanged: (ProductCategory value) {
             setState(() {
@@ -487,7 +488,7 @@ class _EditProductState extends State<EditProduct> {
       decoration: InputDecoration(
           fillColor: Colors.white,
           filled: true,
-          hintText: "Manufacturer",
+          hintText: AppLocalization.of(context).manufacturer,
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -500,7 +501,7 @@ class _EditProductState extends State<EditProduct> {
         if (val.isNotEmpty) {
           return null;
         }
-        return "Please Enter Manufacturer Name";
+        return AppLocalization.of(context).pleaseEnterManufacturerName;
       },
       onTap: () async {},
       onChanged: (val) {
@@ -520,7 +521,7 @@ class _EditProductState extends State<EditProduct> {
             color: Colors.transparent,
           ),
           isExpanded: true,
-          hint: Text("Select item Condition"),
+          hint: Text(AppLocalization.of(context).productCondition),
           value: selectedProductCondition,
           onChanged: (ProductCondition value) {
             setState(() {
@@ -565,7 +566,7 @@ class _EditProductState extends State<EditProduct> {
           ),
           fillColor: Colors.white,
           filled: true,
-          hintText: "Price of the product",
+          hintText: AppLocalization.of(context).price,
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -589,10 +590,10 @@ class _EditProductState extends State<EditProduct> {
             double.parse(val);
             return null;
           } catch (e) {
-            return "Please Enter Valid amount";
+            return AppLocalization.of(context).invalidAmount;
           }
         }
-        return "Please Enter Valid amount";
+        return AppLocalization.of(context).invalidAmount;
       },
     );
   }
@@ -607,7 +608,7 @@ class _EditProductState extends State<EditProduct> {
                 textColor: Colors.white,
                 color: Colors.red,
                 height: 50,
-                child: Text("Delete"),
+                child: Text(AppLocalization.of(context).delete),
                 onPressed: () async {
                   FocusScope.of(context).unfocus();
                   deleteProduct();
@@ -623,7 +624,7 @@ class _EditProductState extends State<EditProduct> {
                 textColor: Colors.white,
                 color: darkBlue(),
                 height: 50,
-                child: Text("Update"),
+                child: Text(AppLocalization.of(context).update),
                 onPressed: () async {
                   FocusScope.of(context).unfocus();
                   editProduct();
@@ -651,9 +652,9 @@ class _EditProductState extends State<EditProduct> {
           currentProduct.shortDescription = productShortDescription;
           currentProduct.manufacturer = productManufacturer;
 
-          //TODO : call editProduct API
           _auth.editProduct(currentProduct).then((value) {
-            Toast.show("Product Edited Successfully", context,
+            Toast.show(
+                AppLocalization.of(context).productEditedSuccessfully, context,
                 textColor: Colors.white, backgroundColor: darkBlue());
             Navigator.pop(context);
           }).catchError((error) {
@@ -662,7 +663,7 @@ class _EditProductState extends State<EditProduct> {
           });
         }
       } else {
-        Toast.show("Please add Image of Product ", context,
+        Toast.show(AppLocalization.of(context).pleaseAddImage, context,
             textColor: Colors.white, backgroundColor: darkBlue());
       }
     }
@@ -672,7 +673,9 @@ class _EditProductState extends State<EditProduct> {
     if (selectedProductCategory != null && selectedProductCondition != null) {
       return true;
     } else {
-      Toast.show("Please Select Product Catagory and Condition", context,
+      Toast.show(
+          AppLocalization.of(context).pleaseSelectProductCategoryAndCondition,
+          context,
           backgroundColor: darkBlue(),
           textColor: Colors.white,
           gravity: Toast.CENTER);
@@ -694,7 +697,7 @@ class _EditProductState extends State<EditProduct> {
           },
         ),
         Text(
-          " is Available? ",
+          AppLocalization.of(context).isAvailable + " ? ",
           style: TextStyle(
             color: Colors.white,
           ),
@@ -725,7 +728,7 @@ class _EditProductState extends State<EditProduct> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text("Available From"),
+              Text(AppLocalization.of(context).availabeFrom),
               Row(
                 children: <Widget>[
                   Icon(Icons.date_range),
@@ -757,7 +760,7 @@ class _EditProductState extends State<EditProduct> {
       _auth.deleteProduct(currentProduct.id).then((value) {
         Navigator.pop(context);
         Toast.show(
-          "Product deleted Successfully !! ",
+          AppLocalization.of(context).productDeletedSuccessfully,
           context,
           backgroundColor: darkBlue(),
           textColor: Colors.white,

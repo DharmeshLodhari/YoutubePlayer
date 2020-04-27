@@ -1,5 +1,6 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
@@ -87,7 +88,7 @@ class _SendPaymentState extends State<SendPayment> {
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
             leading: showBackArrow(),
-            title: Center(child: Text("Send a Payment")),
+            title: Center(child: Text(AppLocalization.of(context).sendPayment)),
             backgroundColor: darkBlue()),
         body: SingleChildScrollView(
           child: Container(
@@ -184,7 +185,7 @@ class _SendPaymentState extends State<SendPayment> {
       cursorColor: darkBlue(),
       validator: (value) {
         if (!isFromProfile && value != _payee.userName) {
-          return "Enter Valid Recipient";
+          return AppLocalization.of(context).invalidRecipient;
         }
         return null;
       },
@@ -196,7 +197,7 @@ class _SendPaymentState extends State<SendPayment> {
         prefixIcon: Icon(Icons.person),
         fillColor: Colors.white,
         filled: true,
-        hintText: "Recipient",
+        hintText: AppLocalization.of(context).recipient,
         labelStyle: TextStyle(
           color: Colors.black,
           fontSize: 16,
@@ -242,7 +243,7 @@ class _SendPaymentState extends State<SendPayment> {
               ),
             ),
           ),
-          hintText: "Enter Amount",
+          hintText: AppLocalization.of(context).enterAmount,
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -258,7 +259,7 @@ class _SendPaymentState extends State<SendPayment> {
             return null;
           } catch (e) {}
         }
-        return "Invalid amount";
+        return AppLocalization.of(context).invalidAmount;
       },
       onTap: () async {
         if (recipient != null) {
@@ -287,7 +288,7 @@ class _SendPaymentState extends State<SendPayment> {
           prefixIcon: Icon(Icons.note),
           fillColor: Colors.white,
           filled: true,
-          hintText: "Reference",
+          hintText: AppLocalization.of(context).reference,
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -312,13 +313,13 @@ class _SendPaymentState extends State<SendPayment> {
         textColor: Colors.white,
         color: darkBlue(),
         height: 50,
-        child: Text("Send Payment"),
+        child: Text(AppLocalization.of(context).sendPayment),
         onPressed: () async {
           FocusScope.of(context).unfocus();
 
           if (!isValidPayee) {
             setState(() {
-              errorMessage = "Invalid recipient";
+              errorMessage = AppLocalization.of(context).invalidRecipient;
               return;
             });
           }
@@ -326,7 +327,7 @@ class _SendPaymentState extends State<SendPayment> {
           if (recipient == _payee.userName) {
             if (!isValidPayee) {
               setState(() {
-                errorMessage = "Invalid recipient";
+                errorMessage = AppLocalization.of(context).invalidRecipient;
                 return;
               });
             }
@@ -367,7 +368,7 @@ class _SendPaymentState extends State<SendPayment> {
                           Navigator.pop(context);
                           setState(() {
                             errorMessage =
-                                "Server Error please try after some time !";
+                                AppLocalization.of(context).serverError;
                             Toast.show(errorMessage, context,
                                 gravity: Toast.TOP,
                                 backgroundColor: darkBlue(),
@@ -376,7 +377,8 @@ class _SendPaymentState extends State<SendPayment> {
                         } else {
                           Navigator.pop(context);
                           setState(() {
-                            errorMessage = "Something went wrong  !!";
+                            errorMessage =
+                                AppLocalization.of(context).somethingWentWrong;
                             Toast.show(errorMessage, context,
                                 gravity: Toast.TOP,
                                 backgroundColor: darkBlue(),
@@ -387,7 +389,8 @@ class _SendPaymentState extends State<SendPayment> {
                     },
                     cancelCallBack: () {
                       Scaffold.of(context).showSnackBar(SnackBar(
-                        content: Text("Wrong Password !!"),
+                        content:
+                            Text(AppLocalization.of(context).invalidPassword),
                       ));
                     });
               } catch (e) {
@@ -397,7 +400,7 @@ class _SendPaymentState extends State<SendPayment> {
               }
             }
           } else {
-            var msg = "Invalid recipient";
+            var msg = AppLocalization.of(context).invalidRecipient;
             Toast.show(msg, context,
                 gravity: Toast.CENTER,
                 backgroundColor: darkBlue(),

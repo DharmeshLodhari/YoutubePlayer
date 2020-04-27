@@ -8,6 +8,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl_translation: ^0.17.1
   flutter_spinkit: ^4.0.0
   http: ^0.12.0+2
   provider: ^4.0.0
@@ -32,13 +35,14 @@ dependencies:
   connectivity: ^0.4.8+2
   flutter_local_notifications: ^0.6.0
   uuid: ^2.0.4
-  intl: ^0.16.1
+  intl: ^0.16.0
   autocomplete_textfield: ^1.7.3
   popup_menu: ^1.0.5
   flappy_search_bar: ^1.7.2
   package_info: ^0.4.0+16
   maps_launcher: ^1.2.0
   rflutter_alert: ^1.0.2
+
 
 flutter_icons:
   android: "launcher_icon"

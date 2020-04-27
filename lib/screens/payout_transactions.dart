@@ -1,4 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/tiles/payout_tile.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/widget/noItemInList.dart';
@@ -68,7 +69,8 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
         getList();
         _refreshController.refreshCompleted();
       } else {
-        Toast.show("Internet Connection is not available", context,
+        Toast.show(
+            AppLocalization.of(context).internetConnectionNotAvailable, context,
             gravity: Toast.BOTTOM, backgroundColor: darkBlue());
         _refreshController.refreshCompleted();
       }
@@ -92,7 +94,7 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
         backgroundColor: lightBlue(),
         appBar: AppBar(
           backgroundColor: darkBlue(),
-          title: Text('Bank Payout'),
+          title: Text(AppLocalization.of(context).bankPayout),
         ),
         body: SmartRefresher(
             enablePullDown: true,
@@ -110,7 +112,7 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
   Widget _buildTransactionList() {
     return noItemInList
         ? NoItemInList(
-            msg: "Payout history empty",
+            msg: AppLocalization.of(context).payoutHistoryEmpty,
           )
         : ListView.builder(
             //+1 for progressbar
@@ -164,7 +166,8 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
         });
       } else if (next == null && payoutList.length > 6) {
         _scaffoldKey.currentState.showSnackBar(SnackBar(
-          content: Text("Your have reached the end of the list"),
+          content:
+              Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
         ));
       }

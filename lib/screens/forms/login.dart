@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
@@ -85,7 +86,7 @@ class _UserLoginState extends State<UserLogin> {
           backgroundColor: lightBlue(),
           resizeToAvoidBottomInset: true,
           appBar: AppBar(
-            title: Text('Login'),
+            title: Text(AppLocalization.of(context).login),
             backgroundColor: darkBlue(),
             elevation: 0.0,
           ),
@@ -143,7 +144,7 @@ class _UserLoginState extends State<UserLogin> {
               Platform.isAndroid ? Icons.phone_android : Icons.phone_iphone),
           fillColor: Colors.white,
           filled: true,
-          hintText: "Phone Number",
+          hintText: AppLocalization.of(context).phoneNumber,
           labelStyle: TextStyle(
             color: darkBlue(),
             fontSize: 16,
@@ -156,7 +157,7 @@ class _UserLoginState extends State<UserLogin> {
         if (val.isNotEmpty && val.length == 13) {
           return null;
         }
-        return "Invalid phone number";
+        return AppLocalization.of(context).invalidPhoneNumber;
       },
       onChanged: (val) {
         setState(() {
@@ -176,7 +177,7 @@ class _UserLoginState extends State<UserLogin> {
           prefixIcon: Icon(Icons.lock),
           fillColor: Colors.white,
           filled: true,
-          hintText: "Password",
+          hintText: AppLocalization.of(context).password,
           labelStyle: TextStyle(
             color: darkBlue(),
             fontSize: 16,
@@ -185,7 +186,9 @@ class _UserLoginState extends State<UserLogin> {
               borderRadius: BorderRadius.all(Radius.circular(4)),
               borderSide: BorderSide(
                   width: 1, color: Colors.white, style: BorderStyle.solid))),
-      validator: (val) => val.length < 4 ? "Enter a valid Password." : null,
+      validator: (val) => val.length < 4
+          ? AppLocalization.of(context).invalidPhoneNumber
+          : null,
       onChanged: (val) {
         setState(() {
           password = val.trim();
@@ -202,7 +205,7 @@ class _UserLoginState extends State<UserLogin> {
         textColor: Colors.white,
         color: darkBlue(),
         height: 50,
-        child: Text("LOGIN"),
+        child: Text(AppLocalization.of(context).login),
       ),
     );
   }
@@ -229,7 +232,7 @@ class _UserLoginState extends State<UserLogin> {
         ),
         Expanded(
           child: Text(
-            "Remember Me",
+            AppLocalization.of(context).rememberMe,
             style: TextStyle(color: Colors.white),
           ),
         )
@@ -259,13 +262,13 @@ class _UserLoginState extends State<UserLogin> {
           await _sharedPreferences.setString('password', password);
 
       if (!isCheckedSet || !isLoggedOut || !usernameSet || !passwordSet) {
-        Toast.show("User Not Saved !!!", context);
+        Toast.show(AppLocalization.of(context).userIsNotSaved, context);
       }
     } else {
       bool isSuccessFullyStored =
           await _sharedPreferences.setBool('isChecked', isChecked);
       if (!isSuccessFullyStored) {
-        Toast.show("User Not Saved !!!", context);
+        Toast.show(AppLocalization.of(context).userIsNotSaved, context);
       }
     }
   }
@@ -313,7 +316,7 @@ class _UserLoginState extends State<UserLogin> {
           }
         } else {
           Navigator.pop(context);
-          Toast.show("User is Not Registerd !!", context,
+          Toast.show(AppLocalization.of(context).userIsNotRegistered, context,
               gravity: Toast.CENTER,
               backgroundColor: darkBlue(),
               textColor: Colors.white);
@@ -330,7 +333,7 @@ class _UserLoginState extends State<UserLogin> {
       child: Align(
         alignment: Alignment.centerRight,
         child: Text(
-          "Forgot Password?",
+          AppLocalization.of(context).forgotPassword,
           style: TextStyle(
             decoration: TextDecoration.underline,
           ),
@@ -458,8 +461,8 @@ class _UserLoginState extends State<UserLogin> {
           context: context,
           title: notification['title'],
           description: notification['body'],
-          actionOne: "NAVIGATE",
-          actionTwo: "CANCEL",
+          actionOne: AppLocalization.of(context).navigate,
+          actionTwo: AppLocalization.of(context).cancel,
           type: AlertType.none,
         );
         if (result) {
@@ -492,20 +495,6 @@ class _UserLoginState extends State<UserLogin> {
         _navigateToItemDetail(notification);
       },
     );
-  }
-
-  void showCuperDialog<T>(
-      {BuildContext context, Map<String, dynamic> notification, Widget child}) {
-    showCupertinoDialog<T>(
-      context: context,
-      builder: (BuildContext context) => child,
-    ).then((T value) {
-      if (value != null) {
-        if (value == "Navigate") {
-          _navigateToItemDetail(notification);
-        }
-      }
-    });
   }
 
   Map<String, dynamic> getAndroidNotification(Map<String, dynamic> message) {

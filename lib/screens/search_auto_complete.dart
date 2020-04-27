@@ -1,5 +1,6 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:Slydo/screens/colors.dart';
@@ -97,7 +98,7 @@ class _SearchAutoCompleteState extends State<SearchAutoComplete> {
           textStyle: filterValue == 'Users'
               ? TextStyle(color: lightBlue(), fontSize: 10)
               : TextStyle(color: Colors.white, fontSize: 10),
-          title: 'Users',
+          title: AppLocalization.of(context).users,
           image: Icon(
             Icons.supervised_user_circle,
             color: filterValue == 'Users' ? lightBlue() : Colors.white,
@@ -110,7 +111,7 @@ class _SearchAutoCompleteState extends State<SearchAutoComplete> {
             textStyle: filterValue == 'Products'
                 ? TextStyle(color: lightBlue(), fontSize: 10)
                 : TextStyle(color: Colors.white, fontSize: 10),
-            title: 'Products',
+            title: AppLocalization.of(context).products,
             image: Icon(
               Icons.computer,
               color: filterValue == 'Products' ? lightBlue() : Colors.white,
@@ -123,7 +124,7 @@ class _SearchAutoCompleteState extends State<SearchAutoComplete> {
             textStyle: filterValue == 'Services'
                 ? TextStyle(color: lightBlue(), fontSize: 10)
                 : TextStyle(color: Colors.white, fontSize: 10),
-            title: 'Services',
+            title: AppLocalization.of(context).services,
             image: Icon(
               Icons.burst_mode,
               color: filterValue == 'Services' ? lightBlue() : Colors.white,
@@ -146,7 +147,7 @@ class _SearchAutoCompleteState extends State<SearchAutoComplete> {
       results.clear();
       noItemInList = false;
       filterValue = item.menuTitle;
-      hint = "Find $filterValue";
+      hint = AppLocalization.of(context).find + " $filterValue";
     });
   }
 
@@ -215,11 +216,11 @@ class _SearchAutoCompleteState extends State<SearchAutoComplete> {
   Widget _buildResultList() {
     return isSearchIsEmpty
         ? NoItemInList(
-            msg: "Please type something to get results",
+            msg: AppLocalization.of(context).pleaseTypeSomethingToGetResult,
           )
         : noItemInList
             ? NoItemInList(
-                msg: "Sorry No $filterValue found",
+                msg: AppLocalization.of(context).noResultFound,
               )
             : ListView.builder(
                 //+1 for progressbar
@@ -279,7 +280,8 @@ class _SearchAutoCompleteState extends State<SearchAutoComplete> {
         });
       } else if (next == null && results.length > 6) {
         _scaffoldSearchKey.currentState.showSnackBar(SnackBar(
-          content: Text("Your have reached the end of the list"),
+          content:
+              Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
         ));
       }
@@ -319,7 +321,7 @@ class _SearchAutoCompleteState extends State<SearchAutoComplete> {
   }
 
   List<Widget> listSecondaryActions(CustomerProfile user) {
-    String caption = 'Send';
+    String caption = AppLocalization.of(context).send;
     return [
       IconSlideAction(
           caption: caption,
@@ -340,7 +342,7 @@ class _SearchAutoCompleteState extends State<SearchAutoComplete> {
   List<Widget> listActionSlideActions(CustomerProfile user) {
     return [
       IconSlideAction(
-        caption: 'Request',
+        caption: AppLocalization.of(context).request,
         color: Colors.green,
         icon: Icons.event_note,
         onTap: () async {

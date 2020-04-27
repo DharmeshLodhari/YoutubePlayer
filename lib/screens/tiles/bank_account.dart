@@ -1,5 +1,6 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/widget/passcodePopup.dart';
@@ -94,7 +95,7 @@ class _AccountBalanceTileState extends State<AccountBalanceTile> {
       margin: EdgeInsets.symmetric(horizontal: 20),
       child: ListTile(
         title: Text(
-          'Account Balance',
+          AppLocalization.of(context).accountBalance,
           style: TextStyle(
               color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
         ),
@@ -115,7 +116,7 @@ class _AccountBalanceTileState extends State<AccountBalanceTile> {
                   },
                   cancelCallBack: () {
                     Scaffold.of(context).showSnackBar(SnackBar(
-                      content: Text("Wrong Password !!"),
+                      content: Text(AppLocalization.of(context).wrongPassword),
                     ));
                   });
               widget.onTap();

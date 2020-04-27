@@ -1,3 +1,4 @@
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:flutter/material.dart';
 
 class ExploreTile extends StatefulWidget {
@@ -13,7 +14,7 @@ class _ExploreTileState extends State<ExploreTile> {
         margin: EdgeInsets.fromLTRB(40.0, 0.0, 40.0, 0.0),
         child: ListTile(
           title: Text(
-            "Explore",
+            AppLocalization.of(context).explore,
             style: TextStyle(
                 color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
           ),

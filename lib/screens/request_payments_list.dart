@@ -1,4 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/screens/tiles/transaction.dart';
@@ -77,7 +78,8 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         getList();
         _refreshController.refreshCompleted();
       } else {
-        Toast.show("Internet Connection is not available", context,
+        Toast.show(
+            AppLocalization.of(context).internetConnectionNotAvailable, context,
             gravity: Toast.BOTTOM, backgroundColor: darkBlue());
         _refreshController.refreshCompleted();
       }
@@ -101,7 +103,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
           appBar: AppBar(
             automaticallyImplyLeading: false,
             backgroundColor: darkBlue(),
-            title: Text('Payment Requests'),
+            title: Text(AppLocalization.of(context).paymentRequests),
             actions: <Widget>[
               sendRequestButton(),
             ],
@@ -121,7 +123,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   Widget _buildRequestPaymentList() {
     return noItemInList
         ? NoItemInList(
-            msg: "No Pending Payment Request.",
+            msg: AppLocalization.of(context).noPendingPaymentRequest,
           )
         : ListView.builder(
             padding: EdgeInsets.symmetric(vertical: 4),
@@ -177,7 +179,8 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         });
       } else if (next == null && requestPaymentList.length > 6) {
         _scaffoldPaymentListKey.currentState.showSnackBar(SnackBar(
-          content: Text("Your have reached the bottom of the list"),
+          content:
+              Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
         ));
       }
@@ -204,8 +207,11 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
                     'isFromProfile': true
                   });
             } else {
-              Toast.show("Internet Connection is not available", context,
-                  gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+              Toast.show(
+                  AppLocalization.of(context).internetConnectionNotAvailable,
+                  context,
+                  gravity: Toast.BOTTOM,
+                  backgroundColor: darkBlue());
             }
           });
         },
@@ -224,7 +230,9 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   }
 
   List<Widget> listSecondaryActions(PaymentRequest paymentRequest, int index) {
-    String caption = !paymentRequest.isCredit ? 'Cancel' : 'Reject';
+    String caption = !paymentRequest.isCredit
+        ? AppLocalization.of(context).cancel
+        : AppLocalization.of(context).reject;
     return [
       IconSlideAction(
           caption: caption,
@@ -243,7 +251,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
     } else {
       return [
         IconSlideAction(
-          caption: 'Send Money',
+          caption: AppLocalization.of(context).sendMoney,
           color: Colors.green,
           icon: Icons.reply,
           onTap: () {
@@ -254,69 +262,22 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
     }
   }
 
-  void acceptPaymentRequestAlert(PaymentRequest paymentRequest, int index) {
-    showDialog(
-      context: context,
-      child: AlertDialog(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(15.0))),
-        content: Text('Are you sure want to Accept this request?',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-            )),
-        actions: <Widget>[
-          FlatButton(
-            child: const Text('YES'),
-            color: darkBlue(),
-            onPressed: () async {
-              bool done = await _auth.acceptPaymentRequests(paymentRequest);
-              if (done) {
-                Navigator.pop(context);
-                _showSnackBar(context, 'Payment Request Accepted !!');
-                setState(() {
-                  requestPaymentList.removeAt(index);
-                  if (requestPaymentList.length <= 9) {
-                    getList();
-                  }
-                });
-              } else {
-                Navigator.pop(context);
-                _showSnackBar(context, "Error");
-              }
-            },
-          ),
-          FlatButton(
-            color: darkBlue(),
-            child: const Text(
-              'NO',
-              style: TextStyle(fontWeight: FontWeight.w400),
-            ),
-            onPressed: () {
-              setState(() {
-                Navigator.pop(context);
-              });
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> rejectPaymentRequestAlert(
+  void acceptPaymentRequestAlert(
       PaymentRequest paymentRequest, int index) async {
     bool result = await showDialogBox(
       context: context,
-      title: "Reject",
-      description: "Are you sure want to reject this request?",
-      actionOne: "YES",
-      actionTwo: "NO",
+      title: AppLocalization.of(context).accept,
+      description:
+          AppLocalization.of(context).areYouSureWantToAcceptThisRequest,
+      actionOne: AppLocalization.of(context).yes,
+      actionTwo: AppLocalization.of(context).no,
       type: AlertType.warning,
     );
     if (result) {
-      bool done = await _auth.rejectPaymentRequests(paymentRequest);
+      bool done = await _auth.acceptPaymentRequests(paymentRequest);
       if (done) {
-        _showSnackBar(context, "Payment Request Rejected !!");
+        _showSnackBar(
+            context, AppLocalization.of(context).paymentRequestAccepted);
         setState(() {
           requestPaymentList.removeAt(index);
           if (requestPaymentList.length <= 9) {
@@ -324,7 +285,36 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
           }
         });
       } else {
-        _showSnackBar(context, "Error");
+        Navigator.pop(context);
+        _showSnackBar(context, AppLocalization.of(context).error);
+      }
+    }
+  }
+
+  Future<void> rejectPaymentRequestAlert(
+      PaymentRequest paymentRequest, int index) async {
+    bool result = await showDialogBox(
+      context: context,
+      title: AppLocalization.of(context).reject,
+      description:
+          AppLocalization.of(context).areYouSureWantToRejectThisPayment,
+      actionOne: AppLocalization.of(context).yes,
+      actionTwo: AppLocalization.of(context).no,
+      type: AlertType.warning,
+    );
+    if (result) {
+      bool done = await _auth.rejectPaymentRequests(paymentRequest);
+      if (done) {
+        _showSnackBar(
+            context, AppLocalization.of(context).paymentRequestRejected);
+        setState(() {
+          requestPaymentList.removeAt(index);
+          if (requestPaymentList.length <= 9) {
+            getList();
+          }
+        });
+      } else {
+        _showSnackBar(context, AppLocalization.of(context).error);
       }
     }
   }

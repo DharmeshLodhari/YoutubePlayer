@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
+import '../../locale/app_localization.dart';
+
 class AddAccount extends StatefulWidget {
   @override
   _AddAccountState createState() => _AddAccountState();
@@ -37,7 +39,7 @@ class _AddAccountState extends State<AddAccount> {
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
           backgroundColor: darkBlue(),
-          title: Text('Add A Bank Account'),
+          title: Text(AppLocalization.of(context).addBankAccountMsg),
           elevation: 0.0,
         ),
         body: SingleChildScrollView(
@@ -58,7 +60,7 @@ class _AddAccountState extends State<AddAccount> {
                     SizedBox(height: 10),
                     getAccountNumber(),
                     SizedBox(height: 20),
-                    Text("Set as default account"),
+                    Text(AppLocalization.of(context).setDefaultAccountMsg),
                     checkButton(),
                     SizedBox(height: 20),
                     Text(
@@ -126,7 +128,7 @@ class _AddAccountState extends State<AddAccount> {
           prefixIcon: Icon(Icons.person),
           fillColor: Colors.white,
           filled: true,
-          hintText: "Account Name",
+          hintText: AppLocalization.of(context).accountNameHint,
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -135,8 +137,9 @@ class _AddAccountState extends State<AddAccount> {
               borderRadius: BorderRadius.all(Radius.circular(4)),
               borderSide: BorderSide(
                   width: 1, color: Colors.green, style: BorderStyle.solid))),
-      validator: (val) =>
-          val.length < 5 ? "Enter a valid name matching account number." : null,
+      validator: (val) => val.length < 5
+          ? AppLocalization.of(context).validationTextMessage
+          : null,
       onChanged: (val) {
         setState(() {
           accountName = val;
@@ -154,7 +157,7 @@ class _AddAccountState extends State<AddAccount> {
           prefixIcon: Icon(Icons.format_list_numbered),
           fillColor: Colors.white,
           filled: true,
-          hintText: "Account Number",
+          hintText: AppLocalization.of(context).accountNumber,
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -163,8 +166,9 @@ class _AddAccountState extends State<AddAccount> {
               borderRadius: BorderRadius.all(Radius.circular(4)),
               borderSide: BorderSide(
                   width: 1, color: Colors.green, style: BorderStyle.solid))),
-      validator: (val) =>
-          val.length < 10 ? "Enter a valid account number." : null,
+      validator: (val) => val.length < 10
+          ? AppLocalization.of(context).validationTextMessage1
+          : null,
       onChanged: (val) {
         setState(() {
           accountNumber = val;
@@ -219,11 +223,11 @@ class _AddAccountState extends State<AddAccount> {
                   .pushNamed('/dashboard', arguments: {'dashboardIndex': 5});
             } else {
               setState(() {
-                errorMessage = "An error has occured please try again";
+                errorMessage = AppLocalization.of(context).errorMsg1;
               });
             }
           } else {
-            var msg = "Invalid Bank Details !!";
+            var msg = AppLocalization.of(context).errorMsg2;
             Toast.show(msg, context,
                 gravity: Toast.BOTTOM,
                 backgroundColor: darkBlue(),
@@ -233,7 +237,7 @@ class _AddAccountState extends State<AddAccount> {
         textColor: Colors.white,
         color: darkBlue(),
         height: 50,
-        child: Text("Submit"),
+        child: Text(AppLocalization.of(context).submitButton),
       ),
     );
   }

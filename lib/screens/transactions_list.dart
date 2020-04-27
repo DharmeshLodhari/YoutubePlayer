@@ -1,4 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/screens/tiles/transaction.dart';
 import 'package:Slydo/services/auth.dart';
@@ -68,7 +69,8 @@ class _TransactionListState extends State<TransactionList> {
         getList();
         _refreshController.refreshCompleted();
       } else {
-        Toast.show("Internet Connection is not available", context,
+        Toast.show(
+            AppLocalization.of(context).internetConnectionNotAvailable, context,
             gravity: Toast.BOTTOM, backgroundColor: darkBlue());
         _refreshController.refreshCompleted();
       }
@@ -92,7 +94,7 @@ class _TransactionListState extends State<TransactionList> {
         appBar: AppBar(
           automaticallyImplyLeading: false,
           backgroundColor: darkBlue(),
-          title: Text('Transactions'),
+          title: Text(AppLocalization.of(context).transactions),
         ),
         body: SmartRefresher(
             enablePullDown: true,
@@ -110,7 +112,7 @@ class _TransactionListState extends State<TransactionList> {
   Widget _buildTransactionList() {
     return noItemInList
         ? NoItemInList(
-            msg: "Transaction history empty",
+            msg: AppLocalization.of(context).transactionHistoryEmpty,
           )
         : ListView.builder(
             padding: EdgeInsets.symmetric(vertical: 4),
@@ -166,7 +168,8 @@ class _TransactionListState extends State<TransactionList> {
         });
       } else if (next == null && transactionList.length > 6) {
         _scaffoldTransactionKey.currentState.showSnackBar(SnackBar(
-          content: Text("Your have reached the end of the list"),
+          content:
+              Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
         ));
       }

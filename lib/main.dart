@@ -6,7 +6,10 @@ import 'package:Slydo/services/app_life_cycle.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
+
+import 'locale/app_localization.dart';
 
 void main() async {
   // Set `enableInDevMode` to true to see reports while in debug mode
@@ -28,37 +31,29 @@ void main() async {
   ).then((value) {
     runZoned(() {
       runApp(
-        MultiProvider(
-            providers: [
-              ChangeNotifierProvider<UserBloc>.value(
-                value: UserBloc(),
-              ),
-              ChangeNotifierProvider<PayeeBloc>.value(
-                value: PayeeBloc(),
-              ),
-              ChangeNotifierProvider<CustomerProfileBloc>.value(
-                value: CustomerProfileBloc(),
-              ),
-              ChangeNotifierProvider<BankAccountBloc>.value(
-                value: BankAccountBloc(),
-              ),
-              ChangeNotifierProvider<RefreshBlocForTransaction>.value(
-                value: RefreshBlocForTransaction(),
-              ),
-              ChangeNotifierProvider<RefreshBlocForRequestPayment>.value(
-                value: RefreshBlocForRequestPayment(),
-              ),
-              ChangeNotifierProvider<RefreshBlocForMessages>.value(
-                value: RefreshBlocForMessages(),
-              ),
-            ],
-            child: AppLifeCycle(
-              child: MaterialApp(
-                initialRoute: '/splash',
-                onGenerateRoute: RouteGenerator.generateRoute,
-                debugShowCheckedModeBanner: false,
-              ),
-            )),
+        MultiProvider(providers: [
+          ChangeNotifierProvider<UserBloc>.value(
+            value: UserBloc(),
+          ),
+          ChangeNotifierProvider<PayeeBloc>.value(
+            value: PayeeBloc(),
+          ),
+          ChangeNotifierProvider<CustomerProfileBloc>.value(
+            value: CustomerProfileBloc(),
+          ),
+          ChangeNotifierProvider<BankAccountBloc>.value(
+            value: BankAccountBloc(),
+          ),
+          ChangeNotifierProvider<RefreshBlocForTransaction>.value(
+            value: RefreshBlocForTransaction(),
+          ),
+          ChangeNotifierProvider<RefreshBlocForRequestPayment>.value(
+            value: RefreshBlocForRequestPayment(),
+          ),
+          ChangeNotifierProvider<RefreshBlocForMessages>.value(
+            value: RefreshBlocForMessages(),
+          ),
+        ], child: MyApp()),
       );
     }, onError: (exception, stack) {
       Crashlytics.instance.recordError(exception, stack);
@@ -67,4 +62,30 @@ void main() async {
 //    exit(0);
     });
   });
+}
+
+class MyApp extends StatelessWidget {
+  //default local language
+  final AppLocalizationDelegate _localeOverrideDelegate =
+      AppLocalizationDelegate(Locale('en', 'US'));
+
+  @override
+  Widget build(BuildContext context) {
+//    AppLocalization.load(Locale("gu", "GU"));
+
+    AppLocalization.load(Locale("en", "US"));
+    return AppLifeCycle(
+      child: MaterialApp(
+        localizationsDelegates: [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          _localeOverrideDelegate
+        ],
+        supportedLocales: [const Locale('en', 'US'), const Locale('gu', 'GU')],
+        initialRoute: '/splash',
+        onGenerateRoute: RouteGenerator.generateRoute,
+        debugShowCheckedModeBanner: false,
+      ),
+    );
+  }
 }

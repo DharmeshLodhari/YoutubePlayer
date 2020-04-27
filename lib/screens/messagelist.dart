@@ -1,4 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/message.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/screens/tiles/message.dart';
@@ -79,7 +80,8 @@ class _MessageListState extends State<MessageList> {
         getList();
         _refreshController.refreshCompleted();
       } else {
-        Toast.show("Internet Connection is not available", context,
+        Toast.show(
+            AppLocalization.of(context).internetConnectionNotAvailable, context,
             gravity: Toast.BOTTOM, backgroundColor: darkBlue());
         _refreshController.refreshCompleted();
       }
@@ -104,7 +106,7 @@ class _MessageListState extends State<MessageList> {
           appBar: AppBar(
             automaticallyImplyLeading: false,
             backgroundColor: darkBlue(),
-            title: Text('Messages'),
+            title: Text(AppLocalization.of(context).messages),
             actions: <Widget>[_threeItemPopup()],
           ),
           body: SmartRefresher(
@@ -137,7 +139,7 @@ class _MessageListState extends State<MessageList> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text("Filter"),
+                  Text(AppLocalization.of(context).filter),
                   Icon(
                     Icons.sort,
                     color: Colors.black,
@@ -155,7 +157,7 @@ class _MessageListState extends State<MessageList> {
           list.add(
             CheckedPopupMenuItem(
               child: Text(
-                "All",
+                AppLocalization.of(context).all,
                 style: TextStyle(color: Colors.black),
               ),
               value: "all",
@@ -165,7 +167,7 @@ class _MessageListState extends State<MessageList> {
           list.add(
             CheckedPopupMenuItem(
               child: Text(
-                "Archived",
+                AppLocalization.of(context).archived,
                 style: TextStyle(color: Colors.black),
               ),
               value: "archived",
@@ -176,7 +178,7 @@ class _MessageListState extends State<MessageList> {
           list.add(
             CheckedPopupMenuItem(
               child: Text(
-                "Sent",
+                AppLocalization.of(context).sent,
                 style: TextStyle(color: Colors.black),
               ),
               value: "sent",
@@ -186,7 +188,7 @@ class _MessageListState extends State<MessageList> {
           list.add(
             CheckedPopupMenuItem(
               child: Text(
-                "Starred",
+                AppLocalization.of(context).starred,
                 style: TextStyle(color: Colors.black),
               ),
               value: "starred",
@@ -208,7 +210,7 @@ class _MessageListState extends State<MessageList> {
   Widget _buildMessageList() {
     return noItemInList
         ? NoItemInList(
-            msg: "No Messages",
+            msg: AppLocalization.of(context).noMessages,
           )
         : ListView.builder(
             padding: EdgeInsets.symmetric(vertical: 4),
@@ -265,7 +267,8 @@ class _MessageListState extends State<MessageList> {
         });
       } else if (next == null && messageList.length > 6) {
         _scaffoldMessageKey.currentState.showSnackBar(SnackBar(
-          content: Text("Your have reached the bottom of the list"),
+          content:
+              Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
         ));
       }
@@ -325,8 +328,12 @@ class _MessageListState extends State<MessageList> {
                     ),
           onPressed: () async {
             var action = isRecipient
-                ? partialMessage.isArchivedByRecipient ? "unarchive" : "archive"
-                : partialMessage.isArchivedBySender ? "unarchive" : "archive";
+                ? partialMessage.isArchivedByRecipient
+                    ? AppLocalization.of(context).unarchive
+                    : AppLocalization.of(context).archive
+                : partialMessage.isArchivedBySender
+                    ? AppLocalization.of(context).unarchive
+                    : AppLocalization.of(context).archive;
             await _auth.updateMessage(partialMessage.id, action);
             setState(() {
               if (isRecipient) {
@@ -372,17 +379,18 @@ class _MessageListState extends State<MessageList> {
   void deleteMessage(PartialMessage partialMessage, int index) async {
     bool result = await showDialogBox(
       context: context,
-      title: "Delete",
-      description: "Are you sure want to delete this Message?",
-      actionOne: "YES",
-      actionTwo: "CANCEL",
+      title: AppLocalization.of(context).delete,
+      description: AppLocalization.of(context).areYouSureWantToDeleteThisMsg,
+      actionOne: AppLocalization.of(context).yes,
+      actionTwo: AppLocalization.of(context).cancel,
       type: AlertType.warning,
     );
     if (result) {
       // call delete message _auth method
       bool done = await _auth.deleteMessage(messageList[index].id);
       if (done) {
-        _showSnackBar(context, "Message is deleted successfully!!");
+        _showSnackBar(
+            context, AppLocalization.of(context).messageIsDeletedSuccessfully);
         setState(() {
           messageList.removeAt(index);
           if (messageList.length <= 9) {
@@ -390,7 +398,7 @@ class _MessageListState extends State<MessageList> {
           }
         });
       } else {
-        _showSnackBar(context, "Error");
+        _showSnackBar(context, AppLocalization.of(context).error);
       }
     }
   }

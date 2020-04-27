@@ -1,4 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/widget/noItemInList.dart';
@@ -69,7 +70,8 @@ class _BankAccountListState extends State<BankAccountList> {
         getList();
         _refreshController.refreshCompleted();
       } else {
-        Toast.show("Internet Connection is not available", context,
+        Toast.show(
+            AppLocalization.of(context).internetConnectionNotAvailable, context,
             gravity: Toast.BOTTOM, backgroundColor: darkBlue());
         _refreshController.refreshCompleted();
       }
@@ -91,7 +93,7 @@ class _BankAccountListState extends State<BankAccountList> {
         backgroundColor: lightBlue(),
         appBar: AppBar(
           backgroundColor: darkBlue(),
-          title: Text('Bank Accounts'),
+          title: Text(AppLocalization.of(context).bankAccount),
           actions: <Widget>[
             IconButton(
               icon: Icon(Icons.add),
@@ -100,8 +102,11 @@ class _BankAccountListState extends State<BankAccountList> {
                 if (bankAccountList.length < 2) {
                   Navigator.of(context).pushNamed('/add-account');
                 } else {
-                  Toast.show("You can add maximum two bank account", context,
-                      textColor: Colors.white, backgroundColor: darkBlue());
+                  Toast.show(
+                      AppLocalization.of(context).youCanAddMaximumTwoAccount,
+                      context,
+                      textColor: Colors.white,
+                      backgroundColor: darkBlue());
                 }
               },
             )
@@ -123,7 +128,7 @@ class _BankAccountListState extends State<BankAccountList> {
   Widget _buildBankAccountList() {
     return noItemInList
         ? NoItemInList(
-            msg: "You Don't have any Bank Account Please Add one",
+            msg: AppLocalization.of(context).youDontHaveAnyAccountPleaseAddOne,
           )
         : ListView.builder(
             padding: EdgeInsets.symmetric(vertical: 16),
@@ -182,7 +187,8 @@ class _BankAccountListState extends State<BankAccountList> {
         });
       } else if (next == null && bankAccountList.length > 6) {
         _scaffoldKey.currentState.showSnackBar(SnackBar(
-          content: Text("Your have reached the end of the list"),
+          content:
+              Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
         ));
       }
@@ -260,7 +266,7 @@ class _BankAccountListState extends State<BankAccountList> {
             height: 2,
           ),
           Text(
-            "Default",
+            AppLocalization.of(context).defaultMsg,
             style: TextStyle(fontSize: 12, color: Colors.grey[600]),
           ),
           SizedBox(
@@ -286,7 +292,7 @@ class _BankAccountListState extends State<BankAccountList> {
   }
 
   List<Widget> listSecondaryActions({BankAccount account}) {
-    String caption = 'delete';
+    String caption = AppLocalization.of(context).delete;
     return [
       IconSlideAction(
           caption: caption,
@@ -302,7 +308,7 @@ class _BankAccountListState extends State<BankAccountList> {
     {
       if (bankAccountList.length == 1) {
         Toast.show(
-          "You can not delete only bank account",
+          AppLocalization.of(context).youCanNotDeleteOnlyBankAccount,
           context,
           backgroundColor: darkBlue(),
           textColor: Colors.white,
@@ -311,7 +317,7 @@ class _BankAccountListState extends State<BankAccountList> {
         _auth.deleteBankAccount(account.uuid).then((value) {
           if (value) {
             Toast.show(
-              "Account deleted successfully !!",
+              AppLocalization.of(context).accountDeletedSuccessfully,
               context,
               backgroundColor: darkBlue(),
               textColor: Colors.white,
@@ -319,7 +325,7 @@ class _BankAccountListState extends State<BankAccountList> {
             _onRefresh();
           } else {
             Toast.show(
-              "Account is Not deleted !!",
+              AppLocalization.of(context).accountIsNotDeleted,
               context,
               backgroundColor: darkBlue(),
               textColor: Colors.white,
@@ -340,13 +346,19 @@ class _BankAccountListState extends State<BankAccountList> {
   List<Widget> listActionSlideActions({BankAccount account}) {
     return [
       IconSlideAction(
-        caption: account.isDefault ? 'Default' : "Make default",
+        caption: account.isDefault
+            ? AppLocalization.of(context).defaultMsg
+            : AppLocalization.of(context).makeDefault,
         color: Colors.green,
         icon: Icons.device_hub,
         onTap: account.isDefault
             ? () {
-                Toast.show("This Account is Alerady Default Account ", context,
-                    textColor: Colors.white, backgroundColor: darkBlue());
+                Toast.show(
+                    AppLocalization.of(context)
+                        .thisAccountIsAlreadyDefaultAccount,
+                    context,
+                    textColor: Colors.white,
+                    backgroundColor: darkBlue());
               }
             : () {
                 updateBankAccount(account);
@@ -367,7 +379,7 @@ class _BankAccountListState extends State<BankAccountList> {
     _auth.updateBankAccount(data).then((value) {
       if (value) {
         Toast.show(
-          "Account updated successfully !!",
+          AppLocalization.of(context).accountUpdatedSuccessfully,
           context,
           backgroundColor: darkBlue(),
           textColor: Colors.white,
@@ -375,7 +387,7 @@ class _BankAccountListState extends State<BankAccountList> {
         _onRefresh();
       } else {
         Toast.show(
-          "Account is not updated!!",
+          AppLocalization.of(context).accountIsNotUpdated,
           context,
           backgroundColor: darkBlue(),
           textColor: Colors.white,

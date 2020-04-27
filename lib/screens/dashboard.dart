@@ -1,3 +1,4 @@
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/messagelist.dart';
 import 'package:Slydo/screens/search_auto_complete.dart';
 import 'package:flutter/cupertino.dart';
@@ -74,37 +75,37 @@ class _DashboardState extends State<Dashboard> {
               Icons.home,
               color: Colors.white,
             ),
-            title: Text('Home',
+            title: Text(AppLocalization.of(context).home,
                 style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
           BottomNavigationBarItem(
             backgroundColor: lightBlue(),
             icon: Icon(Icons.notifications, color: Colors.white),
-            title: Text('Requests',
+            title: Text(AppLocalization.of(context).requests,
                 style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
           BottomNavigationBarItem(
             backgroundColor: lightBlue(),
             icon: Icon(Icons.account_balance_wallet, color: Colors.white),
-            title: Text('Transactions',
+            title: Text(AppLocalization.of(context).transactions,
                 style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
           BottomNavigationBarItem(
             backgroundColor: lightBlue(),
             icon: Icon(Icons.search, color: Colors.white),
-            title: Text('Search',
+            title: Text(AppLocalization.of(context).search,
                 style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
           BottomNavigationBarItem(
             backgroundColor: lightBlue(),
             icon: Icon(Icons.email, color: Colors.white),
-            title: Text('Messages',
+            title: Text(AppLocalization.of(context).messages,
                 style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
           BottomNavigationBarItem(
             backgroundColor: lightBlue(),
             icon: Icon(Icons.settings, color: Colors.white),
-            title: Text('Settings',
+            title: Text(AppLocalization.of(context).settings,
                 style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
         ],

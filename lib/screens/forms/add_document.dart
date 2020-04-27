@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
@@ -45,7 +46,7 @@ class _AddDocumentState extends State<AddDocument> {
       backgroundColor: lightBlue(),
       appBar: AppBar(
         backgroundColor: darkBlue(),
-        title: Text("Verify Yourself"),
+        title: Text(AppLocalization.of(context).verifyYourSelfMsg),
       ),
       body: Column(
         children: <Widget>[
@@ -112,8 +113,8 @@ class _AddDocumentState extends State<AddDocument> {
                 Icons.account_balance_wallet,
                 size: 40,
               ),
-              title: "Passport",
-              subtitle: "Face photo page",
+              title: AppLocalization.of(context).passportMsg,
+              subtitle: AppLocalization.of(context).facePhotoPage,
               onTap: _nextFormStep,
               enabled: isPassportAllowed),
           documentTypeTile(
@@ -121,8 +122,8 @@ class _AddDocumentState extends State<AddDocument> {
                 Icons.directions_car,
                 size: 40,
               ),
-              title: "Driver's License",
-              subtitle: "Front and Back",
+              title: AppLocalization.of(context).driverLicence,
+              subtitle: AppLocalization.of(context).frontAndBack,
               onTap: _nextFormStep,
               enabled: isDrivingLicenceAllowed),
           documentTypeTile(
@@ -130,8 +131,8 @@ class _AddDocumentState extends State<AddDocument> {
                 Icons.card_membership,
                 size: 40,
               ),
-              title: "Identical Card",
-              subtitle: "Front and Back",
+              title: AppLocalization.of(context).identityCard,
+              subtitle: AppLocalization.of(context).frontAndBack,
               onTap: _nextFormStep,
               enabled: isIdentiticardAllowed),
         ],
@@ -141,7 +142,7 @@ class _AddDocumentState extends State<AddDocument> {
 
   Widget titleTextOne() {
     return Text(
-      "Verify your identity",
+      AppLocalization.of(context).verifyYourIdentity,
       style: TextStyle(
           fontWeight: FontWeight.bold, fontSize: 24, color: darkBlue()),
     );
@@ -149,7 +150,7 @@ class _AddDocumentState extends State<AddDocument> {
 
   Widget subtitleTextOne() {
     return Text(
-      "select the type of document you want to upload",
+      AppLocalization.of(context).selectTypeOfDocument,
       style: TextStyle(
           fontWeight: FontWeight.w500, fontSize: 16, color: Colors.white),
     );
@@ -203,7 +204,7 @@ class _AddDocumentState extends State<AddDocument> {
 
   Widget titleTextTwo() {
     return Text(
-      "Passport Photo page",
+      AppLocalization.of(context).passportPhotoPage,
       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
     );
   }
@@ -216,10 +217,10 @@ class _AddDocumentState extends State<AddDocument> {
           size: 40,
         ),
         title: Text(
-          "Need to use your mobile to take photos?",
+          AppLocalization.of(context).needToUseYourMobileToTake,
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        subtitle: Text("Tap hear to continue"),
+        subtitle: Text(AppLocalization.of(context).tapHereToContinue),
         onTap: () async {
           ImagePicker.pickImage(source: ImageSource.camera).then((value) {
             setState(() {
@@ -239,10 +240,10 @@ class _AddDocumentState extends State<AddDocument> {
           size: 40,
         ),
         title: Text(
-          "Upload photo from your device",
+          AppLocalization.of(context).uploadPhotoFromDevice,
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        subtitle: Text("Tap hear to continue"),
+        subtitle: Text(AppLocalization.of(context).tapHereToContinue),
         onTap: () async {
           ImagePicker.pickImage(
             source: ImageSource.gallery,
@@ -285,18 +286,10 @@ class _AddDocumentState extends State<AddDocument> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-//        MaterialButton(
-//          child: Text(
-//            "Previous",
-//            style: TextStyle(color: Colors.white),
-//          ),
-//          color: darkBlue(),
-//          onPressed: _previousFormStep,
-//        ),
         documentImage != null
             ? MaterialButton(
                 child: Text(
-                  "Next",
+                  AppLocalization.of(context).next,
                   style: TextStyle(color: Colors.white),
                 ),
                 color: darkBlue(),
@@ -334,7 +327,7 @@ class _AddDocumentState extends State<AddDocument> {
 
   Widget titleTextThree() {
     return Text(
-      "User Photo page",
+      AppLocalization.of(context).userPhotoPage,
       style: TextStyle(
           fontWeight: FontWeight.bold, fontSize: 24, color: darkBlue()),
     );
@@ -348,10 +341,10 @@ class _AddDocumentState extends State<AddDocument> {
           size: 40,
         ),
         title: Text(
-          "Need to use your mobile to take photos?",
+          AppLocalization.of(context).needToUseYourMobileToTake,
           style: TextStyle(fontWeight: FontWeight.bold, color: darkBlue()),
         ),
-        subtitle: Text("Tap hear to continue"),
+        subtitle: Text(AppLocalization.of(context).tapHereToContinue),
         onTap: () {
           ImagePicker.pickImage(source: ImageSource.camera).then((value) {
             setState(() {
@@ -397,7 +390,7 @@ class _AddDocumentState extends State<AddDocument> {
       children: <Widget>[
         MaterialButton(
           child: Text(
-            "Previous",
+            AppLocalization.of(context).previous,
             style: TextStyle(color: Colors.white),
           ),
           color: darkBlue(),
@@ -406,7 +399,7 @@ class _AddDocumentState extends State<AddDocument> {
         userImage != null
             ? MaterialButton(
                 child: Text(
-                  "Finish",
+                  AppLocalization.of(context).finish,
                   style: TextStyle(color: Colors.white),
                 ),
                 color: darkBlue(),

@@ -6,6 +6,7 @@
 //TODO: inputs {recipient, subject, body, submitButton }
 
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/message.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
@@ -68,7 +69,7 @@ class _DetailedMessageState extends State<DetailedMessage> {
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
             leading: showBackArrow(),
-            title: Center(child: Text("Message")),
+            title: Center(child: Text(AppLocalization.of(context).message)),
             backgroundColor: darkBlue()),
         body: isLoading
             ? Center(
@@ -141,8 +142,8 @@ class _DetailedMessageState extends State<DetailedMessage> {
   }
 
   Widget getRecipientWidget() {
-    return Text(
-        "to: ${message.recipient.length > 15 ? message.recipient.substring(0, 15) : message.recipient}");
+    return Text(AppLocalization.of(context).to +
+        ": ${message.recipient.length > 15 ? message.recipient.substring(0, 15) : message.recipient}");
   }
 
   getLeading() {
@@ -194,8 +195,12 @@ class _DetailedMessageState extends State<DetailedMessage> {
               : Icon(Icons.unarchive),
       onPressed: () async {
         var action = isRecipient
-            ? message.isArchivedByRecipient ? "unarchive" : "archive"
-            : message.isArchivedBySender ? "unarchive" : "archive";
+            ? message.isArchivedByRecipient
+                ? AppLocalization.of(context).unarchive
+                : AppLocalization.of(context).archive
+            : message.isArchivedBySender
+                ? AppLocalization.of(context).unarchive
+                : AppLocalization.of(context).archive;
         await _auth.updateMessage(message.id, action);
         setState(() {
           if (isRecipient) {
@@ -232,8 +237,12 @@ class _DetailedMessageState extends State<DetailedMessage> {
               : Icon(Icons.star_border),
       onPressed: () async {
         var action = isRecipient
-            ? message.isStarredByRecipient ? "unstar" : "star"
-            : message.isStarredBySender ? "unstar" : "star";
+            ? message.isStarredByRecipient
+                ? AppLocalization.of(context).unstar
+                : AppLocalization.of(context).star
+            : message.isStarredBySender
+                ? AppLocalization.of(context).unstar
+                : AppLocalization.of(context).star;
         await _auth.updateMessage(message.id, action);
         setState(() {
           if (isRecipient) {
@@ -285,7 +294,7 @@ class _DetailedMessageState extends State<DetailedMessage> {
       textColor: Colors.white,
       color: darkBlue(),
       height: 50,
-      child: Text("Replay"),
+      child: Text(AppLocalization.of(context).reply),
       onPressed: () {
         Navigator.of(context).pushNamed('/compose_message', arguments: {
           'recipient': message.sender,

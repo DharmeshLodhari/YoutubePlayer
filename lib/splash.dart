@@ -135,7 +135,10 @@ class _SplashScreenState extends State<SplashScreen> {
                         Navigator.of(context).popAndPushNamed('/add-document');
                       }
                     }
-                  } catch (e) {}
+                  } catch (e) {
+                    Navigator.of(context).pushNamed('/dashboard',
+                        arguments: {'dashboardIndex': 0});
+                  }
                 });
               }
             } else {
