@@ -1,6 +1,7 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/models/store.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
@@ -40,9 +41,13 @@ class _SendPaymentState extends State<SendPayment> {
   bool isValidPayee = false;
   int amount;
   String reference = "";
+  String category = "";
   String errorMessage = "";
   String recipient;
   final locationService = LocationService();
+
+  PaymentCategory selectedPaymentCategory;
+  String paymentCategory;
 
   @override
   void initState() {
@@ -103,6 +108,8 @@ class _SendPaymentState extends State<SendPayment> {
                     getRecipientField(),
                     SizedBox(height: 10),
                     displayAmountField(),
+                    SizedBox(height: 10),
+                    getCategoryField(),
                     SizedBox(height: 10),
                     getReferenceField(),
                     SizedBox(height: 10),
@@ -278,6 +285,56 @@ class _SendPaymentState extends State<SendPayment> {
     );
   }
 
+  Widget getCategoryField() {
+    return Card(
+      margin: EdgeInsets.all(0),
+      child: Container(
+        padding: EdgeInsets.all(8),
+        width: double.infinity,
+        child: DropdownButton<PaymentCategory>(
+          isExpanded: true,
+          underline: Divider(
+            color: Colors.transparent,
+          ),
+          hint: Row(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: Icon(
+                  Icons.category,
+                  color: Colors.grey[600],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 16.0),
+                child: Text(AppLocalization.of(context).category),
+              ),
+            ],
+          ),
+          value: selectedPaymentCategory,
+          onChanged: (PaymentCategory value) {
+            setState(() {
+              selectedPaymentCategory = value;
+              paymentCategory = selectedPaymentCategory.name;
+            });
+          },
+          items: paymentCategories.map((PaymentCategory category) {
+            return DropdownMenuItem<PaymentCategory>(
+              value: category,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 0),
+                child: Text(
+                  category.name,
+                  style: TextStyle(color: Colors.black),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ),
+    );
+  }
+
   Widget getReferenceField() {
     return TextFormField(
       cursorColor: darkBlue(),
@@ -332,7 +389,9 @@ class _SendPaymentState extends State<SendPayment> {
               });
             }
 
-            if (isValidPayee && _formKey.currentState.validate()) {
+            if (isValidPayee &&
+                _formKey.currentState.validate() &&
+                validateDropdown()) {
               // Todo: Add a try block here and stop user from continuing if they deny location permission
               var userLocation;
               Map deviceData;
@@ -409,5 +468,17 @@ class _SendPaymentState extends State<SendPayment> {
         },
       ),
     );
+  }
+
+  bool validateDropdown() {
+    if (selectedPaymentCategory != null) {
+      return true;
+    } else {
+      Toast.show(AppLocalization.of(context).selectCategory, context,
+          backgroundColor: darkBlue(),
+          textColor: Colors.white,
+          gravity: Toast.CENTER);
+      return false;
+    }
   }
 }

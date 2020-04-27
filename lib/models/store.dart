@@ -142,6 +142,32 @@ class Service {
   }
 }
 
+class PaymentCategory {
+  const PaymentCategory(this.name);
+  final String name;
+}
+
+List<PaymentCategory> paymentCategories = <PaymentCategory>[
+  PaymentCategory(
+    'General',
+  ),
+  PaymentCategory(
+    'Groceries',
+  ),
+  PaymentCategory(
+    'Entertainment',
+  ),
+  PaymentCategory(
+    'Eating out',
+  ),
+  PaymentCategory(
+    'Bills',
+  ),
+  PaymentCategory(
+    'Shopping',
+  ),
+];
+
 class ProductCategory {
   const ProductCategory(this.name, this.icon);
   final String name;
