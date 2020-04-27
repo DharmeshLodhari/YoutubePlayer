@@ -5,9 +5,9 @@
   "addBankAccountMsg":"Add A Bank Account" ,
   "setDefaultAccountMsg": "Set as default account",
   "accountNameHint": "Account Name",
+  "validationTextMessage": "Enter a valid name matching account number.",
 
-  "Enter a valid name matching account number.":"validationTextMessage",
-  "Account Number":"accountNumber",
+  "accountNumber": "Account Number",
   "Enter a valid account number.":"validationTextMessage1",
   "An error has occured please try again":"errorMsg1",
   "Invalid Bank Details !!":"errorMsg2",
