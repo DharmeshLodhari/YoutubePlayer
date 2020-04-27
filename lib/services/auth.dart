@@ -389,17 +389,13 @@ class AuthService {
 
   // delete single bankaccount
   Future<bool> deleteBankAccount(String id) async {
-    var url = baseUrl + "/api/v1/transactions/bank-accounts-list/" + id + "/";
+    var url = baseUrl + "/api/v1/transactions/delete-bank-account/" + id + "/";
     var headers = await getAuthHeaders();
-    var response = await http.delete(
-      url,
-      headers: headers,
-    );
-    var jsonData = json.decode(response.body);
+    var response = await http.delete(url, headers: headers);
     if (response.statusCode == 204) {
       return true;
     } else {
-      throw jsonData;
+      return false;
     }
   }
 
@@ -413,13 +409,10 @@ class AuthService {
 
   // update bank account information
   Future<bool> updateBankAccount(Map data) async {
-    var url = baseUrl +
-        "/api/v1/transactions/bank-accounts-list/" +
-        data['uuid'] +
-        "/";
+    var url = baseUrl + "/api/v1/transactions/set-default-bank-account/" + data['uuid'] + "/";
     var headers = await getAuthHeaders();
-    var _data = jsonEncode(data);
     var response;
+    var _data = jsonEncode(data);
     try {
       response = await http.patch(url, headers: headers, body: _data);
     } catch (e) {
