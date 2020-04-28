@@ -35,6 +35,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   bool isLoading = false;
   bool noItemInList = false;
   RefreshBlocForRequestPayment _refreshBloc;
+  String filterValue = "all";
 
   @protected
   void initState() {
@@ -108,6 +109,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
             title: Text(AppLocalization.of(context).paymentRequests),
             actions: <Widget>[
               sendRequestButton(),
+              _threeItemPopup(),
             ],
           ),
           body: SmartRefresher(
@@ -121,6 +123,74 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
               child: _buildRequestPaymentList()),
         ));
   }
+
+  Widget _threeItemPopup() => PopupMenuButton(
+        padding: EdgeInsets.all(0),
+        captureInheritedThemes: true,
+        itemBuilder: (context) {
+          var list = List<PopupMenuEntry<Object>>();
+          list.add(
+            PopupMenuItem(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(AppLocalization.of(context).filter),
+                  Icon(
+                    Icons.sort,
+                    color: Colors.black,
+                  )
+                ],
+              ),
+              value: 1,
+            ),
+          );
+          list.add(
+            PopupMenuDivider(
+              height: 10,
+            ),
+          );
+          list.add(
+            CheckedPopupMenuItem(
+              child: Text(
+                AppLocalization.of(context).all,
+                style: TextStyle(color: Colors.black),
+              ),
+              value: "all",
+              checked: filterValue == "all" ? true : false,
+            ),
+          );
+          list.add(
+            CheckedPopupMenuItem(
+              child: Text(
+                AppLocalization.of(context).received,
+                style: TextStyle(color: Colors.black),
+              ),
+              value: "received",
+              checked: filterValue == "received" ? true : false,
+            ),
+          );
+
+          list.add(
+            CheckedPopupMenuItem(
+              child: Text(
+                AppLocalization.of(context).sent,
+                style: TextStyle(color: Colors.black),
+              ),
+              value: "sent",
+              checked: filterValue == "sent" ? true : false,
+            ),
+          );
+          return list;
+        },
+        onSelected: (Object object) {
+          setState(() {
+            if (object != 1) {
+              filterValue = object;
+              _onRefresh();
+            }
+          });
+        },
+      );
 
   Widget _buildRequestPaymentList() {
     return noItemInList

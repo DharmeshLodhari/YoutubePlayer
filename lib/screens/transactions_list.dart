@@ -135,7 +135,6 @@ class _TransactionListState extends State<TransactionList> {
           );
   }
 
-  //TODO:ADD THIS TEST TO APPLOCALIZATION FILE
   Widget _threeItemPopup() => PopupMenuButton(
         padding: EdgeInsets.all(0),
         captureInheritedThemes: true,
