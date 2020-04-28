@@ -1,0 +1,1033 @@
+{
+  "@@last_modified": "2020-04-28T11:37:30.983864",
+  "addBankAccountMsg": "Add A Bank Account",
+  "@addBankAccountMsg": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "setDefaultAccountMsg": "Set as default account",
+  "@setDefaultAccountMsg": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "accountNameHint": "Account Name",
+  "@accountNameHint": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "validationTextMessage": "Enter a valid name matching account number.",
+  "@validationTextMessage": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "accountNumber": "Account Number",
+  "@accountNumber": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "validationTextMessage1": "Enter a valid account number.",
+  "@validationTextMessage1": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "errorMsg1": "An error has occured please try again",
+  "@errorMsg1": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "errorMsg2": "Invalid Bank Details !!",
+  "@errorMsg2": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "submitButton": "Submit",
+  "@submitButton": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "verifyYourSelfMsg": "Verify Yourself",
+  "@verifyYourSelfMsg": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "passportMsg": "Passport",
+  "@passportMsg": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "facePhotoPage": "Face photo page",
+  "@facePhotoPage": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "driverLicence": "Driver's License",
+  "@driverLicence": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "frontAndBack": "Front and Back",
+  "@frontAndBack": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "identityCard": "Identical Card",
+  "@identityCard": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "verifyYourIdentity": "Verify your identity",
+  "@verifyYourIdentity": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "selectTypeOfDocument": "select the type of document you want to upload",
+  "@selectTypeOfDocument": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "passportPhotoPage": "Passport Photo page",
+  "@passportPhotoPage": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "needToUseYourMobileToTake": "Need to use your mobile to take photos?",
+  "@needToUseYourMobileToTake": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "tapHereToContinue": "Tap hear to continue",
+  "@tapHereToContinue": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "uploadPhotoFromDevice": "Upload photo from your device",
+  "@uploadPhotoFromDevice": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "next": "Next",
+  "@next": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "userPhotoPage": "User Photo page",
+  "@userPhotoPage": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "previous": "Previous",
+  "@previous": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "finish": "Finish",
+  "@finish": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "composeMessage": "Compose Message",
+  "@composeMessage": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "invalidRecipient": "Invalid recipient",
+  "@invalidRecipient": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "recipient": "Recipient",
+  "@recipient": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "subject": "Subject",
+  "@subject": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "typeYourMsgHere": "Type your message here....",
+  "@typeYourMsgHere": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "forgotPassword": "Forgot Password",
+  "@forgotPassword": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "enterYourPhoneNumber": "Enter Your Phone Number",
+  "@enterYourPhoneNumber": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "invalidPhoneNumber": "Invalid phone number",
+  "@invalidPhoneNumber": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "enterYourOtpHere": "Enter Your OTP Here",
+  "@enterYourOtpHere": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "pleaseEnterOtp": "Please Enter OTP",
+  "@pleaseEnterOtp": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "invalidOtp": "Invalid OTP",
+  "@invalidOtp": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "verifyOtp": "Verify OTP",
+  "@verifyOtp": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "continueMsg": "Continue",
+  "@continueMsg": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "login": "Login",
+  "@login": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "phoneNumber": "Phone Number",
+  "@phoneNumber": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "password": "Password",
+  "@password": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "invalidPassword": "Invalid Password",
+  "@invalidPassword": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "rememberMe": "Remember Me",
+  "@rememberMe": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "userIsNotRegistered": "User is Not Registerd !!",
+  "@userIsNotRegistered": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "userIsNotSaved": "User Not Saved !!!",
+  "@userIsNotSaved": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "navigate": "NAVIGATE",
+  "@navigate": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "cancel": "CANCEL",
+  "@cancel": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "payout": "Payout",
+  "@payout": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "enterAmount": "Enter Amount",
+  "@enterAmount": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "invalidAmount": "Invalid Amount",
+  "@invalidAmount": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "serverError": "Server Error Please try after some time !",
+  "@serverError": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "somethingWentWrong": "Something went Wrong !!",
+  "@somethingWentWrong": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "noteForUser": "you are about to transfer money into your bank account",
+  "@noteForUser": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "signUp": "Sign Up",
+  "@signUp": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "selectYourCountry": "Select your Country",
+  "@selectYourCountry": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "search": "Search",
+  "@search": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "selectYourPhoneCode": "Select your phone code",
+  "@selectYourPhoneCode": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "requestPayment": "Request Payment",
+  "@requestPayment": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "reference": "Reference",
+  "@reference": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "requestNotSend": "Request not send",
+  "@requestNotSend": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "resetPassword": "Reset Password",
+  "@resetPassword": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "newPassword": "New Password",
+  "@newPassword": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "passwordShouldNotEmpty": "Password Should Not Empty",
+  "@passwordShouldNotEmpty": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "passwordMustBeOfFourDigit": "Password Must Be Of 4 Digit",
+  "@passwordMustBeOfFourDigit": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "confirmPassword": "Confirm Password",
+  "@confirmPassword": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "passwordMismatch": "Password Mismatch",
+  "@passwordMismatch": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "sendPayment": "Send Payment",
+  "@sendPayment": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "useFourDigitNumber": "Use 4 Digit Number",
+  "@useFourDigitNumber": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "termsAndCondition": "By clicking Register you are agreeing to the Terms and Conditions.",
+  "@termsAndCondition": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "fullName": "Full Name",
+  "@fullName": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "enterValidNameMatchingAccountNumber": "Enter a valid name matching account number.",
+  "@enterValidNameMatchingAccountNumber": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "register": "Register",
+  "@register": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "invalidDetails": "Invalid Details !!",
+  "@invalidDetails": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "accountBalance": "Account Balance",
+  "@accountBalance": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "wrongPassword": "Wrong Password !!",
+  "@wrongPassword": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "star": "star",
+  "@star": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "unstar": "unstar",
+  "@unstar": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "date": "Date",
+  "@date": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "time": "Time",
+  "@time": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "internetConnectionNotAvailable": "Internet Connection is not available",
+  "@internetConnectionNotAvailable": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "bankAccount": "Bank Account",
+  "@bankAccount": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "youCanAddMaximumTwoAccount": "You can add maximum two bank account",
+  "@youCanAddMaximumTwoAccount": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "youDontHaveAnyAccountPleaseAddOne": "You Don't have any Bank Account Please Add one",
+  "@youDontHaveAnyAccountPleaseAddOne": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "youHaveReachedBottomOfTheList": "Your have reached the end of the list",
+  "@youHaveReachedBottomOfTheList": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "defaultMsg": "Default",
+  "@defaultMsg": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "delete": "Delete",
+  "@delete": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "youCanNotDeleteOnlyBankAccount": "You can not delete only bank account",
+  "@youCanNotDeleteOnlyBankAccount": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "accountDeletedSuccessfully": "Account Deleted Successfully",
+  "@accountDeletedSuccessfully": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "accountIsNotDeleted": "Account is not deleted !!",
+  "@accountIsNotDeleted": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "makeDefault": "Make default",
+  "@makeDefault": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "thisAccountIsAlreadyDefaultAccount": "This Account is Alerady Default Account",
+  "@thisAccountIsAlreadyDefaultAccount": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "accountUpdatedSuccessfully": "Account updated successfully !!",
+  "@accountUpdatedSuccessfully": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "accountIsNotUpdated": "Account is not updated !!",
+  "@accountIsNotUpdated": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "home": "Home",
+  "@home": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "requests": "Requests",
+  "@requests": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "transactions": "Transactions",
+  "@transactions": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "messages": "Messages",
+  "@messages": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "settings": "Settings",
+  "@settings": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "message": "Message",
+  "@message": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "to": "To",
+  "@to": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "unarchive": "unarchive",
+  "@unarchive": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "archive": "",
+  "@archive": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "reply": "Replay",
+  "@reply": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "explore": "Explore",
+  "@explore": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "exit": "Exit",
+  "@exit": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "areYouSureWantToExit": "Are You Sure Want To Exit?",
+  "@areYouSureWantToExit": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "yes": "Yes",
+  "@yes": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "no": "No",
+  "@no": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "copied": "Copied!",
+  "@copied": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "copyUrl": "Copy Url",
+  "@copyUrl": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "request": "Request",
+  "@request": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "send": "Send",
+  "@send": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "scanQrCode": "Scan QR Code",
+  "@scanQrCode": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "introMsg1": "Slydo allows you to send and receive\npayments instantly in Africa",
+  "@introMsg1": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "introMsg2": "Slydo allows you to send and receive\npayments instantly in Africa",
+  "@introMsg2": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "viewTransactions": "View transactions",
+  "@viewTransactions": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "anEasyWayToAcceptAndReceivePayment": "An easy way to accept \n and receive payments.",
+  "@anEasyWayToAcceptAndReceivePayment": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "skip": "Skip",
+  "@skip": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "done": "Done",
+  "@done": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "filter": "Filter",
+  "@filter": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "all": "All",
+  "@all": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "archived": "Archived",
+  "@archived": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "sent": "Sent",
+  "@sent": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "starred": "Starred",
+  "@starred": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "noMessages": "No Messages",
+  "@noMessages": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "areYouSureWantToDeleteThisMsg": "Are you sure want to delete this Message?",
+  "@areYouSureWantToDeleteThisMsg": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageIsDeletedSuccessfully": "Message is deleted successfully!!",
+  "@messageIsDeletedSuccessfully": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "error": "Error",
+  "@error": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "bankPayout": "Bank Payout",
+  "@bankPayout": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "payoutHistoryEmpty": "Payout history empty !!",
+  "@payoutHistoryEmpty": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "paymentRequests": "Payment Requests",
+  "@paymentRequests": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "noPendingPaymentRequest": "No Pending Payment Request",
+  "@noPendingPaymentRequest": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "reject": "Reject",
+  "@reject": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "sendMoney": "Send Money",
+  "@sendMoney": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "accept": "Accept",
+  "@accept": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "areYouSureWantToAcceptThisRequest": "Are you sure want to Accept this request?",
+  "@areYouSureWantToAcceptThisRequest": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "paymentRequestAccepted": "Payment Request Accepted !!",
+  "@paymentRequestAccepted": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "areYouSureWantToRejectThisPayment": "Are you sure want to reject this request?",
+  "@areYouSureWantToRejectThisPayment": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "paymentRequestRejected": "Payment Request Rejected !!",
+  "@paymentRequestRejected": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "flip": "Flip",
+  "@flip": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "users": "Users",
+  "@users": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "products": "Products",
+  "@products": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "services": "Services",
+  "@services": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "find": "Find",
+  "@find": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "pleaseTypeSomethingToGetResult": "Please type something to get results",
+  "@pleaseTypeSomethingToGetResult": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "noResultFound": "No Result Found!",
+  "@noResultFound": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "appVersion": "App Version",
+  "@appVersion": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "buildnumber": "Build number",
+  "@buildnumber": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "logout": "Logout",
+  "@logout": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "editProfile": "Edit Profile",
+  "@editProfile": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "addAccount": "Add Account",
+  "@addAccount": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "selectTheImageSource": "Select the image Source",
+  "@selectTheImageSource": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "camera": "Camera",
+  "@camera": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "gallary": "Gallary",
+  "@gallary": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "addServices": "Add Services",
+  "@addServices": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "addProducts": "Add Products",
+  "@addProducts": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "bankName": "Bank Name",
+  "@bankName": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "account": "Account",
+  "@account": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "name": "Name",
+  "@name": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "payoutList": "Payout List",
+  "@payoutList": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "transaction": "Transaction",
+  "@transaction": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "status": "Status",
+  "@status": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "category": "Category",
+  "@category": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "note": "Note",
+  "@note": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "description": "Description",
+  "@description": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "transactionHistoryEmpty": "Transaction history empty",
+  "@transactionHistoryEmpty": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "enterPassCode": "Enter Passcode",
+  "@enterPassCode": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "addProduct": "Add Product",
+  "@addProduct": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "addImage": "Add Image",
+  "@addImage": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "productName": "Product name",
+  "@productName": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "pleaseEnterProductName": "Please Enter Product Name",
+  "@pleaseEnterProductName": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "shortDescription": "Short Description",
+  "@shortDescription": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "productCondition": "Product Condition",
+  "@productCondition": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "price": "Price",
+  "@price": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "pleaseEnterValidAmout": "Please Enter Valid Amount",
+  "@pleaseEnterValidAmout": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "add": "Add",
+  "@add": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "productAddedSuccessfully": "Product Added Succesfully",
+  "@productAddedSuccessfully": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "pleaseAddImage": "Please Add Image",
+  "@pleaseAddImage": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "pleaseSelectProductCategoryAndCondition": "Please Select Product Category and Condition",
+  "@pleaseSelectProductCategoryAndCondition": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "manufacturer": "Manufacturer",
+  "@manufacturer": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "pleaseEnterManufacturerName": "Please Enter Manufacturer Name",
+  "@pleaseEnterManufacturerName": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "isAvailable": "is Available",
+  "@isAvailable": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "availabeFrom": "Available From",
+  "@availabeFrom": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "addService": "Add Service",
+  "@addService": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "enterServiceName": "Enter Service Name",
+  "@enterServiceName": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "pleaseEnterServiceName": "Please Enter Service Name",
+  "@pleaseEnterServiceName": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "describeYourServiceHere": "Describe your service here..",
+  "@describeYourServiceHere": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "descriptionMustNotEmpty": "Description must not empty",
+  "@descriptionMustNotEmpty": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "selectCategory": "Select Catagory",
+  "@selectCategory": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "priceOfService": "Price Of Service",
+  "@priceOfService": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "serviceAddedSuccessfully": "Service Added Succesfully",
+  "@serviceAddedSuccessfully": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "editProduct": "Edit Product",
+  "@editProduct": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "update": "Update",
+  "@update": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "productEditedSuccessfully": "Product Edited Successfully",
+  "@productEditedSuccessfully": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "productDeletedSuccessfully": "Product deleted Successfully !!",
+  "@productDeletedSuccessfully": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "editService": "Edit Service",
+  "@editService": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "serviceEditedSuccessfully": "Service Edited Successfully",
+  "@serviceEditedSuccessfully": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "serviceDeletedSuccessfully": "Service Deleted Successfully",
+  "@serviceDeletedSuccessfully": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "productDetail": "Product Detail",
+  "@productDetail": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "details": "Details",
+  "@details": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "sellersOtherProduct": "Seller's Other Products",
+  "@sellersOtherProduct": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "comingSoon": "Coming Sonn!",
+  "@comingSoon": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "serviceDetail": "Service Detail",
+  "@serviceDetail": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "sellersOtherServices": "Seller's Other Services",
+  "@sellersOtherServices": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "noProducts": "No Products",
+  "@noProducts": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "noServices": "No Services",
+  "@noServices": {
+    "type": "text",
+    "placeholders": {}
+  }
+}
