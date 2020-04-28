@@ -79,7 +79,12 @@ class MyApp extends StatelessWidget {
           GlobalWidgetsLocalizations.delegate,
           _localeOverrideDelegate
         ],
-        supportedLocales: [const Locale('en', 'US'), const Locale('gu', 'GU')],
+        supportedLocales: [
+          const Locale('en', 'US'),
+          const Locale('fr', 'FR'),
+          const Locale('es', 'ES'),
+          const Locale('pt', 'PT'),
+        ],
         initialRoute: '/splash',
         onGenerateRoute: RouteGenerator.generateRoute,
         debugShowCheckedModeBanner: false,
