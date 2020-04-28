@@ -155,6 +155,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "productEditedSuccessfully" : MessageLookupByLibrary.simpleMessage("Product Edited Successfully"),
     "productName" : MessageLookupByLibrary.simpleMessage("Product name"),
     "products" : MessageLookupByLibrary.simpleMessage("Products"),
+    "received" : MessageLookupByLibrary.simpleMessage("Received"),
     "recipient" : MessageLookupByLibrary.simpleMessage("Recipient"),
     "reference" : MessageLookupByLibrary.simpleMessage("Reference"),
     "register" : MessageLookupByLibrary.simpleMessage("Register"),

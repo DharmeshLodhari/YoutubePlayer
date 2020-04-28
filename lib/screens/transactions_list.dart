@@ -174,7 +174,7 @@ class _TransactionListState extends State<TransactionList> {
           list.add(
             CheckedPopupMenuItem(
               child: Text(
-                "Received",
+                AppLocalization.of(context).received,
                 style: TextStyle(color: Colors.black),
               ),
               value: "received",

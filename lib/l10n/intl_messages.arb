@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2020-04-28T11:37:30.983864",
+  "@@last_modified": "2020-04-28T14:19:59.767309",
   "addBankAccountMsg": "Add A Bank Account",
   "@addBankAccountMsg": {
     "type": "text",
@@ -827,6 +827,11 @@
   },
   "transactionHistoryEmpty": "Transaction history empty",
   "@transactionHistoryEmpty": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "received": "Received",
+  "@received": {
     "type": "text",
     "placeholders": {}
   },

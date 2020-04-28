@@ -1211,6 +1211,13 @@ class AppLocalization {
     );
   }
 
+  String get received {
+    return Intl.message(
+      "Received",
+      name: "received",
+    );
+  }
+
   //passcodePopup
   String get enterPassCode {
     return Intl.message(
