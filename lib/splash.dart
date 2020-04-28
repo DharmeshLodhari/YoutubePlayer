@@ -192,8 +192,6 @@ class _SplashScreenState extends State<SplashScreen> {
                     }
                   } catch (e) {
                     debugPrint(e.toString());
-//                    Navigator.of(context).pushNamed('/dashboard',
-//                        arguments: {'dashboardIndex': 0});
                   }
                 });
               }

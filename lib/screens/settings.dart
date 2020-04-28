@@ -504,8 +504,8 @@ class _SettingsListState extends State<SettingsList> {
         builder: (context) => AlertDialog(
               title: Text(AppLocalization.of(context).selectYourLanguage),
               content: Container(
-                height: 250,
-                width: 250,
+                height: MediaQuery.of(context).size.height / 2,
+                width: MediaQuery.of(context).size.width  - 100,
                 child: ListView(
                   children: languages.map((data) {
                     debugPrint((language.languageCode == data.languageCode)
