@@ -60,24 +60,47 @@ class _SplashScreenState extends State<SplashScreen> {
     List languagesList;
     String currentLocale;
 
+    //checking if the language data is stored in system or not
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    if (sharedPreferences.containsKey("language")) {
+      String languageCode = sharedPreferences.getString("language");
+      AppLocalization.load(Locale(languageCode, ""));
+      debugPrint("Language Set From SharedPreference => $languageCode ");
+      return;
+    }
+
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
       languagesList = await Devicelocale.preferredLanguages;
-      debugPrint(languagesList.toString());
+      debugPrint("Device preferred languages => $languagesList");
     } on PlatformException {
       debugPrint("Error obtaining preferred languages");
     }
     try {
       currentLocale = await Devicelocale.currentLocale;
-
-      debugPrint(currentLocale);
-
+      debugPrint("Device current language => $currentLocale");
+      Language language;
       languages.forEach((lang) {
         if (lang.languageCode == currentLocale.substring(0, 2)) {
-          AppLocalization.load(Locale(lang.languageCode, ""));
-          debugPrint("Language From System ${lang.name}");
+          language = lang;
+          return;
         }
       });
+
+      AppLocalization.load(Locale(language.languageCode, ""));
+      debugPrint("Language Set From System ${language.name}");
+
+      SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
+      if (sharedPreferences.containsKey("language")) {
+        bool result = await sharedPreferences.setString(
+            "language", language.languageCode);
+        debugPrint("Language is updated in sharedPreference => $result");
+      } else {
+        bool result = await sharedPreferences.setString(
+            "language", language.languageCode);
+        debugPrint("Language is set in sharedPreference => $result");
+      }
     } on PlatformException {
       debugPrint("Error obtaining current locale");
     }

@@ -34,7 +34,18 @@ class _SettingsListState extends State<SettingsList> {
   String accountBalance = "";
   bool isLocked;
   var arguments;
-  Language language = getLanguageByLanguageCode("en");
+  Language language;
+
+  void getLanguage() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    if (sharedPreferences.containsKey("language")) {
+      String languageCode = sharedPreferences.getString("language");
+      setState(() {
+        language = getLanguageByLanguageCode(languageCode);
+        debugPrint(language.name);
+      });
+    }
+  }
 
   PackageInfo _packageInfo = PackageInfo(
     appName: 'Unknown',
@@ -42,8 +53,8 @@ class _SettingsListState extends State<SettingsList> {
     version: 'Unknown',
     buildNumber: 'Unknown',
   );
-  SlidableController slidableController;
 
+  SlidableController slidableController;
   _SettingsListState({this.arguments});
 
   Future<void> _initPackageInfo() async {
@@ -90,6 +101,7 @@ class _SettingsListState extends State<SettingsList> {
     );
 
     _initPackageInfo();
+    getLanguage();
     super.initState();
   }
 
@@ -493,9 +505,13 @@ class _SettingsListState extends State<SettingsList> {
               title: Text(AppLocalization.of(context).selectYourLanguage),
               content: Container(
                 height: 250,
+                width: 250,
                 child: ListView(
                   children: languages.map((data) {
+                    debugPrint((language.languageCode == data.languageCode)
+                        .toString());
                     return RadioListTile(
+                      selected: language.languageCode == data.languageCode,
                       title: Text(data.name),
                       activeColor: darkBlue(),
                       groupValue: language,
@@ -505,6 +521,7 @@ class _SettingsListState extends State<SettingsList> {
                           language = lang;
                           setLanguage(lang);
                           Navigator.pop(context);
+                          saveIntoSharedPreference(lang);
                         });
                       },
                     );
@@ -525,6 +542,20 @@ class _SettingsListState extends State<SettingsList> {
         backgroundColor: darkBlue(),
       );
     });
+  }
+
+  //to save language in shared preference when user change the language
+  void saveIntoSharedPreference(Language language) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    if (sharedPreferences.containsKey("language")) {
+      bool result =
+          await sharedPreferences.setString("language", language.languageCode);
+      debugPrint("Language is updated in sharedPreference => $result");
+    } else {
+      bool result =
+          await sharedPreferences.setString("language", language.languageCode);
+      debugPrint("Language is set in sharedPreference => $result");
+    }
   }
 
   void handleSlideAnimationChanged(Animation<double> slideAnimation) {}
