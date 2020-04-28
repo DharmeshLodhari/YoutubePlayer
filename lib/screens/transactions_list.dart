@@ -30,6 +30,7 @@ class _TransactionListState extends State<TransactionList> {
   bool isLoading = false;
   bool noItemInList = false;
   RefreshBlocForTransaction _refreshBloc;
+  String filterValue = "all";
 
   @override
   void initState() {
@@ -50,8 +51,10 @@ class _TransactionListState extends State<TransactionList> {
     _refreshBloc
       ..addListener(() {
         if (_refreshBloc.isRefresh) {
-          _onRefresh();
-          _refreshBloc.isRefresh = false;
+          if (mounted) {
+            _onRefresh();
+            _refreshBloc.isRefresh = false;
+          }
         }
       });
   }
@@ -95,6 +98,7 @@ class _TransactionListState extends State<TransactionList> {
           automaticallyImplyLeading: false,
           backgroundColor: darkBlue(),
           title: Text(AppLocalization.of(context).transactions),
+          actions: <Widget>[_threeItemPopup()],
         ),
         body: SmartRefresher(
             enablePullDown: true,
@@ -130,6 +134,75 @@ class _TransactionListState extends State<TransactionList> {
             controller: _scrollController,
           );
   }
+
+  //TODO:ADD THIS TEST TO APPLOCALIZATION FILE
+  Widget _threeItemPopup() => PopupMenuButton(
+        padding: EdgeInsets.all(0),
+        captureInheritedThemes: true,
+        itemBuilder: (context) {
+          var list = List<PopupMenuEntry<Object>>();
+          list.add(
+            PopupMenuItem(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(AppLocalization.of(context).filter),
+                  Icon(
+                    Icons.sort,
+                    color: Colors.black,
+                  )
+                ],
+              ),
+              value: 1,
+            ),
+          );
+          list.add(
+            PopupMenuDivider(
+              height: 10,
+            ),
+          );
+          list.add(
+            CheckedPopupMenuItem(
+              child: Text(
+                AppLocalization.of(context).all,
+                style: TextStyle(color: Colors.black),
+              ),
+              value: "all",
+              checked: filterValue == "all" ? true : false,
+            ),
+          );
+          list.add(
+            CheckedPopupMenuItem(
+              child: Text(
+                "Received",
+                style: TextStyle(color: Colors.black),
+              ),
+              value: "received",
+              checked: filterValue == "received" ? true : false,
+            ),
+          );
+
+          list.add(
+            CheckedPopupMenuItem(
+              child: Text(
+                AppLocalization.of(context).sent,
+                style: TextStyle(color: Colors.black),
+              ),
+              value: "sent",
+              checked: filterValue == "sent" ? true : false,
+            ),
+          );
+          return list;
+        },
+        onSelected: (Object object) {
+          setState(() {
+            if (object != 1) {
+              filterValue = object;
+              _onRefresh();
+            }
+          });
+        },
+      );
 
   Widget _buildIndicator() {
     return new Padding(

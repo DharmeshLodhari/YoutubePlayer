@@ -13,7 +13,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
 
@@ -303,7 +302,7 @@ class _UserLoginState extends State<UserLogin> {
                   bankAccountBloc.bankAccount = _bankAccount;
                 }
               } catch (e) {
-                debugPrint(e);
+                debugPrint(e.toString());
               }
             });
           }
@@ -457,13 +456,13 @@ class _UserLoginState extends State<UserLogin> {
         debugPrint("Notification From onMessage:  $notification");
 
         // show the notification in the dialog
-        bool result = await showDialogBox(
+        bool result = await showDialogBoxWithImage(
           context: context,
           title: notification['title'],
           description: notification['body'],
+          image: notification['image'],
           actionOne: AppLocalization.of(context).navigate,
           actionTwo: AppLocalization.of(context).cancel,
-          type: AlertType.none,
         );
         if (result) {
           _navigateToItemDetail(notification);
@@ -509,6 +508,7 @@ class _UserLoginState extends State<UserLogin> {
     notification["tag"] = message['data']['tag'];
     notification["dir"] = message['data']['dir'];
     notification["actions"] = message['data']['actions'];
+    notification['image'] = message['data']['image'];
     debugPrint("notification from android getnotification $notification");
     return notification;
   }

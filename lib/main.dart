@@ -71,7 +71,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    AppLocalization.load(Locale("en", "US"));
     return AppLifeCycle(
       child: MaterialApp(
         localizationsDelegates: [

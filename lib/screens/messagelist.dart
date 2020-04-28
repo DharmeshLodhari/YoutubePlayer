@@ -62,8 +62,10 @@ class _MessageListState extends State<MessageList> {
     _refreshBloc
       ..addListener(() {
         if (_refreshBloc.isRefresh) {
-          _onRefresh();
-          _refreshBloc.isRefresh = false;
+          if (mounted) {
+            _onRefresh();
+            _refreshBloc.isRefresh = false;
+          }
         }
       });
   }
