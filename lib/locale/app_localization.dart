@@ -1167,6 +1167,27 @@ class AppLocalization {
     );
   }
 
+  String get language {
+    return Intl.message(
+      "Langauge",
+      name: "language",
+    );
+  }
+
+  String get selectYourLanguage {
+    return Intl.message(
+      "Select your Language",
+      name: "selectYourLanguage",
+    );
+  }
+
+  String get languageSwitchedTo {
+    return Intl.message(
+      "Language switched to",
+      name: "languageSwitchedTo",
+    );
+  }
+
   //transaction detail page
   String get transaction {
     return Intl.message(
@@ -1512,8 +1533,18 @@ class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalization> {
   const AppLocalizationDelegate(this.overriddenLocale);
 
   @override
-  bool isSupported(Locale locale) =>
-      ['en', 'es', 'fr', 'pt'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => [
+        'am',
+        'ar',
+        'en',
+        'es',
+        'fr',
+        'ha',
+        'pt',
+        'sw',
+        'yo',
+        'zu'
+      ].contains(locale.languageCode);
 
   @override
   Future<AppLocalization> load(Locale locale) => AppLocalization.load(locale);

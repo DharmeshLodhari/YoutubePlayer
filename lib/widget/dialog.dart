@@ -70,7 +70,7 @@ Future<bool> showDialogBoxWithImage(
         radius: BorderRadius.circular(2),
         child: Text(
           actionOne,
-          style: TextStyle(color: Colors.white, fontSize: 20),
+          style: TextStyle(color: Colors.white, fontSize: 20,),
         ),
         onPressed: () => Navigator.pop(context, true),
         color: Color.fromRGBO(13, 27, 70, 1.0),

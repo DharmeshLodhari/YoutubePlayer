@@ -2,14 +2,18 @@ import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:connectivity/connectivity.dart';
+import 'package:devicelocale/devicelocale.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
 
 import 'data/state_notifier.dart';
+import 'locale/app_localization.dart';
+import 'models/device.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -29,6 +33,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     checkConnection();
+    initPlatformState();
     super.initState();
   }
 
@@ -49,6 +54,33 @@ class _SplashScreenState extends State<SplashScreen> {
         });
       }
     });
+  }
+
+  Future<void> initPlatformState() async {
+    List languagesList;
+    String currentLocale;
+
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      languagesList = await Devicelocale.preferredLanguages;
+      debugPrint(languagesList.toString());
+    } on PlatformException {
+      debugPrint("Error obtaining preferred languages");
+    }
+    try {
+      currentLocale = await Devicelocale.currentLocale;
+
+      debugPrint(currentLocale);
+
+      languages.forEach((lang) {
+        if (lang.languageCode == currentLocale.substring(0, 2)) {
+          AppLocalization.load(Locale(lang.languageCode, ""));
+          debugPrint("Language From System ${lang.name}");
+        }
+      });
+    } on PlatformException {
+      debugPrint("Error obtaining current locale");
+    }
   }
 
   @override
@@ -136,8 +168,9 @@ class _SplashScreenState extends State<SplashScreen> {
                       }
                     }
                   } catch (e) {
-                    Navigator.of(context).pushNamed('/dashboard',
-                        arguments: {'dashboardIndex': 0});
+                    debugPrint(e.toString());
+//                    Navigator.of(context).pushNamed('/dashboard',
+//                        arguments: {'dashboardIndex': 0});
                   }
                 });
               }

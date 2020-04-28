@@ -1,5 +1,6 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/models/device.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/screens/tiles/bank_account.dart';
@@ -33,6 +34,8 @@ class _SettingsListState extends State<SettingsList> {
   String accountBalance = "";
   bool isLocked;
   var arguments;
+  Language language = getLanguageByLanguageCode("en");
+
   PackageInfo _packageInfo = PackageInfo(
     appName: 'Unknown',
     packageName: 'Unknown',
@@ -158,6 +161,8 @@ class _SettingsListState extends State<SettingsList> {
                   userBloc.user.type != 'user'
                       ? SizedBox(height: 10)
                       : Container(),
+                  languageChanger(),
+                  SizedBox(height: 10),
                   slydoBankAccountTile(),
                   SizedBox(height: 25),
                   _infoTile(),
@@ -458,6 +463,68 @@ class _SettingsListState extends State<SettingsList> {
         },
       ),
     ];
+  }
+
+  Widget languageChanger() {
+    return Card(
+      margin: EdgeInsets.symmetric(horizontal: 20),
+      child: ListTile(
+        title: Text(
+          AppLocalization.of(context).language,
+          style: TextStyle(
+              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+        ),
+        leading: Icon(
+          Icons.language,
+          color: darkBlue(),
+          size: 45,
+        ),
+        onTap: () {
+          changeLanguage();
+        },
+      ),
+    );
+  }
+
+  void changeLanguage() async {
+    await showDialog<Language>(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text(AppLocalization.of(context).selectYourLanguage),
+              content: Container(
+                height: 250,
+                child: ListView(
+                  children: languages.map((data) {
+                    return RadioListTile(
+                      title: Text(data.name),
+                      activeColor: darkBlue(),
+                      groupValue: language,
+                      value: data,
+                      onChanged: (lang) {
+                        setState(() {
+                          language = lang;
+                          setLanguage(lang);
+                          Navigator.pop(context);
+                        });
+                      },
+                    );
+                  }).toList(),
+                ),
+              ),
+            ));
+  }
+
+  void setLanguage(Language language) {
+    setState(() {
+      AppLocalization.load(Locale(language.languageCode, ""));
+      Toast.show(
+        AppLocalization.of(context).languageSwitchedTo + " ${language.name}",
+        context,
+        duration: Toast.LENGTH_LONG,
+        textColor: Colors.white,
+        backgroundColor: darkBlue(),
+      );
+    });
   }
 
   void handleSlideAnimationChanged(Animation<double> slideAnimation) {}

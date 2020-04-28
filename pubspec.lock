@@ -8,13 +8,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.2.0"
-  after_init:
-    dependency: "direct main"
-    description:
-      name: after_init
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.2"
   analyzer:
     dependency: transitive
     description:
@@ -148,6 +141,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.4.2+2"
+  devicelocale:
+    dependency: "direct main"
+    description:
+      name: devicelocale
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.3"
   dots_indicator:
     dependency: transitive
     description:

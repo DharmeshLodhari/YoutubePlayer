@@ -2,7 +2,7 @@
   "@@last_modified": "2020-04-27T12:28:02.770925",
   "_locale":"es",
 
-  "addBankAccountMsg":"Add A Bank Account" ,
+  "addBankAccountMsg":"Agregar una cuenta bancariat" ,
   "setDefaultAccountMsg": "Set as default account",
   "accountNameHint": "Account Name",
   "validationTextMessage": "Enter a valid name matching account number.",

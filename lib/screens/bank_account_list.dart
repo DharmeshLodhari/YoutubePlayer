@@ -384,6 +384,11 @@ class _BankAccountListState extends State<BankAccountList> {
           backgroundColor: darkBlue(),
           textColor: Colors.white,
         );
+        _auth.getBankAccounts().then((accounts) {
+          BankAccountBloc bankAccountBloc =
+              Provider.of<BankAccountBloc>(context, listen: false);
+          bankAccountBloc.bankAccount = accounts[0];
+        });
         _onRefresh();
       } else {
         Toast.show(

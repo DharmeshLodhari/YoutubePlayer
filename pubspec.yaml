@@ -42,7 +42,7 @@ dependencies:
   package_info: ^0.4.0+16
   maps_launcher: ^1.2.0
   rflutter_alert: ^1.0.2
-  after_init: ^0.1.2
+  devicelocale: ^0.2.3
 
 
 flutter_icons:

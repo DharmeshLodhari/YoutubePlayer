@@ -371,7 +371,6 @@ class AuthService {
           var bank = item["bank"];
           var logoUrl = item["bank"]['logo_url'];
           item["bank"]['logo_url'] = logoUrl;
-
           BankAccount account = BankAccount(
               bankAvatar: item["bank"]['logo_url'],
               uuid: item['id'].toString(),
@@ -409,7 +408,10 @@ class AuthService {
 
   // update bank account information
   Future<bool> updateBankAccount(Map data) async {
-    var url = baseUrl + "/api/v1/transactions/set-default-bank-account/" + data['uuid'] + "/";
+    var url = baseUrl +
+        "/api/v1/transactions/set-default-bank-account/" +
+        data['uuid'] +
+        "/";
     var headers = await getAuthHeaders();
     var response;
     var _data = jsonEncode(data);
@@ -443,7 +445,6 @@ class AuthService {
 
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
-      debugPrint(jsonData.toString());
       List<BankAccount> accounts = [];
       for (var item in jsonData['results']) {
         var bank = item["bank"];

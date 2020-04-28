@@ -32,7 +32,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "accountUpdatedSuccessfully" : MessageLookupByLibrary.simpleMessage("Account updated successfully !!"),
     "add" : MessageLookupByLibrary.simpleMessage("Add"),
     "addAccount" : MessageLookupByLibrary.simpleMessage("Add Account"),
-    "addBankAccountMsg" : MessageLookupByLibrary.simpleMessage("Add A Bank Account"),
+    "addBankAccountMsg" : MessageLookupByLibrary.simpleMessage("Ajouter un compte bancaire"),
     "addImage" : MessageLookupByLibrary.simpleMessage("Add Image"),
     "addProduct" : MessageLookupByLibrary.simpleMessage("Add Product"),
     "addProducts" : MessageLookupByLibrary.simpleMessage("Add Products"),
