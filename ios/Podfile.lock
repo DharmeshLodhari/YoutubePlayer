@@ -2,8 +2,6 @@ PODS:
   - connectivity (0.0.1):
     - Flutter
     - Reachability
-  - connectivity_macos (0.0.1):
-    - Flutter
   - Crashlytics (3.14.0):
     - Fabric (~> 1.10.2)
   - device_info (0.0.1):
@@ -149,7 +147,6 @@ PODS:
 
 DEPENDENCIES:
   - connectivity (from `.symlinks/plugins/connectivity/ios`)
-  - connectivity_macos (from `.symlinks/plugins/connectivity_macos/ios`)
   - device_info (from `.symlinks/plugins/device_info/ios`)
   - devicelocale (from `.symlinks/plugins/devicelocale/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
@@ -200,8 +197,6 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   connectivity:
     :path: ".symlinks/plugins/connectivity/ios"
-  connectivity_macos:
-    :path: ".symlinks/plugins/connectivity_macos/ios"
   device_info:
     :path: ".symlinks/plugins/device_info/ios"
   devicelocale:
@@ -249,7 +244,6 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   connectivity: 6e94255659cc86dcbef1d452ad3e0491bb1b3e75
-  connectivity_macos: e2e9731b6b22dda39eb1b128f6969d574460e191
   Crashlytics: 540b7e5f5da5a042647227a5e3ac51d85eed06df
   device_info: d7d233b645a32c40dfdc212de5cf646ca482f175
   devicelocale: feebbe5e7a30adb8c4f83185de1b50ff19b44f00
@@ -294,6 +288,6 @@ SPEC CHECKSUMS:
   url_launcher_macos: fd7894421cd39320dce5f292fc99ea9270b2a313
   url_launcher_web: e5527357f037c87560776e36436bf2b0288b965c
 
-PODFILE CHECKSUM: 34d1a6b3f1e7576153d9b08905486afb4cd10d0f
+PODFILE CHECKSUM: f66afd41f1d1f009748856e6c142749f94c1ab86
 
 COCOAPODS: 1.9.0
