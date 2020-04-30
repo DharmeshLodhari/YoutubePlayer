@@ -35,7 +35,11 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   bool isLoading = false;
   bool noItemInList = false;
   RefreshBlocForRequestPayment _refreshBloc;
+
+  // variables for to getting filter requestPaymentList
   String filterValue = "all";
+  bool fromMe = false;
+  bool toMe = false;
 
   @protected
   void initState() {
@@ -186,6 +190,21 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
           setState(() {
             if (object != 1) {
               filterValue = object;
+              filterValue = object;
+              switch (filterValue) {
+                case "received":
+                  toMe = true;
+                  fromMe = false;
+                  break;
+                case "sent":
+                  toMe = false;
+                  fromMe = true;
+                  break;
+                default:
+                  toMe = false;
+                  fromMe = false;
+                  break;
+              }
               _onRefresh();
             }
           });
@@ -235,7 +254,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
           isLoading = true;
         });
         Map<String, dynamic> result =
-            await _auth.listPaymentRequests(next, previous);
+            await _auth.listPaymentRequests(next, previous, toMe, fromMe);
         count = result['count'];
         next = result['next'];
         previous = result['previous'];

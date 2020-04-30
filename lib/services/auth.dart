@@ -518,7 +518,7 @@ class AuthService {
   }
 
   Future<Map<String, dynamic>> listPaymentRequests(
-      String next, String previous) async {
+      String next, String previous, bool toMe, bool fromMe) async {
     Map<String, String> knownCustomers = {};
 
     var url = "";
@@ -527,6 +527,12 @@ class AuthService {
     }
     if (next == "") {
       url = baseUrl + "/api/v1/transactions/request-payment/list";
+      if (toMe) {
+        url = url + "?to_me=true";
+      }
+      if (fromMe) {
+        url = url + "?from_me=true";
+      }
     } else {
       url = next;
     }
