@@ -481,11 +481,20 @@ class _SettingsListState extends State<SettingsList> {
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 20),
       child: ListTile(
-        title: Text(
-          AppLocalization.of(context).language,
-          style: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(""),
+            Text(
+              AppLocalization.of(context).language,
+              style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16),
+            ),
+          ],
         ),
+        subtitle: Text(""),
         leading: Icon(
           Icons.language,
           color: darkBlue(),
@@ -505,7 +514,7 @@ class _SettingsListState extends State<SettingsList> {
               title: Text(AppLocalization.of(context).selectYourLanguage),
               content: Container(
                 height: MediaQuery.of(context).size.height / 2,
-                width: MediaQuery.of(context).size.width  - 100,
+                width: MediaQuery.of(context).size.width - 100,
                 child: ListView(
                   children: languages.map((data) {
                     debugPrint((language.languageCode == data.languageCode)

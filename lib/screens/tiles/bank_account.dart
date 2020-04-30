@@ -54,12 +54,9 @@ class _BankAccountTileState extends State<BankAccountTile> {
                   ),
           ),
         ),
-        trailing: IconButton(
-          icon: Icon(Icons.settings, color: Colors.grey[400]),
-          onPressed: () {
-            Navigator.of(context).pushNamed("/bank-account-list");
-          },
-        ),
+        onTap: () {
+          Navigator.of(context).pushNamed("/bank-account-list");
+        },
       ),
     );
   }

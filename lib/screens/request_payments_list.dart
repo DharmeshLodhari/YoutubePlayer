@@ -82,6 +82,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         next = "";
         previous = "";
         requestPaymentList = [];
+        noItemInList = false;
         getList();
         _refreshController.refreshCompleted();
       } else {

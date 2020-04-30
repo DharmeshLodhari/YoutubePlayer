@@ -73,6 +73,7 @@ class _TransactionListState extends State<TransactionList> {
         next = "";
         previous = "";
         transactionList = [];
+        noItemInList = false;
         getList();
         _refreshController.refreshCompleted();
       } else {
