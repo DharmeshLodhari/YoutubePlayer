@@ -248,21 +248,6 @@ class _HomeState extends State<Home> {
                   ),
           ),
         ),
-        onTap: () async {
-          var notification = {
-            "notification": {
-              "title": "Payment Request",
-              "body": "NGN1 Requested"
-            },
-            "data": {
-              "actions": "/request-payment",
-              "dir": "auto",
-              "image":
-                  "https://slydo-assets.s3.amazonaws.com/media/customer/avatar/ea86a3ba6762486195db008b9a31fd17.jpg",
-              "vibrate": [200, 100, 200, 100, 200, 100, 400]
-            }
-          };
-        },
       ),
     );
   }

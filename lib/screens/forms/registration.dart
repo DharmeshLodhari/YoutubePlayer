@@ -186,7 +186,6 @@ class _RegistrationState extends State<Registration> {
       _auth
           .verifyPhoneNumber(phoneNumberWithCountryCode, sentOTP, passwordToken)
           .then((value) {
-        String resetToken = value;
         Navigator.of(context).popAndPushNamed('/register', arguments: {
           'phoneNumber': phoneNumberWithCountryCode,
         });

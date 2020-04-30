@@ -264,7 +264,7 @@ class _SearchAllState extends State<SearchAll> {
           isLoading = true;
         });
         Map<String, dynamic> result =
-            await _auth.getTransactions(next, previous);
+            await _auth.getTransactions(next, previous, false, false);
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
@@ -287,6 +287,7 @@ class _SearchAllState extends State<SearchAll> {
     }
   }
 
+  // ignore: missing_return
   Widget getResultTile(var result) {
     switch (filterValue) {
       case "Users":

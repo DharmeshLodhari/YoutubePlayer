@@ -2,7 +2,6 @@ import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/transactions.dart';
-import 'package:Slydo/services/auth.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:maps_launcher/maps_launcher.dart';
@@ -24,7 +23,6 @@ class _TransactionDetailState extends State<TransactionDetail> {
   Transaction transaction;
   UserBloc userBloc;
 
-  final _auth = AuthService();
   _TransactionDetailState({this.arguments});
 
   @override

@@ -14,7 +14,7 @@ import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
 final String baseUrl = "http://api.slydo.co";
-final String SecureBaseUrl = "https://api.slydo.co";
+final String secureBaseUrl = "https://api.slydo.co";
 final String localHostUrl = "https://127.0.0.1:8080";
 
 class AuthService {
@@ -584,13 +584,19 @@ class AuthService {
 
   // List users transactions
   Future<Map<String, dynamic>> getTransactions(
-      String next, String previous) async {
+      String next, String previous, bool moneyIn, bool moneyOut) async {
     var url = "";
     if (next == null) {
       return null;
     }
     if (next == "") {
       url = baseUrl + "/api/v1/transactions/list/";
+      if (moneyIn) {
+        url = url + "?money_in=true";
+      }
+      if (moneyOut) {
+        url = url + "?money_out=true";
+      }
     } else {
       url = next;
     }
@@ -924,13 +930,13 @@ class AuthService {
   Future<String> verifyPhoneNumber(
       // ignore: non_constant_identifier_names
       String phoneNumber,
-      String OTP,
+      String otp,
       String passwordToken) async {
     var url = baseUrl + "/api/v1/sms/verify";
     var headers = getNonAuthHeader();
     var data = {
       "phone": phoneNumber,
-      "code": OTP,
+      "code": otp,
       "password-token": passwordToken,
     };
     var _data = jsonEncode(data);

@@ -293,6 +293,7 @@ class _SearchAutoCompleteState extends State<SearchAutoComplete> {
     }
   }
 
+  // ignore: missing_return
   Widget getResultTile(var result) {
     switch (filterValue) {
       case "Users":
@@ -728,6 +729,7 @@ class _SearchAutoCompleteState extends State<SearchAutoComplete> {
             break;
         }
       },
+      itemSubmitted: (item) {},
     );
   }
 }

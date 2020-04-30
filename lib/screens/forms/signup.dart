@@ -8,6 +8,7 @@ import 'package:toast/toast.dart';
 
 import '../../widget/LoadingIndicator.dart';
 
+// ignore: must_be_immutable
 class SignUp extends StatefulWidget {
   var arguments;
   SignUp({@required this.arguments});

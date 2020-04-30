@@ -53,6 +53,7 @@ class Product {
     };
   }
 
+  // ignore: missing_return
   String getImageId(String imageUrl) {
     for (var data in this.pictureMap) {
       if (data['file'] == imageUrl) {
@@ -108,6 +109,7 @@ class Service {
     this.pictureMap,
   });
 
+  // ignore: missing_return
   String getImageId(String imageUrl) {
     for (var data in this.pictureMap) {
       if (data['file'] == imageUrl) {

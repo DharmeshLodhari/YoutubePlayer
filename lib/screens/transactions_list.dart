@@ -30,7 +30,11 @@ class _TransactionListState extends State<TransactionList> {
   bool isLoading = false;
   bool noItemInList = false;
   RefreshBlocForTransaction _refreshBloc;
+
+  // variables for to getting filter transactions
   String filterValue = "all";
+  bool moneyOut = false;
+  bool moneyIn = false;
 
   @override
   void initState() {
@@ -197,6 +201,20 @@ class _TransactionListState extends State<TransactionList> {
           setState(() {
             if (object != 1) {
               filterValue = object;
+              switch (filterValue) {
+                case "received":
+                  moneyIn = true;
+                  moneyOut = false;
+                  break;
+                case "sent":
+                  moneyIn = false;
+                  moneyOut = true;
+                  break;
+                default:
+                  moneyIn = false;
+                  moneyOut = false;
+                  break;
+              }
               _onRefresh();
             }
           });
@@ -224,7 +242,7 @@ class _TransactionListState extends State<TransactionList> {
           isLoading = true;
         });
         Map<String, dynamic> result =
-            await _auth.getTransactions(next, previous);
+            await _auth.getTransactions(next, previous, moneyIn, moneyOut);
         count = result['count'];
         next = result['next'];
         previous = result['previous'];

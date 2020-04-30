@@ -61,7 +61,6 @@ class _ResetPasswordState extends State<ResetPassword> {
                       height: 20,
                     ),
                     resetPasswordButton(),
-                    Text(resetToken)
                   ],
                 ),
               ),

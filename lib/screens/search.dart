@@ -17,7 +17,6 @@ import 'package:popup_menu/popup_menu.dart';
 import 'package:provider/provider.dart';
 
 final List<dynamic> services = [];
-CustomerProfile _payee;
 
 class SearchAll extends StatefulWidget {
   @override
@@ -280,6 +279,7 @@ class _SearchAllState extends State<SearchAll> {
     }
   }
 
+  // ignore: missing_return
   Widget getResultTile(var result) {
     switch (filterValue) {
       case "Users":
