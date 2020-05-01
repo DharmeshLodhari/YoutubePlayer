@@ -451,7 +451,9 @@ class _UserLoginState extends State<UserLogin> {
       onMessage: (Map<String, dynamic> message) async {
         debugPrint("onMessage: $message");
         // creating notification from server payload
-        var notification = getAndroidNotification(message);
+        var notification = Platform.isAndroid
+            ? getAndroidNotification(message)
+            : getIosNotification(message);
 
         debugPrint("Notification From onMessage:  $notification");
 
@@ -475,7 +477,9 @@ class _UserLoginState extends State<UserLogin> {
       onLaunch: (Map<String, dynamic> message) async {
         debugPrint("onLaunch: $message");
         // creating notification from server payload
-        var notification = getAndroidNotification(message);
+        var notification = Platform.isAndroid
+            ? getAndroidNotification(message)
+            : getIosNotification(message);
 
         debugPrint("Notification From onLaunch:  $notification");
 
@@ -486,7 +490,9 @@ class _UserLoginState extends State<UserLogin> {
       onResume: (Map<String, dynamic> message) async {
         debugPrint("onResume: $message");
         // creating notification from server payload
-        var notification = getAndroidNotification(message);
+        var notification = Platform.isAndroid
+            ? getAndroidNotification(message)
+            : getIosNotification(message);
 
         debugPrint("Notification From OnResume:  $notification");
 
@@ -510,6 +516,20 @@ class _UserLoginState extends State<UserLogin> {
     notification["actions"] = message['data']['actions'];
     notification['image'] = message['data']['image'];
     debugPrint("notification from android getnotification $notification");
+    return notification;
+  }
+
+  Map<String, dynamic> getIosNotification(Map<String, dynamic> message) {
+    Map<String, dynamic> notification = {};
+    notification["body"] = message['notification']['body'];
+    notification["title"] = message['notification']['title'];
+    notification["vibrate"] = message['vibrate'];
+    notification["icon"] = message['notification']['icon'];
+    notification["tag"] = message['notification']['tag'];
+    notification["dir"] = message['dir'];
+    notification["actions"] = message['actions'];
+    notification['image'] = message['image'];
+    debugPrint("notification from IOS getnotification $notification");
     return notification;
   }
 }

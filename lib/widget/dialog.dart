@@ -57,7 +57,7 @@ Future<bool> showDialogBoxWithImage(
     image: Image.network(
       image,
       height: 200,
-      width: double.infinity,
+      width: MediaQuery.of(context).size.width - 200,
       fit: BoxFit.fill,
       filterQuality: FilterQuality.high,
     ),
@@ -70,7 +70,10 @@ Future<bool> showDialogBoxWithImage(
         radius: BorderRadius.circular(2),
         child: Text(
           actionOne,
-          style: TextStyle(color: Colors.white, fontSize: 20,),
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+          ),
         ),
         onPressed: () => Navigator.pop(context, true),
         color: Color.fromRGBO(13, 27, 70, 1.0),
