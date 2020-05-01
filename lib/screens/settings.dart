@@ -42,7 +42,12 @@ class _SettingsListState extends State<SettingsList> {
       String languageCode = sharedPreferences.getString("language");
       setState(() {
         language = getLanguageByLanguageCode(languageCode);
-        debugPrint(language.name);
+        debugPrint("Setted language: => " + language.name);
+      });
+    } else {
+      setState(() {
+        language = getLanguageByLanguageCode("en");
+        debugPrint("Setted default language: => " + language.name);
       });
     }
   }
@@ -508,6 +513,7 @@ class _SettingsListState extends State<SettingsList> {
   }
 
   void changeLanguage() async {
+    debugPrint(" teste $language   ${language.languageCode}  ${language.name}");
     await showDialog<Language>(
         context: context,
         builder: (context) => AlertDialog(
@@ -517,8 +523,6 @@ class _SettingsListState extends State<SettingsList> {
                 width: MediaQuery.of(context).size.width - 100,
                 child: ListView(
                   children: languages.map((data) {
-                    debugPrint((language.languageCode == data.languageCode)
-                        .toString());
                     return RadioListTile(
                       selected: language.languageCode == data.languageCode,
                       title: Text(data.name),
@@ -559,11 +563,13 @@ class _SettingsListState extends State<SettingsList> {
     if (sharedPreferences.containsKey("language")) {
       bool result =
           await sharedPreferences.setString("language", language.languageCode);
-      debugPrint("Language is updated in sharedPreference => $result");
+      debugPrint(
+          "${language.name} Language is updated in sharedPreference => $result");
     } else {
       bool result =
           await sharedPreferences.setString("language", language.languageCode);
-      debugPrint("Language is set in sharedPreference => $result");
+      debugPrint(
+          "${language.name} Language is set in sharedPreference => $result");
     }
   }
 

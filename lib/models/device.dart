@@ -33,11 +33,14 @@ List<Language> languages = <Language>[
 ];
 
 Language getLanguageByLanguageCode(String languageCode) {
-  // ignore: missing_return
+  Language language;
   languages.forEach((lang) {
     if (languageCode == lang.languageCode) {
-      return lang;
+      language = lang;
     }
   });
+  if (language != null) {
+    return language;
+  }
   return languages.first;
 }
