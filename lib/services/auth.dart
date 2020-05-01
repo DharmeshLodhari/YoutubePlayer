@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/models/message.dart';
@@ -1400,7 +1401,6 @@ class AuthService {
     if (next != "") {
       url = next;
     }
-
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
 
@@ -1419,6 +1419,233 @@ class AuthService {
     } else {
       var jsonData = json.decode(response.body);
       throw jsonData;
+    }
+  }
+
+  // Transactions graph and Category
+
+  Future<Map<String, dynamic>> getTransactionWeeklyReport(
+      String url, String next, String previous) async {
+    if (next == null) {
+      return null;
+    }
+    if (next != "") {
+      url = next;
+    }
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
+    debugPrint(response.statusCode.toString());
+    debugPrint(response.body);
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+
+      Map<String, dynamic> result = {
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": jsonData["results"],
+      };
+      return result;
+    } else {
+      var randomize = Random();
+      int start = randomize.nextInt(30);
+      int end = randomize.nextInt(30);
+      Map<String, dynamic> result = {
+        "next": baseUrl + "/api/v1/search/use/",
+        "prevoius": baseUrl + "/api/v1/search/use/",
+        "results": {
+          "start": start,
+          "end": end,
+          "expenses": [
+            randomize.nextDouble() * 100,
+            randomize.nextDouble() * 100,
+            randomize.nextDouble() * 100,
+            randomize.nextDouble() * 100,
+            randomize.nextDouble() * 100,
+            randomize.nextDouble() * 100,
+            randomize.nextDouble() * 100,
+          ]
+        },
+      };
+
+      return result;
+//      var jsonData = json.decode(response.body);
+//      throw jsonData;
+    }
+  }
+
+  Future<Map<String, dynamic>> getCategorySpend(String url) async {
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
+    debugPrint(response.statusCode.toString());
+    debugPrint(response.body);
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+
+      Map<String, dynamic> result = {
+        "results": jsonData["results"],
+      };
+      return result;
+    } else {
+      var randomize = Random();
+
+      Map<String, dynamic> result = {
+        "results": {
+          "data": [
+            {
+              "name": "Bills",
+              "amount": randomize.nextInt(999).toString(),
+              "url": "assets/images/category/bills.png",
+            },
+            {
+              "name": "Charity",
+              "amount": randomize.nextInt(999).toString(),
+              "url": "assets/images/category/charity.png",
+            },
+            {
+              "name": "Eat out",
+              "amount": randomize.nextInt(999).toString(),
+              "url": "assets/images/category/eatout.png",
+            },
+            {
+              "name": "Entertainment",
+              "amount": randomize.nextInt(999).toString(),
+              "url": "assets/images/category/entertainment.png",
+            },
+            {
+              "name": "Transaportation",
+              "amount": randomize.nextInt(999).toString(),
+              "url": "assets/images/category/transaport.png",
+            },
+            {
+              "name": "Family",
+              "amount": randomize.nextInt(999).toString(),
+              "url": "assets/images/category/family.png",
+            },
+            {
+              "name": "Finance",
+              "amount": randomize.nextInt(999).toString(),
+              "url": "assets/images/category/finance.png",
+            },
+            {
+              "name": "General",
+              "amount": randomize.nextInt(999).toString(),
+              "url": "assets/images/category/general.png",
+            },
+            {
+              "name": "Grocies",
+              "amount": randomize.nextInt(999).toString(),
+              "url": "assets/images/category/groceries.png",
+            },
+            {
+              "name": "Holyday",
+              "amount": randomize.nextInt(999).toString(),
+              "url": "assets/images/category/holyday.png",
+            },
+            {
+              "name": "Personal Cear",
+              "amount": randomize.nextInt(999).toString(),
+              "url": "assets/images/category/personalcear.png",
+            },
+            {
+              "name": "Shopping",
+              "amount": randomize.nextInt(999).toString(),
+              "url": "assets/images/category/shopping.png",
+            },
+          ]
+        },
+      };
+
+      return result;
+//      var jsonData = json.decode(response.body);
+//      throw jsonData;
+    }
+  }
+
+  Future<Map<String, dynamic>> getPaymentCategory(String url) async {
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
+    debugPrint(response.statusCode.toString());
+    debugPrint(response.body);
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+
+      Map<String, dynamic> result = {
+        "results": jsonData["results"],
+      };
+      return result;
+    } else {
+      var randomize = Random();
+
+      Map<String, dynamic> result = {
+        "results": {
+          "data": [
+            {
+              "name": "Bills",
+              "amount": randomize.nextInt(999).toString(),
+              "url": "assets/images/category/bills.png",
+            },
+            {
+              "name": "Charity",
+              "amount": randomize.nextInt(999).toString(),
+              "url": "assets/images/category/charity.png",
+            },
+            {
+              "name": "Eat out",
+              "amount": randomize.nextInt(999).toString(),
+              "url": "assets/images/category/eatout.png",
+            },
+            {
+              "name": "Entertainment",
+              "amount": randomize.nextInt(999).toString(),
+              "url": "assets/images/category/entertainment.png",
+            },
+            {
+              "name": "Transaportation",
+              "amount": randomize.nextInt(999).toString(),
+              "url": "assets/images/category/transaport.png",
+            },
+            {
+              "name": "Family",
+              "amount": randomize.nextInt(999).toString(),
+              "url": "assets/images/category/family.png",
+            },
+            {
+              "name": "Finance",
+              "amount": randomize.nextInt(999).toString(),
+              "url": "assets/images/category/finance.png",
+            },
+            {
+              "name": "General",
+              "amount": randomize.nextInt(999).toString(),
+              "url": "assets/images/category/general.png",
+            },
+            {
+              "name": "Grocies",
+              "amount": randomize.nextInt(999).toString(),
+              "url": "assets/images/category/groceries.png",
+            },
+            {
+              "name": "Holyday",
+              "amount": randomize.nextInt(999).toString(),
+              "url": "assets/images/category/holyday.png",
+            },
+            {
+              "name": "Personal Cear",
+              "amount": randomize.nextInt(999).toString(),
+              "url": "assets/images/category/personalcear.png",
+            },
+            {
+              "name": "Shopping",
+              "amount": randomize.nextInt(999).toString(),
+              "url": "assets/images/category/shopping.png",
+            },
+          ]
+        },
+      };
+
+      return result;
+//      var jsonData = json.decode(response.body);
+//      throw jsonData;
     }
   }
 }

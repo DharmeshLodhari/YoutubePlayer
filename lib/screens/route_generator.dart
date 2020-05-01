@@ -24,6 +24,7 @@ import 'package:Slydo/screens/search_auto_complete.dart';
 import 'package:Slydo/screens/service_detail_page.dart';
 import 'package:Slydo/screens/settings.dart';
 import 'package:Slydo/screens/transaction_detail_page.dart';
+import 'package:Slydo/screens/transaction_graph.dart';
 import 'package:Slydo/screens/transactions_list.dart';
 import 'package:Slydo/splash.dart';
 import 'package:Slydo/widget/resultReturningPasswordPopup.dart';
@@ -68,6 +69,8 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => PaymentRequestList());
       case '/transactions':
         return MaterialPageRoute(builder: (_) => TransactionList());
+      case '/transaction-graph':
+        return MaterialPageRoute(builder: (_) => TransactionGraph());
       case '/transaction-detail':
         return MaterialPageRoute(
             builder: (_) => TransactionDetail(

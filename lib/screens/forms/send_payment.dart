@@ -46,6 +46,11 @@ class _SendPaymentState extends State<SendPayment> {
   String recipient;
   final locationService = LocationService();
 
+  //variables for categorie
+  bool isLoading = true;
+  List<String> paymentCategoriesTest = List();
+  String selectedCategory;
+
   PaymentCategory selectedPaymentCategory;
   String paymentCategory;
 
@@ -62,11 +67,11 @@ class _SendPaymentState extends State<SendPayment> {
           });
         }
       });
-
+    fetchCategory();
     super.initState();
   }
 
-  initializeDisplayCard() {
+  void initializeDisplayCard() {
     if (!isFromProfile) {
       if (customerProfileBloc.customer.userName != null) {
         setState(() {
@@ -76,6 +81,18 @@ class _SendPaymentState extends State<SendPayment> {
         });
       }
     }
+  }
+
+  void fetchCategory() async {
+    _auth.getPaymentCategory(baseUrl + "/api/v1/search/use/").then((result) {
+      setState(() {
+        List categoriesList = result["results"]["data"];
+        categoriesList.forEach((data) {
+          paymentCategoriesTest.add(data["name"]);
+        });
+        isLoading = false;
+      });
+    });
   }
 
   @override
@@ -95,39 +112,45 @@ class _SendPaymentState extends State<SendPayment> {
             leading: showBackArrow(),
             title: Center(child: Text(AppLocalization.of(context).sendPayment)),
             backgroundColor: darkBlue()),
-        body: SingleChildScrollView(
-          child: Container(
-            padding: EdgeInsets.all(40),
-            child: Center(
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: <Widget>[
-                    getDisplayCard(),
-                    SizedBox(height: 10),
-                    getRecipientField(),
-                    SizedBox(height: 10),
-                    displayAmountField(),
-                    SizedBox(height: 10),
-                    getCategoryField(),
-                    SizedBox(height: 10),
-                    getReferenceField(),
-                    SizedBox(height: 10),
-                    Text(
-                      errorMessage,
-                      style: TextStyle(
-                          color: Colors.red,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16),
+        body: isLoading
+            ? Center(
+                child: CircularProgressIndicator(
+                  backgroundColor: Colors.white,
+                ),
+              )
+            : SingleChildScrollView(
+                child: Container(
+                  padding: EdgeInsets.all(40),
+                  child: Center(
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        children: <Widget>[
+                          getDisplayCard(),
+                          SizedBox(height: 10),
+                          getRecipientField(),
+                          SizedBox(height: 10),
+                          displayAmountField(),
+                          SizedBox(height: 10),
+                          getCategoryField(),
+                          SizedBox(height: 10),
+                          getReferenceField(),
+                          SizedBox(height: 10),
+                          Text(
+                            errorMessage,
+                            style: TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16),
+                          ),
+                          SizedBox(height: 10),
+                          getSubmitButton(),
+                        ],
+                      ),
                     ),
-                    SizedBox(height: 10),
-                    getSubmitButton(),
-                  ],
+                  ),
                 ),
               ),
-            ),
-          ),
-        ),
       ),
     );
     //
@@ -291,7 +314,7 @@ class _SendPaymentState extends State<SendPayment> {
       child: Container(
         padding: EdgeInsets.all(8),
         width: double.infinity,
-        child: DropdownButton<PaymentCategory>(
+        child: DropdownButton<String>(
           isExpanded: true,
           underline: Divider(
             color: Colors.transparent,
@@ -311,20 +334,19 @@ class _SendPaymentState extends State<SendPayment> {
               ),
             ],
           ),
-          value: selectedPaymentCategory,
-          onChanged: (PaymentCategory value) {
+          value: selectedCategory,
+          onChanged: (String value) {
             setState(() {
-              selectedPaymentCategory = value;
-              paymentCategory = selectedPaymentCategory.name;
+              selectedCategory = value;
             });
           },
-          items: paymentCategories.map((PaymentCategory category) {
-            return DropdownMenuItem<PaymentCategory>(
+          items: paymentCategoriesTest.map((String category) {
+            return DropdownMenuItem<String>(
               value: category,
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 0),
                 child: Text(
-                  category.name,
+                  category,
                   style: TextStyle(color: Colors.black),
                 ),
               ),
@@ -403,7 +425,7 @@ class _SendPaymentState extends State<SendPayment> {
                   "to_customer": recipient,
                   "currency": userBloc.user.currency,
                   "amount": amount.toString(),
-                  "category": "Shopping",
+                  "category": selectedCategory,
                   "notes": reference,
                   "description": reference,
                   "latitude": userLocation.latitude,
@@ -471,7 +493,7 @@ class _SendPaymentState extends State<SendPayment> {
   }
 
   bool validateDropdown() {
-    if (selectedPaymentCategory != null) {
+    if (selectedCategory != null) {
       return true;
     } else {
       Toast.show(AppLocalization.of(context).selectCategory, context,

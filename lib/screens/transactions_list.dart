@@ -103,7 +103,7 @@ class _TransactionListState extends State<TransactionList> {
           automaticallyImplyLeading: false,
           backgroundColor: darkBlue(),
           title: Text(AppLocalization.of(context).transactions),
-          actions: <Widget>[_threeItemPopup()],
+          actions: <Widget>[openGraph(),_threeItemPopup(), ],
         ),
         body: SmartRefresher(
             enablePullDown: true,
@@ -270,5 +270,17 @@ class _TransactionListState extends State<TransactionList> {
         getList();
       });
     }
+  }
+
+  Widget openGraph() {
+    return IconButton(
+      icon: Icon(
+        Icons.pie_chart,
+        color: Colors.white,
+      ),
+      onPressed: () {
+        Navigator.of(context).pushNamed("/transaction-graph");
+      },
+    );
   }
 }
