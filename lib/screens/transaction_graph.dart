@@ -1,5 +1,3 @@
-//TODO: APP LOCALIZATION FOR THIS PAGE
-
 import 'package:Slydo/screens/tiles/spend_on_categoty.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/widget/bar_chart.dart';
@@ -28,7 +26,8 @@ class _TransactionGraphState extends State<TransactionGraph> {
   }
 
   void fetchData() {
-    _auth.getCategorySpend(baseUrl + "/api/v1/search/use/").then((result) {
+    String weekNumber = "18";
+    _auth.getCategorySpend(weekNumber).then((result) {
       setState(() {
         categoryAndSpend = result["results"]["data"];
         isLoading = false;
@@ -79,16 +78,20 @@ class _TransactionGraphState extends State<TransactionGraph> {
                                   child: BarChart(),
                                 );
                               }
-                              return SpendOnCategoryTile(
-                                name: categoryAndSpend[index - 1]["name"],
-                                amount: categoryAndSpend[index - 1]["amount"],
-                                url: categoryAndSpend[index - 1]["url"],
-                              );
+                              return getSpendOnCategoryTile(categoryAndSpend[index - 1]);
                             }),
                       ),
                     ),
                   ],
                 )),
+    );
+  }
+
+  Widget getSpendOnCategoryTile(Map<String, String> categoryAndSpend) {
+    return SpendOnCategoryTile(
+      name: categoryAndSpend["name"],
+      amount: categoryAndSpend["amount"],
+      url: categoryAndSpend["url"],
     );
   }
 }

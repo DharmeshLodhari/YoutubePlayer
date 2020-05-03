@@ -1426,6 +1426,8 @@ class AuthService {
 
   Future<Map<String, dynamic>> getTransactionWeeklyReport(
       String url, String next, String previous) async {
+    String weekNumber; //
+    var url = baseUrl + "/api/v1/transactions/transaction-filter/?week=" + weekNumber;
     if (next == null) {
       return null;
     }
@@ -1473,17 +1475,17 @@ class AuthService {
     }
   }
 
-  Future<Map<String, dynamic>> getCategorySpend(String url) async {
+  Future<dynamic> getCategorySpend(String weekNumber) async {
+    var url = baseUrl + "/api/v1/transactions/transaction-filter/?week=" + weekNumber;
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
     debugPrint(response.statusCode.toString());
-    debugPrint(response.body);
+    var jsonData = json.decode(response.body);
+    debugPrint(jsonData.toString());
     if (response.statusCode == 200) {
-      var jsonData = json.decode(response.body);
-
-      Map<String, dynamic> result = {
-        "results": jsonData["results"],
-      };
+//      Note: day in week is Sunday=1 through Saturday=7.
+      var data = jsonData["results"]["categories"];
+      var result = {"results": {"data":  data}};
       return result;
     } else {
       var randomize = Random();
@@ -1561,11 +1563,11 @@ class AuthService {
     }
   }
 
-  Future<Map<String, dynamic>> getPaymentCategory(String url) async {
+  Future<Map<String, dynamic>> getPaymentCategory() async {
+    var url = baseUrl + "/api/v1/transactions/payment-category/";
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
     debugPrint(response.statusCode.toString());
-    debugPrint(response.body);
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
 
@@ -1574,78 +1576,8 @@ class AuthService {
       };
       return result;
     } else {
-      var randomize = Random();
-
-      Map<String, dynamic> result = {
-        "results": {
-          "data": [
-            {
-              "name": "Bills",
-              "amount": randomize.nextInt(999).toString(),
-              "url": "assets/images/category/bills.png",
-            },
-            {
-              "name": "Charity",
-              "amount": randomize.nextInt(999).toString(),
-              "url": "assets/images/category/charity.png",
-            },
-            {
-              "name": "Eat out",
-              "amount": randomize.nextInt(999).toString(),
-              "url": "assets/images/category/eatout.png",
-            },
-            {
-              "name": "Entertainment",
-              "amount": randomize.nextInt(999).toString(),
-              "url": "assets/images/category/entertainment.png",
-            },
-            {
-              "name": "Transaportation",
-              "amount": randomize.nextInt(999).toString(),
-              "url": "assets/images/category/transaport.png",
-            },
-            {
-              "name": "Family",
-              "amount": randomize.nextInt(999).toString(),
-              "url": "assets/images/category/family.png",
-            },
-            {
-              "name": "Finance",
-              "amount": randomize.nextInt(999).toString(),
-              "url": "assets/images/category/finance.png",
-            },
-            {
-              "name": "General",
-              "amount": randomize.nextInt(999).toString(),
-              "url": "assets/images/category/general.png",
-            },
-            {
-              "name": "Grocies",
-              "amount": randomize.nextInt(999).toString(),
-              "url": "assets/images/category/groceries.png",
-            },
-            {
-              "name": "Holyday",
-              "amount": randomize.nextInt(999).toString(),
-              "url": "assets/images/category/holyday.png",
-            },
-            {
-              "name": "Personal Cear",
-              "amount": randomize.nextInt(999).toString(),
-              "url": "assets/images/category/personalcear.png",
-            },
-            {
-              "name": "Shopping",
-              "amount": randomize.nextInt(999).toString(),
-              "url": "assets/images/category/shopping.png",
-            },
-          ]
-        },
-      };
-
-      return result;
-//      var jsonData = json.decode(response.body);
-//      throw jsonData;
+      var jsonData = json.decode(response.body);
+      throw jsonData;
     }
   }
 }

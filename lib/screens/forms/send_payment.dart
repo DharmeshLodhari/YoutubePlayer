@@ -84,7 +84,7 @@ class _SendPaymentState extends State<SendPayment> {
   }
 
   void fetchCategory() async {
-    _auth.getPaymentCategory(baseUrl + "/api/v1/search/use/").then((result) {
+    _auth.getPaymentCategory().then((result) {
       setState(() {
         List categoriesList = result["results"]["data"];
         categoriesList.forEach((data) {

@@ -52,3 +52,11 @@ lib/l10n/intl_ar.arb
 lib/l10n/intl_am.arb 
 lib/locale/app_localization.dart
                                         
+from django.db.models.functions import TruncMonth
+from django.db.models import Count
+
+Sales.objects
+    .annotate(month=TruncMonth('timestamp'))  # Truncate to month and add to select list
+    .values('month')                          # Group By month
+    .annotate(c=Count('id'))                  # Select the count of the grouping
+    .values('month', 'c')                     # (might be redundant, haven't tested) select month and count
