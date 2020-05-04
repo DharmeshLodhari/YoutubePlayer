@@ -2,6 +2,7 @@ import 'package:Slydo/screens/tiles/spend_on_categoty.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/date_time_info.dart';
 import 'package:Slydo/widget/bar_chart.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
 
@@ -26,6 +27,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
   DateTime start;
   DateTime end;
   var barChartData;
+  Map<String, num> _measures;
 
   @override
   void initState() {
@@ -62,7 +64,9 @@ class _TransactionGraphState extends State<TransactionGraph> {
           resizeToAvoidBottomInset: true,
           backgroundColor: lightBlue(),
           appBar: AppBar(
-              backgroundColor: darkBlue(), title: Text("Transacions Graph")),
+              actions: <Widget>[flipCardButton()],
+              backgroundColor: darkBlue(),
+              title: Text("Transacions Graph")),
           body: isLoading
               ? Center(
                   child: CircularProgressIndicator(
@@ -81,8 +85,11 @@ class _TransactionGraphState extends State<TransactionGraph> {
 
   Widget flipGraph() {
     return FlipCard(
+      key: cardKey,
+      flipOnTouch: false,
+      direction: FlipDirection.VERTICAL,
       front: firstSide(),
-      back: Container(),
+      back: secondSide(),
     );
   }
 
@@ -126,6 +133,157 @@ class _TransactionGraphState extends State<TransactionGraph> {
           }
           return getSpendOnCategoryTile(categoryAndSpend[index - 2]);
         });
+  }
+
+  Widget secondSide() {
+    return Container(
+        margin: EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 20.0),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              offset: Offset(0, 2),
+              blurRadius: 6.0,
+            ),
+          ],
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        child: lineGraph());
+  }
+
+  Widget lineGraph() {
+    return Padding(
+        padding: EdgeInsets.fromLTRB(12, 12, 12, 12),
+        child: Column(children: <Widget>[
+          Text(
+            'Weekly Spending',
+            style: TextStyle(
+              fontSize: 20.0,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.2,
+            ),
+          ),
+          SizedBox(height: 5.0),
+          Expanded(child: chartBuilder()),
+          SizedBox(height: 20.0),
+          getSelectedData()
+        ]));
+  }
+
+  charts.LineChart chartBuilder() {
+    var firstData = [
+      GraphData(day: 0, amount: 10),
+      GraphData(day: 1, amount: 30),
+      GraphData(day: 2, amount: 15),
+      GraphData(day: 3, amount: 25),
+      GraphData(day: 4, amount: 45),
+      GraphData(day: 5, amount: 60),
+      GraphData(day: 6, amount: 60),
+    ];
+    var secondData = [
+      GraphData(day: 0, amount: 100),
+      GraphData(day: 1, amount: 20),
+      GraphData(day: 2, amount: 40),
+      GraphData(day: 3, amount: 35),
+      GraphData(day: 4, amount: 45),
+      GraphData(day: 5, amount: 70),
+      GraphData(day: 6, amount: 10),
+    ];
+    var series = [
+      charts.Series<GraphData, int>(
+          id: "income",
+          colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+          domainFn: (GraphData data, _) => data.day,
+          measureFn: (GraphData data, _) => data.amount,
+          displayName: "Income",
+          data: firstData),
+      charts.Series<GraphData, int>(
+          id: "expenditure",
+          colorFn: (_, __) => charts.MaterialPalette.red.shadeDefault,
+          domainFn: (GraphData data, _) => data.day,
+          measureFn: (GraphData data, _) => data.amount,
+          displayName: "Expenditure",
+          data: secondData)
+    ];
+
+    return charts.LineChart(series,
+        domainAxis: new charts.NumericAxisSpec(
+          tickFormatterSpec: charts.BasicNumericTickFormatterSpec(
+            _formaterDay,
+          ),
+        ),
+        animate: true,
+        defaultRenderer: new charts.LineRendererConfig(),
+        behaviors: [
+          new charts.SeriesLegend(
+            outsideJustification: charts.OutsideJustification.endDrawArea,
+            horizontalFirst: false,
+            desiredMaxRows: 2,
+            cellPadding: new EdgeInsets.only(right: 4.0, bottom: 4.0),
+            entryTextStyle: charts.TextStyleSpec(
+                color: charts.MaterialPalette.blue.shadeDefault,
+                fontFamily: 'Georgia',
+                fontSize: 11),
+          ),
+          new charts.ChartTitle('Days',
+              behaviorPosition: charts.BehaviorPosition.bottom,
+              titleOutsideJustification:
+                  charts.OutsideJustification.middleDrawArea),
+          new charts.ChartTitle('Amount',
+              behaviorPosition: charts.BehaviorPosition.start,
+              titleOutsideJustification:
+                  charts.OutsideJustification.middleDrawArea),
+        ]);
+  }
+
+  Widget getSelectedData() {
+    List<Widget> widgets = new List();
+    _measures.forEach((String series, num value) => Text(""));
+  }
+
+  String _formaterDay(num day) {
+    switch (day) {
+      case 0:
+        return "Su";
+        break;
+      case 1:
+        return "Mo";
+        break;
+      case 2:
+        return "Tu";
+        break;
+      case 3:
+        return "We";
+        break;
+      case 4:
+        return "Th";
+        break;
+      case 5:
+        return "Fr";
+        break;
+      case 6:
+        return "Sa";
+        break;
+    }
+    return "Day";
+  }
+
+  _onSelectionChanged(charts.SelectionModel model) {
+    final selectedDatum = model.selectedDatum;
+
+    final measures = <String, num>{};
+
+    if (selectedDatum.isNotEmpty) {
+      selectedDatum.forEach((charts.SeriesDatum datumPair) {
+        measures[datumPair.series.displayName] = datumPair.datum.sales;
+      });
+    }
+
+    // Request a build.
+    setState(() {
+      _measures = measures;
+    });
   }
 
   Widget getSpendOnCategoryTile(Map<String, dynamic> categoryAndSpend) {
@@ -206,4 +364,19 @@ class _TransactionGraphState extends State<TransactionGraph> {
     end = end.add(Duration(days: 7));
     fetchData(week.toString());
   }
+
+  flipCardButton() {
+    return IconButton(
+      icon: Icon(Icons.flip),
+      onPressed: () {
+        cardKey.currentState.toggleCard();
+      },
+    );
+  }
+}
+
+class GraphData {
+  int day;
+  int amount;
+  GraphData({this.day, this.amount});
 }
