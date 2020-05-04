@@ -137,7 +137,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
 
   Widget secondSide() {
     return Container(
-        margin: EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 0),
+        margin: EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10),
         decoration: BoxDecoration(
           color: Colors.white,
           boxShadow: [
@@ -164,7 +164,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
       ),
 
       Expanded(child: chartBuilder()),
-//          SizedBox(height: 20.0),
+
 //          getSelectedData()
     ]);
   }
