@@ -44,6 +44,7 @@ dependencies:
   maps_launcher: ^1.2.0
   rflutter_alert: ^1.0.2
   devicelocale: ^0.2.3
+  flip_card: ^0.4.4
 
 
 flutter_icons:

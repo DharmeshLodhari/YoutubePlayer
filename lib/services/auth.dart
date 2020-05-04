@@ -1425,28 +1425,56 @@ class AuthService {
   // Transactions graph and Category
 
   Future<Map<String, dynamic>> getTransactionWeeklyReport(
-      String url, String next, String previous) async {
-    String weekNumber; //
-    var url = baseUrl + "/api/v1/transactions/transaction-filter/?week=" + weekNumber;
-    if (next == null) {
-      return null;
-    }
-    if (next != "") {
-      url = next;
-    }
+      String weekNumber) async {
+    var url =
+        baseUrl + "/api/v1/transactions/transaction-filter/?week=" + weekNumber;
+    debugPrint("Url = $url");
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
     debugPrint(response.statusCode.toString());
     debugPrint(response.body);
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
-
-      Map<String, dynamic> result = {
-        "next": jsonData["next"],
-        "previous": jsonData["previous"],
-        "results": jsonData["results"],
-      };
-      return result;
+      return jsonData;
+//      var result = {
+//        "results": {
+//          "categories": [
+//            {
+//              "category": "Family",
+//              "amount": 1000.00,
+//              "url": "assets/images/category/bills.png"
+//            },
+//            {
+//              "category": "Shopping",
+//              "amount": 12674.00,
+//              "url": "assets/images/category/bills.png"
+//            },
+//            {
+//              "category": "Transportation",
+//              "amount": 1000.00,
+//              "url": "assets/images/category/bills.png"
+//            },
+//            {
+//              "category": "Uncategorized",
+//              "amount": 300.00,
+//              "url": "assets/images/category/bills.png"
+//            }
+//          ],
+//          "week": [
+//            {"day": 1, "amount": 134.10},
+//            {"day": 2, "amount": 116.20},
+//            {"day": 3, "amount": 16.20},
+//            {"day": 4, "amount": 20.23},
+//            {"day": 5, "amount": 900.45},
+//            {"day": 6, "amount": 23.45},
+//            {"day": 7, "amount": 300.46}
+//          ],
+//          "income": [],
+//          "expenditure": []
+//        }
+//      };
+//
+//      return result;
     } else {
       var randomize = Random();
       int start = randomize.nextInt(30);
@@ -1476,7 +1504,8 @@ class AuthService {
   }
 
   Future<dynamic> getCategorySpend(String weekNumber) async {
-    var url = baseUrl + "/api/v1/transactions/transaction-filter/?week=" + weekNumber;
+    var url =
+        baseUrl + "/api/v1/transactions/transaction-filter/?week=" + weekNumber;
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
     debugPrint(response.statusCode.toString());
@@ -1485,7 +1514,47 @@ class AuthService {
     if (response.statusCode == 200) {
 //      Note: day in week is Sunday=1 through Saturday=7.
       var data = jsonData["results"]["categories"];
-      var result = {"results": {"data":  data}};
+//      var result = {
+//        "results": {"data": data}
+//      };
+
+      var result = {
+        "results": {
+          "categories": [
+            {
+              "category": "Family",
+              "amount": 1000.00,
+              "url": "assets/images/category/bills.png"
+            },
+            {
+              "category": "Shopping",
+              "amount": 12674.00,
+              "url": "assets/images/category/bills.png"
+            },
+            {
+              "category": "Transportation",
+              "amount": 1000.00,
+              "url": "assets/images/category/bills.png"
+            },
+            {
+              "category": "Uncategorized",
+              "amount": 300.00,
+              "url": "assets/images/category/bills.png"
+            }
+          ],
+          "week": [
+            {"day": 1, "amount": 134.10},
+            {"day": 2, "amount": 116.20},
+            {"day": 3, "amount": 16.20},
+            {"day": 4, "amount": 20.23},
+            {"day": 5, "amount": 900.45},
+            {"day": 6, "amount": 23.45},
+            {"day": 7, "amount": 300.46}
+          ],
+          "income": [],
+          "expenditure": []
+        }
+      };
       return result;
     } else {
       var randomize = Random();
