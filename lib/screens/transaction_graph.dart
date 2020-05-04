@@ -116,7 +116,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
           }
           if (index == 1) {
             return Container(
-              margin: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 10.0),
+              margin: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 0.0),
               decoration: BoxDecoration(
                 color: Colors.white,
                 boxShadow: [
@@ -137,7 +137,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
 
   Widget secondSide() {
     return Container(
-        margin: EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 20.0),
+        margin: EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 0),
         decoration: BoxDecoration(
           color: Colors.white,
           boxShadow: [
@@ -153,26 +153,24 @@ class _TransactionGraphState extends State<TransactionGraph> {
   }
 
   Widget lineGraph() {
-    return Padding(
-        padding: EdgeInsets.fromLTRB(12, 12, 12, 12),
-        child: Column(children: <Widget>[
-          Text(
-            'Weekly Spending',
-            style: TextStyle(
-              fontSize: 20.0,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.2,
-            ),
-          ),
-          SizedBox(height: 5.0),
-          Expanded(child: chartBuilder()),
-          SizedBox(height: 20.0),
-          getSelectedData()
-        ]));
+    return Column(children: <Widget>[
+      Text(
+        'Weekly Spending',
+        style: TextStyle(
+          fontSize: 16.0,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 1.2,
+        ),
+      ),
+
+      Expanded(child: chartBuilder()),
+//          SizedBox(height: 20.0),
+//          getSelectedData()
+    ]);
   }
 
   charts.LineChart chartBuilder() {
-    var firstData = [
+    List<GraphData> firstData = [
       GraphData(day: 0, amount: 10),
       GraphData(day: 1, amount: 30),
       GraphData(day: 2, amount: 15),
@@ -181,7 +179,8 @@ class _TransactionGraphState extends State<TransactionGraph> {
       GraphData(day: 5, amount: 60),
       GraphData(day: 6, amount: 60),
     ];
-    var secondData = [
+
+    List<GraphData> secondData = [
       GraphData(day: 0, amount: 100),
       GraphData(day: 1, amount: 20),
       GraphData(day: 2, amount: 40),
@@ -216,17 +215,21 @@ class _TransactionGraphState extends State<TransactionGraph> {
         animate: true,
         defaultRenderer: new charts.LineRendererConfig(),
         behaviors: [
-          new charts.SeriesLegend(
-            outsideJustification: charts.OutsideJustification.endDrawArea,
-            horizontalFirst: false,
-            desiredMaxRows: 2,
-            cellPadding: new EdgeInsets.only(right: 4.0, bottom: 4.0),
-            entryTextStyle: charts.TextStyleSpec(
-                color: charts.MaterialPalette.blue.shadeDefault,
-                fontFamily: 'Georgia',
-                fontSize: 11),
-          ),
+//          new charts.SeriesLegend(
+//            outsideJustification: charts.OutsideJustification.endDrawArea,
+//            horizontalFirst: false,
+//            desiredMaxRows: 2,
+//            cellPadding: new EdgeInsets.only(right: 4.0, bottom: 4.0),
+//            entryTextStyle: charts.TextStyleSpec(
+//                color: charts.MaterialPalette.blue.shadeDefault,
+//                fontFamily: 'Georgia',
+//                fontSize: 11),
+//          ),
           new charts.ChartTitle('Days',
+              titleStyleSpec: charts.TextStyleSpec(
+                  color: charts.MaterialPalette.black,
+                  fontFamily: 'Georgia',
+                  fontSize: 11),
               behaviorPosition: charts.BehaviorPosition.bottom,
               titleOutsideJustification:
                   charts.OutsideJustification.middleDrawArea),

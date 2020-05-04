@@ -1435,46 +1435,62 @@ class AuthService {
     debugPrint(response.body);
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
-      return jsonData;
-//      var result = {
-//        "results": {
-//          "categories": [
-//            {
-//              "category": "Family",
-//              "amount": 1000.00,
-//              "url": "assets/images/category/bills.png"
-//            },
-//            {
-//              "category": "Shopping",
-//              "amount": 12674.00,
-//              "url": "assets/images/category/bills.png"
-//            },
-//            {
-//              "category": "Transportation",
-//              "amount": 1000.00,
-//              "url": "assets/images/category/bills.png"
-//            },
-//            {
-//              "category": "Uncategorized",
-//              "amount": 300.00,
-//              "url": "assets/images/category/bills.png"
-//            }
-//          ],
-//          "week": [
-//            {"day": 1, "amount": 134.10},
-//            {"day": 2, "amount": 116.20},
-//            {"day": 3, "amount": 16.20},
-//            {"day": 4, "amount": 20.23},
-//            {"day": 5, "amount": 900.45},
-//            {"day": 6, "amount": 23.45},
-//            {"day": 7, "amount": 300.46}
-//          ],
-//          "income": [],
-//          "expenditure": []
-//        }
-//      };
-//
-//      return result;
+//      return jsonData;
+      var result = {
+        "results": {
+          "categories": [
+            {
+              "category": "Family",
+              "amount": 1000.00,
+              "url": "assets/images/category/bills.png"
+            },
+            {
+              "category": "Shopping",
+              "amount": 12674.00,
+              "url": "assets/images/category/bills.png"
+            },
+            {
+              "category": "Transportation",
+              "amount": 1000.00,
+              "url": "assets/images/category/bills.png"
+            },
+            {
+              "category": "Uncategorized",
+              "amount": 300.00,
+              "url": "assets/images/category/bills.png"
+            }
+          ],
+          "week": [
+            {"day": 1, "amount": 134.10},
+            {"day": 2, "amount": 116.20},
+            {"day": 3, "amount": 16.20},
+            {"day": 4, "amount": 20.23},
+            {"day": 5, "amount": 900.45},
+            {"day": 6, "amount": 23.45},
+            {"day": 7, "amount": 300.46}
+          ],
+          "income": [
+            {"day": 1, "amount": 10},
+            {"day": 2, "amount": 50},
+            {"day": 3, "amount": 70},
+            {"day": 4, "amount": 0},
+            {"day": 5, "amount": 21},
+            {"day": 6, "amount": 88},
+            {"day": 8, "amount": 400},
+          ],
+          "expenditure": [
+            {"day": 1, "amount": 10},
+            {"day": 2, "amount": 30},
+            {"day": 3, "amount": 50},
+            {"day": 4, "amount": 25},
+            {"day": 5, "amount": 300},
+            {"day": 6, "amount": 250},
+            {"day": 7, "amount": 10},
+          ]
+        }
+      };
+
+      return result;
     } else {
       var randomize = Random();
       int start = randomize.nextInt(30);

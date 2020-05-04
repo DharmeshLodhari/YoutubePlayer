@@ -25,8 +25,8 @@ void main() async {
   // to set orientation only vertical
   SystemChrome.setPreferredOrientations(
     [
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
+//      DeviceOrientation.portraitUp,
+//      DeviceOrientation.portraitDown,
     ],
   ).then((value) {
     runZoned(() {
