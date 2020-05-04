@@ -18,7 +18,7 @@ class _SpendOnCategoryTileState extends State<SpendOnCategoryTile> {
   Widget build(BuildContext context) {
     var userBloc = Provider.of<UserBloc>(context);
     return Card(
-      margin: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+      margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
       child: Padding(
         padding: const EdgeInsets.all(1.0),
         child: ListTile(

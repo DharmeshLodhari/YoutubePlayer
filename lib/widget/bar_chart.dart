@@ -57,7 +57,7 @@ class _BarChartState extends State<BarChart> {
 
   void getData(List<dynamic> expenses) {
     expenses.forEach((data) {
-      barData[data["day"] - 1] = double.parse(data["amount"].toString());
+      barData[data["day"]] = double.parse(data["amount"].toString());
     });
   }
 

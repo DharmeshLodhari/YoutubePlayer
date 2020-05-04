@@ -1,3 +1,5 @@
+import 'package:Slydo/data/currency.dart';
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/tiles/spend_on_categoty.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/date_time_info.dart';
@@ -5,6 +7,7 @@ import 'package:Slydo/widget/bar_chart.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'colors.dart';
 
@@ -16,6 +19,7 @@ class TransactionGraph extends StatefulWidget {
 class _TransactionGraphState extends State<TransactionGraph> {
   final transactionGraphKey = GlobalKey<ScaffoldState>();
   GlobalKey<FlipCardState> cardKey = GlobalKey<FlipCardState>();
+  UserBloc userBloc;
 
   //variables for category tile
   dynamic categoryAndSpend;
@@ -28,6 +32,29 @@ class _TransactionGraphState extends State<TransactionGraph> {
   DateTime end;
   var barChartData;
   Map<String, num> _measures;
+  var income;
+  var expenditure;
+  var firstData = [
+    GraphData(day: 0, amount: 0),
+    GraphData(day: 1, amount: 0),
+    GraphData(day: 2, amount: 0),
+    GraphData(day: 3, amount: 0),
+    GraphData(day: 4, amount: 0),
+    GraphData(day: 5, amount: 0),
+    GraphData(day: 6, amount: 0),
+  ];
+  var secondData = [
+    GraphData(day: 0, amount: 0),
+    GraphData(day: 1, amount: 0),
+    GraphData(day: 2, amount: 0),
+    GraphData(day: 3, amount: 0),
+    GraphData(day: 4, amount: 0),
+    GraphData(day: 5, amount: 0),
+    GraphData(day: 6, amount: 0),
+  ];
+
+  //variable for flip card
+  bool isFlipped = false;
 
   @override
   void initState() {
@@ -47,14 +74,64 @@ class _TransactionGraphState extends State<TransactionGraph> {
       setState(() {
         categoryAndSpend = result["results"]["categories"];
         barChartData = result["results"]["week"];
+        income = result["results"]["income"];
+        expenditure = result["results"]["expenditure"];
         debugPrint("$categoryAndSpend");
         isLoading = false;
+        loadDataIntoGraph();
       });
     });
   }
 
+  void loadDataIntoGraph() {
+    cleanData();
+    debugPrint("$income");
+
+    income.forEach((data) {
+      firstData[data["day"]] =
+          GraphData(day: data["day"], amount: data["amount"]);
+    });
+
+    firstData.forEach((data) {
+      debugPrint("day ${data.day} amount :${data.amount}");
+    });
+
+    debugPrint("$expenditure");
+
+    expenditure.forEach((data) {
+      secondData[data["day"]] =
+          GraphData(day: data["day"], amount: data["amount"]);
+    });
+
+    secondData.forEach((data) {
+      debugPrint("day ${data.day} amount :${data.amount}");
+    });
+  }
+
+  void cleanData() {
+    firstData = [
+      GraphData(day: 0, amount: 0),
+      GraphData(day: 1, amount: 0),
+      GraphData(day: 2, amount: 0),
+      GraphData(day: 3, amount: 0),
+      GraphData(day: 4, amount: 0),
+      GraphData(day: 5, amount: 0),
+      GraphData(day: 6, amount: 0),
+    ];
+    secondData = [
+      GraphData(day: 0, amount: 0),
+      GraphData(day: 1, amount: 0),
+      GraphData(day: 2, amount: 0),
+      GraphData(day: 3, amount: 0),
+      GraphData(day: 4, amount: 0),
+      GraphData(day: 5, amount: 0),
+      GraphData(day: 6, amount: 0),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
     return WillPopScope(
       onWillPop: () async {
         return true;
@@ -67,19 +144,36 @@ class _TransactionGraphState extends State<TransactionGraph> {
               actions: <Widget>[flipCardButton()],
               backgroundColor: darkBlue(),
               title: Text("Transacions Graph")),
-          body: isLoading
-              ? Center(
-                  child: CircularProgressIndicator(
-                    backgroundColor: Colors.white,
-                  ),
-                )
-              : Column(
-                  children: <Widget>[
-                    Expanded(
-                      child: Container(child: flipGraph()),
+          body: Column(
+            children: <Widget>[
+              Container(
+                margin: EdgeInsets.fromLTRB(10.0, 8.0, 10.0, 0.0),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black12,
+                      offset: Offset(0, 2),
+                      blurRadius: 6.0,
                     ),
                   ],
-                )),
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                child: dateChanger(),
+              ),
+              isLoading
+                  ? Expanded(
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          backgroundColor: Colors.white,
+                        ),
+                      ),
+                    )
+                  : Expanded(
+                      child: Container(child: flipGraph()),
+                    ),
+            ],
+          )),
     );
   }
 
@@ -95,28 +189,11 @@ class _TransactionGraphState extends State<TransactionGraph> {
 
   Widget firstSide() {
     return ListView.builder(
-        itemCount: categoryAndSpend.length + 2,
+        itemCount: categoryAndSpend.length + 1,
         itemBuilder: (context, index) {
           if (index == 0) {
             return Container(
-              margin: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 0.0),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    offset: Offset(0, 2),
-                    blurRadius: 6.0,
-                  ),
-                ],
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: dateChanger(),
-            );
-          }
-          if (index == 1) {
-            return Container(
-              margin: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 0.0),
+              margin: EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 5),
               decoration: BoxDecoration(
                 color: Colors.white,
                 boxShadow: [
@@ -131,7 +208,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
               child: BarChart(arguments: {"week": barChartData}),
             );
           }
-          return getSpendOnCategoryTile(categoryAndSpend[index - 2]);
+          return getSpendOnCategoryTile(categoryAndSpend[index - 1]);
         });
   }
 
@@ -162,33 +239,57 @@ class _TransactionGraphState extends State<TransactionGraph> {
           letterSpacing: 1.2,
         ),
       ),
-
       Expanded(child: chartBuilder()),
-
-//          getSelectedData()
+      Padding(
+        padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            getSelectedData(),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Container(
+                      height: 10,
+                      width: 10,
+                      color: Colors.red,
+                    ),
+                    SizedBox(
+                      width: 2,
+                    ),
+                    Text(
+                      "Expenditure",
+                      style: TextStyle(fontSize: 11),
+                    )
+                  ],
+                ),
+                Row(
+                  children: <Widget>[
+                    Container(
+                      height: 10,
+                      width: 10,
+                      color: Colors.blue,
+                    ),
+                    SizedBox(
+                      width: 2,
+                    ),
+                    Text(
+                      "Income",
+                      style: TextStyle(fontSize: 11),
+                    )
+                  ],
+                )
+              ],
+            )
+          ],
+        ),
+      )
     ]);
   }
 
   charts.LineChart chartBuilder() {
-    List<GraphData> firstData = [
-      GraphData(day: 0, amount: 10),
-      GraphData(day: 1, amount: 30),
-      GraphData(day: 2, amount: 15),
-      GraphData(day: 3, amount: 25),
-      GraphData(day: 4, amount: 45),
-      GraphData(day: 5, amount: 60),
-      GraphData(day: 6, amount: 60),
-    ];
-
-    List<GraphData> secondData = [
-      GraphData(day: 0, amount: 100),
-      GraphData(day: 1, amount: 20),
-      GraphData(day: 2, amount: 40),
-      GraphData(day: 3, amount: 35),
-      GraphData(day: 4, amount: 45),
-      GraphData(day: 5, amount: 70),
-      GraphData(day: 6, amount: 10),
-    ];
     var series = [
       charts.Series<GraphData, int>(
           id: "income",
@@ -209,31 +310,40 @@ class _TransactionGraphState extends State<TransactionGraph> {
     return charts.LineChart(series,
         domainAxis: new charts.NumericAxisSpec(
           tickFormatterSpec: charts.BasicNumericTickFormatterSpec(
-            _formaterDay,
+            formatDay,
           ),
         ),
         animate: true,
-        defaultRenderer: new charts.LineRendererConfig(),
+        defaultRenderer: new charts.LineRendererConfig(includePoints: true),
+        selectionModels: [
+          new charts.SelectionModelConfig(
+              type: charts.SelectionModelType.info,
+              changedListener: _onSelectionChanged)
+        ],
         behaviors: [
-//          new charts.SeriesLegend(
-//            outsideJustification: charts.OutsideJustification.endDrawArea,
-//            horizontalFirst: false,
-//            desiredMaxRows: 2,
-//            cellPadding: new EdgeInsets.only(right: 4.0, bottom: 4.0),
-//            entryTextStyle: charts.TextStyleSpec(
-//                color: charts.MaterialPalette.blue.shadeDefault,
-//                fontFamily: 'Georgia',
-//                fontSize: 11),
-//          ),
+          new charts.SelectNearest(
+              eventTrigger: charts.SelectionTrigger.tapAndDrag),
+          new charts.LinePointHighlighter(
+              showHorizontalFollowLine:
+                  charts.LinePointHighlighterFollowLineType.none,
+              showVerticalFollowLine:
+                  charts.LinePointHighlighterFollowLineType.nearest),
           new charts.ChartTitle('Days',
               titleStyleSpec: charts.TextStyleSpec(
+                  lineHeight: 0,
                   color: charts.MaterialPalette.black,
                   fontFamily: 'Georgia',
                   fontSize: 11),
               behaviorPosition: charts.BehaviorPosition.bottom,
               titleOutsideJustification:
                   charts.OutsideJustification.middleDrawArea),
-          new charts.ChartTitle('Amount',
+          new charts.ChartTitle(
+              'Amount (${worldCurrencies[userBloc.user.currency]})',
+              titleStyleSpec: charts.TextStyleSpec(
+                  lineHeight: 0,
+                  color: charts.MaterialPalette.black,
+                  fontFamily: 'Georgia',
+                  fontSize: 11),
               behaviorPosition: charts.BehaviorPosition.start,
               titleOutsideJustification:
                   charts.OutsideJustification.middleDrawArea),
@@ -242,10 +352,22 @@ class _TransactionGraphState extends State<TransactionGraph> {
 
   Widget getSelectedData() {
     List<Widget> widgets = new List();
-    _measures.forEach((String series, num value) => Text(""));
+    if (_measures != null) {
+      _measures.forEach((String series, num value) {
+        widgets.add(Text(
+          "$series : $value",
+          style: TextStyle(fontSize: 11),
+        ));
+      });
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: widgets,
+      );
+    }
+    return Container();
   }
 
-  String _formaterDay(num day) {
+  String formatDay(num day) {
     switch (day) {
       case 0:
         return "Su";
@@ -274,15 +396,12 @@ class _TransactionGraphState extends State<TransactionGraph> {
 
   _onSelectionChanged(charts.SelectionModel model) {
     final selectedDatum = model.selectedDatum;
-
     final measures = <String, num>{};
-
     if (selectedDatum.isNotEmpty) {
       selectedDatum.forEach((charts.SeriesDatum datumPair) {
-        measures[datumPair.series.displayName] = datumPair.datum.sales;
+        measures[datumPair.series.displayName] = datumPair.datum.amount;
       });
     }
-
     // Request a build.
     setState(() {
       _measures = measures;
@@ -300,17 +419,16 @@ class _TransactionGraphState extends State<TransactionGraph> {
 
   Widget dateChanger() {
     return Padding(
-      padding: EdgeInsets.all(12.0),
+      padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
       child: Column(children: <Widget>[
         Text(
           'Weekly Spending',
           style: TextStyle(
-            fontSize: 20.0,
+            fontSize: 18.0,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.2,
           ),
         ),
-        SizedBox(height: 5.0),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
@@ -319,7 +437,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
               child: Center(
                 child: IconButton(
                   icon: Icon(Icons.arrow_back),
-                  iconSize: 30.0,
+                  iconSize: 25.0,
                   onPressed: fetchPrevious,
                 ),
               ),
@@ -341,7 +459,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
               child: Center(
                 child: IconButton(
                   icon: Icon(Icons.arrow_forward),
-                  iconSize: 30.0,
+                  iconSize: 25.0,
                   onPressed: fetchNext,
                 ),
               ),
@@ -372,7 +490,13 @@ class _TransactionGraphState extends State<TransactionGraph> {
     return IconButton(
       icon: Icon(Icons.flip),
       onPressed: () {
-        cardKey.currentState.toggleCard();
+        if (isFlipped) {
+          cardKey.currentState.toggleCard();
+          isFlipped = false;
+        } else {
+          cardKey.currentState.toggleCard();
+          isFlipped = true;
+        }
       },
     );
   }

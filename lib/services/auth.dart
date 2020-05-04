@@ -1423,7 +1423,6 @@ class AuthService {
   }
 
   // Transactions graph and Category
-
   Future<Map<String, dynamic>> getTransactionWeeklyReport(
       String weekNumber) async {
     var url =
@@ -1431,109 +1430,10 @@ class AuthService {
     debugPrint("Url = $url");
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
-    debugPrint(response.statusCode.toString());
-    debugPrint(response.body);
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
-      return jsonData;
-//      var result = {
-//        "results": {
-//          "categories": [
-//            {
-//              "category": "Family",
-//              "amount": 1000.00,
-//              "url": "assets/images/category/bills.png"
-//            },
-//            {
-//              "category": "Shopping",
-//              "amount": 12674.00,
-//              "url": "assets/images/category/bills.png"
-//            },
-//            {
-//              "category": "Transportation",
-//              "amount": 1000.00,
-//              "url": "assets/images/category/bills.png"
-//            },
-//            {
-//              "category": "Uncategorized",
-//              "amount": 300.00,
-//              "url": "assets/images/category/bills.png"
-//            }
-//          ],
-//          "week": [
-//            {"day": 1, "amount": 134.10},
-//            {"day": 2, "amount": 116.20},
-//            {"day": 3, "amount": 16.20},
-//            {"day": 4, "amount": 20.23},
-//            {"day": 5, "amount": 900.45},
-//            {"day": 6, "amount": 23.45},
-//            {"day": 7, "amount": 300.46}
-//          ],
-//          "income": [
-//            {"day": 1, "amount": 10},
-//            {"day": 2, "amount": 50},
-//            {"day": 3, "amount": 70},
-//            {"day": 4, "amount": 0},
-//            {"day": 5, "amount": 21},
-//            {"day": 6, "amount": 88},
-//            {"day": 8, "amount": 400},
-//          ],
-//          "expenditure": [
-//            {"day": 1, "amount": 10},
-//            {"day": 2, "amount": 30},
-//            {"day": 3, "amount": 50},
-//            {"day": 4, "amount": 25},
-//            {"day": 5, "amount": 300},
-//            {"day": 6, "amount": 250},
-//            {"day": 7, "amount": 10},
-//          ]
-//        }
-//      };
-
-//      return result;
-    } else {
+//      return jsonData;
       var randomize = Random();
-      int start = randomize.nextInt(30);
-      int end = randomize.nextInt(30);
-      Map<String, dynamic> result = {
-        "next": baseUrl + "/api/v1/search/use/",
-        "prevoius": baseUrl + "/api/v1/search/use/",
-        "results": {
-          "start": start,
-          "end": end,
-          "expenses": [
-            randomize.nextDouble() * 100,
-            randomize.nextDouble() * 100,
-            randomize.nextDouble() * 100,
-            randomize.nextDouble() * 100,
-            randomize.nextDouble() * 100,
-            randomize.nextDouble() * 100,
-            randomize.nextDouble() * 100,
-          ]
-        },
-      };
-
-      return result;
-//      var jsonData = json.decode(response.body);
-//      throw jsonData;
-    }
-  }
-
-  Future<dynamic> getCategorySpend(String weekNumber) async {
-    var url =
-        baseUrl + "/api/v1/transactions/transaction-filter/?week=" + weekNumber;
-    var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
-    debugPrint(response.statusCode.toString());
-    var jsonData = json.decode(response.body);
-    debugPrint(jsonData.toString());
-    if (response.statusCode == 200) {
-//      Note: day in week is Sunday=1 through Saturday=7.
-      var data = jsonData["results"]["categories"];
-//      var result = {
-//        "results": {"data": data}
-//      };
-
       var result = {
         "results": {
           "categories": [
@@ -1559,92 +1459,39 @@ class AuthService {
             }
           ],
           "week": [
-            {"day": 1, "amount": 134.10},
-            {"day": 2, "amount": 116.20},
-            {"day": 3, "amount": 16.20},
-            {"day": 4, "amount": 20.23},
-            {"day": 5, "amount": 900.45},
-            {"day": 6, "amount": 23.45},
-            {"day": 7, "amount": 300.46}
+            {"day": 0, "amount": randomize.nextInt(1000)},
+            {"day": 1, "amount": randomize.nextInt(1000)},
+            {"day": 2, "amount": randomize.nextInt(1000)},
+            {"day": 3, "amount": randomize.nextInt(1000)},
+            {"day": 4, "amount": randomize.nextInt(1000)},
+            {"day": 5, "amount": randomize.nextInt(1000)},
+            {"day": 6, "amount": randomize.nextInt(1000)}
           ],
-          "income": [],
-          "expenditure": []
+          "income": [
+            {"day": 1, "amount": randomize.nextInt(1000)},
+            {"day": 0, "amount": randomize.nextInt(1000)},
+            {"day": 2, "amount": randomize.nextInt(1000)},
+            {"day": 3, "amount": randomize.nextInt(1000)},
+            {"day": 4, "amount": randomize.nextInt(1000)},
+            {"day": 5, "amount": randomize.nextInt(1000)},
+            {"day": 6, "amount": randomize.nextInt(1000)},
+          ],
+          "expenditure": [
+            {"day": 0, "amount": randomize.nextInt(600)},
+            {"day": 1, "amount": randomize.nextInt(770)},
+            {"day": 2, "amount": randomize.nextInt(1000)},
+            {"day": 3, "amount": randomize.nextInt(500)},
+            {"day": 4, "amount": randomize.nextInt(200)},
+            {"day": 6, "amount": randomize.nextInt(1000)},
+            {"day": 5, "amount": randomize.nextInt(600)},
+          ]
         }
       };
+
       return result;
     } else {
-      var randomize = Random();
-
-      Map<String, dynamic> result = {
-        "results": {
-          "data": [
-            {
-              "name": "Bills",
-              "amount": randomize.nextInt(999).toString(),
-              "url": "assets/images/category/bills.png",
-            },
-            {
-              "name": "Charity",
-              "amount": randomize.nextInt(999).toString(),
-              "url": "assets/images/category/charity.png",
-            },
-            {
-              "name": "Eat out",
-              "amount": randomize.nextInt(999).toString(),
-              "url": "assets/images/category/eatout.png",
-            },
-            {
-              "name": "Entertainment",
-              "amount": randomize.nextInt(999).toString(),
-              "url": "assets/images/category/entertainment.png",
-            },
-            {
-              "name": "Transaportation",
-              "amount": randomize.nextInt(999).toString(),
-              "url": "assets/images/category/transaport.png",
-            },
-            {
-              "name": "Family",
-              "amount": randomize.nextInt(999).toString(),
-              "url": "assets/images/category/family.png",
-            },
-            {
-              "name": "Finance",
-              "amount": randomize.nextInt(999).toString(),
-              "url": "assets/images/category/finance.png",
-            },
-            {
-              "name": "General",
-              "amount": randomize.nextInt(999).toString(),
-              "url": "assets/images/category/general.png",
-            },
-            {
-              "name": "Grocies",
-              "amount": randomize.nextInt(999).toString(),
-              "url": "assets/images/category/groceries.png",
-            },
-            {
-              "name": "Holyday",
-              "amount": randomize.nextInt(999).toString(),
-              "url": "assets/images/category/holyday.png",
-            },
-            {
-              "name": "Personal Cear",
-              "amount": randomize.nextInt(999).toString(),
-              "url": "assets/images/category/personalcear.png",
-            },
-            {
-              "name": "Shopping",
-              "amount": randomize.nextInt(999).toString(),
-              "url": "assets/images/category/shopping.png",
-            },
-          ]
-        },
-      };
-
-      return result;
-//      var jsonData = json.decode(response.body);
-//      throw jsonData;
+      var jsonData = json.decode(response.body);
+      throw jsonData;
     }
   }
 
