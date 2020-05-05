@@ -1467,22 +1467,22 @@ class AuthService {
 //            {"day": 7, "amount": randomize.nextInt(1000)}
 //          ],
 //          "income": [
-//            {"day": 1, "amount": randomize.nextInt(1000)},
-//            {"day": 7, "amount": randomize.nextInt(1000)},
-//            {"day": 2, "amount": randomize.nextInt(1000)},
-//            {"day": 3, "amount": randomize.nextInt(1000)},
-//            {"day": 4, "amount": randomize.nextInt(1000)},
-//            {"day": 5, "amount": randomize.nextInt(1000)},
-//            {"day": 6, "amount": randomize.nextInt(1000)},
+////            {"day": 1, "amount": randomize.nextInt(1000)},
+////            {"day": 7, "amount": randomize.nextInt(1000)},
+////            {"day": 2, "amount": randomize.nextInt(1000)},
+////            {"day": 3, "amount": randomize.nextInt(1000)},
+////            {"day": 4, "amount": randomize.nextInt(1000)},
+////            {"day": 5, "amount": randomize.nextInt(1000)},
+////            {"day": 6, "amount": randomize.nextInt(1000)},
 //          ],
 //          "expenditure": [
-//            {"day": 7, "amount": randomize.nextInt(600)},
-//            {"day": 1, "amount": randomize.nextInt(770)},
-//            {"day": 2, "amount": randomize.nextInt(1000)},
-//            {"day": 3, "amount": randomize.nextInt(500)},
-//            {"day": 4, "amount": randomize.nextInt(200)},
-//            {"day": 6, "amount": randomize.nextInt(1000)},
-//            {"day": 5, "amount": randomize.nextInt(600)},
+////            {"day": 7, "amount": randomize.nextInt(600)},
+////            {"day": 1, "amount": randomize.nextInt(770)},
+////            {"day": 2, "amount": randomize.nextInt(1000)},
+////            {"day": 3, "amount": randomize.nextInt(500)},
+////            {"day": 4, "amount": randomize.nextInt(200)},
+////            {"day": 6, "amount": randomize.nextInt(1000)},
+////            {"day": 5, "amount": randomize.nextInt(600)},
 //          ]
 //        }
 //      };

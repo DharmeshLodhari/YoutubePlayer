@@ -73,7 +73,6 @@ class _TransactionGraphState extends State<TransactionGraph> {
         barChartData = result["results"]["week"];
         income = result["results"]["income"];
         expenditure = result["results"]["expenditure"];
-        debugPrint("$categoryAndSpend");
         isLoading = false;
         loadDataIntoGraph();
       });
@@ -81,27 +80,17 @@ class _TransactionGraphState extends State<TransactionGraph> {
   }
 
   void loadDataIntoGraph() {
+    //for cleaning all data from previous fetch data
     cleanData();
-    debugPrint("$income");
 
     income.forEach((data) {
       firstData[data["day"] - 1] =
           GraphData(day: data["day"] - 1, amount: data["amount"]);
     });
 
-    firstData.forEach((data) {
-      debugPrint("day ${data.day} amount :${data.amount}");
-    });
-
-    debugPrint("$expenditure");
-
     expenditure.forEach((data) {
       secondData[data["day"] - 1] =
           GraphData(day: data["day"] - 1, amount: data["amount"]);
-    });
-
-    secondData.forEach((data) {
-      debugPrint("day ${data.day} amount :${data.amount}");
     });
   }
 
@@ -351,10 +340,17 @@ class _TransactionGraphState extends State<TransactionGraph> {
     List<Widget> widgets = new List();
     if (_measures != null) {
       _measures.forEach((String series, num value) {
-        widgets.add(Text(
-          "$series : $value",
-          style: TextStyle(fontSize: 11),
-        ));
+        if (series == "Income") {
+          widgets.add(Text(
+            "$series : $value",
+            style: TextStyle(fontSize: 11, color: Colors.blue),
+          ));
+        } else {
+          widgets.add(Text(
+            "$series : $value",
+            style: TextStyle(fontSize: 11, color: Colors.red),
+          ));
+        }
       });
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
