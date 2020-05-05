@@ -1432,62 +1432,6 @@ class AuthService {
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
       return jsonData;
-//      var randomize = Random();
-//      var result = {
-//        "results": {
-//          "categories": [
-//            {
-//              "category": "Family",
-//              "amount": 1000.00,
-//              "url": "assets/images/category/bills.png"
-//            },
-//            {
-//              "category": "Shopping",
-//              "amount": 12674.00,
-//              "url": "assets/images/category/bills.png"
-//            },
-//            {
-//              "category": "Transportation",
-//              "amount": 1000.00,
-//              "url": "assets/images/category/bills.png"
-//            },
-//            {
-//              "category": "Uncategorized",
-//              "amount": 300.00,
-//              "url": "assets/images/category/bills.png"
-//            }
-//          ],
-//          "week": [
-//            {"day": 1, "amount": randomize.nextInt(1000)},
-//            {"day": 2, "amount": randomize.nextInt(1000)},
-//            {"day": 3, "amount": randomize.nextInt(1000)},
-//            {"day": 4, "amount": randomize.nextInt(1000)},
-//            {"day": 5, "amount": randomize.nextInt(1000)},
-//            {"day": 6, "amount": randomize.nextInt(1000)},
-//            {"day": 7, "amount": randomize.nextInt(1000)}
-//          ],
-//          "income": [
-////            {"day": 1, "amount": randomize.nextInt(1000)},
-////            {"day": 7, "amount": randomize.nextInt(1000)},
-////            {"day": 2, "amount": randomize.nextInt(1000)},
-////            {"day": 3, "amount": randomize.nextInt(1000)},
-////            {"day": 4, "amount": randomize.nextInt(1000)},
-////            {"day": 5, "amount": randomize.nextInt(1000)},
-////            {"day": 6, "amount": randomize.nextInt(1000)},
-//          ],
-//          "expenditure": [
-////            {"day": 7, "amount": randomize.nextInt(600)},
-////            {"day": 1, "amount": randomize.nextInt(770)},
-////            {"day": 2, "amount": randomize.nextInt(1000)},
-////            {"day": 3, "amount": randomize.nextInt(500)},
-////            {"day": 4, "amount": randomize.nextInt(200)},
-////            {"day": 6, "amount": randomize.nextInt(1000)},
-////            {"day": 5, "amount": randomize.nextInt(600)},
-//          ]
-//        }
-//      };
-//
-//      return result;
     } else {
       var jsonData = json.decode(response.body);
       throw jsonData;
