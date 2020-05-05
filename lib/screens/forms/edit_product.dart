@@ -728,7 +728,7 @@ class _EditProductState extends State<EditProduct> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(AppLocalization.of(context).availabeFrom),
+              Text(AppLocalization.of(context).availableFrom),
               Row(
                 children: <Widget>[
                   Icon(Icons.date_range),

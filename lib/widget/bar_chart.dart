@@ -187,7 +187,7 @@ class _BarChartState extends State<BarChart> {
           height: 200,
           child: Center(
             child: Text(
-              AppLocalization.of(context).noTransactionIsDoneInThisWeek,
+              AppLocalization.of(context).noTransactionDoneThisWeek,
               style: TextStyle(
                 fontSize: 20.0,
                 fontWeight: FontWeight.bold,

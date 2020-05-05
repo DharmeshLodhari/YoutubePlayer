@@ -645,7 +645,7 @@ class _EditServiceState extends State<EditService> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(AppLocalization.of(context).availabeFrom),
+              Text(AppLocalization.of(context).availableFrom),
               Row(
                 children: <Widget>[
                   Icon(Icons.date_range),

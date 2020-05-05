@@ -149,7 +149,7 @@
  "pleaseTypeSomethingToGetResult": "Please type something to get results",
  "noResultFound": "No Result Found!",
  "appVersion": "App Version",
- "buildnumber": "Build number",
+ "buildNumber": "Build number",
  "logout": "Logout",
  "editProfile": "Edit Profile",
  "addAccount": "Add Account",
@@ -184,7 +184,7 @@
  "manufacturer": "Manufacturer",
  "pleaseEnterManufacturerName": "Please Enter Manufacturer Name",
  "isAvailable": "is Available",
- "availabeFrom": "Available From",
+ "availableFrom": "Available From",
  "addService": "Add Service",
  "enterServiceName": "Enter Service Name",
  "pleaseEnterServiceName": "Please Enter Service Name",
@@ -219,10 +219,10 @@
  "mondayAbb": "Mo",
  "tuesdayAbb": "Tu",
  "wednesdayAbb": "We",
- "thurshdayAbb": "Th",
+ "thursdayAbb": "Th",
  "fridayAbb": "Fr",
  "saturdayAbb": "Sa",
  "day": "Day",
  "weeklySpendingChart": "Weekly Spending Chart",
- "noTransactionIsDoneInThisWeek": "No Transaction is done in this week"
+ "noTransactionDoneThisWeek": "No Transactions done this week"
 }

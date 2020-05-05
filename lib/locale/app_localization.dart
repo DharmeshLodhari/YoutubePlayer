@@ -1076,10 +1076,10 @@ class AppLocalization {
     );
   }
 
-  String get buildnumber {
+  String get buildNumber {
     return Intl.message(
       "Build number",
-      name: "buildnumber",
+      name: "buildNumber",
     );
   }
 
@@ -1353,10 +1353,10 @@ class AppLocalization {
     );
   }
 
-  String get availabeFrom {
+  String get availableFrom {
     return Intl.message(
       "Available From",
-      name: "availabeFrom",
+      name: "availableFrom",
     );
   }
 
@@ -1600,7 +1600,7 @@ class AppLocalization {
   String get thursdayAbb {
     return Intl.message(
       "Th",
-      name: "thurshdayAbb",
+      name: "thursdayAbb",
     );
   }
 
@@ -1633,10 +1633,10 @@ class AppLocalization {
     );
   }
 
-  String get noTransactionIsDoneInThisWeek {
+  String get noTransactionDoneThisWeek {
     return Intl.message(
-      "No Transaction is done in this week",
-      name: "noTransactionIsDoneInThisWeek",
+      "No Transactions done this week",
+      name: "noTransactionDoneThisWeek",
     );
   }
 }

@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2020-05-05T19:28:27.991011",
+  "@@last_modified": "2020-05-05T20:11:36.894528",
   "addBankAccountMsg": "Add A Bank Account",
   "@addBankAccountMsg": {
     "type": "text",
@@ -735,8 +735,8 @@
     "type": "text",
     "placeholders": {}
   },
-  "buildnumber": "Build number",
-  "@buildnumber": {
+  "buildNumber": "Build number",
+  "@buildNumber": {
     "type": "text",
     "placeholders": {}
   },
@@ -930,8 +930,8 @@
     "type": "text",
     "placeholders": {}
   },
-  "availabeFrom": "Available From",
-  "@availabeFrom": {
+  "availableFrom": "Available From",
+  "@availableFrom": {
     "type": "text",
     "placeholders": {}
   },
@@ -1100,6 +1100,11 @@
     "type": "text",
     "placeholders": {}
   },
+  "thursdayAbb": "Th",
+  "@thursdayAbb": {
+    "type": "text",
+    "placeholders": {}
+  },
   "fridayAbb": "Fr",
   "@fridayAbb": {
     "type": "text",
@@ -1120,8 +1125,8 @@
     "type": "text",
     "placeholders": {}
   },
-  "noTransactionIsDoneInThisWeek": "No Transaction is done in this week",
-  "@noTransactionIsDoneInThisWeek": {
+  "noTransactionDoneThisWeek": "No Transactions done this week",
+  "@noTransactionDoneThisWeek": {
     "type": "text",
     "placeholders": {}
   }

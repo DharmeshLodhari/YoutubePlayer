@@ -83,7 +83,7 @@ class _SettingsListState extends State<SettingsList> {
             style: TextStyle(color: Colors.white),
           ),
           Text(
-              AppLocalization.of(context).buildnumber +
+              AppLocalization.of(context).buildNumber +
                   ': ' +
                   _packageInfo.buildNumber,
               style: TextStyle(color: Colors.white)),

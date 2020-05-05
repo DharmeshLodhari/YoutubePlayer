@@ -1426,7 +1426,6 @@ class AuthService {
       String weekNumber) async {
     var url =
         baseUrl + "/api/v1/transactions/transaction-filter/?week=" + weekNumber;
-    debugPrint("Url = $url");
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
     if (response.statusCode == 200) {
