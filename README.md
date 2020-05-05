@@ -51,7 +51,7 @@ lib/l10n/intl_sw.arb
 lib/l10n/intl_ar.arb 
 lib/l10n/intl_am.arb 
 lib/locale/app_localization.dart
-                                        
+
 from django.db.models.functions import TruncMonth
 from django.db.models import Count
 

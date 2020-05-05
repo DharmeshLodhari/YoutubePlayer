@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2020-04-28T17:47:09.640605",
+  "@@last_modified": "2020-05-05T19:28:27.991011",
   "addBankAccountMsg": "Add A Bank Account",
   "@addBankAccountMsg": {
     "type": "text",
@@ -800,6 +800,21 @@
     "type": "text",
     "placeholders": {}
   },
+  "language": "Langauge",
+  "@language": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "selectYourLanguage": "Select your Language",
+  "@selectYourLanguage": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "languageSwitchedTo": "Language switched to",
+  "@languageSwitchedTo": {
+    "type": "text",
+    "placeholders": {}
+  },
   "transaction": "Transaction",
   "@transaction": {
     "type": "text",
@@ -1032,6 +1047,81 @@
   },
   "noServices": "No Services",
   "@noServices": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "transactionGraph": "Transaction Graph",
+  "@transactionGraph": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "weeklySpending": "Weekly Spending",
+  "@weeklySpending": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "expenditure": "Expenditure",
+  "@expenditure": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "income": "Income",
+  "@income": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "days": "Days",
+  "@days": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "amount": "Amount",
+  "@amount": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "sundayAbb": "Su",
+  "@sundayAbb": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "mondayAbb": "Mo",
+  "@mondayAbb": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "tuesdayAbb": "Tu",
+  "@tuesdayAbb": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "wednesdayAbb": "We",
+  "@wednesdayAbb": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "fridayAbb": "Fr",
+  "@fridayAbb": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "saturdayAbb": "Sa",
+  "@saturdayAbb": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "day": "Day",
+  "@day": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "weeklySpendingChart": "Weekly Spending Chart",
+  "@weeklySpendingChart": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "noTransactionIsDoneInThisWeek": "No Transaction is done in this week",
+  "@noTransactionIsDoneInThisWeek": {
     "type": "text",
     "placeholders": {}
   }
