@@ -208,5 +208,21 @@
  "sellersOtherServices": "Seller's Other Services",
  "noProducts": "No Products",
  "noServices": "No Services",
- "received": "Received"
+ "received": "Received",
+ "transactionGraph": "Transaction Graph",
+ "weeklySpending": "Weekly Spending",
+ "expenditure": "Expenditure",
+ "income": "Income",
+ "days": "Days",
+ "amount": "Amount",
+ "sundayAbb": "Su",
+ "mondayAbb": "Mo",
+ "tuesdayAbb": "Tu",
+ "wednesdayAbb": "We",
+ "thurshdayAbb": "Th",
+ "fridayAbb": "Fr",
+ "saturdayAbb": "Sa",
+ "day": "Day",
+ "weeklySpendingChart": "Weekly Spending Chart",
+ "noTransactionIsDoneInThisWeek": "No Transaction is done in this week"
 }

@@ -1,5 +1,6 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/tiles/spend_on_categoty.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/date_time_and_money_converter.dart';
@@ -80,7 +81,6 @@ class _TransactionGraphState extends State<TransactionGraph> {
   }
 
   void loadDataIntoGraph() {
-    //for cleaning all data from previous fetch data
     cleanData();
 
     income.forEach((data) {
@@ -94,6 +94,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
     });
   }
 
+  //for cleaning all data from previous fetch
   void cleanData() {
     firstData = [
       GraphData(day: 0, amount: 0),
@@ -129,7 +130,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
           appBar: AppBar(
               actions: <Widget>[flipCardButton()],
               backgroundColor: darkBlue(),
-              title: Text("Transacions Graph")),
+              title: Text(AppLocalization.of(context).transactionGraph)),
           body: Column(
             children: <Widget>[
               Container(
@@ -218,7 +219,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
   Widget lineGraph() {
     return Column(children: <Widget>[
       Text(
-        'Weekly Spending',
+        AppLocalization.of(context).weeklySpending,
         style: TextStyle(
           fontSize: 16.0,
           fontWeight: FontWeight.bold,
@@ -246,7 +247,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
                       width: 2,
                     ),
                     Text(
-                      "Expenditure",
+                      AppLocalization.of(context).expenditure,
                       style: TextStyle(fontSize: 11),
                     )
                   ],
@@ -262,7 +263,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
                       width: 2,
                     ),
                     Text(
-                      "Income",
+                      AppLocalization.of(context).income,
                       style: TextStyle(fontSize: 11),
                     )
                   ],
@@ -282,14 +283,14 @@ class _TransactionGraphState extends State<TransactionGraph> {
           colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
           domainFn: (GraphData data, _) => data.day,
           measureFn: (GraphData data, _) => data.amount,
-          displayName: "Income",
+          displayName: AppLocalization.of(context).income,
           data: firstData),
       charts.Series<GraphData, int>(
           id: "expenditure",
           colorFn: (_, __) => charts.MaterialPalette.red.shadeDefault,
           domainFn: (GraphData data, _) => data.day,
           measureFn: (GraphData data, _) => data.amount,
-          displayName: "Expenditure",
+          displayName: AppLocalization.of(context).expenditure,
           data: secondData)
     ];
 
@@ -314,7 +315,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
                   charts.LinePointHighlighterFollowLineType.none,
               showVerticalFollowLine:
                   charts.LinePointHighlighterFollowLineType.nearest),
-          new charts.ChartTitle('Days',
+          new charts.ChartTitle(AppLocalization.of(context).days,
               titleStyleSpec: charts.TextStyleSpec(
                   lineHeight: 0,
                   color: charts.MaterialPalette.black,
@@ -324,7 +325,8 @@ class _TransactionGraphState extends State<TransactionGraph> {
               titleOutsideJustification:
                   charts.OutsideJustification.middleDrawArea),
           new charts.ChartTitle(
-              'Amount (${worldCurrencies[userBloc.user.currency]})',
+              AppLocalization.of(context).amount +
+                  ' (${worldCurrencies[userBloc.user.currency]})',
               titleStyleSpec: charts.TextStyleSpec(
                   lineHeight: 0,
                   color: charts.MaterialPalette.black,
@@ -363,28 +365,28 @@ class _TransactionGraphState extends State<TransactionGraph> {
   String formatDay(num day) {
     switch (day) {
       case 0:
-        return "Su";
+        return AppLocalization.of(context).sundayAbb;
         break;
       case 1:
-        return "Mo";
+        return AppLocalization.of(context).mondayAbb;
         break;
       case 2:
-        return "Tu";
+        return AppLocalization.of(context).tuesdayAbb;
         break;
       case 3:
-        return "We";
+        return AppLocalization.of(context).wednesdayAbb;
         break;
       case 4:
-        return "Th";
+        return AppLocalization.of(context).thursdayAbb;
         break;
       case 5:
-        return "Fr";
+        return AppLocalization.of(context).fridayAbb;
         break;
       case 6:
-        return "Sa";
+        return AppLocalization.of(context).saturdayAbb;
         break;
     }
-    return "Day";
+    return AppLocalization.of(context).day;
   }
 
   _onSelectionChanged(charts.SelectionModel model) {
@@ -415,7 +417,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
       padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
       child: Column(children: <Widget>[
         Text(
-          'Weekly Spending',
+          AppLocalization.of(context).weeklySpending,
           style: TextStyle(
             fontSize: 18.0,
             fontWeight: FontWeight.bold,
@@ -465,7 +467,6 @@ class _TransactionGraphState extends State<TransactionGraph> {
 
   void fetchPrevious() {
     week = week - 1;
-    debugPrint("privious: " + week.toString());
     start = start.subtract(Duration(days: 7));
     end = end.subtract(Duration(days: 7));
     fetchData(week.toString());
@@ -473,7 +474,6 @@ class _TransactionGraphState extends State<TransactionGraph> {
 
   void fetchNext() {
     week = week + 1;
-    debugPrint("next: " + week.toString());
     start = start.add(Duration(days: 7));
     end = end.add(Duration(days: 7));
     fetchData(week.toString());

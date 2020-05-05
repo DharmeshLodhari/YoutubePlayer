@@ -1,11 +1,11 @@
-//TODO: APP LOCALIZATION FOR THIS PAGE
-
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/services/date_time_and_money_converter.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+// ignore: must_be_immutable
 class BarChart extends StatefulWidget {
   var arguments;
   BarChart({this.arguments});
@@ -24,6 +24,7 @@ class _BarChartState extends State<BarChart> {
   double mostExpensive;
   bool isLoading = true;
   List<double> barData = [0, 0, 0, 0, 0, 0, 0];
+  bool isDataIsZero = false;
 
   @override
   void initState() {
@@ -57,6 +58,12 @@ class _BarChartState extends State<BarChart> {
 
   void getData(List<dynamic> expenses) {
     expenses.forEach((data) {
+      var amount = double.parse(data["amount"].toString());
+      if (amount >= 0.01) {
+        setState(() {
+          isDataIsZero = true;
+        });
+      }
       barData[data["day"] - 1] = double.parse(data["amount"].toString());
     });
   }
@@ -81,82 +88,86 @@ class _BarChartState extends State<BarChart> {
               ),
             ),
           )
-        : Padding(
-            padding: EdgeInsets.all(12.0),
-            child: Column(
-              children: <Widget>[
-                Text(
-                  'Weekly Spending Chart (${worldCurrencies[userBloc.user.currency]})',
-                  style: TextStyle(
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.2,
-                  ),
-                ),
-                SizedBox(height: 15.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: <Widget>[
-                    Expanded(
-                      child: Bar(
-                        label: 'Su',
-                        amountSpent: barData[0],
-                        mostExpensive: mostExpensive,
-                      ),
-                    ),
-                    Expanded(
-                      child: Bar(
-                        label: 'Mo',
-                        amountSpent: barData[1],
-                        mostExpensive: mostExpensive,
-                      ),
-                    ),
-                    Expanded(
-                      child: Bar(
-                        label: 'Tu',
-                        amountSpent: barData[2],
-                        mostExpensive: mostExpensive,
-                      ),
-                    ),
-                    Expanded(
-                      child: Bar(
-                        label: 'We',
-                        amountSpent: barData[3],
-                        mostExpensive: mostExpensive,
-                      ),
-                    ),
-                    Expanded(
-                      child: Bar(
-                        label: 'Th',
-                        amountSpent: barData[4],
-                        mostExpensive: mostExpensive,
-                      ),
-                    ),
-                    Expanded(
-                      child: Bar(
-                        label: 'Fr',
-                        amountSpent: barData[5],
-                        mostExpensive: mostExpensive,
-                      ),
-                    ),
-                    Expanded(
-                      child: Bar(
-                        label: 'Sa',
-                        amountSpent: barData[6],
-                        mostExpensive: mostExpensive,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+        : isDataIsZero ? barChart() : noDataPresent();
+  }
+
+  Widget barChart() {
+    return Padding(
+      padding: EdgeInsets.all(12.0),
+      child: Column(
+        children: <Widget>[
+          Text(
+            AppLocalization.of(context).weeklySpendingChart +
+                ' (${worldCurrencies[userBloc.user.currency]})',
+            style: TextStyle(
+              fontSize: 20.0,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.2,
             ),
-          );
+          ),
+          SizedBox(height: 15.0),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: <Widget>[
+              Expanded(
+                child: Bar(
+                  label: AppLocalization.of(context).sundayAbb,
+                  amountSpent: barData[0],
+                  mostExpensive: mostExpensive,
+                ),
+              ),
+              Expanded(
+                child: Bar(
+                  label: AppLocalization.of(context).mondayAbb,
+                  amountSpent: barData[1],
+                  mostExpensive: mostExpensive,
+                ),
+              ),
+              Expanded(
+                child: Bar(
+                  label: AppLocalization.of(context).tuesdayAbb,
+                  amountSpent: barData[2],
+                  mostExpensive: mostExpensive,
+                ),
+              ),
+              Expanded(
+                child: Bar(
+                  label: AppLocalization.of(context).wednesdayAbb,
+                  amountSpent: barData[3],
+                  mostExpensive: mostExpensive,
+                ),
+              ),
+              Expanded(
+                child: Bar(
+                  label: AppLocalization.of(context).thursdayAbb,
+                  amountSpent: barData[4],
+                  mostExpensive: mostExpensive,
+                ),
+              ),
+              Expanded(
+                child: Bar(
+                  label: AppLocalization.of(context).fridayAbb,
+                  amountSpent: barData[5],
+                  mostExpensive: mostExpensive,
+                ),
+              ),
+              Expanded(
+                child: Bar(
+                  label: AppLocalization.of(context).saturdayAbb,
+                  amountSpent: barData[6],
+                  mostExpensive: mostExpensive,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   void fetchPrevious() {
     week = week - 1;
-    debugPrint("privious: " + week.toString());
     start = start.subtract(Duration(days: 7));
     end = end.subtract(Duration(days: 7));
     fetchData(week.toString());
@@ -164,10 +175,27 @@ class _BarChartState extends State<BarChart> {
 
   void fetchNext() {
     week = week + 1;
-    debugPrint("next: " + week.toString());
     start = start.add(Duration(days: 7));
     end = end.add(Duration(days: 7));
     fetchData(week.toString());
+  }
+
+  Widget noDataPresent() {
+    return Padding(
+        padding: EdgeInsets.all(20.0),
+        child: Container(
+          height: 200,
+          child: Center(
+            child: Text(
+              AppLocalization.of(context).noTransactionIsDoneInThisWeek,
+              style: TextStyle(
+                fontSize: 20.0,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.2,
+              ),
+            ),
+          ),
+        ));
   }
 }
 

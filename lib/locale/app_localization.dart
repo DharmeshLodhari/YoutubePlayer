@@ -1525,6 +1525,120 @@ class AppLocalization {
       name: "noServices",
     );
   }
+
+  //transaction_graph
+  String get transactionGraph {
+    return Intl.message(
+      "Transaction Graph",
+      name: "transactionGraph",
+    );
+  }
+
+  String get weeklySpending {
+    return Intl.message(
+      "Weekly Spending",
+      name: "weeklySpending",
+    );
+  }
+
+  String get expenditure {
+    return Intl.message(
+      "Expenditure",
+      name: "expenditure",
+    );
+  }
+
+  String get income {
+    return Intl.message(
+      "Income",
+      name: "income",
+    );
+  }
+
+  String get days {
+    return Intl.message(
+      "Days",
+      name: "days",
+    );
+  }
+
+  String get amount {
+    return Intl.message(
+      "Amount",
+      name: "amount",
+    );
+  }
+
+  String get sundayAbb {
+    return Intl.message(
+      "Su",
+      name: "sundayAbb",
+    );
+  }
+
+  String get mondayAbb {
+    return Intl.message(
+      "Mo",
+      name: "mondayAbb",
+    );
+  }
+
+  String get tuesdayAbb {
+    return Intl.message(
+      "Tu",
+      name: "tuesdayAbb",
+    );
+  }
+
+  String get wednesdayAbb {
+    return Intl.message(
+      "We",
+      name: "wednesdayAbb",
+    );
+  }
+
+  String get thursdayAbb {
+    return Intl.message(
+      "Th",
+      name: "thurshdayAbb",
+    );
+  }
+
+  String get fridayAbb {
+    return Intl.message(
+      "Fr",
+      name: "fridayAbb",
+    );
+  }
+
+  String get saturdayAbb {
+    return Intl.message(
+      "Sa",
+      name: "saturdayAbb",
+    );
+  }
+
+  String get day {
+    return Intl.message(
+      "Day",
+      name: "day",
+    );
+  }
+
+  //bar_chart
+  String get weeklySpendingChart {
+    return Intl.message(
+      "Weekly Spending Chart",
+      name: "weeklySpendingChart",
+    );
+  }
+
+  String get noTransactionIsDoneInThisWeek {
+    return Intl.message(
+      "No Transaction is done in this week",
+      name: "noTransactionIsDoneInThisWeek",
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalization> {
