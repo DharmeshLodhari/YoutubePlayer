@@ -112,8 +112,6 @@ class _QRCodeViewState extends State<QRCodeView> {
         //data for product
 //        scandata : https://api.slydo.co/api/v1/products/dc69b13498ec4d67b91785a418b91e57/
 
-        var data = scanData.split('/');
-
         if (scanData.startsWith(secureBaseUrl) ||
             scanData.startsWith(baseUrl) ||
             scanData.startsWith(localHostUrl)) {
