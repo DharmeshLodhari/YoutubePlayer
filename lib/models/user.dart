@@ -14,7 +14,7 @@ class User {
   bool isVerified;
   final Setting setting = Setting(
       enableService: false,
-      enableProduct: false,
+      enableProduct: true,
       enableExplore: false,
       enableTransactionDetailPage: true);
 
@@ -29,7 +29,7 @@ class User {
     this.qrCode,
     this.password,
     this.currency = "€",
-    this.type = "user",
+    this.type = "seller",
     this.isVerified = false,
   });
 

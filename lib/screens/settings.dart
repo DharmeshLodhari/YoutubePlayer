@@ -363,7 +363,7 @@ class _SettingsListState extends State<SettingsList> {
 
   Widget serviceTile() {
     return Card(
-      margin: EdgeInsets.fromLTRB(40.0, 0.0, 40.0, 0.0),
+      margin: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
       child: ListTile(
         title: Text(
           AppLocalization.of(context).addServices,
@@ -384,7 +384,7 @@ class _SettingsListState extends State<SettingsList> {
 
   Widget productTile() {
     return Card(
-      margin: EdgeInsets.fromLTRB(40.0, 0.0, 40.0, 0.0),
+      margin: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
       child: ListTile(
         title: Text(
           AppLocalization.of(context).addProducts,

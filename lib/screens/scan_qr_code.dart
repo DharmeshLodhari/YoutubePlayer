@@ -1,5 +1,6 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/models/store.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,8 @@ class _QRCodeViewState extends State<QRCodeView> {
   _QRCodeViewState({this.arguments});
 
   bool isRequest = false;
+  CustomerProfileBloc customerProfileBloc;
+  UserBloc userBloc;
 
   final _auth = AuthService();
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
@@ -99,38 +102,74 @@ class _QRCodeViewState extends State<QRCodeView> {
 
   // Scan qr code here and check on server then navigate to payment screen.
   void _onQRViewCreated(QRViewController controller) {
-    final CustomerProfileBloc customerProfileBloc =
+    customerProfileBloc =
         Provider.of<CustomerProfileBloc>(context, listen: false);
+    userBloc = Provider.of<UserBloc>(context, listen: false);
     this.controller = controller;
     controller.scannedDataStream.listen((scanData) async {
       //if we get a text that belongs to us then we process it
       if (scanData != null) {
+        //data for product
+//        scandata : https://api.slydo.co/api/v1/products/dc69b13498ec4d67b91785a418b91e57/
+
+        var data = scanData.split('/');
+
         if (scanData.startsWith(secureBaseUrl) ||
             scanData.startsWith(baseUrl) ||
             scanData.startsWith(localHostUrl)) {
           var scanDataList = scanData.split('/');
           scanDataList.removeWhere((value) => value == "");
-          var recipient = scanDataList.last;
-
-          // Pull the user from the server
-          // TODO: Add try block here and check if error occurred in server like 404 then take user to home page and show error
-          customerProfileBloc.customer =
-              await _auth.fetchCustomerProfile(recipient);
-          Navigator.pop(context);
-          if (isRequest) {
-            Navigator.of(context).pushNamed(
-              '/request-payment',
-              arguments: {'isRequest': true},
-            );
-          } else {
-            Navigator.of(context).pushNamed('/send-payment',
-                arguments: <String, bool>{
-                  'isFromProfile': false,
-                  'isRequest': false
-                });
-          }
+          debugPrint("scandataList $scanDataList");
+          getNavigationRoot(scanDataList);
         }
       }
     });
+  }
+
+  void getNavigationRoot(List<String> scanDataList) async {
+    if (scanDataList[scanDataList.length - 2] == "products") {
+      var productId = scanDataList.last;
+      var product = getProduct(productId);
+      Navigator.pop(context);
+      Navigator.of(context)
+          .pushNamed("/product", arguments: {"product": product});
+    } else {
+      var recipient = scanDataList.last;
+      // Pull the user from the server
+      // TODO: Add try block here and check if error occurred in server like 404 then take user to home page and show error
+      customerProfileBloc.customer =
+          await _auth.fetchCustomerProfile(recipient);
+      Navigator.pop(context);
+      if (isRequest) {
+        Navigator.of(context).pushNamed(
+          '/request-payment',
+          arguments: {'isRequest': true},
+        );
+      } else {
+        Navigator.of(context).pushNamed('/send-payment',
+            arguments: <String, bool>{
+              'isFromProfile': false,
+              'isRequest': false
+            });
+      }
+    }
+  }
+
+  Product getProduct(String productId) {
+    Product product = Product();
+    product.id = productId;
+    product.name = "";
+    product.shortDescription = "";
+    product.description = "";
+    product.condition = "";
+    product.currency = userBloc.user.currency;
+    product.price = "0";
+    product.availableFrom = DateTime.now();
+    product.isAvailable = false;
+    product.qrCode = "";
+    product.seller = "";
+    product.manufacturer = "";
+    product.serverImages = [];
+    return product;
   }
 }

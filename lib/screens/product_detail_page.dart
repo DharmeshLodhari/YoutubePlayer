@@ -33,6 +33,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   void fetchProduct(String productId) async {
     _auth.getProduct(productId).then((value) {
+      debugPrint("$value");
       setState(() {
         product = value;
       });
@@ -93,6 +94,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 _buildSizeChartWidgets(),
                 SizedBox(height: 12.0),
                 _buildDetailsAndMaterialWidgets(),
+                SizedBox(height: 12.0),
+                _builsBuyButtonWidget(),
                 SizedBox(height: 24.0),
               ],
             ),
@@ -296,5 +299,19 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       photos.add(img);
     }
     return photos;
+  }
+
+  _builsBuyButtonWidget() {
+    return Center(
+      child: MaterialButton(
+        minWidth: 200,
+        color: darkBlue(),
+        child: Text(
+          "Buy",
+          style: TextStyle(color: Colors.white),
+        ),
+        onPressed: () {},
+      ),
+    );
   }
 }
