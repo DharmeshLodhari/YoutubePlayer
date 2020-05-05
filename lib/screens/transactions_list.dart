@@ -103,7 +103,10 @@ class _TransactionListState extends State<TransactionList> {
           automaticallyImplyLeading: false,
           backgroundColor: darkBlue(),
           title: Text(AppLocalization.of(context).transactions),
-          actions: <Widget>[openGraph(),_threeItemPopup(), ],
+          actions: <Widget>[
+            openGraph(),
+            _threeItemPopup(),
+          ],
         ),
         body: SmartRefresher(
             enablePullDown: true,
