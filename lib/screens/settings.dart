@@ -35,6 +35,7 @@ class _SettingsListState extends State<SettingsList> {
   bool isLocked;
   var arguments;
   Language language;
+  BankAccountBloc bankAccountBloc;
 
   void getLanguage() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
@@ -113,8 +114,7 @@ class _SettingsListState extends State<SettingsList> {
   @override
   Widget build(BuildContext context) {
     final UserBloc userBloc = Provider.of<UserBloc>(context);
-    final BankAccountBloc bankAccountBloc =
-        Provider.of<BankAccountBloc>(context);
+    bankAccountBloc = Provider.of<BankAccountBloc>(context);
     return WillPopScope(
       onWillPop: () async {
         Navigator.pop(context);
@@ -445,15 +445,17 @@ class _SettingsListState extends State<SettingsList> {
 
   Widget _getSlidableWithLists(
       BuildContext context, Widget accountBalanceTile) {
-    return Slidable(
-      controller: slidableController,
-      direction: Axis.horizontal,
-      actionPane: SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
-      child: VerticalListItem(accountBalanceTile),
-      actions: listActionSlideActions(),
-      secondaryActions: listSecondaryActions(),
-    );
+    return bankAccountBloc.bankAccount.accountNumber != null
+        ? Slidable(
+            controller: slidableController,
+            direction: Axis.horizontal,
+            actionPane: SlidableBehindActionPane(),
+            actionExtentRatio: 0.25,
+            child: VerticalListItem(accountBalanceTile),
+            actions: listActionSlideActions(),
+            secondaryActions: listSecondaryActions(),
+          )
+        : accountBalanceTile;
   }
 
   List<Widget> listSecondaryActions() {
@@ -513,7 +515,6 @@ class _SettingsListState extends State<SettingsList> {
   }
 
   void changeLanguage() async {
-    debugPrint(" teste $language   ${language.languageCode}  ${language.name}");
     await showDialog<Language>(
         context: context,
         builder: (context) => AlertDialog(

@@ -1,3 +1,4 @@
+import 'package:flutter_money_formatter/flutter_money_formatter.dart';
 import 'package:intl/intl.dart';
 
 int weekNumber(DateTime date) {
@@ -12,4 +13,9 @@ DateTime getStartingOfWeek(DateTime date) {
 DateTime getEndingOfWeek(DateTime date) {
   DateTime startingOfWeek = getStartingOfWeek(date);
   return startingOfWeek.add(new Duration(days: 6));
+}
+
+String moneyConverter(var amount) {
+  FlutterMoneyFormatter fmf = FlutterMoneyFormatter(amount: amount);
+  return fmf.output.compactNonSymbol;
 }

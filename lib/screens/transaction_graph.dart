@@ -2,7 +2,7 @@ import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/tiles/spend_on_categoty.dart';
 import 'package:Slydo/services/auth.dart';
-import 'package:Slydo/services/date_time_info.dart';
+import 'package:Slydo/services/date_time_and_money_converter.dart';
 import 'package:Slydo/widget/bar_chart.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flip_card/flip_card.dart';
@@ -53,9 +53,6 @@ class _TransactionGraphState extends State<TransactionGraph> {
     GraphData(day: 6, amount: 0),
   ];
 
-  //variable for flip card
-  bool isFlipped = false;
-
   @override
   void initState() {
     DateTime date = DateTime.now();
@@ -88,8 +85,8 @@ class _TransactionGraphState extends State<TransactionGraph> {
     debugPrint("$income");
 
     income.forEach((data) {
-      firstData[data["day"]] =
-          GraphData(day: data["day"], amount: data["amount"]);
+      firstData[data["day"] - 1] =
+          GraphData(day: data["day"] - 1, amount: data["amount"]);
     });
 
     firstData.forEach((data) {
@@ -99,8 +96,8 @@ class _TransactionGraphState extends State<TransactionGraph> {
     debugPrint("$expenditure");
 
     expenditure.forEach((data) {
-      secondData[data["day"]] =
-          GraphData(day: data["day"], amount: data["amount"]);
+      secondData[data["day"] - 1] =
+          GraphData(day: data["day"] - 1, amount: data["amount"]);
     });
 
     secondData.forEach((data) {
@@ -490,13 +487,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
     return IconButton(
       icon: Icon(Icons.flip),
       onPressed: () {
-        if (isFlipped) {
-          cardKey.currentState.toggleCard();
-          isFlipped = false;
-        } else {
-          cardKey.currentState.toggleCard();
-          isFlipped = true;
-        }
+        cardKey.currentState.toggleCard();
       },
     );
   }

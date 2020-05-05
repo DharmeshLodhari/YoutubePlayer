@@ -2,7 +2,7 @@
 
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/services/date_time_info.dart';
+import 'package:Slydo/services/date_time_and_money_converter.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -57,7 +57,7 @@ class _BarChartState extends State<BarChart> {
 
   void getData(List<dynamic> expenses) {
     expenses.forEach((data) {
-      barData[data["day"]] = double.parse(data["amount"].toString());
+      barData[data["day"] - 1] = double.parse(data["amount"].toString());
     });
   }
 
@@ -218,6 +218,7 @@ class Bar extends StatelessWidget {
     //TODO: enable this function to shorting amount 50000000 == 5M
     //TODO: enable this function to shorting amount 500000 == 500k
     //TODO: enable this function to shorting amount 5.00 == 5
-    return amountSpent.toStringAsFixed(2).toString();
+
+    return moneyConverter(amountSpent);
   }
 }
