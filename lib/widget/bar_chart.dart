@@ -182,13 +182,11 @@ class Bar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final barHeight = amountSpent != 0 && mostExpensive != 0
-        ? amountSpent / mostExpensive * _maxBarHeight
-        : 1.0;
+    final barHeight = getBarHeight();
     return Column(
       children: <Widget>[
         Text(
-          getAmount(),
+          moneyConverter(amountSpent),
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w600,
@@ -215,12 +213,10 @@ class Bar extends StatelessWidget {
     );
   }
 
-  String getAmount() {
-    //TODO: round of all amount to nearest whole number
-    //TODO: enable this function to shorting amount 50000000 == 5M
-    //TODO: enable this function to shorting amount 500000 == 500k
-    //TODO: enable this function to shorting amount 5.00 == 5
-
-    return moneyConverter(amountSpent);
+  double getBarHeight() {
+    if (amountSpent != 0 && mostExpensive != 0) {
+      return amountSpent / mostExpensive * _maxBarHeight;
+    }
+    return 1.0;
   }
 }
