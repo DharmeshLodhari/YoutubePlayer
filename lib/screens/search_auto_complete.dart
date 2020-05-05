@@ -444,7 +444,7 @@ class _SearchAutoCompleteState extends State<SearchAutoComplete> {
                     InkWell(
                       child: CachedNetworkImage(
                         width: double.infinity,
-                        imageUrl: object["seller_avatar"],
+                        imageUrl: object["cover"],
                         fit: BoxFit.fill,
                         filterQuality: FilterQuality.high,
                       ),
@@ -542,7 +542,7 @@ class _SearchAutoCompleteState extends State<SearchAutoComplete> {
         contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 8),
         leading: ClipOval(
           child: CachedNetworkImage(
-            imageUrl: object["provider_avatar"],
+            imageUrl: object["cover"],
             height: 50,
             width: 50,
             colorBlendMode: BlendMode.darken,

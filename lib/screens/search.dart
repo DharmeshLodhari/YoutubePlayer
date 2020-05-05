@@ -253,7 +253,6 @@ class _SearchAllState extends State<SearchAll> {
         next = result['next'];
         previous = result['previous'];
         List tempList = result['results'];
-        debugPrint(tempList.toString());
         setState(() {
           isLoading = false;
           tempList.forEach((result) {
@@ -456,7 +455,7 @@ class _SearchAllState extends State<SearchAll> {
       isOwner = true;
     }
     return Container(
-      height: 250,
+      height: 50,
       width: double.infinity,
       child: Card(
           shape: RoundedRectangleBorder(
@@ -471,7 +470,7 @@ class _SearchAllState extends State<SearchAll> {
                     InkWell(
                       child: CachedNetworkImage(
                         width: double.infinity,
-                        imageUrl: object["seller_avatar"],
+                        imageUrl: object["cover"],
                         fit: BoxFit.fill,
                         filterQuality: FilterQuality.high,
                       ),
@@ -569,7 +568,7 @@ class _SearchAllState extends State<SearchAll> {
         contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 8),
         leading: ClipOval(
           child: CachedNetworkImage(
-            imageUrl: object["provider_avatar"],
+            imageUrl: object["cover"],
             height: 50,
             width: 50,
             colorBlendMode: BlendMode.darken,

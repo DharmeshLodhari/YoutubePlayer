@@ -54,12 +54,3 @@ lib/locale/app_localization.dart
 
 flutter pub run intl_translation:generate_from_arb \
 --output-dir=lib/l10n --no-use-deferred-loading \lib/l10n/intl_messages.arb lib/l10n/intl_es.arb lib/l10n/intl_fr.arb lib/l10n/intl_pt.arb lib/l10n/intl_en.arb lib/l10n/intl_ha.arb lib/l10n/intl_yo.arb lib/l10n/intl_zu.arb lib/l10n/intl_sw.arb lib/l10n/intl_ar.arb lib/l10n/intl_am.arb lib/locale/app_localization.dart
-
-from django.db.models.functions import TruncMonth
-from django.db.models import Count
-
-Sales.objects
-    .annotate(month=TruncMonth('timestamp'))  # Truncate to month and add to select list
-    .values('month')                          # Group By month
-    .annotate(c=Count('id'))                  # Select the count of the grouping
-    .values('month', 'c')                     # (might be redundant, haven't tested) select month and count
