@@ -33,6 +33,7 @@ class _RequestPaymentState extends State<RequestPayment> {
 
   final _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
+  final requestPaymentScaffold = GlobalKey<ScaffoldState>();
   CustomerProfile _payee;
   UserBloc userBloc;
   CustomerProfileBloc customerProfileBloc;
@@ -90,13 +91,15 @@ class _RequestPaymentState extends State<RequestPayment> {
 
   void fetchCategory() async {
     _auth.getPaymentCategory().then((result) {
-      setState(() {
-        List categoriesList = result["results"]["data"];
-        categoriesList.forEach((data) {
-          paymentCategoriesTest.add(data["name"]);
+      if (mounted) {
+        setState(() {
+          List categoriesList = result["results"]["data"];
+          categoriesList.forEach((data) {
+            paymentCategoriesTest.add(data["name"]);
+          });
+          isLoading = false;
         });
-        isLoading = false;
-      });
+      }
     });
   }
 
@@ -112,6 +115,7 @@ class _RequestPaymentState extends State<RequestPayment> {
         return false;
       },
       child: Scaffold(
+        key: requestPaymentScaffold,
         backgroundColor: lightBlue(),
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
@@ -439,8 +443,6 @@ class _RequestPaymentState extends State<RequestPayment> {
             if (isValidPayee &&
                 _formKey.currentState.validate() &&
                 validateDropdown()) {
-              // Todo: Add a try block here and stop user from continuing if they deny location permission
-
               var userLocation;
               try {
                 userLocation = await locationService.getLocation();
@@ -489,7 +491,7 @@ class _RequestPaymentState extends State<RequestPayment> {
                       });
                     },
                     cancelCallBack: () {
-                      Scaffold.of(context).showSnackBar(SnackBar(
+                      requestPaymentScaffold.currentState.showSnackBar(SnackBar(
                         content:
                             Text(AppLocalization.of(context).invalidPassword),
                       ));

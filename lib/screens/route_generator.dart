@@ -19,8 +19,8 @@ import 'package:Slydo/screens/product_detail_page.dart';
 import 'package:Slydo/screens/profile.dart';
 import 'package:Slydo/screens/request_payments_list.dart';
 import 'package:Slydo/screens/scan_qr_code.dart';
-import 'package:Slydo/screens/search.dart';
 import 'package:Slydo/screens/search_auto_complete.dart';
+import 'package:Slydo/screens/search_backup.dart';
 import 'package:Slydo/screens/service_detail_page.dart';
 import 'package:Slydo/screens/settings.dart';
 import 'package:Slydo/screens/transaction_detail_page.dart';
@@ -30,6 +30,7 @@ import 'package:Slydo/splash.dart';
 import 'package:Slydo/widget/resultReturningPasswordPopup.dart';
 import 'package:flutter/material.dart';
 
+import 'checkout_shopping_cart.dart';
 import 'detailed_message.dart';
 import 'forms/payout.dart';
 import 'forms/registration.dart';
@@ -162,9 +163,12 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (context) => ForgotPassword());
       case '/reset-password':
         return MaterialPageRoute(
-            builder: (context) => ResetPassword(
-                  arguments: settings.arguments,
-                ));
+          builder: (context) => ResetPassword(
+            arguments: settings.arguments,
+          ),
+        );
+      case '/shopping-cart':
+        return MaterialPageRoute(builder: (context) => ShoppingCart());
 
       default:
         // If there is no such named route in the switch statement, e.g. /third

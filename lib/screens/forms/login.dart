@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/models/store.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
@@ -35,6 +36,7 @@ class _UserLoginState extends State<UserLogin> {
   TextEditingController phoneNumberController;
   TextEditingController passwordController;
   SharedPreferences _sharedPreferences;
+  BasketBloc basketBloc;
 
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
@@ -73,6 +75,7 @@ class _UserLoginState extends State<UserLogin> {
 
   @override
   Widget build(BuildContext context) {
+    basketBloc = Provider.of<BasketBloc>(context);
     return WillPopScope(
       onWillPop: () {
         if (FocusScope.of(context).hasFocus) {
@@ -401,6 +404,8 @@ class _UserLoginState extends State<UserLogin> {
                   if (_user.isVerified == true) {
                     Navigator.of(context).pushNamed(navigate['route'],
                         arguments: navigate['arguments']);
+                    //to initializeShoppingCart
+                    initializeShoppingCart();
                   } else {
                     Navigator.of(context).popAndPushNamed('/add-document');
                   }
@@ -415,6 +420,11 @@ class _UserLoginState extends State<UserLogin> {
     } else {
       Navigator.of(context).pushNamed("/index");
     }
+  }
+
+  void initializeShoppingCart() async {
+    List items = await _auth.getShoppingCart();
+    basketBloc.items = items;
   }
 
   void setupNotification() async {

@@ -377,7 +377,6 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
           }
         });
       } else {
-        Navigator.pop(context);
         _showSnackBar(context, AppLocalization.of(context).error);
       }
     }

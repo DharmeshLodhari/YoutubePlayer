@@ -23,17 +23,23 @@ class PasscodePopup {
 
     showDialog(
         context: context,
-        builder: (context) => PasscodeScreen(
-              title: AppLocalization.of(context).enterPassCode,
-              passwordEnteredCallback: _onPasscodeEntered,
-              cancelLocalizedText: AppLocalization.of(context).cancel,
-              deleteLocalizedText: AppLocalization.of(context).delete,
-              shouldTriggerVerification: _verificationNotifier.stream,
-              passwordDigits: 4,
-              isValidCallback: isValidCallback,
-              cancelCallback: cancelCallBack,
-              keyboardUIConfig:
-                  KeyboardUIConfig(deleteButtonMargin: EdgeInsets.all(8)),
+        builder: (context) => Column(
+              children: <Widget>[
+                Expanded(
+                  child: PasscodeScreen(
+                    title: AppLocalization.of(context).enterPassCode,
+                    passwordEnteredCallback: _onPasscodeEntered,
+                    cancelLocalizedText: AppLocalization.of(context).cancel,
+                    deleteLocalizedText: AppLocalization.of(context).delete,
+                    shouldTriggerVerification: _verificationNotifier.stream,
+                    passwordDigits: 4,
+                    isValidCallback: isValidCallback,
+                    cancelCallback: cancelCallBack,
+                    keyboardUIConfig:
+                        KeyboardUIConfig(deleteButtonMargin: EdgeInsets.all(8)),
+                  ),
+                ),
+              ],
             ));
   }
 

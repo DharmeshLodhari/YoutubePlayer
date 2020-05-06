@@ -28,14 +28,20 @@ class SendPayment extends StatefulWidget {
 
 class _SendPaymentState extends State<SendPayment> {
   TextEditingController _recipientController = TextEditingController();
+  TextEditingController _amountController = TextEditingController();
+  TextEditingController _referenceController = TextEditingController();
   FocusNode _recipientFocus = FocusNode();
   http.Response response;
 
   final _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
+  final _sendPaymentScaffold = GlobalKey<ScaffoldState>();
   CustomerProfile _payee;
   UserBloc userBloc;
   CustomerProfileBloc customerProfileBloc;
+
+  //for Product payment
+  Product product;
 
   bool isFromProfile = false;
   bool isValidPayee = false;
@@ -50,15 +56,17 @@ class _SendPaymentState extends State<SendPayment> {
   bool isLoading = true;
   List<String> paymentCategoriesTest = List();
   String selectedCategory;
-
-  PaymentCategory selectedPaymentCategory;
-  String paymentCategory;
+  BasketBloc basketBloc;
 
   @override
   void initState() {
     isFromProfile =
         widget.arguments != null ? widget.arguments['isFromProfile'] : false;
+    product = widget.arguments != null ? widget.arguments['product'] : null;
 
+    if (product != null) {
+      setAllFieldProduct();
+    }
     _recipientFocus
       ..addListener(() {
         if (!_recipientFocus.hasFocus) {
@@ -69,6 +77,15 @@ class _SendPaymentState extends State<SendPayment> {
       });
     fetchCategory();
     super.initState();
+  }
+
+  void setAllFieldProduct() {
+    _amountController.text = product.price;
+    amount = int.parse(_amountController.text);
+    _referenceController.text = product.name;
+    reference = _referenceController.text;
+    selectedCategory = "Shopping";
+    isValidPayee = true;
   }
 
   void initializeDisplayCard() {
@@ -85,13 +102,15 @@ class _SendPaymentState extends State<SendPayment> {
 
   void fetchCategory() async {
     _auth.getPaymentCategory().then((result) {
-      setState(() {
-        List categoriesList = result["results"]["data"];
-        categoriesList.forEach((data) {
-          paymentCategoriesTest.add(data["name"]);
+      if (mounted) {
+        setState(() {
+          List categoriesList = result["results"]["data"];
+          categoriesList.forEach((data) {
+            paymentCategoriesTest.add(data["name"]);
+          });
+          isLoading = false;
         });
-        isLoading = false;
-      });
+      }
     });
   }
 
@@ -99,6 +118,7 @@ class _SendPaymentState extends State<SendPayment> {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
+    basketBloc = Provider.of<BasketBloc>(context);
     return WillPopScope(
       onWillPop: () async {
         _payee = null;
@@ -107,6 +127,7 @@ class _SendPaymentState extends State<SendPayment> {
       },
       child: Scaffold(
         backgroundColor: lightBlue(),
+        key: _sendPaymentScaffold,
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
             leading: showBackArrow(),
@@ -211,7 +232,6 @@ class _SendPaymentState extends State<SendPayment> {
       enabled: isFromProfile,
       focusNode: _recipientFocus,
       textCapitalization: TextCapitalization.none,
-//      initialValue: isFromProfile ? "" : _payee.userName,
       cursorColor: darkBlue(),
       validator: (value) {
         if (!isFromProfile && value != _payee.userName) {
@@ -219,10 +239,8 @@ class _SendPaymentState extends State<SendPayment> {
         }
         return null;
       },
-      //
       autofocus: false,
       obscureText: false,
-
       decoration: InputDecoration(
         prefixIcon: Icon(Icons.person),
         fillColor: Colors.white,
@@ -237,7 +255,6 @@ class _SendPaymentState extends State<SendPayment> {
             borderSide: BorderSide(
                 width: 1, color: Colors.white, style: BorderStyle.solid)),
       ),
-
       onChanged: (val) {
         setState(() {
           if (!isFromProfile && _payee != null) {
@@ -253,6 +270,8 @@ class _SendPaymentState extends State<SendPayment> {
   Widget displayAmountField() {
     return TextFormField(
       cursorColor: darkBlue(),
+      controller: _amountController,
+      enabled: product == null,
       autofocus: false,
       obscureText: false,
       keyboardType: TextInputType.number,
@@ -314,44 +333,47 @@ class _SendPaymentState extends State<SendPayment> {
       child: Container(
         padding: EdgeInsets.all(8),
         width: double.infinity,
-        child: DropdownButton<String>(
-          isExpanded: true,
-          underline: Divider(
-            color: Colors.transparent,
-          ),
-          hint: Row(
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(left: 8.0),
-                child: Icon(
-                  Icons.category,
-                  color: Colors.grey[600],
+        child: IgnorePointer(
+          ignoring: product != null,
+          child: DropdownButton<String>(
+            isExpanded: true,
+            underline: Divider(
+              color: Colors.transparent,
+            ),
+            hint: Row(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: Icon(
+                    Icons.category,
+                    color: Colors.grey[600],
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 16.0),
-                child: Text(AppLocalization.of(context).category),
-              ),
-            ],
-          ),
-          value: selectedCategory,
-          onChanged: (String value) {
-            setState(() {
-              selectedCategory = value;
-            });
-          },
-          items: paymentCategoriesTest.map((String category) {
-            return DropdownMenuItem<String>(
-              value: category,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 0),
-                child: Text(
-                  category,
-                  style: TextStyle(color: Colors.black),
+                Padding(
+                  padding: const EdgeInsets.only(left: 16.0),
+                  child: Text(AppLocalization.of(context).category),
                 ),
-              ),
-            );
-          }).toList(),
+              ],
+            ),
+            value: selectedCategory,
+            onChanged: (String value) {
+              setState(() {
+                selectedCategory = value;
+              });
+            },
+            items: paymentCategoriesTest.map((String category) {
+              return DropdownMenuItem<String>(
+                value: category,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 0),
+                  child: Text(
+                    category,
+                    style: TextStyle(color: Colors.black),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
         ),
       ),
     );
@@ -361,7 +383,9 @@ class _SendPaymentState extends State<SendPayment> {
     return TextFormField(
       cursorColor: darkBlue(),
       autofocus: false,
+      enabled: product == null,
       obscureText: false,
+      controller: _referenceController,
       textCapitalization: TextCapitalization.sentences,
       decoration: InputDecoration(
           prefixIcon: Icon(Icons.note),
@@ -394,7 +418,9 @@ class _SendPaymentState extends State<SendPayment> {
         height: 50,
         child: Text(AppLocalization.of(context).sendPayment),
         onPressed: () async {
-          FocusScope.of(context).unfocus();
+          if (FocusScope.of(context).hasFocus) {
+            FocusScope.of(context).unfocus();
+          }
 
           if (!isValidPayee) {
             setState(() {
@@ -443,6 +469,7 @@ class _SendPaymentState extends State<SendPayment> {
                       _auth.makePayment(data).then((value) {
                         response = value;
                         if (response.statusCode == 200) {
+                          popFromShoppingCart(product);
                           Navigator.of(context).pushNamed('/dashboard',
                               arguments: {'dashboardIndex': 2});
                         } else if (response.statusCode == 500) {
@@ -469,7 +496,7 @@ class _SendPaymentState extends State<SendPayment> {
                       });
                     },
                     cancelCallBack: () {
-                      Scaffold.of(context).showSnackBar(SnackBar(
+                      _sendPaymentScaffold.currentState.showSnackBar(SnackBar(
                         content:
                             Text(AppLocalization.of(context).invalidPassword),
                       ));
@@ -490,6 +517,15 @@ class _SendPaymentState extends State<SendPayment> {
         },
       ),
     );
+  }
+
+  void popFromShoppingCart(Product product) {
+    basketBloc.items.forEach((item) {
+      if (item.id == product.id) {
+        basketBloc.removeItemFromCart(item);
+        return;
+      }
+    });
   }
 
   bool validateDropdown() {

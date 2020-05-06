@@ -129,6 +129,7 @@ class _SettingsListState extends State<SettingsList> {
           backgroundColor: darkBlue(),
           title: Text(AppLocalization.of(context).settings),
           actions: <Widget>[
+            shoppingCartButton(),
             IconButton(
               icon: Icon(Icons.power_settings_new, color: Colors.white),
               onPressed: () {
@@ -142,7 +143,7 @@ class _SettingsListState extends State<SettingsList> {
           scrollDirection: Axis.vertical,
           child: Container(
             color: lightBlue(),
-            padding: EdgeInsets.fromLTRB(0, 16, 0, 36),
+            padding: EdgeInsets.fromLTRB(0, 10, 0, 36),
             child: Center(
               child: Column(
                 children: <Widget>[
@@ -190,6 +191,18 @@ class _SettingsListState extends State<SettingsList> {
         ),
         floatingActionButton: _account == true ? null : addAccountButton(),
       ),
+    );
+  }
+
+  Widget shoppingCartButton() {
+    return IconButton(
+      icon: Icon(
+        Icons.shopping_cart,
+        color: Colors.white,
+      ),
+      onPressed: () {
+        Navigator.pushNamed(context, "/shopping-cart");
+      },
     );
   }
 

@@ -109,48 +109,53 @@ class _QRCodeViewState extends State<QRCodeView> {
     controller.scannedDataStream.listen((scanData) async {
       //if we get a text that belongs to us then we process it
       if (scanData != null) {
-        //data for product
-//        scandata : https://api.slydo.co/api/v1/products/dc69b13498ec4d67b91785a418b91e57/
-
         if (scanData.startsWith(secureBaseUrl) ||
             scanData.startsWith(baseUrl) ||
             scanData.startsWith(localHostUrl)) {
           var scanDataList = scanData.split('/');
           scanDataList.removeWhere((value) => value == "");
-          debugPrint("scandataList $scanDataList");
           getNavigationRoot(scanDataList);
         }
       }
     });
   }
 
+  // TODO: Add try block here and check if error occurred in server like 404 then take user to home page and show error
   void getNavigationRoot(List<String> scanDataList) async {
     if (scanDataList[scanDataList.length - 2] == "products") {
       var productId = scanDataList.last;
       var product = getProduct(productId);
+
       Navigator.pop(context);
       Navigator.of(context)
           .pushNamed("/product", arguments: {"product": product});
     } else {
       var recipient = scanDataList.last;
-      // Pull the user from the server
-      // TODO: Add try block here and check if error occurred in server like 404 then take user to home page and show error
-      customerProfileBloc.customer =
-          await _auth.fetchCustomerProfile(recipient);
+      getRecipient(recipient);
+
       Navigator.pop(context);
       if (isRequest) {
         Navigator.of(context).pushNamed(
           '/request-payment',
-          arguments: {'isRequest': true},
+          arguments: {
+            'isRequest': true,
+          },
         );
       } else {
-        Navigator.of(context).pushNamed('/send-payment',
-            arguments: <String, bool>{
-              'isFromProfile': false,
-              'isRequest': false
-            });
+        Navigator.of(context).pushNamed(
+          '/send-payment',
+          arguments: {
+            'isFromProfile': false,
+            'isRequest': false,
+          },
+        );
       }
     }
+  }
+
+  // Pull the user from the server
+  void getRecipient(String recipient) async {
+    customerProfileBloc.customer = await _auth.fetchCustomerProfile(recipient);
   }
 
   Product getProduct(String productId) {

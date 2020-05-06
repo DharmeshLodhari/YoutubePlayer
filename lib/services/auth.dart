@@ -131,6 +131,64 @@ class AuthService {
         password: null);
   }
 
+  //ShoppingCart
+  Future<List> getShoppingCart() async {
+    var url = baseUrl + "/api/v1/user/shopping-cart/";
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
+    if (response.statusCode == 200) {
+      var jsonData = jsonDecode(response.body);
+      return getCartItems(jsonData);
+    } else
+      return [];
+  }
+
+  Future<bool> addItemToShoppingCart(Map data) async {
+    var url = baseUrl + "/api/v1/user/shopping-cart/";
+    var headers = await getAuthHeaders();
+    var response = await http.patch(url, headers: headers, body: data);
+    if (response.statusCode == 200) {
+      var jsonData = jsonDecode(response.body);
+      return true;
+    } else
+      return false;
+  }
+
+  Future<bool> removeItemToShoppingCart(Map data) async {
+    var url = baseUrl +
+        "/api/v1/user/shopping-cart/" +
+        data["type"] +
+        "/" +
+        data["id"] +
+        "/";
+    var headers = await getAuthHeaders();
+    var response = await http.delete(
+      url,
+      headers: headers,
+    );
+    if (response.statusCode == 200) {
+      var jsonData = jsonDecode(response.body);
+      return true;
+    } else
+      return false;
+  }
+
+  List<Map<String, dynamic>> getCartItems(var data) {
+    List items = List();
+
+    for (int i = 0; i < data.length; i++) {
+      if (data[i].type == "product") {
+//        var product = Product.fromJson(data[i]);
+//        items.add(product);
+      }
+      if (data[i].type == "service") {
+//        var service = Service.fromJson(data[i]);
+//        items.add(service);
+      }
+    }
+    return items;
+  }
+
   // Log user out
   Future<void> logOut() async {
     var url = baseUrl + "/api/v1/user/auth/logout/";
