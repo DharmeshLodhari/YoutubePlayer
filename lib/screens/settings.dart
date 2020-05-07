@@ -171,15 +171,9 @@ class _SettingsListState extends State<SettingsList> {
                   userBloc.user.setting.enableExplore
                       ? SizedBox(height: 10)
                       : Container(),
-                  userBloc.user.type != 'user' ? serviceTile() : Container(),
-                  userBloc.user.type != 'user'
-                      ? SizedBox(height: 10)
-                      : Container(),
-                  userBloc.user.type != 'user' ? productTile() : Container(),
-                  userBloc.user.type != 'user'
-                      ? SizedBox(height: 10)
-                      : Container(),
                   languageChanger(),
+                  SizedBox(height: 10),
+                  productsAndServicesWidget(),
                   SizedBox(height: 10),
                   slydoBankAccountTile(),
                   SizedBox(height: 25),
@@ -266,12 +260,8 @@ class _SettingsListState extends State<SettingsList> {
         ),
         onTap: () {
           _auth.fetchCustomerProfile(userBloc.user.userName).then((user) {
-            if (user.type != 'user') {
-              {
-                Navigator.pushNamed(context, '/profile',
-                    arguments: {"searchedUser": user});
-              }
-            }
+            Navigator.pushNamed(context, '/profile',
+                arguments: {"searchedUser": user});
           });
         },
       ),
@@ -495,6 +485,36 @@ class _SettingsListState extends State<SettingsList> {
         },
       ),
     ];
+  }
+
+  Widget productsAndServicesWidget() {
+    return Card(
+      margin: EdgeInsets.symmetric(horizontal: 20),
+      child: ListTile(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(""),
+            Text(
+              "Products & Services",
+              style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16),
+            ),
+          ],
+        ),
+        subtitle: Text(""),
+        leading: Icon(
+          Icons.widgets,
+          color: darkBlue(),
+          size: 45,
+        ),
+        onTap: () {
+          Navigator.pushNamed(context, "/user-dashboard");
+        },
+      ),
+    );
   }
 
   Widget languageChanger() {

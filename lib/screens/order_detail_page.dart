@@ -11,17 +11,19 @@ import 'package:toast/toast.dart';
 
 import 'colors.dart';
 
-class ShoppingCart extends StatefulWidget {
+class OrderDetailPage extends StatefulWidget {
   @override
-  _ShoppingCartState createState() => _ShoppingCartState();
+  _OrderDetailPageState createState() => _OrderDetailPageState();
 }
 
-class _ShoppingCartState extends State<ShoppingCart> {
+class _OrderDetailPageState extends State<OrderDetailPage> {
   BasketBloc basketBloc;
   CustomerProfileBloc customerProfileBloc;
   SlidableController slidableController;
   UserBloc userBloc;
+  PersistentBottomSheetController persistentBottomSheetController;
   final _auth = AuthService();
+  GlobalKey scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -29,7 +31,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
       onSlideAnimationChanged: handleSlideAnimationChanged,
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
     );
-
     super.initState();
   }
 
@@ -40,21 +41,16 @@ class _ShoppingCartState extends State<ShoppingCart> {
     userBloc = Provider.of<UserBloc>(context);
     return WillPopScope(
       onWillPop: () async {
-        Navigator.pop(context);
-        Navigator.pushNamed(context, '/dashboard',
-            arguments: {"dashboardIndex": 5});
-        return false;
+        return true;
       },
       child: Scaffold(
+        key: scaffoldKey,
         backgroundColor: lightBlue(),
         appBar: AppBar(
           automaticallyImplyLeading: true,
           backgroundColor: darkBlue(),
-          title: Text("Shopping Basket"),
-          actions: <Widget>[
-            search(),
-            addItemToBasket(),
-          ],
+          title: Text("Order Detail"),
+          actions: <Widget>[noteIconButton(), statusIconButton()],
         ),
         body: Column(
           children: <Widget>[
@@ -74,14 +70,115 @@ class _ShoppingCartState extends State<ShoppingCart> {
     );
   }
 
-  Widget search() {
+  Widget statusIconButton() {
     return IconButton(
-      icon: Icon(Icons.search),
+      icon: Icon(Icons.settings),
       onPressed: () {
-        Navigator.pushNamed(context, "/dashboard",
-            arguments: {"dashboardIndex": 3});
+        showBtmSheet();
       },
     );
+  }
+
+  Widget noteIconButton() {
+    return IconButton(
+      icon: Icon(Icons.event_note),
+      onPressed: () {
+        showNoteSheet();
+      },
+    );
+  }
+
+  showNoteSheet() {
+    showModalBottomSheet<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return Container(
+            child: Padding(
+              padding: const EdgeInsets.all(32.0),
+              child: Column(
+                children: <Widget>[
+                  Text(
+                    'Notes',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Theme.of(context).accentColor,
+                      fontSize: 16.0,
+                    ),
+                  ),
+                  Text(
+                      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum"),
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
+  showBtmSheet() {
+    showModalBottomSheet<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return Container(
+            height: 300,
+            child: Padding(
+              padding: const EdgeInsets.all(32.0),
+              child: Column(
+                children: <Widget>[
+                  Text("Status"),
+                  Expanded(
+                    child: ListView(
+                      children: <Widget>[
+                        RadioListTile(
+                          title: Text(
+                            'Pending',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Theme.of(context).accentColor,
+                              fontSize: 16.0,
+                            ),
+                          ),
+                          onChanged: (value) {
+                            updateStatus(value);
+                          },
+                        ),
+                        RadioListTile(
+                          title: Text(
+                            'Pending',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Theme.of(context).accentColor,
+                              fontSize: 16.0,
+                            ),
+                          ),
+                        ),
+                        RadioListTile(
+                          title: Text(
+                            'Pending',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Theme.of(context).accentColor,
+                              fontSize: 16.0,
+                            ),
+                          ),
+                        ),
+                        RadioListTile(
+                          title: Text(
+                            'Pending',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Theme.of(context).accentColor,
+                              fontSize: 16.0,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
   }
 
   Widget checkoutWidget() {
@@ -104,9 +201,9 @@ class _ShoppingCartState extends State<ShoppingCart> {
               ],
             ),
             MaterialButton(
-              color: darkBlue(),
+              color: Colors.red,
               child: Text(
-                "Buy",
+                "Cancle",
                 style: TextStyle(color: Colors.white),
               ),
               onPressed: () {},
@@ -125,24 +222,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
         ),
         basketBloc.items[index],
         index);
-  }
-
-  Widget addItemToBasket() {
-    return Padding(
-      padding: const EdgeInsets.only(right: 10.0),
-      child: InkWell(
-        onTap: () {
-          Navigator.of(context)
-              .pushNamed('/scan-qr', arguments: {'isRequest': false});
-        },
-        child: Image.asset(
-          'assets/images/qr_code.png',
-          height: 24.0,
-          width: 24.0,
-          color: Colors.white,
-        ),
-      ),
-    );
   }
 
   Widget _getSlidableWithLists(
@@ -164,9 +243,9 @@ class _ShoppingCartState extends State<ShoppingCart> {
       IconSlideAction(
           caption: caption,
           color: Colors.red,
-          icon: Icons.remove_shopping_cart,
+          icon: Icons.cancel,
           onTap: () async {
-            removeItem(index);
+//            removeItem(index);
           }),
     ];
   }
@@ -193,12 +272,12 @@ class _ShoppingCartState extends State<ShoppingCart> {
     }
     return [
       IconSlideAction(
-        caption: "Buy",
+        caption: "Message",
         color: isValid ? Colors.green : Colors.grey[600],
-        icon: Icons.send,
+        icon: Icons.message,
         onTap: isValid
             ? () {
-                navigateToSendPayment(product, index);
+//                navigateToSendPayment(product, index);
               }
             : () {},
       ),
@@ -239,6 +318,10 @@ class _ShoppingCartState extends State<ShoppingCart> {
     product.manufacturer = "";
     product.serverImages = [];
     return product;
+  }
+
+  void updateStatus(value) {
+    _auth.updateOrderStatus(value);
   }
 }
 

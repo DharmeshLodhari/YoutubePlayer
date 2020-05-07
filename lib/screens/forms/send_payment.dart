@@ -58,11 +58,15 @@ class _SendPaymentState extends State<SendPayment> {
   String selectedCategory;
   BasketBloc basketBloc;
 
+  //variables for shoppingcart
+  int itemIndex;
+
   @override
   void initState() {
     isFromProfile =
         widget.arguments != null ? widget.arguments['isFromProfile'] : false;
     product = widget.arguments != null ? widget.arguments['product'] : null;
+    itemIndex = widget.arguments != null ? widget.arguments['itemIndex'] : null;
 
     if (product != null) {
       setAllFieldProduct();
@@ -312,10 +316,13 @@ class _SendPaymentState extends State<SendPayment> {
       },
       onTap: () async {
         if (recipient != null) {
-          var customerProfile = await _auth.fetchCustomerProfile(recipient);
-          setState(() {
-            _payee = customerProfile;
-            isValidPayee = _payee.userName != userBloc.user.userName;
+          await _auth.fetchCustomerProfile(recipient).then((customerProfile) {
+            if (customerProfile != null) {
+              setState(() {
+                _payee = customerProfile;
+                isValidPayee = _payee.userName != userBloc.user.userName;
+              });
+            }
           });
         }
       },
@@ -520,12 +527,13 @@ class _SendPaymentState extends State<SendPayment> {
   }
 
   void popFromShoppingCart(Product product) {
-    basketBloc.items.forEach((item) {
-      if (item.id == product.id) {
-        basketBloc.removeItemFromCart(item);
-        return;
+    if (itemIndex != null) {
+      try {
+        basketBloc.removeItemFromCart(basketBloc.items[itemIndex]);
+      } catch (e) {
+        debugPrint("SendPayment PopFromShopping cart : " + e.toString());
       }
-    });
+    }
   }
 
   bool validateDropdown() {

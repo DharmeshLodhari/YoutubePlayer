@@ -151,28 +151,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                   backgroundColor: darkBlue(),
                   pinned: true,
                   expandedHeight: 220.0,
-                  actions: <Widget>[
-                    IconButton(
-                      icon: Icon(
-                        Icons.call,
-                        color: Colors.white,
-                      ),
-                      onPressed: () {},
-                    ),
-                    IconButton(
-                      icon: Icon(
-                        Icons.message,
-                        color: Colors.white,
-                      ),
-                      onPressed: () {
-                        Navigator.of(context)
-                            .pushNamed('/compose_message', arguments: {
-                          'recipient': searchedUser.userName,
-                          'subject': "",
-                        });
-                      },
-                    ),
-                  ],
+                  actions: actionButtons(),
 //                bottom: tabBar(),
                   title: Text(searchedUser.userName),
                   titleSpacing: 0,
@@ -229,6 +208,34 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
           },
           body: tabViews()),
     );
+  }
+
+  List<Widget> actionButtons() {
+    return [
+      !isOwner
+          ? IconButton(
+              icon: Icon(
+                Icons.call,
+                color: Colors.white,
+              ),
+              onPressed: () {},
+            )
+          : Container(),
+      !isOwner
+          ? IconButton(
+              icon: Icon(
+                Icons.message,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                Navigator.of(context).pushNamed('/compose_message', arguments: {
+                  'recipient': searchedUser.userName,
+                  'subject': "",
+                });
+              },
+            )
+          : Container()
+    ];
   }
 
   Widget tabBar() {

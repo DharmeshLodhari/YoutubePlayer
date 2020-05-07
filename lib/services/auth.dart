@@ -144,33 +144,35 @@ class AuthService {
   }
 
   Future<bool> addItemToShoppingCart(Map data) async {
-    var url = baseUrl + "/api/v1/user/shopping-cart/";
-    var headers = await getAuthHeaders();
-    var response = await http.patch(url, headers: headers, body: data);
-    if (response.statusCode == 200) {
-      var jsonData = jsonDecode(response.body);
-      return true;
-    } else
-      return false;
+//    var url = baseUrl + "/api/v1/user/shopping-cart/";
+//    var headers = await getAuthHeaders();
+//    var response = await http.patch(url, headers: headers, body: data);
+//    if (response.statusCode == 200) {
+//      var jsonData = jsonDecode(response.body);
+//      return true;
+//    } else
+//      return false;
+    return true;
   }
 
   Future<bool> removeItemToShoppingCart(Map data) async {
-    var url = baseUrl +
-        "/api/v1/user/shopping-cart/" +
-        data["type"] +
-        "/" +
-        data["id"] +
-        "/";
-    var headers = await getAuthHeaders();
-    var response = await http.delete(
-      url,
-      headers: headers,
-    );
-    if (response.statusCode == 200) {
-      var jsonData = jsonDecode(response.body);
-      return true;
-    } else
-      return false;
+//    var url = baseUrl +
+//        "/api/v1/user/shopping-cart/" +
+//        data["type"] +
+//        "/" +
+//        data["id"] +
+//        "/";
+//    var headers = await getAuthHeaders();
+//    var response = await http.delete(
+//      url,
+//      headers: headers,
+//    );
+//    if (response.statusCode == 200) {
+//      var jsonData = jsonDecode(response.body);
+//      return true;
+//    } else
+//      return false;
+    return true;
   }
 
   List<Map<String, dynamic>> getCartItems(var data) {
@@ -538,6 +540,8 @@ class AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.patch(url, headers: headers, body: _data);
+    debugPrint("StatusCode = ${response.statusCode}");
+    debugPrint("body = ${response.body}");
     if (response.statusCode == 200) {
       return true;
     } else {
@@ -1510,6 +1514,83 @@ class AuthService {
     } else {
       var jsonData = json.decode(response.body);
       throw jsonData;
+    }
+  }
+
+  //Order
+
+  Future<bool> updateOrderStatus(var value) async {
+    return true;
+  }
+
+  Future<Map<String, dynamic>> listOrders(
+      String next, String previous, bool toMe, bool fromMe) async {
+    Map<String, String> knownCustomers = {};
+
+    var url = "";
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      url = baseUrl + "/api/v1/transactions/request-payment/list";
+      if (toMe) {
+        url = url + "?to_me=true";
+      }
+      if (fromMe) {
+        url = url + "?from_me=true";
+      }
+    } else {
+      url = next;
+    }
+
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      List<PaymentRequest> paymentRequests = [];
+      // This variable will hold list of transactions we got from server
+      var user = await getUser();
+      var jsonData = json.decode(response.body);
+      for (var item in jsonData["results"]) {
+        // if sender is not current user then
+        bool isCredit = (item["from_customer"] != user.userName &&
+                item["to_customer"] == user.userName)
+            ? true
+            : false;
+
+        var payee = isCredit ? item["from_customer"] : item['to_customer'];
+
+        try {
+          if (knownCustomers.containsKey(payee) == false) {
+            var customer = await fetchCustomerProfile(payee);
+            knownCustomers[payee] = customer.avatar;
+          }
+          var avatar = knownCustomers[payee];
+          PaymentRequest paymentRequest = PaymentRequest(
+              status: item['status'],
+              id: item['id'].toString(),
+              description: item['description'],
+              payee: payee,
+              avatar: avatar,
+              currency: item['currency'],
+              createdAt: item['created_at'],
+              amount: item['amount'],
+              isCredit: isCredit);
+          paymentRequests.add(paymentRequest);
+        } catch (Exception) {}
+      }
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": paymentRequests
+      };
+      return result;
+    } else if (response.statusCode == 500) {
+      throw "Server Error";
+    } else {
+      throw json.decode(response.body);
     }
   }
 }

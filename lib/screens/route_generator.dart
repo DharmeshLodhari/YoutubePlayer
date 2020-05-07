@@ -14,6 +14,8 @@ import 'package:Slydo/screens/forms/request_payment.dart';
 import 'package:Slydo/screens/forms/reset_password.dart';
 import 'package:Slydo/screens/forms/send_payment.dart';
 import 'package:Slydo/screens/forms/signup.dart';
+import 'package:Slydo/screens/order_detail_page.dart';
+import 'package:Slydo/screens/orders_list.dart';
 import 'package:Slydo/screens/payout_transactions.dart';
 import 'package:Slydo/screens/product_detail_page.dart';
 import 'package:Slydo/screens/profile.dart';
@@ -26,6 +28,7 @@ import 'package:Slydo/screens/settings.dart';
 import 'package:Slydo/screens/transaction_detail_page.dart';
 import 'package:Slydo/screens/transaction_graph.dart';
 import 'package:Slydo/screens/transactions_list.dart';
+import 'package:Slydo/screens/user_dashboard.dart';
 import 'package:Slydo/splash.dart';
 import 'package:Slydo/widget/resultReturningPasswordPopup.dart';
 import 'package:flutter/material.dart';
@@ -169,6 +172,12 @@ class RouteGenerator {
         );
       case '/shopping-cart':
         return MaterialPageRoute(builder: (context) => ShoppingCart());
+      case '/user-dashboard':
+        return MaterialPageRoute(builder: (context) => UserDashboard());
+      case '/orders-list':
+        return MaterialPageRoute(builder: (context) => OrdersList());
+      case '/order-detail-page':
+        return MaterialPageRoute(builder: (context) => OrderDetailPage());
 
       default:
         // If there is no such named route in the switch statement, e.g. /third

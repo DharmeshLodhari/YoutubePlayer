@@ -713,36 +713,23 @@ class Setting {
       this.enableTransactionDetailPage});
 }
 
-class BasketBloc extends ChangeNotifier {
-  // will accept products and services
-  List _items = List();
-  int _total = 0;
+class Order {
+  String orderId;
+  String totalAmount;
+  String sender;
+  String recipient;
+  String date;
+  String status;
+  List orderItem;
+  String notes;
 
-  int get total => _total;
-
-  set total(int value) {
-    _total = value;
-    notifyListeners();
-  }
-
-  List get items => _items;
-
-  set items(List value) {
-    _items = value;
-    notifyListeners();
-  }
-
-  // this will add the product or service in the cart;
-  void addItemToCart(var item) {
-    _items.add(item);
-    _total = _total + int.parse(item.price);
-    notifyListeners();
-  }
-
-  // this will remove the product or service from the cart;
-  void removeItemFromCart(item) {
-    _items.remove(item);
-    _total = _total - int.parse(item.price);
-    notifyListeners();
-  }
+  Order(
+      {this.orderId,
+      this.totalAmount,
+      this.sender,
+      this.recipient,
+      this.date,
+      this.status,
+      this.orderItem,
+      this.notes});
 }
