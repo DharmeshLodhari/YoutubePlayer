@@ -4,6 +4,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/screens/tiles/shopping_cart_tile.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
@@ -21,6 +22,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
   CustomerProfileBloc customerProfileBloc;
   SlidableController slidableController;
   UserBloc userBloc;
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _auth = AuthService();
 
   @override
@@ -46,6 +48,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
         return false;
       },
       child: Scaffold(
+        key: _scaffoldKey,
         backgroundColor: lightBlue(),
         appBar: AppBar(
           automaticallyImplyLeading: true,
@@ -109,7 +112,9 @@ class _ShoppingCartState extends State<ShoppingCart> {
                 "Buy",
                 style: TextStyle(color: Colors.white),
               ),
-              onPressed: () {},
+              onPressed: () {
+                addNoteDialog();
+              },
             )
           ],
         ),
@@ -239,6 +244,76 @@ class _ShoppingCartState extends State<ShoppingCart> {
     product.manufacturer = "";
     product.serverImages = [];
     return product;
+  }
+
+  addNoteDialog() {
+    var note = "";
+    showMaterialDialog<String>(
+      context: context,
+      child: WillPopScope(
+        onWillPop: () async {
+          Navigator.pop(context, 'cancel');
+          return false;
+        },
+        child: AlertDialog(
+          titlePadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          title: Text(
+            'ADD Note',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          content: Container(
+            child: TextFormField(
+              cursorColor: darkBlue(),
+              decoration: InputDecoration(
+                  hintText: "Enter your note here..",
+                  isDense: true,
+                  focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: darkBlue())),
+                  enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: darkBlue()))),
+              onChanged: (val) {
+                note = val;
+              },
+            ),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text(
+                'CANCEL',
+                style: TextStyle(color: darkBlue()),
+              ),
+              onPressed: () {
+                Navigator.pop(context, 'cancel');
+              },
+            ),
+            FlatButton(
+              child: Text(
+                'NEXT',
+                style: TextStyle(color: darkBlue()),
+              ),
+              onPressed: () {
+                Navigator.pop(context, note);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void showMaterialDialog<T>({BuildContext context, Widget child}) {
+    showDialog<T>(
+      context: context,
+      builder: (BuildContext context) => child,
+    ).then<void>((T value) {
+      // The value passed to Navigator.pop() or null.
+      if (value != null) {
+        _scaffoldKey.currentState.showSnackBar(SnackBar(
+          content: Text('You selected: $value'),
+        ));
+      }
+    });
   }
 }
 

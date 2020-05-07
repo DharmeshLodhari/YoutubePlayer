@@ -21,9 +21,11 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   CustomerProfileBloc customerProfileBloc;
   SlidableController slidableController;
   UserBloc userBloc;
-  PersistentBottomSheetController persistentBottomSheetController;
+  PersistentBottomSheetController statusBottomSheetController;
+  PersistentBottomSheetController noteBottomSheetController;
   final _auth = AuthService();
-  GlobalKey scaffoldKey = GlobalKey<ScaffoldState>();
+  final scaffoldKey = GlobalKey<ScaffoldState>();
+  var statusOfOrder = "pending";
 
   @override
   void initState() {
@@ -89,96 +91,163 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   showNoteSheet() {
-    showModalBottomSheet<void>(
-        context: context,
-        builder: (BuildContext context) {
-          return Container(
-            child: Padding(
-              padding: const EdgeInsets.all(32.0),
-              child: Column(
-                children: <Widget>[
-                  Text(
-                    'Notes',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Theme.of(context).accentColor,
-                      fontSize: 16.0,
-                    ),
+    var dummyText = "Lorem Ipsum is simply dummy text of the printing and typesetting industry." +
+        " Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, " +
+        "when an unknown printer took a galley of type and " +
+        "scrambled it to make a type specimen book." +
+        " It has survived not only five centuries," +
+        " but also the leap into electronic typesetting," +
+        " remaining essentially unchanged." +
+        " It was popularised in the 1960s with the release of" +
+        " Letraset sheets containing Lorem Ipsum passages," +
+        " and more recently with desktop publishing" +
+        " software like Aldus PageMaker including versions of Lorem Ipsum" +
+        "Lorem Ipsum is simply dummy text of the printing and typesetting industry." +
+        " Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, " +
+        "when an unknown printer took a galley of type and " +
+        "scrambled it to make a type specimen book." +
+        " It has survived not only five centuries," +
+        " but also the leap into electronic typesetting," +
+        " remaining essentially unchanged." +
+        " It was popularised in the 1960s with the release of" +
+        " Letraset sheets containing Lorem Ipsum passages," +
+        " and more recently with desktop publishing" +
+        " software like Aldus PageMaker including versions of Lorem Ipsum" +
+        "Lorem Ipsum is simply dummy text of the printing and typesetting industry." +
+        " Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, " +
+        "when an unknown printer took a galley of type and " +
+        "scrambled it to make a type specimen book." +
+        " It has survived not only five centuries," +
+        " but also the leap into electronic typesetting," +
+        " remaining essentially unchanged." +
+        " It was popularised in the 1960s with the release of" +
+        " Letraset sheets containing Lorem Ipsum passages," +
+        " and more recently with desktop publishing" +
+        " software like Aldus PageMaker including versions of Lorem Ipsum";
+
+    noteBottomSheetController =
+        scaffoldKey.currentState.showBottomSheet((context) => Card(
+              elevation: 15,
+              margin: EdgeInsets.all(0),
+              color: Colors.white,
+              child: Container(
+                height: MediaQuery.of(context).size.height / 2,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 12.0),
+                  child: Column(
+                    children: <Widget>[
+                      Text(
+                        'Notes',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: darkBlue(),
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.vertical,
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.fromLTRB(24.0, 16, 24, 24),
+                            child: Text(
+                              dummyText,
+                              style: TextStyle(fontSize: 14),
+                              textAlign: TextAlign.justify,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  Text(
-                      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum"),
-                ],
+                ),
               ),
-            ),
-          );
-        });
+            ));
   }
 
-  showBtmSheet() {
-    showModalBottomSheet<void>(
-        context: context,
-        builder: (BuildContext context) {
-          return Container(
-            height: 300,
-            child: Padding(
-              padding: const EdgeInsets.all(32.0),
-              child: Column(
-                children: <Widget>[
-                  Text("Status"),
-                  Expanded(
-                    child: ListView(
-                      children: <Widget>[
-                        RadioListTile(
-                          title: Text(
-                            'Pending',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Theme.of(context).accentColor,
-                              fontSize: 16.0,
+  showBtmSheet() async {
+    statusBottomSheetController =
+        scaffoldKey.currentState.showBottomSheet((context) => Card(
+              margin: EdgeInsets.all(0),
+              elevation: 15,
+              child: Container(
+                height: MediaQuery.of(context).size.height / 2,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 10.0),
+                  child: Column(
+                    children: <Widget>[
+                      Text(
+                        'Status',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: darkBlue(),
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      Expanded(
+                        child: ListView(
+                          children: <Widget>[
+                            Divider(
+                              height: 0,
                             ),
-                          ),
-                          onChanged: (value) {
-                            updateStatus(value);
-                          },
-                        ),
-                        RadioListTile(
-                          title: Text(
-                            'Pending',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Theme.of(context).accentColor,
-                              fontSize: 16.0,
+                            statusListTile(
+                              title: "Pending",
+                              value: "pending",
                             ),
-                          ),
-                        ),
-                        RadioListTile(
-                          title: Text(
-                            'Pending',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Theme.of(context).accentColor,
-                              fontSize: 16.0,
+                            Divider(
+                              height: 0,
                             ),
-                          ),
-                        ),
-                        RadioListTile(
-                          title: Text(
-                            'Pending',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Theme.of(context).accentColor,
-                              fontSize: 16.0,
+                            statusListTile(
+                              title: "Processing",
+                              value: "processing",
                             ),
-                          ),
+                            Divider(
+                              height: 0,
+                            ),
+                            statusListTile(
+                              title: "Out For Delivery",
+                              value: "delivery",
+                            ),
+                            Divider(
+                              height: 0,
+                            ),
+                            statusListTile(
+                              title: "Completed",
+                              value: "completed",
+                            ),
+                            Divider(
+                              height: 0,
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
-          );
+            ));
+  }
+
+  Widget statusListTile({String title, String value}) {
+    return RadioListTile(
+      activeColor: darkBlue(),
+      title: Text(
+        title,
+        textAlign: TextAlign.start,
+        style: TextStyle(
+          color: darkBlue(),
+          fontSize: 16.0,
+        ),
+      ),
+      value: value,
+      onChanged: (value) {
+        statusBottomSheetController.setState(() {
+          updateStatus(value);
+          statusOfOrder = value;
         });
+      },
+      groupValue: statusOfOrder,
+    );
   }
 
   Widget checkoutWidget() {

@@ -38,7 +38,9 @@ class _ShoppingCartTileState extends State<ShoppingCartTile> {
   Widget getLeading() {
     return ClipOval(
       child: CachedNetworkImage(
-        imageUrl: product.serverImages[0],
+        imageUrl: product.serverImages.isNotEmpty
+            ? product.serverImages.first
+            : "https://homepages.cae.wisc.edu/~ece533/images/peppers.png",
         height: 50,
         width: 50,
         colorBlendMode: BlendMode.darken,

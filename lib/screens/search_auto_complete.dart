@@ -428,89 +428,107 @@ class _SearchAutoCompleteState extends State<SearchAutoComplete> {
     if (object['seller'] == userBloc.user.userName) {
       isOwner = true;
     }
-    return Container(
-      height: 250,
-      width: double.infinity,
-      child: Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(0),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(0),
-            child: Column(
-              children: <Widget>[
-                Expanded(
-                  child: Stack(children: <Widget>[
-                    InkWell(
-                      child: CachedNetworkImage(
-                        width: double.infinity,
-                        imageUrl: object["cover"],
-                        fit: BoxFit.fill,
-                        filterQuality: FilterQuality.high,
-                      ),
-                      onTap: () {
-                        Navigator.pushNamed(context, '/product',
-                            arguments: {"product": product});
-                      },
-                    ),
-                    isOwner
-                        ? Positioned(
-                            right: 0,
-                            child: IconButton(
-                              icon: Icon(
-                                Icons.edit,
-                                size: 20,
-                                color: darkBlue(),
-                              ),
-                              onPressed: () {
-                                Navigator.of(context).pushNamed(
-                                  '/edit-product',
-                                  arguments: {
-                                    "productId": product.id,
-                                  },
-                                );
-                              },
-                            ),
-                          )
-                        : Container()
-                  ]),
-                ),
-                ListTile(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 8),
-                    dense: true,
-                    title: Text(
-                      object['name'].length > 30
-                          ? object['name'].substring(0, 30)
-                          : object['name'],
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                    ),
-                    subtitle: Text(
-                      object['short_description'].length > 30
-                          ? object['short_description'].substring(0, 30)
-                          : object['short_description'],
-                      style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500),
-                    ),
-                    trailing: RichText(
-                      text: TextSpan(children: [
-                        TextSpan(
-                            text: worldCurrencies[object["currency"]],
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18)),
-                        TextSpan(text: " "),
-                        TextSpan(
-                            text: object['price'].toString(),
-                            style: TextStyle(color: Colors.black))
-                      ]),
-                    )),
-              ],
+    return productCard(product, object);
+  }
+
+  Widget productCard(Product product, var object) {
+    return Card(
+      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+      child: Container(
+        child: Column(
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 8),
+              child: ListTile(
+                leading: getLeading(product, object),
+                title: getTitle(product),
+                trailing: product.price.toString().length > 6
+                    ? null
+                    : getTrailing(product),
+                subtitle: getSubtitle(product),
+                onTap: () {
+                  Navigator.pushNamed(context, '/product',
+                      arguments: {"product": product});
+                },
+              ),
             ),
-          )),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget getLeading(Product product, var object) {
+    var imageUrl = "";
+    try {
+      imageUrl = object["cover"] ??
+          "https://homepages.cae.wisc.edu/~ece533/images/peppers.png";
+    } catch (e) {
+      imageUrl = "";
+    }
+    if (imageUrl == "") {
+      imageUrl = "https://homepages.cae.wisc.edu/~ece533/images/peppers.png";
+    }
+    return ClipOval(
+      child: CachedNetworkImage(
+        imageUrl: imageUrl,
+        height: 50,
+        width: 50,
+        colorBlendMode: BlendMode.darken,
+        fit: BoxFit.cover,
+        filterQuality: FilterQuality.high,
+        placeholder: (context, url) => imageUrl == ""
+            ? Icon(Icons.person)
+            : CircularProgressIndicator(
+                backgroundColor: Colors.white,
+              ),
+      ),
+    );
+  }
+
+  Widget getTitle(Product product) {
+    return Text(
+      "${product.name.length > 17 ? product.name.substring(0, 17) : product.name}",
+      style: TextStyle(
+          color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+    );
+  }
+
+  Widget getTrailing(Product product) {
+    return Text(
+      worldCurrencies[product.currency] + ' ' + product.price.toString(),
+      style: TextStyle(
+          color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 15),
+    );
+  }
+
+  Widget getSubtitle(Product product) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          "${product.shortDescription.length > 20 ? product.shortDescription.substring(0, 20) : product.shortDescription}",
+          style: TextStyle(color: Colors.grey[600]),
+        ),
+        SizedBox(
+          height: 2,
+        ),
+        product.price.toString().length > 6
+            ? getTrailing(product)
+            : Container(),
+        getSellerName(product)
+      ],
+    );
+  }
+
+  Widget getSellerName(Product product) {
+    return Row(
+      children: <Widget>[
+        Text(
+          product.seller,
+          style: TextStyle(fontSize: 10, color: Colors.grey[600]),
+        ),
+      ],
     );
   }
 

@@ -1518,8 +1518,16 @@ class AuthService {
   }
 
   //Order
-
   Future<bool> updateOrderStatus(var value) async {
+    var data = {
+      "id": "b049cd8b-1186-4b75-97ab-6dea92124ba7",
+      "type": "product"
+    };
+    var _data = jsonEncode(data);
+    var url = baseUrl + "/api/v1/shopping-cart/";
+    var headers = await getAuthHeaders();
+    var response = await http.patch(url, headers: headers, body: _data);
+    debugPrint("response ${response.statusCode}");
     return true;
   }
 
