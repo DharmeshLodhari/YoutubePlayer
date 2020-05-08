@@ -177,7 +177,7 @@ class _SettingsListState extends State<SettingsList> {
                   productsAndServicesWidget(),
                   SizedBox(height: 10),
                   slydoBankAccountTile(),
-                  SizedBox(height: 25),
+                  SizedBox(height: 10),
                   IconButton(
                     icon: Icon(Icons.title),
                     onPressed: () {
@@ -188,6 +188,7 @@ class _SettingsListState extends State<SettingsList> {
                       );
                     },
                   ),
+                  SizedBox(height: 10),
                   _infoTile(),
                 ],
               ),
