@@ -53,6 +53,39 @@ class Product {
     };
   }
 
+  Product.fromJson(object) {
+    this.id = object["id"];
+    this.name = object["name"] ?? "";
+    this.description = object["description"] ?? "";
+    this.shortDescription = object["short_description"] ?? "";
+    this.price = object["price"].toString();
+    this.localImages = object["localImages"] ?? [];
+    this.serverImages = getProductImages(object["pictures"]) ?? [];
+    this.seller = object["seller"] ?? "";
+    this.qrCode = object["qrCode"] ?? "";
+    this.condition = object["condition"] ?? "";
+    this.category = object["category"] ?? "";
+    this.manufacturer = object["manufacturer"] ?? "";
+    this.isAvailable = object["is_available"] ?? false;
+    this.availableFrom =
+        getProductDateTime(object["available_from"]) ?? DateTime.now();
+    this.currency = object["currency"] ?? "";
+    this.pictureMap = object["pictureMap"] ?? [];
+  }
+
+  List<String> getProductImages(List data) {
+    List<String> images = List();
+    data.forEach((element) {
+      images.add(element["file"].toString());
+    });
+    return images;
+  }
+
+  DateTime getProductDateTime(var date) {
+    DateTime dateTime = DateTime.parse(date);
+    return dateTime;
+  }
+
   // ignore: missing_return
   String getImageId(String imageUrl) {
     for (var data in this.pictureMap) {

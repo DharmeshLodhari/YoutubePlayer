@@ -131,66 +131,6 @@ class AuthService {
         password: null);
   }
 
-  //ShoppingCart
-  Future<List> getShoppingCart() async {
-    var url = baseUrl + "/api/v1/user/shopping-cart/";
-    var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
-    if (response.statusCode == 200) {
-      var jsonData = jsonDecode(response.body);
-      return getCartItems(jsonData);
-    } else
-      return [];
-  }
-
-  Future<bool> addItemToShoppingCart(Map data) async {
-//    var url = baseUrl + "/api/v1/user/shopping-cart/";
-//    var headers = await getAuthHeaders();
-//    var response = await http.patch(url, headers: headers, body: data);
-//    if (response.statusCode == 200) {
-//      var jsonData = jsonDecode(response.body);
-//      return true;
-//    } else
-//      return false;
-    return true;
-  }
-
-  Future<bool> removeItemToShoppingCart(Map data) async {
-//    var url = baseUrl +
-//        "/api/v1/user/shopping-cart/" +
-//        data["type"] +
-//        "/" +
-//        data["id"] +
-//        "/";
-//    var headers = await getAuthHeaders();
-//    var response = await http.delete(
-//      url,
-//      headers: headers,
-//    );
-//    if (response.statusCode == 200) {
-//      var jsonData = jsonDecode(response.body);
-//      return true;
-//    } else
-//      return false;
-    return true;
-  }
-
-  List<Map<String, dynamic>> getCartItems(var data) {
-    List items = List();
-
-    for (int i = 0; i < data.length; i++) {
-      if (data[i].type == "product") {
-//        var product = Product.fromJson(data[i]);
-//        items.add(product);
-      }
-      if (data[i].type == "service") {
-//        var service = Service.fromJson(data[i]);
-//        items.add(service);
-      }
-    }
-    return items;
-  }
-
   // Log user out
   Future<void> logOut() async {
     var url = baseUrl + "/api/v1/user/auth/logout/";
@@ -727,6 +667,15 @@ class AuthService {
   //Send payment to backend
   Future<http.Response> makePayment(Map data) async {
     var url = baseUrl + "/api/v1/transactions/make-payment/";
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await http.post(url, headers: headers, body: _data);
+    return response;
+  }
+
+  //send payment of the order to particular sellers
+  Future<http.Response> makePaymentForCartOrder(Map data) async {
+    var url = baseUrl + "/api/v1/transactions/make-payment-for-orders/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.post(url, headers: headers, body: _data);
@@ -1600,5 +1549,70 @@ class AuthService {
     } else {
       throw json.decode(response.body);
     }
+  }
+
+  //ShoppingCart
+  Future<List> getShoppingCart() async {
+    var url = baseUrl + "/api/v1/shopping-cart/";
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
+    if (response.statusCode == 200) {
+      var jsonData = jsonDecode(response.body);
+      debugPrint("$jsonData");
+      return getCartItems(jsonData);
+    } else
+      return [];
+  }
+
+  Future<bool> addItemToShoppingCart(Map data) async {
+    var url = baseUrl + "/api/v1/shopping-cart/add-item/";
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await http.patch(url, headers: headers, body: _data);
+    if (response.statusCode == 200) {
+      return true;
+    }
+    return false;
+  }
+
+  //place shopping cart order
+  Future<Map<String, dynamic>> placeOrderOfShoppingCart(Map data) async {
+    var url = baseUrl + "/api/v1/shopping-cart/";
+    var _data = jsonEncode(data);
+    var headers = await getAuthHeaders();
+    var response = await http.post(url, headers: headers, body: _data);
+    debugPrint("${response.statusCode}");
+    var jsonData = jsonDecode(response.body);
+    if (response.statusCode == 201) {
+      return jsonData;
+    }
+    return {"error": "error"};
+  }
+
+  List<dynamic> getCartItems(var jsonResponse) {
+    List items = List();
+    var data = jsonResponse["results"];
+    for (int i = 0; i < data.length; i++) {
+      if (data[i]["type"] == "product") {
+        var product = Product.fromJson(data[i]);
+        items.add(product);
+      }
+      if (data[i]["type"] == "service") {
+//        var service = Service.fromJson(data[i]);
+//        items.add(service);
+      }
+    }
+    return items;
+  }
+
+  Future<bool> removeItemToShoppingCart(Map data) async {
+    var url = baseUrl + "/api/v1/shopping-cart/remove-item/";
+    var _data = jsonEncode(data);
+    var headers = await getAuthHeaders();
+    var response = await http.patch(url, headers: headers, body: _data);
+    if (response.statusCode == 200) {
+      return true;
+    } else
+      return false;
   }
 }

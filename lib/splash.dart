@@ -26,6 +26,8 @@ class _SplashScreenState extends State<SplashScreen> {
   String phoneNumberFromPref;
   String passwordFromPref;
   SharedPreferences _sharedPreferences;
+  final _auth = AuthService();
+  BasketBloc basketBloc;
 
   // bool for to check if internet connection is available or not
   var hasConnection = false;
@@ -108,6 +110,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    basketBloc = Provider.of<BasketBloc>(context);
     return Container(
       color: lightBlue(),
       child: hasConnection
@@ -184,6 +187,8 @@ class _SplashScreenState extends State<SplashScreen> {
                     if (_bankAccount != null) {
                       bankAccountBloc.bankAccount = _bankAccount;
                       if (_user.isVerified == true) {
+                        //initialize shoppingcart
+                        initializeShoppingCart();
                         Navigator.of(context).pushNamed('/dashboard',
                             arguments: {'dashboardIndex': 0});
                       } else {
@@ -209,5 +214,18 @@ class _SplashScreenState extends State<SplashScreen> {
       Navigator.pop(context);
       Navigator.of(context).pushNamed("/index");
     }
+  }
+
+  void initializeShoppingCart() async {
+    debugPrint("initializeShoppingCart called");
+    List items = await _auth.getShoppingCart();
+    getOrderAmount(items);
+    basketBloc.items = items;
+  }
+
+  void getOrderAmount(List items) {
+//    items.forEach((element) {
+//      basketBloc.total = basketBloc.total + element['price'];
+//    });
   }
 }

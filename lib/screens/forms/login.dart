@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/models/store.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
@@ -311,8 +310,12 @@ class _UserLoginState extends State<UserLogin> {
           }
 
           if (_user.isVerified == true) {
-            Navigator.of(context)
-                .pushNamed('/dashboard', arguments: {'dashboardIndex': 0});
+            //to initializeShoppingCart
+            initializeShoppingCart();
+            Navigator.of(context).pushNamed(
+              '/dashboard',
+              arguments: {'dashboardIndex': 0},
+            );
           } else {
             Navigator.of(context).popAndPushNamed('/add-document');
           }
@@ -325,6 +328,19 @@ class _UserLoginState extends State<UserLogin> {
         }
       });
     }
+  }
+
+  void initializeShoppingCart() async {
+    debugPrint("initializeShoppingCart called");
+    List items = await _auth.getShoppingCart();
+    getOrderAmount(items);
+    basketBloc.items = items;
+  }
+
+  void getOrderAmount(List items) {
+//    items.forEach((element) {
+//      basketBloc.total = basketBloc.total + element['price'];
+//    });
   }
 
   Widget forgotPasswordButton() {
@@ -404,8 +420,6 @@ class _UserLoginState extends State<UserLogin> {
                   if (_user.isVerified == true) {
                     Navigator.of(context).pushNamed(navigate['route'],
                         arguments: navigate['arguments']);
-                    //to initializeShoppingCart
-                    initializeShoppingCart();
                   } else {
                     Navigator.of(context).popAndPushNamed('/add-document');
                   }
@@ -420,11 +434,6 @@ class _UserLoginState extends State<UserLogin> {
     } else {
       Navigator.of(context).pushNamed("/index");
     }
-  }
-
-  void initializeShoppingCart() async {
-    List items = await _auth.getShoppingCart();
-    basketBloc.items = items;
   }
 
   void setupNotification() async {

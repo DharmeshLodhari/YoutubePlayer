@@ -99,9 +99,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         size: 30,
         color: Colors.white,
       ),
-      onPressed: () {
+      onPressed: () async {
         Map data = {"type": "product", "id": product.id};
-        _auth.addItemToShoppingCart(data);
+        await _auth.addItemToShoppingCart(data);
 
         basketBloc.addItemToCart(product);
         Toast.show("Product is Added Successfully in the cart", context,

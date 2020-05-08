@@ -13,12 +13,12 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:popup_menu/popup_menu.dart';
 import 'package:provider/provider.dart';
 
-class SearchTest extends StatefulWidget {
+class SearchModule extends StatefulWidget {
   @override
-  _SearchTestState createState() => _SearchTestState();
+  _SearchModuleState createState() => _SearchModuleState();
 }
 
-class _SearchTestState extends State<SearchTest> {
+class _SearchModuleState extends State<SearchModule> {
   bool isValidSearch = false;
   bool isSearchIsEmpty = true;
   String autoCompleteSearchText = "";
@@ -27,7 +27,7 @@ class _SearchTestState extends State<SearchTest> {
   CustomerProfileBloc customerProfileBloc;
   UserBloc userBloc;
   static var filterValue = "Users";
-  String hint = "Search Users";
+  String hint = "Find Users";
   Icon icon = Icon(
     Icons.supervised_user_circle,
     color: Colors.white,
@@ -579,7 +579,6 @@ class _SearchTestState extends State<SearchTest> {
   }
 
   void getAutoCompleteUser() async {
-    debugPrint("getAutoComplete called!!");
     try {
       setState(() {
         results = [];
@@ -664,6 +663,9 @@ class _SearchTestState extends State<SearchTest> {
           style: TextStyle(color: Colors.black, fontSize: 16),
           controller: searchItemTextController,
           onFieldSubmitted: (val) {
+            setState(() {
+              results = [];
+            });
             if (next != null) {
               setState(() {
                 count = 0;

@@ -177,12 +177,12 @@ class _ShoppingCartState extends State<ShoppingCart> {
     ];
   }
 
-  void removeItem(int index) {
+  void removeItem(int index) async {
     Map data = {
       "type": "product",
       "id": basketBloc.items[index].id,
     };
-    _auth.removeItemToShoppingCart(data);
+    await _auth.removeItemToShoppingCart(data);
     basketBloc.removeItemFromCart(basketBloc.items[index]);
     Toast.show("Product is Removed Successfully from the cart", context,
         backgroundColor: darkBlue(),
@@ -308,15 +308,31 @@ class _ShoppingCartState extends State<ShoppingCart> {
     showDialog<T>(
       context: context,
       builder: (BuildContext context) => child,
-    ).then<void>((T value) {
+    ).then<void>((T value) async {
       // The value passed to Navigator.pop() or null.
       if (value != null) {
+        var data = {"note": value};
+        if (value != "cancel") {
+          var userOrder = await _auth.placeOrderOfShoppingCart(data);
+          var orderPayment = await _auth.makePaymentForCartOrder(userOrder);
+
+          if (!userOrder.containsKey('error')) {
+            payForOrder(userOrder);
+          } else {
+            Toast.show(userOrder.toString(), context);
+          }
+        }
         _scaffoldKey.currentState.showSnackBar(SnackBar(
           content: Text('You selected: $value'),
         ));
       }
     });
   }
+
+  // abi  => [1,2,3,4,5,6] total => 200
+  // brijesh  => [1,2] total => 300
+
+  void payForOrder(Map<String, dynamic> result) {}
 }
 
 // ignore: must_be_immutable

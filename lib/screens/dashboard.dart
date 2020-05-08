@@ -1,6 +1,6 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/messagelist.dart';
-import 'package:Slydo/screens/search_auto_complete.dart';
+import 'package:Slydo/screens/search_module.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -44,7 +44,7 @@ class _DashboardState extends State<Dashboard> {
         Home(),
         PaymentRequestList(),
         TransactionList(),
-        SearchAutoComplete(),
+        SearchModule(),
         MessageList(),
         SettingsList(
           arguments: {'isLocked': isLocked},

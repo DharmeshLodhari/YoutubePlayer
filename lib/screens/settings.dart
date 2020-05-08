@@ -3,7 +3,6 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/device.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/screens/colors.dart';
-import 'package:Slydo/screens/test/search_test.dart';
 import 'package:Slydo/screens/tiles/bank_account.dart';
 import 'package:Slydo/screens/tiles/explore.dart';
 import 'package:Slydo/services/auth.dart';
@@ -177,18 +176,7 @@ class _SettingsListState extends State<SettingsList> {
                   productsAndServicesWidget(),
                   SizedBox(height: 10),
                   slydoBankAccountTile(),
-                  SizedBox(height: 10),
-                  IconButton(
-                    icon: Icon(Icons.title),
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => SearchTest(),
-                        ),
-                      );
-                    },
-                  ),
-                  SizedBox(height: 10),
+                  SizedBox(height: 20),
                   _infoTile(),
                 ],
               ),
