@@ -1,3 +1,4 @@
+//TODO: ADD APP LOCALIZATION
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
@@ -115,15 +116,12 @@ class _UserDashboardState extends State<UserDashboard> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Center(
-                child: Icon(
-                  icon,
-                  size: 45,
-                ),
+                child: Icon(icon, size: 45, color: darkBlue()),
               ),
               Center(
                 child: Text(
                   textTrimmer(title),
-                  style: TextStyle(fontSize: 12),
+                  style: TextStyle(fontSize: 12, color: darkBlue()),
                 ),
               ),
             ],

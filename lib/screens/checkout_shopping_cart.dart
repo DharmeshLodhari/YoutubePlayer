@@ -1,4 +1,4 @@
-//TODO: APPLY APP LOCALIZATION
+//TODO: ADD APP LOCALIZATION
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/models/store.dart';
@@ -89,6 +89,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
 
   Widget checkoutWidget() {
     return Card(
+      elevation: 5,
       margin: EdgeInsets.symmetric(horizontal: 16),
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 8),
@@ -260,7 +261,8 @@ class _ShoppingCartState extends State<ShoppingCart> {
           contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           title: Text(
             'ADD Note',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: TextStyle(
+                fontSize: 20, fontWeight: FontWeight.bold, color: darkBlue()),
           ),
           content: Container(
             child: TextFormField(

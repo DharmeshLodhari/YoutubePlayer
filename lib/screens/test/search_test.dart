@@ -7,19 +7,18 @@ import 'package:Slydo/models/user.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/widget/noItemInList.dart';
-import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:popup_menu/popup_menu.dart';
 import 'package:provider/provider.dart';
 
-class SearchAutoComplete extends StatefulWidget {
+class SearchTest extends StatefulWidget {
   @override
-  _SearchAutoCompleteState createState() => _SearchAutoCompleteState();
+  _SearchTestState createState() => _SearchTestState();
 }
 
-class _SearchAutoCompleteState extends State<SearchAutoComplete> {
+class _SearchTestState extends State<SearchTest> {
   bool isValidSearch = false;
   bool isSearchIsEmpty = true;
   String autoCompleteSearchText = "";
@@ -28,7 +27,7 @@ class _SearchAutoCompleteState extends State<SearchAutoComplete> {
   CustomerProfileBloc customerProfileBloc;
   UserBloc userBloc;
   static var filterValue = "Users";
-  String hint = "Search hear";
+  String hint = "Search Users";
   Icon icon = Icon(
     Icons.supervised_user_circle,
     color: Colors.white,
@@ -41,11 +40,8 @@ class _SearchAutoCompleteState extends State<SearchAutoComplete> {
 
   List<Widget> results = [];
 
-  // this variables are for the autocomplete
-  bool loading = true;
-  List<dynamic> users = List<dynamic>();
-  GlobalKey<AutoCompleteTextFieldState<dynamic>> autoTextFieldKey = GlobalKey();
-  TextEditingController autoCompleteTextController = TextEditingController();
+  GlobalKey textFormField = GlobalKey();
+  TextEditingController searchItemTextController = TextEditingController();
 
   //popupmenu variables
   PopupMenu menu;
@@ -79,12 +75,12 @@ class _SearchAutoCompleteState extends State<SearchAutoComplete> {
       }
     });
 
-    autoCompleteTextController.addListener(() {
-      if (autoCompleteTextController.text.length >= 5) {
-        autoCompleteSearchText = autoCompleteTextController.text;
+    searchItemTextController.addListener(() {
+      if (searchItemTextController.text.length >= 5) {
+        autoCompleteSearchText = searchItemTextController.text;
         getAutoCompleteUser();
       }
-      if (results.isNotEmpty || autoCompleteTextController.text.length != 0) {
+      if (results.isNotEmpty || searchItemTextController.text.length != 0) {
         setState(() {
           isSearchIsEmpty = false;
         });
@@ -152,7 +148,7 @@ class _SearchAutoCompleteState extends State<SearchAutoComplete> {
 
   void onClickMenu(MenuItemProvider item) {
     setState(() {
-      autoCompleteTextController.text = "";
+      searchItemTextController.text = "";
       count = 0;
       next = "";
       previous = "";
@@ -290,7 +286,7 @@ class _SearchAutoCompleteState extends State<SearchAutoComplete> {
           isLoading = true;
         });
         Map<String, dynamic> result = await _auth.searchEndpointPagination(
-            getSearchUrl(autoCompleteTextController.text), next, previous);
+            getSearchUrl(searchItemTextController.text), next, previous);
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
@@ -335,112 +331,6 @@ class _SearchAutoCompleteState extends State<SearchAutoComplete> {
         break;
     }
   }
-
-  Widget _getSlidableWithLists(
-      BuildContext context, Widget searchCard, CustomerProfile user) {
-    return Slidable(
-      controller: slidableController,
-      direction: Axis.horizontal,
-      actionPane: SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
-      child: VerticalListItem(searchCard, user),
-      actions: listActionSlideActions(user),
-      secondaryActions: listSecondaryActions(user),
-    );
-  }
-
-  List<Widget> listSecondaryActions(CustomerProfile user) {
-    String caption = AppLocalization.of(context).send;
-    return [
-      IconSlideAction(
-          caption: caption,
-          color: Colors.green,
-          icon: Icons.send,
-          onTap: () async {
-            customerProfileBloc.customer =
-                await _auth.fetchCustomerProfile(user.userName);
-            Navigator.of(context).pushNamed('/send-payment',
-                arguments: <String, bool>{
-                  'isFromProfile': false,
-                  'isRequest': false
-                });
-          }),
-    ];
-  }
-
-  List<Widget> listActionSlideActions(CustomerProfile user) {
-    return [
-      IconSlideAction(
-        caption: AppLocalization.of(context).request,
-        color: Colors.green,
-        icon: Icons.event_note,
-        onTap: () async {
-          customerProfileBloc.customer =
-              await _auth.fetchCustomerProfile(user.userName);
-          Navigator.of(context).pushNamed('/request-payment',
-              arguments: <String, bool>{
-                'isFromProfile': false,
-                'isRequest': true
-              });
-        },
-      ),
-    ];
-  }
-
-  Widget _getSlidableWithLists1(
-      BuildContext context, Widget searchCard, Product product) {
-    return Slidable(
-      controller: slidableController1,
-      direction: Axis.horizontal,
-      actionPane: SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
-      child: VerticalListItem1(searchCard, product),
-      actions: listActionSlideActions1(product),
-      secondaryActions: listSecondaryActions1(product),
-    );
-  }
-
-  List<Widget> listSecondaryActions1(Product product) {
-    return [
-      IconSlideAction(
-        caption: "Message",
-        color: Colors.green,
-        icon: Icons.message,
-        onTap: () async {
-          Navigator.of(context).pushNamed('/compose_message', arguments: {
-            'recipient': product.seller,
-            'subject': product.name,
-          });
-        },
-      ),
-    ];
-  }
-
-  List<Widget> listActionSlideActions1(Product product) {
-    return [
-      IconSlideAction(
-          caption: "BUY",
-          color: Colors.green,
-          icon: Icons.shopping_basket,
-          onTap: () async {
-            customerProfileBloc.customer =
-                await _auth.fetchCustomerProfile(product.seller);
-            Navigator.of(context).pushNamed('/send-payment', arguments: {
-              'isFromProfile': false,
-              'isRequest': false,
-              'product': product
-            });
-          }),
-    ];
-  }
-
-  void handleSlideAnimationChanged(Animation<double> slideAnimation) {}
-
-  void handleSlideIsOpenChanged(bool isOpen) {}
-
-  void handleSlideAnimationChanged1(Animation<double> slideAnimation) {}
-
-  void handleSlideIsOpenChanged1(bool isOpen) {}
 
   String getSearchUrl(String searchedText) {
     switch (filterValue) {
@@ -746,90 +636,154 @@ class _SearchAutoCompleteState extends State<SearchAutoComplete> {
   }
 
   Widget autoComplete() {
-    return AutoCompleteTextField<dynamic>(
-      controller: autoCompleteTextController,
-      textSubmitted: (val) {
-        if (next != null) {
-          setState(() {
-            count = 0;
-            next = "";
-            previous = "";
-            results = [];
-          });
-          getList();
-        }
-      },
-      key: autoTextFieldKey,
-      suggestions: users,
-      clearOnSubmit: true,
-      decoration: InputDecoration(
-        contentPadding: EdgeInsets.all(10),
-        hintText: hint,
-        isDense: true,
-        enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: Colors.white,
-            width: 1,
+    return Column(
+      children: <Widget>[
+        TextFormField(
+          key: textFormField,
+          decoration: InputDecoration(
+            contentPadding: EdgeInsets.all(10),
+            hintText: hint,
+            isDense: true,
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.white,
+                width: 1,
+              ),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: darkBlue(),
+                width: 1,
+              ),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            fillColor: Colors.white,
+            filled: true,
           ),
-          borderRadius: BorderRadius.circular(6),
+          style: TextStyle(color: Colors.black, fontSize: 16),
+          controller: searchItemTextController,
+          onFieldSubmitted: (val) {
+            if (next != null) {
+              setState(() {
+                count = 0;
+                next = "";
+                previous = "";
+                results = [];
+              });
+              getList();
+            }
+          },
         ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: darkBlue(),
-            width: 1,
-          ),
-          borderRadius: BorderRadius.circular(6),
-        ),
-        fillColor: Colors.white,
-        filled: true,
-      ),
-      style: TextStyle(color: Colors.black, fontSize: 16),
-
-      // ignore: missing_return
-      itemFilter: (item, query) {
-        switch (filterValue) {
-          case "Users":
-            return item.userName.toLowerCase().startsWith(query.toLowerCase());
-            break;
-          case "Products":
-            return item.name.toLowerCase().startsWith(query.toLowerCase());
-            break;
-          case "Services":
-            return item.name.toLowerCase().startsWith(query.toLowerCase());
-            break;
-        }
-      },
-      // ignore: missing_return
-      itemSorter: (a, b) {
-        switch (filterValue) {
-          case "Users":
-            return a.userName.compareTo(b.userName);
-            break;
-          case "Products":
-            return a.name.compareTo(b.name);
-            break;
-          case "Services":
-            return a.name.compareTo(b.name);
-            break;
-        }
-      },
-      // ignore: missing_return
-      itemBuilder: (context, item) {
-        switch (filterValue) {
-          case "Users":
-            return getUserTile(item);
-            break;
-          case "Products":
-            return getProductTile(item);
-            break;
-          case "Services":
-            return getServiceTile(item);
-            break;
-        }
-      },
-      itemSubmitted: (item) {},
+      ],
     );
   }
+
+  Widget _getSlidableWithLists(
+      BuildContext context, Widget searchCard, CustomerProfile user) {
+    return Slidable(
+      controller: slidableController,
+      direction: Axis.horizontal,
+      actionPane: SlidableBehindActionPane(),
+      actionExtentRatio: 0.25,
+      child: VerticalListItem(searchCard, user),
+      actions: listActionSlideActions(user),
+      secondaryActions: listSecondaryActions(user),
+    );
+  }
+
+  List<Widget> listSecondaryActions(CustomerProfile user) {
+    String caption = AppLocalization.of(context).send;
+    return [
+      IconSlideAction(
+          caption: caption,
+          color: Colors.green,
+          icon: Icons.send,
+          onTap: () async {
+            customerProfileBloc.customer =
+                await _auth.fetchCustomerProfile(user.userName);
+            Navigator.of(context).pushNamed('/send-payment',
+                arguments: <String, bool>{
+                  'isFromProfile': false,
+                  'isRequest': false
+                });
+          }),
+    ];
+  }
+
+  List<Widget> listActionSlideActions(CustomerProfile user) {
+    return [
+      IconSlideAction(
+        caption: AppLocalization.of(context).request,
+        color: Colors.green,
+        icon: Icons.event_note,
+        onTap: () async {
+          customerProfileBloc.customer =
+              await _auth.fetchCustomerProfile(user.userName);
+          Navigator.of(context).pushNamed('/request-payment',
+              arguments: <String, bool>{
+                'isFromProfile': false,
+                'isRequest': true
+              });
+        },
+      ),
+    ];
+  }
+
+  Widget _getSlidableWithLists1(
+      BuildContext context, Widget searchCard, Product product) {
+    return Slidable(
+      controller: slidableController1,
+      direction: Axis.horizontal,
+      actionPane: SlidableBehindActionPane(),
+      actionExtentRatio: 0.25,
+      child: VerticalListItem1(searchCard, product),
+      actions: listActionSlideActions1(product),
+      secondaryActions: listSecondaryActions1(product),
+    );
+  }
+
+  List<Widget> listSecondaryActions1(Product product) {
+    return [
+      IconSlideAction(
+        caption: "Message",
+        color: Colors.green,
+        icon: Icons.message,
+        onTap: () async {
+          Navigator.of(context).pushNamed('/compose_message', arguments: {
+            'recipient': product.seller,
+            'subject': product.name,
+          });
+        },
+      ),
+    ];
+  }
+
+  List<Widget> listActionSlideActions1(Product product) {
+    return [
+      IconSlideAction(
+          caption: "BUY",
+          color: Colors.green,
+          icon: Icons.shopping_basket,
+          onTap: () async {
+            customerProfileBloc.customer =
+                await _auth.fetchCustomerProfile(product.seller);
+            Navigator.of(context).pushNamed('/send-payment', arguments: {
+              'isFromProfile': false,
+              'isRequest': false,
+              'product': product
+            });
+          }),
+    ];
+  }
+
+  void handleSlideAnimationChanged(Animation<double> slideAnimation) {}
+
+  void handleSlideIsOpenChanged(bool isOpen) {}
+
+  void handleSlideAnimationChanged1(Animation<double> slideAnimation) {}
+
+  void handleSlideIsOpenChanged1(bool isOpen) {}
 }
 
 // ignore: must_be_immutable

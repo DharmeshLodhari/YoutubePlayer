@@ -43,6 +43,12 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     userBloc = Provider.of<UserBloc>(context);
     return WillPopScope(
       onWillPop: () async {
+        if (statusBottomSheetController != null &&
+            noteBottomSheetController != null) {
+          statusBottomSheetController.close();
+          noteBottomSheetController.close();
+        }
+
         return true;
       },
       child: Scaffold(
@@ -58,6 +64,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
           children: <Widget>[
             Expanded(
               child: ListView.builder(
+                  padding: EdgeInsets.symmetric(vertical: 10),
                   itemCount: basketBloc.items.length,
                   itemBuilder: (BuildContext context, int index) =>
                       getItemTile(index)),
@@ -252,6 +259,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   Widget checkoutWidget() {
     return Card(
+      elevation: 5,
       margin: EdgeInsets.symmetric(horizontal: 16),
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 8),
@@ -273,7 +281,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
               color: Colors.red,
               child: Text(
                 "Cancle",
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: darkBlue()),
               ),
               onPressed: () {},
             )

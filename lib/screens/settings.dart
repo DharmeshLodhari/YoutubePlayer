@@ -3,6 +3,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/device.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/screens/colors.dart';
+import 'package:Slydo/screens/test/search_test.dart';
 import 'package:Slydo/screens/tiles/bank_account.dart';
 import 'package:Slydo/screens/tiles/explore.dart';
 import 'package:Slydo/services/auth.dart';
@@ -143,7 +144,7 @@ class _SettingsListState extends State<SettingsList> {
           scrollDirection: Axis.vertical,
           child: Container(
             color: lightBlue(),
-            padding: EdgeInsets.fromLTRB(0, 10, 0, 36),
+            padding: EdgeInsets.fromLTRB(0, 0, 0, 36),
             child: Center(
               child: Column(
                 children: <Widget>[
@@ -177,6 +178,16 @@ class _SettingsListState extends State<SettingsList> {
                   SizedBox(height: 10),
                   slydoBankAccountTile(),
                   SizedBox(height: 25),
+                  IconButton(
+                    icon: Icon(Icons.title),
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => SearchTest(),
+                        ),
+                      );
+                    },
+                  ),
                   _infoTile(),
                 ],
               ),
@@ -205,14 +216,34 @@ class _SettingsListState extends State<SettingsList> {
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 20),
       child: ListTile(
-        title: Text(
-          userBloc.user.fullName,
-          style: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            SizedBox(
+              height: 8,
+            ),
+            Text(
+              userBloc.user.fullName,
+              style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15),
+            ),
+          ],
         ),
-        isThreeLine: true,
-        subtitle:
-            Text(userBloc.user.userName + "\n" + userBloc.user.phoneNumber),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            SizedBox(
+              height: 4,
+            ),
+            Text(userBloc.user.userName, style: TextStyle(fontSize: 12)),
+            Text(userBloc.user.phoneNumber, style: TextStyle(fontSize: 12)),
+            SizedBox(
+              height: 4,
+            ),
+          ],
+        ),
         leading: isLoading
             ? Container(
                 height: 50,
