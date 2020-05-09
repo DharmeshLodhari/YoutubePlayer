@@ -314,12 +314,15 @@ class _ShoppingCartState extends State<ShoppingCart> {
         var data = {"note": value};
         if (value != "cancel") {
           var userOrder = await _auth.placeOrderOfShoppingCart(data);
-          var orderPayment = await _auth.makePaymentForCartOrder(userOrder);
-
-          if (!userOrder.containsKey('error')) {
-            payForOrder(userOrder);
-          } else {
-            Toast.show(userOrder.toString(), context);
+          if (!userOrder[0].containsKey('error')) {
+            basketBloc.items.clear();  // Shopping cart
+            var successful = await _auth.makePaymentForCartOrder(userOrder);
+            if (successful){
+              Navigator.pushNamed(context, '/orders-list');
+            }
+            else {
+              Navigator.pop(context);
+            }
           }
         }
         _scaffoldKey.currentState.showSnackBar(SnackBar(
@@ -328,11 +331,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
       }
     });
   }
-
-  // abi  => [1,2,3,4,5,6] total => 200
-  // brijesh  => [1,2] total => 300
-
-  void payForOrder(Map<String, dynamic> result) {}
 }
 
 // ignore: must_be_immutable

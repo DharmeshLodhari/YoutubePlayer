@@ -12,29 +12,52 @@ import 'package:toast/toast.dart';
 import 'colors.dart';
 
 class OrderDetailPage extends StatefulWidget {
+  var arguments;
+  OrderDetailPage({@required this.arguments});
+
   @override
-  _OrderDetailPageState createState() => _OrderDetailPageState();
+  _OrderDetailPageState createState() => _OrderDetailPageState(arguments: arguments);
 }
 
 class _OrderDetailPageState extends State<OrderDetailPage> {
+  var arguments;
+  _OrderDetailPageState({this.arguments});
+
   BasketBloc basketBloc;
+  // Todo: why do we have this 2 blocks
   CustomerProfileBloc customerProfileBloc;
-  SlidableController slidableController;
   UserBloc userBloc;
+
+  SlidableController slidableController;
   PersistentBottomSheetController statusBottomSheetController;
   PersistentBottomSheetController noteBottomSheetController;
+  Order order;
+  List consumable = List();
   final _auth = AuthService();
   final scaffoldKey = GlobalKey<ScaffoldState>();
   var statusOfOrder = "pending";
 
   @override
   void initState() {
+    order = arguments['order'];
     slidableController = SlidableController(
       onSlideAnimationChanged: handleSlideAnimationChanged,
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
     );
+    fetchOrder(order.id.toString());
     super.initState();
   }
+
+  void fetchOrder(String orderId) async {
+    _auth.getOrder(orderId).then((value) {
+      if (mounted) {
+        setState(() {
+          consumable = value;
+        });
+      }
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +88,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             Expanded(
               child: ListView.builder(
                   padding: EdgeInsets.symmetric(vertical: 10),
-                  itemCount: basketBloc.items.length,
+                  itemCount: consumable.length,
                   itemBuilder: (BuildContext context, int index) =>
                       getItemTile(index)),
             ),
@@ -98,40 +121,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   showNoteSheet() {
-    var dummyText = "Lorem Ipsum is simply dummy text of the printing and typesetting industry." +
-        " Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, " +
-        "when an unknown printer took a galley of type and " +
-        "scrambled it to make a type specimen book." +
-        " It has survived not only five centuries," +
-        " but also the leap into electronic typesetting," +
-        " remaining essentially unchanged." +
-        " It was popularised in the 1960s with the release of" +
-        " Letraset sheets containing Lorem Ipsum passages," +
-        " and more recently with desktop publishing" +
-        " software like Aldus PageMaker including versions of Lorem Ipsum" +
-        "Lorem Ipsum is simply dummy text of the printing and typesetting industry." +
-        " Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, " +
-        "when an unknown printer took a galley of type and " +
-        "scrambled it to make a type specimen book." +
-        " It has survived not only five centuries," +
-        " but also the leap into electronic typesetting," +
-        " remaining essentially unchanged." +
-        " It was popularised in the 1960s with the release of" +
-        " Letraset sheets containing Lorem Ipsum passages," +
-        " and more recently with desktop publishing" +
-        " software like Aldus PageMaker including versions of Lorem Ipsum" +
-        "Lorem Ipsum is simply dummy text of the printing and typesetting industry." +
-        " Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, " +
-        "when an unknown printer took a galley of type and " +
-        "scrambled it to make a type specimen book." +
-        " It has survived not only five centuries," +
-        " but also the leap into electronic typesetting," +
-        " remaining essentially unchanged." +
-        " It was popularised in the 1960s with the release of" +
-        " Letraset sheets containing Lorem Ipsum passages," +
-        " and more recently with desktop publishing" +
-        " software like Aldus PageMaker including versions of Lorem Ipsum";
-
     noteBottomSheetController =
         scaffoldKey.currentState.showBottomSheet((context) => Card(
               elevation: 15,
@@ -158,7 +147,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                             padding:
                                 const EdgeInsets.fromLTRB(24.0, 16, 24, 24),
                             child: Text(
-                              dummyText,
+                              order.note,
                               style: TextStyle(fontSize: 14),
                               textAlign: TextAlign.justify,
                             ),
@@ -294,10 +283,11 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   Widget getItemTile(int index) {
     return _getSlidableWithLists(
         context,
+
         ShoppingCartTile(
-          product: basketBloc.items[index],
+          product: consumable[index],
         ),
-        basketBloc.items[index],
+        consumable[index],
         index);
   }
 
@@ -330,10 +320,10 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   void removeItem(int index) {
     Map data = {
       "type": "product",
-      "id": basketBloc.items[index].id,
+      "id": consumable[index].id,
     };
     _auth.removeItemToShoppingCart(data);
-    basketBloc.removeItemFromCart(basketBloc.items[index]);
+    basketBloc.removeItemFromCart(consumable[index]);
     Toast.show("Product is Removed Successfully from the cart", context,
         backgroundColor: darkBlue(),
         textColor: Colors.white,
@@ -341,7 +331,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   List<Widget> listActionSlideActions(int index) {
-    var product = basketBloc.items[index];
+    var product = consumable[index];
 
     bool isValid = true;
     if (product.seller == userBloc.user.userName) {

@@ -234,7 +234,7 @@ class AuthService {
   Future<CustomerProfile> updateCustomerAvatar(File avatar) async {
     User user = await getUser();
     var headers = await getAuthHeaders();
-    var url = baseUrl + "/api/v1/user/update-avatar/" + user.userName;
+    var url = baseUrl + "/api/v1/user/update-avatar/" + user.userName  + "/";
 
     if (avatar != null) {
       var avatarPath = avatar.path;
@@ -359,7 +359,7 @@ class AuthService {
 
   // List the users bank accounts
   Future<List<BankAccount>> getBankAccounts() async {
-    var url = baseUrl + "/api/v1/transactions/bank-accounts-list";
+    var url = baseUrl + "/api/v1/transactions/bank-accounts-list/";
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
 
@@ -436,7 +436,7 @@ class AuthService {
       return null;
     }
     if (next == "") {
-      url = baseUrl + "/api/v1/transactions/bank-accounts-list";
+      url = baseUrl + "/api/v1/transactions/bank-accounts-list/";
     } else {
       url = next;
     }
@@ -528,7 +528,7 @@ class AuthService {
       return null;
     }
     if (next == "") {
-      url = baseUrl + "/api/v1/transactions/request-payment/list";
+      url = baseUrl + "/api/v1/transactions/request-payment/list/";
       if (toMe) {
         url = url + "?to_me=true";
       }
@@ -674,12 +674,15 @@ class AuthService {
   }
 
   //send payment of the order to particular sellers
-  Future<http.Response> makePaymentForCartOrder(Map data) async {
+  Future<bool> makePaymentForCartOrder(var data) async {
     var url = baseUrl + "/api/v1/transactions/make-payment-for-orders/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.post(url, headers: headers, body: _data);
-    return response;
+    if (response.statusCode == 200) {
+      return true;
+    }
+    return false;
   }
 
   //Send payout to backend
@@ -1480,7 +1483,7 @@ class AuthService {
     return true;
   }
 
-  Future<Map<String, dynamic>> listOrders(
+  Future<dynamic> listOrders(
       String next, String previous, bool toMe, bool fromMe) async {
     Map<String, String> knownCustomers = {};
 
@@ -1489,7 +1492,7 @@ class AuthService {
       return null;
     }
     if (next == "") {
-      url = baseUrl + "/api/v1/transactions/request-payment/list";
+      url = baseUrl + "/api/v1/order/";
       if (toMe) {
         url = url + "?to_me=true";
       }
@@ -1502,52 +1505,48 @@ class AuthService {
 
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
+    var jsonData = json.decode(response.body);
 
     if (response.statusCode == 200) {
-      List<PaymentRequest> paymentRequests = [];
-      // This variable will hold list of transactions we got from server
-      var user = await getUser();
-      var jsonData = json.decode(response.body);
-      for (var item in jsonData["results"]) {
-        // if sender is not current user then
-        bool isCredit = (item["from_customer"] != user.userName &&
-                item["to_customer"] == user.userName)
-            ? true
-            : false;
+      List items = List();
+      var data = jsonData["results"];
+      for (int i = 0; i < data.length; i++) {
+          debugPrint(data[i].toString());
+          var order = Order.fromJson(data[i]);
+          items.add(order);
+        }
 
-        var payee = isCredit ? item["from_customer"] : item['to_customer'];
-
-        try {
-          if (knownCustomers.containsKey(payee) == false) {
-            var customer = await fetchCustomerProfile(payee);
-            knownCustomers[payee] = customer.avatar;
-          }
-          var avatar = knownCustomers[payee];
-          PaymentRequest paymentRequest = PaymentRequest(
-              status: item['status'],
-              id: item['id'].toString(),
-              description: item['description'],
-              payee: payee,
-              avatar: avatar,
-              currency: item['currency'],
-              createdAt: item['created_at'],
-              amount: item['amount'],
-              isCredit: isCredit);
-          paymentRequests.add(paymentRequest);
-        } catch (Exception) {}
-      }
-
-      Map<String, dynamic> result = {
-        "count": jsonData["count"],
-        "next": jsonData["next"],
-        "previous": jsonData["previous"],
-        "results": paymentRequests
-      };
-      return result;
+      jsonData["results"] = items;
+      return jsonData;
     } else if (response.statusCode == 500) {
       throw "Server Error";
     } else {
       throw json.decode(response.body);
+    }
+  }
+
+  // Get single Order
+  Future<dynamic> getOrder(String id) async {
+    var url = baseUrl + "/api/v1/order/" + id + "/";
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
+    var jsonData = json.decode(response.body);
+    if (response.statusCode == 200) {
+    List items = List();
+    var data = jsonData["results"];
+    for (int i = 0; i < data.length; i++) {
+      if (data[i].containsKey("manufacturer")) {
+        var product = Product.fromJson(data[i]);
+        items.add(product);
+      }
+      if (data[i]["type"] == "service") {
+//        var service = Service.fromJson(data[i]);
+//        items.add(service);
+      }
+    }
+      return items;
+    } else {
+      throw jsonData;
     }
   }
 
@@ -1576,7 +1575,7 @@ class AuthService {
   }
 
   //place shopping cart order
-  Future<Map<String, dynamic>> placeOrderOfShoppingCart(Map data) async {
+  Future<dynamic> placeOrderOfShoppingCart(Map data) async {
     var url = baseUrl + "/api/v1/shopping-cart/";
     var _data = jsonEncode(data);
     var headers = await getAuthHeaders();
@@ -1586,7 +1585,7 @@ class AuthService {
     if (response.statusCode == 201) {
       return jsonData;
     }
-    return {"error": "error"};
+    return [{"error": "error"}];
   }
 
   List<dynamic> getCartItems(var jsonResponse) {

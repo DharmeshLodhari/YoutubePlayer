@@ -75,9 +75,13 @@ class Product {
 
   List<String> getProductImages(List data) {
     List<String> images = List();
-    data.forEach((element) {
-      images.add(element["file"].toString());
-    });
+
+    if (data != null){
+    for (int i = 0; i < data.length; i++) {
+      if (data[i].containsKey("file")) {
+        images.add(data[i]["file"].toString());
+      }
+    }}
     return images;
   }
 
@@ -747,22 +751,47 @@ class Setting {
 }
 
 class Order {
-  String orderId;
-  String totalAmount;
-  String sender;
-  String recipient;
-  String date;
+  String id;
   String status;
-  List orderItem;
-  String notes;
+  String customer;
+  String merchant;
+  String customerAvatar;
+  String merchantAvatar;
+  bool isPaid;
+  String transactionId;
+  String note;
+  String createdAt;
+  String totalPrice;
+  String currency;
 
   Order(
-      {this.orderId,
-      this.totalAmount,
-      this.sender,
-      this.recipient,
-      this.date,
-      this.status,
-      this.orderItem,
-      this.notes});
+      {
+        this.id,
+        this.status,
+        this.customer,
+        this.merchant,
+        this.customerAvatar,
+        this.merchantAvatar,
+        this.isPaid,
+        this.transactionId,
+        this.note,
+        this.createdAt,
+        this.totalPrice,
+        this.currency,
+      });
+
+  Order.fromJson(object) {
+    this.id = object["id"].toString();
+    this.status = object["status"];
+    this.customer = object["customer"];
+    this.merchant = object["merchant"];
+    this.customerAvatar = object["customer_avatar"];
+    this.merchantAvatar = object["merchant_avatar"];
+    this.isPaid = object["is_paid"];
+    this.transactionId = object["transaction_id"];
+    this.note = object["note"];
+    this.createdAt = object["created_at"];
+    this.totalPrice = object["total_price"].toString();
+    this.currency = object["currency"] ?? "NGN";
+  }
 }

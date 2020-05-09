@@ -1,6 +1,7 @@
 //TODO: ADD APP LOCALIZATION
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/models/store.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
@@ -29,7 +30,7 @@ class _OrdersListState extends State<OrdersList> {
   int count = 0;
   String next = "";
   String previous = "";
-  List requestPaymentList = [];
+  List orderList = [];
   ScrollController _scrollController = new ScrollController();
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
@@ -37,7 +38,7 @@ class _OrdersListState extends State<OrdersList> {
   bool noItemInList = false;
   RefreshBlocForRequestPayment _refreshBloc;
 
-  // variables for to getting filter requestPaymentList
+  // variables for to getting filter orderList
   String filterValue = "all";
   bool fromMe = false;
   bool toMe = false;
@@ -68,7 +69,7 @@ class _OrdersListState extends State<OrdersList> {
         count = 0;
         next = "";
         previous = "";
-        requestPaymentList = [];
+        orderList = [];
         noItemInList = false;
         getList();
         _refreshController.refreshCompleted();
@@ -106,7 +107,7 @@ class _OrdersListState extends State<OrdersList> {
               ),
               controller: _refreshController,
               onRefresh: _onRefresh,
-              child: _buildRequestPaymentList()),
+              child: _buildorderList()),
         ));
   }
 
@@ -202,7 +203,7 @@ class _OrdersListState extends State<OrdersList> {
         },
       );
 
-  Widget _buildRequestPaymentList() {
+  Widget _buildorderList() {
     return noItemInList
         ? NoItemInList(
             msg: AppLocalization.of(context).noPendingPaymentRequest,
@@ -210,13 +211,13 @@ class _OrdersListState extends State<OrdersList> {
         : ListView.builder(
             padding: EdgeInsets.symmetric(vertical: 4),
             //+1 for progressbar
-            itemCount: requestPaymentList.length + 1,
+            itemCount: orderList.length + 1,
             itemBuilder: (BuildContext context, int index) {
-              if (index == requestPaymentList.length) {
+              if (index == orderList.length) {
                 return _buildIndicator();
               } else {
                 return _getSlidableWithLists(
-                    context, requestPaymentList[index], index);
+                    context, orderList[index], index);
               }
             },
             controller: _scrollController,
@@ -244,22 +245,22 @@ class _OrdersListState extends State<OrdersList> {
         setState(() {
           isLoading = true;
         });
-        Map<String, dynamic> result =
-            await _auth.listOrders(next, previous, toMe, fromMe);
+        var result = await _auth.listOrders(next, previous, toMe, fromMe);
+
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
         var tempList = result['results'];
         setState(() {
           isLoading = false;
-          requestPaymentList.addAll(tempList);
+          orderList.addAll(tempList);
         });
       }
-      if (requestPaymentList.isEmpty) {
+      if (orderList.isEmpty) {
         setState(() {
           noItemInList = true;
         });
-      } else if (next == null && requestPaymentList.length > 6) {
+      } else if (next == null && orderList.length > 6) {
         _scaffoldPaymentListKey.currentState.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
@@ -311,20 +312,20 @@ class _OrdersListState extends State<OrdersList> {
         .showSnackBar(SnackBar(content: Text(text)));
   }
 
-  List<Widget> listSecondaryActions(PaymentRequest paymentRequest, int index) {
+  List<Widget> listSecondaryActions(Order order, int index) {
     return [
       IconSlideAction(
           caption: "Cancel",
           color: Colors.red,
           icon: Icons.cancel,
           onTap: () async {
-//            rejectPaymentRequestAlert(paymentRequest, index);
+//            rejectOrder(order, index);
           }),
     ];
   }
 
   List<Widget> listActionSlideActions(
-      PaymentRequest paymentRequest, int index) {
+      Order order, int index) {
     return [
       IconSlideAction(
         caption: "Message",
@@ -332,7 +333,7 @@ class _OrdersListState extends State<OrdersList> {
         icon: Icons.message,
         onTap: () {
           Navigator.of(context).pushNamed('/compose_message', arguments: {
-            'recipient': paymentRequest.payee,
+            'recipient': order.merchant,
             'subject': "Order: Ref #123488752627",
           });
 //            acceptPaymentRequestAlert(paymentRequest, index);
@@ -358,8 +359,8 @@ class _OrdersListState extends State<OrdersList> {
         _showSnackBar(
             context, AppLocalization.of(context).paymentRequestAccepted);
         setState(() {
-          requestPaymentList.removeAt(index);
-          if (requestPaymentList.length <= 9) {
+          orderList.removeAt(index);
+          if (orderList.length <= 9) {
             getList();
           }
         });
@@ -369,8 +370,8 @@ class _OrdersListState extends State<OrdersList> {
     }
   }
 
-  Future<void> rejectPaymentRequestAlert(
-      PaymentRequest paymentRequest, int index) async {
+  Future<void> rejectOrder(
+      Order order, int index) async {
     bool result = await showDialogBox(
       context: context,
       title: AppLocalization.of(context).reject,
@@ -381,13 +382,14 @@ class _OrdersListState extends State<OrdersList> {
       type: AlertType.warning,
     );
     if (result) {
-      bool done = await _auth.rejectPaymentRequests(paymentRequest);
+//      bool done = await _auth.rejectPaymentRequests(order);
+      var done = true;
       if (done) {
         _showSnackBar(
             context, AppLocalization.of(context).paymentRequestRejected);
         setState(() {
-          requestPaymentList.removeAt(index);
-          if (requestPaymentList.length <= 9) {
+          orderList.removeAt(index);
+          if (orderList.length <= 9) {
             getList();
           }
         });
@@ -396,35 +398,35 @@ class _OrdersListState extends State<OrdersList> {
       }
     }
   }
-
+  
   Widget _getSlidableWithLists(
-      BuildContext context, PaymentRequest paymentRequest, int index) {
+      BuildContext context, Order order, int index) {
     return Slidable(
-      key: Key(paymentRequest.payee),
+      key: Key(order.customer),
       controller: slidableController,
       direction: Axis.horizontal,
       actionPane: SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
-      child: VerticalListItem(paymentRequest),
-      actions: listActionSlideActions(paymentRequest, index),
-      secondaryActions: listSecondaryActions(paymentRequest, index),
+      child: VerticalListItem(order),
+      actions: listActionSlideActions(order, index),
+      secondaryActions: listSecondaryActions(order, index),
     );
   }
 }
 
 class VerticalListItem extends StatelessWidget {
-  VerticalListItem(this.paymentRequest);
-  final PaymentRequest paymentRequest;
+  VerticalListItem(this.order);
+  final Order order;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, "/order-detail-page");
+        Navigator.pushNamed(context, "/order-detail-page", arguments: {"order": order});
       },
       child: Container(
         color: lightBlue(),
-        child: OrderTile(paymentRequest: paymentRequest),
+        child: OrderTile(order: order),
       ),
     );
   }

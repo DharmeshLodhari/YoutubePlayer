@@ -1,25 +1,31 @@
 import 'package:Slydo/data/currency.dart';
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/models/transactions.dart';
+import 'package:Slydo/models/store.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class OrderTile extends StatelessWidget {
-  final PaymentRequest paymentRequest;
-  OrderTile({this.paymentRequest});
+  UserBloc userBloc;
+  final Order order;
+  OrderTile({this.order});
 
   @override
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
     return Card(
+
       margin: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
       child: Column(
         children: <Widget>[
           Padding(
             padding: EdgeInsets.symmetric(vertical: 8),
             child: ListTile(
+              
                 leading: getLeading(),
                 title: getTitle(),
-                trailing: paymentRequest.amount.toString().length > 6
+                trailing: order.totalPrice.length > 6
                     ? null
                     : getTrailing(),
                 subtitle: getSubtitle(context)),
@@ -29,16 +35,25 @@ class OrderTile extends StatelessWidget {
     );
   }
 
+  String getCustomerOrMerchant(){
+    var customerOrMerchant = order.customer == userBloc.user.userName ? order.merchant: order.customer;
+    return customerOrMerchant.length > 17 ? customerOrMerchant.substring(0, 17) : customerOrMerchant;
+  }
+
+  String getAvatar() {
+    return order.customer == userBloc.user.userName ? order.merchantAvatar: order.customerAvatar;
+  }
+
   Widget getLeading() {
     return ClipOval(
       child: CachedNetworkImage(
-        imageUrl: paymentRequest.avatar,
+        imageUrl: getAvatar(),
         height: 50,
         width: 50,
         colorBlendMode: BlendMode.darken,
         fit: BoxFit.cover,
         filterQuality: FilterQuality.high,
-        placeholder: (context, url) => paymentRequest.avatar == ""
+        placeholder: (context, url) => getAvatar() == ""
             ? Icon(Icons.person)
             : CircularProgressIndicator(
                 backgroundColor: Colors.white,
@@ -49,7 +64,7 @@ class OrderTile extends StatelessWidget {
 
   Widget getTitle() {
     return Text(
-      "Ref # : 1234567890102",
+      "Ref # : ${order.id}",
       style: TextStyle(
           color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
     );
@@ -57,9 +72,7 @@ class OrderTile extends StatelessWidget {
 
   Widget getTrailing() {
     return Text(
-      worldCurrencies[paymentRequest.currency] +
-          ' ' +
-          paymentRequest.amount.toString(),
+      worldCurrencies[order.currency] + ' ' + order.totalPrice,
       style: TextStyle(
           color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 15),
     );
@@ -69,14 +82,13 @@ class OrderTile extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(
-          "${paymentRequest.payee.length > 17 ? paymentRequest.payee.substring(0, 17) : paymentRequest.payee}",
+        Text(getCustomerOrMerchant(),
           style: TextStyle(color: Colors.grey[600]),
         ),
         SizedBox(
           height: 2,
         ),
-        paymentRequest.amount.toString().length > 6
+        order.totalPrice.length > 6
             ? getTrailing()
             : Container(),
         getDateTime(context)
@@ -85,7 +97,7 @@ class OrderTile extends StatelessWidget {
   }
 
   Widget getDateTime(BuildContext context) {
-    DateTime requestTime = DateTime.parse(paymentRequest.createdAt);
+    DateTime requestTime = DateTime.parse(order.createdAt);
 
     return Row(
       children: <Widget>[
