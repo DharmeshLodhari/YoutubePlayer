@@ -177,7 +177,9 @@ class RouteGenerator {
       case '/orders-list':
         return MaterialPageRoute(builder: (context) => OrdersList());
       case '/order-detail-page':
-        return MaterialPageRoute(builder: (context) => OrderDetailPage(arguments: settings.arguments));
+        return MaterialPageRoute(
+            builder: (context) =>
+                OrderDetailPage(arguments: settings.arguments));
 
       default:
         // If there is no such named route in the switch statement, e.g. /third

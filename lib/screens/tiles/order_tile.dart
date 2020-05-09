@@ -15,19 +15,15 @@ class OrderTile extends StatelessWidget {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
     return Card(
-
       margin: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
       child: Column(
         children: <Widget>[
           Padding(
             padding: EdgeInsets.symmetric(vertical: 8),
             child: ListTile(
-              
                 leading: getLeading(),
                 title: getTitle(),
-                trailing: order.totalPrice.length > 6
-                    ? null
-                    : getTrailing(),
+                trailing: order.totalPrice.length > 6 ? null : getTrailing(),
                 subtitle: getSubtitle(context)),
           ),
         ],
@@ -35,13 +31,19 @@ class OrderTile extends StatelessWidget {
     );
   }
 
-  String getCustomerOrMerchant(){
-    var customerOrMerchant = order.customer == userBloc.user.userName ? order.merchant: order.customer;
-    return customerOrMerchant.length > 17 ? customerOrMerchant.substring(0, 17) : customerOrMerchant;
+  String getCustomerOrMerchant() {
+    var customerOrMerchant = order.customer == userBloc.user.userName
+        ? order.merchant
+        : order.customer;
+    return customerOrMerchant.length > 17
+        ? customerOrMerchant.substring(0, 17)
+        : customerOrMerchant;
   }
 
   String getAvatar() {
-    return order.customer == userBloc.user.userName ? order.merchantAvatar: order.customerAvatar;
+    return order.customer == userBloc.user.userName
+        ? order.merchantAvatar
+        : order.customerAvatar;
   }
 
   Widget getLeading() {
@@ -82,15 +84,14 @@ class OrderTile extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(getCustomerOrMerchant(),
+        Text(
+          getCustomerOrMerchant(),
           style: TextStyle(color: Colors.grey[600]),
         ),
         SizedBox(
           height: 2,
         ),
-        order.totalPrice.length > 6
-            ? getTrailing()
-            : Container(),
+        order.totalPrice.length > 6 ? getTrailing() : Container(),
         getDateTime(context)
       ],
     );

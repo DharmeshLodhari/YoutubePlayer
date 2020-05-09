@@ -76,12 +76,13 @@ class Product {
   List<String> getProductImages(List data) {
     List<String> images = List();
 
-    if (data != null){
-    for (int i = 0; i < data.length; i++) {
-      if (data[i].containsKey("file")) {
-        images.add(data[i]["file"].toString());
+    if (data != null) {
+      for (int i = 0; i < data.length; i++) {
+        if (data[i].containsKey("file")) {
+          images.add(data[i]["file"].toString());
+        }
       }
-    }}
+    }
     return images;
   }
 
@@ -764,21 +765,20 @@ class Order {
   String totalPrice;
   String currency;
 
-  Order(
-      {
-        this.id,
-        this.status,
-        this.customer,
-        this.merchant,
-        this.customerAvatar,
-        this.merchantAvatar,
-        this.isPaid,
-        this.transactionId,
-        this.note,
-        this.createdAt,
-        this.totalPrice,
-        this.currency,
-      });
+  Order({
+    this.id,
+    this.status,
+    this.customer,
+    this.merchant,
+    this.customerAvatar,
+    this.merchantAvatar,
+    this.isPaid,
+    this.transactionId,
+    this.note,
+    this.createdAt,
+    this.totalPrice,
+    this.currency,
+  });
 
   Order.fromJson(object) {
     this.id = object["id"].toString();

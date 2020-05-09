@@ -39,9 +39,7 @@ class _OrdersListState extends State<OrdersList> {
   RefreshBlocForRequestPayment _refreshBloc;
 
   // variables for to getting filter orderList
-  String filterValue = "all";
-  bool fromMe = false;
-  bool toMe = false;
+  String filterValue = "";
 
   @protected
   void initState() {
@@ -142,8 +140,8 @@ class _OrdersListState extends State<OrdersList> {
                 AppLocalization.of(context).all,
                 style: TextStyle(color: Colors.black),
               ),
-              value: "all",
-              checked: filterValue == "all" ? true : false,
+              value: "",
+              checked: filterValue == "" ? true : false,
             ),
           );
           list.add(
@@ -176,6 +174,49 @@ class _OrdersListState extends State<OrdersList> {
               checked: filterValue == "completed" ? true : false,
             ),
           );
+
+          list.add(
+            CheckedPopupMenuItem(
+              child: Text(
+                "Awaiting Payment",
+                style: TextStyle(color: Colors.black),
+              ),
+              value: "awaiting payment",
+              checked: filterValue == "awaiting payment" ? true : false,
+            ),
+          );
+          list.add(
+            CheckedPopupMenuItem(
+              child: Text(
+                "Canceled",
+                style: TextStyle(color: Colors.black),
+              ),
+              value: "canceled",
+              checked: filterValue == "canceled" ? true : false,
+            ),
+          );
+
+          list.add(
+            CheckedPopupMenuItem(
+              child: Text(
+                "New Order",
+                style: TextStyle(color: Colors.black),
+              ),
+              value: "new order",
+              checked: filterValue == "new order" ? true : false,
+            ),
+          );
+
+          list.add(
+            CheckedPopupMenuItem(
+              child: Text(
+                "On Hold",
+                style: TextStyle(color: Colors.black),
+              ),
+              value: "on hold",
+              checked: filterValue == "on hold" ? true : false,
+            ),
+          );
           return list;
         },
         onSelected: (Object object) {
@@ -183,20 +224,6 @@ class _OrdersListState extends State<OrdersList> {
             if (object != 1) {
               filterValue = object;
               filterValue = object;
-              switch (filterValue) {
-                case "received":
-                  toMe = true;
-                  fromMe = false;
-                  break;
-                case "sent":
-                  toMe = false;
-                  fromMe = true;
-                  break;
-                default:
-                  toMe = false;
-                  fromMe = false;
-                  break;
-              }
               _onRefresh();
             }
           });
@@ -216,8 +243,7 @@ class _OrdersListState extends State<OrdersList> {
               if (index == orderList.length) {
                 return _buildIndicator();
               } else {
-                return _getSlidableWithLists(
-                    context, orderList[index], index);
+                return _getSlidableWithLists(context, orderList[index], index);
               }
             },
             controller: _scrollController,
@@ -245,7 +271,7 @@ class _OrdersListState extends State<OrdersList> {
         setState(() {
           isLoading = true;
         });
-        var result = await _auth.listOrders(next, previous, toMe, fromMe);
+        var result = await _auth.listOrders(next, previous, filterValue);
 
         count = result['count'];
         next = result['next'];
@@ -324,8 +350,7 @@ class _OrdersListState extends State<OrdersList> {
     ];
   }
 
-  List<Widget> listActionSlideActions(
-      Order order, int index) {
+  List<Widget> listActionSlideActions(Order order, int index) {
     return [
       IconSlideAction(
         caption: "Message",
@@ -370,8 +395,7 @@ class _OrdersListState extends State<OrdersList> {
     }
   }
 
-  Future<void> rejectOrder(
-      Order order, int index) async {
+  Future<void> rejectOrder(Order order, int index) async {
     bool result = await showDialogBox(
       context: context,
       title: AppLocalization.of(context).reject,
@@ -398,9 +422,8 @@ class _OrdersListState extends State<OrdersList> {
       }
     }
   }
-  
-  Widget _getSlidableWithLists(
-      BuildContext context, Order order, int index) {
+
+  Widget _getSlidableWithLists(BuildContext context, Order order, int index) {
     return Slidable(
       key: Key(order.customer),
       controller: slidableController,
@@ -422,7 +445,8 @@ class VerticalListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, "/order-detail-page", arguments: {"order": order});
+        Navigator.pushNamed(context, "/order-detail-page",
+            arguments: {"order": order});
       },
       child: Container(
         color: lightBlue(),

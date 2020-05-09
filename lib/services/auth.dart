@@ -234,7 +234,7 @@ class AuthService {
   Future<CustomerProfile> updateCustomerAvatar(File avatar) async {
     User user = await getUser();
     var headers = await getAuthHeaders();
-    var url = baseUrl + "/api/v1/user/update-avatar/" + user.userName  + "/";
+    var url = baseUrl + "/api/v1/user/update-avatar/" + user.userName + "/";
 
     if (avatar != null) {
       var avatarPath = avatar.path;
@@ -1484,7 +1484,7 @@ class AuthService {
   }
 
   Future<dynamic> listOrders(
-      String next, String previous, bool toMe, bool fromMe) async {
+      String next, String previous, String filterValue) async {
     Map<String, String> knownCustomers = {};
 
     var url = "";
@@ -1492,12 +1492,10 @@ class AuthService {
       return null;
     }
     if (next == "") {
+      debugPrint("filterValue:${filterValue}");
       url = baseUrl + "/api/v1/order/";
-      if (toMe) {
-        url = url + "?to_me=true";
-      }
-      if (fromMe) {
-        url = url + "?from_me=true";
+      if (filterValue != "" && filterValue != null) {
+        url = url + "?status__iexact=${filterValue}";
       }
     } else {
       url = next;
@@ -1511,10 +1509,10 @@ class AuthService {
       List items = List();
       var data = jsonData["results"];
       for (int i = 0; i < data.length; i++) {
-          debugPrint(data[i].toString());
-          var order = Order.fromJson(data[i]);
-          items.add(order);
-        }
+        debugPrint(data[i].toString());
+        var order = Order.fromJson(data[i]);
+        items.add(order);
+      }
 
       jsonData["results"] = items;
       return jsonData;
@@ -1532,18 +1530,18 @@ class AuthService {
     var response = await http.get(url, headers: headers);
     var jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
-    List items = List();
-    var data = jsonData["results"];
-    for (int i = 0; i < data.length; i++) {
-      if (data[i].containsKey("manufacturer")) {
-        var product = Product.fromJson(data[i]);
-        items.add(product);
-      }
-      if (data[i]["type"] == "service") {
+      List items = List();
+      var data = jsonData["results"];
+      for (int i = 0; i < data.length; i++) {
+        if (data[i].containsKey("manufacturer")) {
+          var product = Product.fromJson(data[i]);
+          items.add(product);
+        }
+        if (data[i]["type"] == "service") {
 //        var service = Service.fromJson(data[i]);
 //        items.add(service);
+        }
       }
-    }
       return items;
     } else {
       throw jsonData;
@@ -1585,7 +1583,9 @@ class AuthService {
     if (response.statusCode == 201) {
       return jsonData;
     }
-    return [{"error": "error"}];
+    return [
+      {"error": "error"}
+    ];
   }
 
   List<dynamic> getCartItems(var jsonResponse) {

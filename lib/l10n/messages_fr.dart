@@ -20,227 +20,331 @@ class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'fr';
 
   final messages = _notInlinedMessages(_notInlinedMessages);
-  static _notInlinedMessages(_) => <String, Function> {
-    "accept" : MessageLookupByLibrary.simpleMessage("Accept"),
-    "account" : MessageLookupByLibrary.simpleMessage("Account"),
-    "accountBalance" : MessageLookupByLibrary.simpleMessage("Account Balance"),
-    "accountDeletedSuccessfully" : MessageLookupByLibrary.simpleMessage("Account Deleted Successfully"),
-    "accountIsNotDeleted" : MessageLookupByLibrary.simpleMessage("Account is not deleted !!"),
-    "accountIsNotUpdated" : MessageLookupByLibrary.simpleMessage("Account is not updated !!"),
-    "accountNameHint" : MessageLookupByLibrary.simpleMessage("Account Name"),
-    "accountNumber" : MessageLookupByLibrary.simpleMessage("Account Number"),
-    "accountUpdatedSuccessfully" : MessageLookupByLibrary.simpleMessage("Account updated successfully !!"),
-    "add" : MessageLookupByLibrary.simpleMessage("Add"),
-    "addAccount" : MessageLookupByLibrary.simpleMessage("Add Account"),
-    "addBankAccountMsg" : MessageLookupByLibrary.simpleMessage("Ajouter un compte bancaire"),
-    "addImage" : MessageLookupByLibrary.simpleMessage("Add Image"),
-    "addProduct" : MessageLookupByLibrary.simpleMessage("Add Product"),
-    "addProducts" : MessageLookupByLibrary.simpleMessage("Add Products"),
-    "addService" : MessageLookupByLibrary.simpleMessage("Add Service"),
-    "addServices" : MessageLookupByLibrary.simpleMessage("Add Services"),
-    "all" : MessageLookupByLibrary.simpleMessage("All"),
-    "amount" : MessageLookupByLibrary.simpleMessage("Amount"),
-    "anEasyWayToAcceptAndReceivePayment" : MessageLookupByLibrary.simpleMessage("An easy way to accept \n and receive payments."),
-    "appVersion" : MessageLookupByLibrary.simpleMessage("App Version"),
-    "archive" : MessageLookupByLibrary.simpleMessage(""),
-    "archived" : MessageLookupByLibrary.simpleMessage("Archived"),
-    "areYouSureWantToAcceptThisRequest" : MessageLookupByLibrary.simpleMessage("Are you sure want to Accept this request?"),
-    "areYouSureWantToDeleteThisMsg" : MessageLookupByLibrary.simpleMessage("Are you sure want to delete this Message?"),
-    "areYouSureWantToExit" : MessageLookupByLibrary.simpleMessage("Are You Sure Want To Exit?"),
-    "areYouSureWantToRejectThisPayment" : MessageLookupByLibrary.simpleMessage("Are you sure want to reject this request?"),
-    "availableFrom" : MessageLookupByLibrary.simpleMessage("Available From"),
-    "bankAccount" : MessageLookupByLibrary.simpleMessage("Bank Account"),
-    "bankName" : MessageLookupByLibrary.simpleMessage("Bank Name"),
-    "bankPayout" : MessageLookupByLibrary.simpleMessage("Bank Payout"),
-    "buildNumber" : MessageLookupByLibrary.simpleMessage("Build number"),
-    "camera" : MessageLookupByLibrary.simpleMessage("Camera"),
-    "cancel" : MessageLookupByLibrary.simpleMessage("CANCEL"),
-    "category" : MessageLookupByLibrary.simpleMessage("Category"),
-    "comingSoon" : MessageLookupByLibrary.simpleMessage("Coming Soon!"),
-    "composeMessage" : MessageLookupByLibrary.simpleMessage("Compose Message"),
-    "confirmPassword" : MessageLookupByLibrary.simpleMessage("Confirm Password"),
-    "continueMsg" : MessageLookupByLibrary.simpleMessage("Continue"),
-    "copied" : MessageLookupByLibrary.simpleMessage("Copied!"),
-    "copyUrl" : MessageLookupByLibrary.simpleMessage("Copy Url"),
-    "date" : MessageLookupByLibrary.simpleMessage("Date"),
-    "day" : MessageLookupByLibrary.simpleMessage("Day"),
-    "days" : MessageLookupByLibrary.simpleMessage("Days"),
-    "defaultMsg" : MessageLookupByLibrary.simpleMessage("Default"),
-    "delete" : MessageLookupByLibrary.simpleMessage("Delete"),
-    "describeYourServiceHere" : MessageLookupByLibrary.simpleMessage("Describe your service here.."),
-    "description" : MessageLookupByLibrary.simpleMessage("Description"),
-    "descriptionMustNotEmpty" : MessageLookupByLibrary.simpleMessage("Description must not empty"),
-    "details" : MessageLookupByLibrary.simpleMessage("Details"),
-    "done" : MessageLookupByLibrary.simpleMessage("Done"),
-    "driverLicence" : MessageLookupByLibrary.simpleMessage("Driver\'s License"),
-    "editProduct" : MessageLookupByLibrary.simpleMessage("Edit Product"),
-    "editProfile" : MessageLookupByLibrary.simpleMessage("Edit Profile"),
-    "editService" : MessageLookupByLibrary.simpleMessage("Edit Service"),
-    "enterAmount" : MessageLookupByLibrary.simpleMessage("Enter Amount"),
-    "enterPassCode" : MessageLookupByLibrary.simpleMessage("Enter Passcode"),
-    "enterServiceName" : MessageLookupByLibrary.simpleMessage("Enter Service Name"),
-    "enterValidNameMatchingAccountNumber" : MessageLookupByLibrary.simpleMessage("Enter a valid name matching account number."),
-    "enterYourOtpHere" : MessageLookupByLibrary.simpleMessage("Enter Your OTP Here"),
-    "enterYourPhoneNumber" : MessageLookupByLibrary.simpleMessage("Enter Your Phone Number"),
-    "error" : MessageLookupByLibrary.simpleMessage("Error"),
-    "errorMsg1" : MessageLookupByLibrary.simpleMessage("An error has occurred please try again"),
-    "errorMsg2" : MessageLookupByLibrary.simpleMessage("Invalid Bank Details !!"),
-    "exit" : MessageLookupByLibrary.simpleMessage("Exit"),
-    "expenditure" : MessageLookupByLibrary.simpleMessage("Expenditure"),
-    "explore" : MessageLookupByLibrary.simpleMessage("Explore"),
-    "facePhotoPage" : MessageLookupByLibrary.simpleMessage("Face photo page"),
-    "filter" : MessageLookupByLibrary.simpleMessage("Filter"),
-    "find" : MessageLookupByLibrary.simpleMessage("Find"),
-    "finish" : MessageLookupByLibrary.simpleMessage("Finish"),
-    "flip" : MessageLookupByLibrary.simpleMessage("Flip"),
-    "forgotPassword" : MessageLookupByLibrary.simpleMessage("Forgot Password"),
-    "fridayAbb" : MessageLookupByLibrary.simpleMessage("Fr"),
-    "frontAndBack" : MessageLookupByLibrary.simpleMessage("Front and Back"),
-    "fullName" : MessageLookupByLibrary.simpleMessage("Full Name"),
-    "home" : MessageLookupByLibrary.simpleMessage("Home"),
-    "identityCard" : MessageLookupByLibrary.simpleMessage("Identical Card"),
-    "income" : MessageLookupByLibrary.simpleMessage("Income"),
-    "internetConnectionNotAvailable" : MessageLookupByLibrary.simpleMessage("Internet Connection is not available"),
-    "introMsg1" : MessageLookupByLibrary.simpleMessage("Slydo allows you to send and receive\npayments instantly in Africa"),
-    "introMsg2" : MessageLookupByLibrary.simpleMessage("Slydo allows you to send and receive\npayments instantly in Africa"),
-    "invalidAmount" : MessageLookupByLibrary.simpleMessage("Invalid Amount"),
-    "invalidDetails" : MessageLookupByLibrary.simpleMessage("Invalid Details !!"),
-    "invalidOtp" : MessageLookupByLibrary.simpleMessage("Invalid OTP"),
-    "invalidPassword" : MessageLookupByLibrary.simpleMessage("Invalid Password"),
-    "invalidPhoneNumber" : MessageLookupByLibrary.simpleMessage("Invalid phone number"),
-    "invalidRecipient" : MessageLookupByLibrary.simpleMessage("Invalid recipient"),
-    "isAvailable" : MessageLookupByLibrary.simpleMessage("is Available"),
-    "login" : MessageLookupByLibrary.simpleMessage("Login"),
-    "logout" : MessageLookupByLibrary.simpleMessage("Logout"),
-    "makeDefault" : MessageLookupByLibrary.simpleMessage("Make default"),
-    "manufacturer" : MessageLookupByLibrary.simpleMessage("Manufacturer"),
-    "message" : MessageLookupByLibrary.simpleMessage("Message"),
-    "messageIsDeletedSuccessfully" : MessageLookupByLibrary.simpleMessage("Message is deleted successfully!!"),
-    "messages" : MessageLookupByLibrary.simpleMessage("Messages"),
-    "mondayAbb" : MessageLookupByLibrary.simpleMessage("Mo"),
-    "name" : MessageLookupByLibrary.simpleMessage("Name"),
-    "navigate" : MessageLookupByLibrary.simpleMessage("NAVIGATE"),
-    "needToUseYourMobileToTake" : MessageLookupByLibrary.simpleMessage("Need to use your mobile to take photos?"),
-    "newPassword" : MessageLookupByLibrary.simpleMessage("New Password"),
-    "next" : MessageLookupByLibrary.simpleMessage("Next"),
-    "no" : MessageLookupByLibrary.simpleMessage("No"),
-    "noMessages" : MessageLookupByLibrary.simpleMessage("No Messages"),
-    "noPendingPaymentRequest" : MessageLookupByLibrary.simpleMessage("No Pending Payment Request"),
-    "noProducts" : MessageLookupByLibrary.simpleMessage("No Products"),
-    "noResultFound" : MessageLookupByLibrary.simpleMessage("No Result Found!"),
-    "noServices" : MessageLookupByLibrary.simpleMessage("No Services"),
-    "noTransactionDoneThisWeek" : MessageLookupByLibrary.simpleMessage("No Transactions done this week"),
-    "note" : MessageLookupByLibrary.simpleMessage("Note"),
-    "noteForUser" : MessageLookupByLibrary.simpleMessage("you are about to transfer money into your bank account"),
-    "passportMsg" : MessageLookupByLibrary.simpleMessage("Passport"),
-    "passportPhotoPage" : MessageLookupByLibrary.simpleMessage("Passport Photo page"),
-    "password" : MessageLookupByLibrary.simpleMessage("Password"),
-    "passwordMismatch" : MessageLookupByLibrary.simpleMessage("Password Mismatch"),
-    "passwordMustBeOfFourDigit" : MessageLookupByLibrary.simpleMessage("Password Must Be Of 4 Digit"),
-    "passwordShouldNotEmpty" : MessageLookupByLibrary.simpleMessage("Password Should Not Empty"),
-    "paymentRequestAccepted" : MessageLookupByLibrary.simpleMessage("Payment Request Accepted !!"),
-    "paymentRequestRejected" : MessageLookupByLibrary.simpleMessage("Payment Request Rejected !!"),
-    "paymentRequests" : MessageLookupByLibrary.simpleMessage("Payment Requests"),
-    "payout" : MessageLookupByLibrary.simpleMessage("Payout"),
-    "payoutHistoryEmpty" : MessageLookupByLibrary.simpleMessage("Payout history empty !!"),
-    "payoutList" : MessageLookupByLibrary.simpleMessage("Payout List"),
-    "phoneNumber" : MessageLookupByLibrary.simpleMessage("Phone Number"),
-    "pleaseAddImage" : MessageLookupByLibrary.simpleMessage("Please Add Image"),
-    "pleaseEnterManufacturerName" : MessageLookupByLibrary.simpleMessage("Please Enter Manufacturer Name"),
-    "pleaseEnterOtp" : MessageLookupByLibrary.simpleMessage("Please Enter OTP"),
-    "pleaseEnterProductName" : MessageLookupByLibrary.simpleMessage("Please Enter Product Name"),
-    "pleaseEnterServiceName" : MessageLookupByLibrary.simpleMessage("Please Enter Service Name"),
-    "pleaseEnterValidAmout" : MessageLookupByLibrary.simpleMessage("Please Enter Valid Amount"),
-    "pleaseSelectProductCategoryAndCondition" : MessageLookupByLibrary.simpleMessage("Please Select Product Category and Condition"),
-    "pleaseTypeSomethingToGetResult" : MessageLookupByLibrary.simpleMessage("Please type something to get results"),
-    "previous" : MessageLookupByLibrary.simpleMessage("Previous"),
-    "price" : MessageLookupByLibrary.simpleMessage("Price"),
-    "priceOfService" : MessageLookupByLibrary.simpleMessage("Price Of Service"),
-    "productAddedSuccessfully" : MessageLookupByLibrary.simpleMessage("Product Added Successfully"),
-    "productCondition" : MessageLookupByLibrary.simpleMessage("Product Condition"),
-    "productDeletedSuccessfully" : MessageLookupByLibrary.simpleMessage("Product deleted Successfully !!"),
-    "productDetail" : MessageLookupByLibrary.simpleMessage("Product Detail"),
-    "productEditedSuccessfully" : MessageLookupByLibrary.simpleMessage("Product Edited Successfully"),
-    "productName" : MessageLookupByLibrary.simpleMessage("Product name"),
-    "products" : MessageLookupByLibrary.simpleMessage("Products"),
-    "received" : MessageLookupByLibrary.simpleMessage("Received"),
-    "recipient" : MessageLookupByLibrary.simpleMessage("Recipient"),
-    "reference" : MessageLookupByLibrary.simpleMessage("Reference"),
-    "register" : MessageLookupByLibrary.simpleMessage("Register"),
-    "reject" : MessageLookupByLibrary.simpleMessage("Reject"),
-    "rememberMe" : MessageLookupByLibrary.simpleMessage("Remember Me"),
-    "request" : MessageLookupByLibrary.simpleMessage("Request"),
-    "requestNotSend" : MessageLookupByLibrary.simpleMessage("Request not send"),
-    "requestPayment" : MessageLookupByLibrary.simpleMessage("Request Payment"),
-    "requests" : MessageLookupByLibrary.simpleMessage("Requests"),
-    "resetPassword" : MessageLookupByLibrary.simpleMessage("Reset Password"),
-    "saturdayAbb" : MessageLookupByLibrary.simpleMessage("Sa"),
-    "scanQrCode" : MessageLookupByLibrary.simpleMessage("Scan QR Code"),
-    "search" : MessageLookupByLibrary.simpleMessage("Search"),
-    "selectCategory" : MessageLookupByLibrary.simpleMessage("Select Category"),
-    "selectTheImageSource" : MessageLookupByLibrary.simpleMessage("Select the image Source"),
-    "selectTypeOfDocument" : MessageLookupByLibrary.simpleMessage("select the type of document you want to upload"),
-    "selectYourCountry" : MessageLookupByLibrary.simpleMessage("Select your Country"),
-    "selectYourPhoneCode" : MessageLookupByLibrary.simpleMessage("Select your phone code"),
-    "sellersOtherProduct" : MessageLookupByLibrary.simpleMessage("Seller\'s Other Products"),
-    "sellersOtherServices" : MessageLookupByLibrary.simpleMessage("Seller\'s Other Services"),
-    "send" : MessageLookupByLibrary.simpleMessage("Send"),
-    "sendMoney" : MessageLookupByLibrary.simpleMessage("Send Money"),
-    "sendPayment" : MessageLookupByLibrary.simpleMessage("Send Payment"),
-    "sent" : MessageLookupByLibrary.simpleMessage("Sent"),
-    "serverError" : MessageLookupByLibrary.simpleMessage("Server Error Please try after some time !"),
-    "serviceAddedSuccessfully" : MessageLookupByLibrary.simpleMessage("Service Added Successfully"),
-    "serviceDeletedSuccessfully" : MessageLookupByLibrary.simpleMessage("Service Deleted Successfully"),
-    "serviceDetail" : MessageLookupByLibrary.simpleMessage("Service Detail"),
-    "serviceEditedSuccessfully" : MessageLookupByLibrary.simpleMessage("Service Edited Successfully"),
-    "services" : MessageLookupByLibrary.simpleMessage("Services"),
-    "setDefaultAccountMsg" : MessageLookupByLibrary.simpleMessage("Set as default account"),
-    "settings" : MessageLookupByLibrary.simpleMessage("Settings"),
-    "shortDescription" : MessageLookupByLibrary.simpleMessage("Short Description"),
-    "signUp" : MessageLookupByLibrary.simpleMessage("Sign Up"),
-    "skip" : MessageLookupByLibrary.simpleMessage("Skip"),
-    "somethingWentWrong" : MessageLookupByLibrary.simpleMessage("Something went Wrong !!"),
-    "star" : MessageLookupByLibrary.simpleMessage("star"),
-    "starred" : MessageLookupByLibrary.simpleMessage("Starred"),
-    "status" : MessageLookupByLibrary.simpleMessage("Status"),
-    "subject" : MessageLookupByLibrary.simpleMessage("Subject"),
-    "submitButton" : MessageLookupByLibrary.simpleMessage("Submit"),
-    "sundayAbb" : MessageLookupByLibrary.simpleMessage("Su"),
-    "tapHereToContinue" : MessageLookupByLibrary.simpleMessage("Tap hear to continue"),
-    "termsAndCondition" : MessageLookupByLibrary.simpleMessage("By clicking Register you are agreeing to the Terms and Conditions."),
-    "thisAccountIsAlreadyDefaultAccount" : MessageLookupByLibrary.simpleMessage("This Account is Already Default Account"),
-    "thursdayAbb" : MessageLookupByLibrary.simpleMessage("Th"),
-    "time" : MessageLookupByLibrary.simpleMessage("Time"),
-    "to" : MessageLookupByLibrary.simpleMessage("To"),
-    "transaction" : MessageLookupByLibrary.simpleMessage("Transaction"),
-    "transactionGraph" : MessageLookupByLibrary.simpleMessage("Transaction Graph"),
-    "transactionHistoryEmpty" : MessageLookupByLibrary.simpleMessage("Transaction history empty"),
-    "transactions" : MessageLookupByLibrary.simpleMessage("Transactions"),
-    "tuesdayAbb" : MessageLookupByLibrary.simpleMessage("Tu"),
-    "typeYourMsgHere" : MessageLookupByLibrary.simpleMessage("Type your message here...."),
-    "unarchive" : MessageLookupByLibrary.simpleMessage("unarchive"),
-    "unstar" : MessageLookupByLibrary.simpleMessage("unstar"),
-    "update" : MessageLookupByLibrary.simpleMessage("Update"),
-    "uploadPhotoFromDevice" : MessageLookupByLibrary.simpleMessage("Upload photo from your device"),
-    "useFourDigitNumber" : MessageLookupByLibrary.simpleMessage("Use 4 Digit Number"),
-    "userIsNotRegistered" : MessageLookupByLibrary.simpleMessage("User is Not Registered !!"),
-    "userIsNotSaved" : MessageLookupByLibrary.simpleMessage("User Not Saved !!!"),
-    "userPhotoPage" : MessageLookupByLibrary.simpleMessage("User Photo page"),
-    "users" : MessageLookupByLibrary.simpleMessage("Users"),
-    "validationTextMessage" : MessageLookupByLibrary.simpleMessage("Enter a valid name matching account number."),
-    "validationTextMessage1" : MessageLookupByLibrary.simpleMessage("Enter a valid account number."),
-    "verifyOtp" : MessageLookupByLibrary.simpleMessage("Verify OTP"),
-    "verifyYourIdentity" : MessageLookupByLibrary.simpleMessage("Verify your identity"),
-    "verifyYourSelfMsg" : MessageLookupByLibrary.simpleMessage("Verify Yourself"),
-    "viewTransactions" : MessageLookupByLibrary.simpleMessage("View transactions"),
-    "wednesdayAbb" : MessageLookupByLibrary.simpleMessage("We"),
-    "weeklySpending" : MessageLookupByLibrary.simpleMessage("Weekly Spending"),
-    "weeklySpendingChart" : MessageLookupByLibrary.simpleMessage("Weekly Spending Chart"),
-    "wrongPassword" : MessageLookupByLibrary.simpleMessage("Wrong Password !!"),
-    "yes" : MessageLookupByLibrary.simpleMessage("Yes"),
-    "youCanAddMaximumTwoAccount" : MessageLookupByLibrary.simpleMessage("You can add maximum two bank account"),
-    "youCanNotDeleteOnlyBankAccount" : MessageLookupByLibrary.simpleMessage("You can not delete only bank account"),
-    "youDontHaveAnyAccountPleaseAddOne" : MessageLookupByLibrary.simpleMessage("You Don\'t have any Bank Account Please Add one"),
-    "youHaveReachedBottomOfTheList" : MessageLookupByLibrary.simpleMessage("Your have reached the end of the list")
-  };
+  static _notInlinedMessages(_) => <String, Function>{
+        "accept": MessageLookupByLibrary.simpleMessage("Accept"),
+        "account": MessageLookupByLibrary.simpleMessage("Account"),
+        "accountBalance":
+            MessageLookupByLibrary.simpleMessage("Account Balance"),
+        "accountDeletedSuccessfully": MessageLookupByLibrary.simpleMessage(
+            "Account Deleted Successfully"),
+        "accountIsNotDeleted":
+            MessageLookupByLibrary.simpleMessage("Account is not deleted !!"),
+        "accountIsNotUpdated":
+            MessageLookupByLibrary.simpleMessage("Account is not updated !!"),
+        "accountNameHint": MessageLookupByLibrary.simpleMessage("Account Name"),
+        "accountNumber": MessageLookupByLibrary.simpleMessage("Account Number"),
+        "accountUpdatedSuccessfully": MessageLookupByLibrary.simpleMessage(
+            "Account updated successfully !!"),
+        "add": MessageLookupByLibrary.simpleMessage("Add"),
+        "addAccount": MessageLookupByLibrary.simpleMessage("Add Account"),
+        "addBankAccountMsg":
+            MessageLookupByLibrary.simpleMessage("Ajouter un compte bancaire"),
+        "addImage": MessageLookupByLibrary.simpleMessage("Add Image"),
+        "addProduct": MessageLookupByLibrary.simpleMessage("Add Product"),
+        "addProducts": MessageLookupByLibrary.simpleMessage("Add Products"),
+        "addService": MessageLookupByLibrary.simpleMessage("Add Service"),
+        "addServices": MessageLookupByLibrary.simpleMessage("Add Services"),
+        "all": MessageLookupByLibrary.simpleMessage("All"),
+        "amount": MessageLookupByLibrary.simpleMessage("Amount"),
+        "anEasyWayToAcceptAndReceivePayment":
+            MessageLookupByLibrary.simpleMessage(
+                "An easy way to accept \n and receive payments."),
+        "appVersion": MessageLookupByLibrary.simpleMessage("App Version"),
+        "archive": MessageLookupByLibrary.simpleMessage(""),
+        "archived": MessageLookupByLibrary.simpleMessage("Archived"),
+        "areYouSureWantToAcceptThisRequest":
+            MessageLookupByLibrary.simpleMessage(
+                "Are you sure want to Accept this request?"),
+        "areYouSureWantToDeleteThisMsg": MessageLookupByLibrary.simpleMessage(
+            "Are you sure want to delete this Message?"),
+        "areYouSureWantToExit":
+            MessageLookupByLibrary.simpleMessage("Are You Sure Want To Exit?"),
+        "areYouSureWantToRejectThisPayment":
+            MessageLookupByLibrary.simpleMessage(
+                "Are you sure want to reject this request?"),
+        "availableFrom": MessageLookupByLibrary.simpleMessage("Available From"),
+        "bankAccount": MessageLookupByLibrary.simpleMessage("Bank Account"),
+        "bankName": MessageLookupByLibrary.simpleMessage("Bank Name"),
+        "bankPayout": MessageLookupByLibrary.simpleMessage("Bank Payout"),
+        "buildNumber": MessageLookupByLibrary.simpleMessage("Build number"),
+        "camera": MessageLookupByLibrary.simpleMessage("Camera"),
+        "cancel": MessageLookupByLibrary.simpleMessage("CANCEL"),
+        "category": MessageLookupByLibrary.simpleMessage("Category"),
+        "comingSoon": MessageLookupByLibrary.simpleMessage("Coming Soon!"),
+        "composeMessage":
+            MessageLookupByLibrary.simpleMessage("Compose Message"),
+        "confirmPassword":
+            MessageLookupByLibrary.simpleMessage("Confirm Password"),
+        "continueMsg": MessageLookupByLibrary.simpleMessage("Continue"),
+        "copied": MessageLookupByLibrary.simpleMessage("Copied!"),
+        "copyUrl": MessageLookupByLibrary.simpleMessage("Copy Url"),
+        "date": MessageLookupByLibrary.simpleMessage("Date"),
+        "day": MessageLookupByLibrary.simpleMessage("Day"),
+        "days": MessageLookupByLibrary.simpleMessage("Days"),
+        "defaultMsg": MessageLookupByLibrary.simpleMessage("Default"),
+        "delete": MessageLookupByLibrary.simpleMessage("Delete"),
+        "describeYourServiceHere": MessageLookupByLibrary.simpleMessage(
+            "Describe your service here.."),
+        "description": MessageLookupByLibrary.simpleMessage("Description"),
+        "descriptionMustNotEmpty":
+            MessageLookupByLibrary.simpleMessage("Description must not empty"),
+        "details": MessageLookupByLibrary.simpleMessage("Details"),
+        "done": MessageLookupByLibrary.simpleMessage("Done"),
+        "driverLicence":
+            MessageLookupByLibrary.simpleMessage("Driver\'s License"),
+        "editProduct": MessageLookupByLibrary.simpleMessage("Edit Product"),
+        "editProfile": MessageLookupByLibrary.simpleMessage("Edit Profile"),
+        "editService": MessageLookupByLibrary.simpleMessage("Edit Service"),
+        "enterAmount": MessageLookupByLibrary.simpleMessage("Enter Amount"),
+        "enterPassCode": MessageLookupByLibrary.simpleMessage("Enter Passcode"),
+        "enterServiceName":
+            MessageLookupByLibrary.simpleMessage("Enter Service Name"),
+        "enterValidNameMatchingAccountNumber":
+            MessageLookupByLibrary.simpleMessage(
+                "Enter a valid name matching account number."),
+        "enterYourOtpHere":
+            MessageLookupByLibrary.simpleMessage("Enter Your OTP Here"),
+        "enterYourPhoneNumber":
+            MessageLookupByLibrary.simpleMessage("Enter Your Phone Number"),
+        "error": MessageLookupByLibrary.simpleMessage("Error"),
+        "errorMsg1": MessageLookupByLibrary.simpleMessage(
+            "An error has occurred please try again"),
+        "errorMsg2":
+            MessageLookupByLibrary.simpleMessage("Invalid Bank Details !!"),
+        "exit": MessageLookupByLibrary.simpleMessage("Exit"),
+        "expenditure": MessageLookupByLibrary.simpleMessage("Expenditure"),
+        "explore": MessageLookupByLibrary.simpleMessage("Explore"),
+        "facePhotoPage":
+            MessageLookupByLibrary.simpleMessage("Face photo page"),
+        "filter": MessageLookupByLibrary.simpleMessage("Filter"),
+        "find": MessageLookupByLibrary.simpleMessage("Find"),
+        "finish": MessageLookupByLibrary.simpleMessage("Finish"),
+        "flip": MessageLookupByLibrary.simpleMessage("Flip"),
+        "forgotPassword":
+            MessageLookupByLibrary.simpleMessage("Forgot Password"),
+        "fridayAbb": MessageLookupByLibrary.simpleMessage("Fr"),
+        "frontAndBack": MessageLookupByLibrary.simpleMessage("Front and Back"),
+        "fullName": MessageLookupByLibrary.simpleMessage("Full Name"),
+        "home": MessageLookupByLibrary.simpleMessage("Home"),
+        "identityCard": MessageLookupByLibrary.simpleMessage("Identical Card"),
+        "income": MessageLookupByLibrary.simpleMessage("Income"),
+        "internetConnectionNotAvailable": MessageLookupByLibrary.simpleMessage(
+            "Internet Connection is not available"),
+        "introMsg1": MessageLookupByLibrary.simpleMessage(
+            "Slydo allows you to send and receive\npayments instantly in Africa"),
+        "introMsg2": MessageLookupByLibrary.simpleMessage(
+            "Slydo allows you to send and receive\npayments instantly in Africa"),
+        "invalidAmount": MessageLookupByLibrary.simpleMessage("Invalid Amount"),
+        "invalidDetails":
+            MessageLookupByLibrary.simpleMessage("Invalid Details !!"),
+        "invalidOtp": MessageLookupByLibrary.simpleMessage("Invalid OTP"),
+        "invalidPassword":
+            MessageLookupByLibrary.simpleMessage("Invalid Password"),
+        "invalidPhoneNumber":
+            MessageLookupByLibrary.simpleMessage("Invalid phone number"),
+        "invalidRecipient":
+            MessageLookupByLibrary.simpleMessage("Invalid recipient"),
+        "isAvailable": MessageLookupByLibrary.simpleMessage("is Available"),
+        "login": MessageLookupByLibrary.simpleMessage("Login"),
+        "logout": MessageLookupByLibrary.simpleMessage("Logout"),
+        "makeDefault": MessageLookupByLibrary.simpleMessage("Make default"),
+        "manufacturer": MessageLookupByLibrary.simpleMessage("Manufacturer"),
+        "message": MessageLookupByLibrary.simpleMessage("Message"),
+        "messageIsDeletedSuccessfully": MessageLookupByLibrary.simpleMessage(
+            "Message is deleted successfully!!"),
+        "messages": MessageLookupByLibrary.simpleMessage("Messages"),
+        "mondayAbb": MessageLookupByLibrary.simpleMessage("Mo"),
+        "name": MessageLookupByLibrary.simpleMessage("Name"),
+        "navigate": MessageLookupByLibrary.simpleMessage("NAVIGATE"),
+        "needToUseYourMobileToTake": MessageLookupByLibrary.simpleMessage(
+            "Need to use your mobile to take photos?"),
+        "newPassword": MessageLookupByLibrary.simpleMessage("New Password"),
+        "next": MessageLookupByLibrary.simpleMessage("Next"),
+        "no": MessageLookupByLibrary.simpleMessage("No"),
+        "noMessages": MessageLookupByLibrary.simpleMessage("No Messages"),
+        "noPendingPaymentRequest":
+            MessageLookupByLibrary.simpleMessage("No Pending Payment Request"),
+        "noProducts": MessageLookupByLibrary.simpleMessage("No Products"),
+        "noResultFound":
+            MessageLookupByLibrary.simpleMessage("No Result Found!"),
+        "noServices": MessageLookupByLibrary.simpleMessage("No Services"),
+        "noTransactionDoneThisWeek": MessageLookupByLibrary.simpleMessage(
+            "No Transactions done this week"),
+        "note": MessageLookupByLibrary.simpleMessage("Note"),
+        "noteForUser": MessageLookupByLibrary.simpleMessage(
+            "you are about to transfer money into your bank account"),
+        "passportMsg": MessageLookupByLibrary.simpleMessage("Passport"),
+        "passportPhotoPage":
+            MessageLookupByLibrary.simpleMessage("Passport Photo page"),
+        "password": MessageLookupByLibrary.simpleMessage("Password"),
+        "passwordMismatch":
+            MessageLookupByLibrary.simpleMessage("Password Mismatch"),
+        "passwordMustBeOfFourDigit":
+            MessageLookupByLibrary.simpleMessage("Password Must Be Of 4 Digit"),
+        "passwordShouldNotEmpty":
+            MessageLookupByLibrary.simpleMessage("Password Should Not Empty"),
+        "paymentRequestAccepted":
+            MessageLookupByLibrary.simpleMessage("Payment Request Accepted !!"),
+        "paymentRequestRejected":
+            MessageLookupByLibrary.simpleMessage("Payment Request Rejected !!"),
+        "paymentRequests":
+            MessageLookupByLibrary.simpleMessage("Payment Requests"),
+        "payout": MessageLookupByLibrary.simpleMessage("Payout"),
+        "payoutHistoryEmpty":
+            MessageLookupByLibrary.simpleMessage("Payout history empty !!"),
+        "payoutList": MessageLookupByLibrary.simpleMessage("Payout List"),
+        "phoneNumber": MessageLookupByLibrary.simpleMessage("Phone Number"),
+        "pleaseAddImage":
+            MessageLookupByLibrary.simpleMessage("Please Add Image"),
+        "pleaseEnterManufacturerName": MessageLookupByLibrary.simpleMessage(
+            "Please Enter Manufacturer Name"),
+        "pleaseEnterOtp":
+            MessageLookupByLibrary.simpleMessage("Please Enter OTP"),
+        "pleaseEnterProductName":
+            MessageLookupByLibrary.simpleMessage("Please Enter Product Name"),
+        "pleaseEnterServiceName":
+            MessageLookupByLibrary.simpleMessage("Please Enter Service Name"),
+        "pleaseEnterValidAmout":
+            MessageLookupByLibrary.simpleMessage("Please Enter Valid Amount"),
+        "pleaseSelectProductCategoryAndCondition":
+            MessageLookupByLibrary.simpleMessage(
+                "Please Select Product Category and Condition"),
+        "pleaseTypeSomethingToGetResult": MessageLookupByLibrary.simpleMessage(
+            "Please type something to get results"),
+        "previous": MessageLookupByLibrary.simpleMessage("Previous"),
+        "price": MessageLookupByLibrary.simpleMessage("Price"),
+        "priceOfService":
+            MessageLookupByLibrary.simpleMessage("Price Of Service"),
+        "productAddedSuccessfully":
+            MessageLookupByLibrary.simpleMessage("Product Added Successfully"),
+        "productCondition":
+            MessageLookupByLibrary.simpleMessage("Product Condition"),
+        "productDeletedSuccessfully": MessageLookupByLibrary.simpleMessage(
+            "Product deleted Successfully !!"),
+        "productDetail": MessageLookupByLibrary.simpleMessage("Product Detail"),
+        "productEditedSuccessfully":
+            MessageLookupByLibrary.simpleMessage("Product Edited Successfully"),
+        "productName": MessageLookupByLibrary.simpleMessage("Product name"),
+        "products": MessageLookupByLibrary.simpleMessage("Products"),
+        "received": MessageLookupByLibrary.simpleMessage("Received"),
+        "recipient": MessageLookupByLibrary.simpleMessage("Recipient"),
+        "reference": MessageLookupByLibrary.simpleMessage("Reference"),
+        "register": MessageLookupByLibrary.simpleMessage("Register"),
+        "reject": MessageLookupByLibrary.simpleMessage("Reject"),
+        "rememberMe": MessageLookupByLibrary.simpleMessage("Remember Me"),
+        "request": MessageLookupByLibrary.simpleMessage("Request"),
+        "requestNotSend":
+            MessageLookupByLibrary.simpleMessage("Request not send"),
+        "requestPayment":
+            MessageLookupByLibrary.simpleMessage("Request Payment"),
+        "requests": MessageLookupByLibrary.simpleMessage("Requests"),
+        "resetPassword": MessageLookupByLibrary.simpleMessage("Reset Password"),
+        "saturdayAbb": MessageLookupByLibrary.simpleMessage("Sa"),
+        "scanQrCode": MessageLookupByLibrary.simpleMessage("Scan QR Code"),
+        "search": MessageLookupByLibrary.simpleMessage("Search"),
+        "selectCategory":
+            MessageLookupByLibrary.simpleMessage("Select Category"),
+        "selectTheImageSource":
+            MessageLookupByLibrary.simpleMessage("Select the image Source"),
+        "selectTypeOfDocument": MessageLookupByLibrary.simpleMessage(
+            "select the type of document you want to upload"),
+        "selectYourCountry":
+            MessageLookupByLibrary.simpleMessage("Select your Country"),
+        "selectYourPhoneCode":
+            MessageLookupByLibrary.simpleMessage("Select your phone code"),
+        "sellersOtherProduct":
+            MessageLookupByLibrary.simpleMessage("Seller\'s Other Products"),
+        "sellersOtherServices":
+            MessageLookupByLibrary.simpleMessage("Seller\'s Other Services"),
+        "send": MessageLookupByLibrary.simpleMessage("Send"),
+        "sendMoney": MessageLookupByLibrary.simpleMessage("Send Money"),
+        "sendPayment": MessageLookupByLibrary.simpleMessage("Send Payment"),
+        "sent": MessageLookupByLibrary.simpleMessage("Sent"),
+        "serverError": MessageLookupByLibrary.simpleMessage(
+            "Server Error Please try after some time !"),
+        "serviceAddedSuccessfully":
+            MessageLookupByLibrary.simpleMessage("Service Added Successfully"),
+        "serviceDeletedSuccessfully": MessageLookupByLibrary.simpleMessage(
+            "Service Deleted Successfully"),
+        "serviceDetail": MessageLookupByLibrary.simpleMessage("Service Detail"),
+        "serviceEditedSuccessfully":
+            MessageLookupByLibrary.simpleMessage("Service Edited Successfully"),
+        "services": MessageLookupByLibrary.simpleMessage("Services"),
+        "setDefaultAccountMsg":
+            MessageLookupByLibrary.simpleMessage("Set as default account"),
+        "settings": MessageLookupByLibrary.simpleMessage("Settings"),
+        "shortDescription":
+            MessageLookupByLibrary.simpleMessage("Short Description"),
+        "signUp": MessageLookupByLibrary.simpleMessage("Sign Up"),
+        "skip": MessageLookupByLibrary.simpleMessage("Skip"),
+        "somethingWentWrong":
+            MessageLookupByLibrary.simpleMessage("Something went Wrong !!"),
+        "star": MessageLookupByLibrary.simpleMessage("star"),
+        "starred": MessageLookupByLibrary.simpleMessage("Starred"),
+        "status": MessageLookupByLibrary.simpleMessage("Status"),
+        "subject": MessageLookupByLibrary.simpleMessage("Subject"),
+        "submitButton": MessageLookupByLibrary.simpleMessage("Submit"),
+        "sundayAbb": MessageLookupByLibrary.simpleMessage("Su"),
+        "tapHereToContinue":
+            MessageLookupByLibrary.simpleMessage("Tap hear to continue"),
+        "termsAndCondition": MessageLookupByLibrary.simpleMessage(
+            "By clicking Register you are agreeing to the Terms and Conditions."),
+        "thisAccountIsAlreadyDefaultAccount":
+            MessageLookupByLibrary.simpleMessage(
+                "This Account is Already Default Account"),
+        "thursdayAbb": MessageLookupByLibrary.simpleMessage("Th"),
+        "time": MessageLookupByLibrary.simpleMessage("Time"),
+        "to": MessageLookupByLibrary.simpleMessage("To"),
+        "transaction": MessageLookupByLibrary.simpleMessage("Transaction"),
+        "transactionGraph":
+            MessageLookupByLibrary.simpleMessage("Transaction Graph"),
+        "transactionHistoryEmpty":
+            MessageLookupByLibrary.simpleMessage("Transaction history empty"),
+        "transactions": MessageLookupByLibrary.simpleMessage("Transactions"),
+        "tuesdayAbb": MessageLookupByLibrary.simpleMessage("Tu"),
+        "typeYourMsgHere":
+            MessageLookupByLibrary.simpleMessage("Type your message here...."),
+        "unarchive": MessageLookupByLibrary.simpleMessage("unarchive"),
+        "unstar": MessageLookupByLibrary.simpleMessage("unstar"),
+        "update": MessageLookupByLibrary.simpleMessage("Update"),
+        "uploadPhotoFromDevice": MessageLookupByLibrary.simpleMessage(
+            "Upload photo from your device"),
+        "useFourDigitNumber":
+            MessageLookupByLibrary.simpleMessage("Use 4 Digit Number"),
+        "userIsNotRegistered":
+            MessageLookupByLibrary.simpleMessage("User is Not Registered !!"),
+        "userIsNotSaved":
+            MessageLookupByLibrary.simpleMessage("User Not Saved !!!"),
+        "userPhotoPage":
+            MessageLookupByLibrary.simpleMessage("User Photo page"),
+        "users": MessageLookupByLibrary.simpleMessage("Users"),
+        "validationTextMessage": MessageLookupByLibrary.simpleMessage(
+            "Enter a valid name matching account number."),
+        "validationTextMessage1": MessageLookupByLibrary.simpleMessage(
+            "Enter a valid account number."),
+        "verifyOtp": MessageLookupByLibrary.simpleMessage("Verify OTP"),
+        "verifyYourIdentity":
+            MessageLookupByLibrary.simpleMessage("Verify your identity"),
+        "verifyYourSelfMsg":
+            MessageLookupByLibrary.simpleMessage("Verify Yourself"),
+        "viewTransactions":
+            MessageLookupByLibrary.simpleMessage("View transactions"),
+        "wednesdayAbb": MessageLookupByLibrary.simpleMessage("We"),
+        "weeklySpending":
+            MessageLookupByLibrary.simpleMessage("Weekly Spending"),
+        "weeklySpendingChart":
+            MessageLookupByLibrary.simpleMessage("Weekly Spending Chart"),
+        "wrongPassword":
+            MessageLookupByLibrary.simpleMessage("Wrong Password !!"),
+        "yes": MessageLookupByLibrary.simpleMessage("Yes"),
+        "youCanAddMaximumTwoAccount": MessageLookupByLibrary.simpleMessage(
+            "You can add maximum two bank account"),
+        "youCanNotDeleteOnlyBankAccount": MessageLookupByLibrary.simpleMessage(
+            "You can not delete only bank account"),
+        "youDontHaveAnyAccountPleaseAddOne":
+            MessageLookupByLibrary.simpleMessage(
+                "You Don\'t have any Bank Account Please Add one"),
+        "youHaveReachedBottomOfTheList": MessageLookupByLibrary.simpleMessage(
+            "Your have reached the end of the list")
+      };
 }

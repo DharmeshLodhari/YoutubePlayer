@@ -16,7 +16,8 @@ class OrderDetailPage extends StatefulWidget {
   OrderDetailPage({@required this.arguments});
 
   @override
-  _OrderDetailPageState createState() => _OrderDetailPageState(arguments: arguments);
+  _OrderDetailPageState createState() =>
+      _OrderDetailPageState(arguments: arguments);
 }
 
 class _OrderDetailPageState extends State<OrderDetailPage> {
@@ -57,7 +58,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       }
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -283,7 +283,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   Widget getItemTile(int index) {
     return _getSlidableWithLists(
         context,
-
         ShoppingCartTile(
           product: consumable[index],
         ),

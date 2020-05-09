@@ -315,12 +315,11 @@ class _ShoppingCartState extends State<ShoppingCart> {
         if (value != "cancel") {
           var userOrder = await _auth.placeOrderOfShoppingCart(data);
           if (!userOrder[0].containsKey('error')) {
-            basketBloc.items.clear();  // Shopping cart
+            basketBloc.items.clear(); // Shopping cart
             var successful = await _auth.makePaymentForCartOrder(userOrder);
-            if (successful){
+            if (successful) {
               Navigator.pushNamed(context, '/orders-list');
-            }
-            else {
+            } else {
               Navigator.pop(context);
             }
           }
