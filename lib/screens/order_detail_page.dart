@@ -387,7 +387,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   void updateStatus(value) {
-    _auth.updateOrderStatus(value);
+    _auth.updateOrderStatus(value, order.id.toString());
   }
 }
 

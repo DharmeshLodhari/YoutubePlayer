@@ -1469,20 +1469,33 @@ class AuthService {
     }
   }
 
-  //Order
-  Future<bool> updateOrderStatus(var value) async {
-    var data = {
-      "id": "b049cd8b-1186-4b75-97ab-6dea92124ba7",
-      "type": "product"
-    };
+  // Update Order Status
+  Future<bool> updateOrderStatus(String value, String orderId) async {
+    var data = {"status": value};
     var _data = jsonEncode(data);
-    var url = baseUrl + "/api/v1/shopping-cart/";
+    var url = baseUrl + "/api/v1/order/" + orderId + "/update-status/";
     var headers = await getAuthHeaders();
     var response = await http.patch(url, headers: headers, body: _data);
-    debugPrint("response ${response.statusCode}");
-    return true;
+    if (response.statusCode == 200) {
+      return true;
+    }
+    return false;
   }
 
+  // Update Order Note
+  Future<bool> updateOrderNote(String note, String orderId) async {
+    var data = {"note": note};
+    var _data = jsonEncode(data);
+    var url = baseUrl + "/api/v1/order/" + orderId + "/add-note/";
+    var headers = await getAuthHeaders();
+    var response = await http.patch(url, headers: headers, body: _data);
+    if (response.statusCode == 200) {
+      return true;
+    }
+    return false;
+  }
+
+  // List of Orders
   Future<dynamic> listOrders(
       String next, String previous, String filterValue) async {
     Map<String, String> knownCustomers = {};
