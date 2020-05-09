@@ -147,34 +147,13 @@ class _OrdersListState extends State<OrdersList> {
           list.add(
             CheckedPopupMenuItem(
               child: Text(
-                "Pending",
-                style: TextStyle(color: Colors.black),
+                "New Order",
+                style: TextStyle(color: Colors.green[600]),
               ),
-              value: "pending",
-              checked: filterValue == "pending" ? true : false,
+              value: "new order",
+              checked: filterValue == "new order" ? true : false,
             ),
           );
-          list.add(
-            CheckedPopupMenuItem(
-              child: Text(
-                "Processing",
-                style: TextStyle(color: Colors.black),
-              ),
-              value: "processing",
-              checked: filterValue == "processing" ? true : false,
-            ),
-          );
-          list.add(
-            CheckedPopupMenuItem(
-              child: Text(
-                "Completed",
-                style: TextStyle(color: Colors.black),
-              ),
-              value: "completed",
-              checked: filterValue == "completed" ? true : false,
-            ),
-          );
-
           list.add(
             CheckedPopupMenuItem(
               child: Text(
@@ -195,18 +174,16 @@ class _OrdersListState extends State<OrdersList> {
               checked: filterValue == "canceled" ? true : false,
             ),
           );
-
           list.add(
             CheckedPopupMenuItem(
               child: Text(
-                "New Order",
+                "Completed",
                 style: TextStyle(color: Colors.black),
               ),
-              value: "new order",
-              checked: filterValue == "new order" ? true : false,
+              value: "completed",
+              checked: filterValue == "completed" ? true : false,
             ),
           );
-
           list.add(
             CheckedPopupMenuItem(
               child: Text(
@@ -215,6 +192,26 @@ class _OrdersListState extends State<OrdersList> {
               ),
               value: "on hold",
               checked: filterValue == "on hold" ? true : false,
+            ),
+          );
+          list.add(
+            CheckedPopupMenuItem(
+              child: Text(
+                "Pending",
+                style: TextStyle(color: Colors.black),
+              ),
+              value: "pending",
+              checked: filterValue == "pending" ? true : false,
+            ),
+          );
+          list.add(
+            CheckedPopupMenuItem(
+              child: Text(
+                "Processing",
+                style: TextStyle(color: Colors.black),
+              ),
+              value: "processing",
+              checked: filterValue == "processing" ? true : false,
             ),
           );
           return list;
