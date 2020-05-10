@@ -1591,7 +1591,6 @@ class AuthService {
     var _data = jsonEncode(data);
     var headers = await getAuthHeaders();
     var response = await http.post(url, headers: headers, body: _data);
-    debugPrint("${response.statusCode}");
     var jsonData = jsonDecode(response.body);
     if (response.statusCode == 201) {
       return jsonData;

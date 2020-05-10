@@ -22,6 +22,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
   CustomerProfileBloc customerProfileBloc;
   SlidableController slidableController;
   UserBloc userBloc;
+  List<int> orders;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _auth = AuthService();
 
@@ -313,10 +314,16 @@ class _ShoppingCartState extends State<ShoppingCart> {
       if (value != null) {
         var data = {"note": value};
         if (value != "cancel") {
+          // Create the orders
           var userOrder = await _auth.placeOrderOfShoppingCart(data);
           if (!userOrder[0].containsKey('error')) {
             basketBloc.items.clear(); // Shopping cart
-            var successful = await _auth.makePaymentForCartOrder(userOrder);
+            
+            // Send the list of of orders for payment processing
+            for (int i = 0; i < userOrder.length; i++) {
+              orders.add(userOrder[i]["id"]);
+            }
+            var successful = await _auth.makePaymentForCartOrder({"orders": orders});
             if (successful) {
               Navigator.pushNamed(context, '/orders-list');
             } else {
