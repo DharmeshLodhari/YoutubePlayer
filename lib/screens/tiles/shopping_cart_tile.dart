@@ -53,7 +53,7 @@ class _ShoppingCartTileState extends State<ShoppingCartTile> {
           fit: BoxFit.cover,
           filterQuality: FilterQuality.high,
           placeholder: (context, url) => product.serverImages.isNotEmpty
-              ? product.serverImages.first == ""
+              ? Icon(Icons.widgets)
               : CircularProgressIndicator(
                   backgroundColor: Colors.white,
                 ),

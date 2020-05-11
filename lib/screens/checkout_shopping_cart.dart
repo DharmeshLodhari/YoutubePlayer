@@ -4,6 +4,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/screens/tiles/shopping_cart_tile.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/widget/passcodePopup.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -283,24 +284,9 @@ class _ShoppingCartState extends State<ShoppingCart> {
           titlePadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           title: Text(
-            'ADD Note',
+            'Are you Sure You Want To Place This Order For (${worldCurrencies[userBloc.user.currency]} ${basketBloc.total})?',
             style: TextStyle(
                 fontSize: 20, fontWeight: FontWeight.bold, color: darkBlue()),
-          ),
-          content: Container(
-            child: TextFormField(
-              cursorColor: darkBlue(),
-              decoration: InputDecoration(
-                  hintText: "Enter your note here..",
-                  isDense: true,
-                  focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: darkBlue())),
-                  enabledBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: darkBlue()))),
-              onChanged: (val) {
-                note = val;
-              },
-            ),
           ),
           actions: <Widget>[
             FlatButton(
@@ -314,11 +300,11 @@ class _ShoppingCartState extends State<ShoppingCart> {
             ),
             FlatButton(
               child: Text(
-                'NEXT',
+                'Place',
                 style: TextStyle(color: darkBlue()),
               ),
               onPressed: () {
-                Navigator.pop(context, note);
+                Navigator.pop(context, 'place');
               },
             ),
           ],
@@ -336,26 +322,40 @@ class _ShoppingCartState extends State<ShoppingCart> {
       if (value != null) {
         var data = {"note": value};
         if (value != "cancel") {
-          // Create the orders
-          var userOrder = await _auth.placeOrderOfShoppingCart(data);
+          PasscodePopup(
+              context: context,
+              isValidCallback: () async {
+                showDialog(
+                  context: context,
+                  builder: (context) => Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
 
-          if (!userOrder[0].containsKey('error')) {
-            basketBloc.items.clear(); // Shopping cart
-            basketBloc.total = 0; // clearing the total amount
+                // Create the orders
+                var userOrder = await _auth.placeOrderOfShoppingCart(data);
 
-            // Send the list of of orders for payment processing
-            for (int i = 0; i < userOrder.length; i++) {
-              orders.add(userOrder[i]["id"]);
-            }
-            debugPrint("orders for payments : $orders");
-            var successful =
-                await _auth.makePaymentForCartOrder({"orders": orders});
-            if (successful) {
-              Navigator.pushNamed(context, '/orders-list');
-            } else {
-              debugPrint("MakePaymentForCartOrder UnSuccesfull");
-            }
-          }
+                if (!userOrder[0].containsKey('error')) {
+                  basketBloc.items.clear(); // Shopping cart
+                  basketBloc.total = 0; // clearing the total amount
+
+                  // Send the list of of orders for payment processing
+                  for (int i = 0; i < userOrder.length; i++) {
+                    orders.add(userOrder[i]["id"]);
+                  }
+                  debugPrint("orders for payments : $orders");
+                  var successful =
+                      await _auth.makePaymentForCartOrder({"orders": orders});
+                  if (successful) {
+                    Navigator.pushNamed(context, '/orders-list');
+                  } else {
+                    debugPrint("MakePaymentForCartOrder UnSuccesfull");
+                  }
+                }
+              },
+              cancelCallBack: () {
+                Navigator.pop(context);
+              });
         }
         _scaffoldKey.currentState.showSnackBar(SnackBar(
           content: Text('You selected: $value'),

@@ -34,6 +34,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   PersistentBottomSheetController statusBottomSheetController;
   PersistentBottomSheetController noteBottomSheetController;
 
+  String note = "";
+
   Order order;
   List consumable = List();
   final _auth = AuthService();
@@ -43,7 +45,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   @override
   void initState() {
     order = arguments['order'];
-    statusOfOrder = order.status;
+    statusOfOrder = order.status.toLowerCase();
     slidableController = SlidableController(
       onSlideAnimationChanged: handleSlideAnimationChanged,
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
@@ -138,33 +140,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                             fontSize: 20.0,
                             fontWeight: FontWeight.bold),
                       ),
-                      order.note != ""
-                          ? Expanded(
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.vertical,
-                                child: Padding(
-                                  padding: const EdgeInsets.fromLTRB(
-                                      24.0, 16, 24, 24),
-                                  child: Text(
-                                    getOrderNote(),
-                                    style: TextStyle(fontSize: 14),
-                                    textAlign: TextAlign.justify,
-                                  ),
-                                ),
-                              ),
-                            )
-                          : Expanded(
-                              child: Center(
-                                child: Text(
-                                  getOrderNote(),
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 22,
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
-                              ),
-                            ),
+                      getBodyOfNoteBottomSheet()
                     ],
                   ),
                 ),
@@ -172,10 +148,84 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             ));
   }
 
+  getBodyOfNoteBottomSheet() {
+    bool result = order.note == "" && order.customer == userBloc.user.userName;
+    if (!result) {
+      return Expanded(
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24.0, 16, 24, 24),
+            child: Text(
+              getOrderNote(),
+              style: TextStyle(fontSize: 14),
+              textAlign: TextAlign.justify,
+            ),
+          ),
+        ),
+      );
+    }
+    return Expanded(
+        child: Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        SizedBox(
+          height: 20,
+        ),
+        getNoteAddTextField(),
+        SizedBox(
+          height: 20,
+        ),
+        addNoteBtn(),
+      ],
+    ));
+  }
+
+  Widget getNoteAddTextField() {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 20),
+      child: TextFormField(
+        maxLines: 5,
+        cursorColor: darkBlue(),
+        decoration: InputDecoration(
+            hintText: "Enter your note here..",
+            isDense: true,
+            focusedBorder:
+                UnderlineInputBorder(borderSide: BorderSide(color: darkBlue())),
+            enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: darkBlue()))),
+        onChanged: (val) {
+          note = val;
+        },
+      ),
+    );
+  }
+
+  Widget addNoteBtn() {
+    return FlatButton(
+      color: darkBlue(),
+      child: Text(
+        'Add',
+        style: TextStyle(color: Colors.white),
+      ),
+      onPressed: () async {
+        await _auth.updateOrderNote(note, order.id.toString()).then((value) {
+          if (value) {
+            setState(() {
+              order.note = note;
+            });
+          }
+        });
+        noteBottomSheetController.close();
+      },
+    );
+  }
+
   getOrderNote() {
     if (order.note == "") {
       return "No Special Note Atteched !!";
     }
+    return order.note;
   }
 
   showBtmSheet() async {
