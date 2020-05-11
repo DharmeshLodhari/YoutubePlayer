@@ -191,6 +191,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
     Map data = {
       "type": "product",
       "id": basketBloc.items[index]["item"].id,
+      "qty": basketBloc.items[index]["qty"],
     };
 
     basketBloc.addItemToCart(item: basketBloc.items[index]["item"]);

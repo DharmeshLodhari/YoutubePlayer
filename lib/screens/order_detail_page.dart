@@ -276,7 +276,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                             ),
                             statusListTile(
                               title: "Completed",
-                              value: "completed",
+                              value: "complete",
                             ),
                             Divider(
                               height: 0,

@@ -1579,6 +1579,8 @@ class AuthService {
   }
 
   Future<bool> addItemToShoppingCart(Map data) async {
+    debugPrint("basket: " + data.toString());
+
     var url = baseUrl + "/api/v1/shopping-cart/add-item/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
