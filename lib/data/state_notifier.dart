@@ -169,22 +169,26 @@ class BasketBloc extends ChangeNotifier {
   }
 
   void removeItemInBasketWithQty(var item) {
-    bool flag = false;
+    try {
+      _items.forEach((element) {
+        if (element["item"].id == item.id) {
+          if (element["qty"] > 1) {
+            element["qty"] = element["qty"] - 1;
+            _total = _total - int.parse(item.price);
 
-    _items.forEach((element) {
-      if (element["item"].id == item.id) {
-        flag = true;
-        element["qty"] = element["qty"] - 1;
-        _total = _total - int.parse(item.price);
-        debugPrint("item removed which is more then one");
-        return;
-      }
-    });
+            debugPrint("item removed which is more then one");
+          } else if (element["qty"] == 1) {
+            debugPrint("$_items");
+            debugPrint("$element");
 
-    if (!flag) {
-      _items.remove(item);
-      _total = _total - int.parse(item.price);
-      debugPrint("removeing item which is exect one");
-    }
+            _items.remove(element);
+            _total = _total - int.parse(item.price);
+
+            debugPrint("item removed which is exect one");
+          }
+          return;
+        }
+      });
+    } catch (e) {}
   }
 }

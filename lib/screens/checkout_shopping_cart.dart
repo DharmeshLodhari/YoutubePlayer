@@ -166,16 +166,33 @@ class _ShoppingCartState extends State<ShoppingCart> {
   }
 
   List<Widget> listSecondaryActions(int index) {
-    String caption = "Remove";
+    String caption1 = "Remove";
+    String caption2 = "Add";
     return [
       IconSlideAction(
-          caption: caption,
+          caption: caption1,
           color: Colors.red,
-          icon: Icons.remove_shopping_cart,
+          icon: Icons.remove,
           onTap: () async {
             removeItem(index);
           }),
+      IconSlideAction(
+          caption: caption2,
+          color: Colors.green,
+          icon: Icons.add,
+          onTap: () async {
+            addItem(index);
+          }),
     ];
+  }
+
+  void addItem(int index) async {
+    Map data = {
+      "type": "product",
+      "id": basketBloc.items[index]["item"].id,
+    };
+    await _auth.addItemToShoppingCart(data);
+    basketBloc.addItemToCart(item: basketBloc.items[index]["item"]);
   }
 
   void removeItem(int index) async {
@@ -184,7 +201,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
       "id": basketBloc.items[index]["item"].id,
     };
     await _auth.removeItemToShoppingCart(data);
-    basketBloc.removeItemFromCart(basketBloc.items[index]);
+    basketBloc.removeItemFromCart(basketBloc.items[index]["item"]);
     Toast.show("Product is Removed Successfully from the cart", context,
         backgroundColor: darkBlue(),
         textColor: Colors.white,

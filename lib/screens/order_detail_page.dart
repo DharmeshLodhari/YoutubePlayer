@@ -281,10 +281,11 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   Widget getItemTile(int index) {
+    debugPrint("${consumable[index]}");
     return _getSlidableWithLists(
         context,
         ShoppingCartTile(
-          consumable[index]['item'],
+          {"item": consumable[index], "qty": 1},
         ),
         consumable[index],
         index);
