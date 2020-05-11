@@ -160,6 +160,7 @@ class BasketBloc extends ChangeNotifier {
       _total = _total + int.parse(item.price);
       debugPrint("New Item Added");
     }
+    notifyListeners();
   }
 
   // this will remove the product or service from the cart;
@@ -175,20 +176,14 @@ class BasketBloc extends ChangeNotifier {
           if (element["qty"] > 1) {
             element["qty"] = element["qty"] - 1;
             _total = _total - int.parse(item.price);
-
-            debugPrint("item removed which is more then one");
           } else if (element["qty"] == 1) {
-            debugPrint("$_items");
-            debugPrint("$element");
-
             _items.remove(element);
             _total = _total - int.parse(item.price);
-
-            debugPrint("item removed which is exect one");
           }
           return;
         }
       });
+      notifyListeners();
     } catch (e) {}
   }
 }

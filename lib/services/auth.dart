@@ -1478,6 +1478,8 @@ class AuthService {
     var url = baseUrl + "/api/v1/order/" + orderId + "/update-status/";
     var headers = await getAuthHeaders();
     var response = await http.patch(url, headers: headers, body: _data);
+    debugPrint(response.statusCode.toString());
+    debugPrint(response.body.toString());
     if (response.statusCode == 200) {
       return true;
     }

@@ -11,6 +11,7 @@ import 'package:toast/toast.dart';
 
 import 'colors.dart';
 
+// ignore: must_be_immutable
 class OrderDetailPage extends StatefulWidget {
   var arguments;
   OrderDetailPage({@required this.arguments});
@@ -32,15 +33,17 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   SlidableController slidableController;
   PersistentBottomSheetController statusBottomSheetController;
   PersistentBottomSheetController noteBottomSheetController;
+
   Order order;
   List consumable = List();
   final _auth = AuthService();
   final scaffoldKey = GlobalKey<ScaffoldState>();
-  var statusOfOrder = "pending";
+  var statusOfOrder = "";
 
   @override
   void initState() {
     order = arguments['order'];
+    statusOfOrder = order.status;
     slidableController = SlidableController(
       onSlideAnimationChanged: handleSlideAnimationChanged,
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
@@ -66,12 +69,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     userBloc = Provider.of<UserBloc>(context);
     return WillPopScope(
       onWillPop: () async {
-        if (statusBottomSheetController != null &&
-            noteBottomSheetController != null) {
-          statusBottomSheetController.close();
-          noteBottomSheetController.close();
-        }
-
         return true;
       },
       child: Scaffold(
@@ -128,6 +125,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
               color: Colors.white,
               child: Container(
                 height: MediaQuery.of(context).size.height / 2,
+                width: MediaQuery.of(context).size.width,
                 child: Padding(
                   padding: const EdgeInsets.only(top: 12.0),
                   child: Column(
@@ -140,25 +138,44 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                             fontSize: 20.0,
                             fontWeight: FontWeight.bold),
                       ),
-                      Expanded(
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.vertical,
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.fromLTRB(24.0, 16, 24, 24),
-                            child: Text(
-                              order.note,
-                              style: TextStyle(fontSize: 14),
-                              textAlign: TextAlign.justify,
+                      order.note != ""
+                          ? Expanded(
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.vertical,
+                                child: Padding(
+                                  padding: const EdgeInsets.fromLTRB(
+                                      24.0, 16, 24, 24),
+                                  child: Text(
+                                    getOrderNote(),
+                                    style: TextStyle(fontSize: 14),
+                                    textAlign: TextAlign.justify,
+                                  ),
+                                ),
+                              ),
+                            )
+                          : Expanded(
+                              child: Center(
+                                child: Text(
+                                  getOrderNote(),
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 22,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                 ),
               ),
             ));
+  }
+
+  getOrderNote() {
+    if (order.note == "") {
+      return "No Special Note Atteched !!";
+    }
   }
 
   showBtmSheet() async {
@@ -187,6 +204,41 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                               height: 0,
                             ),
                             statusListTile(
+                              title: "New Order",
+                              value: "new order",
+                            ),
+                            Divider(
+                              height: 0,
+                            ),
+                            statusListTile(
+                              title: "Awaiting Payment",
+                              value: "awaiting payment",
+                            ),
+                            Divider(
+                              height: 0,
+                            ),
+                            statusListTile(
+                              title: "Canceled",
+                              value: "canceled",
+                            ),
+                            Divider(
+                              height: 0,
+                            ),
+                            statusListTile(
+                              title: "Completed",
+                              value: "completed",
+                            ),
+                            Divider(
+                              height: 0,
+                            ),
+                            statusListTile(
+                              title: "On Hold",
+                              value: "on hold",
+                            ),
+                            Divider(
+                              height: 0,
+                            ),
+                            statusListTile(
                               title: "Pending",
                               value: "pending",
                             ),
@@ -196,20 +248,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                             statusListTile(
                               title: "Processing",
                               value: "processing",
-                            ),
-                            Divider(
-                              height: 0,
-                            ),
-                            statusListTile(
-                              title: "Out For Delivery",
-                              value: "delivery",
-                            ),
-                            Divider(
-                              height: 0,
-                            ),
-                            statusListTile(
-                              title: "Completed",
-                              value: "completed",
                             ),
                             Divider(
                               height: 0,
@@ -281,7 +319,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   Widget getItemTile(int index) {
-    debugPrint("${consumable[index]}");
     return _getSlidableWithLists(
         context,
         ShoppingCartTile(

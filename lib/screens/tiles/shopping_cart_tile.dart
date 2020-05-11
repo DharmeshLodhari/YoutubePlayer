@@ -52,8 +52,8 @@ class _ShoppingCartTileState extends State<ShoppingCartTile> {
           colorBlendMode: BlendMode.darken,
           fit: BoxFit.cover,
           filterQuality: FilterQuality.high,
-          placeholder: (context, url) => product.serverImages[0] == ""
-              ? Icon(Icons.person)
+          placeholder: (context, url) => product.serverImages.isNotEmpty
+              ? product.serverImages.first == ""
               : CircularProgressIndicator(
                   backgroundColor: Colors.white,
                 ),
@@ -63,8 +63,8 @@ class _ShoppingCartTileState extends State<ShoppingCartTile> {
         right: 0,
         child: ClipOval(
           child: Container(
-            height: 15,
-            width: 15,
+            height: getHeight(),
+            width: getWidth(),
             color: Colors.green,
             child: Center(
                 child: Text(
@@ -76,6 +76,22 @@ class _ShoppingCartTileState extends State<ShoppingCartTile> {
         ),
       )
     ]);
+  }
+
+  getHeight() {
+    if (qty.toString().length == 1) {
+      return 15.0;
+    } else if (qty.toString().length == 2) {
+      return 15.0;
+    }
+  }
+
+  getWidth() {
+    if (qty.toString().length == 1) {
+      return 15.0;
+    } else if (qty.toString().length == 2) {
+      return 18.0;
+    }
   }
 
   Widget getTitle() {

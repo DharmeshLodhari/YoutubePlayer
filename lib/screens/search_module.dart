@@ -27,8 +27,8 @@ class _SearchModuleState extends State<SearchModule> {
   CustomerProfileBloc customerProfileBloc;
   UserBloc userBloc;
   static var filterValue = "Users";
-  String hint = "Find Users";
-  Icon icon = Icon(
+  static String hint = "Find Users";
+  static Icon icon = Icon(
     Icons.supervised_user_circle,
     color: Colors.white,
     size: 28,

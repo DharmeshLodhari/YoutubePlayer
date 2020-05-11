@@ -173,14 +173,14 @@ class _ShoppingCartState extends State<ShoppingCart> {
           caption: caption1,
           color: Colors.red,
           icon: Icons.remove,
-          onTap: () async {
+          onTap: () {
             removeItem(index);
           }),
       IconSlideAction(
           caption: caption2,
           color: Colors.green,
           icon: Icons.add,
-          onTap: () async {
+          onTap: () {
             addItem(index);
           }),
     ];
@@ -191,8 +191,9 @@ class _ShoppingCartState extends State<ShoppingCart> {
       "type": "product",
       "id": basketBloc.items[index]["item"].id,
     };
-    await _auth.addItemToShoppingCart(data);
+
     basketBloc.addItemToCart(item: basketBloc.items[index]["item"]);
+    await _auth.addItemToShoppingCart(data);
   }
 
   void removeItem(int index) async {
@@ -200,8 +201,10 @@ class _ShoppingCartState extends State<ShoppingCart> {
       "type": "product",
       "id": basketBloc.items[index]["item"].id,
     };
-    await _auth.removeItemToShoppingCart(data);
+
     basketBloc.removeItemFromCart(basketBloc.items[index]["item"]);
+    await _auth.removeItemToShoppingCart(data);
+
     Toast.show("Product is Removed Successfully from the cart", context,
         backgroundColor: darkBlue(),
         textColor: Colors.white,
@@ -245,7 +248,9 @@ class _ShoppingCartState extends State<ShoppingCart> {
 
   void handleSlideAnimationChanged(Animation<double> slideAnimation) {}
 
-  void handleSlideIsOpenChanged(bool isOpen) {}
+  void handleSlideIsOpenChanged(bool isOpen) {
+    setState(() {});
+  }
 
   Product getProduct(String productId) {
     Product product = Product();
@@ -336,6 +341,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
 
           if (!userOrder[0].containsKey('error')) {
             basketBloc.items.clear(); // Shopping cart
+            basketBloc.total = 0; // clearing the total amount
 
             // Send the list of of orders for payment processing
             for (int i = 0; i < userOrder.length; i++) {

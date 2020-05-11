@@ -27,10 +27,29 @@ class PasscodePopup {
               children: <Widget>[
                 Expanded(
                   child: PasscodeScreen(
-                    title: AppLocalization.of(context).enterPassCode,
+                    title: Text(
+                      AppLocalization.of(context).enterPassCode,
+                      style: TextStyle(color: Colors.white),
+                    ),
                     passwordEnteredCallback: _onPasscodeEntered,
-                    cancelLocalizedText: AppLocalization.of(context).cancel,
-                    deleteLocalizedText: AppLocalization.of(context).delete,
+                    cancelButton: FlatButton(
+                      child: Text(
+                        AppLocalization.of(context).cancel,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                    deleteButton: FlatButton(
+                      child: Text(
+                        AppLocalization.of(context).delete,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
                     shouldTriggerVerification: _verificationNotifier.stream,
                     passwordDigits: 4,
                     isValidCallback: isValidCallback,

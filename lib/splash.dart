@@ -219,16 +219,8 @@ class _SplashScreenState extends State<SplashScreen> {
   void initializeShoppingCart() async {
     debugPrint("initializeShoppingCart called");
     List items = await _auth.getShoppingCart();
-    getOrderAmount(items);
     items.forEach((element) {
       basketBloc.addItemToCart(item: element);
     });
-//    basketBloc.items = items;
-  }
-
-  void getOrderAmount(List items) {
-//    items.forEach((element) {
-//      basketBloc.total = basketBloc.total + element['price'];
-//    });
   }
 }
