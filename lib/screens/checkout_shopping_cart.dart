@@ -22,7 +22,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
   CustomerProfileBloc customerProfileBloc;
   SlidableController slidableController;
   UserBloc userBloc;
-  List<int> orders;
+  List<int> orders = List<int>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _auth = AuthService();
 
@@ -128,9 +128,9 @@ class _ShoppingCartState extends State<ShoppingCart> {
     return _getSlidableWithLists(
         context,
         ShoppingCartTile(
-          product: basketBloc.items[index],
+          basketBloc.items[index],
         ),
-        basketBloc.items[index],
+        basketBloc.items[index]["item"],
         index);
   }
 
@@ -181,7 +181,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
   void removeItem(int index) async {
     Map data = {
       "type": "product",
-      "id": basketBloc.items[index].id,
+      "id": basketBloc.items[index]["item"].id,
     };
     await _auth.removeItemToShoppingCart(data);
     basketBloc.removeItemFromCart(basketBloc.items[index]);
@@ -192,7 +192,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
   }
 
   List<Widget> listActionSlideActions(int index) {
-    var product = basketBloc.items[index];
+    var product = basketBloc.items[index]["item"];
 
     bool isValid = true;
     if (product.seller == userBloc.user.userName) {
@@ -316,18 +316,21 @@ class _ShoppingCartState extends State<ShoppingCart> {
         if (value != "cancel") {
           // Create the orders
           var userOrder = await _auth.placeOrderOfShoppingCart(data);
+
           if (!userOrder[0].containsKey('error')) {
             basketBloc.items.clear(); // Shopping cart
-            
+
             // Send the list of of orders for payment processing
             for (int i = 0; i < userOrder.length; i++) {
               orders.add(userOrder[i]["id"]);
             }
-            var successful = await _auth.makePaymentForCartOrder({"orders": orders});
+            debugPrint("orders for payments : $orders");
+            var successful =
+                await _auth.makePaymentForCartOrder({"orders": orders});
             if (successful) {
               Navigator.pushNamed(context, '/orders-list');
             } else {
-              Navigator.pop(context);
+              debugPrint("MakePaymentForCartOrder UnSuccesfull");
             }
           }
         }

@@ -284,7 +284,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     return _getSlidableWithLists(
         context,
         ShoppingCartTile(
-          product: consumable[index],
+          consumable[index]['item'],
         ),
         consumable[index],
         index);

@@ -103,7 +103,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         Map data = {"type": "product", "id": product.id};
         await _auth.addItemToShoppingCart(data);
 
-        basketBloc.addItemToCart(product);
+        basketBloc.addItemToCart(item: product);
+
         Toast.show("Product is Added Successfully in the cart", context,
             backgroundColor: darkBlue(), textColor: Colors.white);
       },

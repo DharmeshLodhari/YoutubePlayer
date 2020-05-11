@@ -119,7 +119,7 @@ class RefreshBlocForMessages extends ChangeNotifier {
 
 class BasketBloc extends ChangeNotifier {
   // will accept products and services
-  List _items = List();
+  List<Map<String, dynamic>> _items = List<Map<String, dynamic>>();
   int _total = 0;
 
   int get total => _total;
@@ -137,16 +137,54 @@ class BasketBloc extends ChangeNotifier {
   }
 
   // this will add the product or service in the cart;
-  void addItemToCart(var item) {
-    _items.add(item);
-    _total = _total + int.parse(item.price);
+  void addItemToCart({var item}) {
+    addItemInBasketWithQty(item);
     notifyListeners();
+  }
+
+  void addItemInBasketWithQty(var item) {
+    bool flag = false;
+
+    _items.forEach((element) {
+      if (element["item"].id == item.id) {
+        flag = true;
+        element["qty"] = element["qty"] + 1;
+        _total = _total + int.parse(item.price);
+        debugPrint("Exising Item Added");
+        return;
+      }
+    });
+
+    if (!flag) {
+      _items.add({"item": item, "qty": 1});
+      _total = _total + int.parse(item.price);
+      debugPrint("New Item Added");
+    }
   }
 
   // this will remove the product or service from the cart;
   void removeItemFromCart(item) {
-    _items.remove(item);
-    _total = _total - int.parse(item.price);
+    removeItemInBasketWithQty(item);
     notifyListeners();
+  }
+
+  void removeItemInBasketWithQty(var item) {
+    bool flag = false;
+
+    _items.forEach((element) {
+      if (element["item"].id == item.id) {
+        flag = true;
+        element["qty"] = element["qty"] - 1;
+        _total = _total - int.parse(item.price);
+        debugPrint("item removed which is more then one");
+        return;
+      }
+    });
+
+    if (!flag) {
+      _items.remove(item);
+      _total = _total - int.parse(item.price);
+      debugPrint("removeing item which is exect one");
+    }
   }
 }

@@ -6,15 +6,20 @@ import 'package:flutter/material.dart';
 // ignore: must_be_immutable
 class ShoppingCartTile extends StatefulWidget {
   Product product;
-  ShoppingCartTile({this.product});
+  int qty;
+  ShoppingCartTile(Map<String, dynamic> item) {
+    product = item["item"];
+    qty = item["qty"];
+  }
   @override
   _ShoppingCartTileState createState() =>
-      _ShoppingCartTileState(product: product);
+      _ShoppingCartTileState(product: product, qty: qty);
 }
 
 class _ShoppingCartTileState extends State<ShoppingCartTile> {
   Product product;
-  _ShoppingCartTileState({this.product});
+  int qty;
+  _ShoppingCartTileState({this.product, this.qty});
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -36,23 +41,41 @@ class _ShoppingCartTileState extends State<ShoppingCartTile> {
   }
 
   Widget getLeading() {
-    return ClipOval(
-      child: CachedNetworkImage(
-        imageUrl: product.serverImages.isNotEmpty
-            ? product.serverImages.first
-            : "https://homepages.cae.wisc.edu/~ece533/images/peppers.png",
-        height: 50,
-        width: 50,
-        colorBlendMode: BlendMode.darken,
-        fit: BoxFit.cover,
-        filterQuality: FilterQuality.high,
-        placeholder: (context, url) => product.serverImages[0] == ""
-            ? Icon(Icons.person)
-            : CircularProgressIndicator(
-                backgroundColor: Colors.white,
-              ),
+    return Stack(children: [
+      ClipOval(
+        child: CachedNetworkImage(
+          imageUrl: product.serverImages.isNotEmpty
+              ? product.serverImages.first
+              : "https://homepages.cae.wisc.edu/~ece533/images/peppers.png",
+          height: 50,
+          width: 50,
+          colorBlendMode: BlendMode.darken,
+          fit: BoxFit.cover,
+          filterQuality: FilterQuality.high,
+          placeholder: (context, url) => product.serverImages[0] == ""
+              ? Icon(Icons.person)
+              : CircularProgressIndicator(
+                  backgroundColor: Colors.white,
+                ),
+        ),
       ),
-    );
+      Positioned(
+        right: 0,
+        child: ClipOval(
+          child: Container(
+            height: 15,
+            width: 15,
+            color: Colors.green,
+            child: Center(
+                child: Text(
+              qty.toString(),
+              style:
+                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            )),
+          ),
+        ),
+      )
+    ]);
   }
 
   Widget getTitle() {
@@ -64,11 +87,30 @@ class _ShoppingCartTileState extends State<ShoppingCartTile> {
   }
 
   Widget getTrailing() {
-    return Text(
-      worldCurrencies[product.currency] + ' ' + product.price.toString(),
-      style: TextStyle(
-          color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 15),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Text(
+          worldCurrencies[product.currency] + ' ' + getProductPrice(),
+          style: TextStyle(
+              color: Colors.grey[600],
+              fontWeight: FontWeight.bold,
+              fontSize: 14),
+        ),
+      ],
     );
+  }
+
+  String getProductPrice() {
+    if (product.price.toString().length > 5) {
+      return product.price.toString().substring(0, 5) + "..";
+    }
+    return product.price.toString();
+  }
+
+  String getTotalPrice() {
+    var price = qty * int.parse(product.price);
+    return price.toString();
   }
 
   Widget getSubtitle(BuildContext context) {
@@ -82,9 +124,19 @@ class _ShoppingCartTileState extends State<ShoppingCartTile> {
         SizedBox(
           height: 2,
         ),
-        product.price.toString().length > 6 ? getTrailing() : Container(),
-        getSellerName(context)
+        getSellerName(context),
+        getTotalPriceWidget(),
       ],
+    );
+  }
+
+  Widget getTotalPriceWidget() {
+    return Text(
+      worldCurrencies[product.currency] + ' ' + getTotalPrice(),
+      style: TextStyle(
+        fontWeight: FontWeight.bold,
+        color: Colors.grey[600],
+      ),
     );
   }
 
