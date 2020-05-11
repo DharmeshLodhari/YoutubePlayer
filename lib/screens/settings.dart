@@ -2,6 +2,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/device.dart';
 import 'package:Slydo/models/transactions.dart';
+import 'package:Slydo/screens/bvn_verification_page.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/screens/tiles/bank_account.dart';
 import 'package:Slydo/screens/tiles/explore.dart';
@@ -176,6 +177,17 @@ class _SettingsListState extends State<SettingsList> {
                   productsAndServicesWidget(),
                   SizedBox(height: 10),
                   slydoBankAccountTile(),
+                  IconButton(
+                    icon: Icon(Icons.near_me),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => BvnVerificationPage(),
+                        ),
+                      );
+                    },
+                  ),
                   SizedBox(height: 20),
                   _infoTile(),
                 ],
