@@ -143,7 +143,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
   }
 
   Widget getItemTileUI(int index) {
-    if (basketBloc.items[index]["type"] == "product") {
+    if (basketBloc.items[index]["item"] is Product) {
       return ShoppingCartTileForProduct(
         basketBloc.items[index],
       );
@@ -172,13 +172,13 @@ class _ShoppingCartState extends State<ShoppingCart> {
   }
 
   Widget _getSlidableWithLists(
-      BuildContext context, Widget productTile, var item, int index) {
+      BuildContext context, Widget itemTile, var item, int index) {
     return Slidable(
       controller: slidableController,
       direction: Axis.horizontal,
       actionPane: SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
-      child: VerticalListItem(productTile, item),
+      child: VerticalListItem(itemTile, item),
       actions: listActionSlideActions(index),
       secondaryActions: listSecondaryActions(index),
     );

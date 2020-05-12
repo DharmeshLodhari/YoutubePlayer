@@ -4,6 +4,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:badges/badges.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -52,24 +53,29 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     return Scaffold(
       backgroundColor: lightBlue(),
       appBar: AppBar(
-        centerTitle: true,
-        leading: IconButton(
-          icon: Icon(
-            Icons.chevron_left,
-            size: 40.0,
-            color: Colors.white,
-          ),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
+        titleSpacing: 0,
         actions: <Widget>[messageSellerWidget(), goToBasket()],
         backgroundColor: darkBlue(),
-        title: Text(
-          AppLocalization.of(context).serviceDetail,
-          style: TextStyle(
-            color: Colors.white,
-          ),
+        title: Row(
+          children: <Widget>[
+            getUserProfile(),
+            Expanded(
+              child: SizedBox(
+                width: 14,
+              ),
+            ),
+            Text(
+              AppLocalization.of(context).serviceDetail,
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
+            Expanded(
+              child: SizedBox(
+                width: 14,
+              ),
+            ),
+          ],
         ),
       ),
       floatingActionButton: addToCart(),
@@ -77,13 +83,37 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     );
   }
 
+  Widget getUserProfile() {
+    return GestureDetector(
+      child: ClipOval(
+        child: Container(
+          height: 40,
+          width: 40,
+          child: CachedNetworkImage(
+            imageUrl: service.providerAvatar != null
+                ? service.providerAvatar
+                : "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png",
+            fit: BoxFit.fill,
+          ),
+        ),
+      ),
+      onTap: () async {
+        _auth.fetchCustomerProfile(service.provider).then((user) {
+          Navigator.pushNamed(context, '/profile',
+              arguments: {"searchedUser": user});
+        });
+      },
+    );
+  }
+
   Widget messageSellerWidget() {
     return IconButton(
       icon: Icon(Icons.message),
       onPressed: () {
-        getRecipient();
-        //TODO:MESSAGE OWNER
-        navigateToSendPayment();
+        Navigator.of(context).pushNamed('/compose_message', arguments: {
+          'recipient': service.provider,
+          'subject': service.name,
+        });
       },
     );
   }

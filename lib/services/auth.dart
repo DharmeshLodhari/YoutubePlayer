@@ -420,7 +420,6 @@ class AuthService {
     } catch (e) {
       debugPrint("update bank account : " + e.toString());
     }
-    debugPrint(response.statusCode.toString());
     if (response.statusCode != 200) {
       var jsonData = response.body;
       debugPrint(jsonData);
@@ -480,8 +479,6 @@ class AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.patch(url, headers: headers, body: _data);
-    debugPrint("StatusCode = ${response.statusCode}");
-    debugPrint("body = ${response.body}");
     if (response.statusCode == 200) {
       return true;
     } else {
@@ -983,7 +980,6 @@ class AuthService {
     };
     var _data = jsonEncode(data);
     var response = await http.patch(url, body: _data, headers: headers);
-    debugPrint("${response.statusCode}");
     var jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
       return true;
@@ -1081,7 +1077,6 @@ class AuthService {
   String dateToString(DateTime date) {
     var formatter = new DateFormat('yyyy-MM-dd');
     var formatted = formatter.format(date);
-    debugPrint(formatted);
     return formatted;
   }
 
@@ -1115,7 +1110,6 @@ class AuthService {
 
     // Add multipart to request
     request.files.addAll(newList);
-    debugPrint(request.fields.toString());
     headers.forEach((k, v) => request.headers[k] = v);
     var response = await request.send();
     var responseBody = await response.stream.bytesToString();
@@ -1162,7 +1156,6 @@ class AuthService {
     var response = await request.send();
 
     var responseBody = await response.stream.bytesToString();
-    debugPrint(responseBody);
     if (response.statusCode == 200) {
       return true;
     } else {
@@ -1175,9 +1168,7 @@ class AuthService {
     var url = baseUrl + "/api/v1/products/" + id + "/";
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
-    debugPrint("Status code : ${response.statusCode}");
     var jsonData = json.decode(response.body);
-    debugPrint("body $jsonData");
     if (response.statusCode == 200) {
       Product product = createProduct(jsonData);
       return product;
@@ -1239,7 +1230,6 @@ class AuthService {
     }
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
-    debugPrint(response.body);
 
     if (response.statusCode == 200) {
       List<Service> serviceList = [];
@@ -1391,8 +1381,6 @@ class AuthService {
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
 
-    debugPrint(response.statusCode.toString());
-    debugPrint(response.body);
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
       Map<String, dynamic> result = {
@@ -1420,8 +1408,6 @@ class AuthService {
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
 
-    debugPrint(response.statusCode.toString());
-    debugPrint(response.body);
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
 
@@ -1458,7 +1444,6 @@ class AuthService {
     var url = baseUrl + "/api/v1/transactions/payment-category/";
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
-    debugPrint(response.statusCode.toString());
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
 
@@ -1479,8 +1464,6 @@ class AuthService {
     var url = baseUrl + "/api/v1/order/" + orderId + "/update-status/";
     var headers = await getAuthHeaders();
     var response = await http.patch(url, headers: headers, body: _data);
-    debugPrint(response.statusCode.toString());
-    debugPrint(response.body.toString());
     if (response.statusCode == 200) {
       return true;
     }
@@ -1550,7 +1533,6 @@ class AuthService {
       var data = jsonData["results"];
       for (int i = 0; i < data.length; i++) {
         if (data[i]["item"].containsKey("manufacturer")) {
-          debugPrint(" data ${data[i]["item"]}");
           var product = Product.fromJson(data[i]["item"]);
           items.add({
             "type": "product",
@@ -1559,7 +1541,6 @@ class AuthService {
           });
         }
         if (!data[i]["item"].containsKey("manufacturer")) {
-          debugPrint(" data ${data[i]["item"]}");
           var service = Service.fromJson(data[i]["item"]);
           items.add({
             "type": "service",
@@ -1581,15 +1562,12 @@ class AuthService {
     var response = await http.get(url, headers: headers);
     var jsonData = jsonDecode(response.body);
     if (response.statusCode == 200) {
-      debugPrint("$jsonData");
       return getCartItems(jsonData);
     }
     throw jsonData;
   }
 
   Future<bool> addItemToShoppingCart(Map data) async {
-    debugPrint("basket: " + data.toString());
-
     var url = baseUrl + "/api/v1/shopping-cart/add-item/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
@@ -1616,6 +1594,7 @@ class AuthService {
   List<dynamic> getCartItems(var jsonResponse) {
     List items = List();
     var data = jsonResponse["results"];
+
     for (int i = 0; i < data.length; i++) {
       if (data[i]["type"] == "product") {
         var product = Product.fromJson(data[i]);

@@ -36,9 +36,9 @@ class _UserProfileState extends State<UserProfile> {
   double top;
 
   //popupmenu variables
-  PopupMenu menu;
+  PopupMenu popUpMenuWidget;
   GlobalKey popupMenuBtnKeyForMenu = GlobalKey();
-  static var filterValue = "Products";
+  var filterValue = "Products";
 
   //for refresh controller
   final GlobalKey<ScaffoldState> _productScaffoldKey =
@@ -140,13 +140,13 @@ class _UserProfileState extends State<UserProfile> {
   }
 
   void popUpMenu() {
-    menu = PopupMenu(
+    popUpMenuWidget = PopupMenu(
       items: getMenuItems(),
       onClickMenu: onClickMenu,
       onDismiss: onDismiss,
       maxColumn: 4,
     );
-    menu.show(widgetKey: popupMenuBtnKeyForMenu);
+    popUpMenuWidget.show(widgetKey: popupMenuBtnKeyForMenu);
   }
 
   List<MenuItem> getMenuItems() {
@@ -183,14 +183,16 @@ class _UserProfileState extends State<UserProfile> {
   }
 
   void onClickMenu(MenuItemProvider item) {
-    setState(() {
-      filterValue = item.menuTitle;
-      if (filterValue == "Products") {
-        currentIndex = 0;
-      } else {
-        currentIndex = 1;
-      }
-    });
+    if (mounted) {
+      setState(() {
+        filterValue = item.menuTitle;
+        if (filterValue == "Products") {
+          currentIndex = 0;
+        } else {
+          currentIndex = 1;
+        }
+      });
+    }
   }
 
   void onDismiss() {
@@ -224,8 +226,17 @@ class _UserProfileState extends State<UserProfile> {
                 ),
               ),
             ),
-            SizedBox(width: 10,),
+            Expanded(
+              child: SizedBox(
+                width: 10,
+              ),
+            ),
             Text(searchedUser.fullName),
+            Expanded(
+              child: SizedBox(
+                width: 10,
+              ),
+            ),
           ],
         ),
         actions: <Widget>[
@@ -288,7 +299,7 @@ class _UserProfileState extends State<UserProfile> {
       key: _productScaffoldKey,
       body: Container(
         color: lightBlue(),
-        padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
+        padding: EdgeInsets.fromLTRB(4, 4, 4, 4),
         child: SmartRefresher(
             enablePullDown: true,
             header: WaterDropHeader(
@@ -468,7 +479,7 @@ class _UserProfileState extends State<UserProfile> {
       key: _serviceScaffoldKey,
       body: Container(
         color: lightBlue(),
-        padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
+        padding: EdgeInsets.fromLTRB(4, 4, 4, 4),
         child: SmartRefresher(
             enablePullDown: true,
             header: WaterDropHeader(

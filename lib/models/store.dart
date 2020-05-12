@@ -126,6 +126,7 @@ class Service {
   List<File> localImages;
   List<String> serverImages;
   String provider;
+  String providerAvatar;
   String qrCode;
   String category;
   bool isAvailable;
@@ -142,6 +143,7 @@ class Service {
     this.localImages,
     this.serverImages,
     this.provider,
+    this.providerAvatar,
     this.qrCode,
     this.category,
     this.isAvailable,
@@ -193,6 +195,7 @@ class Service {
     this.localImages = object["localImages"] ?? [];
     this.serverImages = getServiceImages(object["pictures"]) ?? [];
     this.provider = object["provider"] ?? "";
+    this.providerAvatar = object["provider_avatar"] ?? "";
     this.qrCode = object["qrCode"] ?? "";
     this.category = object["category"] ?? "";
     this.isAvailable = object["is_available"] ?? false;

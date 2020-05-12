@@ -469,25 +469,18 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         icon: Icons.message,
         onTap: isValid
             ? () {
-//                navigateToSendPayment(product, index);
+                navigateToComposeMessage(conditionForUser, index);
               }
             : () {},
       ),
     ];
   }
 
-  void navigateToSendPayment(Product product, int index) async {
-    customerProfileBloc.customer =
-        await _auth.fetchCustomerProfile(product.seller);
-    Navigator.of(context).pushNamed(
-      '/send-payment',
-      arguments: {
-        'isFromProfile': false,
-        'isRequest': false,
-        'product': product,
-        'itemIndex': index
-      },
-    );
+  void navigateToComposeMessage(var conditionForUser, int index) async {
+    Navigator.of(context).pushNamed('/compose_message', arguments: {
+      'recipient': conditionForUser.toString(),
+      'subject': consumable[index]["item"].name.toString(),
+    });
   }
 
   void handleSlideAnimationChanged(Animation<double> slideAnimation) {}
@@ -539,7 +532,7 @@ class VerticalListItem extends StatelessWidget {
         }
         if (type == "service") {
           Service service = item;
-          Navigator.pushNamed(context, "/service",
+          Navigator.pushNamed(context, "/service-detail",
               arguments: {"service": service});
         }
       },

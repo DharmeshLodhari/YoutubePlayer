@@ -147,35 +147,37 @@ class _SearchModuleState extends State<SearchModule> {
   }
 
   void onClickMenu(MenuItemProvider item) {
-    setState(() {
-      searchItemTextController.text = "";
-      count = 0;
-      next = "";
-      previous = "";
-      results.clear();
-      noItemInList = false;
-      filterValue = item.menuTitle;
-      hint = AppLocalization.of(context).find + " $filterValue";
-      if (filterValue == "Users") {
-        icon = Icon(
-          Icons.supervised_user_circle,
-          color: Colors.white,
-          size: 28,
-        );
-      } else if (filterValue == "Products") {
-        icon = Icon(
-          Icons.computer,
-          color: Colors.white,
-          size: 28,
-        );
-      } else if (filterValue == "Services") {
-        icon = Icon(
-          Icons.burst_mode,
-          color: Colors.white,
-          size: 28,
-        );
-      }
-    });
+    if (mounted) {
+      setState(() {
+        searchItemTextController.text = "";
+        count = 0;
+        next = "";
+        previous = "";
+        results.clear();
+        noItemInList = false;
+        filterValue = item.menuTitle;
+        hint = AppLocalization.of(context).find + " $filterValue";
+        if (filterValue == "Users") {
+          icon = Icon(
+            Icons.supervised_user_circle,
+            color: Colors.white,
+            size: 28,
+          );
+        } else if (filterValue == "Products") {
+          icon = Icon(
+            Icons.computer,
+            color: Colors.white,
+            size: 28,
+          );
+        } else if (filterValue == "Services") {
+          icon = Icon(
+            Icons.burst_mode,
+            color: Colors.white,
+            size: 28,
+          );
+        }
+      });
+    }
   }
 
   void onDismiss() {

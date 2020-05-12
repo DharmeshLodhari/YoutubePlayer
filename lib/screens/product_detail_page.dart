@@ -113,8 +113,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     return IconButton(
       icon: Icon(Icons.message),
       onPressed: () {
-        getRecipient();
-        navigateToSendPayment();
+        Navigator.of(context).pushNamed('/compose_message', arguments: {
+          'recipient': product.seller,
+          'subject': product.name,
+        });
       },
     );
   }
