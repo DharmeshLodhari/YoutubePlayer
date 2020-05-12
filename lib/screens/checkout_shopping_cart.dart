@@ -116,7 +116,15 @@ class _ShoppingCartState extends State<ShoppingCart> {
                 style: TextStyle(color: Colors.white),
               ),
               onPressed: () {
-                addNoteDialog();
+                if (basketBloc.items.length != 0) {
+                  addNoteDialog();
+                } else {
+                  Toast.show("Please Add Some Items First !!", context,
+                      textColor: Colors.white,
+                      backgroundColor: darkBlue(),
+                      duration: Toast.LENGTH_LONG,
+                      gravity: Toast.CENTER);
+                }
               },
             )
           ],
@@ -127,12 +135,22 @@ class _ShoppingCartState extends State<ShoppingCart> {
 
   Widget getItemTile(int index) {
     return _getSlidableWithLists(
-        context,
-        ShoppingCartTile(
-          basketBloc.items[index],
-        ),
-        basketBloc.items[index]["item"],
-        index);
+      context,
+      getItemTileUI(index),
+      basketBloc.items[index],
+      index,
+    );
+  }
+
+  Widget getItemTileUI(int index) {
+    if (basketBloc.items[index]["type"] == "product") {
+      return ShoppingCartTileForProduct(
+        basketBloc.items[index],
+      );
+    }
+    return ShoppingCartTileForService(
+      basketBloc.items[index],
+    );
   }
 
   Widget addItemToBasket() {
@@ -154,29 +172,21 @@ class _ShoppingCartState extends State<ShoppingCart> {
   }
 
   Widget _getSlidableWithLists(
-      BuildContext context, Widget productTile, Product product, int index) {
+      BuildContext context, Widget productTile, var item, int index) {
     return Slidable(
       controller: slidableController,
       direction: Axis.horizontal,
       actionPane: SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
-      child: VerticalListItem(productTile, product),
+      child: VerticalListItem(productTile, item),
       actions: listActionSlideActions(index),
       secondaryActions: listSecondaryActions(index),
     );
   }
 
   List<Widget> listSecondaryActions(int index) {
-    String caption1 = "Remove";
     String caption2 = "Add";
     return [
-      IconSlideAction(
-          caption: caption1,
-          color: Colors.red,
-          icon: Icons.remove,
-          onTap: () {
-            removeItem(index);
-          }),
       IconSlideAction(
           caption: caption2,
           color: Colors.green,
@@ -189,7 +199,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
 
   void addItem(int index) async {
     Map data = {
-      "type": "product",
+      "type": basketBloc.items[index]["type"],
       "id": basketBloc.items[index]["item"].id,
       "qty": basketBloc.items[index]["qty"],
     };
@@ -200,37 +210,25 @@ class _ShoppingCartState extends State<ShoppingCart> {
 
   void removeItem(int index) async {
     Map data = {
-      "type": "product",
+      "type": basketBloc.items[index]["type"],
       "id": basketBloc.items[index]["item"].id,
     };
 
     basketBloc.removeItemFromCart(basketBloc.items[index]["item"]);
     await _auth.removeItemToShoppingCart(data);
-
-    Toast.show("Product is Removed Successfully from the cart", context,
-        backgroundColor: darkBlue(),
-        textColor: Colors.white,
-        duration: Toast.LENGTH_LONG);
   }
 
   List<Widget> listActionSlideActions(int index) {
-    var product = basketBloc.items[index]["item"];
+    String caption1 = "Remove";
 
-    bool isValid = true;
-    if (product.seller == userBloc.user.userName) {
-      isValid = false;
-    }
     return [
       IconSlideAction(
-        caption: "Buy",
-        color: isValid ? Colors.green : Colors.grey[600],
-        icon: Icons.send,
-        onTap: isValid
-            ? () {
-                navigateToSendPayment(product, index);
-              }
-            : () {},
-      ),
+          caption: caption1,
+          color: Colors.red,
+          icon: Icons.remove,
+          onTap: () {
+            removeItem(index);
+          }),
     ];
   }
 
@@ -273,7 +271,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
   }
 
   addNoteDialog() {
-    var note = "";
     showMaterialDialog<String>(
       context: context,
       child: WillPopScope(
@@ -285,9 +282,15 @@ class _ShoppingCartState extends State<ShoppingCart> {
           titlePadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           title: Text(
-            'Are you Sure You Want To Place This Order For (${worldCurrencies[userBloc.user.currency]} ${basketBloc.total})?',
+            "Confirmation",
             style: TextStyle(
                 fontSize: 20, fontWeight: FontWeight.bold, color: darkBlue()),
+          ),
+          content: Container(
+            child: Text(
+              'Are you Sure You Want To Place This Order For (${worldCurrencies[userBloc.user.currency]} ${basketBloc.total})?',
+              style: TextStyle(fontWeight: FontWeight.w500),
+            ),
           ),
           actions: <Widget>[
             FlatButton(
@@ -301,7 +304,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
             ),
             FlatButton(
               child: Text(
-                'Place',
+                'PLACE',
                 style: TextStyle(color: darkBlue()),
               ),
               onPressed: () {
@@ -336,7 +339,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
                 // Create the orders
                 var userOrder = await _auth.placeOrderOfShoppingCart(data);
 
-                if (!userOrder[0].containsKey('error')) {
+                if (userOrder != null) {
                   basketBloc.items.clear(); // Shopping cart
                   basketBloc.total = 0; // clearing the total amount
 
@@ -344,23 +347,21 @@ class _ShoppingCartState extends State<ShoppingCart> {
                   for (int i = 0; i < userOrder.length; i++) {
                     orders.add(userOrder[i]["id"]);
                   }
-                  debugPrint("orders for payments : $orders");
                   var successful =
                       await _auth.makePaymentForCartOrder({"orders": orders});
                   if (successful) {
-                    Navigator.pushNamed(context, '/orders-list');
+                    Navigator.popAndPushNamed(context, '/orders-list');
                   } else {
                     debugPrint("MakePaymentForCartOrder UnSuccesfull");
                   }
+                } else {
+                  debugPrint("Could Not Place The Order");
                 }
               },
               cancelCallBack: () {
                 Navigator.pop(context);
               });
         }
-        _scaffoldKey.currentState.showSnackBar(SnackBar(
-          content: Text('You selected: $value'),
-        ));
       }
     });
   }
@@ -368,16 +369,29 @@ class _ShoppingCartState extends State<ShoppingCart> {
 
 // ignore: must_be_immutable
 class VerticalListItem extends StatelessWidget {
-  VerticalListItem(this.child, this.product);
-  final Widget child;
-  Product product;
+  Widget child;
+  var item;
+  String type;
 
+  VerticalListItem(Widget child, var item) {
+    this.child = child;
+    this.type = item["type"];
+    this.item = item["item"];
+  }
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, "/product",
-            arguments: {"product": product});
+        if (type == "product") {
+          Product product = item;
+          Navigator.pushNamed(context, "/product",
+              arguments: {"product": product});
+        }
+        if (type == "service") {
+          Service service = item;
+          Navigator.pushNamed(context, "/service",
+              arguments: {"service": service});
+        }
       },
       child: Container(
         color: lightBlue(),

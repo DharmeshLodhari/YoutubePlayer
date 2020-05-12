@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/models/store.dart';
 import 'package:Slydo/screens/route_generator.dart';
 import 'package:Slydo/services/app_life_cycle.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -26,8 +25,8 @@ void main() async {
   // to set orientation only vertical
   SystemChrome.setPreferredOrientations(
     [
-//      DeviceOrientation.portraitUp,
-//      DeviceOrientation.portraitDown,
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
     ],
   ).then((value) {
     runZoned(() {

@@ -23,7 +23,7 @@ class _RegistrationState extends State<Registration> {
   String phoneNumberWithCountryCode = "";
   final _auth = AuthService();
 
-  List<DropdownMenuItem> dropdownlist = new List<DropdownMenuItem>();
+  List<DropdownMenuItem> dropDownList = new List<DropdownMenuItem>();
   int selectedCountry = 0;
   Country _selectedDialogCountry = CountryPickerUtils.getCountryByIsoCode('IE');
 

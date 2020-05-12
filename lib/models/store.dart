@@ -12,6 +12,7 @@ class Product {
   List<File> localImages;
   List<String> serverImages;
   String seller;
+  String sellerAvatar;
   String condition;
   String qrCode;
   String category;
@@ -30,6 +31,7 @@ class Product {
       this.localImages,
       this.serverImages,
       this.seller,
+      this.sellerAvatar,
       this.qrCode,
       this.condition,
       this.category,
@@ -62,6 +64,7 @@ class Product {
     this.localImages = object["localImages"] ?? [];
     this.serverImages = getProductImages(object["pictures"]) ?? [];
     this.seller = object["seller"] ?? "";
+    this.sellerAvatar = object["seller_avatar"] ?? "";
     this.qrCode = object["qrCode"] ?? "";
     this.condition = object["condition"] ?? "";
     this.category = object["category"] ?? "";
@@ -179,6 +182,42 @@ class Service {
       "is_available": this.isAvailable,
       "available_from": this.availableFrom,
     };
+  }
+
+  Service.fromJson(object) {
+    this.id = object["id"];
+    this.name = object["name"] ?? "";
+    this.description = object["description"] ?? "";
+    this.shortDescription = object["short_description"] ?? "";
+    this.price = object["price"].toString();
+    this.localImages = object["localImages"] ?? [];
+    this.serverImages = getServiceImages(object["pictures"]) ?? [];
+    this.provider = object["provider"] ?? "";
+    this.qrCode = object["qrCode"] ?? "";
+    this.category = object["category"] ?? "";
+    this.isAvailable = object["is_available"] ?? false;
+    this.availableFrom =
+        getServiceDateTime(object["available_from"]) ?? DateTime.now();
+    this.currency = object["currency"] ?? "";
+    this.pictureMap = object["pictureMap"] ?? [];
+  }
+
+  List<String> getServiceImages(List data) {
+    List<String> images = List();
+
+    if (data != null) {
+      for (int i = 0; i < data.length; i++) {
+        if (data[i].containsKey("file")) {
+          images.add(data[i]["file"].toString());
+        }
+      }
+    }
+    return images;
+  }
+
+  DateTime getServiceDateTime(var date) {
+    DateTime dateTime = DateTime.parse(date);
+    return dateTime;
   }
 }
 

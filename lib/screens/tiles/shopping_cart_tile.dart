@@ -1,25 +1,29 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/models/store.dart';
+import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
-class ShoppingCartTile extends StatefulWidget {
-  Product product;
+class ShoppingCartTileForProduct extends StatefulWidget {
+  Product item;
+  String type;
   int qty;
-  ShoppingCartTile(Map<String, dynamic> item) {
-    product = item["item"];
+  ShoppingCartTileForProduct(Map<String, dynamic> item) {
+    type = item["type"];
+    this.item = item["item"];
     qty = item["qty"];
   }
   @override
-  _ShoppingCartTileState createState() =>
-      _ShoppingCartTileState(product: product, qty: qty);
+  _ShoppingCartTileForProductState createState() =>
+      _ShoppingCartTileForProductState(product: item, qty: qty);
 }
 
-class _ShoppingCartTileState extends State<ShoppingCartTile> {
+class _ShoppingCartTileForProductState
+    extends State<ShoppingCartTileForProduct> {
   Product product;
   int qty;
-  _ShoppingCartTileState({this.product, this.qty});
+  _ShoppingCartTileForProductState({this.product, this.qty});
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -41,8 +45,20 @@ class _ShoppingCartTileState extends State<ShoppingCartTile> {
   }
 
   Widget getLeading() {
-    return Stack(children: [
-      ClipOval(
+    return Badge(
+      animationType: BadgeAnimationType.slide,
+      badgeContent: Text(
+        qty.toString(),
+        style: TextStyle(
+          fontSize: 10,
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      badgeColor: Colors.green,
+      padding: EdgeInsets.all(4),
+      position: BadgePosition(right: 0, top: 0),
+      child: ClipOval(
         child: CachedNetworkImage(
           imageUrl: product.serverImages.isNotEmpty
               ? product.serverImages.first
@@ -59,23 +75,7 @@ class _ShoppingCartTileState extends State<ShoppingCartTile> {
                 ),
         ),
       ),
-      Positioned(
-        right: 0,
-        child: ClipOval(
-          child: Container(
-            height: getHeight(),
-            width: getWidth(),
-            color: Colors.green,
-            child: Center(
-                child: Text(
-              qty.toString(),
-              style:
-                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-            )),
-          ),
-        ),
-      )
-    ]);
+    );
   }
 
   getHeight() {
@@ -161,6 +161,170 @@ class _ShoppingCartTileState extends State<ShoppingCartTile> {
       children: <Widget>[
         Text(
           product.seller,
+          style: TextStyle(fontSize: 10, color: Colors.grey[600]),
+        ),
+      ],
+    );
+  }
+}
+
+// ignore: must_be_immutable
+class ShoppingCartTileForService extends StatefulWidget {
+  Service item;
+  String type;
+  int qty;
+  ShoppingCartTileForService(Map<String, dynamic> item) {
+    type = item["type"];
+    this.item = item["item"];
+    qty = item["qty"] ?? 0;
+  }
+  @override
+  _ShoppingCartTileForServiceState createState() =>
+      _ShoppingCartTileForServiceState(service: item, qty: qty);
+}
+
+class _ShoppingCartTileForServiceState
+    extends State<ShoppingCartTileForService> {
+  Service service;
+  int qty;
+  _ShoppingCartTileForServiceState({this.service, this.qty});
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+      child: Column(
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 8),
+            child: ListTile(
+                leading: getLeading(),
+                title: getTitle(),
+                trailing:
+                    service.price.toString().length > 6 ? null : getTrailing(),
+                subtitle: getSubtitle(context)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget getLeading() {
+    return Badge(
+      animationType: BadgeAnimationType.slide,
+      badgeContent: Text(
+        qty.toString(),
+        style: TextStyle(
+          fontSize: 10,
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      badgeColor: Colors.green,
+      padding: EdgeInsets.all(4),
+      position: BadgePosition(right: 0, top: 0),
+      child: ClipOval(
+        child: CachedNetworkImage(
+          imageUrl: service.serverImages.isNotEmpty
+              ? service.serverImages.first
+              : "https://homepages.cae.wisc.edu/~ece533/images/peppers.png",
+          height: 50,
+          width: 50,
+          colorBlendMode: BlendMode.darken,
+          fit: BoxFit.cover,
+          filterQuality: FilterQuality.high,
+          placeholder: (context, url) => service.serverImages.isNotEmpty
+              ? Icon(Icons.widgets)
+              : CircularProgressIndicator(
+                  backgroundColor: Colors.white,
+                ),
+        ),
+      ),
+    );
+  }
+
+  getHeight() {
+    if (qty.toString().length == 1) {
+      return 15.0;
+    } else if (qty.toString().length == 2) {
+      return 15.0;
+    }
+  }
+
+  getWidth() {
+    if (qty.toString().length == 1) {
+      return 15.0;
+    } else if (qty.toString().length == 2) {
+      return 18.0;
+    }
+  }
+
+  Widget getTitle() {
+    return Text(
+      "${service.name.length > 17 ? service.name.substring(0, 17) : service.name}",
+      style: TextStyle(
+          color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+    );
+  }
+
+  Widget getTrailing() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Text(
+          worldCurrencies[service.currency] + ' ' + getProductPrice(),
+          style: TextStyle(
+              color: Colors.grey[600],
+              fontWeight: FontWeight.bold,
+              fontSize: 14),
+        ),
+      ],
+    );
+  }
+
+  String getProductPrice() {
+    if (service.price.toString().length > 5) {
+      return service.price.toString().substring(0, 5) + "..";
+    }
+    return service.price.toString();
+  }
+
+  String getTotalPrice() {
+    var price = qty * int.parse(service.price);
+    return price.toString();
+  }
+
+  Widget getSubtitle(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          "${service.shortDescription.length > 20 ? service.shortDescription.substring(0, 20) : service.shortDescription}",
+          style: TextStyle(color: Colors.grey[600]),
+        ),
+        SizedBox(
+          height: 2,
+        ),
+        getSellerName(context),
+        getTotalPriceWidget(),
+      ],
+    );
+  }
+
+  Widget getTotalPriceWidget() {
+    return Text(
+      worldCurrencies[service.currency] + ' ' + getTotalPrice(),
+      style: TextStyle(
+        fontWeight: FontWeight.bold,
+        color: Colors.grey[600],
+      ),
+    );
+  }
+
+  Widget getSellerName(BuildContext context) {
+    return Row(
+      children: <Widget>[
+        Text(
+          service.provider,
           style: TextStyle(fontSize: 10, color: Colors.grey[600]),
         ),
       ],

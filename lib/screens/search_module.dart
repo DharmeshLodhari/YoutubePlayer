@@ -799,10 +799,8 @@ class VerticalListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        if (user.type != 'user') {
-          Navigator.pushNamed(context, '/profile',
-              arguments: {"searchedUser": user});
-        }
+        Navigator.pushNamed(context, '/profile',
+            arguments: {"searchedUser": user});
       },
       child: Container(
         color: lightBlue(),

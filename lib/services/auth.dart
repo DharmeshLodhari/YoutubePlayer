@@ -679,8 +679,6 @@ class AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.post(url, headers: headers, body: _data);
-    debugPrint("Status code " + response.statusCode.toString());
-    debugPrint("body" + response.body.toString());
     if (response.statusCode == 200) {
       return true;
     }
@@ -1011,6 +1009,7 @@ class AuthService {
     product.category = item['category'].toString();
     product.condition = item['condition'];
     product.seller = item['seller'];
+    product.sellerAvatar = item["seller_avatar"];
     product.price = item['price'].toString();
     product.currency = item["currency"];
 
@@ -1176,7 +1175,9 @@ class AuthService {
     var url = baseUrl + "/api/v1/products/" + id + "/";
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
+    debugPrint("Status code : ${response.statusCode}");
     var jsonData = json.decode(response.body);
+    debugPrint("body $jsonData");
     if (response.statusCode == 200) {
       Product product = createProduct(jsonData);
       return product;
@@ -1509,10 +1510,9 @@ class AuthService {
       return null;
     }
     if (next == "") {
-      debugPrint("filterValue:${filterValue}");
       url = baseUrl + "/api/v1/order/";
       if (filterValue != "" && filterValue != null) {
-        url = url + "?status__iexact=${filterValue}";
+        url = url + "?status__iexact=$filterValue";
       }
     } else {
       url = next;
@@ -1526,7 +1526,6 @@ class AuthService {
       List items = List();
       var data = jsonData["results"];
       for (int i = 0; i < data.length; i++) {
-        debugPrint(data[i].toString());
         var order = Order.fromJson(data[i]);
         items.add(order);
       }
@@ -1550,13 +1549,23 @@ class AuthService {
       List items = List();
       var data = jsonData["results"];
       for (int i = 0; i < data.length; i++) {
-        if (data[i].containsKey("manufacturer")) {
-          var product = Product.fromJson(data[i]);
-          items.add(product);
+        if (data[i]["item"].containsKey("manufacturer")) {
+          debugPrint(" data ${data[i]["item"]}");
+          var product = Product.fromJson(data[i]["item"]);
+          items.add({
+            "type": "product",
+            "item": product,
+            "qty": int.parse(data[i]["qty"]),
+          });
         }
-        if (data[i]["type"] == "service") {
-//        var service = Service.fromJson(data[i]);
-//        items.add(service);
+        if (!data[i]["item"].containsKey("manufacturer")) {
+          debugPrint(" data ${data[i]["item"]}");
+          var service = Service.fromJson(data[i]["item"]);
+          items.add({
+            "type": "service",
+            "item": service,
+            "qty": int.parse(data[i]["qty"]),
+          });
         }
       }
       return items;
@@ -1570,12 +1579,12 @@ class AuthService {
     var url = baseUrl + "/api/v1/shopping-cart/";
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
+    var jsonData = jsonDecode(response.body);
     if (response.statusCode == 200) {
-      var jsonData = jsonDecode(response.body);
       debugPrint("$jsonData");
       return getCartItems(jsonData);
-    } else
-      return [];
+    }
+    throw jsonData;
   }
 
   Future<bool> addItemToShoppingCart(Map data) async {
@@ -1601,9 +1610,7 @@ class AuthService {
     if (response.statusCode == 201) {
       return jsonData;
     }
-    return [
-      {"error": "error"}
-    ];
+    return null;
   }
 
   List<dynamic> getCartItems(var jsonResponse) {
@@ -1615,8 +1622,8 @@ class AuthService {
         items.add(product);
       }
       if (data[i]["type"] == "service") {
-//        var service = Service.fromJson(data[i]);
-//        items.add(service);
+        var service = Service.fromJson(data[i]);
+        items.add(service);
       }
     }
     return items;
@@ -1631,5 +1638,9 @@ class AuthService {
       return true;
     } else
       return false;
+  }
+
+  Future<bool> verifyBVN(String bvnNumber) async {
+    return true;
   }
 }

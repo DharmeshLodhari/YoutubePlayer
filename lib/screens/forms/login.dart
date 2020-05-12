@@ -317,7 +317,7 @@ class _UserLoginState extends State<UserLogin> {
               arguments: {'dashboardIndex': 0},
             );
           } else {
-            Navigator.of(context).popAndPushNamed('/add-document');
+            Navigator.of(context).popAndPushNamed('/bvn-verification');
           }
         } else {
           Navigator.pop(context);

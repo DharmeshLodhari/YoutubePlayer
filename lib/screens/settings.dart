@@ -2,11 +2,11 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/device.dart';
 import 'package:Slydo/models/transactions.dart';
-import 'package:Slydo/screens/bvn_verification_page.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/screens/tiles/bank_account.dart';
 import 'package:Slydo/screens/tiles/explore.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
@@ -37,6 +37,7 @@ class _SettingsListState extends State<SettingsList> {
   var arguments;
   Language language;
   BankAccountBloc bankAccountBloc;
+  BasketBloc basketBloc;
 
   void getLanguage() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
@@ -116,6 +117,7 @@ class _SettingsListState extends State<SettingsList> {
   Widget build(BuildContext context) {
     final UserBloc userBloc = Provider.of<UserBloc>(context);
     bankAccountBloc = Provider.of<BankAccountBloc>(context);
+    basketBloc = Provider.of<BasketBloc>(context);
     return WillPopScope(
       onWillPop: () async {
         Navigator.pop(context);
@@ -177,17 +179,6 @@ class _SettingsListState extends State<SettingsList> {
                   productsAndServicesWidget(),
                   SizedBox(height: 10),
                   slydoBankAccountTile(),
-                  IconButton(
-                    icon: Icon(Icons.near_me),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => BvnVerificationPage(),
-                        ),
-                      );
-                    },
-                  ),
                   SizedBox(height: 20),
                   _infoTile(),
                 ],
@@ -201,15 +192,42 @@ class _SettingsListState extends State<SettingsList> {
   }
 
   Widget shoppingCartButton() {
-    return IconButton(
-      icon: Icon(
-        Icons.shopping_cart,
-        color: Colors.white,
+    return Badge(
+      badgeColor: Colors.green,
+      animationType: BadgeAnimationType.slide,
+      badgeContent: getBadgeContent(),
+      padding:
+          basketBloc.items.length == 0 ? EdgeInsets.all(0) : EdgeInsets.all(4),
+      position: BadgePosition(right: 6, top: 6),
+      child: IconButton(
+        icon: Icon(
+          Icons.shopping_cart,
+          color: Colors.white,
+        ),
+        onPressed: () {
+          Navigator.pushNamed(context, "/shopping-cart");
+        },
       ),
-      onPressed: () {
-        Navigator.pushNamed(context, "/shopping-cart");
-      },
     );
+  }
+
+  Widget getBadgeContent() {
+    if (basketBloc.items.length == 0) {
+      return null;
+    }
+    return Text(
+      getBadgeCount().toString(),
+      style: TextStyle(
+          fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
+    );
+  }
+
+  int getBadgeCount() {
+    int totalItem = 0;
+    basketBloc.items.forEach((element) {
+      totalItem = totalItem + element['qty'];
+    });
+    return totalItem;
   }
 
   Widget displayProfileTile() {

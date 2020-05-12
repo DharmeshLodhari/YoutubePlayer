@@ -38,6 +38,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   Order order;
   List consumable = List();
+  bool isLoading = true;
   final _auth = AuthService();
   final scaffoldKey = GlobalKey<ScaffoldState>();
   var statusOfOrder = "";
@@ -59,6 +60,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       if (mounted) {
         setState(() {
           consumable = value;
+          isLoading = false;
         });
       }
     });
@@ -71,6 +73,12 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     userBloc = Provider.of<UserBloc>(context);
     return WillPopScope(
       onWillPop: () async {
+        if (noteBottomSheetController != null) {
+          noteBottomSheetController = null;
+        }
+        if (statusBottomSheetController != null) {
+          statusBottomSheetController = null;
+        }
         return true;
       },
       child: Scaffold(
@@ -85,11 +93,17 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         body: Column(
           children: <Widget>[
             Expanded(
-              child: ListView.builder(
-                  padding: EdgeInsets.symmetric(vertical: 10),
-                  itemCount: consumable.length,
-                  itemBuilder: (BuildContext context, int index) =>
-                      getItemTile(index)),
+              child: isLoading
+                  ? Center(
+                      child: CircularProgressIndicator(
+                        backgroundColor: Colors.white,
+                      ),
+                    )
+                  : ListView.builder(
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      itemCount: consumable.length,
+                      itemBuilder: (BuildContext context, int index) =>
+                          getItemTile(index)),
             ),
             checkoutWidget(),
             SizedBox(
@@ -169,14 +183,23 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         child: Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        SizedBox(
-          height: 20,
+        Expanded(
+          child: SizedBox(
+            height: 20,
+          ),
         ),
         getNoteAddTextField(),
-        SizedBox(
-          height: 20,
+        Expanded(
+          child: SizedBox(
+            height: 15,
+          ),
         ),
         addNoteBtn(),
+        Expanded(
+          child: SizedBox(
+            height: 20,
+          ),
+        ),
       ],
     ));
   }
@@ -185,15 +208,22 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 20),
       child: TextFormField(
-        maxLines: 5,
+        maxLines: 6,
+        onFieldSubmitted: (val) {
+          addNote();
+        },
         cursorColor: darkBlue(),
         decoration: InputDecoration(
-            hintText: "Enter your note here..",
-            isDense: true,
-            focusedBorder:
-                UnderlineInputBorder(borderSide: BorderSide(color: darkBlue())),
-            enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: darkBlue()))),
+          isDense: true,
+          labelText: "Enter Your Note Here",
+          labelStyle: TextStyle(color: darkBlue()),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: darkBlue(), width: 1.5),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: darkBlue(), width: 1),
+          ),
+        ),
         onChanged: (val) {
           note = val;
         },
@@ -203,22 +233,23 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   Widget addNoteBtn() {
     return FlatButton(
-      color: darkBlue(),
-      child: Text(
-        'Add',
-        style: TextStyle(color: Colors.white),
-      ),
-      onPressed: () async {
-        await _auth.updateOrderNote(note, order.id.toString()).then((value) {
-          if (value) {
-            setState(() {
-              order.note = note;
-            });
-          }
+        color: darkBlue(),
+        child: Text(
+          'Add',
+          style: TextStyle(color: Colors.white),
+        ),
+        onPressed: addNote);
+  }
+
+  void addNote() async {
+    await _auth.updateOrderNote(note, order.id.toString()).then((value) {
+      if (value) {
+        setState(() {
+          order.note = note;
         });
-        noteBottomSheetController.close();
-      },
-    );
+      }
+    });
+    noteBottomSheetController.close();
   }
 
   getOrderNote() {
@@ -341,27 +372,24 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 8),
         color: Colors.white,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
+            SizedBox(
+              height: 10,
+            ),
             Row(
               children: <Widget>[
+                Text("Total : " + worldCurrencies[order.currency] + " "),
                 Text(
-                    "Total : " + worldCurrencies[userBloc.user.currency] + " "),
-                Text(
-                  basketBloc.total.toString(),
-                  style: TextStyle(fontSize: 18),
+                  order.totalPrice.toString(),
+                  style: TextStyle(fontSize: 20),
                 ),
               ],
             ),
-            MaterialButton(
-              color: Colors.red,
-              child: Text(
-                "Cancle",
-                style: TextStyle(color: darkBlue()),
-              ),
-              onPressed: () {},
-            )
+            SizedBox(
+              height: 10,
+            ),
           ],
         ),
       ),
@@ -370,22 +398,30 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   Widget getItemTile(int index) {
     return _getSlidableWithLists(
-        context,
-        ShoppingCartTile(
-          {"item": consumable[index], "qty": 1},
-        ),
+      context,
+      getItemTileUi(index),
+      consumable[index],
+      index,
+    );
+  }
+
+  getItemTileUi(int index) {
+    if (consumable[index]["type"] == "product") {
+      return ShoppingCartTileForProduct(
         consumable[index],
-        index);
+      );
+    }
+    return ShoppingCartTileForService(consumable[index]);
   }
 
   Widget _getSlidableWithLists(
-      BuildContext context, Widget productTile, Product product, int index) {
+      BuildContext context, Widget itemTile, var item, int index) {
     return Slidable(
       controller: slidableController,
       direction: Axis.horizontal,
       actionPane: SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
-      child: VerticalListItem(productTile, product),
+      child: VerticalListItem(itemTile, item),
       actions: listActionSlideActions(index),
       secondaryActions: listSecondaryActions(index),
     );
@@ -418,10 +454,12 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   List<Widget> listActionSlideActions(int index) {
-    var product = consumable[index];
+    var item = consumable[index];
+    var conditionForUser =
+        item["type"] == "product" ? item["item"].seller : item["item"].provider;
 
     bool isValid = true;
-    if (product.seller == userBloc.user.userName) {
+    if (conditionForUser == userBloc.user.userName) {
       isValid = false;
     }
     return [
@@ -481,16 +519,29 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
 // ignore: must_be_immutable
 class VerticalListItem extends StatelessWidget {
-  VerticalListItem(this.child, this.product);
-  final Widget child;
-  Product product;
+  Widget child;
+  var item;
+  String type;
 
+  VerticalListItem(Widget child, var item) {
+    this.child = child;
+    this.type = item["type"];
+    this.item = item["item"];
+  }
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, "/product",
-            arguments: {"product": product});
+        if (type == "product") {
+          Product product = item;
+          Navigator.pushNamed(context, "/product",
+              arguments: {"product": product});
+        }
+        if (type == "service") {
+          Service service = item;
+          Navigator.pushNamed(context, "/service",
+              arguments: {"service": service});
+        }
       },
       child: Container(
         color: lightBlue(),

@@ -269,7 +269,6 @@ class _OrdersListState extends State<OrdersList> {
           isLoading = true;
         });
         var result = await _auth.listOrders(next, previous, filterValue);
-
         count = result['count'];
         next = result['next'];
         previous = result['previous'];

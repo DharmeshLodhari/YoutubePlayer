@@ -1,5 +1,7 @@
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'colors.dart';
 
@@ -12,9 +14,11 @@ class _BvnVerificationPageState extends State<BvnVerificationPage> {
   final _formKey = GlobalKey<FormState>();
   String bvnNumber = "";
   final _auth = AuthService();
+  UserBloc userBloc;
 
   @override
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
     return WillPopScope(
         onWillPop: () async {
           Navigator.pop(context);
@@ -95,11 +99,23 @@ class _BvnVerificationPageState extends State<BvnVerificationPage> {
       FocusScope.of(context).unfocus();
     }
     debugPrint("$bvnNumber");
-    //TODO:CALL API FOR VERIFICATION with bvnNumber
-//    _auth.registerPhoneNumber(bvnNumber).then((value) {
-//      if (_formKey.currentState.validate()) {
-//
-//      }
-//    });
+
+    if (_formKey.currentState.validate()) {
+      //TODO:CALL API FOR VERIFICATION with bvnNumber
+//      _auth.verifyBVN(bvnNumber).then((value) {
+//        //IF BVN NUMBER IS RIGHT
+//        if (value == true) {
+//          _auth
+//              .authenticate(userBloc.user.phoneNumber, userBloc.user.password)
+//              .then((user) {
+//            if (user.isVerified) {
+//              userBloc.user = user;
+//              Navigator.of(context).popAndPushNamed('/dashboard');
+//            }
+//          });
+//        }
+//        debugPrint("verify bav : $value");
+//      });
+    }
   }
 }

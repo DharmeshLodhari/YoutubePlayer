@@ -4,6 +4,8 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:badges/badges.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -54,24 +56,29 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     return Scaffold(
       backgroundColor: lightBlue(),
       appBar: AppBar(
-        centerTitle: true,
-        leading: IconButton(
-          icon: Icon(
-            Icons.chevron_left,
-            size: 40.0,
-            color: Colors.white,
-          ),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-        actions: <Widget>[goToBasket()],
+        actions: <Widget>[messageSellerWidget(), goToBasket()],
         backgroundColor: darkBlue(),
-        title: Text(
-          AppLocalization.of(context).productDetail,
-          style: TextStyle(
-            color: Colors.white,
-          ),
+        titleSpacing: 0,
+        title: Row(
+          children: <Widget>[
+            getUserProfile(),
+            Expanded(
+              child: SizedBox(
+                width: 14,
+              ),
+            ),
+            Text(
+              AppLocalization.of(context).productDetail,
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
+            Expanded(
+              child: SizedBox(
+                width: 14,
+              ),
+            ),
+          ],
         ),
       ),
       floatingActionButton: addToCart(),
@@ -79,16 +86,76 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     );
   }
 
-  Widget goToBasket() {
-    return IconButton(
-      icon: Icon(
-        Icons.shopping_cart,
-        color: Colors.white,
+  Widget getUserProfile() {
+    return GestureDetector(
+      child: ClipOval(
+        child: Container(
+          height: 40,
+          width: 40,
+          child: CachedNetworkImage(
+            imageUrl: product.sellerAvatar != null
+                ? product.sellerAvatar
+                : "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png",
+            fit: BoxFit.fill,
+          ),
+        ),
       ),
-      onPressed: () {
-        Navigator.pushNamed(context, "/shopping-cart");
+      onTap: () async {
+        _auth.fetchCustomerProfile(product.seller).then((user) {
+          Navigator.pushNamed(context, '/profile',
+              arguments: {"searchedUser": user});
+        });
       },
     );
+  }
+
+  Widget messageSellerWidget() {
+    return IconButton(
+      icon: Icon(Icons.message),
+      onPressed: () {
+        getRecipient();
+        navigateToSendPayment();
+      },
+    );
+  }
+
+  Widget goToBasket() {
+    return Badge(
+      badgeColor: Colors.green,
+      animationType: BadgeAnimationType.slide,
+      badgeContent: getBadgeContent(),
+      padding:
+          basketBloc.items.length == 0 ? EdgeInsets.all(0) : EdgeInsets.all(4),
+      position: BadgePosition(right: 6, top: 6),
+      child: IconButton(
+        icon: Icon(
+          Icons.shopping_cart,
+          color: Colors.white,
+        ),
+        onPressed: () {
+          Navigator.pushNamed(context, "/shopping-cart");
+        },
+      ),
+    );
+  }
+
+  Widget getBadgeContent() {
+    if (basketBloc.items.length == 0) {
+      return null;
+    }
+    return Text(
+      getBadgeCount().toString(),
+      style: TextStyle(
+          fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
+    );
+  }
+
+  int getBadgeCount() {
+    int totalItem = 0;
+    basketBloc.items.forEach((element) {
+      totalItem = totalItem + element['qty'];
+    });
+    return totalItem;
   }
 
   Widget addToCart() {
@@ -100,13 +167,20 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         color: Colors.white,
       ),
       onPressed: () async {
-        Map data = {"type": "product", "id": product.id};
+        basketBloc.addItemToCart(item: product, type: "product");
+        var mapData;
+        basketBloc.items.forEach((element) {
+          if (element["item"].id == product.id) {
+            mapData = element;
+            return;
+          }
+        });
+        Map data = {
+          "type": "product",
+          "id": mapData["item"].id,
+          "qty": mapData["qty"],
+        };
         await _auth.addItemToShoppingCart(data);
-
-        basketBloc.addItemToCart(item: product);
-
-        Toast.show("Product is Added Successfully in the cart", context,
-            backgroundColor: darkBlue(), textColor: Colors.white);
       },
     );
   }
@@ -377,57 +451,19 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   _buildBuyButtonWidget() {
-    return Row(
-      children: <Widget>[
-        Expanded(
-          flex: 1,
-          child: SizedBox(
-            width: 10,
-          ),
+    return Center(
+      child: MaterialButton(
+        minWidth: MediaQuery.of(context).size.width / 2.5,
+        color: Colors.green,
+        child: Text(
+          "Buy Now",
+          style: TextStyle(color: Colors.white),
         ),
-        Expanded(
-          flex: 5,
-          child: MaterialButton(
-            minWidth: 200,
-            color: Colors.green,
-            child: Text(
-              "Buy Now",
-              style: TextStyle(color: Colors.white),
-            ),
-            onPressed: () {
-              getRecipient();
-              navigateToSendPayment();
-            },
-          ),
-        ),
-        Expanded(
-          flex: 1,
-          child: SizedBox(
-            width: 5,
-          ),
-        ),
-        Expanded(
-          flex: 5,
-          child: MaterialButton(
-            minWidth: 200,
-            color: Colors.white,
-            child: Icon(
-              Icons.message,
-              color: Colors.green,
-            ),
-            onPressed: () {
-              getRecipient();
-              navigateToSendPayment();
-            },
-          ),
-        ),
-        Expanded(
-          flex: 1,
-          child: SizedBox(
-            width: 10,
-          ),
-        ),
-      ],
+        onPressed: () {
+          getRecipient();
+          navigateToSendPayment();
+        },
+      ),
     );
   }
 

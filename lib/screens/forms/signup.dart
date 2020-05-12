@@ -252,14 +252,13 @@ class _SignUpState extends State<SignUp> {
             showDialog(
                 context: context, builder: (context) => LoadingIndicator());
 
-            //TODO: Call The USER REGISTRATION API
             bool isRegistered;
             _auth.userRegistration(data).then((value) {
               isRegistered = value;
               if (isRegistered) {
                 _auth.authenticate(phoneNumber, password1).then((value) {
                   Navigator.pop(context);
-                  Navigator.of(context).popAndPushNamed('/add-document');
+                  Navigator.of(context).popAndPushNamed('/bvn-verification');
                 });
               }
             });

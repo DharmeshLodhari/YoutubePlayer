@@ -1,4 +1,5 @@
 import 'package:Slydo/screens/bank_account_list.dart';
+import 'package:Slydo/screens/bvn_verification_page.dart';
 import 'package:Slydo/screens/dashboard.dart';
 import 'package:Slydo/screens/explore.dart';
 import 'package:Slydo/screens/forms/add_bank_account.dart';
@@ -18,7 +19,6 @@ import 'package:Slydo/screens/order_detail_page.dart';
 import 'package:Slydo/screens/orders_list.dart';
 import 'package:Slydo/screens/payout_transactions.dart';
 import 'package:Slydo/screens/product_detail_page.dart';
-import 'package:Slydo/screens/profile.dart';
 import 'package:Slydo/screens/request_payments_list.dart';
 import 'package:Slydo/screens/scan_qr_code.dart';
 import 'package:Slydo/screens/search_auto_complete.dart';
@@ -29,6 +29,7 @@ import 'package:Slydo/screens/transaction_detail_page.dart';
 import 'package:Slydo/screens/transaction_graph.dart';
 import 'package:Slydo/screens/transactions_list.dart';
 import 'package:Slydo/screens/user_dashboard.dart';
+import 'package:Slydo/screens/user_profile.dart';
 import 'package:Slydo/splash.dart';
 import 'package:Slydo/widget/resultReturningPasswordPopup.dart';
 import 'package:flutter/material.dart';
@@ -102,7 +103,7 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => SearchAutoComplete());
       case '/profile':
         return MaterialPageRoute(
-            builder: (_) => Profile(arguments: settings.arguments));
+            builder: (_) => UserProfile(arguments: settings.arguments));
       case '/product':
         return MaterialPageRoute(
             builder: (_) => ProductDetailPage(arguments: settings.arguments));
@@ -180,6 +181,8 @@ class RouteGenerator {
         return MaterialPageRoute(
             builder: (context) =>
                 OrderDetailPage(arguments: settings.arguments));
+      case '/bvn-verification':
+        return MaterialPageRoute(builder: (context) => BvnVerificationPage());
 
       default:
         // If there is no such named route in the switch statement, e.g. /third

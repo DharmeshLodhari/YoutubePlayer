@@ -1,5 +1,6 @@
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/models/user.dart';
+import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 
 class UserBloc extends ChangeNotifier {
@@ -121,6 +122,7 @@ class BasketBloc extends ChangeNotifier {
   // will accept products and services
   List<Map<String, dynamic>> _items = List<Map<String, dynamic>>();
   int _total = 0;
+  final _auth = AuthService();
 
   int get total => _total;
 
@@ -137,12 +139,12 @@ class BasketBloc extends ChangeNotifier {
   }
 
   // this will add the product or service in the cart;
-  void addItemToCart({var item}) {
-    addItemInBasketWithQty(item);
+  void addItemToCart({@required var item, @required String type}) {
+    addItemInBasketWithQty(item, type);
     notifyListeners();
   }
 
-  void addItemInBasketWithQty(var item) {
+  void addItemInBasketWithQty(var item, String type) {
     bool flag = false;
 
     _items.forEach((element) {
@@ -156,7 +158,7 @@ class BasketBloc extends ChangeNotifier {
     });
 
     if (!flag) {
-      _items.add({"item": item, "qty": 1});
+      _items.add({"type": type, "item": item, "qty": 1});
       _total = _total + int.parse(item.price);
       debugPrint("New Item Added");
     }

@@ -81,7 +81,7 @@ class _UserDashboardState extends State<UserDashboard> {
                   ),
                   rowIconButtons(
                     iconButton(Icons.settings, "Add Service", () {
-//                      Navigator.pushNamed(context, '/add-service');
+                      Navigator.pushNamed(context, '/add-service');
                       Toast.show("Comming Soon !!", context,
                           backgroundColor: darkBlue(), textColor: Colors.white);
                     }),

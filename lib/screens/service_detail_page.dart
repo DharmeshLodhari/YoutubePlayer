@@ -1,8 +1,11 @@
 import 'package:Slydo/data/currency.dart';
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'colors.dart';
 
@@ -20,6 +23,8 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   var arguments;
   _ServiceDetailPageState({this.arguments});
   Service service;
+  CustomerProfileBloc customerProfileBloc;
+  BasketBloc basketBloc;
 
   final _auth = AuthService();
 
@@ -42,6 +47,8 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
 
   @override
   Widget build(BuildContext context) {
+    customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
+    basketBloc = Provider.of<BasketBloc>(context);
     return Scaffold(
       backgroundColor: lightBlue(),
       appBar: AppBar(
@@ -56,6 +63,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
             Navigator.of(context).pop();
           },
         ),
+        actions: <Widget>[messageSellerWidget(), goToBasket()],
         backgroundColor: darkBlue(),
         title: Text(
           AppLocalization.of(context).serviceDetail,
@@ -64,7 +72,76 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
           ),
         ),
       ),
+      floatingActionButton: addToCart(),
       body: _buildServiceDetailsPage(context),
+    );
+  }
+
+  Widget messageSellerWidget() {
+    return IconButton(
+      icon: Icon(Icons.message),
+      onPressed: () {
+        getRecipient();
+        //TODO:MESSAGE OWNER
+        navigateToSendPayment();
+      },
+    );
+  }
+
+  Widget goToBasket() {
+    return Badge(
+      animationType: BadgeAnimationType.slide,
+      badgeContent: Text(
+        getBadgeCount().toString(),
+        style: TextStyle(
+            fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
+      ),
+      padding: EdgeInsets.all(4),
+      position: BadgePosition(right: 6, top: 6),
+      child: IconButton(
+        icon: Icon(
+          Icons.shopping_cart,
+          color: Colors.white,
+        ),
+        onPressed: () {
+          Navigator.pushNamed(context, "/shopping-cart");
+        },
+      ),
+    );
+  }
+
+  int getBadgeCount() {
+    int totalItem = 0;
+    basketBloc.items.forEach((element) {
+      totalItem = totalItem + element['qty'];
+    });
+    return totalItem;
+  }
+
+  Widget addToCart() {
+    return FloatingActionButton(
+      backgroundColor: darkBlue(),
+      child: Icon(
+        Icons.add_shopping_cart,
+        size: 30,
+        color: Colors.white,
+      ),
+      onPressed: () async {
+        basketBloc.addItemToCart(item: service);
+        var mapData;
+        basketBloc.items.forEach((element) {
+          if (element["item"].id == service.id) {
+            mapData = element;
+            return;
+          }
+        });
+        Map data = {
+          "type": "service",
+          "id": mapData["item"].id,
+          "qty": mapData["qty"],
+        };
+        await _auth.addItemToShoppingCart(data);
+      },
     );
   }
 
@@ -94,7 +171,9 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                 _buildSizeChartWidgets(),
                 SizedBox(height: 12.0),
                 _buildDetailsAndMaterialWidgets(),
-                SizedBox(height: 24.0),
+                SizedBox(height: 12.0),
+                _buildBuyButtonWidget(),
+                SizedBox(height: 12.0),
               ],
             ),
           ),
@@ -210,7 +289,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
             children: <Widget>[
               Icon(
                 Icons.access_time,
-                color: Colors.grey[600],
+                color: Colors.black,
               ),
               SizedBox(
                 width: 12.0,
@@ -218,7 +297,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
               Text(
                 service.availableFrom.toString(),
                 style: TextStyle(
-                  color: Colors.grey[600],
+                  color: Colors.black,
                 ),
               ),
             ],
@@ -236,6 +315,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           TabBar(
+            indicatorColor: darkBlue(),
             controller: tabController,
             tabs: <Widget>[
               Tab(
@@ -297,5 +377,39 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       photos.add(img);
     }
     return photos;
+  }
+
+  _buildBuyButtonWidget() {
+    return Center(
+      child: MaterialButton(
+        minWidth: MediaQuery.of(context).size.width / 2.5,
+        color: Colors.green,
+        child: Text(
+          "Buy Now",
+          style: TextStyle(color: Colors.white),
+        ),
+        onPressed: () {
+          getRecipient();
+          navigateToSendPayment();
+        },
+      ),
+    );
+  }
+
+  // Pull the user from the server
+  void getRecipient() async {
+    customerProfileBloc.customer =
+        await _auth.fetchCustomerProfile(service.provider);
+  }
+
+  void navigateToSendPayment() {
+    Navigator.of(context).pushNamed(
+      '/send-payment',
+      arguments: {
+        'isFromProfile': false,
+        'isRequest': false,
+//        'product': product
+      },
+    );
   }
 }
