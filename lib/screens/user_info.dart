@@ -1,0 +1,232 @@
+import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/colors.dart';
+import 'package:Slydo/services/auth.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connectivity/connectivity.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:toast/toast.dart';
+
+class UserInfo extends StatefulWidget {
+  @override
+  _UserInfoState createState() => _UserInfoState();
+}
+
+class _UserInfoState extends State<UserInfo> {
+  final GlobalKey<ScaffoldState> _scaffoldUserInfoKey =
+      new GlobalKey<ScaffoldState>();
+  @override
+  Widget build(BuildContext context) {
+    final UserBloc userBloc = Provider.of<UserBloc>(context);
+
+    return WillPopScope(
+      onWillPop: () async {
+        return true;
+      },
+      child: Scaffold(
+        key: _scaffoldUserInfoKey,
+        resizeToAvoidBottomInset: true,
+        backgroundColor: lightBlue(),
+        body: Center(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: Container(
+              color: lightBlue(),
+              padding: EdgeInsets.all(30),
+              child: Center(
+                child: Column(
+                  children: <Widget>[
+                    SizedBox(height: 10),
+                    displayUserInfo(userBloc),
+                    SizedBox(height: 30),
+                    displayPaymentButtons()
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget displayUserInfo(userBloc) {
+    return Center(
+      child: Card(
+        semanticContainer: true,
+        elevation: 4.0,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Container(
+                padding: EdgeInsets.all(40),
+                child: CachedNetworkImage(
+                  imageUrl: userBloc.user.qrCode,
+                  colorBlendMode: BlendMode.darken,
+                  fit: BoxFit.fitWidth,
+                  filterQuality: FilterQuality.high,
+                  placeholder: (context, url) => CircularProgressIndicator(
+                    backgroundColor: Colors.white,
+                  ),
+                )),
+            ButtonBar(
+              mainAxisSize: MainAxisSize.max,
+              alignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                FlatButton(
+                    onPressed: () {},
+                    child: Text(userBloc.user.fullName,
+                        style: TextStyle(color: Colors.black, fontSize: 14))),
+                FlatButton.icon(
+                    onPressed: () {
+                      Clipboard.setData(new ClipboardData(
+                          text: baseUrl +
+                              "/api/v1/customer/" +
+                              userBloc.user.userName));
+                      Toast.show(AppLocalization.of(context).copied, context,
+                          gravity: Toast.CENTER,
+                          duration: Toast.LENGTH_LONG,
+                          backgroundColor: darkBlue());
+                    },
+                    icon: Icon(Icons.content_copy, color: Colors.black),
+                    label: Text(AppLocalization.of(context).copyUrl,
+                        style: TextStyle(color: Colors.black, fontSize: 14))),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget displayPaymentButtons() {
+    return Row(
+      children: <Widget>[
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(0.0, 8.0, 8.0, 8.0),
+            child: ButtonTheme(
+              //elevation: 4,
+              child: MaterialButton(
+                elevation: 4.0,
+                onPressed: () {
+                  Connectivity().checkConnectivity().then((value) {
+                    var connectionResult = value;
+                    if (connectionResult == ConnectivityResult.wifi ||
+                        connectionResult == ConnectivityResult.mobile) {
+                      Navigator.of(context).pushNamed('/request-payment',
+                          arguments: <String, bool>{
+                            'isFromProfile': true,
+                            'isRequest': true
+                          });
+                    } else {
+                      Toast.show(
+                          AppLocalization.of(context)
+                              .internetConnectionNotAvailable,
+                          context,
+                          gravity: Toast.BOTTOM,
+                          backgroundColor: darkBlue());
+                    }
+                  });
+                },
+                textColor: Colors.white,
+                color: darkBlue(),
+                height: 50,
+                child: Text(AppLocalization.of(context).request),
+              ),
+            ),
+          ),
+        ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(8.0, 8.0, 0.0, 8.0),
+            child: ButtonTheme(
+              //elevation: 4,
+
+              child: MaterialButton(
+                elevation: 4.0,
+                onPressed: () {
+                  Connectivity().checkConnectivity().then((value) {
+                    var connectionResult = value;
+                    if (connectionResult == ConnectivityResult.wifi ||
+                        connectionResult == ConnectivityResult.mobile) {
+                      Navigator.of(context).pushNamed('/send-payment',
+                          arguments: <String, bool>{'isFromProfile': true});
+                    } else {
+                      Toast.show(
+                          AppLocalization.of(context)
+                              .internetConnectionNotAvailable,
+                          context,
+                          gravity: Toast.BOTTOM,
+                          backgroundColor: darkBlue());
+                    }
+                  });
+                },
+                textColor: Colors.white,
+                color: darkBlue(),
+                height: 50,
+                child: Text(AppLocalization.of(context)
+                    .send), // change this to make payment request button to
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget displayQRCodeButton() {
+    return Padding(
+      padding: const EdgeInsets.only(right: 4.0),
+      child: InkWell(
+        onTap: () {
+          Connectivity().checkConnectivity().then((value) {
+            var connectionResult = value;
+            if (connectionResult == ConnectivityResult.wifi ||
+                connectionResult == ConnectivityResult.mobile) {
+              Navigator.of(context)
+                  .pushNamed('/scan-qr', arguments: {'isRequest': false});
+            } else {
+              Toast.show(
+                  AppLocalization.of(context).internetConnectionNotAvailable,
+                  context,
+                  gravity: Toast.BOTTOM,
+                  backgroundColor: darkBlue());
+            }
+          });
+        },
+        child: Image.asset(
+          'assets/images/qr_code.png',
+          height: 24.0,
+          width: 24.0,
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+
+  Widget displayUserAvatar(userBloc) {
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: GestureDetector(
+        child: ClipOval(
+          child: CachedNetworkImage(
+            imageUrl: userBloc.user.avatar,
+            height: 40,
+            width: 40,
+            colorBlendMode: BlendMode.darken,
+            fit: BoxFit.cover,
+            filterQuality: FilterQuality.high,
+            placeholder: (context, url) => userBloc.user.avatar == ""
+                ? Icon(Icons.person)
+                : CircularProgressIndicator(
+                    backgroundColor: Colors.white,
+                  ),
+          ),
+        ),
+      ),
+    );
+  }
+}

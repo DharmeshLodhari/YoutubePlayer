@@ -4,6 +4,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:Slydo/screens/colors.dart';
+import 'package:Slydo/screens/user_info.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -175,6 +176,18 @@ class _UserProfileState extends State<UserProfile> {
             )),
       );
     }
+
+    menuItems.add(
+      MenuItem(
+          textStyle: filterValue == 'Info'
+              ? TextStyle(color: lightBlue(), fontSize: 10)
+              : TextStyle(color: Colors.white, fontSize: 10),
+          title: "Info",
+          image: Icon(
+            Icons.computer,
+            color: filterValue == 'Info' ? lightBlue() : Colors.white,
+          )),
+    );
     return menuItems;
   }
 
@@ -188,8 +201,10 @@ class _UserProfileState extends State<UserProfile> {
         filterValue = item.menuTitle;
         if (filterValue == "Products") {
           currentIndex = 0;
-        } else {
+        } else if (filterValue == "Services") {
           currentIndex = 1;
+        } else if (filterValue == "Info") {
+          currentIndex = 2;
         }
       });
     }
@@ -290,6 +305,7 @@ class _UserProfileState extends State<UserProfile> {
       children: [
         productsList(),
         servicesList(),
+        UserInfo(),
       ],
     );
   }
