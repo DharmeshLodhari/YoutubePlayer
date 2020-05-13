@@ -223,51 +223,58 @@ class _UserProfileState extends State<UserProfile> {
       isOwner = true;
     }
 
-    return Scaffold(
-      backgroundColor: lightBlue(),
-      appBar: AppBar(
-        automaticallyImplyLeading: true,
-        backgroundColor: darkBlue(),
-        titleSpacing: 0,
-        title: Row(
-          children: <Widget>[
-            ClipOval(
-              child: Container(
-                height: 40,
-                width: 40,
-                child: CachedNetworkImage(
-                  imageUrl: searchedUser.avatar,
-                  fit: BoxFit.fill,
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.popAndPushNamed(context, '/dashboard',
+            arguments: {'dashboardIndex': 5});
+        return false;
+      },
+      child: Scaffold(
+        backgroundColor: lightBlue(),
+        appBar: AppBar(
+          automaticallyImplyLeading: true,
+          backgroundColor: darkBlue(),
+          titleSpacing: 0,
+          title: Row(
+            children: <Widget>[
+              ClipOval(
+                child: Container(
+                  height: 40,
+                  width: 40,
+                  child: CachedNetworkImage(
+                    imageUrl: searchedUser.avatar,
+                    fit: BoxFit.fill,
+                  ),
                 ),
               ),
-            ),
-            Expanded(
-              child: SizedBox(
-                width: 10,
+              Expanded(
+                child: SizedBox(
+                  width: 10,
+                ),
               ),
-            ),
-            Text(searchedUser.fullName),
-            Expanded(
-              child: SizedBox(
-                width: 10,
+              Text(searchedUser.fullName),
+              Expanded(
+                child: SizedBox(
+                  width: 10,
+                ),
               ),
-            ),
+            ],
+          ),
+          actions: <Widget>[
+            IconButton(
+              key: popupMenuBtnKeyForMenu,
+              icon: Icon(
+                Icons.more_vert,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                popUpMenu();
+              },
+            )
           ],
         ),
-        actions: <Widget>[
-          IconButton(
-            key: popupMenuBtnKeyForMenu,
-            icon: Icon(
-              Icons.more_vert,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              popUpMenu();
-            },
-          )
-        ],
+        body: tabViews(),
       ),
-      body: tabViews(),
     );
   }
 
