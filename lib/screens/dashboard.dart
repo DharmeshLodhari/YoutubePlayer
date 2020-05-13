@@ -1,14 +1,17 @@
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/checkout_shopping_cart.dart';
 import 'package:Slydo/screens/messagelist.dart';
 import 'package:Slydo/screens/search_module.dart';
+import 'package:Slydo/screens/user_dashboard.dart';
+import 'package:badges/badges.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../screens/colors.dart';
 import 'home.dart';
 import 'request_payments_list.dart';
-import 'settings.dart';
-import 'transactions_list.dart';
 
 // ignore: must_be_immutable
 class Dashboard extends StatefulWidget {
@@ -25,7 +28,7 @@ class _DashboardState extends State<Dashboard> {
   var arguments;
   static var isLocked = true;
   List<Widget> screens;
-
+  BasketBloc basketBloc;
   _DashboardState({this.arguments});
 
   @override
@@ -43,10 +46,10 @@ class _DashboardState extends State<Dashboard> {
       screens = [
         Home(),
         PaymentRequestList(),
-        TransactionList(),
+        ShoppingCart(),
         SearchModule(),
         MessageList(),
-        SettingsList(
+        UserDashboard(
           arguments: {'isLocked': isLocked},
         ),
       ];
@@ -55,8 +58,46 @@ class _DashboardState extends State<Dashboard> {
     super.initState();
   }
 
+  Widget goToBasket() {
+    return Badge(
+      badgeColor: Colors.green,
+      animationType: BadgeAnimationType.slide,
+      badgeContent: getBadgeContent(),
+      padding:
+          basketBloc.items.length == 0 ? EdgeInsets.all(0) : EdgeInsets.all(4),
+      position: BadgePosition(right: 6, top: 6),
+      child: IconButton(
+        padding: EdgeInsets.all(0),
+        icon: Icon(
+          Icons.shopping_cart,
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+
+  Widget getBadgeContent() {
+    if (basketBloc.items.length == 0) {
+      return null;
+    }
+    return Text(
+      getBadgeCount().toString(),
+      style: TextStyle(
+          fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
+    );
+  }
+
+  int getBadgeCount() {
+    int totalItem = 0;
+    basketBloc.items.forEach((element) {
+      totalItem = totalItem + element['qty'];
+    });
+    return totalItem;
+  }
+
   @override
   Widget build(BuildContext context) {
+    basketBloc = Provider.of<BasketBloc>(context);
     return Scaffold(
       body: IndexedStack(index: _currentIndex, children: screens),
       bottomNavigationBar: BottomNavigationBar(
@@ -87,8 +128,8 @@ class _DashboardState extends State<Dashboard> {
           ),
           BottomNavigationBarItem(
             backgroundColor: lightBlue(),
-            icon: Icon(Icons.account_balance_wallet, color: Colors.white),
-            title: Text(AppLocalization.of(context).transactions,
+            icon: goToBasket(),
+            title: Text("Basket",
                 style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
           BottomNavigationBarItem(
@@ -106,7 +147,7 @@ class _DashboardState extends State<Dashboard> {
           BottomNavigationBarItem(
             backgroundColor: lightBlue(),
             icon: Icon(Icons.settings, color: Colors.white),
-            title: Text(AppLocalization.of(context).settings,
+            title: Text("More",
                 style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
         ],

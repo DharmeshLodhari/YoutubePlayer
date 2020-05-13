@@ -175,7 +175,8 @@ class RouteGenerator {
       case '/shopping-cart':
         return MaterialPageRoute(builder: (context) => ShoppingCart());
       case '/user-dashboard':
-        return MaterialPageRoute(builder: (context) => UserDashboard());
+        return MaterialPageRoute(
+            builder: (context) => UserDashboard(arguments: settings.arguments));
       case '/orders-list':
         return MaterialPageRoute(builder: (context) => OrdersList());
       case '/order-detail-page':

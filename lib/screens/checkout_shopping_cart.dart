@@ -53,9 +53,9 @@ class _ShoppingCartState extends State<ShoppingCart> {
         key: _scaffoldKey,
         backgroundColor: lightBlue(),
         appBar: AppBar(
-          automaticallyImplyLeading: true,
+          automaticallyImplyLeading: false,
           backgroundColor: darkBlue(),
-          title: Text("Shopping Basket"),
+          title: Text("Basket"),
           actions: <Widget>[
             search(),
             addItemToBasket(),
