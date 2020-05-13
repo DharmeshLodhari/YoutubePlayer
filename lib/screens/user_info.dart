@@ -1,5 +1,6 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/models/user.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -9,18 +10,28 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
+// ignore: must_be_immutable
 class UserInfo extends StatefulWidget {
+  CustomerProfile user;
+  UserInfo({@required this.user});
   @override
-  _UserInfoState createState() => _UserInfoState();
+  _UserInfoState createState() => _UserInfoState(user: user);
 }
 
 class _UserInfoState extends State<UserInfo> {
+  CustomerProfile user;
+  UserBloc _userBloc;
+  _UserInfoState({this.user});
+
   final GlobalKey<ScaffoldState> _scaffoldUserInfoKey =
       new GlobalKey<ScaffoldState>();
+
+  final _auth = AuthService();
+  CustomerProfileBloc customerProfileBloc;
   @override
   Widget build(BuildContext context) {
-    final UserBloc userBloc = Provider.of<UserBloc>(context);
-
+    customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
+    _userBloc = Provider.of<UserBloc>(context);
     return WillPopScope(
       onWillPop: () async {
         return true;
@@ -29,22 +40,22 @@ class _UserInfoState extends State<UserInfo> {
         key: _scaffoldUserInfoKey,
         resizeToAvoidBottomInset: true,
         backgroundColor: lightBlue(),
-        body: Center(
-          child: SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: Container(
-              color: lightBlue(),
-              padding: EdgeInsets.all(30),
-              child: Center(
-                child: Column(
-                  children: <Widget>[
-                    SizedBox(height: 10),
-                    displayUserInfo(userBloc),
-                    SizedBox(height: 30),
-                    displayPaymentButtons()
-                  ],
+        body: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Container(
+            color: lightBlue(),
+            padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+            child: Column(
+              children: <Widget>[
+                SizedBox(
+                  height: 30,
                 ),
-              ),
+                displayUserNameAndContect(),
+                SizedBox(height: 10),
+                displayUserInfo(),
+                SizedBox(height: 30),
+                displayPaymentButtons()
+              ],
             ),
           ),
         ),
@@ -52,56 +63,94 @@ class _UserInfoState extends State<UserInfo> {
     );
   }
 
-  Widget displayUserInfo(userBloc) {
-    return Center(
-      child: Card(
-        semanticContainer: true,
-        elevation: 4.0,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Container(
-                padding: EdgeInsets.all(40),
-                child: CachedNetworkImage(
-                  imageUrl: userBloc.user.qrCode,
-                  colorBlendMode: BlendMode.darken,
-                  fit: BoxFit.fitWidth,
-                  filterQuality: FilterQuality.high,
-                  placeholder: (context, url) => CircularProgressIndicator(
-                    backgroundColor: Colors.white,
-                  ),
-                )),
-            ButtonBar(
-              mainAxisSize: MainAxisSize.max,
-              alignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                FlatButton(
-                    onPressed: () {},
-                    child: Text(userBloc.user.fullName,
-                        style: TextStyle(color: Colors.black, fontSize: 14))),
-                FlatButton.icon(
-                    onPressed: () {
-                      Clipboard.setData(new ClipboardData(
-                          text: baseUrl +
-                              "/api/v1/customer/" +
-                              userBloc.user.userName));
-                      Toast.show(AppLocalization.of(context).copied, context,
-                          gravity: Toast.CENTER,
-                          duration: Toast.LENGTH_LONG,
-                          backgroundColor: darkBlue());
-                    },
-                    icon: Icon(Icons.content_copy, color: Colors.black),
-                    label: Text(AppLocalization.of(context).copyUrl,
-                        style: TextStyle(color: Colors.black, fontSize: 14))),
-              ],
+  Widget displayUserNameAndContect() {
+    return Card(
+      child: ListTile(
+          leading: ClipOval(
+            child: Container(
+              height: 45,
+              width: 45,
+              child: CachedNetworkImage(
+                imageUrl: user.avatar,
+                fit: BoxFit.fill,
+              ),
             ),
-          ],
-        ),
+          ),
+          title: Text(user.fullName),
+          subtitle: Text(user.userName),
+          trailing: getTrailing()),
+    );
+  }
+
+  Widget getTrailing() {
+    if (_userBloc.user.userName == user.userName) {
+      return null;
+    }
+    return IconButton(
+      icon: Icon(
+        Icons.message,
+        color: darkBlue(),
+      ),
+      onPressed: () {
+        _auth.fetchCustomerProfile(user.userName).then((fetchedUser) {
+          customerProfileBloc.customer = fetchedUser;
+          Navigator.of(context).pushNamed('/compose_message', arguments: {
+            'recipient': fetchedUser.userName,
+            'subject': "",
+          });
+        });
+      },
+    );
+  }
+
+  Widget displayUserInfo() {
+    return Card(
+      elevation: 4.0,
+      child: Column(
+        children: <Widget>[
+          Container(
+              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 40),
+              child: CachedNetworkImage(
+                imageUrl: user.qrCode,
+                colorBlendMode: BlendMode.darken,
+                fit: BoxFit.fitWidth,
+                filterQuality: FilterQuality.high,
+                placeholder: (context, url) => CircularProgressIndicator(
+                  backgroundColor: Colors.white,
+                ),
+              )),
+          ButtonBar(
+            mainAxisSize: MainAxisSize.max,
+            alignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              FlatButton(
+                  onPressed: () {},
+                  child: Text(user.fullName,
+                      style: TextStyle(color: Colors.black, fontSize: 14))),
+              FlatButton.icon(
+                  onPressed: () {
+                    Clipboard.setData(new ClipboardData(
+                        text: baseUrl + "/api/v1/customer/" + user.userName));
+                    Toast.show(AppLocalization.of(context).copied, context,
+                        gravity: Toast.CENTER,
+                        duration: Toast.LENGTH_LONG,
+                        backgroundColor: darkBlue());
+                  },
+                  icon: Icon(Icons.content_copy, color: Colors.black),
+                  label: Text(AppLocalization.of(context).copyUrl,
+                      style: TextStyle(color: Colors.black, fontSize: 14))),
+            ],
+          ),
+        ],
       ),
     );
   }
 
   Widget displayPaymentButtons() {
+    if (_userBloc.user.userName == user.userName) {
+      return Container();
+    }
+
     return Row(
       children: <Widget>[
         Expanded(
@@ -111,24 +160,14 @@ class _UserInfoState extends State<UserInfo> {
               //elevation: 4,
               child: MaterialButton(
                 elevation: 4.0,
-                onPressed: () {
-                  Connectivity().checkConnectivity().then((value) {
-                    var connectionResult = value;
-                    if (connectionResult == ConnectivityResult.wifi ||
-                        connectionResult == ConnectivityResult.mobile) {
-                      Navigator.of(context).pushNamed('/request-payment',
-                          arguments: <String, bool>{
-                            'isFromProfile': true,
-                            'isRequest': true
-                          });
-                    } else {
-                      Toast.show(
-                          AppLocalization.of(context)
-                              .internetConnectionNotAvailable,
-                          context,
-                          gravity: Toast.BOTTOM,
-                          backgroundColor: darkBlue());
-                    }
+                onPressed: () async {
+                  _auth.fetchCustomerProfile(user.userName).then((fetchedUser) {
+                    customerProfileBloc.customer = fetchedUser;
+                    Navigator.of(context).pushNamed('/request-payment',
+                        arguments: <String, bool>{
+                          'isFromProfile': false,
+                          'isRequest': true
+                        });
                   });
                 },
                 textColor: Colors.white,
@@ -148,20 +187,10 @@ class _UserInfoState extends State<UserInfo> {
               child: MaterialButton(
                 elevation: 4.0,
                 onPressed: () {
-                  Connectivity().checkConnectivity().then((value) {
-                    var connectionResult = value;
-                    if (connectionResult == ConnectivityResult.wifi ||
-                        connectionResult == ConnectivityResult.mobile) {
-                      Navigator.of(context).pushNamed('/send-payment',
-                          arguments: <String, bool>{'isFromProfile': true});
-                    } else {
-                      Toast.show(
-                          AppLocalization.of(context)
-                              .internetConnectionNotAvailable,
-                          context,
-                          gravity: Toast.BOTTOM,
-                          backgroundColor: darkBlue());
-                    }
+                  _auth.fetchCustomerProfile(user.userName).then((fetchedUser) {
+                    customerProfileBloc.customer = fetchedUser;
+                    Navigator.of(context).pushNamed('/send-payment',
+                        arguments: <String, bool>{'isFromProfile': false});
                   });
                 },
                 textColor: Colors.white,

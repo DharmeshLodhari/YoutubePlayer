@@ -102,7 +102,7 @@ class _UserProfileState extends State<UserProfile> {
         servicePrevious = "";
         serviceList = [];
         debugPrint("Refresh called on Service!!  ");
-        getProductList();
+        getServiceList();
         _servicesRefreshController.refreshCompleted();
       } else {
         Toast.show(
@@ -262,6 +262,19 @@ class _UserProfileState extends State<UserProfile> {
           ),
           actions: <Widget>[
             IconButton(
+              icon: Icon(Icons.share),
+              onPressed: () {
+                Toast.show(
+                  "Coming Soon !!",
+                  context,
+                  gravity: Toast.BOTTOM,
+                  duration: Toast.LENGTH_LONG,
+                  backgroundColor: darkBlue(),
+                  textColor: Colors.white,
+                );
+              },
+            ),
+            IconButton(
               key: popupMenuBtnKeyForMenu,
               icon: Icon(
                 Icons.more_vert,
@@ -312,7 +325,7 @@ class _UserProfileState extends State<UserProfile> {
       children: [
         productsList(),
         servicesList(),
-        UserInfo(),
+        UserInfo(user: searchedUser),
       ],
     );
   }
@@ -381,7 +394,7 @@ class _UserProfileState extends State<UserProfile> {
                                         icon: Icon(
                                           Icons.edit,
                                           size: 20,
-                                          color: darkBlue(),
+                                          color: Colors.white,
                                         ),
                                         onPressed: () {
                                           Navigator.of(context).pushNamed(
@@ -528,7 +541,7 @@ class _UserProfileState extends State<UserProfile> {
               if (index == serviceList.length) {
                 return _buildServiceIndicator();
               } else {
-                return serviceTile(index);
+                return serviceTileExpanded(index);
               }
             });
   }
@@ -586,90 +599,95 @@ class _UserProfileState extends State<UserProfile> {
     }
   }
 
-  Widget serviceTile(int index) {
+  Widget serviceTileExpanded(int index) {
     return Card(
-      elevation: 4,
-      clipBehavior: Clip.antiAliasWithSaveLayer,
-      color: Colors.white,
-      child: ListTile(
-        dense: true,
-        contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 8),
-        leading: ClipOval(
-          child: CachedNetworkImage(
-            imageUrl: serviceList[index].serverImages[0],
-            height: 50,
-            width: 50,
-            colorBlendMode: BlendMode.darken,
-            fit: BoxFit.cover,
-            filterQuality: FilterQuality.high,
-            placeholder: (context, url) => searchedUser.avatar == ""
-                ? Icon(Icons.person)
-                : CircularProgressIndicator(
-                    backgroundColor: Colors.white,
-                  ),
-          ),
+        elevation: 5,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(0),
         ),
-        title: Text(
-          serviceList[index].name.length > 20
-              ? serviceList[index].name.substring(0, 20)
-              : serviceList[index].name,
-          style: TextStyle(color: darkBlue(), fontWeight: FontWeight.bold),
-        ),
-        subtitle: Text(
-          serviceList[index].shortDescription.length > 20
-              ? serviceList[index].shortDescription.substring(0, 20)
-              : serviceList[index].shortDescription,
-        ),
-        trailing: isOwner
-            ? IconButton(
-                icon: Icon(
-                  Icons.edit,
-                  color: darkBlue(),
+        child: Container(
+          height: MediaQuery.of(context).size.height / 2.75,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(0),
+            child: Column(
+              children: <Widget>[
+                Expanded(
+                  child: Stack(children: <Widget>[
+                    InkWell(
+                      child: CachedNetworkImage(
+                        width: double.infinity,
+                        imageUrl: serviceList[index].serverImages[0],
+                        fit: BoxFit.fill,
+                        filterQuality: FilterQuality.high,
+                      ),
+                      onTap: () {
+                        Navigator.pushNamed(context, '/service-detail',
+                            arguments: {"service": serviceList[index]});
+                      },
+                    ),
+                    isOwner
+                        ? Positioned(
+                            right: 0,
+                            child: IconButton(
+                              icon: Icon(
+                                Icons.edit,
+                                size: 20,
+                                color: Colors.white,
+                              ),
+                              onPressed: () {
+                                Navigator.of(context).pushNamed(
+                                  '/edit-service',
+                                  arguments: {
+                                    "serviceId":
+                                        serviceList[index].id.toString(),
+                                  },
+                                );
+                              },
+                            ),
+                          )
+                        : Container()
+                  ]),
                 ),
-                onPressed: () {
-                  Navigator.of(context).pushNamed(
-                    '/edit-service',
-                    arguments: {
-                      "serviceId": serviceList[index].id,
-                    },
-                  );
-                },
-              )
-            : null,
-        onTap: () {
-          Navigator.of(context).pushNamed('/service-detail',
-              arguments: {"service": serviceList[index]});
-        },
-      ),
-    );
+                ListTile(
+                    dense: true,
+                    title: Text(
+                      serviceList[index].name.length > 35
+                          ? serviceList[index].name.substring(0, 35)
+                          : serviceList[index].name,
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
+                    subtitle: Text(
+                      serviceList[index].shortDescription.length > 35
+                          ? serviceList[index].shortDescription.substring(0, 35)
+                          : serviceList[index].shortDescription,
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    trailing: RichText(
+                      text: TextSpan(children: [
+                        TextSpan(
+                            text: worldCurrencies[serviceList[index].currency],
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18)),
+                        TextSpan(text: " "),
+                        TextSpan(
+                            text: serviceList[index].price.toString(),
+                            style: TextStyle(color: Colors.black))
+                      ]),
+                    )),
+              ],
+            ),
+          ),
+        ));
   }
 
   String getDisplayImage(int index, List<Product> productList) {
     return productList[index].serverImages[0];
-  }
-}
-
-class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
-  _SliverAppBarDelegate(this._tabBar);
-
-  final TabBar _tabBar;
-
-  @override
-  double get minExtent => _tabBar.preferredSize.height;
-  @override
-  double get maxExtent => _tabBar.preferredSize.height;
-
-  @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return new Container(
-      color: darkBlue(),
-      child: _tabBar,
-    );
-  }
-
-  @override
-  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
-    return false;
   }
 }

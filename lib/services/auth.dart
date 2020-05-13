@@ -1613,6 +1613,8 @@ class AuthService {
     var _data = jsonEncode(data);
     var headers = await getAuthHeaders();
     var response = await http.patch(url, headers: headers, body: _data);
+    debugPrint("Status Code : ${response.statusCode}");
+    debugPrint("response body : ${response.body}");
     if (response.statusCode == 200) {
       return true;
     } else

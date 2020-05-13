@@ -386,6 +386,7 @@ class _SettingsListState extends State<SettingsList> {
   }
 
   void logoutUser(BankAccountBloc bankAccountBloc) async {
+    emptyBasketCart();
     SharedPreferences _sharedPreferences;
     await _auth.logOut();
     bankAccountBloc.bankAccount = BankAccount();
@@ -397,6 +398,11 @@ class _SettingsListState extends State<SettingsList> {
 
     Navigator.pushNamedAndRemoveUntil(context, "/index", (r) => false,
         arguments: {'isIntroDone': true});
+  }
+
+  void emptyBasketCart() {
+    basketBloc.items.clear();
+    basketBloc.total = 0;
   }
 
   Widget displayAccountBalance(isLocked) {

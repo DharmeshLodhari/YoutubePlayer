@@ -388,7 +388,8 @@ class _SearchModuleState extends State<SearchModule> {
     product.condition = object['condition'];
     product.currency = object['currency'];
     product.price = object['price'].toString();
-    product.availableFrom = DateTime.parse(object['available_from']);
+    product.availableFrom =
+        DateTime.parse(object['available_from']) ?? DateTime.now();
     product.isAvailable = object['is_available'];
     product.qrCode = object['qr_code'];
     product.seller = object['seller'];
@@ -517,6 +518,7 @@ class _SearchModuleState extends State<SearchModule> {
     service.serverImages = [];
     service.currency = "NGN";
     service.description = "";
+    service.availableFrom = DateTime.now();
 
     bool isOwner = false;
     if (object['provider'] == userBloc.user.userName) {

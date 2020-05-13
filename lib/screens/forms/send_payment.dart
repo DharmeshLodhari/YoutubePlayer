@@ -134,6 +134,7 @@ class _SendPaymentState extends State<SendPayment> {
         key: _sendPaymentScaffold,
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
+            actions: <Widget>[getUserProfileIcon()],
             leading: showBackArrow(),
             title: Center(child: Text(AppLocalization.of(context).sendPayment)),
             backgroundColor: darkBlue()),
@@ -179,6 +180,16 @@ class _SendPaymentState extends State<SendPayment> {
       ),
     );
     //
+  }
+
+  Widget getUserProfileIcon() {
+//    if (_payee != null) {
+//      return IconButton(
+//        icon: Icon(Icons.person),
+//        onPressed: () {},
+//      );
+//    }
+    return Container();
   }
 
   Widget showBackArrow() {

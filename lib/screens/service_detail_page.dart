@@ -7,6 +7,7 @@ import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:toast/toast.dart';
 
 import 'colors.dart';
 
@@ -34,6 +35,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     setState(() {
       service = arguments['service'];
     });
+    debugPrint("provider avatar ${service.providerAvatar}");
     fetchService(service.id.toString());
     super.initState();
   }
@@ -120,13 +122,11 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
 
   Widget goToBasket() {
     return Badge(
+      badgeColor: Colors.green,
       animationType: BadgeAnimationType.slide,
-      badgeContent: Text(
-        getBadgeCount().toString(),
-        style: TextStyle(
-            fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
-      ),
-      padding: EdgeInsets.all(4),
+      badgeContent: getBadgeContent(),
+      padding:
+          basketBloc.items.length == 0 ? EdgeInsets.all(0) : EdgeInsets.all(4),
       position: BadgePosition(right: 6, top: 6),
       child: IconButton(
         icon: Icon(
@@ -137,6 +137,17 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
           Navigator.pushNamed(context, "/shopping-cart");
         },
       ),
+    );
+  }
+
+  Widget getBadgeContent() {
+    if (basketBloc.items.length == 0) {
+      return null;
+    }
+    return Text(
+      getBadgeCount().toString(),
+      style: TextStyle(
+          fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
     );
   }
 
@@ -197,9 +208,9 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                 _buildFurtherInfoWidget(),
                 SizedBox(height: 12.0),
                 _buildDivider(screenSize),
-                SizedBox(height: 12.0),
+                SizedBox(height: 6.0),
                 _buildSizeChartWidgets(),
-                SizedBox(height: 12.0),
+                SizedBox(height: 6.0),
                 _buildDetailsAndMaterialWidgets(),
                 SizedBox(height: 12.0),
                 _buildBuyButtonWidget(),
@@ -310,7 +321,9 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
 
   _buildSizeChartWidgets() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 12.0,
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -325,13 +338,36 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                 width: 12.0,
               ),
               Text(
-                service.availableFrom.toString(),
+                "${service.availableFrom.day}/${service.availableFrom.month}/${service.availableFrom.year}",
                 style: TextStyle(
                   color: Colors.black,
                 ),
               ),
             ],
           ),
+          Expanded(
+            child: Container(),
+          ),
+          MaterialButton(
+            minWidth: 100,
+            child: Row(
+              children: <Widget>[
+                Icon(Icons.share),
+                SizedBox(width: 12),
+                Text("Share")
+              ],
+            ),
+            onPressed: () {
+              Toast.show(
+                "Coming Soon !!",
+                context,
+                gravity: Toast.BOTTOM,
+                duration: Toast.LENGTH_LONG,
+                backgroundColor: darkBlue(),
+                textColor: Colors.white,
+              );
+            },
+          )
         ],
       ),
     );
@@ -362,6 +398,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                   style: TextStyle(
                     color: Colors.black,
                   ),
+                  textAlign: TextAlign.center,
                 ),
               ),
             ],
@@ -410,9 +447,10 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   _buildBuyButtonWidget() {
-    return Center(
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 10),
       child: MaterialButton(
-        minWidth: MediaQuery.of(context).size.width / 2.5,
+        minWidth: MediaQuery.of(context).size.width / 1.4,
         color: Colors.green,
         child: Text(
           "Buy Now",

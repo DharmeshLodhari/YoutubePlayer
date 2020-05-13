@@ -209,9 +209,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 _buildFurtherInfoWidget(),
                 SizedBox(height: 12.0),
                 _buildDivider(screenSize),
-                SizedBox(height: 12.0),
+                SizedBox(height: 6.0),
                 _buildSizeChartWidgets(),
-                SizedBox(height: 12.0),
+                SizedBox(height: 6.0),
                 _buildDivider(screenSize),
                 _buildDetailsAndMaterialWidgets(),
                 SizedBox(height: 12.0),
@@ -309,15 +309,11 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         children: <Widget>[
           Image.asset(
             "assets/images/qr_code.png",
-            height: 30,
-            width: 30,
+            height: 25,
+            width: 25,
             filterQuality: FilterQuality.low,
             fit: BoxFit.fill,
           ),
-          SizedBox(
-            width: 6,
-          ),
-          Text("Copy QR")
         ],
       ),
       onPressed: () {
@@ -351,7 +347,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   _buildSizeChartWidgets() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 12.0,
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -366,13 +364,36 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 width: 12.0,
               ),
               Text(
-                product.availableFrom.toString(),
+                "${product.availableFrom.day}/${product.availableFrom.month}/${product.availableFrom.year}",
                 style: TextStyle(
                   color: Colors.black,
                 ),
               ),
             ],
           ),
+          Expanded(
+            child: Container(),
+          ),
+          MaterialButton(
+            minWidth: 100,
+            child: Row(
+              children: <Widget>[
+                Icon(Icons.share),
+                SizedBox(width: 12),
+                Text("Share")
+              ],
+            ),
+            onPressed: () {
+              Toast.show(
+                "Coming Soon !!",
+                context,
+                gravity: Toast.BOTTOM,
+                duration: Toast.LENGTH_LONG,
+                backgroundColor: darkBlue(),
+                textColor: Colors.white,
+              );
+            },
+          )
         ],
       ),
     );
@@ -404,6 +425,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     style: TextStyle(
                       color: Colors.black,
                     ),
+                    textAlign: TextAlign.center,
                   ),
                 ),
               ],
@@ -453,9 +475,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   _buildBuyButtonWidget() {
-    return Center(
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 10),
       child: MaterialButton(
-        minWidth: MediaQuery.of(context).size.width / 2.5,
+        minWidth: MediaQuery.of(context).size.width / 1.4,
         color: Colors.green,
         child: Text(
           "Buy Now",
