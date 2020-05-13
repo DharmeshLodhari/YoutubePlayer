@@ -160,9 +160,7 @@ class _UserDashboardState extends State<UserDashboard> {
                       Icons.credit_card,
                       "Top Up",
                       () {
-                        Toast.show("Comming Soon !!", context,
-                            backgroundColor: darkBlue(),
-                            textColor: Colors.white);
+                        Navigator.pushNamed(context, "/card-payment-page");
                       },
                     ),
                     iconButton(Icons.account_balance_wallet, "Transactions",

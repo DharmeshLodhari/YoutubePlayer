@@ -92,15 +92,13 @@ class _TransactionListState extends State<TransactionList> {
 
     return WillPopScope(
       onWillPop: () async {
-        Navigator.pop(context);
-        Navigator.pushNamed(context, '/dashboard');
-        return false;
+        return true;
       },
       child: Scaffold(
         key: _scaffoldTransactionKey,
         backgroundColor: lightBlue(),
         appBar: AppBar(
-          automaticallyImplyLeading: false,
+          automaticallyImplyLeading: true,
           backgroundColor: darkBlue(),
           title: Text(AppLocalization.of(context).transactions),
           actions: <Widget>[
