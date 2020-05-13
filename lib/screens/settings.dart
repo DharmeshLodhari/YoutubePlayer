@@ -178,6 +178,8 @@ class _SettingsListState extends State<SettingsList> {
                   SizedBox(height: 10),
                   productsAndServicesWidget(),
                   SizedBox(height: 10),
+                  topUpFromCreditCard(),
+                  SizedBox(height: 10),
                   slydoBankAccountTile(),
                   SizedBox(height: 20),
                   _infoTile(),
@@ -568,6 +570,36 @@ class _SettingsListState extends State<SettingsList> {
         ),
         onTap: () {
           Navigator.pushNamed(context, "/user-dashboard");
+        },
+      ),
+    );
+  }
+
+  Widget topUpFromCreditCard() {
+    return Card(
+      margin: EdgeInsets.symmetric(horizontal: 20),
+      child: ListTile(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(""),
+            Text(
+              "Top Up",
+              style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16),
+            ),
+          ],
+        ),
+        subtitle: Text(""),
+        leading: Icon(
+          Icons.credit_card,
+          color: darkBlue(),
+          size: 45,
+        ),
+        onTap: () {
+          Navigator.pushNamed(context, "/card-payment-page");
         },
       ),
     );

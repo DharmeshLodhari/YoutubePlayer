@@ -1,5 +1,6 @@
 import 'package:Slydo/screens/bank_account_list.dart';
 import 'package:Slydo/screens/bvn_verification_page.dart';
+import 'package:Slydo/screens/card_payment_page.dart';
 import 'package:Slydo/screens/dashboard.dart';
 import 'package:Slydo/screens/explore.dart';
 import 'package:Slydo/screens/forms/add_bank_account.dart';
@@ -183,6 +184,8 @@ class RouteGenerator {
                 OrderDetailPage(arguments: settings.arguments));
       case '/bvn-verification':
         return MaterialPageRoute(builder: (context) => BvnVerificationPage());
+      case '/card-payment-page':
+        return MaterialPageRoute(builder: (context) => CardPaymentPage());
 
       default:
         // If there is no such named route in the switch statement, e.g. /third

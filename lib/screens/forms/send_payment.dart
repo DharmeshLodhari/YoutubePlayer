@@ -99,6 +99,14 @@ class _SendPaymentState extends State<SendPayment> {
           _payee = customerProfileBloc.customer;
           recipient = _payee.userName;
           _recipientController.text = recipient;
+          _auth.fetchCustomerProfile(recipient).then((customerProfile) {
+            if (customerProfile != null) {
+              setState(() {
+                _payee = customerProfile;
+                isValidPayee = _payee.userName != userBloc.user.userName;
+              });
+            }
+          });
         });
       }
     }
@@ -183,12 +191,15 @@ class _SendPaymentState extends State<SendPayment> {
   }
 
   Widget getUserProfileIcon() {
-//    if (_payee != null) {
-//      return IconButton(
-//        icon: Icon(Icons.person),
-//        onPressed: () {},
-//      );
-//    }
+    if (_payee != null || isValidPayee) {
+      return IconButton(
+        icon: Icon(Icons.person),
+        onPressed: () {
+          Navigator.pushNamed(context, '/profile',
+              arguments: {"searchedUser": _payee});
+        },
+      );
+    }
     return Container();
   }
 
@@ -213,6 +224,10 @@ class _SendPaymentState extends State<SendPayment> {
         fit: BoxFit.fitWidth,
         filterQuality: FilterQuality.high,
       );
+      setState(() {
+        isValidPayee = true;
+      });
+
       qrCodeImage = CachedNetworkImage(
         imageUrl: _payee.qrCode,
         colorBlendMode: BlendMode.darken,

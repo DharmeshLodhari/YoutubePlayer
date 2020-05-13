@@ -39,7 +39,7 @@ class _UserProfileState extends State<UserProfile> {
   //popupmenu variables
   PopupMenu popUpMenuWidget;
   GlobalKey popupMenuBtnKeyForMenu = GlobalKey();
-  var filterValue = "Products";
+  var filterValue = "Info";
 
   //for refresh controller
   final GlobalKey<ScaffoldState> _productScaffoldKey =
@@ -153,6 +153,18 @@ class _UserProfileState extends State<UserProfile> {
   List<MenuItem> getMenuItems() {
     var menuItems = [
       MenuItem(
+          textStyle: filterValue == 'Info'
+              ? TextStyle(color: lightBlue(), fontSize: 10)
+              : TextStyle(color: Colors.white, fontSize: 10),
+          title: "Info",
+          image: Icon(
+            Icons.computer,
+            color: filterValue == 'Info' ? lightBlue() : Colors.white,
+          )),
+    ];
+
+    menuItems.add(
+      MenuItem(
           textStyle: filterValue == 'Products'
               ? TextStyle(color: lightBlue(), fontSize: 10)
               : TextStyle(color: Colors.white, fontSize: 10),
@@ -161,7 +173,7 @@ class _UserProfileState extends State<UserProfile> {
             Icons.computer,
             color: filterValue == 'Products' ? lightBlue() : Colors.white,
           )),
-    ];
+    );
 
     if (userBloc.user.setting.enableService) {
       menuItems.add(
@@ -177,17 +189,6 @@ class _UserProfileState extends State<UserProfile> {
       );
     }
 
-    menuItems.add(
-      MenuItem(
-          textStyle: filterValue == 'Info'
-              ? TextStyle(color: lightBlue(), fontSize: 10)
-              : TextStyle(color: Colors.white, fontSize: 10),
-          title: "Info",
-          image: Icon(
-            Icons.computer,
-            color: filterValue == 'Info' ? lightBlue() : Colors.white,
-          )),
-    );
     return menuItems;
   }
 
@@ -199,11 +200,11 @@ class _UserProfileState extends State<UserProfile> {
     if (mounted) {
       setState(() {
         filterValue = item.menuTitle;
-        if (filterValue == "Products") {
+        if (filterValue == "Info") {
           currentIndex = 0;
-        } else if (filterValue == "Services") {
+        } else if (filterValue == "Products") {
           currentIndex = 1;
-        } else if (filterValue == "Info") {
+        } else if (filterValue == "Services") {
           currentIndex = 2;
         }
       });
@@ -323,9 +324,9 @@ class _UserProfileState extends State<UserProfile> {
     return IndexedStack(
       index: currentIndex,
       children: [
+        UserInfo(user: searchedUser),
         productsList(),
         servicesList(),
-        UserInfo(user: searchedUser),
       ],
     );
   }

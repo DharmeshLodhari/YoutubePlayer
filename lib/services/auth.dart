@@ -1624,4 +1624,17 @@ class AuthService {
   Future<bool> verifyBVN(String bvnNumber) async {
     return true;
   }
+
+  // top up slydo account
+  Future<bool> topUpAccountByCC(Map data) async {
+    var url = baseUrl + "/api/v1/transactions/top-up/";
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await http.post(url, headers: headers, body: _data);
+    if (response.statusCode != 200) {
+      return true;
+    }
+    debugPrint("topUp By CC${response.body}");
+    return false;
+  }
 }
