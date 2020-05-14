@@ -218,11 +218,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
   }
 
   void removeItem(int index) async {
-//    Map data = {
-//      "type": basketBloc.items[index]["type"],
-//      "id": basketBloc.items[index]["item"].id,
-//    };
-//
     String type =
         basketBloc.items[index]["item"] is Product ? "product" : "service";
 

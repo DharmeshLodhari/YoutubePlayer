@@ -16,6 +16,7 @@ import 'package:Slydo/screens/forms/request_payment.dart';
 import 'package:Slydo/screens/forms/reset_password.dart';
 import 'package:Slydo/screens/forms/send_payment.dart';
 import 'package:Slydo/screens/forms/signup.dart';
+import 'package:Slydo/screens/forms/user_address.dart';
 import 'package:Slydo/screens/order_detail_page.dart';
 import 'package:Slydo/screens/orders_list.dart';
 import 'package:Slydo/screens/payout_transactions.dart';
@@ -187,6 +188,8 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (context) => BvnVerificationPage());
       case '/card-payment-page':
         return MaterialPageRoute(builder: (context) => CardPaymentPage());
+      case '/user-address':
+        return MaterialPageRoute(builder: (context) => UserAddress());
 
       default:
         // If there is no such named route in the switch statement, e.g. /third

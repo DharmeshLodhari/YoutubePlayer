@@ -56,6 +56,9 @@ void main() async {
           ChangeNotifierProvider<BasketBloc>.value(
             value: BasketBloc(),
           ),
+          ChangeNotifierProvider<AddressBloc>.value(
+            value: AddressBloc(),
+          ),
         ], child: MyApp()),
       );
     }, onError: (exception, stack) {

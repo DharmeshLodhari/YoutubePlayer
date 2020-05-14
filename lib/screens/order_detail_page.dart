@@ -35,6 +35,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   PersistentBottomSheetController noteBottomSheetController;
 
   String note = "";
+  String val = "test1";
 
   Order order;
   List consumable = List();
@@ -128,9 +129,58 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     return IconButton(
       icon: Icon(Icons.event_note),
       onPressed: () {
-        showNoteSheet();
+        testTile();
+//        showNoteSheet();
       },
     );
+  }
+
+  void testTile() {
+    showModalBottomSheet<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return Container(
+              child: Wrap(
+            children: <Widget>[
+              RadioListTile(
+                groupValue: val,
+                value: "test1",
+                title: Text("Test1"),
+                activeColor: darkBlue(),
+                selected: val == "test1",
+                onChanged: (value) {
+                  setState(() {
+                    val = value;
+                  });
+                },
+              ),
+              RadioListTile(
+                groupValue: val,
+                value: "test2",
+                title: Text("Test2"),
+                activeColor: darkBlue(),
+                selected: val == "test2",
+                onChanged: (value) {
+                  setState(() {
+                    val = value;
+                  });
+                },
+              ),
+              RadioListTile(
+                groupValue: val,
+                value: "test3",
+                title: Text("Test3"),
+                activeColor: darkBlue(),
+                selected: val == "test3",
+                onChanged: (value) {
+                  setState(() {
+                    val = value;
+                  });
+                },
+              ),
+            ],
+          ));
+        });
   }
 
   showNoteSheet() {
@@ -429,15 +479,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   List<Widget> listSecondaryActions(int index) {
     String caption = "Remove";
-    return [
-      IconSlideAction(
-          caption: caption,
-          color: Colors.red,
-          icon: Icons.cancel,
-          onTap: () async {
-//            removeItem(index);
-          }),
-    ];
+    return [];
   }
 
   void removeItem(int index) {

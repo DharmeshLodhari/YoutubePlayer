@@ -42,9 +42,6 @@ class _UserDashboardState extends State<UserDashboard> {
   Language language;
   String accountBalance = "";
 
-  PersistentBottomSheetController bankAccountController;
-  PersistentBottomSheetController profileSheetController;
-
   @override
   void initState() {
     setState(() {
@@ -66,16 +63,17 @@ class _UserDashboardState extends State<UserDashboard> {
 
     return WillPopScope(
       onWillPop: () async {
-        Navigator.pop(context);
-        Navigator.pushNamed(context, '/dashboard',
-            arguments: {'dashboardIndex': 5});
+        Navigator.pushNamed(
+          context,
+          '/dashboard',
+        );
         return false;
       },
       child: Scaffold(
         key: _scaffoldSettingKey,
         backgroundColor: lightBlue(),
         appBar: AppBar(
-          automaticallyImplyLeading: true,
+          automaticallyImplyLeading: false,
           backgroundColor: darkBlue(),
           title: Row(
             children: <Widget>[
@@ -106,7 +104,7 @@ class _UserDashboardState extends State<UserDashboard> {
                 children: <Widget>[
                   SizedBox(height: 20),
                   displayAccountBalance(isLocked),
-                  SizedBox(height: 20),
+                  SizedBox(height: 15),
 
                   //ROW 1
                   rowIconButtons(
@@ -282,7 +280,7 @@ class _UserDashboardState extends State<UserDashboard> {
 
   Widget rowIconButtons(Widget item1, Widget item2, Widget item3) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20),
+      margin: EdgeInsets.symmetric(horizontal: 17),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
@@ -292,106 +290,6 @@ class _UserDashboardState extends State<UserDashboard> {
         ],
       ),
     );
-  }
-
-  showBankAccoutSheet() {
-    bankAccountController =
-        _scaffoldSettingKey.currentState.showBottomSheet((context) => Card(
-              elevation: 15,
-              margin: EdgeInsets.all(0),
-              color: Colors.white,
-              child: Container(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 12.0),
-                  child: Wrap(
-                    children: <Widget>[
-                      Center(
-                        child: Text(
-                          'Bank Account Actions',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              color: darkBlue(),
-                              fontSize: 20.0,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      ListTile(
-                        title: Text("Bank Accounts"),
-                        onTap: () {
-                          Navigator.pushNamed(context, "/bank-account-list");
-                        },
-                      ),
-                      ListTile(
-                        title: Text("Payout List"),
-                        onTap: () {
-                          Navigator.pushNamed(context, "/payout-list");
-                        },
-                      ),
-                      ListTile(
-                        title: Text("Payout"),
-                        onTap: () {
-                          Navigator.pushNamed(context, "/payout");
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ));
-  }
-
-  showProfileSheet() {
-    profileSheetController =
-        _scaffoldSettingKey.currentState.showBottomSheet((context) => Card(
-              elevation: 15,
-              margin: EdgeInsets.all(0),
-              color: Colors.white,
-              child: Container(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 12.0),
-                  child: Wrap(
-                    children: <Widget>[
-                      Center(
-                        child: Text(
-                          'Profile',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              color: darkBlue(),
-                              fontSize: 20.0,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      ListTile(
-                        dense: true,
-                        title: Text("My Profile"),
-                        onTap: () {
-                          _auth
-                              .fetchCustomerProfile(userBloc.user.userName)
-                              .then((user) {
-                            Navigator.pushNamed(context, '/profile',
-                                arguments: {"searchedUser": user});
-                          });
-                        },
-                      ),
-                      ListTile(
-                        dense: true,
-                        title: Text("Update Avatar"),
-                        onTap: () {
-                          pickImage(userBloc);
-                        },
-                      ),
-                      ListTile(
-                        dense: true,
-                        title: Text("Address"),
-                        onTap: () {
-//                          pickImage(userBloc);
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ));
   }
 
   void pickImage(userBloc) async {
@@ -516,92 +414,72 @@ class _UserDashboardState extends State<UserDashboard> {
 
   void profileAndroidSheet() {
     showModalBottomSheet<void>(
+        backgroundColor: Colors.transparent,
         context: context,
         builder: (BuildContext context) {
-          return Container(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 12.0),
-              child: Wrap(
-                children: <Widget>[
-                  Center(
-                    child: Text(
-                      'Profile',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          color: darkBlue(),
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.bold),
+          return Card(
+              color: Colors.white,
+              margin: EdgeInsets.symmetric(horizontal: 20),
+              child: Container(
+                child: Wrap(
+                  children: <Widget>[
+                    ListTile(
+                      title: Center(child: Text("My Profile")),
+                      onTap: () {
+                        _auth
+                            .fetchCustomerProfile(userBloc.user.userName)
+                            .then((user) {
+                          Navigator.pushNamed(context, '/profile',
+                              arguments: {"searchedUser": user});
+                        });
+                      },
                     ),
-                  ),
-                  ListTile(
-                    dense: true,
-                    title: Text("My Profile"),
-                    onTap: () {
-                      _auth
-                          .fetchCustomerProfile(userBloc.user.userName)
-                          .then((user) {
-                        Navigator.pushNamed(context, '/profile',
-                            arguments: {"searchedUser": user});
-                      });
-                    },
-                  ),
-                  ListTile(
-                    dense: true,
-                    title: Text("Update Avatar"),
-                    onTap: () {
-                      pickImage(userBloc);
-                    },
-                  ),
-                  ListTile(
-                    dense: true,
-                    title: Text("Address"),
-                    onTap: () {
-//                          pickImage(userBloc);
-                    },
-                  ),
-                ],
-              ),
-            ),
-          );
+                    ListTile(
+                      title: Center(child: Text("Update Avatar")),
+                      onTap: () {
+                        pickImage(userBloc);
+                      },
+                    ),
+                    ListTile(
+                      title: Center(child: Text("Address")),
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          '/user-address',
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ));
         });
   }
 
   void bankAndroidSheet() {
     showModalBottomSheet<void>(
+        backgroundColor: Colors.transparent,
         context: context,
         builder: (BuildContext context) {
-          return Container(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 12.0),
+          return Card(
+            color: Colors.white,
+            margin: EdgeInsets.symmetric(horizontal: 20),
+            child: Container(
               child: Wrap(
                 children: <Widget>[
-                  Center(
-                    child: Text(
-                      'Bank Account Actions',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          color: darkBlue(),
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
                   ListTile(
-                    title: Text("Bank Accounts"),
-                    dense: true,
+                    title: Center(child: Text("Bank Accounts")),
                     onTap: () {
                       Navigator.pushNamed(context, "/bank-account-list");
                     },
                   ),
                   ListTile(
-                    title: Text("Payout List"),
-                    dense: true,
+                    title: Center(child: Text("Payout List")),
                     onTap: () {
                       Navigator.pushNamed(context, "/payout-list");
                     },
                   ),
                   ListTile(
-                    title: Text("Payout"),
-                    dense: true,
+                    title: Center(child: Text("Payout")),
                     onTap: () {
                       Navigator.pushNamed(context, "/payout");
                     },
@@ -698,6 +576,10 @@ class _UserDashboardState extends State<UserDashboard> {
         } else if (value == "Update Avatar") {
           pickImage(userBloc);
         } else if (value == "Address") {
+          Navigator.pushNamed(
+            context,
+            '/user-address',
+          );
         } else if (value == "Bank Accounts") {
           Navigator.pushNamed(context, "/bank-account-list");
         } else if (value == "Payout List") {

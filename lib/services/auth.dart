@@ -1650,4 +1650,46 @@ class AuthService {
     debugPrint("topUp By CC${response.body}");
     return false;
   }
+
+  Future<Map<String, dynamic>> getUserAddressList(
+      String next, String previous) async {
+    Map<String, dynamic> result = {
+      "count": 0,
+      "next": null,
+      "previous": null,
+      "results": []
+    };
+    return result;
+  }
+
+  Future<Address> fetchUserAddress() async {
+    if (true == false) {
+      return Address(
+          addressLineOne: "3170  Hilltop Drive",
+          addressLineTwo: "Loretta E Dinkins",
+          city: "Whiteface",
+          state: "Texas",
+          country: "IRELAND",
+          countryIsoCode: "IE");
+    }
+    return Address(
+        addressLineOne: "",
+        addressLineTwo: "",
+        city: "",
+        state: "",
+        country: "",
+        countryIsoCode: "NG");
+  }
+
+  Future<bool> addUserAddress(Map data) async {
+    var url = baseUrl + "/api/v1/add-address/";
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await http.post(url, headers: headers, body: _data);
+    if (response.statusCode != 200) {
+      return true;
+    }
+    debugPrint("address add failed : ${response.body}");
+    return true;
+  }
 }

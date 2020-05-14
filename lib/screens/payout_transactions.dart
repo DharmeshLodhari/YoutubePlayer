@@ -66,7 +66,11 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
         next = "";
         previous = "";
         payoutList = [];
-        getList();
+        if(mounted)
+          {
+            getList();
+          }
+
         _refreshController.refreshCompleted();
       } else {
         Toast.show(

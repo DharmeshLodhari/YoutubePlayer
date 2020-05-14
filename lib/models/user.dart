@@ -126,3 +126,29 @@ class UserLocation {
 
   UserLocation({this.latitude, this.longitude});
 }
+
+class Address {
+  String addressLineOne;
+  String addressLineTwo;
+  String city;
+  String state;
+  String country;
+  String countryIsoCode;
+
+  Address(
+      {this.addressLineOne,
+      this.addressLineTwo,
+      this.city,
+      this.state,
+      this.country,
+      this.countryIsoCode});
+
+  Address.fromJson(var object) {
+    this.addressLineOne = object['addressLineOne'] ?? "";
+    this.addressLineTwo = object['addressLineTwo'] ?? "";
+    this.city = object['city'] ?? "";
+    this.state = object['state'] ?? "";
+    this.country = object['country'] ?? "";
+    this.countryIsoCode = object['countryIsoCode'] ?? "IE";
+  }
+}

@@ -189,3 +189,14 @@ class BasketBloc extends ChangeNotifier {
     } catch (e) {}
   }
 }
+
+class AddressBloc extends ChangeNotifier {
+  Address _address;
+
+  Address get address => _address;
+
+  set address(Address value) {
+    _address = value;
+    notifyListeners();
+  }
+}
