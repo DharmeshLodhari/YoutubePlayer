@@ -1,4 +1,6 @@
 //TODO: ADD APP LOCALIZATION
+import 'dart:io';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/device.dart';
@@ -7,6 +9,7 @@ import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/screens/tiles/bank_account.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -24,6 +27,7 @@ class UserDashboard extends StatefulWidget {
 
 class _UserDashboardState extends State<UserDashboard> {
   var arguments;
+
   _UserDashboardState({this.arguments});
 
   final GlobalKey<ScaffoldState> _scaffoldSettingKey =
@@ -110,7 +114,9 @@ class _UserDashboardState extends State<UserDashboard> {
                       Icons.person,
                       "Profile",
                       () {
-                        showProfileSheet();
+                        Platform.isAndroid
+                            ? profileAndroidSheet()
+                            : profileIOSSheet();
                       },
                     ),
                     iconButton(
@@ -295,19 +301,19 @@ class _UserDashboardState extends State<UserDashboard> {
               margin: EdgeInsets.all(0),
               color: Colors.white,
               child: Container(
-                height: MediaQuery.of(context).size.height / 2,
-                width: MediaQuery.of(context).size.width,
                 child: Padding(
                   padding: const EdgeInsets.only(top: 12.0),
-                  child: Column(
+                  child: Wrap(
                     children: <Widget>[
-                      Text(
-                        'Bank Account Actions',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: darkBlue(),
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold),
+                      Center(
+                        child: Text(
+                          'Bank Account Actions',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: darkBlue(),
+                              fontSize: 20.0,
+                              fontWeight: FontWeight.bold),
+                        ),
                       ),
                       ListTile(
                         title: Text("Bank Accounts"),
@@ -341,21 +347,22 @@ class _UserDashboardState extends State<UserDashboard> {
               margin: EdgeInsets.all(0),
               color: Colors.white,
               child: Container(
-                height: MediaQuery.of(context).size.height / 2,
-                width: MediaQuery.of(context).size.width,
                 child: Padding(
                   padding: const EdgeInsets.only(top: 12.0),
-                  child: Column(
+                  child: Wrap(
                     children: <Widget>[
-                      Text(
-                        'Profile',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: darkBlue(),
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold),
+                      Center(
+                        child: Text(
+                          'Profile',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: darkBlue(),
+                              fontSize: 20.0,
+                              fontWeight: FontWeight.bold),
+                        ),
                       ),
                       ListTile(
+                        dense: true,
                         title: Text("My Profile"),
                         onTap: () {
                           _auth
@@ -367,12 +374,14 @@ class _UserDashboardState extends State<UserDashboard> {
                         },
                       ),
                       ListTile(
+                        dense: true,
                         title: Text("Update Avatar"),
                         onTap: () {
                           pickImage(userBloc);
                         },
                       ),
                       ListTile(
+                        dense: true,
                         title: Text("Address"),
                         onTap: () {
 //                          pickImage(userBloc);
@@ -503,5 +512,131 @@ class _UserDashboardState extends State<UserDashboard> {
       debugPrint(
           "${language.name} Language is set in sharedPreference => $result");
     }
+  }
+
+  void androidSheet() {
+    showModalBottomSheet<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return Container(
+            child: Padding(
+              padding: const EdgeInsets.all(32.0),
+              child: Text(
+                'This is the modal bottom sheet. Tap anywhere to dismiss.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Theme.of(context).accentColor,
+                  fontSize: 24.0,
+                ),
+              ),
+            ),
+          );
+        });
+  }
+
+  void profileAndroidSheet() {
+    showModalBottomSheet<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return Container(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 12.0),
+              child: Wrap(
+                children: <Widget>[
+                  Center(
+                    child: Text(
+                      'Profile',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: darkBlue(),
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  ListTile(
+                    dense: true,
+                    title: Text("My Profile"),
+                    onTap: () {
+                      _auth
+                          .fetchCustomerProfile(userBloc.user.userName)
+                          .then((user) {
+                        Navigator.pushNamed(context, '/profile',
+                            arguments: {"searchedUser": user});
+                      });
+                    },
+                  ),
+                  ListTile(
+                    dense: true,
+                    title: Text("Update Avatar"),
+                    onTap: () {
+                      pickImage(userBloc);
+                    },
+                  ),
+                  ListTile(
+                    dense: true,
+                    title: Text("Address"),
+                    onTap: () {
+//                          pickImage(userBloc);
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
+  void profileIOSSheet() {
+    showDemoActionSheet(
+      context: context,
+      child: CupertinoActionSheet(
+        actions: <Widget>[
+          CupertinoActionSheetAction(
+            child: const Text('My Profile'),
+            onPressed: () {
+              Navigator.pop(context, 'My Profile');
+            },
+          ),
+          CupertinoActionSheetAction(
+            child: const Text('Update Avatar'),
+            onPressed: () {
+              Navigator.pop(context, 'Update Avatar');
+            },
+          ),
+          CupertinoActionSheetAction(
+            child: const Text('Address'),
+            onPressed: () {
+              Navigator.pop(context, 'Address');
+            },
+          ),
+        ],
+        cancelButton: CupertinoActionSheetAction(
+          child: const Text('Cancel'),
+          isDefaultAction: true,
+          onPressed: () {
+            Navigator.pop(context, 'Cancel');
+          },
+        ),
+      ),
+    );
+  }
+
+  void showDemoActionSheet({BuildContext context, Widget child}) {
+    showCupertinoModalPopup<String>(
+      context: context,
+      builder: (BuildContext context) => child,
+    ).then((String value) {
+      debugPrint(value);
+      if (value != null) {
+        if (value == "My Profile") {
+          _auth.fetchCustomerProfile(userBloc.user.userName).then((user) {
+            Navigator.pushNamed(context, '/profile',
+                arguments: {"searchedUser": user});
+          });
+        } else if (value == "Update Avatar") {
+          pickImage(userBloc);
+        } else if (value == "Address") {}
+      }
+    });
   }
 }

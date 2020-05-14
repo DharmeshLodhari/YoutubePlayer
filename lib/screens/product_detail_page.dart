@@ -9,6 +9,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:share/share.dart';
 import 'package:toast/toast.dart';
 
 // ignore: must_be_immutable
@@ -135,7 +136,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           color: Colors.white,
         ),
         onPressed: () {
-          Navigator.pushNamed(context, "/shopping-cart");
+          Navigator.pushNamed(context, "/dashboard",
+              arguments: {"dashboardIndex": 2});
         },
       ),
     );
@@ -169,7 +171,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         color: Colors.white,
       ),
       onPressed: () async {
-        basketBloc.addItemToCart(item: product, type: "product");
+        String type = product is Product ? "product" : "service";
+        basketBloc.addItemToCart(item: product, type: type);
         var mapData;
         basketBloc.items.forEach((element) {
           if (element["item"].id == product.id) {
@@ -178,10 +181,11 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           }
         });
         Map data = {
-          "type": "product",
+          "type": type,
           "id": mapData["item"].id,
           "qty": mapData["qty"],
         };
+        debugPrint("Data From Product Page : $data");
         await _auth.addItemToShoppingCart(data);
       },
     );
@@ -384,14 +388,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               ],
             ),
             onPressed: () {
-              Toast.show(
-                "Coming Soon !!",
-                context,
-                gravity: Toast.BOTTOM,
-                duration: Toast.LENGTH_LONG,
-                backgroundColor: darkBlue(),
-                textColor: Colors.white,
-              );
+              var shareBody = "${product.name}\n" +
+                  "http://slydo.co/products/" +
+                  product.id.toString();
+              Share.share(shareBody, subject: "${product.name}");
             },
           )
         ],

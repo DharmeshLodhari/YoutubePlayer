@@ -1,3 +1,4 @@
+import 'package:Slydo/models/store.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/widget/noItemInList.dart';
@@ -221,7 +222,8 @@ class _SplashScreenState extends State<SplashScreen> {
     debugPrint("initializeShoppingCart called");
     List items = await _auth.getShoppingCart();
     items.forEach((element) {
-      basketBloc.addItemToCart(item: element);
+      String type = element is Product ? "product" : "service";
+      basketBloc.addItemToCart(item: element, type: type);
     });
   }
 }

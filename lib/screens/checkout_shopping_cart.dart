@@ -198,35 +198,48 @@ class _ShoppingCartState extends State<ShoppingCart> {
   }
 
   void addItem(int index) async {
-    int qty = 1;
-
-
+    String type =
+        basketBloc.items[index]["item"] is Product ? "product" : "service";
+    basketBloc.addItemToCart(item: basketBloc.items[index]["item"], type: type);
+    var mapData;
     basketBloc.items.forEach((element) {
       if (element["item"].id == basketBloc.items[index]["item"].id) {
-        qty = element["qty"] + qty;
+        mapData = element;
+        return;
       }
     });
-
-    debugPrint("qty:$qty");
-    String type = basketBloc.items[index]["item"] is Service? "service":"product";
-    basketBloc.items[index]["type"] = type;
     Map data = {
       "type": type,
-      "id": basketBloc.items[index]["item"].id,
-      "qty": qty,
+      "id": mapData["item"].id,
+      "qty": mapData["qty"],
     };
-
-    basketBloc.addItemToCart(item: basketBloc.items[index]["item"], type: basketBloc.items[index]["type"]);
+    debugPrint("Data From incresing the  item : $data");
     await _auth.addItemToShoppingCart(data);
-    debugPrint("after qty:");
-
   }
 
   void removeItem(int index) async {
+//    Map data = {
+//      "type": basketBloc.items[index]["type"],
+//      "id": basketBloc.items[index]["item"].id,
+//    };
+//
+    String type =
+        basketBloc.items[index]["item"] is Product ? "product" : "service";
+
+    var mapData;
+    basketBloc.items.forEach((element) {
+      if (element["item"].id == basketBloc.items[index]["item"].id) {
+        mapData = element;
+        return;
+      }
+    });
     Map data = {
-      "type": basketBloc.items[index]["type"],
-      "id": basketBloc.items[index]["item"].id,
+      "type": type,
+      "id": mapData["item"].id,
+      "qty": mapData["qty"] - 1,
     };
+
+    debugPrint("Data send From Remove Button : $data");
     basketBloc.removeItemFromCart(basketBloc.items[index]["item"]);
     await _auth.removeItemToShoppingCart(data);
   }

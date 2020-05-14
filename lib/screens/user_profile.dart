@@ -14,6 +14,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:popup_menu/popup_menu.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:share/share.dart';
 import 'package:toast/toast.dart';
 
 // ignore: must_be_immutable
@@ -265,14 +266,10 @@ class _UserProfileState extends State<UserProfile> {
             IconButton(
               icon: Icon(Icons.share),
               onPressed: () {
-                Toast.show(
-                  "Coming Soon !!",
-                  context,
-                  gravity: Toast.BOTTOM,
-                  duration: Toast.LENGTH_LONG,
-                  backgroundColor: darkBlue(),
-                  textColor: Colors.white,
-                );
+                var shareBody = "${searchedUser.fullName}\n" +
+                    "http://slydo.co/user/" +
+                    searchedUser.userName;
+                Share.share(shareBody, subject: "${searchedUser.fullName}");
               },
             ),
             IconButton(

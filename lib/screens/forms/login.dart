@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/models/store.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
@@ -334,7 +335,8 @@ class _UserLoginState extends State<UserLogin> {
     debugPrint("initializeShoppingCart called");
     List items = await _auth.getShoppingCart();
     items.forEach((element) {
-      basketBloc.addItemToCart(item: element, type: items[0].seller? "product":"service");
+      String type = element is Product ? "product" : "service";
+      basketBloc.addItemToCart(item: element, type: type);
     });
   }
 

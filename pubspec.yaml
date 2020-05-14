@@ -50,6 +50,7 @@ dependencies:
   flutter_money_formatter: ^0.8.3
   badges: ^1.1.1
   flutter_credit_card: ^0.1.3
+  share: ^0.6.4+2
 
 dependency_overrides:
   intl: ^0.16.0
@@ -62,8 +63,6 @@ flutter_icons:
   adaptive_icon_background: "assets/images/blue_background.png"
   adaptive_icon_foreground: "assets/images/icon_foreground.png"
   ios: true
-
-
 
 dev_dependencies:
   flutter_test:

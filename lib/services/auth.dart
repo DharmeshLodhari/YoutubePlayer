@@ -8,7 +8,6 @@ import 'package:Slydo/models/store.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
@@ -1561,7 +1560,10 @@ class AuthService {
     var url = baseUrl + "/api/v1/shopping-cart/";
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
+    debugPrint("Status Code : ${response.statusCode}");
     var jsonData = jsonDecode(response.body);
+    debugPrint("jsonData : $jsonData");
+
     if (response.statusCode == 200) {
       debugPrint(jsonData.toString());
       return getCartItems(jsonData);
@@ -1577,7 +1579,7 @@ class AuthService {
     var jsonData = jsonDecode(response.body);
     debugPrint("sent data: " + _data.toString());
     if (response.statusCode == 200) {
-      debugPrint("response"+ jsonData.toString());
+      debugPrint("response" + jsonData.toString());
 
       return true;
     }
@@ -1617,12 +1619,16 @@ class AuthService {
 
     for (int i = 0; i < data.length; i++) {
       if (data[i]["type"] == "product") {
-        var product = Product.fromJson(data[i]);
-        items.add(product);
+        for (int j = 0; j < data[i]["qty"]; j++) {
+          var product = Product.fromJson(data[i]);
+          items.add(product);
+        }
       }
       if (data[i]["type"] == "service") {
-        var service = Service.fromJson(data[i]);
-        items.add(service);
+        for (int j = 0; j < data[i]["qty"]; j++) {
+          var service = Service.fromJson(data[i]);
+          items.add(service);
+        }
       }
     }
     return items;

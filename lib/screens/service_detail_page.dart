@@ -7,7 +7,7 @@ import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
+import 'package:share/share.dart';
 
 import 'colors.dart';
 
@@ -134,7 +134,8 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
           color: Colors.white,
         ),
         onPressed: () {
-          Navigator.pushNamed(context, "/shopping-cart");
+          Navigator.pushNamed(context, "/dashboard",
+              arguments: {"dashboardIndex": 2});
         },
       ),
     );
@@ -168,7 +169,8 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         color: Colors.white,
       ),
       onPressed: () async {
-        basketBloc.addItemToCart(item: service);
+        String type = service is Product ? "product" : "service";
+        basketBloc.addItemToCart(item: service, type: type);
         var mapData;
         basketBloc.items.forEach((element) {
           if (element["item"].id == service.id) {
@@ -177,10 +179,11 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
           }
         });
         Map data = {
-          "type": "service",
+          "type": type,
           "id": mapData["item"].id,
           "qty": mapData["qty"],
         };
+        debugPrint("Data From Service Page : $data");
         await _auth.addItemToShoppingCart(data);
       },
     );
@@ -358,14 +361,10 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
               ],
             ),
             onPressed: () {
-              Toast.show(
-                "Coming Soon !!",
-                context,
-                gravity: Toast.BOTTOM,
-                duration: Toast.LENGTH_LONG,
-                backgroundColor: darkBlue(),
-                textColor: Colors.white,
-              );
+              var shareBody = "${service.name}\n" +
+                  "http://slydo.co/services/" +
+                  service.id.toString();
+              Share.share(shareBody, subject: "${service.name}");
             },
           )
         ],
