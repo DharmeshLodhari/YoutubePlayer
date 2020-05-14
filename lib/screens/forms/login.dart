@@ -334,7 +334,7 @@ class _UserLoginState extends State<UserLogin> {
     debugPrint("initializeShoppingCart called");
     List items = await _auth.getShoppingCart();
     items.forEach((element) {
-      basketBloc.addItemToCart(item: element);
+      basketBloc.addItemToCart(item: element, type: items[0].seller? "product":"service");
     });
   }
 

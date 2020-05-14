@@ -441,12 +441,14 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   void removeItem(int index) {
+    var item = consumable[index];
     Map data = {
-      "type": "product",
-      "id": consumable[index].id,
+      "type": item["type"],
+      "id": item.id,
     };
+
     _auth.removeItemToShoppingCart(data);
-    basketBloc.removeItemFromCart(consumable[index]);
+    basketBloc.removeItemFromCart(item);
     Toast.show("Product is Removed Successfully from the cart", context,
         backgroundColor: darkBlue(),
         textColor: Colors.white,

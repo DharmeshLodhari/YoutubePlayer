@@ -198,14 +198,28 @@ class _ShoppingCartState extends State<ShoppingCart> {
   }
 
   void addItem(int index) async {
+    int qty = 1;
+
+
+    basketBloc.items.forEach((element) {
+      if (element["item"].id == basketBloc.items[index]["item"].id) {
+        qty = element["qty"] + qty;
+      }
+    });
+
+    debugPrint("qty:$qty");
+    String type = basketBloc.items[index]["item"] is Service? "service":"product";
+    basketBloc.items[index]["type"] = type;
     Map data = {
-      "type": basketBloc.items[index]["type"],
+      "type": type,
       "id": basketBloc.items[index]["item"].id,
-      "qty": basketBloc.items[index]["qty"],
+      "qty": qty,
     };
 
-    basketBloc.addItemToCart(item: basketBloc.items[index]["item"]);
+    basketBloc.addItemToCart(item: basketBloc.items[index]["item"], type: basketBloc.items[index]["type"]);
     await _auth.addItemToShoppingCart(data);
+    debugPrint("after qty:");
+
   }
 
   void removeItem(int index) async {
@@ -213,7 +227,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
       "type": basketBloc.items[index]["type"],
       "id": basketBloc.items[index]["item"].id,
     };
-
     basketBloc.removeItemFromCart(basketBloc.items[index]["item"]);
     await _auth.removeItemToShoppingCart(data);
   }

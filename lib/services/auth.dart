@@ -8,6 +8,7 @@ import 'package:Slydo/models/store.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
@@ -1562,6 +1563,7 @@ class AuthService {
     var response = await http.get(url, headers: headers);
     var jsonData = jsonDecode(response.body);
     if (response.statusCode == 200) {
+      debugPrint(jsonData.toString());
       return getCartItems(jsonData);
     }
     throw jsonData;
@@ -1572,10 +1574,28 @@ class AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.patch(url, headers: headers, body: _data);
+    var jsonData = jsonDecode(response.body);
+    debugPrint("sent data: " + _data.toString());
     if (response.statusCode == 200) {
+      debugPrint("response"+ jsonData.toString());
+
       return true;
     }
     return false;
+  }
+
+  Future<bool> removeItemToShoppingCart(Map data) async {
+    var url = baseUrl + "/api/v1/shopping-cart/remove-item/";
+    var _data = jsonEncode(data);
+    var headers = await getAuthHeaders();
+    var response = await http.patch(url, headers: headers, body: _data);
+    debugPrint("data posted : ${_data}");
+    debugPrint("Status Code : ${response.statusCode}");
+    debugPrint("response body : ${response.body}");
+    if (response.statusCode == 200) {
+      return true;
+    } else
+      return false;
   }
 
   //place shopping cart order
@@ -1606,19 +1626,6 @@ class AuthService {
       }
     }
     return items;
-  }
-
-  Future<bool> removeItemToShoppingCart(Map data) async {
-    var url = baseUrl + "/api/v1/shopping-cart/remove-item/";
-    var _data = jsonEncode(data);
-    var headers = await getAuthHeaders();
-    var response = await http.patch(url, headers: headers, body: _data);
-    debugPrint("Status Code : ${response.statusCode}");
-    debugPrint("response body : ${response.body}");
-    if (response.statusCode == 200) {
-      return true;
-    } else
-      return false;
   }
 
   Future<bool> verifyBVN(String bvnNumber) async {
