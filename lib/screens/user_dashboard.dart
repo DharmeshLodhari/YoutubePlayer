@@ -177,11 +177,7 @@ class _UserDashboardState extends State<UserDashboard> {
                       Icons.account_balance,
                       "Bank",
                       () {
-                        Platform.isAndroid
-                            ? bankIOSSheet()
-                            : bankAndroidSheet();
-//                        bankAndroidSheet();
-//                        showBankAccoutSheet();
+                        Platform.isIOS ? bankIOSSheet() : bankAndroidSheet();
                       },
                     ),
                   ),
