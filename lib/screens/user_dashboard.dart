@@ -177,7 +177,11 @@ class _UserDashboardState extends State<UserDashboard> {
                       Icons.account_balance,
                       "Bank",
                       () {
-                        showBankAccoutSheet();
+                        Platform.isAndroid
+                            ? bankIOSSheet()
+                            : bankAndroidSheet();
+//                        bankAndroidSheet();
+//                        showBankAccoutSheet();
                       },
                     ),
                   ),
@@ -514,26 +518,6 @@ class _UserDashboardState extends State<UserDashboard> {
     }
   }
 
-  void androidSheet() {
-    showModalBottomSheet<void>(
-        context: context,
-        builder: (BuildContext context) {
-          return Container(
-            child: Padding(
-              padding: const EdgeInsets.all(32.0),
-              child: Text(
-                'This is the modal bottom sheet. Tap anywhere to dismiss.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Theme.of(context).accentColor,
-                  fontSize: 24.0,
-                ),
-              ),
-            ),
-          );
-        });
-  }
-
   void profileAndroidSheet() {
     showModalBottomSheet<void>(
         context: context,
@@ -586,6 +570,53 @@ class _UserDashboardState extends State<UserDashboard> {
         });
   }
 
+  void bankAndroidSheet() {
+    showModalBottomSheet<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return Container(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 12.0),
+              child: Wrap(
+                children: <Widget>[
+                  Center(
+                    child: Text(
+                      'Bank Account Actions',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: darkBlue(),
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  ListTile(
+                    title: Text("Bank Accounts"),
+                    dense: true,
+                    onTap: () {
+                      Navigator.pushNamed(context, "/bank-account-list");
+                    },
+                  ),
+                  ListTile(
+                    title: Text("Payout List"),
+                    dense: true,
+                    onTap: () {
+                      Navigator.pushNamed(context, "/payout-list");
+                    },
+                  ),
+                  ListTile(
+                    title: Text("Payout"),
+                    dense: true,
+                    onTap: () {
+                      Navigator.pushNamed(context, "/payout");
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
   void profileIOSSheet() {
     showDemoActionSheet(
       context: context,
@@ -621,6 +652,41 @@ class _UserDashboardState extends State<UserDashboard> {
     );
   }
 
+  void bankIOSSheet() {
+    showDemoActionSheet(
+      context: context,
+      child: CupertinoActionSheet(
+        actions: <Widget>[
+          CupertinoActionSheetAction(
+            child: const Text('Bank Accounts'),
+            onPressed: () {
+              Navigator.pop(context, 'Bank Accounts');
+            },
+          ),
+          CupertinoActionSheetAction(
+            child: const Text('Payout List'),
+            onPressed: () {
+              Navigator.pop(context, 'Payout List');
+            },
+          ),
+          CupertinoActionSheetAction(
+            child: const Text('Payout'),
+            onPressed: () {
+              Navigator.pop(context, 'Payout');
+            },
+          ),
+        ],
+        cancelButton: CupertinoActionSheetAction(
+          child: const Text('Cancel'),
+          isDefaultAction: true,
+          onPressed: () {
+            Navigator.pop(context, 'Cancel');
+          },
+        ),
+      ),
+    );
+  }
+
   void showDemoActionSheet({BuildContext context, Widget child}) {
     showCupertinoModalPopup<String>(
       context: context,
@@ -635,7 +701,14 @@ class _UserDashboardState extends State<UserDashboard> {
           });
         } else if (value == "Update Avatar") {
           pickImage(userBloc);
-        } else if (value == "Address") {}
+        } else if (value == "Address") {
+        } else if (value == "Bank Accounts") {
+          Navigator.pushNamed(context, "/bank-account-list");
+        } else if (value == "Payout List") {
+          Navigator.pushNamed(context, "/payout-list");
+        } else if (value == "Payout") {
+          Navigator.pushNamed(context, "/payout");
+        }
       }
     });
   }
