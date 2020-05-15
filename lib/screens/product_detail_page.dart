@@ -335,6 +335,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 28, 0, 0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(
                 //name,
@@ -428,7 +429,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           Row(
             children: <Widget>[
               Icon(
-                Icons.calendar_today,
+                Icons.date_range,
                 color: Colors.black,
               ),
               SizedBox(
@@ -537,15 +538,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         ],
       ),
     );
-  }
-
-  List<Widget> productPhotos(Product product) {
-    List<Widget> photos = [];
-    for (var url in product.serverImages) {
-      var img = Image.network(url);
-      photos.add(img);
-    }
-    return photos;
   }
 
   _buildBuyButtonWidget() {

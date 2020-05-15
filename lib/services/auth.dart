@@ -1211,6 +1211,7 @@ class AuthService {
     service.provider = item['provider'];
     service.price = item['price'].toString();
     service.currency = item["currency"];
+    service.providerAvatar = item["provider_avatar"];
 
     return service;
   }
@@ -1352,6 +1353,7 @@ class AuthService {
     var jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
       Service service = createService(jsonData);
+      debugPrint("jsondata :$jsonData");
       return service;
     } else {
       throw jsonData;

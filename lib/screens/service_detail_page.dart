@@ -5,9 +5,12 @@ import 'package:Slydo/models/store.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
+import 'package:toast/toast.dart';
 
 import 'colors.dart';
 
@@ -23,19 +26,24 @@ class ServiceDetailPage extends StatefulWidget {
 class _ServiceDetailPageState extends State<ServiceDetailPage>
     with TickerProviderStateMixin {
   var arguments;
+
   _ServiceDetailPageState({this.arguments});
+
   Service service;
   CustomerProfileBloc customerProfileBloc;
   BasketBloc basketBloc;
 
   final _auth = AuthService();
 
+  static List<String> imgList = [];
+
+  int _current = 0;
+
   @override
   void initState() {
     setState(() {
       service = arguments['service'];
     });
-    debugPrint("provider avatar ${service.providerAvatar}");
     fetchService(service.id.toString());
     super.initState();
   }
@@ -44,6 +52,8 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     _auth.getService(serviceId).then((value) {
       setState(() {
         service = value;
+        imgList = service.serverImages;
+        debugPrint("provider avatar ${service.providerAvatar}");
       });
     });
   }
@@ -82,6 +92,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       ),
       floatingActionButton: addToCart(),
       body: _buildServiceDetailsPage(context),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 
@@ -161,31 +172,49 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   Widget addToCart() {
-    return FloatingActionButton(
-      backgroundColor: darkBlue(),
-      child: Icon(
-        Icons.add_shopping_cart,
-        size: 30,
-        color: Colors.white,
+    return Card(
+      elevation: 10,
+      margin: EdgeInsets.symmetric(horizontal: 15),
+      child: Container(
+        padding: EdgeInsets.all(8),
+        height: 55,
+        child: Row(
+          children: <Widget>[
+            _buildBuyButtonWidget(),
+            SizedBox(
+              width: 12,
+            ),
+            Expanded(
+              child: MaterialButton(
+                height: double.infinity,
+                color: lightBlue(),
+                child: Icon(
+                  Icons.add_shopping_cart,
+                  color: Colors.white,
+                ),
+                onPressed: () async {
+                  String type = service is Product ? "product" : "service";
+                  basketBloc.addItemToCart(item: service, type: type);
+                  var mapData;
+                  basketBloc.items.forEach((element) {
+                    if (element["item"].id == service.id) {
+                      mapData = element;
+                      return;
+                    }
+                  });
+                  Map data = {
+                    "type": type,
+                    "id": mapData["item"].id,
+                    "qty": mapData["qty"],
+                  };
+                  debugPrint("Data From Service Page : $data");
+                  await _auth.addItemToShoppingCart(data);
+                },
+              ),
+            ),
+          ],
+        ),
       ),
-      onPressed: () async {
-        String type = service is Product ? "product" : "service";
-        basketBloc.addItemToCart(item: service, type: type);
-        var mapData;
-        basketBloc.items.forEach((element) {
-          if (element["item"].id == service.id) {
-            mapData = element;
-            return;
-          }
-        });
-        Map data = {
-          "type": type,
-          "id": mapData["item"].id,
-          "qty": mapData["qty"],
-        };
-        debugPrint("Data From Service Page : $data");
-        await _auth.addItemToShoppingCart(data);
-      },
     );
   }
 
@@ -202,22 +231,20 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 _buildServiceImagesWidgets(),
-                _buildServiceTitleWidget(),
+                _buildServiceTitleAndPriceWidget(),
                 SizedBox(height: 12.0),
-                _buildPriceWidgets(),
+                _buildShortInfoWidget(),
                 SizedBox(height: 12.0),
-                _buildDivider(screenSize),
-                SizedBox(height: 12.0),
-                _buildFurtherInfoWidget(),
                 SizedBox(height: 12.0),
                 _buildDivider(screenSize),
-                SizedBox(height: 6.0),
-                _buildSizeChartWidgets(),
-                SizedBox(height: 6.0),
-                _buildDetailsAndMaterialWidgets(),
                 SizedBox(height: 12.0),
-                _buildBuyButtonWidget(),
+                _buildAvailableFromAndShareWidgets(),
                 SizedBox(height: 12.0),
+                _buildDivider(screenSize),
+                _buildDescriptionWidget(),
+                SizedBox(height: 20.0),
+                _buildProviderOtherServices(),
+                SizedBox(height: 80.0),
               ],
             ),
           ),
@@ -238,72 +265,149 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     );
   }
 
+  Widget _buildDescriptionWidget() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+      child: Text(
+        service.description,
+        style: TextStyle(
+          fontSize: 16,
+          color: Colors.black87,
+          wordSpacing: 0.2,
+          height: 1.2,
+        ),
+      ),
+    );
+  }
+
   _buildServiceImagesWidgets() {
-    TabController imagesController =
-        TabController(length: service.serverImages.length, vsync: this);
-
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Container(
-        height: 250.0,
-        child: Center(
-          child: DefaultTabController(
-            length: service.serverImages.length,
-            child: Stack(
-              children: <Widget>[
-                TabBarView(
-                  controller: imagesController,
-                  children: servicePhotos(service),
-                ),
-                Container(
-                  alignment: FractionalOffset(0.5, 0.95),
-                  child: TabPageSelector(
-                    controller: imagesController,
-                    selectedColor: Colors.grey,
-                    color: Colors.white,
-                  ),
-                )
-              ],
+    return Column(
+      children: <Widget>[
+        Stack(
+          children: <Widget>[
+            CarouselSlider(
+              options: CarouselOptions(
+                  viewportFraction: 1.0,
+                  enlargeCenterPage: false,
+                  autoPlay: false,
+                  aspectRatio: 1.2,
+                  onPageChanged: (index, _) {
+                    setState(() {
+                      _current = index;
+                    });
+                  }),
+              items: imgList
+                  .map((item) => Container(
+                        child: Center(
+                            child: CachedNetworkImage(
+                          imageUrl: item,
+                          fit: BoxFit.fill,
+                          height: double.infinity,
+                          width: double.infinity,
+                        )),
+                      ))
+                  .toList(),
             ),
+            Positioned(
+              bottom: 0,
+              left:
+                  MediaQuery.of(context).size.width / 2 - (5 * imgList.length),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: imgList.map((url) {
+                  int index = imgList.indexOf(url);
+                  return Container(
+                    width: 5.0,
+                    height: 5.0,
+                    margin:
+                        EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: _current == index ? lightBlue() : Colors.white,
+                    ),
+                  );
+                }).toList(),
+              ),
+            )
+          ],
+        ),
+      ],
+    );
+  }
+
+  _buildServiceTitleAndPriceWidget() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 28, 0, 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                //name,
+                service.name,
+                style: TextStyle(
+                    fontSize: 13.0,
+                    color: Colors.grey[600],
+                    fontWeight: FontWeight.w500),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Row(
+                  children: <Widget>[
+                    Text(
+                      worldCurrencies[service.currency],
+                      style: TextStyle(
+                          fontFamily: "Roboto",
+                          fontSize: 28.0,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w600),
+                    ),
+                    Text(
+                      service.price,
+                      style: TextStyle(
+                          fontSize: 28.0,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
-      ),
+        copyQrCode(),
+      ],
     );
   }
 
-  _buildServiceTitleWidget() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12.0),
-      child: Center(
-        child: Text(
-          //name,
-          service.name,
-          style: TextStyle(fontSize: 16.0, color: Colors.black),
-        ),
-      ),
-    );
-  }
-
-  _buildPriceWidgets() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+  Widget copyQrCode() {
+    return MaterialButton(
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        mainAxisSize: MainAxisSize.max,
         children: <Widget>[
-          Text(
-            worldCurrencies[service.currency] + service.price,
-            style: TextStyle(fontSize: 16.0, color: Colors.black),
-          ),
-          SizedBox(
-            width: 8.0,
+          CachedNetworkImage(
+            imageUrl: service.qrCode,
+            height: 50,
+            width: 50,
+            filterQuality: FilterQuality.high,
+            fit: BoxFit.fill,
           ),
         ],
       ),
+      onPressed: () {
+        Clipboard.setData(new ClipboardData(text: service.qrCode));
+        Toast.show(AppLocalization.of(context).copied, context,
+            gravity: Toast.CENTER,
+            duration: Toast.LENGTH_LONG,
+            backgroundColor: darkBlue());
+      },
     );
   }
 
-  _buildFurtherInfoWidget() {
+  Widget _buildShortInfoWidget() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0),
       child: Row(
@@ -314,7 +418,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
           Text(
             service.shortDescription,
             style: TextStyle(
-              color: Colors.grey[500],
+              color: Colors.black,
             ),
           ),
         ],
@@ -322,7 +426,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     );
   }
 
-  _buildSizeChartWidgets() {
+  _buildAvailableFromAndShareWidgets() {
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: 12.0,
@@ -334,7 +438,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
           Row(
             children: <Widget>[
               Icon(
-                Icons.access_time,
+                Icons.date_range,
                 color: Colors.black,
               ),
               SizedBox(
@@ -372,93 +476,86 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     );
   }
 
-  _buildDetailsAndMaterialWidgets() {
-    TabController tabController = new TabController(length: 2, vsync: this);
+  Widget _buildProviderOtherServices() {
     return Container(
+      height: 200,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          TabBar(
-            indicatorColor: darkBlue(),
-            controller: tabController,
-            tabs: <Widget>[
-              Tab(
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(left: 12.0),
                 child: Text(
-                  AppLocalization.of(context).details,
-                  style: TextStyle(
-                    color: Colors.black,
-                  ),
+                  "Provider's other Services",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
                 ),
               ),
-              Tab(
-                child: Text(
-                  AppLocalization.of(context).sellersOtherServices,
-                  style: TextStyle(
-                    color: Colors.black,
+              GestureDetector(
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 12.0),
+                  child: Text(
+                    "See all",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                        color: lightBlue()),
                   ),
-                  textAlign: TextAlign.center,
                 ),
+                onTap: () {
+                  Toast.show("Coming Soon !! ", context,
+                      textColor: Colors.white, backgroundColor: darkBlue());
+                },
               ),
             ],
           ),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
-            height: 200.0,
-            child: TabBarView(
-              controller: tabController,
-              children: <Widget>[
-                ListView(
-                  children: [
-                    Text(
-                      service.description,
-                      style: TextStyle(
-                        color: Colors.black,
+          SizedBox(
+            height: 10,
+          ),
+          Expanded(
+            child: ListView.builder(
+                itemCount: 10,
+                scrollDirection: Axis.horizontal,
+                itemBuilder: (context, index) => Card(
+                      color: Colors.grey[200],
+                      child: Container(
+                        width: MediaQuery.of(context).size.width - 100,
+                        child: Center(
+                            child: Text(
+                          "Coming Soon !!",
+                          style: TextStyle(color: lightBlue()),
+                        )),
                       ),
-                    ),
-                  ],
-                ),
-                ListView(
-                  children: [
-                    Text(
-                      AppLocalization.of(context).comingSoon,
-                      style: TextStyle(
-                        color: Colors.black,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                    )),
           ),
         ],
       ),
     );
   }
 
-  List<Widget> servicePhotos(Service service) {
-    List<Widget> photos = [];
-    for (var url in service.serverImages) {
-      var img = Image.network(url);
-      photos.add(img);
-    }
-    return photos;
-  }
-
   _buildBuyButtonWidget() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 10),
-      child: MaterialButton(
-        minWidth: MediaQuery.of(context).size.width / 1.4,
-        color: Colors.green,
-        child: Text(
-          "Buy Now",
-          style: TextStyle(color: Colors.white),
+    return Expanded(
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: lightBlue(),
+            width: 2,
+            style: BorderStyle.solid,
+          ),
+          borderRadius: BorderRadius.circular(5),
         ),
-        onPressed: () {
-          getRecipient();
-          navigateToSendPayment();
-        },
+        child: FlatButton(
+          color: Colors.white,
+          child: Text(
+            "Buy Now",
+            style: TextStyle(color: lightBlue()),
+          ),
+          onPressed: () {
+            getRecipient();
+            navigateToSendPayment();
+          },
+        ),
       ),
     );
   }
