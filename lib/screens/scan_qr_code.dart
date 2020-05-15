@@ -122,6 +122,7 @@ class _QRCodeViewState extends State<QRCodeView> {
 
   // TODO: Add try block here and check if error occurred in server like 404 then take user to home page and show error
   void getNavigationRoot(List<String> scanDataList) async {
+    debugPrint("test: "+ scanDataList[scanDataList.length - 2]);
     if (scanDataList[scanDataList.length - 2] == "products") {
       var productId = scanDataList.last;
       var product = getProduct(productId);
@@ -129,7 +130,15 @@ class _QRCodeViewState extends State<QRCodeView> {
       Navigator.pop(context);
       Navigator.of(context)
           .pushNamed("/product", arguments: {"product": product});
-    } else {
+    }
+    else if (scanDataList[scanDataList.length - 2] == "services") {
+      var serviceId = scanDataList.last;
+      var service = getService(serviceId);
+      Navigator.pop(context);
+      Navigator.of(context).pushNamed("/service-detail", arguments: {"service": service});
+
+    }
+    else {
       var recipient = scanDataList.last;
       getRecipient(recipient);
 
@@ -175,4 +184,25 @@ class _QRCodeViewState extends State<QRCodeView> {
     product.serverImages = [];
     return product;
   }
+
+  Service getService(String serviceId){
+    Service service = Service();
+    service.id = serviceId;
+    service.name = "";
+    service.description = "";
+    service.shortDescription = "";
+    service.price = "0";
+    service.localImages = [];
+    service.serverImages = [];
+    service.provider = "";
+    service.providerAvatar = "";
+    service.qrCode = "";
+    service.category = "";
+    service.isAvailable = true;
+    service.availableFrom = DateTime.now();
+    service.currency = userBloc.user.currency;
+    service.pictureMap = [];
+    return service;
+  }
+
 }
