@@ -108,13 +108,14 @@ class _AccountBalanceTileState extends State<AccountBalanceTile> {
               color: Colors.grey[400]),
           onPressed: () {
             if (widget.isLocked) {
-              PasscodePopup(
+              PassCodePopup(
                   context: context,
                   isValidCallback: () {
                     Navigator.of(context).pushNamed('/dashboard',
                         arguments: {'dashboardIndex': 5, 'isLocked': false});
                   },
                   cancelCallBack: () {
+                    Navigator.pop(context);
                     Scaffold.of(context).showSnackBar(SnackBar(
                       content: Text(AppLocalization.of(context).wrongPassword),
                     ));

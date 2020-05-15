@@ -26,7 +26,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
   FocusNode _recipientFocus = FocusNode();
 
   bool isValidRecipient = false;
-  bool isReplayMessage = false;
+  bool isReplyMessage = false;
   final _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
   CustomerProfile _payee;
@@ -48,7 +48,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
     // and set into recipient field and subject field and also display the recipent data tile
     if (arguments != null) {
       setState(() {
-        isReplayMessage = true;
+        isReplyMessage = true;
       });
       recipient = arguments['recipient'];
       _recipientController.text = recipient;
@@ -86,7 +86,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
   }
 
   initializeDisplayCard() {
-    if (isReplayMessage) {
+    if (isReplyMessage) {
       if (customerProfileBloc.customer.userName != null) {
         setState(() {
           _payee = customerProfileBloc.customer;
@@ -176,7 +176,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
             if (_formKey.currentState.validate()) {
               Navigator.of(context).popAndPushNamed("/dashboard",
                   arguments: {"dashboardIndex": 4});
-              if (isReplayMessage) {
+              if (isReplyMessage) {
                 Navigator.of(context).popAndPushNamed("/dashboard",
                     arguments: {"dashboardIndex": 4});
               }
@@ -255,7 +255,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
   Widget getRecipientField() {
     return TextFormField(
       controller: _recipientController,
-      enabled: isReplayMessage ? false : true,
+      enabled: isReplyMessage ? false : true,
       focusNode: _recipientFocus,
       cursorColor: darkBlue(),
       validator: (value) {
@@ -281,7 +281,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
                   width: 1, color: Colors.white, style: BorderStyle.solid))),
       onChanged: (val) {
         setState(() {
-          if (isReplayMessage && _payee != null) {
+          if (isReplyMessage && _payee != null) {
             recipient = _payee.userName;
           } else {
             recipient = val.toLowerCase();
@@ -293,14 +293,14 @@ class _ComposeMessageState extends State<ComposeMessage> {
 
   Widget getSubjectField() {
     return TextFormField(
-      enabled: isReplayMessage && subjectNeedReplayAtPrefix ? false : true,
+      enabled: isReplyMessage && subjectNeedReplayAtPrefix ? false : true,
       cursorColor: darkBlue(),
       controller: _subjectController,
       autofocus: false,
       obscureText: false,
       decoration: InputDecoration(
         prefixText:
-            isReplayMessage ? subjectNeedReplayAtPrefix ? "Re:" : "" : "",
+            isReplyMessage ? subjectNeedReplayAtPrefix ? "Re:" : "" : "",
         prefixIcon: Icon(Icons.subject),
         fillColor: Colors.white,
         filled: true,

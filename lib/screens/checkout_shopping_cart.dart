@@ -347,7 +347,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
       if (value != null) {
         var data = {"note": value};
         if (value != "cancel") {
-          PasscodePopup(
+          PassCodePopup(
               context: context,
               isValidCallback: () async {
                 showDialog(

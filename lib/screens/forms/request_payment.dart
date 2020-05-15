@@ -459,7 +459,7 @@ class _RequestPaymentState extends State<RequestPayment> {
                   "longitude": userLocation.longitude,
                 };
 
-                PasscodePopup(
+                PassCodePopup(
                     context: context,
                     isValidCallback: () {
                       showDialog(
@@ -491,6 +491,7 @@ class _RequestPaymentState extends State<RequestPayment> {
                       });
                     },
                     cancelCallBack: () {
+                      Navigator.pop(context);
                       requestPaymentScaffold.currentState.showSnackBar(SnackBar(
                         content:
                             Text(AppLocalization.of(context).invalidPassword),

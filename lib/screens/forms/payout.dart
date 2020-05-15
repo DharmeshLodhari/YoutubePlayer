@@ -195,7 +195,7 @@ class _PayoutState extends State<Payout> {
                     "amount": amount,
                     "currency": userBloc.user.currency,
                   };
-                  PasscodePopup(
+                  PassCodePopup(
                       context: context,
                       isValidCallback: () {
                         showDialog(
@@ -231,6 +231,7 @@ class _PayoutState extends State<Payout> {
                         });
                       },
                       cancelCallBack: () {
+                        Navigator.pop(context);
                         Scaffold.of(context).showSnackBar(SnackBar(
                           content:
                               Text(AppLocalization.of(context).invalidPassword),

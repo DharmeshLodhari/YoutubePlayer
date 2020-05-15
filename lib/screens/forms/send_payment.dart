@@ -492,7 +492,7 @@ class _SendPaymentState extends State<SendPayment> {
                   "deviceData": deviceData
                 };
 
-                PasscodePopup(
+                PassCodePopup(
                     context: context,
                     isValidCallback: () {
                       showDialog(
@@ -529,6 +529,7 @@ class _SendPaymentState extends State<SendPayment> {
                       });
                     },
                     cancelCallBack: () {
+                      Navigator.pop(context);
                       _sendPaymentScaffold.currentState.showSnackBar(SnackBar(
                         content:
                             Text(AppLocalization.of(context).invalidPassword),

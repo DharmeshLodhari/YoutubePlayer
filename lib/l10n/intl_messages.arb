@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2020-05-05T20:11:36.894528",
+  "@@last_modified": "2020-05-15T14:38:37.512444",
   "addBankAccountMsg": "Add A Bank Account",
   "@addBankAccountMsg": {
     "type": "text",
@@ -510,7 +510,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "reply": "Replay",
+  "reply": "Reply",
   "@reply": {
     "type": "text",
     "placeholders": {}

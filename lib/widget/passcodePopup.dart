@@ -7,7 +7,7 @@ import 'package:passcode_screen/keyboard.dart';
 import 'package:passcode_screen/passcode_screen.dart';
 import 'package:provider/provider.dart';
 
-class PasscodePopup {
+class PassCodePopup {
   BuildContext context;
   GestureTapCallback isValidCallback;
   GestureTapCallback cancelCallBack;
@@ -15,7 +15,7 @@ class PasscodePopup {
       StreamController<bool>.broadcast();
   UserBloc userBloc;
 
-  PasscodePopup(
+  PassCodePopup(
       {@required this.context,
       @required this.isValidCallback,
       this.cancelCallBack}) {
@@ -33,20 +33,22 @@ class PasscodePopup {
                     ),
                     passwordEnteredCallback: _onPasscodeEntered,
                     cancelButton: FlatButton(
+                      padding: EdgeInsets.all(0),
                       child: Text(
                         AppLocalization.of(context).cancel,
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 12,
+                          fontSize: 10,
                         ),
                       ),
                     ),
                     deleteButton: FlatButton(
+                      padding: EdgeInsets.all(0),
                       child: Text(
                         AppLocalization.of(context).delete,
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 12,
+                          fontSize: 10,
                         ),
                       ),
                     ),

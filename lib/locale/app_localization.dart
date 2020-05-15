@@ -754,7 +754,7 @@ class AppLocalization {
 
   String get reply {
     return Intl.message(
-      "Replay",
+      "Reply",
       name: "reply",
     );
   }

@@ -86,7 +86,7 @@ class _DetailedMessageState extends State<DetailedMessage> {
                       SizedBox(height: 10),
                       displayMessageInfo(),
                       SizedBox(height: 10),
-                      displayReplayButton(),
+                      displayReplyButton(),
                       SizedBox(height: 10),
                     ],
                   ),
@@ -287,7 +287,7 @@ class _DetailedMessageState extends State<DetailedMessage> {
     );
   }
 
-  displayReplayButton() {
+  displayReplyButton() {
     return MaterialButton(
       minWidth: double.infinity,
       elevation: 4.0,
