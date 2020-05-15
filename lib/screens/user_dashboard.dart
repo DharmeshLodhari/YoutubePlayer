@@ -6,6 +6,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/device.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/screens/colors.dart';
+import 'package:Slydo/screens/product_detail_page_modified.dart';
 import 'package:Slydo/screens/tiles/bank_account.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -128,6 +129,9 @@ class _UserDashboardState extends State<UserDashboard> {
                       Icons.event_note,
                       "Taxes",
                       () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (_) => ProductDetailPageModified()));
+
                         Toast.show("Comming Soon !!", context,
                             backgroundColor: darkBlue(),
                             textColor: Colors.white);

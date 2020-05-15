@@ -45,6 +45,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       if (mounted) {
         setState(() {
           product = value;
+          debugPrint("productId : $productId");
+//          imgList = product.serverImages;
         });
       }
     });

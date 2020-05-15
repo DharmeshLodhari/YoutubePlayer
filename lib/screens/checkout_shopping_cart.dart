@@ -4,6 +4,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/screens/tiles/shopping_cart_tile.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/passcodePopup.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -63,18 +64,35 @@ class _ShoppingCartState extends State<ShoppingCart> {
         ),
         body: Column(
           children: <Widget>[
-            Expanded(
-              child: ListView.builder(
-                  itemCount: basketBloc.items.length,
-                  itemBuilder: (BuildContext context, int index) =>
-                      getItemTile(index)),
-            ),
-            checkoutWidget(),
+            bodyOfCart(),
             SizedBox(
               height: 20,
             )
           ],
         ),
+      ),
+    );
+  }
+
+  Widget bodyOfCart() {
+    if (basketBloc.total == 0) {
+      return Expanded(
+        child: Center(
+          child: NoItemInList(msg: "Shopping Cart is Empty !!"),
+        ),
+      );
+    }
+    return Expanded(
+      child: Column(
+        children: <Widget>[
+          Expanded(
+            child: ListView.builder(
+                itemCount: basketBloc.items.length,
+                itemBuilder: (BuildContext context, int index) =>
+                    getItemTile(index)),
+          ),
+          checkoutWidget(),
+        ],
       ),
     );
   }
