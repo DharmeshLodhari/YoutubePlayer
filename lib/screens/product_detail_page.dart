@@ -472,10 +472,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       child: Text(
         product.description,
         style: TextStyle(
-          color: Colors.black87,
-          wordSpacing: 0.2,
-          fontSize: 16,
-        ),
+            color: Colors.black87, wordSpacing: 0.2, fontSize: 16, height: 1.2),
       ),
     );
   }
