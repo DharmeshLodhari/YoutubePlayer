@@ -58,14 +58,29 @@ class PaymentRequestTile extends StatelessWidget {
   }
 
   Widget getTrailing() {
-    return Text(
-      worldCurrencies[paymentRequest.currency] +
-          ' ' +
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Text(
+          worldCurrencies[paymentRequest.currency] + " ",
+          style: TextStyle(
+              fontFamily: "Roboto",
+              color: paymentRequest.isCredit
+                  ? Colors.grey[600]
+                  : Colors.green[400],
+              fontWeight: FontWeight.bold,
+              fontSize: 15),
+        ),
+        Text(
           paymentRequest.amount.toString(),
-      style: TextStyle(
-          color: paymentRequest.isCredit ? Colors.grey[600] : Colors.green[400],
-          fontWeight: FontWeight.bold,
-          fontSize: 15),
+          style: TextStyle(
+              color: paymentRequest.isCredit
+                  ? Colors.grey[600]
+                  : Colors.green[400],
+              fontWeight: FontWeight.bold,
+              fontSize: 15),
+        ),
+      ],
     );
   }
 
@@ -167,14 +182,27 @@ class TransactionTile extends StatelessWidget {
   }
 
   Widget getAmount() {
-    return Text(
-      worldCurrencies[transaction.currency] +
-          ' ' +
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Text(
+          worldCurrencies[transaction.currency] + " ",
+          style: TextStyle(
+              fontFamily: "Roboto",
+              color:
+                  transaction.isCredit ? Colors.grey[600] : Colors.green[400],
+              fontWeight: FontWeight.bold,
+              fontSize: 15),
+        ),
+        Text(
           transaction.amount.toString(),
-      style: TextStyle(
-          color: transaction.isCredit ? Colors.green[400] : Colors.grey[600],
-          fontWeight: FontWeight.bold,
-          fontSize: 15),
+          style: TextStyle(
+              color:
+                  transaction.isCredit ? Colors.grey[600] : Colors.green[400],
+              fontWeight: FontWeight.bold,
+              fontSize: 15),
+        ),
+      ],
     );
   }
 

@@ -39,18 +39,17 @@ class _ProductDetailPageModifiedState extends State<ProductDetailPageModified>
   @override
   void initState() {
     setState(() {
-      product = Product();
+      product = arguments['product'];
     });
-    fetchProduct("11");
+    fetchProduct(product.id.toString());
     super.initState();
   }
 
   void fetchProduct(String productId) async {
-    _auth.getProduct("49dabb16-05b2-4182-81a1-9c81f4fc38d9").then((value) {
+    _auth.getProduct(productId).then((value) {
       if (mounted) {
         setState(() {
           product = value;
-          debugPrint("${product.serverImages}");
           imgList = product.serverImages;
         });
       }
@@ -170,35 +169,6 @@ class _ProductDetailPageModifiedState extends State<ProductDetailPageModified>
     return totalItem;
   }
 
-//  Widget addToCart() {
-//    return FloatingActionButton(
-//      backgroundColor: darkBlue(),
-//      child: Icon(
-//        Icons.add_shopping_cart,
-//        size: 30,
-//        color: Colors.white,
-//      ),
-//      onPressed: () async {
-//        String type = product is Product ? "product" : "service";
-//        basketBloc.addItemToCart(item: product, type: type);
-//        var mapData;
-//        basketBloc.items.forEach((element) {
-//          if (element["item"].id == product.id) {
-//            mapData = element;
-//            return;
-//          }
-//        });
-//        Map data = {
-//          "type": type,
-//          "id": mapData["item"].id,
-//          "qty": mapData["qty"],
-//        };
-//        debugPrint("Data From Product Page : $data");
-//        await _auth.addItemToShoppingCart(data);
-//      },
-//    );
-//  }
-
   Widget addToCart() {
     return Card(
       elevation: 10,
@@ -259,18 +229,17 @@ class _ProductDetailPageModifiedState extends State<ProductDetailPageModified>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 _buildProductImagesWidgets(),
-                _buildProductTitleWidget(),
+                _buildProductTitleAndPriceWidget(),
                 SizedBox(height: 12.0),
-                _buildPriceWidgets(),
-                _buildFurtherInfoWidget(),
+                _buildShortInfoWidget(),
                 SizedBox(height: 12.0),
-                SizedBox(height: 12.0),
-                _buildDivider(screenSize),
-                SizedBox(height: 12.0),
-                _buildSizeChartWidgets(),
                 SizedBox(height: 12.0),
                 _buildDivider(screenSize),
-                _buildDetailsAndMaterialWidgets(),
+                SizedBox(height: 12.0),
+                _buildAvailableFromAndShareWidgets(),
+                SizedBox(height: 12.0),
+                _buildDivider(screenSize),
+                _buildDescriptionWidget(),
                 _buildSellersOtherProducts(),
                 SizedBox(height: 80.0),
               ],
@@ -358,7 +327,7 @@ class _ProductDetailPageModifiedState extends State<ProductDetailPageModified>
     );
   }
 
-  _buildProductTitleWidget() {
+  _buildProductTitleAndPriceWidget() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -405,21 +374,6 @@ class _ProductDetailPageModifiedState extends State<ProductDetailPageModified>
     );
   }
 
-  _buildPriceWidgets() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        mainAxisSize: MainAxisSize.max,
-        children: <Widget>[
-          SizedBox(
-            width: 8.0,
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget copyQrCode() {
     return MaterialButton(
       child: Row(
@@ -443,7 +397,7 @@ class _ProductDetailPageModifiedState extends State<ProductDetailPageModified>
     );
   }
 
-  _buildFurtherInfoWidget() {
+  Widget _buildShortInfoWidget() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0),
       child: Row(
@@ -462,7 +416,7 @@ class _ProductDetailPageModifiedState extends State<ProductDetailPageModified>
     );
   }
 
-  _buildSizeChartWidgets() {
+  _buildAvailableFromAndShareWidgets() {
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: 12.0,
@@ -512,73 +466,7 @@ class _ProductDetailPageModifiedState extends State<ProductDetailPageModified>
     );
   }
 
-//  _buildDetailsAndMaterialWidgets() {
-//    TabController tabController = new TabController(length: 2, vsync: this);
-//    return Container(
-//      child: Column(
-//        crossAxisAlignment: CrossAxisAlignment.start,
-//        mainAxisSize: MainAxisSize.min,
-//        children: <Widget>[
-//          Container(
-//            child: TabBar(
-//              indicatorColor: darkBlue(),
-//              controller: tabController,
-//              tabs: <Widget>[
-//                Tab(
-//                  child: Text(
-//                    AppLocalization.of(context).details,
-//                    style: TextStyle(
-//                      color: Colors.black,
-//                    ),
-//                  ),
-//                ),
-//                Tab(
-//                  child: Text(
-//                    AppLocalization.of(context).sellersOtherProduct,
-//                    style: TextStyle(
-//                      color: Colors.black,
-//                    ),
-//                    textAlign: TextAlign.center,
-//                  ),
-//                ),
-//              ],
-//            ),
-//          ),
-//          Container(
-//            padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
-//            height: 200.0,
-//            child: TabBarView(
-//              controller: tabController,
-//              children: <Widget>[
-//                ListView(
-//                  children: <Widget>[
-//                    Text(
-//                      product.description,
-//                      style: TextStyle(
-//                        color: Colors.black,
-//                      ),
-//                    ),
-//                  ],
-//                ),
-//                ListView(
-//                  children: <Widget>[
-//                    Text(
-//                      AppLocalization.of(context).comingSoon,
-//                      style: TextStyle(
-//                        color: Colors.black,
-//                      ),
-//                    ),
-//                  ],
-//                ),
-//              ],
-//            ),
-//          ),
-//        ],
-//      ),
-//    );
-//  }
-
-  Widget _buildDetailsAndMaterialWidgets() {
+  Widget _buildDescriptionWidget() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
       child: Text(
@@ -682,24 +570,6 @@ class _ProductDetailPageModifiedState extends State<ProductDetailPageModified>
       ),
     );
   }
-
-//  _buildBuyButtonWidget() {
-//    return Padding(
-//      padding: EdgeInsets.symmetric(horizontal: 10),
-//      child: MaterialButton(
-//        minWidth: MediaQuery.of(context).size.width / 1.4,
-//        color: Colors.green,
-//        child: Text(
-//          "Buy Now",
-//          style: TextStyle(color: Colors.white),
-//        ),
-//        onPressed: () {
-//          getRecipient();
-//          navigateToSendPayment();
-//        },
-//      ),
-//    );
-//  }
 
   // Pull the user from the server
   void getRecipient() async {

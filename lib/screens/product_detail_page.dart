@@ -6,6 +6,7 @@ import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -30,6 +31,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   Product product;
   CustomerProfileBloc customerProfileBloc;
   BasketBloc basketBloc;
+  static List<String> imgList = [];
+
+  int _current = 0;
 
   @override
   void initState() {
@@ -45,8 +49,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       if (mounted) {
         setState(() {
           product = value;
-          debugPrint("productId : $productId");
-//          imgList = product.serverImages;
+          imgList = product.serverImages;
         });
       }
     });
@@ -86,6 +89,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       ),
       floatingActionButton: addToCart(),
       body: _buildProductDetailsPage(context),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 
@@ -165,31 +169,49 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget addToCart() {
-    return FloatingActionButton(
-      backgroundColor: darkBlue(),
-      child: Icon(
-        Icons.add_shopping_cart,
-        size: 30,
-        color: Colors.white,
+    return Card(
+      elevation: 10,
+      margin: EdgeInsets.symmetric(horizontal: 15),
+      child: Container(
+        padding: EdgeInsets.all(8),
+        height: 55,
+        child: Row(
+          children: <Widget>[
+            _buildBuyButtonWidget(),
+            SizedBox(
+              width: 12,
+            ),
+            Expanded(
+              child: MaterialButton(
+                height: double.infinity,
+                color: lightBlue(),
+                child: Icon(
+                  Icons.add_shopping_cart,
+                  color: Colors.white,
+                ),
+                onPressed: () async {
+                  String type = product is Product ? "product" : "service";
+                  basketBloc.addItemToCart(item: product, type: type);
+                  var mapData;
+                  basketBloc.items.forEach((element) {
+                    if (element["item"].id == product.id) {
+                      mapData = element;
+                      return;
+                    }
+                  });
+                  Map data = {
+                    "type": type,
+                    "id": mapData["item"].id,
+                    "qty": mapData["qty"],
+                  };
+                  debugPrint("Data From Product Page : $data");
+                  await _auth.addItemToShoppingCart(data);
+                },
+              ),
+            ),
+          ],
+        ),
       ),
-      onPressed: () async {
-        String type = product is Product ? "product" : "service";
-        basketBloc.addItemToCart(item: product, type: type);
-        var mapData;
-        basketBloc.items.forEach((element) {
-          if (element["item"].id == product.id) {
-            mapData = element;
-            return;
-          }
-        });
-        Map data = {
-          "type": type,
-          "id": mapData["item"].id,
-          "qty": mapData["qty"],
-        };
-        debugPrint("Data From Product Page : $data");
-        await _auth.addItemToShoppingCart(data);
-      },
     );
   }
 
@@ -206,23 +228,20 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 _buildProductImagesWidgets(),
-                _buildProductTitleWidget(),
+                _buildProductTitleAndPriceWidget(),
                 SizedBox(height: 12.0),
-                _buildPriceWidgets(),
+                _buildShortInfoWidget(),
                 SizedBox(height: 12.0),
-                _buildDivider(screenSize),
-                SizedBox(height: 12.0),
-                _buildFurtherInfoWidget(),
                 SizedBox(height: 12.0),
                 _buildDivider(screenSize),
-                SizedBox(height: 6.0),
-                _buildSizeChartWidgets(),
-                SizedBox(height: 6.0),
+                SizedBox(height: 12.0),
+                _buildAvailableFromAndShareWidgets(),
+                SizedBox(height: 12.0),
                 _buildDivider(screenSize),
-                _buildDetailsAndMaterialWidgets(),
-                SizedBox(height: 12.0),
-                _buildBuyButtonWidget(),
-                SizedBox(height: 12.0),
+                _buildDescriptionWidget(),
+                SizedBox(height: 20.0),
+                _buildSellersOtherProducts(),
+                SizedBox(height: 80.0),
               ],
             ),
           ),
@@ -243,69 +262,115 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     );
   }
 
-  _buildProductImagesWidgets() {
-    TabController imagesController =
-        TabController(length: product.serverImages.length, vsync: this);
-
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Container(
-        height: 250.0,
-        child: Center(
-          child: DefaultTabController(
-            length: product.serverImages.length,
-            child: Stack(
-              children: <Widget>[
-                TabBarView(
-                  controller: imagesController,
-                  children: productPhotos(product),
-                ),
-                Container(
-                  alignment: FractionalOffset(0.5, 0.95),
-                  child: TabPageSelector(
-                    controller: imagesController,
-                    selectedColor: Colors.grey,
-                    color: Colors.white,
-                  ),
-                )
-              ],
+  final List<Widget> imageSliders = imgList
+      .map((item) => Container(
+            child: CachedNetworkImage(
+              imageUrl: item,
+              fit: BoxFit.fitWidth,
             ),
-          ),
+          ))
+      .toList();
+
+  _buildProductImagesWidgets() {
+    return Column(
+      children: <Widget>[
+        Stack(
+          children: <Widget>[
+            CarouselSlider(
+              options: CarouselOptions(
+                  viewportFraction: 1.0,
+                  enlargeCenterPage: false,
+                  autoPlay: false,
+                  aspectRatio: 1.2,
+                  onPageChanged: (index, _) {
+                    setState(() {
+                      _current = index;
+                    });
+                  }),
+              items: imgList
+                  .map((item) => Container(
+                        child: Center(
+                            child: CachedNetworkImage(
+                          imageUrl: item,
+                          fit: BoxFit.fill,
+                          height: double.infinity,
+                          width: double.infinity,
+                        )),
+                      ))
+                  .toList(),
+            ),
+            Positioned(
+              bottom: 0,
+              left:
+                  MediaQuery.of(context).size.width / 2 - (5 * imgList.length),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: imgList.map((url) {
+                  int index = imgList.indexOf(url);
+                  return Container(
+                    width: 5.0,
+                    height: 5.0,
+                    margin:
+                        EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: _current == index ? lightBlue() : Colors.white,
+                    ),
+                  );
+                }).toList(),
+              ),
+            )
+          ],
         ),
-      ),
+      ],
     );
   }
 
-  _buildProductTitleWidget() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12.0),
-      child: Center(
-        child: Text(
-          //name,
-          product.name,
-          style: TextStyle(fontSize: 16.0, color: Colors.black),
+  _buildProductTitleAndPriceWidget() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 28, 0, 0),
+          child: Column(
+            children: <Widget>[
+              Text(
+                //name,
+                product.name,
+                style: TextStyle(
+                    fontSize: 13.0,
+                    color: Colors.grey[600],
+                    fontWeight: FontWeight.w500),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Row(
+                  children: <Widget>[
+                    Text(
+                      worldCurrencies[product.currency],
+                      style: TextStyle(
+                          fontFamily: "Roboto",
+                          fontSize: 28.0,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w600),
+                    ),
+                    Text(
+                      product.price,
+                      style: TextStyle(
+                          fontSize: 28.0,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-    );
-  }
-
-  _buildPriceWidgets() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        mainAxisSize: MainAxisSize.max,
-        children: <Widget>[
-          Text(
-            worldCurrencies[product.currency] + product.price,
-            style: TextStyle(fontSize: 16.0, color: Colors.black),
-          ),
-          SizedBox(
-            width: 8.0,
-          ),
-          copyQrCode(),
-        ],
-      ),
+        copyQrCode(),
+      ],
     );
   }
 
@@ -313,11 +378,11 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     return MaterialButton(
       child: Row(
         children: <Widget>[
-          Image.asset(
-            "assets/images/qr_code.png",
-            height: 25,
-            width: 25,
-            filterQuality: FilterQuality.low,
+          CachedNetworkImage(
+            imageUrl: product.qrCode,
+            height: 50,
+            width: 50,
+            filterQuality: FilterQuality.high,
             fit: BoxFit.fill,
           ),
         ],
@@ -332,7 +397,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     );
   }
 
-  _buildFurtherInfoWidget() {
+  Widget _buildShortInfoWidget() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0),
       child: Row(
@@ -351,7 +416,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     );
   }
 
-  _buildSizeChartWidgets() {
+  _buildAvailableFromAndShareWidgets() {
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: 12.0,
@@ -363,7 +428,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           Row(
             children: <Widget>[
               Icon(
-                Icons.access_time,
+                Icons.calendar_today,
                 color: Colors.black,
               ),
               SizedBox(
@@ -401,66 +466,72 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     );
   }
 
-  _buildDetailsAndMaterialWidgets() {
-    TabController tabController = new TabController(length: 2, vsync: this);
+  Widget _buildDescriptionWidget() {
     return Container(
+      padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+      child: Text(
+        product.description,
+        style: TextStyle(
+          color: Colors.black87,
+          wordSpacing: 0.2,
+          fontSize: 16,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSellersOtherProducts() {
+    return Container(
+      height: 200,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Container(
-            child: TabBar(
-              indicatorColor: darkBlue(),
-              controller: tabController,
-              tabs: <Widget>[
-                Tab(
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(left: 12.0),
+                child: Text(
+                  AppLocalization.of(context).sellersOtherProduct,
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+                ),
+              ),
+              GestureDetector(
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 12.0),
                   child: Text(
-                    AppLocalization.of(context).details,
+                    "See all",
                     style: TextStyle(
-                      color: Colors.black,
-                    ),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                        color: lightBlue()),
                   ),
                 ),
-                Tab(
-                  child: Text(
-                    AppLocalization.of(context).sellersOtherProduct,
-                    style: TextStyle(
-                      color: Colors.black,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ],
-            ),
+                onTap: () {
+                  Toast.show("Coming Soon !! ", context,
+                      textColor: Colors.white, backgroundColor: darkBlue());
+                },
+              ),
+            ],
           ),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
-            height: 200.0,
-            child: TabBarView(
-              controller: tabController,
-              children: <Widget>[
-                ListView(
-                  children: <Widget>[
-                    Text(
-                      product.description,
-                      style: TextStyle(
-                        color: Colors.black,
+          SizedBox(
+            height: 10,
+          ),
+          Expanded(
+            child: ListView.builder(
+                itemCount: 10,
+                scrollDirection: Axis.horizontal,
+                itemBuilder: (context, index) => Card(
+                      color: Colors.grey[200],
+                      child: Container(
+                        width: MediaQuery.of(context).size.width - 100,
+                        child: Center(
+                            child: Text(
+                          "Coming Soon !!",
+                          style: TextStyle(color: lightBlue()),
+                        )),
                       ),
-                    ),
-                  ],
-                ),
-                ListView(
-                  children: <Widget>[
-                    Text(
-                      AppLocalization.of(context).comingSoon,
-                      style: TextStyle(
-                        color: Colors.black,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                    )),
           ),
         ],
       ),
@@ -477,19 +548,27 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   _buildBuyButtonWidget() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 10),
-      child: MaterialButton(
-        minWidth: MediaQuery.of(context).size.width / 1.4,
-        color: Colors.green,
-        child: Text(
-          "Buy Now",
-          style: TextStyle(color: Colors.white),
+    return Expanded(
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: lightBlue(),
+            width: 2,
+            style: BorderStyle.solid,
+          ),
+          borderRadius: BorderRadius.circular(5),
         ),
-        onPressed: () {
-          getRecipient();
-          navigateToSendPayment();
-        },
+        child: FlatButton(
+          color: Colors.white,
+          child: Text(
+            "Buy Now",
+            style: TextStyle(color: lightBlue()),
+          ),
+          onPressed: () {
+            getRecipient();
+            navigateToSendPayment();
+          },
+        ),
       ),
     );
   }
