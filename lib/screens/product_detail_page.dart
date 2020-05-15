@@ -473,6 +473,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         product.description,
         style: TextStyle(
           fontSize: 16,
+          color: Colors.black87,
+          wordSpacing: 0.2,
+          height: 1.2,
         ),
       ),
     );
