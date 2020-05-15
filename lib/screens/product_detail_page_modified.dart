@@ -377,12 +377,24 @@ class _ProductDetailPageModifiedState extends State<ProductDetailPageModified>
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
-                child: Text(
-                  worldCurrencies[product.currency] + product.price,
-                  style: TextStyle(
-                      fontSize: 28.0,
-                      color: Colors.black,
-                      fontWeight: FontWeight.w600),
+                child: Row(
+                  children: <Widget>[
+                    Text(
+                      worldCurrencies[product.currency],
+                      style: TextStyle(
+                          fontFamily: "Roboto",
+                          fontSize: 28.0,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w600),
+                    ),
+                    Text(
+                      product.price,
+                      style: TextStyle(
+                          fontSize: 28.0,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w600),
+                    ),
+                  ],
                 ),
               ),
             ],

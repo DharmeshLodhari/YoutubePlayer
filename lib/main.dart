@@ -99,6 +99,9 @@ class MyApp extends StatelessWidget {
         initialRoute: '/splash',
         onGenerateRoute: RouteGenerator.generateRoute,
         debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          fontFamily: "CircularStd",
+        ),
       ),
     );
   }
