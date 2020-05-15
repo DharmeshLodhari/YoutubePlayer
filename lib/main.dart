@@ -101,6 +101,13 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           fontFamily: "CircularStd",
+          textTheme: TextTheme(
+            bodyText1: TextStyle(
+              color: Colors.black87,
+              wordSpacing: 0.2,
+              height: 1.2,
+            ),
+          ),
         ),
       ),
     );
