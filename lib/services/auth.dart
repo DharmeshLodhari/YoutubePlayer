@@ -1653,26 +1653,15 @@ class AuthService {
     return false;
   }
 
-  Future<Map<String, dynamic>> getUserAddressList(
-      String next, String previous) async {
-    Map<String, dynamic> result = {
-      "count": 0,
-      "next": null,
-      "previous": null,
-      "results": []
-    };
-    return result;
-  }
-
   Future<Address> fetchUserAddress() async {
-    if (true == false) {
-      return Address(
-          addressLineOne: "3170  Hilltop Drive",
-          addressLineTwo: "Loretta E Dinkins",
-          city: "Whiteface",
-          state: "Texas",
-          country: "IRELAND",
-          countryIsoCode: "IE");
+    var url = baseUrl + "/api/v1/user/address/";
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
+    var jsonData = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      debugPrint("address: " + jsonData.toString());
+      return Address.fromJson(jsonData);
     }
     return Address(
         addressLineOne: "",
@@ -1684,11 +1673,11 @@ class AuthService {
   }
 
   Future<bool> addUserAddress(Map data) async {
-    var url = baseUrl + "/api/v1/add-address/";
+    var url = baseUrl + "/api/v1/user/address/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.post(url, headers: headers, body: _data);
-    if (response.statusCode != 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
     debugPrint("address add failed : ${response.body}");

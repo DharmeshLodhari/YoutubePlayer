@@ -18,12 +18,12 @@ class Address {
         this.countryIsoCode});
 
   Address.fromJson(var object) {
-    this.addressLineOne = object['addressLineOne'] ?? "";
-    this.addressLineTwo = object['addressLineTwo'] ?? "";
+    this.addressLineOne = object['address_line_1'] ?? "";
+    this.addressLineTwo = object['address_line_2'] ?? "";
     this.city = object['city'] ?? "";
     this.state = object['state'] ?? "";
     this.country = object['country'] ?? "";
-    this.countryIsoCode = object['countryIsoCode'] ?? "IE";
+    this.countryIsoCode = object['country_iso_code'] ?? "NG";
   }
 }
 

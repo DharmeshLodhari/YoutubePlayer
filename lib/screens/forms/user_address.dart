@@ -25,7 +25,7 @@ class _UserAddressState extends State<UserAddress> {
   TextEditingController cityController = TextEditingController();
   TextEditingController stateController = TextEditingController();
 
-  Country selectedCountry = CountryPickerUtils.getCountryByIsoCode('IE');
+  Country selectedCountry = CountryPickerUtils.getCountryByIsoCode('NG');
 
   AddressBloc addressBloc;
   bool isLoading = false;
@@ -40,7 +40,7 @@ class _UserAddressState extends State<UserAddress> {
         addressBloc.address = value;
         isLoading = false;
 
-        addressLineOneController.text = addressBloc.address.addressLineTwo;
+        addressLineOneController.text = addressBloc.address.addressLineOne;
         addressLineTwoController.text = addressBloc.address.addressLineTwo;
         cityController.text = addressBloc.address.city;
         stateController.text = addressBloc.address.state;
@@ -269,8 +269,8 @@ class _UserAddressState extends State<UserAddress> {
         onPressed: () async {
           if (_formKey.currentState.validate()) {
             Map data = {
-              "address_line_one": addressLineOneController.text,
-              "address_line_two": addressLineTwoController.text,
+              "address_line_1": addressLineOneController.text,
+              "address_line_2": addressLineTwoController.text,
               "city": cityController.text,
               "state": stateController.text,
               "country": selectedCountry.name,
