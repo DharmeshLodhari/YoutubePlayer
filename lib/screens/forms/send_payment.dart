@@ -42,6 +42,8 @@ class _SendPaymentState extends State<SendPayment> {
 
   //for Product payment
   Product product;
+  //for Service payment
+  Service service;
 
   bool isFromProfile = false;
   bool isValidPayee = false;
@@ -66,10 +68,14 @@ class _SendPaymentState extends State<SendPayment> {
     isFromProfile =
         widget.arguments != null ? widget.arguments['isFromProfile'] : false;
     product = widget.arguments != null ? widget.arguments['product'] : null;
+    service = widget.arguments != null ? widget.arguments['service'] : null;
     itemIndex = widget.arguments != null ? widget.arguments['itemIndex'] : null;
 
     if (product != null) {
       setAllFieldProduct();
+    }
+    if (service != null) {
+      setAllFieldService();
     }
     _recipientFocus
       ..addListener(() {
@@ -92,22 +98,35 @@ class _SendPaymentState extends State<SendPayment> {
     isValidPayee = true;
   }
 
+  void setAllFieldService() {
+    _amountController.text = service.price;
+    amount = int.parse(_amountController.text);
+    _referenceController.text = service.name;
+    reference = _referenceController.text;
+    selectedCategory = "Shopping";
+    isValidPayee = true;
+  }
+
   void initializeDisplayCard() {
     if (!isFromProfile) {
       if (customerProfileBloc.customer.userName != null) {
-        setState(() {
-          _payee = customerProfileBloc.customer;
-          recipient = _payee.userName;
-          _recipientController.text = recipient;
-          _auth.fetchCustomerProfile(recipient).then((customerProfile) {
-            if (customerProfile != null) {
-              setState(() {
-                _payee = customerProfile;
-                isValidPayee = _payee.userName != userBloc.user.userName;
-              });
-            }
+        if (mounted) {
+          setState(() {
+            _payee = customerProfileBloc.customer;
+            recipient = _payee.userName;
+            _recipientController.text = recipient;
+            _auth.fetchCustomerProfile(recipient).then((customerProfile) {
+              if (customerProfile != null) {
+                if (mounted) {
+                  setState(() {
+                    _payee = customerProfile;
+                    isValidPayee = _payee.userName != userBloc.user.userName;
+                  });
+                }
+              }
+            });
           });
-        });
+        }
       }
     }
   }
@@ -215,6 +234,7 @@ class _SendPaymentState extends State<SendPayment> {
 
   Widget getDisplayCard() {
     initializeDisplayCard();
+
     var avatarImage;
     var qrCodeImage;
     if (_payee != null) {
@@ -301,7 +321,7 @@ class _SendPaymentState extends State<SendPayment> {
     return TextFormField(
       cursorColor: darkBlue(),
       controller: _amountController,
-      enabled: product == null,
+      enabled: product == null && service == null,
       autofocus: false,
       obscureText: false,
       keyboardType: TextInputType.number,
@@ -369,7 +389,7 @@ class _SendPaymentState extends State<SendPayment> {
         padding: EdgeInsets.all(8),
         width: double.infinity,
         child: IgnorePointer(
-          ignoring: product != null,
+          ignoring: product != null || service != null,
           child: DropdownButton<String>(
             isExpanded: true,
             underline: Divider(
@@ -418,7 +438,7 @@ class _SendPaymentState extends State<SendPayment> {
     return TextFormField(
       cursorColor: darkBlue(),
       autofocus: false,
-      enabled: product == null,
+      enabled: product == null && service == null,
       obscureText: false,
       controller: _referenceController,
       textCapitalization: TextCapitalization.sentences,
@@ -505,8 +525,9 @@ class _SendPaymentState extends State<SendPayment> {
                         response = value;
                         if (response.statusCode == 200) {
                           popFromShoppingCart(product);
-                          Navigator.of(context).pushNamed('/dashboard',
-                              arguments: {'dashboardIndex': 2});
+                          Navigator.of(context).pushNamed(
+                            '/transactions',
+                          );
                         } else if (response.statusCode == 500) {
                           Navigator.pop(context);
                           setState(() {

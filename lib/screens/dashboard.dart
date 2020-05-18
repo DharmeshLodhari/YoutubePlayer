@@ -147,7 +147,7 @@ class _DashboardState extends State<Dashboard> {
           BottomNavigationBarItem(
             backgroundColor: lightBlue(),
             icon: Icon(Icons.settings, color: Colors.white),
-            title: Text("More",
+            title: Text("Explore",
                 style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
         ],

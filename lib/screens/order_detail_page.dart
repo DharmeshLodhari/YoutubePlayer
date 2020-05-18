@@ -26,7 +26,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   _OrderDetailPageState({this.arguments});
 
   BasketBloc basketBloc;
-  // Todo: why do we have this 2 blocks
   CustomerProfileBloc customerProfileBloc;
   UserBloc userBloc;
 
@@ -35,7 +34,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   PersistentBottomSheetController noteBottomSheetController;
 
   String note = "";
-  String val = "test1";
 
   Order order;
   List consumable = List();
@@ -357,10 +355,12 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       ),
       value: value,
       onChanged: (value) {
-        statusBottomSheetController.setState(() {
-          updateStatus(value);
-          statusOfOrder = value;
-        });
+        if (userBloc.user.userName == customerProfileBloc.customer.userName) {
+          statusBottomSheetController.setState(() {
+            updateStatus(value);
+            statusOfOrder = value;
+          });
+        }
       },
       groupValue: statusOfOrder,
     );

@@ -219,8 +219,7 @@ class _AddAccountState extends State<AddAccount> {
                 } catch (e) {}
               });
 
-              Navigator.of(context)
-                  .pushNamed('/dashboard', arguments: {'dashboardIndex': 5});
+              Navigator.of(context).pushNamed('/bank-account-list');
             } else {
               setState(() {
                 errorMessage = AppLocalization.of(context).errorMsg1;

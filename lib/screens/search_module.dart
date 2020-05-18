@@ -37,6 +37,7 @@ class _SearchModuleState extends State<SearchModule> {
   final _auth = AuthService();
   SlidableController slidableController;
   SlidableController slidableController1;
+  SlidableController slidableController2;
 
   List<Widget> results = [];
 
@@ -62,9 +63,13 @@ class _SearchModuleState extends State<SearchModule> {
       onSlideAnimationChanged: handleSlideAnimationChanged,
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
     );
-    slidableController = SlidableController(
+    slidableController1 = SlidableController(
       onSlideAnimationChanged: handleSlideAnimationChanged1,
       onSlideIsOpenChanged: handleSlideIsOpenChanged1,
+    );
+    slidableController2 = SlidableController(
+      onSlideAnimationChanged: handleSlideAnimationChanged2,
+      onSlideIsOpenChanged: handleSlideIsOpenChanged2,
     );
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
@@ -549,7 +554,11 @@ class _SearchModuleState extends State<SearchModule> {
     if (object['provider'] == userBloc.user.userName) {
       isOwner = true;
     }
+    return _getSlidableWithLists2(
+        context, getServiceCard(service, object), service);
+  }
 
+  Widget getServiceCard(Service service, var object) {
     return Card(
       elevation: 4,
       clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -557,21 +566,7 @@ class _SearchModuleState extends State<SearchModule> {
       child: ListTile(
         dense: true,
         contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 8),
-        leading: ClipOval(
-          child: CachedNetworkImage(
-            imageUrl: object["cover"],
-            height: 50,
-            width: 50,
-            colorBlendMode: BlendMode.darken,
-            fit: BoxFit.cover,
-            filterQuality: FilterQuality.high,
-            placeholder: (context, url) => object["provider_avatar"] == ""
-                ? Icon(Icons.person)
-                : CircularProgressIndicator(
-                    backgroundColor: Colors.white,
-                  ),
-          ),
-        ),
+        leading: getLeadingService(service, object),
         title: Text(
           object["name"].length > 20
               ? object["name"].substring(0, 20)
@@ -583,27 +578,65 @@ class _SearchModuleState extends State<SearchModule> {
               ? object["short_description"].substring(0, 20)
               : object["short_description"],
         ),
-        trailing: isOwner
-            ? IconButton(
-                icon: Icon(
-                  Icons.edit,
-                  color: darkBlue(),
-                ),
-                onPressed: () {
-                  Navigator.of(context).pushNamed(
-                    '/edit-service',
-                    arguments: {
-                      "serviceId": service.id,
-                    },
-                  );
-                },
-              )
-            : null,
+        trailing: service.price.toString().length > 6
+            ? null
+            : getTrailingService(service),
         onTap: () {
           Navigator.of(context)
               .pushNamed('/service-detail', arguments: {"service": service});
         },
       ),
+    );
+  }
+
+  Widget getLeadingService(Service service, var object) {
+    var imageUrl = "";
+    try {
+      imageUrl = object["cover"] ??
+          "https://homepages.cae.wisc.edu/~ece533/images/peppers.png";
+    } catch (e) {
+      imageUrl = "";
+    }
+    if (imageUrl == "") {
+      imageUrl = "https://homepages.cae.wisc.edu/~ece533/images/peppers.png";
+    }
+    return ClipOval(
+      child: CachedNetworkImage(
+        imageUrl: imageUrl,
+        height: 50,
+        width: 50,
+        colorBlendMode: BlendMode.darken,
+        fit: BoxFit.cover,
+        filterQuality: FilterQuality.high,
+        placeholder: (context, url) => imageUrl == ""
+            ? Icon(Icons.person)
+            : CircularProgressIndicator(
+                backgroundColor: Colors.white,
+              ),
+      ),
+    );
+  }
+
+  Widget getTrailingService(Service service) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Text(
+          worldCurrencies[service.currency] + ' ',
+          style: TextStyle(
+              fontFamily: "Roboto",
+              color: Colors.grey[600],
+              fontWeight: FontWeight.bold,
+              fontSize: 15),
+        ),
+        Text(
+          service.price.toString(),
+          style: TextStyle(
+              color: Colors.grey[600],
+              fontWeight: FontWeight.bold,
+              fontSize: 15),
+        ),
+      ],
     );
   }
 
@@ -624,7 +657,6 @@ class _SearchModuleState extends State<SearchModule> {
       var data = result['results'];
 
       loadUsers(data);
-      debugPrint("length of the items : " + data.length.toString());
     } catch (error) {
       debugPrint(error.toString());
     }
@@ -820,6 +852,53 @@ class _SearchModuleState extends State<SearchModule> {
     ];
   }
 
+  Widget _getSlidableWithLists2(
+      BuildContext context, Widget searchCard, Service service) {
+    return Slidable(
+      controller: slidableController2,
+      direction: Axis.horizontal,
+      actionPane: SlidableBehindActionPane(),
+      actionExtentRatio: 0.25,
+      child: VerticalListItem2(searchCard, service),
+      actions: listActionSlideActions2(service),
+      secondaryActions: listSecondaryActions2(service),
+    );
+  }
+
+  List<Widget> listSecondaryActions2(Service service) {
+    return [
+      IconSlideAction(
+        caption: "Message",
+        color: Colors.green,
+        icon: Icons.message,
+        onTap: () async {
+          Navigator.of(context).pushNamed('/compose_message', arguments: {
+            'recipient': service.provider,
+            'subject': service.name,
+          });
+        },
+      ),
+    ];
+  }
+
+  List<Widget> listActionSlideActions2(Service service) {
+    return [
+      IconSlideAction(
+          caption: "BUY",
+          color: Colors.green,
+          icon: Icons.shopping_basket,
+          onTap: () async {
+            customerProfileBloc.customer =
+                await _auth.fetchCustomerProfile(service.provider);
+            Navigator.of(context).pushNamed('/send-payment', arguments: {
+              'isFromProfile': false,
+              'isRequest': false,
+              'service': service
+            });
+          }),
+    ];
+  }
+
   void handleSlideAnimationChanged(Animation<double> slideAnimation) {}
 
   void handleSlideIsOpenChanged(bool isOpen) {}
@@ -827,6 +906,10 @@ class _SearchModuleState extends State<SearchModule> {
   void handleSlideAnimationChanged1(Animation<double> slideAnimation) {}
 
   void handleSlideIsOpenChanged1(bool isOpen) {}
+
+  void handleSlideAnimationChanged2(Animation<double> slideAnimation) {}
+
+  void handleSlideIsOpenChanged2(bool isOpen) {}
 }
 
 // ignore: must_be_immutable
@@ -863,6 +946,28 @@ class VerticalListItem1 extends StatelessWidget {
       onTap: () {
         Navigator.pushNamed(context, '/product',
             arguments: {"product": product});
+      },
+      child: Container(
+        color: lightBlue(),
+        child: child,
+      ),
+    );
+  }
+}
+
+// ignore: must_be_immutable
+class VerticalListItem2 extends StatelessWidget {
+  VerticalListItem2(this.child, this.service);
+
+  final Widget child;
+  Service service;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(context, '/service-detail',
+            arguments: {"service": service});
       },
       child: Container(
         color: lightBlue(),

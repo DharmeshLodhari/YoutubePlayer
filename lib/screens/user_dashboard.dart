@@ -254,26 +254,32 @@ class _UserDashboardState extends State<UserDashboard> {
   }
 
   Widget displayUserAvatar() {
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: GestureDetector(
-        child: ClipOval(
-          child: CachedNetworkImage(
-            imageUrl: userBloc.user.avatar,
-            height: 40,
-            width: 40,
-            colorBlendMode: BlendMode.darken,
-            fit: BoxFit.cover,
-            filterQuality: FilterQuality.high,
-            placeholder: (context, url) => userBloc.user.avatar == ""
-                ? Icon(Icons.person)
-                : CircularProgressIndicator(
-                    backgroundColor: Colors.white,
-                  ),
-          ),
-        ),
-      ),
-    );
+    return isLoading
+        ? Center(
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation(Colors.white),
+            ),
+          )
+        : Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: GestureDetector(
+              child: ClipOval(
+                child: CachedNetworkImage(
+                  imageUrl: userBloc.user.avatar,
+                  height: 40,
+                  width: 40,
+                  colorBlendMode: BlendMode.darken,
+                  fit: BoxFit.cover,
+                  filterQuality: FilterQuality.high,
+                  placeholder: (context, url) => userBloc.user.avatar == ""
+                      ? Icon(Icons.person)
+                      : CircularProgressIndicator(
+                          backgroundColor: Colors.white,
+                        ),
+                ),
+              ),
+            ),
+          );
   }
 
   void logoutUser(BankAccountBloc bankAccountBloc) async {
@@ -284,8 +290,10 @@ class _UserDashboardState extends State<UserDashboard> {
     _sharedPreferences = await SharedPreferences.getInstance();
     _sharedPreferences.setBool('isLoggedOut', true);
 
-    Navigator.pushNamedAndRemoveUntil(context, "/index", (r) => false,
-        arguments: {'isIntroDone': true});
+    if (mounted) {
+      Navigator.pushNamedAndRemoveUntil(context, "/index", (r) => false,
+          arguments: {'isIntroDone': true});
+    }
   }
 
   void emptyBasketCart() {
@@ -375,7 +383,8 @@ class _UserDashboardState extends State<UserDashboard> {
             ));
 
     if (imageSource != null) {
-      final file = await ImagePicker.pickImage(source: imageSource);
+      final file =
+          await ImagePicker.pickImage(source: imageSource, imageQuality: 70);
       if (file != null) {
         try {
           setState(() {
@@ -386,6 +395,7 @@ class _UserDashboardState extends State<UserDashboard> {
           var phoneNumber = dbUser.phoneNumber;
           var password = dbUser.password;
 
+          debugPrint(file.toString());
           // Upload Image new image
           await _auth.updateCustomerAvatar(file);
 
@@ -394,9 +404,12 @@ class _UserDashboardState extends State<UserDashboard> {
             userBloc.user = value;
             setState(() {
               isLoading = false;
+              Navigator.pop(context);
             });
           });
-        } catch (err) {}
+        } catch (err) {
+          debugPrint("update avatar : " + err.toString());
+        }
       }
     }
   }

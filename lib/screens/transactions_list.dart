@@ -92,7 +92,9 @@ class _TransactionListState extends State<TransactionList> {
 
     return WillPopScope(
       onWillPop: () async {
-        return true;
+        Navigator.popAndPushNamed(context, "/dashboard",
+            arguments: {"dashboardIndex": 5});
+        return false;
       },
       child: Scaffold(
         key: _scaffoldTransactionKey,

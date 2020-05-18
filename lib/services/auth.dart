@@ -1564,7 +1564,6 @@ class AuthService {
     var response = await http.get(url, headers: headers);
     debugPrint("Status Code : ${response.statusCode}");
     var jsonData = jsonDecode(response.body);
-    debugPrint("jsonData : $jsonData");
 
     if (response.statusCode == 200) {
       debugPrint(jsonData.toString());

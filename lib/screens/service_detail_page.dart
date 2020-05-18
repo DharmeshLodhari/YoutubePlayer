@@ -572,7 +572,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       arguments: {
         'isFromProfile': false,
         'isRequest': false,
-//        'product': product
+        'service': service
       },
     );
   }

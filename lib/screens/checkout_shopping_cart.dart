@@ -58,7 +58,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
           backgroundColor: darkBlue(),
           title: Text("Basket"),
           actions: <Widget>[
-            search(),
             addItemToBasket(),
           ],
         ),
@@ -94,16 +93,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
           checkoutWidget(),
         ],
       ),
-    );
-  }
-
-  Widget search() {
-    return IconButton(
-      icon: Icon(Icons.search),
-      onPressed: () {
-        Navigator.pushNamed(context, "/dashboard",
-            arguments: {"dashboardIndex": 3});
-      },
     );
   }
 
@@ -436,7 +425,7 @@ class VerticalListItem extends StatelessWidget {
         }
         if (type == "service") {
           Service service = item;
-          Navigator.pushNamed(context, "/service",
+          Navigator.pushNamed(context, "/service-detail",
               arguments: {"service": service});
         }
       },
