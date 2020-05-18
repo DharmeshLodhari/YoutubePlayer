@@ -479,6 +479,7 @@ class _EditServiceState extends State<EditService> {
                 worldCurrencies[userBloc.user.currency],
                 textAlign: TextAlign.center,
                 style: TextStyle(
+                    fontFamily: "Roboto",
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
                     color: Colors.grey[600]),

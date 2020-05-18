@@ -575,10 +575,24 @@ class _SearchAutoCompleteState extends State<SearchAutoComplete> {
   }
 
   Widget getTrailing(Product product) {
-    return Text(
-      worldCurrencies[product.currency] + ' ' + product.price.toString(),
-      style: TextStyle(
-          color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 15),
+    return Row(
+      children: <Widget>[
+        Text(
+          worldCurrencies[product.currency] + ' ' + product.price.toString(),
+          style: TextStyle(
+              fontFamily: "Roboto",
+              color: Colors.grey[600],
+              fontWeight: FontWeight.bold,
+              fontSize: 15),
+        ),
+        Text(
+          ' ' + product.price.toString(),
+          style: TextStyle(
+              color: Colors.grey[600],
+              fontWeight: FontWeight.bold,
+              fontSize: 15),
+        ),
+      ],
     );
   }
 

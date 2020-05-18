@@ -81,9 +81,11 @@ class _SearchModuleState extends State<SearchModule> {
         getAutoCompleteUser();
       }
       if (results.isNotEmpty || searchItemTextController.text.length != 0) {
-        setState(() {
-          isSearchIsEmpty = false;
-        });
+        if (mounted) {
+          setState(() {
+            isSearchIsEmpty = false;
+          });
+        }
       }
     });
 
@@ -284,26 +286,32 @@ class _SearchModuleState extends State<SearchModule> {
   void getList() async {
     if (!isLoading) {
       if (next != null && !isLoading) {
-        setState(() {
-          isLoading = true;
-        });
+        if (mounted) {
+          setState(() {
+            isLoading = true;
+          });
+        }
         Map<String, dynamic> result = await _auth.searchEndpointPagination(
             getSearchUrl(searchItemTextController.text), next, previous);
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
         List tempList = result['results'];
-        setState(() {
-          isLoading = false;
-          tempList.forEach((result) {
-            results.add(getResultTile(result));
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+            tempList.forEach((result) {
+              results.add(getResultTile(result));
+            });
           });
-        });
+        }
       }
       if (results.isEmpty) {
-        setState(() {
-          noItemInList = true;
-        });
+        if (mounted) {
+          setState(() {
+            noItemInList = true;
+          });
+        }
       } else if (next == null && results.length > 6) {
         _scaffoldSearchKey.currentState.showSnackBar(SnackBar(
           content:
@@ -312,10 +320,12 @@ class _SearchModuleState extends State<SearchModule> {
         ));
       }
     } else {
-      setState(() {
-        isLoading = false;
-        getList();
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+          getList();
+        });
+      }
     }
   }
 
@@ -468,10 +478,25 @@ class _SearchModuleState extends State<SearchModule> {
   }
 
   Widget getTrailing(Product product) {
-    return Text(
-      worldCurrencies[product.currency] + ' ' + product.price.toString(),
-      style: TextStyle(
-          color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 15),
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Text(
+          worldCurrencies[product.currency] + ' ',
+          style: TextStyle(
+              fontFamily: "Roboto",
+              color: Colors.grey[600],
+              fontWeight: FontWeight.bold,
+              fontSize: 15),
+        ),
+        Text(
+          product.price.toString(),
+          style: TextStyle(
+              color: Colors.grey[600],
+              fontWeight: FontWeight.bold,
+              fontSize: 15),
+        ),
+      ],
     );
   }
 
@@ -584,9 +609,11 @@ class _SearchModuleState extends State<SearchModule> {
 
   void getAutoCompleteUser() async {
     try {
-      setState(() {
-        results = [];
-      });
+      if (mounted) {
+        setState(() {
+          results = [];
+        });
+      }
 
       String url = getSearchUrl(autoCompleteSearchText);
       var result = await _auth.searchEndpoint(url);
@@ -607,32 +634,38 @@ class _SearchModuleState extends State<SearchModule> {
     switch (filterValue) {
       case "Users":
         data.forEach((item) {
-          setState(() {
-            if (data.isNotEmpty) {
-              noItemInList = false;
-            }
-            results.add(getUserTile(item));
-          });
+          if (mounted) {
+            setState(() {
+              if (data.isNotEmpty) {
+                noItemInList = false;
+              }
+              results.add(getUserTile(item));
+            });
+          }
         });
         break;
       case "Products":
         data.forEach((item) {
-          setState(() {
-            if (data.isNotEmpty) {
-              noItemInList = false;
-            }
-            results.add(getProductTile(item));
-          });
+          if (mounted) {
+            setState(() {
+              if (data.isNotEmpty) {
+                noItemInList = false;
+              }
+              results.add(getProductTile(item));
+            });
+          }
         });
         break;
       case "Services":
         data.forEach((item) {
-          setState(() {
-            if (data.isNotEmpty) {
-              noItemInList = false;
-            }
-            results.add(getServiceTile(item));
-          });
+          if (mounted) {
+            setState(() {
+              if (data.isNotEmpty) {
+                noItemInList = false;
+              }
+              results.add(getServiceTile(item));
+            });
+          }
         });
         break;
     }
@@ -667,17 +700,21 @@ class _SearchModuleState extends State<SearchModule> {
           style: TextStyle(color: Colors.black, fontSize: 16),
           controller: searchItemTextController,
           onFieldSubmitted: (val) {
-            setState(() {
-              results = [];
-            });
-            if (next != null) {
+            if (mounted) {
               setState(() {
-                count = 0;
-                next = "";
-                previous = "";
                 results = [];
               });
-              getList();
+            }
+            if (next != null) {
+              if (mounted) {
+                setState(() {
+                  count = 0;
+                  next = "";
+                  previous = "";
+                  results = [];
+                });
+                getList();
+              }
             }
           },
         ),

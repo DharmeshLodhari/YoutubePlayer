@@ -395,6 +395,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                                           productList[index].currency],
                                       style: TextStyle(
                                           color: Colors.black,
+                                          fontFamily: "Roboto",
                                           fontWeight: FontWeight.bold,
                                           fontSize: 18)),
                                   TextSpan(text: " "),

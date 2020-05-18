@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/route_generator.dart';
+import 'package:Slydo/routes/route_generator.dart';
 import 'package:Slydo/services/app_life_cycle.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';

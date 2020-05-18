@@ -129,58 +129,9 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     return IconButton(
       icon: Icon(Icons.event_note),
       onPressed: () {
-        testTile();
-//        showNoteSheet();
+        showNoteSheet();
       },
     );
-  }
-
-  void testTile() {
-    showModalBottomSheet<void>(
-        context: context,
-        builder: (BuildContext context) {
-          return Container(
-              child: Wrap(
-            children: <Widget>[
-              RadioListTile(
-                groupValue: val,
-                value: "test1",
-                title: Text("Test1"),
-                activeColor: darkBlue(),
-                selected: val == "test1",
-                onChanged: (value) {
-                  setState(() {
-                    val = value;
-                  });
-                },
-              ),
-              RadioListTile(
-                groupValue: val,
-                value: "test2",
-                title: Text("Test2"),
-                activeColor: darkBlue(),
-                selected: val == "test2",
-                onChanged: (value) {
-                  setState(() {
-                    val = value;
-                  });
-                },
-              ),
-              RadioListTile(
-                groupValue: val,
-                value: "test3",
-                title: Text("Test3"),
-                activeColor: darkBlue(),
-                selected: val == "test3",
-                onChanged: (value) {
-                  setState(() {
-                    val = value;
-                  });
-                },
-              ),
-            ],
-          ));
-        });
   }
 
   showNoteSheet() {
@@ -430,7 +381,13 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             ),
             Row(
               children: <Widget>[
-                Text("Total : " + worldCurrencies[order.currency] + " "),
+                Text("Total"),
+                Text(
+                  " : " + worldCurrencies[order.currency] + " ",
+                  style: TextStyle(
+                    fontFamily: "Roboto",
+                  ),
+                ),
                 Text(
                   order.totalPrice.toString(),
                   style: TextStyle(fontSize: 20),

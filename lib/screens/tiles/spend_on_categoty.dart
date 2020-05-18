@@ -44,12 +44,25 @@ class _SpendOnCategoryTileState extends State<SpendOnCategoryTile> {
               Text("")
             ],
           ),
-          trailing: Text(
-            '${worldCurrencies[userBloc.user.currency]} ${widget.amount} ',
-            style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey[600]),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text(
+                '${worldCurrencies[userBloc.user.currency]}',
+                style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: "Roboto",
+                    color: Colors.grey[600]),
+              ),
+              Text(
+                ' ${widget.amount} ',
+                style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey[600]),
+              ),
+            ],
           ),
         ),
       ),

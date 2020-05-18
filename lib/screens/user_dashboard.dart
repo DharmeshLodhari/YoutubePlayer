@@ -8,10 +8,12 @@ import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/screens/tiles/bank_account.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/widget/passcodePopup.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
@@ -38,9 +40,46 @@ class _UserDashboardState extends State<UserDashboard> {
   BasketBloc basketBloc;
 
   bool isLoading = false;
+  bool storeLocked = false;
   bool isLocked;
   Language language;
   String accountBalance = "";
+
+  PackageInfo _packageInfo = PackageInfo(
+    appName: 'Unknown',
+    packageName: 'Unknown',
+    version: 'Unknown',
+    buildNumber: 'Unknown',
+  );
+
+  Future<void> _initPackageInfo() async {
+    final PackageInfo info = await PackageInfo.fromPlatform();
+    setState(() {
+      _packageInfo = info;
+    });
+  }
+
+  Widget _infoTile() {
+    return Container(
+      color: Colors.transparent,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Text(
+            AppLocalization.of(context).appVersion +
+                ': ' +
+                _packageInfo.version,
+            style: TextStyle(color: Colors.white),
+          ),
+          Text(
+              AppLocalization.of(context).buildNumber +
+                  ': ' +
+                  _packageInfo.buildNumber,
+              style: TextStyle(color: Colors.white)),
+        ],
+      ),
+    );
+  }
 
   @override
   void initState() {
@@ -51,6 +90,7 @@ class _UserDashboardState extends State<UserDashboard> {
       getAccountBalance();
     }
 
+    _initPackageInfo();
     getLanguage();
     super.initState();
   }
@@ -125,66 +165,91 @@ class _UserDashboardState extends State<UserDashboard> {
                       },
                     ),
                     iconButton(
-                      Icons.event_note,
-                      "Taxes",
-                      () {
-                        Toast.show("Comming Soon !!", context,
-                            backgroundColor: darkBlue(),
-                            textColor: Colors.white);
-                      },
-                    ),
-                  ),
-
-                  //ROW 2
-                  rowIconButtons(
-                    iconButton(
                       Icons.shopping_cart,
                       "Orders",
                       () {
                         Navigator.pushNamed(context, '/orders-list');
                       },
                     ),
-                    iconButton(
-                      Icons.shopping_basket,
-                      "Add Products",
-                      () {
-                        Navigator.pushNamed(context, '/add-product');
-                      },
-                    ),
-                    iconButton(Icons.settings, "Add Service", () {
-                      Navigator.pushNamed(context, '/add-service');
-                      Toast.show("Comming Soon !!", context,
-                          backgroundColor: darkBlue(), textColor: Colors.white);
-                    }),
                   ),
+
+                  //ROW 2
+                  rowIconButtons(
+                      iconButton(Icons.account_balance_wallet, "Transactions",
+                          () {
+                        PassCodePopup(
+                            context: context,
+                            isValidCallback: () {
+                              Navigator.pushNamed(context, "/transactions");
+                            },
+                            cancelCallBack: () {
+                              Navigator.pop(context);
+                            });
+                      }),
+                      iconButton(
+                        Icons.account_balance,
+                        "Bank",
+                        () {
+                          Platform.isIOS ? bankIOSSheet() : bankAndroidSheet();
+                        },
+                      ),
+                      myStore()),
 
                   //ROW 3
                   rowIconButtons(
-                    iconButton(
-                      Icons.credit_card,
-                      "Top Up",
-                      () {
-                        Navigator.pushNamed(context, "/card-payment-page");
-                      },
-                    ),
-                    iconButton(Icons.account_balance_wallet, "Transactions",
-                        () {
-                      Navigator.pushNamed(context, "/transactions");
-                    }),
-                    iconButton(
-                      Icons.account_balance,
-                      "Bank",
-                      () {
-                        Platform.isIOS ? bankIOSSheet() : bankAndroidSheet();
-                      },
-                    ),
+                      Container(),
+//TODO: FIND BATTER WAY TO ACCEPT CREDIT CARD  PAYMENT WITH OUT US WITH IN FOR THIS
+//                    iconButton(
+//                      Icons.credit_card,
+//                      "Top Up",
+//                      () {
+//                        Navigator.pushNamed(context, "/card-payment-page");
+//                      },
+//                    ),
+                      Container(),
+                      Container()),
+                  SizedBox(
+                    height: 16,
                   ),
+                  _infoTile(),
                 ],
               ),
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget myStore() {
+    return Stack(
+      children: <Widget>[
+        iconButton(
+          Icons.store_mall_directory,
+          "My Store",
+          () {
+            storeLocked
+                ? null
+                : Platform.isIOS
+                    ? storeItemIOSSheet()
+                    : storeItemAndroidSheet();
+          },
+        ),
+        storeLocked
+            ? Positioned(
+                child: GestureDetector(
+                  child: Icon(
+                    Icons.lock_outline,
+                    size: 18,
+                    color: Colors.grey,
+                  ),
+                  onTap: () {},
+                ),
+                right: 8,
+                top: 8,
+              )
+            : Container()
+      ],
     );
   }
 
@@ -586,8 +651,70 @@ class _UserDashboardState extends State<UserDashboard> {
           Navigator.pushNamed(context, "/payout-list");
         } else if (value == "Payout") {
           Navigator.pushNamed(context, "/payout");
+        } else if (value == "Add Product") {
+          Navigator.pushNamed(context, '/add-product');
+        } else if (value == "Add Service") {
+          Navigator.pushNamed(context, '/add-service');
         }
       }
     });
+  }
+
+  void storeItemAndroidSheet() {
+    showModalBottomSheet<void>(
+        backgroundColor: Colors.transparent,
+        context: context,
+        builder: (BuildContext context) {
+          return Card(
+              color: Colors.white,
+              margin: EdgeInsets.symmetric(horizontal: 20),
+              child: Container(
+                child: Wrap(
+                  children: <Widget>[
+                    ListTile(
+                      title: Center(child: Text("Add Product")),
+                      onTap: () {
+                        Navigator.pushNamed(context, '/add-product');
+                      },
+                    ),
+                    ListTile(
+                      title: Center(child: Text("Add Service")),
+                      onTap: () {
+                        Navigator.pushNamed(context, '/add-service');
+                      },
+                    ),
+                  ],
+                ),
+              ));
+        });
+  }
+
+  void storeItemIOSSheet() {
+    showDemoActionSheet(
+      context: context,
+      child: CupertinoActionSheet(
+        actions: <Widget>[
+          CupertinoActionSheetAction(
+            child: const Text('Add Product'),
+            onPressed: () {
+              Navigator.pop(context, 'Add Product');
+            },
+          ),
+          CupertinoActionSheetAction(
+            child: const Text('Add Service'),
+            onPressed: () {
+              Navigator.pop(context, 'Add Service');
+            },
+          ),
+        ],
+        cancelButton: CupertinoActionSheetAction(
+          child: const Text('Cancel'),
+          isDefaultAction: true,
+          onPressed: () {
+            Navigator.pop(context, 'Cancel');
+          },
+        ),
+      ),
+    );
   }
 }

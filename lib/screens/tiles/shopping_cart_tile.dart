@@ -106,12 +106,25 @@ class _ShoppingCartTileForProductState
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        Text(
-          worldCurrencies[product.currency] + ' ' + getProductPrice(),
-          style: TextStyle(
-              color: Colors.grey[600],
-              fontWeight: FontWeight.bold,
-              fontSize: 14),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Text(
+              worldCurrencies[product.currency],
+              style: TextStyle(
+                  color: Colors.grey[600],
+                  fontFamily: "Roboto",
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14),
+            ),
+            Text(
+              ' ' + getProductPrice(),
+              style: TextStyle(
+                  color: Colors.grey[600],
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14),
+            ),
+          ],
         ),
       ],
     );
@@ -147,12 +160,25 @@ class _ShoppingCartTileForProductState
   }
 
   Widget getTotalPriceWidget() {
-    return Text(
-      worldCurrencies[product.currency] + ' ' + getTotalPrice(),
-      style: TextStyle(
-        fontWeight: FontWeight.bold,
-        color: Colors.grey[600],
-      ),
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Text(
+          worldCurrencies[product.currency],
+          style: TextStyle(
+            color: Colors.grey[600],
+            fontFamily: "Roboto",
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Text(
+          ' ' + getTotalPrice(),
+          style: TextStyle(
+            color: Colors.grey[600],
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
     );
   }
 
@@ -270,12 +296,25 @@ class _ShoppingCartTileForServiceState
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        Text(
-          worldCurrencies[service.currency] + ' ' + getProductPrice(),
-          style: TextStyle(
-              color: Colors.grey[600],
-              fontWeight: FontWeight.bold,
-              fontSize: 14),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Text(
+              worldCurrencies[service.currency],
+              style: TextStyle(
+                  color: Colors.grey[600],
+                  fontFamily: "Roboto",
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14),
+            ),
+            Text(
+              ' ' + getProductPrice(),
+              style: TextStyle(
+                  color: Colors.grey[600],
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14),
+            ),
+          ],
         ),
       ],
     );
@@ -311,12 +350,25 @@ class _ShoppingCartTileForServiceState
   }
 
   Widget getTotalPriceWidget() {
-    return Text(
-      worldCurrencies[service.currency] + ' ' + getTotalPrice(),
-      style: TextStyle(
-        fontWeight: FontWeight.bold,
-        color: Colors.grey[600],
-      ),
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Text(
+          worldCurrencies[service.currency],
+          style: TextStyle(
+            color: Colors.grey[600],
+            fontFamily: "Roboto",
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Text(
+          ' ' + getTotalPrice(),
+          style: TextStyle(
+            color: Colors.grey[600],
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
     );
   }
 

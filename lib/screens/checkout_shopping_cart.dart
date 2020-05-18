@@ -119,8 +119,13 @@ class _ShoppingCartState extends State<ShoppingCart> {
           children: <Widget>[
             Row(
               children: <Widget>[
+                Text("Total"),
                 Text(
-                    "Total : " + worldCurrencies[userBloc.user.currency] + " "),
+                  " : " + worldCurrencies[userBloc.user.currency] + " ",
+                  style: TextStyle(
+                    fontFamily: "Roboto",
+                  ),
+                ),
                 Text(
                   basketBloc.total.toString(),
                   style: TextStyle(fontSize: 18),
@@ -328,7 +333,10 @@ class _ShoppingCartState extends State<ShoppingCart> {
           content: Container(
             child: Text(
               'Are you Sure You Want To Place This Order For (${worldCurrencies[userBloc.user.currency]} ${basketBloc.total})?',
-              style: TextStyle(fontWeight: FontWeight.w500),
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                fontFamily: "Roboto",
+              ),
             ),
           ),
           actions: <Widget>[
