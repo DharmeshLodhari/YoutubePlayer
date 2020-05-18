@@ -35,13 +35,14 @@ import 'package:Slydo/screens/user_profile.dart';
 import 'package:Slydo/splash.dart';
 import 'package:Slydo/widget/resultReturningPasswordPopup.dart';
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 
-import 'checkout_shopping_cart.dart';
-import 'detailed_message.dart';
-import 'forms/payout.dart';
-import 'forms/registration.dart';
-import 'home.dart';
-import 'index.dart';
+import '../screens/checkout_shopping_cart.dart';
+import '../screens/detailed_message.dart';
+import '../screens/forms/payout.dart';
+import '../screens/forms/registration.dart';
+import '../screens/home.dart';
+import '../screens/index.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -110,8 +111,10 @@ class RouteGenerator {
         return MaterialPageRoute(
             builder: (_) => ProductDetailPage(arguments: settings.arguments));
       case '/add-product':
-        return MaterialPageRoute(
-          builder: (_) => AddProduct(),
+        return PageTransition(
+          child: AddProduct(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
         );
       case '/edit-product':
         return MaterialPageRoute(

@@ -630,6 +630,7 @@ class _SearchAllState extends State<SearchAll> {
                         TextSpan(
                             text: worldCurrencies[object["currency"]],
                             style: TextStyle(
+                                fontFamily: "Roboto",
                                 color: Colors.black,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18)),

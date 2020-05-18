@@ -117,11 +117,6 @@ class _UserProfileState extends State<UserProfile> {
   @override
   void initState() {
     searchedUser = arguments['searchedUser'];
-    debugPrint(searchedUser.fullName);
-    debugPrint(searchedUser.userName);
-    debugPrint(searchedUser.qrCode);
-    debugPrint(searchedUser.avatar);
-
     this.getProductList();
     _productScrollController.addListener(() {
       if (_productScrollController.position.pixels ==
@@ -436,6 +431,7 @@ class _UserProfileState extends State<UserProfile> {
                                       text: worldCurrencies[
                                           productList[index].currency],
                                       style: TextStyle(
+                                          fontFamily: "Roboto",
                                           color: Colors.black,
                                           fontWeight: FontWeight.bold,
                                           fontSize: 18)),
@@ -671,6 +667,7 @@ class _UserProfileState extends State<UserProfile> {
                             text: worldCurrencies[serviceList[index].currency],
                             style: TextStyle(
                                 color: Colors.black,
+                                fontFamily: "Roboto",
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18)),
                         TextSpan(text: " "),

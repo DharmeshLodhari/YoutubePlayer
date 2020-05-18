@@ -162,14 +162,27 @@ class _TransactionDetailState extends State<TransactionDetail> {
   }
 
   Widget getAmount() {
-    return Text(
-      worldCurrencies[transaction.currency] +
-          ' ' +
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Text(
+          worldCurrencies[transaction.currency] + " ",
+          style: TextStyle(
+              color:
+                  transaction.isCredit ? Colors.green[400] : Colors.grey[600],
+              fontWeight: FontWeight.bold,
+              fontFamily: "Roboto",
+              fontSize: 15),
+        ),
+        Text(
           transaction.amount.toString(),
-      style: TextStyle(
-          color: transaction.isCredit ? Colors.green[400] : Colors.grey[600],
-          fontWeight: FontWeight.bold,
-          fontSize: 15),
+          style: TextStyle(
+              color:
+                  transaction.isCredit ? Colors.green[400] : Colors.grey[600],
+              fontWeight: FontWeight.bold,
+              fontSize: 15),
+        ),
+      ],
     );
   }
 

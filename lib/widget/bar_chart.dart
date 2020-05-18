@@ -96,14 +96,27 @@ class _BarChartState extends State<BarChart> {
       padding: EdgeInsets.all(12.0),
       child: Column(
         children: <Widget>[
-          Text(
-            AppLocalization.of(context).weeklySpendingChart +
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                "Expenditure",
+                style: TextStyle(
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.2,
+                ),
+              ),
+              Text(
                 ' (${worldCurrencies[userBloc.user.currency]})',
-            style: TextStyle(
-              fontSize: 20.0,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.2,
-            ),
+                style: TextStyle(
+                  fontFamily: "Roboto",
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.2,
+                ),
+              ),
+            ],
           ),
           SizedBox(height: 15.0),
           Row(

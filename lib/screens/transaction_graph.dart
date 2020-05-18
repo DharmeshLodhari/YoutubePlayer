@@ -219,7 +219,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
   Widget lineGraph() {
     return Column(children: <Widget>[
       Text(
-        AppLocalization.of(context).weeklySpending,
+        "Income/Expenditure",
         style: TextStyle(
           fontSize: 16.0,
           fontWeight: FontWeight.bold,
@@ -417,7 +417,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
       padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
       child: Column(children: <Widget>[
         Text(
-          AppLocalization.of(context).weeklySpending,
+          "Week Range",
           style: TextStyle(
             fontSize: 18.0,
             fontWeight: FontWeight.bold,

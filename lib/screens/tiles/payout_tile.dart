@@ -16,34 +16,48 @@ class PayoutTile extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.symmetric(vertical: 1),
         child: ListTile(
-            leading: ClipOval(
-              child: CachedNetworkImage(
-                imageUrl: payout.bankLogo,
-                height: 45,
-                width: 45,
-                colorBlendMode: BlendMode.darken,
-                fit: BoxFit.cover,
-                filterQuality: FilterQuality.high,
-                placeholder: (context, url) => payout.bankLogo == ""
-                    ? Icon(Icons.account_balance)
-                    : CircularProgressIndicator(
-                        backgroundColor: Colors.white,
-                      ),
-              ),
+          leading: ClipOval(
+            child: CachedNetworkImage(
+              imageUrl: payout.bankLogo,
+              height: 45,
+              width: 45,
+              colorBlendMode: BlendMode.darken,
+              fit: BoxFit.cover,
+              filterQuality: FilterQuality.high,
+              placeholder: (context, url) => payout.bankLogo == ""
+                  ? Icon(Icons.account_balance)
+                  : CircularProgressIndicator(
+                      backgroundColor: Colors.white,
+                    ),
             ),
-            title: Text(payout.bankName,
-                style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15)),
-            subtitle: getDateTime(context),
-            trailing: Text(
-              worldCurrencies[payout.currency] + ' ' + payout.amount.toString(),
+          ),
+          title: Text(payout.bankName,
               style: TextStyle(
-                  color: getStatusColor(payout.status),
+                  color: Colors.black,
                   fontWeight: FontWeight.bold,
-                  fontSize: 15),
-            )),
+                  fontSize: 15)),
+          subtitle: getDateTime(context),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text(
+                worldCurrencies[payout.currency],
+                style: TextStyle(
+                    fontFamily: "Roboto",
+                    color: getStatusColor(payout.status),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15),
+              ),
+              Text(
+                payout.amount.toString(),
+                style: TextStyle(
+                    color: getStatusColor(payout.status),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15),
+              )
+            ],
+          ),
+        ),
       ),
     );
   }

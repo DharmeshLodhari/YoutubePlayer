@@ -96,12 +96,20 @@ class _AccountBalanceTileState extends State<AccountBalanceTile> {
           style: TextStyle(
               color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
         ),
-        subtitle: Text(
-          widget.isLocked
-              ? "*******"
-              : worldCurrencies[userBloc.user.currency] + " " + widget.balance,
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
+        subtitle: widget.isLocked
+            ? Text("*******",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold))
+            : Row(mainAxisSize: MainAxisSize.min, children: [
+                Text(worldCurrencies[userBloc.user.currency],
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: "Roboto",
+                    )),
+                Text(" " + widget.balance,
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              ]),
         leading: currencyImage,
         trailing: IconButton(
           icon: Icon(widget.isLocked ? Icons.lock_outline : Icons.lock_open,

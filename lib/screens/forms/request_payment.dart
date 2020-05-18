@@ -301,6 +301,7 @@ class _RequestPaymentState extends State<RequestPayment> {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     fontSize: 22,
+                    fontFamily: "Roboto",
                     fontWeight: FontWeight.bold,
                     color: Colors.grey[600]),
               ),

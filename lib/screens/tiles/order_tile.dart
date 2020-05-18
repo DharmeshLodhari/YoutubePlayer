@@ -74,10 +74,25 @@ class OrderTile extends StatelessWidget {
   }
 
   Widget getTrailing() {
-    return Text(
-      worldCurrencies[order.currency] + ' ' + order.totalPrice,
-      style: TextStyle(
-          color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 15),
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Text(
+          worldCurrencies[order.currency] + ' ',
+          style: TextStyle(
+              fontFamily: "Roboto",
+              color: Colors.grey[600],
+              fontWeight: FontWeight.bold,
+              fontSize: 15),
+        ),
+        Text(
+          order.totalPrice,
+          style: TextStyle(
+              color: Colors.grey[600],
+              fontWeight: FontWeight.bold,
+              fontSize: 15),
+        ),
+      ],
     );
   }
 
