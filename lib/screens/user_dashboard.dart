@@ -79,7 +79,7 @@ class _UserDashboardState extends State<UserDashboard> {
             children: <Widget>[
               displayUserAvatar(),
               Expanded(child: SizedBox(width: 10)),
-              Text("User Dashboard"),
+              Text(AppLocalization.of(context).explore),
               Expanded(child: SizedBox(width: 10)),
             ],
           ),
