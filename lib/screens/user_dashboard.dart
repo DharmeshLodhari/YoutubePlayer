@@ -40,7 +40,7 @@ class _UserDashboardState extends State<UserDashboard> {
   BasketBloc basketBloc;
 
   bool isLoading = false;
-  bool storeLocked = false;
+  bool storeLocked = true;
   bool isLocked;
   Language language;
   String accountBalance = "";
@@ -100,6 +100,10 @@ class _UserDashboardState extends State<UserDashboard> {
     userBloc = Provider.of<UserBloc>(context);
     bankAccountBloc = Provider.of<BankAccountBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
+
+    if (userBloc.user.type == "seller") {
+      storeLocked = false;
+    }
 
     return WillPopScope(
       onWillPop: () async {

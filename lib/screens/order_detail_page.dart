@@ -355,7 +355,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       ),
       value: value,
       onChanged: (value) {
-        if (userBloc.user.userName == customerProfileBloc.customer.userName) {
+        if (userBloc.user.userName == order.merchant) {
           statusBottomSheetController.setState(() {
             updateStatus(value);
             statusOfOrder = value;
