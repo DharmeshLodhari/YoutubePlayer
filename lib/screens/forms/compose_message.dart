@@ -180,18 +180,25 @@ class _ComposeMessageState extends State<ComposeMessage> {
                 Navigator.of(context).popAndPushNamed("/dashboard",
                     arguments: {"dashboardIndex": 4});
               }
-
-              try {
-                var data = {
-                  "sender": userBloc.user.userName,
-                  "recipient": recipient,
-                  "body": message,
-                  "subject": subject,
-                };
-                _auth.sendMessage(data);
-              } catch (e) {
-                Toast.show(e, context,
-                    gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+              if (userBloc.user.userName != recipient) {
+                try {
+                  var data = {
+                    "sender": userBloc.user.userName,
+                    "recipient": recipient,
+                    "body": message,
+                    "subject": subject,
+                  };
+                  _auth.sendMessage(data);
+                } catch (e) {
+                  Toast.show(e, context,
+                      gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+                }
+              } else {
+                var msg = AppLocalization.of(context).invalidRecipient;
+                Toast.show(msg, context,
+                    gravity: Toast.CENTER,
+                    backgroundColor: darkBlue(),
+                    textColor: Colors.white);
               }
             }
           } else {

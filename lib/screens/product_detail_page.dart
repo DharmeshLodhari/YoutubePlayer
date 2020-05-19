@@ -30,8 +30,11 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   final _auth = AuthService();
   Product product;
   CustomerProfileBloc customerProfileBloc;
+  UserBloc userBloc;
   BasketBloc basketBloc;
   static List<String> imgList = [];
+
+  bool isValidCustomer;
 
   int _current = 0;
 
@@ -59,6 +62,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   Widget build(BuildContext context) {
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
+    userBloc = Provider.of<UserBloc>(context);
+    isValidCustomer = userBloc.user.userName != product.seller;
     return Scaffold(
       backgroundColor: lightBlue(),
       appBar: AppBar(
@@ -190,22 +195,29 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   color: Colors.white,
                 ),
                 onPressed: () async {
-                  String type = product is Product ? "product" : "service";
-                  basketBloc.addItemToCart(item: product, type: type);
-                  var mapData;
-                  basketBloc.items.forEach((element) {
-                    if (element["item"].id == product.id) {
-                      mapData = element;
-                      return;
-                    }
-                  });
-                  Map data = {
-                    "type": type,
-                    "id": mapData["item"].id,
-                    "qty": mapData["qty"],
-                  };
-                  debugPrint("Data From Product Page : $data");
-                  await _auth.addItemToShoppingCart(data);
+                  if (isValidCustomer) {
+                    String type = product is Product ? "product" : "service";
+                    basketBloc.addItemToCart(item: product, type: type);
+                    var mapData;
+                    basketBloc.items.forEach((element) {
+                      if (element["item"].id == product.id) {
+                        mapData = element;
+                        return;
+                      }
+                    });
+                    Map data = {
+                      "type": type,
+                      "id": mapData["item"].id,
+                      "qty": mapData["qty"],
+                    };
+                    debugPrint("Data From Product Page : $data");
+                    await _auth.addItemToShoppingCart(data);
+                  } else {
+                    Toast.show("You can not Purchase this item !!", context,
+                        textColor: Colors.white,
+                        backgroundColor: darkBlue(),
+                        duration: Toast.LENGTH_LONG);
+                  }
                 },
               ),
             ),
@@ -332,42 +344,45 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.fromLTRB(20, 28, 0, 0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                //name,
-                product.name,
-                style: TextStyle(
-                    fontSize: 13.0,
-                    color: Colors.grey[600],
-                    fontWeight: FontWeight.w500),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Row(
-                  children: <Widget>[
-                    Text(
-                      worldCurrencies[product.currency],
-                      style: TextStyle(
-                          fontFamily: "Roboto",
-                          fontSize: 28.0,
-                          color: Colors.black,
-                          fontWeight: FontWeight.w600),
-                    ),
-                    Text(
-                      product.price,
-                      style: TextStyle(
-                          fontSize: 28.0,
-                          color: Colors.black,
-                          fontWeight: FontWeight.w600),
-                    ),
-                  ],
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 28, 0, 0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  //name,
+                  product.name,
+                  style: TextStyle(
+                      fontSize: 13.0,
+                      color: Colors.grey[600],
+                      fontWeight: FontWeight.w500),
                 ),
-              ),
-            ],
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Text(
+                        worldCurrencies[product.currency],
+                        style: TextStyle(
+                            fontFamily: "Roboto",
+                            fontSize: 28.0,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w600),
+                      ),
+                      Text(
+                        product.price,
+                        style: TextStyle(
+                            fontSize: 28.0,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w600),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
         copyQrCode(),
@@ -406,10 +421,12 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           SizedBox(
             width: 12.0,
           ),
-          Text(
-            product.shortDescription,
-            style: TextStyle(
-              color: Colors.black,
+          Expanded(
+            child: Text(
+              product.shortDescription,
+              style: TextStyle(
+                color: Colors.black,
+              ),
             ),
           ),
         ],
@@ -558,8 +575,15 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             style: TextStyle(color: lightBlue()),
           ),
           onPressed: () {
-            getRecipient();
-            navigateToSendPayment();
+            if (isValidCustomer) {
+              getRecipient();
+              navigateToSendPayment();
+            } else {
+              Toast.show("You can not Purchase this item !!", context,
+                  textColor: Colors.white,
+                  backgroundColor: darkBlue(),
+                  duration: Toast.LENGTH_LONG);
+            }
           },
         ),
       ),

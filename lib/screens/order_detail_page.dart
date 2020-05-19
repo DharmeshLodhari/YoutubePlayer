@@ -4,6 +4,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/screens/tiles/shopping_cart_tile.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
@@ -23,6 +24,8 @@ class OrderDetailPage extends StatefulWidget {
 
 class _OrderDetailPageState extends State<OrderDetailPage> {
   var arguments;
+
+  String test = "1";
   _OrderDetailPageState({this.arguments});
 
   BasketBloc basketBloc;
@@ -118,7 +121,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     return IconButton(
       icon: Icon(Icons.settings),
       onPressed: () {
-        showBtmSheet();
+//        showBtmSheet();
+        showChangeStatusAndroidSheet();
       },
     );
   }
@@ -127,7 +131,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     return IconButton(
       icon: Icon(Icons.event_note),
       onPressed: () {
-        showNoteSheet();
+//        showNoteSheet();
+        showNoteAndroidSheet();
       },
     );
   }
@@ -161,19 +166,60 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             ));
   }
 
-  getBodyOfNoteBottomSheet() {
+  void showNoteAndroidSheet() {
+    showModalBottomSheet<void>(
+        enableDrag: true,
+        isScrollControlled: true,
+        context: context,
+        backgroundColor: Colors.transparent,
+        builder: (BuildContext context) {
+          return Card(
+            elevation: 15,
+            margin: EdgeInsets.symmetric(horizontal: 20),
+            color: Colors.white,
+            child: Container(
+              height: MediaQuery.of(context).size.height / 2 +
+                  MediaQuery.of(context).viewInsets.bottom,
+              child: Column(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Text(
+                      'Notes',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: darkBlue(),
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  getBodyOfNoteBottomSheet()
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
+  Widget getBodyOfNoteBottomSheet() {
     bool result = order.note == "" && order.customer == userBloc.user.userName;
     if (!result) {
       return Expanded(
         child: SingleChildScrollView(
           scrollDirection: Axis.vertical,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(24.0, 16, 24, 24),
-            child: Text(
-              getOrderNote(),
-              style: TextStyle(fontSize: 14),
-              textAlign: TextAlign.justify,
-            ),
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 10, 24, 10),
+                  child: Text(
+                    getOrderNote(),
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.justify,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       );
@@ -182,23 +228,14 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         child: Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        Expanded(
-          child: SizedBox(
-            height: 20,
-          ),
+        SizedBox(
+          height: 30,
         ),
         getNoteAddTextField(),
-        Expanded(
-          child: SizedBox(
-            height: 15,
-          ),
+        SizedBox(
+          height: 20,
         ),
         addNoteBtn(),
-        Expanded(
-          child: SizedBox(
-            height: 20,
-          ),
-        ),
       ],
     ));
   }
@@ -215,7 +252,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         decoration: InputDecoration(
           isDense: true,
           labelText: "Enter Your Note Here",
-          labelStyle: TextStyle(color: darkBlue()),
+          labelStyle: TextStyle(color: Colors.grey[600]),
+          alignLabelWithHint: true,
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(color: darkBlue(), width: 1.5),
           ),
@@ -342,7 +380,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             ));
   }
 
-  Widget statusListTile({String title, String value}) {
+  Widget statusListTile({String title, String value, StateSetter setState}) {
     return RadioListTile(
       activeColor: darkBlue(),
       title: Text(
@@ -356,14 +394,116 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       value: value,
       onChanged: (value) {
         if (userBloc.user.userName == order.merchant) {
-          statusBottomSheetController.setState(() {
+          setState(() {
+//            statusBottomSheetController.setState(() {
             updateStatus(value);
             statusOfOrder = value;
+//            });
           });
         }
       },
       groupValue: statusOfOrder,
     );
+  }
+
+  void showChangeStatusAndroidSheet() {
+    showModalBottomSheet<void>(
+        context: context,
+        backgroundColor: Colors.transparent,
+        builder: (BuildContext context) {
+          return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return Card(
+                color: Colors.white,
+                margin: EdgeInsets.symmetric(horizontal: 20),
+                elevation: 15,
+                child: Container(
+                  height: MediaQuery.of(context).size.height / 2,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: Column(
+                      children: <Widget>[
+                        Text(
+                          'Status',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: darkBlue(),
+                              fontSize: 20.0,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        Expanded(
+                          child: ListView(
+                            children: <Widget>[
+                              Divider(
+                                height: 0,
+                              ),
+                              statusListTile(
+                                title: "New Order",
+                                value: "new order",
+                                setState: setState,
+                              ),
+                              Divider(
+                                height: 0,
+                              ),
+                              statusListTile(
+                                title: "Awaiting Payment",
+                                value: "awaiting payment",
+                                setState: setState,
+                              ),
+                              Divider(
+                                height: 0,
+                              ),
+                              statusListTile(
+                                title: "Canceled",
+                                value: "canceled",
+                                setState: setState,
+                              ),
+                              Divider(
+                                height: 0,
+                              ),
+                              statusListTile(
+                                title: "Completed",
+                                value: "complete",
+                                setState: setState,
+                              ),
+                              Divider(
+                                height: 0,
+                              ),
+                              statusListTile(
+                                title: "On Hold",
+                                value: "on hold",
+                                setState: setState,
+                              ),
+                              Divider(
+                                height: 0,
+                              ),
+                              statusListTile(
+                                title: "Pending",
+                                value: "pending",
+                                setState: setState,
+                              ),
+                              Divider(
+                                height: 0,
+                              ),
+                              statusListTile(
+                                title: "Processing",
+                                value: "processing",
+                                setState: setState,
+                              ),
+                              Divider(
+                                height: 0,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+          );
+        });
   }
 
   Widget checkoutWidget() {

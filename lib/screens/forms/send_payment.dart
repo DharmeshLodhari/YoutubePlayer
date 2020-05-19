@@ -496,72 +496,81 @@ class _SendPaymentState extends State<SendPayment> {
                 _formKey.currentState.validate() &&
                 validateDropdown()) {
               // Todo: Add a try block here and stop user from continuing if they deny location permission
-              var userLocation;
-              Map deviceData;
-              try {
-                userLocation = await locationService.getLocation();
-                deviceData = await getDeviceInfo();
-                var data = {
-                  "from_customer": userBloc.user.userName,
-                  "to_customer": recipient,
-                  "currency": userBloc.user.currency,
-                  "amount": amount.toString(),
-                  "category": selectedCategory,
-                  "notes": reference,
-                  "description": reference,
-                  "latitude": userLocation.latitude,
-                  "longitude": userLocation.longitude,
-                  "deviceData": deviceData
-                };
+              if (userBloc.user.userName != recipient) {
+                var userLocation;
+                Map deviceData;
+                try {
+                  userLocation = await locationService.getLocation();
+                  deviceData = await getDeviceInfo();
+                  var data = {
+                    "from_customer": userBloc.user.userName,
+                    "to_customer": recipient,
+                    "currency": userBloc.user.currency,
+                    "amount": amount.toString(),
+                    "category": selectedCategory,
+                    "notes": reference,
+                    "description": reference,
+                    "latitude": userLocation.latitude,
+                    "longitude": userLocation.longitude,
+                    "deviceData": deviceData
+                  };
 
-                PassCodePopup(
-                    context: context,
-                    isValidCallback: () {
-                      showDialog(
-                          context: context,
-                          builder: (context) =>
-                              Center(child: CircularProgressIndicator()));
-                      _auth.makePayment(data).then((value) {
-                        response = value;
-                        if (response.statusCode == 200) {
-                          popFromShoppingCart(product);
-                          Navigator.of(context).pushNamed(
-                            '/transactions',
-                          );
-                        } else if (response.statusCode == 500) {
-                          Navigator.pop(context);
-                          setState(() {
-                            errorMessage =
-                                AppLocalization.of(context).serverError;
-                            Toast.show(errorMessage, context,
-                                gravity: Toast.TOP,
-                                backgroundColor: darkBlue(),
-                                textColor: Colors.white);
-                          });
-                        } else {
-                          Navigator.pop(context);
-                          setState(() {
-                            errorMessage =
-                                AppLocalization.of(context).somethingWentWrong;
-                            Toast.show(errorMessage, context,
-                                gravity: Toast.TOP,
-                                backgroundColor: darkBlue(),
-                                textColor: Colors.white);
-                          });
-                        }
+                  PassCodePopup(
+                      context: context,
+                      isValidCallback: () {
+                        showDialog(
+                            context: context,
+                            builder: (context) =>
+                                Center(child: CircularProgressIndicator()));
+                        _auth.makePayment(data).then((value) {
+                          response = value;
+                          if (response.statusCode == 200) {
+                            popFromShoppingCart(product);
+                            Navigator.of(context).pushNamed(
+                              '/transactions',
+                            );
+                          } else if (response.statusCode == 500) {
+                            Navigator.pop(context);
+                            setState(() {
+                              errorMessage =
+                                  AppLocalization.of(context).serverError;
+                              Toast.show(errorMessage, context,
+                                  gravity: Toast.TOP,
+                                  backgroundColor: darkBlue(),
+                                  textColor: Colors.white);
+                            });
+                          } else {
+                            Navigator.pop(context);
+                            setState(() {
+                              errorMessage = AppLocalization.of(context)
+                                  .somethingWentWrong;
+                              Toast.show(errorMessage, context,
+                                  gravity: Toast.TOP,
+                                  backgroundColor: darkBlue(),
+                                  textColor: Colors.white);
+                            });
+                          }
+                        });
+                      },
+                      cancelCallBack: () {
+                        Navigator.pop(context);
+                        _sendPaymentScaffold.currentState.showSnackBar(SnackBar(
+                          content:
+                              Text(AppLocalization.of(context).invalidPassword),
+                        ));
                       });
-                    },
-                    cancelCallBack: () {
-                      Navigator.pop(context);
-                      _sendPaymentScaffold.currentState.showSnackBar(SnackBar(
-                        content:
-                            Text(AppLocalization.of(context).invalidPassword),
-                      ));
-                    });
-              } catch (e) {
-                print(e);
-                Toast.show(e, context,
-                    gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+                } catch (e) {
+                  print(e);
+                  Toast.show(e, context,
+                      gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+                }
+              } else {
+                Toast.show(
+                  AppLocalization.of(context).invalidRecipient,
+                  context,
+                  textColor: Colors.white,
+                  backgroundColor: darkBlue(),
+                );
               }
             }
           } else {

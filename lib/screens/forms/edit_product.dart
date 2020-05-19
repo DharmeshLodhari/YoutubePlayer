@@ -241,14 +241,38 @@ class _EditProductState extends State<EditProduct> {
           ],
         ),
         onTap: () {
-          ImagePicker.pickImage(source: ImageSource.gallery).then((value) {
-            setState(() {
-              productLocalImages.add(value);
-            });
-          });
+          pickImage();
         },
       ),
     );
+  }
+
+  void pickImage() async {
+    final imageSource = await showDialog<ImageSource>(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text(AppLocalization.of(context).selectTheImageSource),
+              actions: <Widget>[
+                MaterialButton(
+                  child: Text(AppLocalization.of(context).camera),
+                  onPressed: () => Navigator.pop(context, ImageSource.camera),
+                ),
+                MaterialButton(
+                  child: Text(AppLocalization.of(context).gallary),
+                  onPressed: () => Navigator.pop(context, ImageSource.gallery),
+                )
+              ],
+            ));
+
+    if (imageSource != null) {
+      ImagePicker.pickImage(source: imageSource).then((value) {
+        if (value != null) {
+          setState(() {
+            productLocalImages.add(value);
+          });
+        }
+      });
+    }
   }
 
   Widget showLocalImage(int index) {

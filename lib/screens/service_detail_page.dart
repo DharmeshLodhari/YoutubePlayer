@@ -27,10 +27,13 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     with TickerProviderStateMixin {
   var arguments;
 
+  bool isValidCustomer;
+
   _ServiceDetailPageState({this.arguments});
 
   Service service;
   CustomerProfileBloc customerProfileBloc;
+  UserBloc userBloc;
   BasketBloc basketBloc;
 
   final _auth = AuthService();
@@ -61,7 +64,9 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   @override
   Widget build(BuildContext context) {
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
+    userBloc = Provider.of<UserBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
+    isValidCustomer = userBloc.user.userName != service.provider;
     return Scaffold(
       backgroundColor: lightBlue(),
       appBar: AppBar(
@@ -186,31 +191,37 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
             ),
             Expanded(
               child: MaterialButton(
-                height: double.infinity,
-                color: lightBlue(),
-                child: Icon(
-                  Icons.add_shopping_cart,
-                  color: Colors.white,
-                ),
-                onPressed: () async {
-                  String type = service is Product ? "product" : "service";
-                  basketBloc.addItemToCart(item: service, type: type);
-                  var mapData;
-                  basketBloc.items.forEach((element) {
-                    if (element["item"].id == service.id) {
-                      mapData = element;
-                      return;
+                  height: double.infinity,
+                  color: lightBlue(),
+                  child: Icon(
+                    Icons.add_shopping_cart,
+                    color: Colors.white,
+                  ),
+                  onPressed: () async {
+                    if (isValidCustomer) {
+                      String type = service is Product ? "product" : "service";
+                      basketBloc.addItemToCart(item: service, type: type);
+                      var mapData;
+                      basketBloc.items.forEach((element) {
+                        if (element["item"].id == service.id) {
+                          mapData = element;
+                          return;
+                        }
+                      });
+                      Map data = {
+                        "type": type,
+                        "id": mapData["item"].id,
+                        "qty": mapData["qty"],
+                      };
+                      debugPrint("Data From Service Page : $data");
+                      await _auth.addItemToShoppingCart(data);
+                    } else {
+                      Toast.show("You can not Purchase this item !!", context,
+                          textColor: Colors.white,
+                          backgroundColor: darkBlue(),
+                          duration: Toast.LENGTH_LONG);
                     }
-                  });
-                  Map data = {
-                    "type": type,
-                    "id": mapData["item"].id,
-                    "qty": mapData["qty"],
-                  };
-                  debugPrint("Data From Service Page : $data");
-                  await _auth.addItemToShoppingCart(data);
-                },
-              ),
+                  }),
             ),
           ],
         ),
@@ -341,42 +352,45 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.fromLTRB(20, 28, 0, 0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                //name,
-                service.name,
-                style: TextStyle(
-                    fontSize: 13.0,
-                    color: Colors.grey[600],
-                    fontWeight: FontWeight.w500),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Row(
-                  children: <Widget>[
-                    Text(
-                      worldCurrencies[service.currency],
-                      style: TextStyle(
-                          fontFamily: "Roboto",
-                          fontSize: 28.0,
-                          color: Colors.black,
-                          fontWeight: FontWeight.w600),
-                    ),
-                    Text(
-                      service.price,
-                      style: TextStyle(
-                          fontSize: 28.0,
-                          color: Colors.black,
-                          fontWeight: FontWeight.w600),
-                    ),
-                  ],
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 28, 0, 0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  //name,
+                  service.name,
+                  style: TextStyle(
+                      fontSize: 13.0,
+                      color: Colors.grey[600],
+                      fontWeight: FontWeight.w500),
                 ),
-              ),
-            ],
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Text(
+                        worldCurrencies[service.currency],
+                        style: TextStyle(
+                            fontFamily: "Roboto",
+                            fontSize: 28.0,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w600),
+                      ),
+                      Text(
+                        service.price,
+                        style: TextStyle(
+                            fontSize: 28.0,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w600),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
         copyQrCode(),
@@ -415,10 +429,12 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
           SizedBox(
             width: 12.0,
           ),
-          Text(
-            service.shortDescription,
-            style: TextStyle(
-              color: Colors.black,
+          Expanded(
+            child: Text(
+              service.shortDescription,
+              style: TextStyle(
+                color: Colors.black,
+              ),
             ),
           ),
         ],
@@ -552,8 +568,15 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
             style: TextStyle(color: lightBlue()),
           ),
           onPressed: () {
-            getRecipient();
-            navigateToSendPayment();
+            if (isValidCustomer) {
+              getRecipient();
+              navigateToSendPayment();
+            } else {
+              Toast.show("You can not Purchase this item !!", context,
+                  textColor: Colors.white,
+                  backgroundColor: darkBlue(),
+                  duration: Toast.LENGTH_LONG);
+            }
           },
         ),
       ),

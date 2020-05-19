@@ -1,15 +1,18 @@
 //TODO: ADD APP LOCALIZATION
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/screens/tiles/shopping_cart_tile.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/passcodePopup.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:toast/toast.dart';
 
 import 'colors.dart';
@@ -28,6 +31,9 @@ class _ShoppingCartState extends State<ShoppingCart> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _auth = AuthService();
 
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
+
   @override
   void initState() {
     slidableController = SlidableController(
@@ -36,6 +42,36 @@ class _ShoppingCartState extends State<ShoppingCart> {
     );
 
     super.initState();
+  }
+
+  void _onRefresh() async {
+    //check network connectivity and if true then refresh the list
+    Connectivity().checkConnectivity().then((value) {
+      var connectionResult = value;
+      if (connectionResult == ConnectivityResult.wifi ||
+          connectionResult == ConnectivityResult.mobile) {
+        //clear old items
+        basketBloc.items.clear();
+        basketBloc.total = 0;
+        //fetch items again
+        initializeShoppingCart();
+        _refreshController.refreshCompleted();
+      } else {
+        Toast.show(
+            AppLocalization.of(context).internetConnectionNotAvailable, context,
+            gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+        _refreshController.refreshCompleted();
+      }
+    });
+  }
+
+  void initializeShoppingCart() async {
+    debugPrint("initializeShoppingCart called");
+    List items = await _auth.getShoppingCart();
+    items.forEach((element) {
+      String type = element is Product ? "product" : "service";
+      basketBloc.addItemToCart(item: element, type: type);
+    });
   }
 
   @override
@@ -61,39 +97,30 @@ class _ShoppingCartState extends State<ShoppingCart> {
             addItemToBasket(),
           ],
         ),
-        body: Column(
-          children: <Widget>[
-            bodyOfCart(),
-            SizedBox(
-              height: 20,
-            )
-          ],
-        ),
+        body: SmartRefresher(
+            enablePullDown: true,
+            header: WaterDropHeader(
+              complete: Container(),
+              waterDropColor: darkBlue(),
+            ),
+            controller: _refreshController,
+            onRefresh: _onRefresh,
+            child: _buildBodyOfCart()),
+        floatingActionButton: checkoutWidget(),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       ),
     );
   }
 
-  Widget bodyOfCart() {
-    if (basketBloc.total == 0) {
-      return Expanded(
-        child: Center(
-          child: NoItemInList(msg: "Shopping Cart is Empty !!"),
-        ),
-      );
-    }
-    return Expanded(
-      child: Column(
-        children: <Widget>[
-          Expanded(
-            child: ListView.builder(
-                itemCount: basketBloc.items.length,
-                itemBuilder: (BuildContext context, int index) =>
-                    getItemTile(index)),
-          ),
-          checkoutWidget(),
-        ],
-      ),
-    );
+  Widget _buildBodyOfCart() {
+    return basketBloc.total == 0
+        ? Center(
+            child: NoItemInList(msg: "Shopping Cart is Empty !!"),
+          )
+        : ListView.builder(
+            itemCount: basketBloc.items.length,
+            itemBuilder: (BuildContext context, int index) =>
+                getItemTile(index));
   }
 
   Widget checkoutWidget() {

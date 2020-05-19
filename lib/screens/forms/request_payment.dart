@@ -444,64 +444,74 @@ class _RequestPaymentState extends State<RequestPayment> {
             if (isValidPayee &&
                 _formKey.currentState.validate() &&
                 validateDropdown()) {
-              var userLocation;
-              try {
-                userLocation = await locationService.getLocation();
+              if (userBloc.user.userName != recipient) {
+                var userLocation;
+                try {
+                  userLocation = await locationService.getLocation();
 
-                var data = {
-                  "from_customer": userBloc.user.userName,
-                  "to_customer": recipient,
-                  "currency": userBloc.user.currency,
-                  "amount": amount.toString(),
-                  "category": selectedCategory,
-                  "notes": reference,
-                  "description": reference,
-                  "latitude": userLocation.latitude,
-                  "longitude": userLocation.longitude,
-                };
+                  var data = {
+                    "from_customer": userBloc.user.userName,
+                    "to_customer": recipient,
+                    "currency": userBloc.user.currency,
+                    "amount": amount.toString(),
+                    "category": selectedCategory,
+                    "notes": reference,
+                    "description": reference,
+                    "latitude": userLocation.latitude,
+                    "longitude": userLocation.longitude,
+                  };
 
-                PassCodePopup(
-                    context: context,
-                    isValidCallback: () {
-                      showDialog(
-                          context: context,
-                          builder: (context) =>
-                              Center(child: CircularProgressIndicator()));
-                      _auth.createPaymentRequests(data).then((value) {
-                        if (value) {
-                          Navigator.of(context).pushNamed('/dashboard',
-                              arguments: {'dashboardIndex': 1});
-                        } else if (!value) {
-                          Navigator.pop(context);
-                          Toast.show(AppLocalization.of(context).requestNotSend,
-                              context,
-                              gravity: Toast.TOP,
-                              backgroundColor: darkBlue(),
-                              textColor: Colors.white);
-                        } else {
-                          Navigator.pop(context);
-                          setState(() {
-                            errorMessage =
-                                AppLocalization.of(context).invalidPassword;
-                            Toast.show(errorMessage, context,
+                  PassCodePopup(
+                      context: context,
+                      isValidCallback: () {
+                        showDialog(
+                            context: context,
+                            builder: (context) =>
+                                Center(child: CircularProgressIndicator()));
+                        _auth.createPaymentRequests(data).then((value) {
+                          if (value) {
+                            Navigator.of(context).pushNamed('/dashboard',
+                                arguments: {'dashboardIndex': 1});
+                          } else if (!value) {
+                            Navigator.pop(context);
+                            Toast.show(
+                                AppLocalization.of(context).requestNotSend,
+                                context,
                                 gravity: Toast.TOP,
                                 backgroundColor: darkBlue(),
                                 textColor: Colors.white);
-                          });
-                        }
+                          } else {
+                            Navigator.pop(context);
+                            setState(() {
+                              errorMessage =
+                                  AppLocalization.of(context).invalidPassword;
+                              Toast.show(errorMessage, context,
+                                  gravity: Toast.TOP,
+                                  backgroundColor: darkBlue(),
+                                  textColor: Colors.white);
+                            });
+                          }
+                        });
+                      },
+                      cancelCallBack: () {
+                        Navigator.pop(context);
+                        requestPaymentScaffold.currentState
+                            .showSnackBar(SnackBar(
+                          content:
+                              Text(AppLocalization.of(context).invalidPassword),
+                        ));
                       });
-                    },
-                    cancelCallBack: () {
-                      Navigator.pop(context);
-                      requestPaymentScaffold.currentState.showSnackBar(SnackBar(
-                        content:
-                            Text(AppLocalization.of(context).invalidPassword),
-                      ));
-                    });
-              } catch (e) {
-                print(e);
-                Toast.show(e, context,
-                    gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+                } catch (e) {
+                  print(e);
+                  Toast.show(e, context,
+                      gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+                }
+              } else {
+                var msg = AppLocalization.of(context).invalidRecipient;
+                Toast.show(msg, context,
+                    gravity: Toast.CENTER,
+                    backgroundColor: darkBlue(),
+                    textColor: Colors.white);
               }
             }
           } else {
