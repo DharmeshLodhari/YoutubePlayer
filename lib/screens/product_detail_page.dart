@@ -4,6 +4,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/widget/item_display_card.dart';
 import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -37,6 +38,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   bool isValidCustomer;
   bool isOtherItemFetched = false;
+  bool isOtherItemIsEmpty = true;
   ScrollController _scrollController = new ScrollController();
 
   List<dynamic> sellersOtherItems = List<dynamic>();
@@ -79,13 +81,18 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       debugPrint("value : $value");
       if (value.isNotEmpty) {
         setState(() {
+          isOtherItemIsEmpty = false;
           sellersOtherItems = value;
+        });
+      } else {
+        setState(() {
+          isOtherItemIsEmpty = true;
         });
       }
     });
 
-    Toast.show("fetch other items Called !!", context,
-        backgroundColor: darkBlue(), textColor: Colors.white);
+//    Toast.show("fetch other items Called !!", context,
+//        backgroundColor: darkBlue(), textColor: Colors.white);
     isOtherItemFetched = true;
   }
 
@@ -284,7 +291,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 _buildDivider(screenSize),
                 _buildDescriptionWidget(),
                 SizedBox(height: 20.0),
-                _buildSellersOtherProducts(),
+                isOtherItemIsEmpty ? Container() : _buildSellersOtherProducts(),
                 SizedBox(height: 80.0),
               ],
             ),
@@ -559,8 +566,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   ),
                 ),
                 onTap: () {
-                  Toast.show("Coming Soon !! ", context,
-                      textColor: Colors.white, backgroundColor: darkBlue());
+                  _auth.fetchCustomerProfile(product.seller).then((user) {
+                    Navigator.pushNamed(context, '/profile',
+                        arguments: {"searchedUser": user, "index": 1});
+                  });
                 },
               ),
             ],
@@ -569,60 +578,15 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             height: 10,
           ),
           Expanded(
-            child: ListView.builder(padding: EdgeInsets.symmetric(horizontal: 8),
-                itemCount: sellersOtherItems.length,
-                scrollDirection: Axis.horizontal,
-                itemBuilder: (context, index) => Card(
-                      semanticContainer: true,
-                      clipBehavior: Clip.antiAliasWithSaveLayer,
-                      color: Colors.white,
-                      elevation: 5,
-                      child: Container(
-                        width: MediaQuery.of(context).size.width - 100,
-                        height: MediaQuery.of(context).size.height / 3,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Expanded(
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(4),
-                                    topRight: Radius.circular(4)),
-                                child: CachedNetworkImage(
-                                  imageUrl: product.serverImages.first,
-                                  fit: BoxFit.cover,
-                                  width: double.infinity,
-                                ),
-                              ),
-                            ),
-                            ListTile(
-                              dense: true,
-                              title: Text(
-                                sellersOtherItems[index].name,
-                                style: TextStyle(color: lightBlue()),
-                                maxLines: 1,
-                              ),
-                              subtitle: Text(
-                                product.shortDescription,
-                                maxLines: 1,
-                              ),
-                              trailing: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  Text(
-                                    worldCurrencies[product.currency],
-                                    style: TextStyle(fontFamily: "Roboto"),
-                                  ),
-                                  Text(
-                                    product.price.toString(),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    )),
+            child: ListView.builder(
+              padding: EdgeInsets.symmetric(horizontal: 8),
+              itemCount: sellersOtherItems.length,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (context, index) => displayProduct(
+                context: context,
+                product: sellersOtherItems[index],
+              ),
+            ),
           ),
         ],
       ),

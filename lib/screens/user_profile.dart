@@ -117,6 +117,17 @@ class _UserProfileState extends State<UserProfile> {
   @override
   void initState() {
     searchedUser = arguments['searchedUser'];
+    setState(() {
+      currentIndex = arguments['index'] ?? 0;
+      if (currentIndex == 0) {
+        filterValue = "Info";
+      } else if (currentIndex == 1) {
+        filterValue = "Products";
+      } else if (currentIndex == 2) {
+        filterValue = "Services";
+      }
+    });
+
     this.getProductList();
     _productScrollController.addListener(() {
       if (_productScrollController.position.pixels ==

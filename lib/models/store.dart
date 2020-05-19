@@ -11,6 +11,7 @@ class Product {
   String price;
   List<File> localImages;
   List<String> serverImages;
+  String cover;
   String seller;
   String sellerAvatar;
   String condition;
@@ -31,6 +32,7 @@ class Product {
       this.localImages,
       this.serverImages,
       this.seller,
+      this.cover = "",
       this.sellerAvatar,
       this.qrCode,
       this.condition,
@@ -63,6 +65,7 @@ class Product {
     this.price = object["price"].toString();
     this.localImages = object["localImages"] ?? [];
     this.serverImages = getProductImages(object["pictures"]) ?? [];
+    this.cover = object["cover"] ?? "";
     this.seller = object["seller"] ?? "";
     this.sellerAvatar = object["seller_avatar"] ?? "";
     this.qrCode = object["qrCode"] ?? "";
@@ -90,8 +93,11 @@ class Product {
   }
 
   DateTime getProductDateTime(var date) {
-    DateTime dateTime = DateTime.parse(date);
-    return dateTime;
+    if (date != null) {
+      DateTime dateTime = DateTime.parse(date);
+      return dateTime;
+    }
+    return DateTime.now();
   }
 
   // ignore: missing_return
