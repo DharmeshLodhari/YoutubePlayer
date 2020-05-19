@@ -473,17 +473,13 @@ class AuthService {
   }
 
   // Accept Payment with POST method with empty data  post
-  Future<bool> acceptPaymentRequests(PaymentRequest paymentRequest) async {
+  Future<http.Response> acceptPaymentRequests(PaymentRequest paymentRequest) async {
     var url = baseUrl + "/api/v1/transactions/request-payment/accept/";
     var data = {"id": paymentRequest.id};
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.patch(url, headers: headers, body: _data);
-    if (response.statusCode == 200) {
-      return true;
-    } else {
-      return false;
-    }
+    return response;
   }
 
   // Patch payment status with empty data  patch
@@ -504,16 +500,12 @@ class AuthService {
   }
 
   // Create Payment request with data from user input  post method  return true / false
-  Future<bool> createPaymentRequests(Map data) async {
+  Future<http.Response> createPaymentRequests(Map data) async {
     var url = baseUrl + "/api/v1/transactions/request-payment/create/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.post(url, headers: headers, body: _data);
-    if (response.statusCode == 200) {
-      return false;
-    } else {
-      return true;
-    }
+    return response;
   }
 
   Future<Map<String, dynamic>> listPaymentRequests(
@@ -671,15 +663,12 @@ class AuthService {
   }
 
   //send payment of the order to particular sellers
-  Future<bool> makePaymentForCartOrder(var data) async {
+  Future<http.Response> makePaymentForCartOrder(var data) async {
     var url = baseUrl + "/api/v1/transactions/make-payment-for-orders/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.post(url, headers: headers, body: _data);
-    if (response.statusCode == 200) {
-      return true;
-    }
-    return false;
+    return response;
   }
 
   //Send payout to backend
@@ -1687,8 +1676,9 @@ class AuthService {
       {@required String type,
       @required String userId,
       @required String exclude}) async {
-    String urlPart =
-        type == "products" ? "sellers-other-products" : "providers-other-services";
+    String urlPart = type == "products"
+        ? "sellers-other-products"
+        : "providers-other-services";
 
     var url = "$baseUrl/api/v1/$type/$urlPart/$userId/?exclude=$exclude";
 

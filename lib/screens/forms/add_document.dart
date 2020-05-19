@@ -222,7 +222,8 @@ class _AddDocumentState extends State<AddDocument> {
         ),
         subtitle: Text(AppLocalization.of(context).tapHereToContinue),
         onTap: () async {
-          ImagePicker.pickImage(source: ImageSource.camera).then((value) {
+          ImagePicker.pickImage(source: ImageSource.camera, imageQuality: 70)
+              .then((value) {
             setState(() {
               documentImage = value;
             });
@@ -245,9 +246,8 @@ class _AddDocumentState extends State<AddDocument> {
         ),
         subtitle: Text(AppLocalization.of(context).tapHereToContinue),
         onTap: () async {
-          ImagePicker.pickImage(
-            source: ImageSource.gallery,
-          ).then((value) {
+          ImagePicker.pickImage(source: ImageSource.gallery, imageQuality: 70)
+              .then((value) {
             setState(() {
               documentImage = value;
             });
@@ -346,7 +346,8 @@ class _AddDocumentState extends State<AddDocument> {
         ),
         subtitle: Text(AppLocalization.of(context).tapHereToContinue),
         onTap: () {
-          ImagePicker.pickImage(source: ImageSource.camera).then((value) {
+          ImagePicker.pickImage(source: ImageSource.camera, imageQuality: 70)
+              .then((value) {
             setState(() {
               userImage = value;
             });

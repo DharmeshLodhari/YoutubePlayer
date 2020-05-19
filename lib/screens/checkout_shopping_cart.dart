@@ -410,12 +410,24 @@ class _ShoppingCartState extends State<ShoppingCart> {
                   for (int i = 0; i < userOrder.length; i++) {
                     orders.add(userOrder[i]["id"]);
                   }
-                  var successful =
+                  var response =
                       await _auth.makePaymentForCartOrder({"orders": orders});
-                  if (successful) {
+                  if (response.statusCode == 200) {
                     Navigator.popAndPushNamed(context, '/orders-list');
+                  } else if (response.statusCode == 500) {
+                    Navigator.pop(context);
+                    Toast.show("server error !!", context,
+                        gravity: Toast.TOP,
+                        backgroundColor: darkBlue(),
+                        textColor: Colors.white);
+                  } else if (response.statusCode == 700) {
+                    Navigator.pop(context);
+                    Navigator.pushNamed(context, "/bvn-verification");
+                  } else if (response.statusCode == 800) {
+                    Navigator.pop(context);
+                    Navigator.pushNamed(context, "/add-document");
                   } else {
-                    debugPrint("MakePaymentForCartOrder UnSuccesfull");
+                    debugPrint("MakePaymentForCartOrder Unsuccessful");
                   }
                 } else {
                   debugPrint("Could Not Place The Order");

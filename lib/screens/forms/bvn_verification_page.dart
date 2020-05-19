@@ -1,9 +1,10 @@
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'colors.dart';
+import '../colors.dart';
 
 class BvnVerificationPage extends StatefulWidget {
   @override
@@ -38,6 +39,13 @@ class _BvnVerificationPageState extends State<BvnVerificationPage> {
                 child: Column(
                   children: <Widget>[
                     getBVNNumber(),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Container(
+                      child:
+                          Text(AppLocalization.of(context).termsAndCondition),
+                    ),
                     SizedBox(
                       height: 20,
                     ),

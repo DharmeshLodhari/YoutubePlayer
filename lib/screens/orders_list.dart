@@ -2,7 +2,6 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/store.dart';
-import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/widget/dialog.dart';
@@ -357,38 +356,9 @@ class _OrdersListState extends State<OrdersList> {
             'recipient': order.merchant,
             'subject': "Order: Ref #123488752627",
           });
-//            acceptPaymentRequestAlert(paymentRequest, index);
         },
       ),
     ];
-  }
-
-  void acceptPaymentRequestAlert(
-      PaymentRequest paymentRequest, int index) async {
-    bool result = await showDialogBox(
-      context: context,
-      title: AppLocalization.of(context).accept,
-      description:
-          AppLocalization.of(context).areYouSureWantToAcceptThisRequest,
-      actionOne: AppLocalization.of(context).yes,
-      actionTwo: AppLocalization.of(context).no,
-      type: AlertType.warning,
-    );
-    if (result) {
-      bool done = await _auth.acceptPaymentRequests(paymentRequest);
-      if (done) {
-        _showSnackBar(
-            context, AppLocalization.of(context).paymentRequestAccepted);
-        setState(() {
-          orderList.removeAt(index);
-          if (orderList.length <= 9) {
-            getList();
-          }
-        });
-      } else {
-        _showSnackBar(context, AppLocalization.of(context).error);
-      }
-    }
   }
 
   Future<void> rejectOrder(Order order, int index) async {

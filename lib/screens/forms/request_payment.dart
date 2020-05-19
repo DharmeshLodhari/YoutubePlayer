@@ -10,6 +10,7 @@ import 'package:Slydo/widget/passcodePopup.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
@@ -37,6 +38,8 @@ class _RequestPaymentState extends State<RequestPayment> {
   CustomerProfile _payee;
   UserBloc userBloc;
   CustomerProfileBloc customerProfileBloc;
+
+  http.Response response;
 
   bool isFromProfile = false;
   bool isValidPayee = false;
@@ -469,22 +472,31 @@ class _RequestPaymentState extends State<RequestPayment> {
                             builder: (context) =>
                                 Center(child: CircularProgressIndicator()));
                         _auth.createPaymentRequests(data).then((value) {
-                          if (value) {
+                          response = value;
+                          if (response.statusCode == 201) {
                             Navigator.of(context).pushNamed('/dashboard',
                                 arguments: {'dashboardIndex': 1});
-                          } else if (!value) {
-                            Navigator.pop(context);
-                            Toast.show(
-                                AppLocalization.of(context).requestNotSend,
-                                context,
-                                gravity: Toast.TOP,
-                                backgroundColor: darkBlue(),
-                                textColor: Colors.white);
-                          } else {
+                          } else if (response.statusCode == 500) {
                             Navigator.pop(context);
                             setState(() {
                               errorMessage =
-                                  AppLocalization.of(context).invalidPassword;
+                                  AppLocalization.of(context).serverError;
+                              Toast.show(errorMessage, context,
+                                  gravity: Toast.TOP,
+                                  backgroundColor: darkBlue(),
+                                  textColor: Colors.white);
+                            });
+                          } else if (response.statusCode == 700) {
+                            Navigator.pop(context);
+                            Navigator.pushNamed(context, "/bvn-verification");
+                          } else if (response.statusCode == 800) {
+                            Navigator.pop(context);
+                            Navigator.pushNamed(context, "/add-document");
+                          } else {
+                            Navigator.pop(context);
+                            setState(() {
+                              errorMessage = AppLocalization.of(context)
+                                  .somethingWentWrong;
                               Toast.show(errorMessage, context,
                                   gravity: Toast.TOP,
                                   backgroundColor: darkBlue(),

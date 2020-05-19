@@ -1,6 +1,5 @@
 import 'package:Slydo/models/store.dart';
 
-
 class Address {
   String addressLineOne;
   String addressLineTwo;
@@ -11,11 +10,11 @@ class Address {
 
   Address(
       {this.addressLineOne,
-        this.addressLineTwo,
-        this.city,
-        this.state,
-        this.country,
-        this.countryIsoCode});
+      this.addressLineTwo,
+      this.city,
+      this.state,
+      this.country,
+      this.countryIsoCode});
 
   Address.fromJson(var object) {
     this.addressLineOne = object['address_line_1'] ?? "";
@@ -26,7 +25,6 @@ class Address {
     this.countryIsoCode = object['country_iso_code'] ?? "NG";
   }
 }
-
 
 class User {
   String uuid;
@@ -60,6 +58,21 @@ class User {
     this.type = "seller",
     this.isVerified = false,
   });
+
+  bool isBusinessUser() {
+    List businessUser = ["Seller", "Business", "Merchant"];
+
+    bool isBusinessUser = false;
+    businessUser.forEach(
+      (element) {
+        if (element == this.type) {
+          isBusinessUser = true;
+          return;
+        }
+      },
+    );
+    return isBusinessUser;
+  }
 
   bool isAuthenticated() {
     //  We should check here if instance has username then user is not Anonymous
@@ -154,4 +167,3 @@ class UserLocation {
 
   UserLocation({this.latitude, this.longitude});
 }
-

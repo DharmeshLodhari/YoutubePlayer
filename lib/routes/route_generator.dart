@@ -1,5 +1,4 @@
 import 'package:Slydo/screens/bank_account_list.dart';
-import 'package:Slydo/screens/bvn_verification_page.dart';
 import 'package:Slydo/screens/card_payment_page.dart';
 import 'package:Slydo/screens/dashboard.dart';
 import 'package:Slydo/screens/explore.dart';
@@ -7,6 +6,7 @@ import 'package:Slydo/screens/forms/add_bank_account.dart';
 import 'package:Slydo/screens/forms/add_document.dart';
 import 'package:Slydo/screens/forms/add_product.dart';
 import 'package:Slydo/screens/forms/add_service.dart';
+import 'package:Slydo/screens/forms/bvn_verification_page.dart';
 import 'package:Slydo/screens/forms/compose_message.dart';
 import 'package:Slydo/screens/forms/edit_product.dart';
 import 'package:Slydo/screens/forms/edit_service.dart';

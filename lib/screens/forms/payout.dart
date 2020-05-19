@@ -218,6 +218,12 @@ class _PayoutState extends State<Payout> {
                                   backgroundColor: darkBlue(),
                                   textColor: Colors.white);
                             });
+                          } else if (response.statusCode == 700) {
+                            Navigator.pop(context);
+                            Navigator.pushNamed(context, "/bvn-verification");
+                          } else if (response.statusCode == 800) {
+                            Navigator.pop(context);
+                            Navigator.pushNamed(context, "/add-document");
                           } else {
                             Navigator.pop(context);
                             setState(() {

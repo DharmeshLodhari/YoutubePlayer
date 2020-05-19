@@ -366,8 +366,8 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       type: AlertType.warning,
     );
     if (result) {
-      bool done = await _auth.acceptPaymentRequests(paymentRequest);
-      if (done) {
+      var response = await _auth.acceptPaymentRequests(paymentRequest);
+      if (response.statusCode == 200) {
         _showSnackBar(
             context, AppLocalization.of(context).paymentRequestAccepted);
         setState(() {
@@ -376,6 +376,15 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
             getList();
           }
         });
+      } else if (response.statusCode == 500) {
+        Toast.show("Server error !!", context,
+            gravity: Toast.TOP,
+            backgroundColor: darkBlue(),
+            textColor: Colors.white);
+      } else if (response.statusCode == 700) {
+        Navigator.pushNamed(context, "/bvn-verification");
+      } else if (response.statusCode == 800) {
+        Navigator.pushNamed(context, "/add-document");
       } else {
         _showSnackBar(context, AppLocalization.of(context).error);
       }

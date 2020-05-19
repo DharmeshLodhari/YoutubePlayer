@@ -101,7 +101,7 @@ class _UserDashboardState extends State<UserDashboard> {
     bankAccountBloc = Provider.of<BankAccountBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
 
-    if (userBloc.user.type == "seller") {
+    if (userBloc.user.isBusinessUser()) {
       storeLocked = false;
     }
 
