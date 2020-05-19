@@ -78,7 +78,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         .ownersOrderProductsAndServices(
             type: "products", userId: product.seller, exclude: product.id)
         .then((value) {
-      debugPrint("value : $value");
       if (value.isNotEmpty) {
         setState(() {
           isOtherItemIsEmpty = false;

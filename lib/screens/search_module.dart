@@ -91,6 +91,12 @@ class _SearchModuleState extends State<SearchModule> {
             isSearchIsEmpty = false;
           });
         }
+      } else {
+        if (mounted) {
+          setState(() {
+            isSearchIsEmpty = true;
+          });
+        }
       }
     });
 
@@ -102,6 +108,7 @@ class _SearchModuleState extends State<SearchModule> {
       items: getMenuItems(),
       onClickMenu: onClickMenu,
       onDismiss: onDismiss,
+      context: context,
       maxColumn: 4,
     );
     menu.show(widgetKey: popupMenuBtnKey);
@@ -193,8 +200,6 @@ class _SearchModuleState extends State<SearchModule> {
 
   @override
   Widget build(BuildContext context) {
-    PopupMenu.context = context;
-
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
 

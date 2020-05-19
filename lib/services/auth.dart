@@ -473,7 +473,8 @@ class AuthService {
   }
 
   // Accept Payment with POST method with empty data  post
-  Future<http.Response> acceptPaymentRequests(PaymentRequest paymentRequest) async {
+  Future<http.Response> acceptPaymentRequests(
+      PaymentRequest paymentRequest) async {
     var url = baseUrl + "/api/v1/transactions/request-payment/accept/";
     var data = {"id": paymentRequest.id};
     var headers = await getAuthHeaders();
@@ -1685,13 +1686,9 @@ class AuthService {
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
     List items = List();
-
-    debugPrint("status code: ${response.statusCode}");
-    debugPrint("response body: ${response.body}");
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
       var data = jsonData["results"];
-      debugPrint("data: $data");
       for (int i = 0; i < data.length; i++) {
         if (type == "products") {
           var product = Product.fromJson(data[i]);

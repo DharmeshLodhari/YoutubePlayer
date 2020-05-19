@@ -149,6 +149,7 @@ class _UserProfileState extends State<UserProfile> {
 
   void popUpMenu() {
     popUpMenuWidget = PopupMenu(
+      context: context,
       items: getMenuItems(),
       onClickMenu: onClickMenu,
       onDismiss: onDismiss,
@@ -224,7 +225,6 @@ class _UserProfileState extends State<UserProfile> {
 
   @override
   Widget build(BuildContext context) {
-    PopupMenu.context = context;
     userBloc = Provider.of<UserBloc>(context);
 
     if (userBloc.user.userName == searchedUser.userName) {
@@ -233,9 +233,7 @@ class _UserProfileState extends State<UserProfile> {
 
     return WillPopScope(
       onWillPop: () async {
-        Navigator.popAndPushNamed(context, '/dashboard',
-            arguments: {'dashboardIndex': 5});
-        return false;
+        return true;
       },
       child: Scaffold(
         backgroundColor: lightBlue(),
