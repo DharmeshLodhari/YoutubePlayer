@@ -9,6 +9,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 import 'package:toast/toast.dart';
@@ -35,6 +36,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   static List<String> imgList = [];
 
   bool isValidCustomer;
+  bool isOtherItemFetched = false;
+  ScrollController _scrollController = new ScrollController();
+
+  List<dynamic> sellersOtherItems = List<dynamic>();
 
   int _current = 0;
 
@@ -44,6 +49,14 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       product = arguments['product'];
     });
     fetchProduct(product.id.toString());
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        if (!isOtherItemFetched) {
+          getOtherItems();
+        }
+      }
+    });
     super.initState();
   }
 
@@ -56,6 +69,24 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         });
       }
     });
+  }
+
+  void getOtherItems() {
+    _auth
+        .ownersOrderProductsAndServices(
+            type: "products", userId: product.seller, exclude: product.id)
+        .then((value) {
+      debugPrint("value : $value");
+      if (value.isNotEmpty) {
+        setState(() {
+          sellersOtherItems = value;
+        });
+      }
+    });
+
+    Toast.show("fetch other items Called !!", context,
+        backgroundColor: darkBlue(), textColor: Colors.white);
+    isOtherItemFetched = true;
   }
 
   @override
@@ -231,6 +262,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     Size screenSize = MediaQuery.of(context).size;
 
     return ListView(
+      controller: _scrollController,
       children: <Widget>[
         Container(
           padding: const EdgeInsets.all(4.0),
@@ -501,7 +533,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   Widget _buildSellersOtherProducts() {
     return Container(
-      height: 200,
+      height: 250,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -537,18 +569,58 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             height: 10,
           ),
           Expanded(
-            child: ListView.builder(
-                itemCount: 10,
+            child: ListView.builder(padding: EdgeInsets.symmetric(horizontal: 8),
+                itemCount: sellersOtherItems.length,
                 scrollDirection: Axis.horizontal,
                 itemBuilder: (context, index) => Card(
-                      color: Colors.grey[200],
+                      semanticContainer: true,
+                      clipBehavior: Clip.antiAliasWithSaveLayer,
+                      color: Colors.white,
+                      elevation: 5,
                       child: Container(
                         width: MediaQuery.of(context).size.width - 100,
-                        child: Center(
-                            child: Text(
-                          "Coming Soon !!",
-                          style: TextStyle(color: lightBlue()),
-                        )),
+                        height: MediaQuery.of(context).size.height / 3,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Expanded(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(4),
+                                    topRight: Radius.circular(4)),
+                                child: CachedNetworkImage(
+                                  imageUrl: product.serverImages.first,
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                ),
+                              ),
+                            ),
+                            ListTile(
+                              dense: true,
+                              title: Text(
+                                sellersOtherItems[index].name,
+                                style: TextStyle(color: lightBlue()),
+                                maxLines: 1,
+                              ),
+                              subtitle: Text(
+                                product.shortDescription,
+                                maxLines: 1,
+                              ),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Text(
+                                    worldCurrencies[product.currency],
+                                    style: TextStyle(fontFamily: "Roboto"),
+                                  ),
+                                  Text(
+                                    product.price.toString(),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     )),
           ),

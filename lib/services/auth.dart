@@ -1566,7 +1566,6 @@ class AuthService {
     var jsonData = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
-      debugPrint(jsonData.toString());
       return getCartItems(jsonData);
     }
     throw jsonData;
@@ -1681,5 +1680,42 @@ class AuthService {
     }
     debugPrint("address add failed : ${response.body}");
     return true;
+  }
+
+  Future<List<dynamic>> ownersOrderProductsAndServices(
+      {@required String type,
+      @required String userId,
+      @required String exclude}) async {
+    String urlPart =
+        type == "products" ? "sellers-other-products" : "providers-other-services";
+
+    var url = "$baseUrl/api/v1/$type/$urlPart/$userId/?exclude=$exclude";
+
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
+    List items = List();
+
+    debugPrint("status code: ${response.statusCode}");
+    debugPrint("response body: ${response.body}");
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+      var data = jsonData["results"];
+      debugPrint("data: $data");
+      for (int i = 0; i < data.length; i++) {
+        if (type == "products") {
+          var product = Product.fromJson(data[i]);
+          items.add(product);
+        }
+        if (type == "services") {
+          var service = Service.fromJson(data[i]);
+          items.add(service);
+        }
+      }
+      return items;
+    } else if (response.statusCode == 500) {
+      throw "Server Error";
+    } else {
+      return items;
+    }
   }
 }
