@@ -1,10 +1,3 @@
-//TODO: Display sender message
-
-//TODO: allow user to type recevierName like we do in payment request
-//TODO: allow user to input body
-//TODO: allow user to click send button
-//TODO: inputs {recipient, subject, body, submitButton }
-
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/message.dart';
@@ -297,6 +290,7 @@ class _DetailedMessageState extends State<DetailedMessage> {
       child: Text(AppLocalization.of(context).reply),
       onPressed: () {
         Navigator.of(context).pushNamed('/compose_message', arguments: {
+          'isReply': 1,
           'recipient': message.sender,
           'subject': message.subject,
         });

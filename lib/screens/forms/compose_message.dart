@@ -27,13 +27,13 @@ class _ComposeMessageState extends State<ComposeMessage> {
 
   bool isValidRecipient = false;
   bool isReplyMessage = false;
+  bool isSubjectIsPresent = false;
   final _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
   CustomerProfile _payee;
   UserBloc userBloc;
   CustomerProfileBloc customerProfileBloc;
   String subject = "";
-  bool subjectNeedReplayAtPrefix = true;
   String message = "";
   String errorMessage = "";
   String recipient;
@@ -46,17 +46,19 @@ class _ComposeMessageState extends State<ComposeMessage> {
 
     // checking if the message is replay message then we fetch recipient and subject Details
     // and set into recipient field and subject field and also display the recipent data tile
+
     if (arguments != null) {
       setState(() {
-        isReplyMessage = true;
+        isReplyMessage = arguments['isReply'] == 1 ? true : false ?? false;
       });
       recipient = arguments['recipient'];
       _recipientController.text = recipient;
       subject = arguments['subject'];
-      if (subject == "") {
-        subjectNeedReplayAtPrefix = false;
+      if (subject != "") {
+        setState(() {
+          isSubjectIsPresent = true;
+        });
       }
-
       _subjectController.text = subject;
       fetchCustomer();
     }
@@ -262,7 +264,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
   Widget getRecipientField() {
     return TextFormField(
       controller: _recipientController,
-      enabled: isReplyMessage ? false : true,
+      enabled: !isReplyMessage && !isSubjectIsPresent,
       focusNode: _recipientFocus,
       cursorColor: darkBlue(),
       validator: (value) {
@@ -300,14 +302,13 @@ class _ComposeMessageState extends State<ComposeMessage> {
 
   Widget getSubjectField() {
     return TextFormField(
-      enabled: isReplyMessage && subjectNeedReplayAtPrefix ? false : true,
+      enabled: !isReplyMessage && !isSubjectIsPresent,
       cursorColor: darkBlue(),
       controller: _subjectController,
       autofocus: false,
       obscureText: false,
       decoration: InputDecoration(
-        prefixText:
-            isReplyMessage ? subjectNeedReplayAtPrefix ? "Re:" : "" : "",
+        prefixText: isReplyMessage ? "Re:" : "",
         prefixIcon: Icon(Icons.subject),
         fillColor: Colors.white,
         filled: true,

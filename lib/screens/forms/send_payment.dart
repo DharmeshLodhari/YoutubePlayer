@@ -153,8 +153,7 @@ class _SendPaymentState extends State<SendPayment> {
     return WillPopScope(
       onWillPop: () async {
         _payee = null;
-        Navigator.pop(context);
-        return false;
+        return true;
       },
       child: Scaffold(
         backgroundColor: lightBlue(),
@@ -526,7 +525,7 @@ class _SendPaymentState extends State<SendPayment> {
                           response = value;
                           if (response.statusCode == 200) {
                             popFromShoppingCart(product);
-                            Navigator.of(context).pushNamed(
+                            Navigator.of(context).popAndPushNamed(
                               '/transactions',
                             );
                           } else if (response.statusCode == 500) {

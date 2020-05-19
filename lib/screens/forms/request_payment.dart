@@ -114,8 +114,7 @@ class _RequestPaymentState extends State<RequestPayment> {
     return WillPopScope(
       onWillPop: () async {
         _payee = null;
-        Navigator.pop(context);
-        return false;
+        return true;
       },
       child: Scaffold(
         key: requestPaymentScaffold,
@@ -474,7 +473,7 @@ class _RequestPaymentState extends State<RequestPayment> {
                         _auth.createPaymentRequests(data).then((value) {
                           response = value;
                           if (response.statusCode == 201) {
-                            Navigator.of(context).pushNamed('/dashboard',
+                            Navigator.of(context).popAndPushNamed('/dashboard',
                                 arguments: {'dashboardIndex': 1});
                           } else if (response.statusCode == 500) {
                             Navigator.pop(context);
