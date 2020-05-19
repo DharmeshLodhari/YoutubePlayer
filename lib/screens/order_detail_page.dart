@@ -33,8 +33,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   UserBloc userBloc;
 
   SlidableController slidableController;
-  PersistentBottomSheetController statusBottomSheetController;
-  PersistentBottomSheetController noteBottomSheetController;
 
   String note = "";
 
@@ -75,12 +73,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     userBloc = Provider.of<UserBloc>(context);
     return WillPopScope(
       onWillPop: () async {
-        if (noteBottomSheetController != null) {
-          noteBottomSheetController = null;
-        }
-        if (statusBottomSheetController != null) {
-          statusBottomSheetController = null;
-        }
         return true;
       },
       child: Scaffold(
@@ -121,7 +113,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     return IconButton(
       icon: Icon(Icons.settings),
       onPressed: () {
-//        showBtmSheet();
         showChangeStatusAndroidSheet();
       },
     );
@@ -131,39 +122,9 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     return IconButton(
       icon: Icon(Icons.event_note),
       onPressed: () {
-//        showNoteSheet();
         showNoteAndroidSheet();
       },
     );
-  }
-
-  showNoteSheet() {
-    noteBottomSheetController =
-        scaffoldKey.currentState.showBottomSheet((context) => Card(
-              elevation: 15,
-              margin: EdgeInsets.all(0),
-              color: Colors.white,
-              child: Container(
-                height: MediaQuery.of(context).size.height / 2,
-                width: MediaQuery.of(context).size.width,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 12.0),
-                  child: Column(
-                    children: <Widget>[
-                      Text(
-                        'Notes',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: darkBlue(),
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      getBodyOfNoteBottomSheet()
-                    ],
-                  ),
-                ),
-              ),
-            ));
   }
 
   void showNoteAndroidSheet() {
@@ -283,10 +244,10 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       if (value) {
         setState(() {
           order.note = note;
+          Navigator.pop(context);
         });
       }
     });
-    noteBottomSheetController.close();
   }
 
   getOrderNote() {
@@ -294,116 +255,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       return "No Special Note Atteched !!";
     }
     return order.note;
-  }
-
-  showBtmSheet() async {
-    statusBottomSheetController =
-        scaffoldKey.currentState.showBottomSheet((context) => Card(
-              margin: EdgeInsets.all(0),
-              elevation: 15,
-              child: Container(
-                height: MediaQuery.of(context).size.height / 2,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 10.0),
-                  child: Column(
-                    children: <Widget>[
-                      Text(
-                        'Status',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: darkBlue(),
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      Expanded(
-                        child: ListView(
-                          children: <Widget>[
-                            Divider(
-                              height: 0,
-                            ),
-                            statusListTile(
-                              title: "New Order",
-                              value: "new order",
-                            ),
-                            Divider(
-                              height: 0,
-                            ),
-                            statusListTile(
-                              title: "Awaiting Payment",
-                              value: "awaiting payment",
-                            ),
-                            Divider(
-                              height: 0,
-                            ),
-                            statusListTile(
-                              title: "Canceled",
-                              value: "canceled",
-                            ),
-                            Divider(
-                              height: 0,
-                            ),
-                            statusListTile(
-                              title: "Completed",
-                              value: "complete",
-                            ),
-                            Divider(
-                              height: 0,
-                            ),
-                            statusListTile(
-                              title: "On Hold",
-                              value: "on hold",
-                            ),
-                            Divider(
-                              height: 0,
-                            ),
-                            statusListTile(
-                              title: "Pending",
-                              value: "pending",
-                            ),
-                            Divider(
-                              height: 0,
-                            ),
-                            statusListTile(
-                              title: "Processing",
-                              value: "processing",
-                            ),
-                            Divider(
-                              height: 0,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ));
-  }
-
-  Widget statusListTile({String title, String value, StateSetter setState}) {
-    return RadioListTile(
-      activeColor: darkBlue(),
-      title: Text(
-        title,
-        textAlign: TextAlign.start,
-        style: TextStyle(
-          color: darkBlue(),
-          fontSize: 16.0,
-        ),
-      ),
-      value: value,
-      onChanged: (value) {
-        if (userBloc.user.userName == order.merchant) {
-          setState(() {
-//            statusBottomSheetController.setState(() {
-            updateStatus(value);
-            statusOfOrder = value;
-//            });
-          });
-        }
-      },
-      groupValue: statusOfOrder,
-    );
   }
 
   void showChangeStatusAndroidSheet() {
@@ -506,6 +357,30 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         });
   }
 
+  Widget statusListTile({String title, String value, StateSetter setState}) {
+    return RadioListTile(
+      activeColor: darkBlue(),
+      title: Text(
+        title,
+        textAlign: TextAlign.start,
+        style: TextStyle(
+          color: darkBlue(),
+          fontSize: 16.0,
+        ),
+      ),
+      value: value,
+      onChanged: (value) {
+        if (userBloc.user.userName == order.merchant) {
+          setState(() {
+            updateStatus(value);
+            statusOfOrder = value;
+          });
+        }
+      },
+      groupValue: statusOfOrder,
+    );
+  }
+
   Widget checkoutWidget() {
     return Card(
       elevation: 5,
@@ -575,7 +450,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   List<Widget> listSecondaryActions(int index) {
-    String caption = "Remove";
     return [];
   }
 
