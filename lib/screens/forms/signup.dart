@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
 import '../../widget/LoadingIndicator.dart';
@@ -29,6 +31,8 @@ class _SignUpState extends State<SignUp> {
   String password1 = '';
   String password2 = '';
 
+  UserBloc userBloc;
+
   @override
   void initState() {
     phoneNumber = arguments['phoneNumber'];
@@ -37,6 +41,7 @@ class _SignUpState extends State<SignUp> {
 
   @override
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
     return Scaffold(
         backgroundColor: lightBlue(),
         resizeToAvoidBottomInset: true,
@@ -257,8 +262,10 @@ class _SignUpState extends State<SignUp> {
               isRegistered = value;
               if (isRegistered) {
                 _auth.authenticate(phoneNumber, password1).then((value) {
+                  var user = value;
+                  userBloc.user = user;
                   Navigator.pop(context);
-                  Navigator.of(context).popAndPushNamed('/bvn-verification');
+                  Navigator.of(context).popAndPushNamed('/dashboard');
                 });
               }
             });
