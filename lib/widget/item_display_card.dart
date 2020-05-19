@@ -76,3 +76,76 @@ Widget displayProduct({BuildContext context, Product product}) {
     ),
   );
 }
+
+Widget displayService({BuildContext context, Service service}) {
+  return Card(
+    semanticContainer: true,
+    clipBehavior: Clip.antiAliasWithSaveLayer,
+    color: Colors.white,
+    elevation: 5,
+    child: GestureDetector(
+      child: Container(
+        width: MediaQuery.of(context).size.width - 100,
+        height: MediaQuery.of(context).size.height / 3,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Expanded(
+              child: ClipRRect(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(4), topRight: Radius.circular(4)),
+                child: CachedNetworkImage(
+                  imageUrl: service.cover,
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                ),
+              ),
+            ),
+            ListTile(
+              dense: true,
+              title: Text(
+                service.name,
+                style: TextStyle(color: lightBlue()),
+                maxLines: 1,
+              ),
+              subtitle: Text(
+                service.shortDescription,
+                maxLines: 1,
+              ),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(
+                    worldCurrencies[service.currency],
+                    style: TextStyle(fontFamily: "Roboto"),
+                  ),
+                  Text(
+                    service.price.toString(),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+      onTap: () {
+        Service currentService = Service();
+        currentService.name = service.name;
+        currentService.id = service.id;
+        currentService.shortDescription = service.shortDescription;
+        currentService.currency = service.currency;
+        currentService.price = service.price;
+        currentService.isAvailable = service.isAvailable;
+        currentService.qrCode = service.qrCode;
+        currentService.provider = service.provider;
+        currentService.serverImages = service.serverImages;
+        currentService.currency = service.currency;
+        currentService.description = service.description;
+        currentService.availableFrom = DateTime.now();
+
+        Navigator.pushNamed(context, '/service-detail',
+            arguments: {"service": currentService});
+      },
+    ),
+  );
+}

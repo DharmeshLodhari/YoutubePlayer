@@ -3,6 +3,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/widget/item_display_card.dart';
 import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -27,18 +28,22 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     with TickerProviderStateMixin {
   var arguments;
 
-  bool isValidCustomer;
-
   _ServiceDetailPageState({this.arguments});
 
   Service service;
   CustomerProfileBloc customerProfileBloc;
   UserBloc userBloc;
   BasketBloc basketBloc;
+  static List<String> imgList = [];
 
   final _auth = AuthService();
 
-  static List<String> imgList = [];
+  bool isValidCustomer;
+  bool isOtherItemFetched = false;
+  bool isOtherItemIsEmpty = true;
+  ScrollController _scrollController = new ScrollController();
+
+  List<dynamic> sellersOtherItems = List<dynamic>();
 
   int _current = 0;
 
@@ -48,6 +53,14 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       service = arguments['service'];
     });
     fetchService(service.id.toString());
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        if (!isOtherItemFetched) {
+          getOtherItems();
+        }
+      }
+    });
     super.initState();
   }
 
@@ -59,6 +72,26 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         debugPrint("provider avatar ${service.providerAvatar}");
       });
     });
+  }
+
+  void getOtherItems() {
+    _auth
+        .ownersOrderProductsAndServices(
+            type: "services", userId: service.provider, exclude: service.id)
+        .then((value) {
+      debugPrint("value : $value");
+      if (value.isNotEmpty) {
+        setState(() {
+          isOtherItemIsEmpty = false;
+          sellersOtherItems = value;
+        });
+      } else {
+        setState(() {
+          isOtherItemIsEmpty = true;
+        });
+      }
+    });
+    isOtherItemFetched = true;
   }
 
   @override
@@ -233,6 +266,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     Size screenSize = MediaQuery.of(context).size;
 
     return ListView(
+      controller: _scrollController,
       children: <Widget>[
         Container(
           padding: const EdgeInsets.all(4.0),
@@ -253,8 +287,10 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                 SizedBox(height: 12.0),
                 _buildDivider(screenSize),
                 _buildDescriptionWidget(),
-                SizedBox(height: 20.0),
-                _buildProviderOtherServices(),
+                SizedBox(height: 30.0),
+                isOtherItemIsEmpty
+                    ? Container()
+                    : _buildProviderOtherServices(),
                 SizedBox(height: 80.0),
               ],
             ),
@@ -494,7 +530,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
 
   Widget _buildProviderOtherServices() {
     return Container(
-      height: 200,
+      height: 250,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -520,8 +556,10 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                   ),
                 ),
                 onTap: () {
-                  Toast.show("Coming Soon !! ", context,
-                      textColor: Colors.white, backgroundColor: darkBlue());
+                  _auth.fetchCustomerProfile(service.provider).then((user) {
+                    Navigator.pushNamed(context, '/profile',
+                        arguments: {"searchedUser": user, "index": 2});
+                  });
                 },
               ),
             ],
@@ -531,19 +569,14 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
           ),
           Expanded(
             child: ListView.builder(
-                itemCount: 10,
-                scrollDirection: Axis.horizontal,
-                itemBuilder: (context, index) => Card(
-                      color: Colors.grey[200],
-                      child: Container(
-                        width: MediaQuery.of(context).size.width - 100,
-                        child: Center(
-                            child: Text(
-                          "Coming Soon !!",
-                          style: TextStyle(color: lightBlue()),
-                        )),
-                      ),
-                    )),
+              padding: EdgeInsets.symmetric(horizontal: 8),
+              itemCount: sellersOtherItems.length,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (context, index) => displayService(
+                context: context,
+                service: sellersOtherItems[index],
+              ),
+            ),
           ),
         ],
       ),

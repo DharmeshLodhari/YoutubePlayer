@@ -131,6 +131,7 @@ class Service {
   String price;
   List<File> localImages;
   List<String> serverImages;
+  String cover;
   String provider;
   String providerAvatar;
   String qrCode;
@@ -148,6 +149,7 @@ class Service {
     this.price,
     this.localImages,
     this.serverImages,
+    this.cover = "",
     this.provider,
     this.providerAvatar,
     this.qrCode,
@@ -200,6 +202,7 @@ class Service {
     this.price = object["price"].toString();
     this.localImages = object["localImages"] ?? [];
     this.serverImages = getServiceImages(object["pictures"]) ?? [];
+    this.cover = object["cover"] ?? "";
     this.provider = object["provider"] ?? "";
     this.providerAvatar = object["provider_avatar"] ?? "";
     this.qrCode = object["qrCode"] ?? "";
@@ -225,8 +228,11 @@ class Service {
   }
 
   DateTime getServiceDateTime(var date) {
-    DateTime dateTime = DateTime.parse(date);
-    return dateTime;
+    if (date != null) {
+      DateTime dateTime = DateTime.parse(date);
+      return dateTime;
+    }
+    return DateTime.now();
   }
 }
 

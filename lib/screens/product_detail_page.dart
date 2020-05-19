@@ -90,9 +90,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         });
       }
     });
-
-//    Toast.show("fetch other items Called !!", context,
-//        backgroundColor: darkBlue(), textColor: Colors.white);
     isOtherItemFetched = true;
   }
 
@@ -290,7 +287,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 SizedBox(height: 12.0),
                 _buildDivider(screenSize),
                 _buildDescriptionWidget(),
-                SizedBox(height: 20.0),
+                SizedBox(height: 30.0),
                 isOtherItemIsEmpty ? Container() : _buildSellersOtherProducts(),
                 SizedBox(height: 80.0),
               ],
