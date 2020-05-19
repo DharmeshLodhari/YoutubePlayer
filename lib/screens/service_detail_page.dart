@@ -346,11 +346,16 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
               items: imgList
                   .map((item) => Container(
                         child: Center(
-                            child: CachedNetworkImage(
-                          imageUrl: item,
-                          fit: BoxFit.fill,
-                          height: double.infinity,
-                          width: double.infinity,
+                            child: ClipRRect(
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(4),
+                              topRight: Radius.circular(4)),
+                          child: CachedNetworkImage(
+                            imageUrl: item,
+                            fit: BoxFit.fill,
+                            height: double.infinity,
+                            width: double.infinity,
+                          ),
                         )),
                       ))
                   .toList(),

@@ -1533,6 +1533,7 @@ class AuthService {
     if (response.statusCode == 200) {
       List items = List();
       var data = jsonData["results"];
+      debugPrint("data: $data");
       for (int i = 0; i < data.length; i++) {
         if (data[i]["item"].containsKey("manufacturer")) {
           var product = Product.fromJson(data[i]["item"]);
