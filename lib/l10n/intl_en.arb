@@ -287,5 +287,11 @@
  "areYouSureWantToDeleteThisItem" :"Are You Sure Want To Delete This Item :" ,
  "retry" :"Retry",
  "bvnTermsAndCondition":"By clicking Register you are agreeing to the Terms and Conditions.",
- "documentVerificationTermsAndCondition":"By clicking Register you are agreeing to the Terms and Conditions."
+ "documentVerificationTermsAndCondition":"By clicking Register you are agreeing to the Terms and Conditions.",
+ "termsForRegistration": "This Phone Number Should Be The Number Associated With your BVN",
+ "termsForUserAgreeCheckBox": "I Agree That If I Give Mismatch Number To My BVN I Will Be solely Responsible For The Consequence.",
+ "termsForName" : "This Name Must Match The Name On Your BVN",
+ "bankAccountTerms": "This Bank Account Must Match Your BVN And Phone Number Registered With Slydo.",
+ "bankAccountUserAgreeTerm": "Putting Misleading Info May Results In Delays Or Lost of Money."
+
 }

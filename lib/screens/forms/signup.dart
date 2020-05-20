@@ -7,6 +7,7 @@ import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../widget/LoadingIndicator.dart';
 
@@ -57,10 +58,13 @@ class _SignUpState extends State<SignUp> {
             child: Form(
               key: _formKey,
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  SizedBox(height: 10),
                   getPhoneNumberField(),
+                  SizedBox(height: 10),
+                  Text(
+                    AppLocalization.of(context).termsForName,
+                    style: TextStyle(color: Colors.red),
+                  ),
                   SizedBox(height: 10),
                   getFullNameField(),
                   SizedBox(height: 10),
@@ -75,8 +79,14 @@ class _SignUpState extends State<SignUp> {
                   SizedBox(height: 10),
                   getPassword2Field(),
                   SizedBox(height: 10),
-                  Container(
-                    child: Text(AppLocalization.of(context).termsAndCondition),
+                  InkWell(
+                    child: Container(
+                      child:
+                          Text(AppLocalization.of(context).termsAndCondition),
+                    ),
+                    onTap: () {
+                      launch('http://slydo.co/terms');
+                    },
                   ),
                   SizedBox(height: 10),
                   getSubmitButton(),

@@ -24,6 +24,7 @@ class _AddAccountState extends State<AddAccount> {
   String accountNumber = "";
   bool isDefault = false;
   List<Bank> banks = getBanks();
+  bool isUserAgree = false;
 
   @override
   Widget build(BuildContext context) {
@@ -47,29 +48,41 @@ class _AddAccountState extends State<AddAccount> {
             key: _formKey,
             child: Container(
               color: lightBlue(),
-              padding: EdgeInsets.all(24),
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  children: <Widget>[
-                    SizedBox(height: 80),
-                    getBankNameDropDownMenu(),
-                    SizedBox(height: 10),
-                    getAccountName(),
-                    SizedBox(height: 10),
-                    getAccountNumber(),
-                    SizedBox(height: 20),
-                    Text(AppLocalization.of(context).setDefaultAccountMsg),
-                    checkButton(),
-                    SizedBox(height: 20),
-                    Text(
-                      errorMessage,
-                      style: TextStyle(color: Colors.red),
+              padding: EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                children: <Widget>[
+                  SizedBox(height: 20),
+                  Text(
+                    AppLocalization.of(context).bankAccountTerms,
+                    style: TextStyle(
+                      color: Colors.red,
                     ),
-                    SizedBox(height: 20),
-                    getSubmitButton(userBloc.user.userName),
-                  ],
-                ),
+                  ),
+                  SizedBox(height: 20),
+                  getBankNameDropDownMenu(),
+                  SizedBox(height: 10),
+                  getAccountName(),
+                  SizedBox(height: 10),
+                  getAccountNumber(),
+                  SizedBox(height: 20),
+                  Text(AppLocalization.of(context).setDefaultAccountMsg),
+                  checkButton(),
+                  SizedBox(height: 10),
+                  errorMessage != ""
+                      ? Text(
+                          errorMessage,
+                          style: TextStyle(color: Colors.red),
+                        )
+                      : Container(),
+                  getUserAgreeCheckBoxWidget(),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  isUserAgree
+                      ? getSubmitButton(userBloc.user.userName)
+                      : Container(),
+                ],
               ),
             ),
           ),
@@ -237,6 +250,30 @@ class _AddAccountState extends State<AddAccount> {
         height: 50,
         child: Text(AppLocalization.of(context).submitButton),
       ),
+    );
+  }
+
+  Widget getUserAgreeCheckBoxWidget() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Checkbox(
+          value: isUserAgree,
+          activeColor: darkBlue(),
+          onChanged: (value) {
+            setState(() {
+              isUserAgree = value;
+            });
+          },
+        ),
+        Expanded(
+            child: Text(
+          AppLocalization.of(context).bankAccountUserAgreeTerm,
+          style: TextStyle(
+            color: Colors.red,
+          ),
+        ))
+      ],
     );
   }
 }

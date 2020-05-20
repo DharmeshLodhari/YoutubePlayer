@@ -2096,6 +2096,41 @@ class AppLocalization {
       name: "documentVerificationTermsAndCondition",
     );
   }
+
+  String get termsForRegistration {
+    return Intl.message(
+      "This Phone Number Should Be The Number Associated With your BVN",
+      name: "termsForRegistration",
+    );
+  }
+
+  String get termsForUserAgreeCheckBox {
+    return Intl.message(
+      "I Agree That If I Give Mismatch Number To My BVN I Will Be solely Responsible For The Consequence.",
+      name: "termsForUserAgreeCheckBox",
+    );
+  }
+
+  String get termsForName {
+    return Intl.message(
+      "This Name Must Match The Name On Your BVN",
+      name: "termsForName",
+    );
+  }
+
+  String get bankAccountTerms {
+    return Intl.message(
+      "This Bank Account Must Match Your BVN And Phone Number Registered With Slydo.",
+      name: "bankAccountTerms",
+    );
+  }
+
+  String get bankAccountUserAgreeTerm {
+    return Intl.message(
+      "Putting Misleading Info May Results In Delays Or Lost of Money.",
+      name: "bankAccountUserAgreeTerm",
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalization> {

@@ -1,4 +1,3 @@
-
 import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';

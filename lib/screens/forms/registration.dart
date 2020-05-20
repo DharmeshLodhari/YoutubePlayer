@@ -27,6 +27,8 @@ class _RegistrationState extends State<Registration> {
   int selectedCountry = 0;
   Country _selectedDialogCountry = CountryPickerUtils.getCountryByIsoCode('IE');
 
+  bool isUserAgree = false;
+
   @override
   void initState() {
     super.initState();
@@ -55,6 +57,15 @@ class _RegistrationState extends State<Registration> {
                     SizedBox(
                       height: 10,
                     ),
+                    Text(
+                      AppLocalization.of(context).termsForRegistration,
+                      style: TextStyle(
+                        color: Colors.red,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
                     getPhoneNumberWidget(),
                     isOTPSent
                         ? SizedBox(
@@ -62,6 +73,10 @@ class _RegistrationState extends State<Registration> {
                           )
                         : Container(),
                     isOTPSent ? getVerificationOTPWidget() : Container(),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    getUserAgreeCheckBoxWidget(),
                     SizedBox(
                       height: 20,
                     ),
@@ -156,18 +171,20 @@ class _RegistrationState extends State<Registration> {
   }
 
   Widget submitButton() {
-    return ButtonTheme(
-      minWidth: double.infinity,
-      child: MaterialButton(
-        onPressed: isOTPSent ? verifyOTP : sendOTP,
-        textColor: Colors.white,
-        color: darkBlue(),
-        height: 50,
-        child: Text(isOTPSent
-            ? AppLocalization.of(context).verifyOtp
-            : AppLocalization.of(context).continueMsg),
-      ),
-    );
+    return isUserAgree && enteredPhoneNumber.length == 9
+        ? ButtonTheme(
+            minWidth: double.infinity,
+            child: MaterialButton(
+              onPressed: isOTPSent ? verifyOTP : sendOTP,
+              textColor: Colors.white,
+              color: darkBlue(),
+              height: 50,
+              child: Text(isOTPSent
+                  ? AppLocalization.of(context).verifyOtp
+                  : AppLocalization.of(context).continueMsg),
+            ),
+          )
+        : Container();
   }
 
   void verifyOTP() {
@@ -198,7 +215,7 @@ class _RegistrationState extends State<Registration> {
       FocusScope.of(context).unfocus();
     }
 
-    if (_formKey.currentState.validate()) {
+    if (_formKey.currentState.validate() && isUserAgree) {
       _auth.registerPhoneNumber(phoneNumberWithCountryCode).then((value) {
         setState(() {
           isOTPSent = true;
@@ -262,4 +279,26 @@ class _RegistrationState extends State<Registration> {
           ),
         ),
       );
+
+  Widget getUserAgreeCheckBoxWidget() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Checkbox(
+          activeColor: darkBlue(),
+          value: isUserAgree,
+          onChanged: (value) {
+            setState(() {
+              isUserAgree = value;
+            });
+          },
+        ),
+        SizedBox(
+          width: 8,
+        ),
+        Expanded(
+            child: Text(AppLocalization.of(context).termsForUserAgreeCheckBox)),
+      ],
+    );
+  }
 }
