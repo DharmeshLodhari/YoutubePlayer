@@ -69,7 +69,6 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       setState(() {
         service = value;
         imgList = service.serverImages;
-        debugPrint("provider avatar ${service.providerAvatar}");
       });
     });
   }
@@ -79,7 +78,6 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         .ownersOrderProductsAndServices(
             type: "services", userId: service.provider, exclude: service.id)
         .then((value) {
-      debugPrint("value : $value");
       if (value.isNotEmpty) {
         setState(() {
           isOtherItemIsEmpty = false;
@@ -183,7 +181,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
           color: Colors.white,
         ),
         onPressed: () {
-          Navigator.pushNamed(context, "/dashboard",
+          Navigator.popAndPushNamed(context, "/dashboard",
               arguments: {"dashboardIndex": 2});
         },
       ),
@@ -249,7 +247,9 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                       debugPrint("Data From Service Page : $data");
                       await _auth.addItemToShoppingCart(data);
                     } else {
-                      Toast.show("You can not Purchase this item !!", context,
+                      Toast.show(
+                          AppLocalization.of(context).youCanNotPurchaseThisItem,
+                          context,
                           textColor: Colors.white,
                           backgroundColor: darkBlue(),
                           duration: Toast.LENGTH_LONG);
@@ -262,7 +262,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     );
   }
 
-  _buildServiceDetailsPage(BuildContext context) {
+  Widget _buildServiceDetailsPage(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
 
     return ListView(
@@ -388,7 +388,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     );
   }
 
-  _buildServiceTitleAndPriceWidget() {
+  Widget _buildServiceTitleAndPriceWidget() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -518,7 +518,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
               children: <Widget>[
                 Icon(Icons.share),
                 SizedBox(width: 12),
-                Text("Share")
+                Text(AppLocalization.of(context).share)
               ],
             ),
             onPressed: () {
@@ -545,7 +545,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
               Padding(
                 padding: const EdgeInsets.only(left: 12.0),
                 child: Text(
-                  "Provider's other Services",
+                  AppLocalization.of(context).providersOtherService,
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
                 ),
               ),
@@ -553,7 +553,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                 child: Padding(
                   padding: const EdgeInsets.only(right: 12.0),
                   child: Text(
-                    "See all",
+                    AppLocalization.of(context).seeAll,
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 12,
@@ -588,7 +588,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     );
   }
 
-  _buildBuyButtonWidget() {
+  Widget _buildBuyButtonWidget() {
     return Expanded(
       child: Container(
         decoration: BoxDecoration(
@@ -602,7 +602,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         child: FlatButton(
           color: Colors.white,
           child: Text(
-            "Buy Now",
+            AppLocalization.of(context).buyNow,
             style: TextStyle(color: lightBlue()),
           ),
           onPressed: () {
@@ -610,7 +610,8 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
               getRecipient();
               navigateToSendPayment();
             } else {
-              Toast.show("You can not Purchase this item !!", context,
+              Toast.show(AppLocalization.of(context).youCanNotPurchaseThisItem,
+                  context,
                   textColor: Colors.white,
                   backgroundColor: darkBlue(),
                   duration: Toast.LENGTH_LONG);

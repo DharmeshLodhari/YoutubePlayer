@@ -1,6 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -14,7 +13,6 @@ class BvnVerificationPage extends StatefulWidget {
 class _BvnVerificationPageState extends State<BvnVerificationPage> {
   final _formKey = GlobalKey<FormState>();
   String bvnNumber = "";
-  final _auth = AuthService();
   UserBloc userBloc;
 
   @override
@@ -22,14 +20,14 @@ class _BvnVerificationPageState extends State<BvnVerificationPage> {
     userBloc = Provider.of<UserBloc>(context);
     return WillPopScope(
         onWillPop: () async {
-          Navigator.pop(context);
-          return false;
+          return true;
         },
         child: Scaffold(
             backgroundColor: lightBlue(),
             resizeToAvoidBottomInset: true,
             appBar: AppBar(
-                title: Center(child: Text("BVN Verification")),
+                title: Center(
+                    child: Text(AppLocalization.of(context).bvnVerification)),
                 backgroundColor: darkBlue()),
             body: SingleChildScrollView(
               padding: EdgeInsets.symmetric(vertical: 40.0, horizontal: 40.0),
@@ -43,8 +41,8 @@ class _BvnVerificationPageState extends State<BvnVerificationPage> {
                       height: 20,
                     ),
                     Container(
-                      child:
-                          Text(AppLocalization.of(context).termsAndCondition),
+                      child: Text(
+                          AppLocalization.of(context).bvnTermsAndCondition),
                     ),
                     SizedBox(
                       height: 20,
@@ -67,7 +65,7 @@ class _BvnVerificationPageState extends State<BvnVerificationPage> {
           prefixIcon: Icon(Icons.account_balance),
           fillColor: Colors.white,
           filled: true,
-          hintText: "Enter Your BVN Number",
+          hintText: AppLocalization.of(context).enterYourBVNNUmber,
           labelStyle: TextStyle(
             color: darkBlue(),
             fontSize: 16,
@@ -80,7 +78,7 @@ class _BvnVerificationPageState extends State<BvnVerificationPage> {
         if (val.isNotEmpty && val.length == 13) {
           return null;
         }
-        return "Invalid BVN NUmber";
+        return AppLocalization.of(context).invalidBVNNumber;
       },
       onChanged: (val) {
         bvnNumber = val;
@@ -96,7 +94,7 @@ class _BvnVerificationPageState extends State<BvnVerificationPage> {
         textColor: Colors.white,
         color: darkBlue(),
         height: 50,
-        child: Text("Verify"),
+        child: Text(AppLocalization.of(context).verify),
       ),
     );
   }

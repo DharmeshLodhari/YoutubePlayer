@@ -130,7 +130,7 @@ class AppLocalization {
 
   String get verifyYourIdentity {
     return Intl.message(
-      "Verify your identity",
+      "Verify Your Identity",
       name: "verifyYourIdentity",
     );
   }
@@ -1637,6 +1637,463 @@ class AppLocalization {
     return Intl.message(
       "No Transactions done this week",
       name: "noTransactionDoneThisWeek",
+    );
+  }
+
+  //bvn_verification_page
+
+  String get bvnVerification {
+    return Intl.message(
+      "BVN Verification",
+      name: "bvnVerification",
+    );
+  }
+
+  String get enterYourBVNNUmber {
+    return Intl.message(
+      "Enter Your BVN Number",
+      name: "enterYourBVNNUmber",
+    );
+  }
+
+  String get invalidBVNNumber {
+    return Intl.message(
+      "Invalid BVN Number",
+      name: "invalidBVNNumber",
+    );
+  }
+
+  String get verify {
+    return Intl.message(
+      "Verify",
+      name: "verify",
+    );
+  }
+
+  //compose Message
+  String get re {
+    return Intl.message(
+      "Re",
+      name: "re",
+    );
+  }
+
+  //user_address
+  String get addAddress {
+    return Intl.message(
+      "Add Address",
+      name: "addAddress",
+    );
+  }
+
+  String get addressLine1 {
+    return Intl.message(
+      "Address Line 1",
+      name: "addressLine1",
+    );
+  }
+
+  String get invalidAddress {
+    return Intl.message(
+      "Invalid Address",
+      name: "invalidAddress",
+    );
+  }
+
+  String get addressLine2 {
+    return Intl.message(
+      "Address Line 2",
+      name: "addressLine2",
+    );
+  }
+
+  String get city {
+    return Intl.message(
+      "City",
+      name: "city",
+    );
+  }
+
+  String get invalidCity {
+    return Intl.message(
+      "Invalid City",
+      name: "invalidCity",
+    );
+  }
+
+  String get state {
+    return Intl.message(
+      "State",
+      name: "state",
+    );
+  }
+
+  String get invalidState {
+    return Intl.message(
+      "Invalid State",
+      name: "invalidState",
+    );
+  }
+
+  String get addressAddedSuccessFully {
+    return Intl.message(
+      "Address Added Successfully",
+      name: "addressAddedSuccessFully",
+    );
+  }
+
+  //order_tile
+  String get ref {
+    return Intl.message(
+      "Ref",
+      name: "ref",
+    );
+  }
+
+  //card_payment_page
+  String get cardPayment {
+    return Intl.message(
+      "Card Payment",
+      name: "cardPayment",
+    );
+  }
+
+  String get cardNumber {
+    return Intl.message(
+      "Card Number",
+      name: "cardNumber",
+    );
+  }
+
+  String get expiredDate {
+    return Intl.message(
+      "Expied Date",
+      name: "expiredDate",
+    );
+  }
+
+  String get cvv {
+    return Intl.message(
+      "CVV",
+      name: "cvv",
+    );
+  }
+
+  String get cardHolder {
+    return Intl.message(
+      "Card Holder",
+      name: "cardHolder",
+    );
+  }
+
+  String get topUp {
+    return Intl.message(
+      "Top Up",
+      name: "topUp",
+    );
+  }
+
+  String get invalidDetail {
+    return Intl.message(
+      "Invalid Detail",
+      name: "invalidDetail",
+    );
+  }
+
+  //checkout_shopping_cart
+  String get basket {
+    return Intl.message(
+      "Basket",
+      name: "basket",
+    );
+  }
+
+  String get shoppingCartIsEmpty {
+    return Intl.message(
+      "Shopping Cart Is Empty !!",
+      name: "shoppingCartIsEmpty",
+    );
+  }
+
+  String get total {
+    return Intl.message(
+      "Total",
+      name: "total",
+    );
+  }
+
+  String get buy {
+    return Intl.message(
+      "Buy",
+      name: "buy",
+    );
+  }
+
+  String get pleaseAddSomeItemsFirst {
+    return Intl.message(
+      "Please Add Some Items First !!",
+      name: "pleaseAddSomeItemsFirst",
+    );
+  }
+
+  String get remove {
+    return Intl.message(
+      "Remove",
+      name: "remove",
+    );
+  }
+
+  String get confirmation {
+    return Intl.message(
+      "Confirmation",
+      name: "confirmation",
+    );
+  }
+
+  String get areYouSureWantToPlaceThisOrderFor {
+    return Intl.message(
+      "Are You Sure Want To Place this Order For",
+      name: "areYouSureWantToPlaceThisOrderFor",
+    );
+  }
+
+  String get place {
+    return Intl.message(
+      "PLACE",
+      name: "place",
+    );
+  }
+
+  //order_detail_page
+  String get orderDetail {
+    return Intl.message(
+      "Order Detail",
+      name: "orderDetail",
+    );
+  }
+
+  String get enterYourNoteHere {
+    return Intl.message(
+      "Enter Your Note Here",
+      name: "enterYourNoteHere",
+    );
+  }
+
+  String get noSpecialNoteAttached {
+    return Intl.message(
+      "No Special Note Attached",
+      name: "noSpecialNoteAttached",
+    );
+  }
+
+  String get newOrder {
+    return Intl.message(
+      "New Order",
+      name: "newOrder",
+    );
+  }
+
+  String get awaitingPayment {
+    return Intl.message(
+      "Awaiting Payment",
+      name: "awaitingPayment",
+    );
+  }
+
+  String get canceled {
+    return Intl.message(
+      "Canceled",
+      name: "canceled",
+    );
+  }
+
+  String get completed {
+    return Intl.message(
+      "Completed",
+      name: "completed",
+    );
+  }
+
+  String get onHold {
+    return Intl.message(
+      "On Hold",
+      name: "onHold",
+    );
+  }
+
+  String get pending {
+    return Intl.message(
+      "Pending",
+      name: "pending",
+    );
+  }
+
+  String get processing {
+    return Intl.message(
+      "Processing",
+      name: "processing",
+    );
+  }
+
+  String get itemIsRemovedSuccessfullyFromCart {
+    return Intl.message(
+      "Item is Removed Successfully From Cart",
+      name: "itemIsRemovedSuccessfullyFromCart",
+    );
+  }
+
+  //orderList
+  String get orders {
+    return Intl.message(
+      "Orders",
+      name: "orders",
+    );
+  }
+
+  String get noOrdersPresent {
+    return Intl.message(
+      "No Orders Present !!",
+      name: "noOrdersPresent",
+    );
+  }
+
+  //product_detail_page
+  String get youCanNotPurchaseThisItem {
+    return Intl.message(
+      "You Can Not Purchase This Item !!",
+      name: "youCanNotPurchaseThisItem",
+    );
+  }
+
+  String get share {
+    return Intl.message(
+      "Share",
+      name: "share",
+    );
+  }
+
+  String get seeAll {
+    return Intl.message(
+      "See all",
+      name: "seeAll",
+    );
+  }
+
+  String get buyNow {
+    return Intl.message(
+      "Buy Now",
+      name: "buyNow",
+    );
+  }
+
+  //service_detail_page
+  String get providersOtherService {
+    return Intl.message(
+      "Provider's Other Services",
+      name: "providersOtherService",
+    );
+  }
+
+  //transaction_graph
+  String get incomeExpenditure {
+    return Intl.message(
+      "Income/Expenditure",
+      name: "incomeExpenditure",
+    );
+  }
+
+  String get weekRange {
+    return Intl.message(
+      "Week Range",
+      name: "weekRange",
+    );
+  }
+
+  //user_dashboard
+  String get profile {
+    return Intl.message(
+      "Profile",
+      name: "profile",
+    );
+  }
+
+  String get bank {
+    return Intl.message(
+      "Bank",
+      name: "bank",
+    );
+  }
+
+  String get myStore {
+    return Intl.message(
+      "My Store",
+      name: "myStore",
+    );
+  }
+
+  String get myProfile {
+    return Intl.message(
+      "MyProfile",
+      name: "myProfile",
+    );
+  }
+
+  String get updateAvatar {
+    return Intl.message(
+      "Update Avatar",
+      name: "updateAvatar",
+    );
+  }
+
+  String get address {
+    return Intl.message(
+      "Address",
+      name: "address",
+    );
+  }
+
+  String get bankAccounts {
+    return Intl.message(
+      "Bank Accounts",
+      name: "bankAccounts",
+    );
+  }
+
+  //user_profile
+  String get info {
+    return Intl.message(
+      "Info",
+      name: "info",
+    );
+  }
+
+  //delete_product_and_service
+  String get areYouSureWantToDeleteThisItem {
+    return Intl.message(
+      "Are You Sure Want To Delete This Item ?",
+      name: "areYouSureWantToDeleteThisItem",
+    );
+  }
+
+  //splash
+  String get retry {
+    return Intl.message(
+      "Retry",
+      name: "retry",
+    );
+  }
+
+  String get bvnTermsAndCondition {
+    return Intl.message(
+      "By clicking Register you are agreeing to the Terms and Conditions.",
+      name: "bvnTermsAndCondition",
+    );
+  }
+
+  String get documentVerificationTermsAndCondition {
+    return Intl.message(
+      "By clicking Register you are agreeing to the Terms and Conditions.",
+      name: "documentVerificationTermsAndCondition",
     );
   }
 }

@@ -1,4 +1,4 @@
-//TODO: ADD APP LOCALIZATION
+
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
@@ -195,9 +195,7 @@ class _SearchAutoCompleteState extends State<SearchAutoComplete> {
 
     return WillPopScope(
       onWillPop: () async {
-        Navigator.pop(context);
-        Navigator.pushNamed(context, '/dashboard');
-        return false;
+        return true;
       },
       child: Scaffold(
         key: _scaffoldSearchKey,
@@ -275,8 +273,10 @@ class _SearchAutoCompleteState extends State<SearchAutoComplete> {
       child: new Center(
         child: new Opacity(
           opacity: isLoading ? 1.0 : 00,
-          child: new CircularProgressIndicator(
-            backgroundColor: Colors.white,
+          child: CircularProgressIndicator(
+            strokeWidth: 2.5,
+            valueColor: AlwaysStoppedAnimation(Colors.white),
+            backgroundColor: lightBlue(),
           ),
         ),
       ),
@@ -560,7 +560,9 @@ class _SearchAutoCompleteState extends State<SearchAutoComplete> {
         placeholder: (context, url) => imageUrl == ""
             ? Icon(Icons.person)
             : CircularProgressIndicator(
-                backgroundColor: Colors.white,
+                strokeWidth: 2.5,
+                valueColor: AlwaysStoppedAnimation(Colors.white),
+                backgroundColor: lightBlue(),
               ),
       ),
     );
@@ -663,7 +665,9 @@ class _SearchAutoCompleteState extends State<SearchAutoComplete> {
             placeholder: (context, url) => object["provider_avatar"] == ""
                 ? Icon(Icons.person)
                 : CircularProgressIndicator(
-                    backgroundColor: Colors.white,
+                    strokeWidth: 2.5,
+                    valueColor: AlwaysStoppedAnimation(Colors.white),
+                    backgroundColor: lightBlue(),
                   ),
           ),
         ),

@@ -83,10 +83,7 @@ class _BankAccountListState extends State<BankAccountList> {
     userBloc = Provider.of<UserBloc>(context);
     return WillPopScope(
       onWillPop: () async {
-        Navigator.pop(context);
-        Navigator.pushNamed(context, '/dashboard',
-            arguments: {'dashboardIndex': 5});
-        return false;
+        return true;
       },
       child: Scaffold(
         key: _scaffoldKey,
@@ -156,8 +153,10 @@ class _BankAccountListState extends State<BankAccountList> {
       child: new Center(
         child: new Opacity(
           opacity: isLoading ? 1.0 : 00,
-          child: new CircularProgressIndicator(
-            backgroundColor: Colors.white,
+          child: CircularProgressIndicator(
+            strokeWidth: 2.5,
+            valueColor: AlwaysStoppedAnimation(Colors.white),
+            backgroundColor: lightBlue(),
           ),
         ),
       ),
@@ -217,7 +216,9 @@ class _BankAccountListState extends State<BankAccountList> {
                     color: darkBlue(),
                   )
                 : CircularProgressIndicator(
-                    backgroundColor: Colors.white,
+                    strokeWidth: 2.5,
+                    valueColor: AlwaysStoppedAnimation(Colors.white),
+                    backgroundColor: lightBlue(),
                   ),
           ),
         ),

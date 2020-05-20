@@ -256,7 +256,7 @@ class _AddProductState extends State<AddProduct> {
       decoration: InputDecoration(
           fillColor: Colors.white,
           filled: true,
-          hintText: "Short Description",
+          hintText: AppLocalization.of(context).shortDescription,
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,

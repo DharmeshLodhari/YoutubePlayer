@@ -1,4 +1,4 @@
-//TODO: ADD APP LOCALIZATION
+
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
@@ -79,43 +79,36 @@ class _ShoppingCartState extends State<ShoppingCart> {
     basketBloc = Provider.of<BasketBloc>(context);
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.pop(context);
-        Navigator.pushNamed(context, '/dashboard',
-            arguments: {"dashboardIndex": 5});
-        return false;
-      },
-      child: Scaffold(
-        key: _scaffoldKey,
-        backgroundColor: lightBlue(),
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          backgroundColor: darkBlue(),
-          title: Text("Basket"),
-          actions: <Widget>[
-            addItemToBasket(),
-          ],
-        ),
-        body: SmartRefresher(
-            enablePullDown: true,
-            header: WaterDropHeader(
-              complete: Container(),
-              waterDropColor: darkBlue(),
-            ),
-            controller: _refreshController,
-            onRefresh: _onRefresh,
-            child: _buildBodyOfCart()),
-        floatingActionButton: checkoutWidget(),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    return Scaffold(
+      key: _scaffoldKey,
+      backgroundColor: lightBlue(),
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: darkBlue(),
+        title: Text(AppLocalization.of(context).basket),
+        actions: <Widget>[
+          addItemToBasket(),
+        ],
       ),
+      body: SmartRefresher(
+          enablePullDown: true,
+          header: WaterDropHeader(
+            complete: Container(),
+            waterDropColor: darkBlue(),
+          ),
+          controller: _refreshController,
+          onRefresh: _onRefresh,
+          child: _buildBodyOfCart()),
+      floatingActionButton: checkoutWidget(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 
   Widget _buildBodyOfCart() {
     return basketBloc.total == 0
         ? Center(
-            child: NoItemInList(msg: "Shopping Cart is Empty !!"),
+            child: NoItemInList(
+                msg: AppLocalization.of(context).shoppingCartIsEmpty),
           )
         : ListView.builder(
             itemCount: basketBloc.items.length,
@@ -135,7 +128,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
           children: <Widget>[
             Row(
               children: <Widget>[
-                Text("Total"),
+                Text(AppLocalization.of(context).total),
                 Text(
                   " : " + worldCurrencies[userBloc.user.currency] + " ",
                   style: TextStyle(
@@ -151,14 +144,16 @@ class _ShoppingCartState extends State<ShoppingCart> {
             MaterialButton(
               color: darkBlue(),
               child: Text(
-                "Buy",
+                AppLocalization.of(context).buy,
                 style: TextStyle(color: Colors.white),
               ),
               onPressed: () {
                 if (basketBloc.items.length != 0) {
                   addNoteDialog();
                 } else {
-                  Toast.show("Please Add Some Items First !!", context,
+                  Toast.show(
+                      AppLocalization.of(context).pleaseAddSomeItemsFirst,
+                      context,
                       textColor: Colors.white,
                       backgroundColor: darkBlue(),
                       duration: Toast.LENGTH_LONG,
@@ -224,7 +219,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
   }
 
   List<Widget> listSecondaryActions(int index) {
-    String caption2 = "Add";
+    String caption2 = AppLocalization.of(context).add;
     return [
       IconSlideAction(
           caption: caption2,
@@ -279,7 +274,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
   }
 
   List<Widget> listActionSlideActions(int index) {
-    String caption1 = "Remove";
+    String caption1 = AppLocalization.of(context).remove;
 
     return [
       IconSlideAction(
@@ -342,13 +337,14 @@ class _ShoppingCartState extends State<ShoppingCart> {
           titlePadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           title: Text(
-            "Confirmation",
+            AppLocalization.of(context).confirmation,
             style: TextStyle(
                 fontSize: 20, fontWeight: FontWeight.bold, color: darkBlue()),
           ),
           content: Container(
             child: Text(
-              'Are you Sure You Want To Place This Order For (${worldCurrencies[userBloc.user.currency]} ${basketBloc.total})?',
+              AppLocalization.of(context).areYouSureWantToPlaceThisOrderFor +
+                  ' (${worldCurrencies[userBloc.user.currency]} ${basketBloc.total})?',
               style: TextStyle(
                 fontWeight: FontWeight.w500,
                 fontFamily: "Roboto",
@@ -358,7 +354,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
           actions: <Widget>[
             FlatButton(
               child: Text(
-                'CANCEL',
+                AppLocalization.of(context).cancel,
                 style: TextStyle(color: darkBlue()),
               ),
               onPressed: () {
@@ -367,7 +363,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
             ),
             FlatButton(
               child: Text(
-                'PLACE',
+                AppLocalization.of(context).place,
                 style: TextStyle(color: darkBlue()),
               ),
               onPressed: () {
@@ -395,7 +391,11 @@ class _ShoppingCartState extends State<ShoppingCart> {
                 showDialog(
                   context: context,
                   builder: (context) => Center(
-                    child: CircularProgressIndicator(),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.5,
+                      valueColor: AlwaysStoppedAnimation(Colors.white),
+                      backgroundColor: lightBlue(),
+                    ),
                   ),
                 );
 
@@ -416,7 +416,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
                     Navigator.popAndPushNamed(context, '/orders-list');
                   } else if (response.statusCode == 500) {
                     Navigator.pop(context);
-                    Toast.show("server error !!", context,
+                    Toast.show(AppLocalization.of(context).serverError, context,
                         gravity: Toast.TOP,
                         backgroundColor: darkBlue(),
                         textColor: Colors.white);

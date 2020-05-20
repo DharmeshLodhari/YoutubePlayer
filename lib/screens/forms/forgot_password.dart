@@ -22,8 +22,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   Widget build(BuildContext context) {
     return WillPopScope(
         onWillPop: () async {
-          Navigator.pop(context);
-          return false;
+          return true;
         },
         child: Scaffold(
             backgroundColor: lightBlue(),

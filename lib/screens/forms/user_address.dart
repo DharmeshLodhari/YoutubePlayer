@@ -58,15 +58,14 @@ class _UserAddressState extends State<UserAddress> {
     final UserBloc userBloc = Provider.of<UserBloc>(context);
     return WillPopScope(
       onWillPop: () async {
-        Navigator.pop(context);
-        return false;
+        return true;
       },
       child: Scaffold(
         backgroundColor: lightBlue(),
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
           backgroundColor: darkBlue(),
-          title: Text("Add Address"),
+          title: Text(AppLocalization.of(context).addAddress),
           elevation: 0.0,
         ),
         body: SingleChildScrollView(
@@ -117,7 +116,7 @@ class _UserAddressState extends State<UserAddress> {
           prefixIcon: Icon(Icons.home),
           fillColor: Colors.white,
           filled: true,
-          hintText: "Address Line 1",
+          hintText: AppLocalization.of(context).addressLine1,
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -126,9 +125,8 @@ class _UserAddressState extends State<UserAddress> {
               borderRadius: BorderRadius.all(Radius.circular(4)),
               borderSide: BorderSide(
                   width: 1, color: Colors.green, style: BorderStyle.solid))),
-      validator: (val) => val.length == 0
-          ? AppLocalization.of(context).validationTextMessage1
-          : null,
+      validator: (val) =>
+          val.length == 0 ? AppLocalization.of(context).invalidAddress : null,
     );
   }
 
@@ -142,7 +140,7 @@ class _UserAddressState extends State<UserAddress> {
           prefixIcon: Icon(Icons.home),
           fillColor: Colors.white,
           filled: true,
-          hintText: "Address Line 2",
+          hintText: AppLocalization.of(context).addressLine2,
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -151,9 +149,8 @@ class _UserAddressState extends State<UserAddress> {
               borderRadius: BorderRadius.all(Radius.circular(4)),
               borderSide: BorderSide(
                   width: 1, color: Colors.green, style: BorderStyle.solid))),
-      validator: (val) => val.length == 0
-          ? AppLocalization.of(context).validationTextMessage1
-          : null,
+      validator: (val) =>
+          val.length == 0 ? AppLocalization.of(context).invalidAddress : null,
     );
   }
 
@@ -167,7 +164,7 @@ class _UserAddressState extends State<UserAddress> {
           prefixIcon: Icon(Icons.location_city),
           fillColor: Colors.white,
           filled: true,
-          hintText: "City",
+          hintText: AppLocalization.of(context).city,
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -176,9 +173,8 @@ class _UserAddressState extends State<UserAddress> {
               borderRadius: BorderRadius.all(Radius.circular(4)),
               borderSide: BorderSide(
                   width: 1, color: Colors.green, style: BorderStyle.solid))),
-      validator: (val) => val.length == 0
-          ? AppLocalization.of(context).validationTextMessage1
-          : null,
+      validator: (val) =>
+          val.length == 0 ? AppLocalization.of(context).invalidCity : null,
     );
   }
 
@@ -192,7 +188,7 @@ class _UserAddressState extends State<UserAddress> {
           prefixIcon: Icon(Icons.flag),
           fillColor: Colors.white,
           filled: true,
-          hintText: "State",
+          hintText: AppLocalization.of(context).state,
           labelStyle: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -201,9 +197,8 @@ class _UserAddressState extends State<UserAddress> {
               borderRadius: BorderRadius.all(Radius.circular(4)),
               borderSide: BorderSide(
                   width: 1, color: Colors.green, style: BorderStyle.solid))),
-      validator: (val) => val.length == 0
-          ? AppLocalization.of(context).validationTextMessage1
-          : null,
+      validator: (val) =>
+          val.length == 0 ? AppLocalization.of(context).invalidState : null,
     );
   }
 
@@ -278,7 +273,7 @@ class _UserAddressState extends State<UserAddress> {
             };
             _auth.addUserAddress(data).then((value) {
               Toast.show(
-                "Address Added Successfully !!!",
+                AppLocalization.of(context).addressAddedSuccessFully + " !!!",
                 context,
                 backgroundColor: darkBlue(),
                 textColor: Colors.white,

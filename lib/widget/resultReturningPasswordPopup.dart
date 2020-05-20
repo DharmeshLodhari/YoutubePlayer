@@ -23,8 +23,7 @@ class _ResultReturningPasswordPopupState
     userBloc = Provider.of<UserBloc>(context);
     return WillPopScope(
       onWillPop: () async {
-        Navigator.pop(context);
-        return false;
+        return true;
       },
       child: Scaffold(
           backgroundColor: lightBlue(),

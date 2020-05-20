@@ -1,6 +1,6 @@
-//TODO: APPLY APP LOCALIZATION
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/screens/tiles/shopping_cart_tile.dart';
 import 'package:Slydo/services/auth.dart';
@@ -28,7 +28,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   _OrderDetailPageState({this.arguments});
 
   BasketBloc basketBloc;
-  CustomerProfileBloc customerProfileBloc;
   UserBloc userBloc;
 
   SlidableController slidableController;
@@ -68,7 +67,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   @override
   Widget build(BuildContext context) {
     basketBloc = Provider.of<BasketBloc>(context);
-    customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
     return WillPopScope(
       onWillPop: () async {
@@ -80,7 +78,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         appBar: AppBar(
           automaticallyImplyLeading: true,
           backgroundColor: darkBlue(),
-          title: Text("Order Detail"),
+          title: Text(AppLocalization.of(context).orderDetail),
           actions: <Widget>[noteIconButton(), statusIconButton()],
         ),
         body: Column(
@@ -89,7 +87,9 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
               child: isLoading
                   ? Center(
                       child: CircularProgressIndicator(
-                        backgroundColor: Colors.white,
+                        strokeWidth: 2.5,
+                        valueColor: AlwaysStoppedAnimation(Colors.white),
+                        backgroundColor: lightBlue(),
                       ),
                     )
                   : ListView.builder(
@@ -145,7 +145,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                   Padding(
                     padding: const EdgeInsets.only(top: 8.0),
                     child: Text(
-                      'Notes',
+                      AppLocalization.of(context).note,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           color: darkBlue(),
@@ -211,7 +211,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         cursorColor: darkBlue(),
         decoration: InputDecoration(
           isDense: true,
-          labelText: "Enter Your Note Here",
+          labelText: AppLocalization.of(context).enterYourNoteHere,
           labelStyle: TextStyle(color: Colors.grey[600]),
           alignLabelWithHint: true,
           focusedBorder: OutlineInputBorder(
@@ -232,7 +232,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     return FlatButton(
         color: darkBlue(),
         child: Text(
-          'Add',
+          AppLocalization.of(context).add,
           style: TextStyle(color: Colors.white),
         ),
         onPressed: addNote);
@@ -251,7 +251,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   getOrderNote() {
     if (order.note == "") {
-      return "No Special Note Atteched !!";
+      return AppLocalization.of(context).noSpecialNoteAttached + " !!";
     }
     return order.note;
   }
@@ -274,7 +274,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                     child: Column(
                       children: <Widget>[
                         Text(
-                          'Status',
+                          AppLocalization.of(context).status,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               color: darkBlue(),
@@ -288,7 +288,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                                 height: 0,
                               ),
                               statusListTile(
-                                title: "New Order",
+                                title: AppLocalization.of(context).newOrder,
                                 value: "new order",
                                 setState: setState,
                               ),
@@ -296,7 +296,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                                 height: 0,
                               ),
                               statusListTile(
-                                title: "Awaiting Payment",
+                                title:
+                                    AppLocalization.of(context).awaitingPayment,
                                 value: "awaiting payment",
                                 setState: setState,
                               ),
@@ -304,7 +305,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                                 height: 0,
                               ),
                               statusListTile(
-                                title: "Canceled",
+                                title: AppLocalization.of(context).canceled,
                                 value: "canceled",
                                 setState: setState,
                               ),
@@ -312,7 +313,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                                 height: 0,
                               ),
                               statusListTile(
-                                title: "Completed",
+                                title: AppLocalization.of(context).completed,
                                 value: "complete",
                                 setState: setState,
                               ),
@@ -320,7 +321,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                                 height: 0,
                               ),
                               statusListTile(
-                                title: "On Hold",
+                                title: AppLocalization.of(context).onHold,
                                 value: "on hold",
                                 setState: setState,
                               ),
@@ -328,7 +329,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                                 height: 0,
                               ),
                               statusListTile(
-                                title: "Pending",
+                                title: AppLocalization.of(context).pending,
                                 value: "pending",
                                 setState: setState,
                               ),
@@ -336,7 +337,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                                 height: 0,
                               ),
                               statusListTile(
-                                title: "Processing",
+                                title: AppLocalization.of(context).processing,
                                 value: "processing",
                                 setState: setState,
                               ),
@@ -395,7 +396,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             ),
             Row(
               children: <Widget>[
-                Text("Total"),
+                Text(AppLocalization.of(context).total),
                 Text(
                   " : " + worldCurrencies[order.currency] + " ",
                   style: TextStyle(
@@ -462,7 +463,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
     _auth.removeItemToShoppingCart(data);
     basketBloc.removeItemFromCart(item);
-    Toast.show("Product is Removed Successfully from the cart", context,
+    Toast.show(
+        AppLocalization.of(context).itemIsRemovedSuccessfullyFromCart, context,
         backgroundColor: darkBlue(),
         textColor: Colors.white,
         duration: Toast.LENGTH_LONG);
@@ -479,7 +481,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     }
     return [
       IconSlideAction(
-        caption: "Message",
+        caption: AppLocalization.of(context).message,
         color: isValid ? Colors.green : Colors.grey[600],
         icon: Icons.message,
         onTap: isValid

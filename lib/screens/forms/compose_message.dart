@@ -30,9 +30,8 @@ class _ComposeMessageState extends State<ComposeMessage> {
   bool isSubjectIsPresent = false;
   final _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
-  CustomerProfile _payee;
+  CustomerProfile messageReceiver;
   UserBloc userBloc;
-  CustomerProfileBloc customerProfileBloc;
   String subject = "";
   String message = "";
   String errorMessage = "";
@@ -69,8 +68,8 @@ class _ComposeMessageState extends State<ComposeMessage> {
   fetchCustomer() async {
     var customerProfile = await _auth.fetchCustomerProfile(recipient);
     setState(() {
-      _payee = customerProfile;
-      isValidRecipient = _payee.userName != userBloc.user.userName;
+      messageReceiver = customerProfile;
+      isValidRecipient = messageReceiver.userName != userBloc.user.userName;
     });
   }
 
@@ -87,28 +86,14 @@ class _ComposeMessageState extends State<ComposeMessage> {
       });
   }
 
-  initializeDisplayCard() {
-    if (isReplyMessage) {
-      if (customerProfileBloc.customer.userName != null) {
-        setState(() {
-          _payee = customerProfileBloc.customer;
-          recipient = _payee.userName;
-          _recipientController.text = recipient;
-        });
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
 
     return WillPopScope(
       onWillPop: () async {
-        _payee = null;
-        Navigator.pop(context);
-        return false;
+        messageReceiver = null;
+        return true;
       },
       child: Scaffold(
         backgroundColor: lightBlue(),
@@ -168,7 +153,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
               errorMessage = AppLocalization.of(context).invalidRecipient;
               return;
             });
-          } else if (recipient == _payee.userName) {
+          } else if (recipient == messageReceiver.userName) {
             if (!isValidRecipient) {
               setState(() {
                 errorMessage = AppLocalization.of(context).invalidRecipient;
@@ -223,38 +208,37 @@ class _ComposeMessageState extends State<ComposeMessage> {
   }
 
   Widget getDisplayCard() {
-    initializeDisplayCard();
     var avatarImage;
     var qrCodeImage;
-    if (_payee != null) {
+    if (messageReceiver != null) {
       avatarImage = CachedNetworkImage(
-        imageUrl: _payee.avatar,
+        imageUrl: messageReceiver.avatar,
         colorBlendMode: BlendMode.darken,
         fit: BoxFit.fitWidth,
         filterQuality: FilterQuality.high,
       );
       qrCodeImage = CachedNetworkImage(
-        imageUrl: _payee.qrCode,
+        imageUrl: messageReceiver.qrCode,
         colorBlendMode: BlendMode.darken,
         fit: BoxFit.fitWidth,
         filterQuality: FilterQuality.high,
       );
     }
 
-    return _payee == null
+    return messageReceiver == null
         ? Container()
         : Card(
             semanticContainer: true,
             child: ListTile(
               dense: true,
               title: Text(
-                _payee.fullName,
+                messageReceiver.fullName,
                 style: TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
                     fontSize: 15),
               ),
-              subtitle: Text(_payee.userName),
+              subtitle: Text(messageReceiver.userName),
               leading: avatarImage,
               trailing: qrCodeImage,
             ),
@@ -268,7 +252,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
       focusNode: _recipientFocus,
       cursorColor: darkBlue(),
       validator: (value) {
-        if (value != _payee.userName) {
+        if (value != messageReceiver.userName) {
           return AppLocalization.of(context).invalidRecipient;
         }
         return null;
@@ -290,8 +274,8 @@ class _ComposeMessageState extends State<ComposeMessage> {
                   width: 1, color: Colors.white, style: BorderStyle.solid))),
       onChanged: (val) {
         setState(() {
-          if (isReplyMessage && _payee != null) {
-            recipient = _payee.userName;
+          if (isReplyMessage && messageReceiver != null) {
+            recipient = messageReceiver.userName;
           } else {
             recipient = val.toLowerCase();
           }
@@ -308,7 +292,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
       autofocus: false,
       obscureText: false,
       decoration: InputDecoration(
-        prefixText: isReplyMessage ? "Re:" : "",
+        prefixText: isReplyMessage ? AppLocalization.of(context).re + ":" : "",
         prefixIcon: Icon(Icons.subject),
         fillColor: Colors.white,
         filled: true,
@@ -332,8 +316,9 @@ class _ComposeMessageState extends State<ComposeMessage> {
         if (recipient != null) {
           var customerProfile = await _auth.fetchCustomerProfile(recipient);
           setState(() {
-            _payee = customerProfile;
-            isValidRecipient = _payee.userName != userBloc.user.userName;
+            messageReceiver = customerProfile;
+            isValidRecipient =
+                messageReceiver.userName != userBloc.user.userName;
           });
         }
       },

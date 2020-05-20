@@ -23,7 +23,8 @@ class _AddDocumentState extends State<AddDocument> {
   File userImage;
   bool isPassportAllowed = true;
   bool isDrivingLicenceAllowed = false;
-  bool isIdentiticardAllowed = false;
+  bool isIdentityCardAllowed = false;
+  bool userAgree = false;
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +47,7 @@ class _AddDocumentState extends State<AddDocument> {
       backgroundColor: lightBlue(),
       appBar: AppBar(
         backgroundColor: darkBlue(),
-        title: Text(AppLocalization.of(context).verifyYourSelfMsg),
+        title: Text(AppLocalization.of(context).verifyYourIdentity),
       ),
       body: Column(
         children: <Widget>[
@@ -66,10 +67,12 @@ class _AddDocumentState extends State<AddDocument> {
 
   // to navigate to the next form
   void _nextFormStep() {
-    _formsPageViewController.nextPage(
-      duration: Duration(milliseconds: 300),
-      curve: Curves.ease,
-    );
+    if (userAgree) {
+      _formsPageViewController.nextPage(
+        duration: Duration(milliseconds: 300),
+        curve: Curves.ease,
+      );
+    }
   }
 
   // to navigate to the previous form
@@ -97,13 +100,6 @@ class _AddDocumentState extends State<AddDocument> {
       padding: EdgeInsets.symmetric(vertical: 30, horizontal: 35),
       child: Column(
         children: <Widget>[
-          SizedBox(
-            height: 20,
-          ),
-          titleTextOne(),
-          SizedBox(
-            height: 10,
-          ),
           subtitleTextOne(),
           SizedBox(
             height: 20,
@@ -134,17 +130,33 @@ class _AddDocumentState extends State<AddDocument> {
               title: AppLocalization.of(context).identityCard,
               subtitle: AppLocalization.of(context).frontAndBack,
               onTap: _nextFormStep,
-              enabled: isIdentiticardAllowed),
+              enabled: isIdentityCardAllowed),
+          SizedBox(
+            height: 12,
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Checkbox(
+                value: userAgree,
+                onChanged: (value) {
+                  setState(() {
+                    userAgree = value;
+                  });
+                },
+                activeColor: darkBlue(),
+              ),
+              SizedBox(
+                width: 8,
+              ),
+              Expanded(
+                child: Text(AppLocalization.of(context)
+                    .documentVerificationTermsAndCondition),
+              ),
+            ],
+          )
         ],
       ),
-    );
-  }
-
-  Widget titleTextOne() {
-    return Text(
-      AppLocalization.of(context).verifyYourIdentity,
-      style: TextStyle(
-          fontWeight: FontWeight.bold, fontSize: 24, color: darkBlue()),
     );
   }
 

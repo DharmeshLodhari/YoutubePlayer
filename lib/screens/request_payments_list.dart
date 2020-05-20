@@ -99,34 +99,28 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
     // refresh the list when lifecycle called onResume method\
     _onRefreshOnResume();
 
-    return WillPopScope(
-        onWillPop: () async {
-          Navigator.pop(context);
-          Navigator.pushNamed(context, '/dashboard');
-          return false;
-        },
-        child: Scaffold(
-          key: _scaffoldPaymentListKey,
-          backgroundColor: lightBlue(),
-          appBar: AppBar(
-            automaticallyImplyLeading: false,
-            backgroundColor: darkBlue(),
-            title: Text(AppLocalization.of(context).paymentRequests),
-            actions: <Widget>[
-              sendRequestButton(),
-              _threeItemPopup(),
-            ],
+    return Scaffold(
+      key: _scaffoldPaymentListKey,
+      backgroundColor: lightBlue(),
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: darkBlue(),
+        title: Text(AppLocalization.of(context).paymentRequests),
+        actions: <Widget>[
+          sendRequestButton(),
+          _threeItemPopup(),
+        ],
+      ),
+      body: SmartRefresher(
+          enablePullDown: true,
+          header: WaterDropHeader(
+            complete: Container(),
+            waterDropColor: darkBlue(),
           ),
-          body: SmartRefresher(
-              enablePullDown: true,
-              header: WaterDropHeader(
-                complete: Container(),
-                waterDropColor: darkBlue(),
-              ),
-              controller: _refreshController,
-              onRefresh: _onRefresh,
-              child: _buildRequestPaymentList()),
-        ));
+          controller: _refreshController,
+          onRefresh: _onRefresh,
+          child: _buildRequestPaymentList()),
+    );
   }
 
   Widget _threeItemPopup() => PopupMenuButton(
@@ -240,8 +234,10 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         child: new Opacity(
             opacity: isLoading ? 1.0 : 00,
             child: isLoading
-                ? new CircularProgressIndicator(
-                    backgroundColor: Colors.white,
+                ? CircularProgressIndicator(
+                    strokeWidth: 2.5,
+                    valueColor: AlwaysStoppedAnimation(Colors.white),
+                    backgroundColor: lightBlue(),
                   )
                 : Container()),
       ),
@@ -377,7 +373,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
           }
         });
       } else if (response.statusCode == 500) {
-        Toast.show("Server error !!", context,
+        Toast.show(AppLocalization.of(context).serverError, context,
             gravity: Toast.TOP,
             backgroundColor: darkBlue(),
             textColor: Colors.white);

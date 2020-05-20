@@ -66,10 +66,9 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
         next = "";
         previous = "";
         payoutList = [];
-        if(mounted)
-          {
-            getList();
-          }
+        if (mounted) {
+          getList();
+        }
 
         _refreshController.refreshCompleted();
       } else {
@@ -88,10 +87,7 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
 
     return WillPopScope(
       onWillPop: () async {
-        Navigator.pop(context);
-        Navigator.pushNamed(context, '/dashboard',
-            arguments: {'dashboardIndex': 5});
-        return false;
+        return true;
       },
       child: Scaffold(
         key: _scaffoldKey,
@@ -140,8 +136,10 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
       child: new Center(
         child: new Opacity(
           opacity: isLoading ? 1.0 : 00,
-          child: new CircularProgressIndicator(
-            backgroundColor: Colors.white,
+          child: CircularProgressIndicator(
+            strokeWidth: 2.5,
+            valueColor: AlwaysStoppedAnimation(Colors.white),
+            backgroundColor: lightBlue(),
           ),
         ),
       ),

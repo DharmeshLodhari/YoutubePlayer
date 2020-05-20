@@ -55,7 +55,7 @@ class User {
     this.qrCode,
     this.password,
     this.currency = "€",
-    this.type = "seller",
+    this.type = "Seller",
     this.isVerified = false,
   });
 

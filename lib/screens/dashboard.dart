@@ -4,10 +4,13 @@ import 'package:Slydo/screens/checkout_shopping_cart.dart';
 import 'package:Slydo/screens/messagelist.dart';
 import 'package:Slydo/screens/search_module.dart';
 import 'package:Slydo/screens/user_dashboard.dart';
+import 'package:Slydo/widget/dialog.dart';
 import 'package:badges/badges.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 import '../screens/colors.dart';
 import 'home.dart';
@@ -98,59 +101,83 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     basketBloc = Provider.of<BasketBloc>(context);
-    return Scaffold(
-      body: IndexedStack(index: _currentIndex, children: screens),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: lightBlue(),
-        fixedColor: lightBlue(),
-        elevation: 0.0,
-        currentIndex: _currentIndex,
-        onTap: (index) {
+    return WillPopScope(
+      onWillPop: () async {
+        if (_currentIndex == 0) {
+          bool result = await showDialogBox(
+            context: context,
+            title: AppLocalization.of(context).exit,
+            description: AppLocalization.of(context).areYouSureWantToExit,
+            actionOne: AppLocalization.of(context).yes,
+            actionTwo: AppLocalization.of(context).no,
+            type: AlertType.none,
+          );
+          if (result) {
+            SystemChannels.platform.invokeMethod<void>('SystemNavigator.pop');
+          }
+        }
+
+        if (_currentIndex != 0) {
           setState(() {
-            _currentIndex = index;
+            _currentIndex = 0;
           });
-        },
-        items: [
-          BottomNavigationBarItem(
-            backgroundColor: lightBlue(),
-            icon: Icon(
-              Icons.home,
-              color: Colors.white,
+        }
+        return false;
+      },
+      child: Scaffold(
+        body: IndexedStack(index: _currentIndex, children: screens),
+        bottomNavigationBar: BottomNavigationBar(
+          backgroundColor: lightBlue(),
+          fixedColor: lightBlue(),
+          elevation: 0.0,
+          currentIndex: _currentIndex,
+          onTap: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+          items: [
+            BottomNavigationBarItem(
+              backgroundColor: lightBlue(),
+              icon: Icon(
+                Icons.home,
+                color: Colors.white,
+              ),
+              title: Text(AppLocalization.of(context).home,
+                  style: TextStyle(color: Colors.white, fontSize: 12)),
             ),
-            title: Text(AppLocalization.of(context).home,
-                style: TextStyle(color: Colors.white, fontSize: 12)),
-          ),
-          BottomNavigationBarItem(
-            backgroundColor: lightBlue(),
-            icon: Icon(Icons.notifications, color: Colors.white),
-            title: Text(AppLocalization.of(context).requests,
-                style: TextStyle(color: Colors.white, fontSize: 12)),
-          ),
-          BottomNavigationBarItem(
-            backgroundColor: lightBlue(),
-            icon: goToBasket(),
-            title: Text("Basket",
-                style: TextStyle(color: Colors.white, fontSize: 12)),
-          ),
-          BottomNavigationBarItem(
-            backgroundColor: lightBlue(),
-            icon: Icon(Icons.search, color: Colors.white),
-            title: Text(AppLocalization.of(context).search,
-                style: TextStyle(color: Colors.white, fontSize: 12)),
-          ),
-          BottomNavigationBarItem(
-            backgroundColor: lightBlue(),
-            icon: Icon(Icons.email, color: Colors.white),
-            title: Text(AppLocalization.of(context).messages,
-                style: TextStyle(color: Colors.white, fontSize: 12)),
-          ),
-          BottomNavigationBarItem(
-            backgroundColor: lightBlue(),
-            icon: Icon(Icons.settings, color: Colors.white),
-            title: Text("Explore",
-                style: TextStyle(color: Colors.white, fontSize: 12)),
-          ),
-        ],
+            BottomNavigationBarItem(
+              backgroundColor: lightBlue(),
+              icon: Icon(Icons.notifications, color: Colors.white),
+              title: Text(AppLocalization.of(context).requests,
+                  style: TextStyle(color: Colors.white, fontSize: 12)),
+            ),
+            BottomNavigationBarItem(
+              backgroundColor: lightBlue(),
+              icon: goToBasket(),
+              title: Text(AppLocalization.of(context).basket,
+                  style: TextStyle(color: Colors.white, fontSize: 12)),
+            ),
+            BottomNavigationBarItem(
+              backgroundColor: lightBlue(),
+              icon: Icon(Icons.search, color: Colors.white),
+              title: Text(AppLocalization.of(context).search,
+                  style: TextStyle(color: Colors.white, fontSize: 12)),
+            ),
+            BottomNavigationBarItem(
+              backgroundColor: lightBlue(),
+              icon: Icon(Icons.email, color: Colors.white),
+              title: Text(AppLocalization.of(context).messages,
+                  style: TextStyle(color: Colors.white, fontSize: 12)),
+            ),
+            BottomNavigationBarItem(
+              backgroundColor: lightBlue(),
+              icon: Icon(Icons.settings, color: Colors.white),
+              title: Text(AppLocalization.of(context).explore,
+                  style: TextStyle(color: Colors.white, fontSize: 12)),
+            ),
+          ],
+        ),
       ),
     );
   }

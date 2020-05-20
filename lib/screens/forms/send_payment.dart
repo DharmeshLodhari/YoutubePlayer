@@ -153,6 +153,7 @@ class _SendPaymentState extends State<SendPayment> {
     return WillPopScope(
       onWillPop: () async {
         _payee = null;
+        customerProfileBloc.customer = null;
         return true;
       },
       child: Scaffold(
@@ -167,7 +168,9 @@ class _SendPaymentState extends State<SendPayment> {
         body: isLoading
             ? Center(
                 child: CircularProgressIndicator(
-                  backgroundColor: Colors.white,
+                  strokeWidth: 2.5,
+                  valueColor: AlwaysStoppedAnimation(Colors.white),
+                  backgroundColor: lightBlue(),
                 ),
               )
             : SingleChildScrollView(
@@ -494,7 +497,6 @@ class _SendPaymentState extends State<SendPayment> {
             if (isValidPayee &&
                 _formKey.currentState.validate() &&
                 validateDropdown()) {
-              // Todo: Add a try block here and stop user from continuing if they deny location permission
               if (userBloc.user.userName != recipient) {
                 var userLocation;
                 Map deviceData;
@@ -519,13 +521,22 @@ class _SendPaymentState extends State<SendPayment> {
                       isValidCallback: () {
                         showDialog(
                             context: context,
-                            builder: (context) =>
-                                Center(child: CircularProgressIndicator()));
+                            builder: (context) => Center(
+                                    child: CircularProgressIndicator(
+                                  strokeWidth: 2.5,
+                                  valueColor:
+                                      AlwaysStoppedAnimation(Colors.white),
+                                  backgroundColor: lightBlue(),
+                                )));
                         _auth.makePayment(data).then((value) {
                           response = value;
                           if (response.statusCode == 200) {
                             popFromShoppingCart(product);
-                            Navigator.of(context).popAndPushNamed(
+                            //Pop Circular Progress Indicator
+                            Navigator.pop(context);
+                            //Pop send payment page
+                            Navigator.pop(context);
+                            Navigator.of(context).pushNamed(
                               '/transactions',
                             );
                           } else if (response.statusCode == 500) {

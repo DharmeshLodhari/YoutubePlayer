@@ -118,9 +118,7 @@ class _ExploreListState extends State<ExploreList> {
               service[1],
               color: darkBlue(),
             ),
-            onTap: () {
-//              sendAndRetrieveMessage();
-            },
+            onTap: () {},
           ),
         ),
       );
@@ -164,7 +162,7 @@ class _ExploreListState extends State<ExploreList> {
                 controller: searchController,
                 decoration: InputDecoration(
                   contentPadding: EdgeInsets.all(10),
-                  hintText: "Seach here",
+                  hintText: AppLocalization.of(context).search,
                   isDense: true,
                   fillColor: Colors.white,
                   filled: true,

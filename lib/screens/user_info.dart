@@ -93,7 +93,6 @@ class _UserInfoState extends State<UserInfo> {
       ),
       onPressed: () {
         _auth.fetchCustomerProfile(user.userName).then((fetchedUser) {
-          customerProfileBloc.customer = fetchedUser;
           Navigator.of(context).pushNamed('/compose_message', arguments: {
             'recipient': fetchedUser.userName,
             'subject': "",
@@ -116,7 +115,9 @@ class _UserInfoState extends State<UserInfo> {
                 fit: BoxFit.fitWidth,
                 filterQuality: FilterQuality.high,
                 placeholder: (context, url) => CircularProgressIndicator(
-                  backgroundColor: Colors.white,
+                  strokeWidth: 2.5,
+                  valueColor: AlwaysStoppedAnimation(Colors.white),
+                  backgroundColor: lightBlue(),
                 ),
               )),
           ButtonBar(
@@ -251,7 +252,9 @@ class _UserInfoState extends State<UserInfo> {
             placeholder: (context, url) => userBloc.user.avatar == ""
                 ? Icon(Icons.person)
                 : CircularProgressIndicator(
-                    backgroundColor: Colors.white,
+                    strokeWidth: 2.5,
+                    valueColor: AlwaysStoppedAnimation(Colors.white),
+                    backgroundColor: lightBlue(),
                   ),
           ),
         ),

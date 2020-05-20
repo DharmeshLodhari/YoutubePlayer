@@ -45,12 +45,12 @@ class _SettingsListState extends State<SettingsList> {
       String languageCode = sharedPreferences.getString("language");
       setState(() {
         language = getLanguageByLanguageCode(languageCode);
-        debugPrint("Setted language: => " + language.name);
+        debugPrint("Set language: => " + language.name);
       });
     } else {
       setState(() {
         language = getLanguageByLanguageCode("en");
-        debugPrint("Setted default language: => " + language.name);
+        debugPrint("Set default language: => " + language.name);
       });
     }
   }
@@ -118,78 +118,70 @@ class _SettingsListState extends State<SettingsList> {
     final UserBloc userBloc = Provider.of<UserBloc>(context);
     bankAccountBloc = Provider.of<BankAccountBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.pop(context);
-        Navigator.pushNamed(context, '/dashboard');
-        return false;
-      },
-      child: Scaffold(
-        key: _scaffoldSettingKey,
-        backgroundColor: lightBlue(),
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          backgroundColor: darkBlue(),
-          title: Text(AppLocalization.of(context).settings),
-          actions: <Widget>[
-            shoppingCartButton(),
-            IconButton(
-              icon: Icon(Icons.power_settings_new, color: Colors.white),
-              onPressed: () {
-                logoutUser(bankAccountBloc);
-              },
-              tooltip: AppLocalization.of(context).logout,
-            ),
-          ],
-        ),
-        body: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: Container(
-            color: lightBlue(),
-            padding: EdgeInsets.fromLTRB(0, 0, 0, 36),
-            child: Center(
-              child: Column(
-                children: <Widget>[
-                  SizedBox(height: 20),
-                  displayProfileTile(),
-                  SizedBox(height: 10),
-                  _getSlidableWithLists(
-                      context, displayAccountBalance(isLocked)),
-                  bankAccountBloc.bankAccount.bankName != null
-                      ? SizedBox(height: 10)
-                      : Container(),
-                  bankAccountBloc.bankAccount.bankName != null
-                      ? displayBankAccountTile(bankAccountBloc)
-                      : Container(),
-                  userBloc.user.setting.enableExplore
-                      ? SizedBox(
-                          height: 0,
-                        )
-                      : SizedBox(
-                          height: 10,
-                        ),
-                  userBloc.user.setting.enableExplore
-                      ? ExploreTile()
-                      : Container(),
-                  userBloc.user.setting.enableExplore
-                      ? SizedBox(height: 10)
-                      : Container(),
-                  languageChanger(),
-                  SizedBox(height: 10),
-                  productsAndServicesWidget(),
-                  SizedBox(height: 10),
-                  topUpFromCreditCard(),
-                  SizedBox(height: 10),
-                  slydoBankAccountTile(),
-                  SizedBox(height: 20),
-                  _infoTile(),
-                ],
-              ),
+    return Scaffold(
+      key: _scaffoldSettingKey,
+      backgroundColor: lightBlue(),
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: darkBlue(),
+        title: Text(AppLocalization.of(context).settings),
+        actions: <Widget>[
+          shoppingCartButton(),
+          IconButton(
+            icon: Icon(Icons.power_settings_new, color: Colors.white),
+            onPressed: () {
+              logoutUser(bankAccountBloc);
+            },
+            tooltip: AppLocalization.of(context).logout,
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Container(
+          color: lightBlue(),
+          padding: EdgeInsets.fromLTRB(0, 0, 0, 36),
+          child: Center(
+            child: Column(
+              children: <Widget>[
+                SizedBox(height: 20),
+                displayProfileTile(),
+                SizedBox(height: 10),
+                _getSlidableWithLists(context, displayAccountBalance(isLocked)),
+                bankAccountBloc.bankAccount.bankName != null
+                    ? SizedBox(height: 10)
+                    : Container(),
+                bankAccountBloc.bankAccount.bankName != null
+                    ? displayBankAccountTile(bankAccountBloc)
+                    : Container(),
+                userBloc.user.setting.enableExplore
+                    ? SizedBox(
+                        height: 0,
+                      )
+                    : SizedBox(
+                        height: 10,
+                      ),
+                userBloc.user.setting.enableExplore
+                    ? ExploreTile()
+                    : Container(),
+                userBloc.user.setting.enableExplore
+                    ? SizedBox(height: 10)
+                    : Container(),
+                languageChanger(),
+                SizedBox(height: 10),
+                productsAndServicesWidget(),
+                SizedBox(height: 10),
+                topUpFromCreditCard(),
+                SizedBox(height: 10),
+                slydoBankAccountTile(),
+                SizedBox(height: 20),
+                _infoTile(),
+              ],
             ),
           ),
         ),
-        floatingActionButton: _account == true ? null : addAccountButton(),
       ),
+      floatingActionButton: _account == true ? null : addAccountButton(),
     );
   }
 
@@ -270,7 +262,9 @@ class _SettingsListState extends State<SettingsList> {
                 height: 50,
                 width: 50,
                 child: CircularProgressIndicator(
-                  backgroundColor: Colors.white,
+                  strokeWidth: 2.5,
+                  valueColor: AlwaysStoppedAnimation(Colors.white),
+                  backgroundColor: lightBlue(),
                 ),
               )
             : ClipOval(
@@ -284,8 +278,10 @@ class _SettingsListState extends State<SettingsList> {
                   placeholder: (context, url) => userBloc.user.avatar == ""
                       ? Icon(Icons.person)
                       : CircularProgressIndicator(
-                          backgroundColor: Colors.white,
-                        ),
+                    strokeWidth: 2.5,
+                    valueColor: AlwaysStoppedAnimation(Colors.white),
+                    backgroundColor: lightBlue(),
+                  ),
                 ),
               ),
         trailing: IconButton(

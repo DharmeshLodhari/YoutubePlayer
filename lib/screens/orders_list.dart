@@ -1,4 +1,4 @@
-//TODO: ADD APP LOCALIZATION
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/store.dart';
@@ -10,6 +10,7 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:toast/toast.dart';
@@ -30,12 +31,14 @@ class _OrdersListState extends State<OrdersList> {
   String next = "";
   String previous = "";
   List orderList = [];
+
+  UserBloc userBloc;
+
   ScrollController _scrollController = new ScrollController();
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isLoading = false;
   bool noItemInList = false;
-  RefreshBlocForRequestPayment _refreshBloc;
 
   // variables for to getting filter orderList
   String filterValue = "";
@@ -81,6 +84,7 @@ class _OrdersListState extends State<OrdersList> {
 
   @override
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
     return WillPopScope(
         onWillPop: () async {
           return true;
@@ -91,7 +95,7 @@ class _OrdersListState extends State<OrdersList> {
           appBar: AppBar(
             automaticallyImplyLeading: true,
             backgroundColor: darkBlue(),
-            title: Text("Orders"),
+            title: Text(AppLocalization.of(context).orders),
             actions: <Widget>[
               _threeItemPopup(),
             ],
@@ -104,7 +108,7 @@ class _OrdersListState extends State<OrdersList> {
               ),
               controller: _refreshController,
               onRefresh: _onRefresh,
-              child: _buildorderList()),
+              child: _buildOrderList()),
         ));
   }
 
@@ -146,7 +150,7 @@ class _OrdersListState extends State<OrdersList> {
           list.add(
             CheckedPopupMenuItem(
               child: Text(
-                "New Order",
+                AppLocalization.of(context).newOrder,
                 style: TextStyle(color: Colors.green[600]),
               ),
               value: "new order",
@@ -156,7 +160,7 @@ class _OrdersListState extends State<OrdersList> {
           list.add(
             CheckedPopupMenuItem(
               child: Text(
-                "Awaiting Payment",
+                AppLocalization.of(context).awaitingPayment,
                 style: TextStyle(color: Colors.black),
               ),
               value: "awaiting payment",
@@ -166,7 +170,7 @@ class _OrdersListState extends State<OrdersList> {
           list.add(
             CheckedPopupMenuItem(
               child: Text(
-                "Canceled",
+                AppLocalization.of(context).canceled,
                 style: TextStyle(color: Colors.black),
               ),
               value: "canceled",
@@ -176,7 +180,7 @@ class _OrdersListState extends State<OrdersList> {
           list.add(
             CheckedPopupMenuItem(
               child: Text(
-                "Completed",
+                AppLocalization.of(context).completed,
                 style: TextStyle(color: Colors.black),
               ),
               value: "completed",
@@ -186,7 +190,7 @@ class _OrdersListState extends State<OrdersList> {
           list.add(
             CheckedPopupMenuItem(
               child: Text(
-                "On Hold",
+                AppLocalization.of(context).onHold,
                 style: TextStyle(color: Colors.black),
               ),
               value: "on hold",
@@ -196,7 +200,7 @@ class _OrdersListState extends State<OrdersList> {
           list.add(
             CheckedPopupMenuItem(
               child: Text(
-                "Pending",
+                AppLocalization.of(context).pending,
                 style: TextStyle(color: Colors.black),
               ),
               value: "pending",
@@ -206,7 +210,7 @@ class _OrdersListState extends State<OrdersList> {
           list.add(
             CheckedPopupMenuItem(
               child: Text(
-                "Processing",
+                AppLocalization.of(context).processing,
                 style: TextStyle(color: Colors.black),
               ),
               value: "processing",
@@ -226,10 +230,10 @@ class _OrdersListState extends State<OrdersList> {
         },
       );
 
-  Widget _buildorderList() {
+  Widget _buildOrderList() {
     return noItemInList
         ? NoItemInList(
-            msg: AppLocalization.of(context).noPendingPaymentRequest,
+            msg: AppLocalization.of(context).noOrdersPresent,
           )
         : ListView.builder(
             padding: EdgeInsets.symmetric(vertical: 4),
@@ -253,8 +257,10 @@ class _OrdersListState extends State<OrdersList> {
         child: new Opacity(
             opacity: isLoading ? 1.0 : 00,
             child: isLoading
-                ? new CircularProgressIndicator(
-                    backgroundColor: Colors.white,
+                ? CircularProgressIndicator(
+                    strokeWidth: 2.5,
+                    valueColor: AlwaysStoppedAnimation(Colors.white),
+                    backgroundColor: lightBlue(),
                   )
                 : Container()),
       ),
@@ -336,7 +342,7 @@ class _OrdersListState extends State<OrdersList> {
   List<Widget> listSecondaryActions(Order order, int index) {
     return [
       IconSlideAction(
-          caption: "Cancel",
+          caption: AppLocalization.of(context).cancel,
           color: Colors.red,
           icon: Icons.cancel,
           onTap: () async {
@@ -348,13 +354,20 @@ class _OrdersListState extends State<OrdersList> {
   List<Widget> listActionSlideActions(Order order, int index) {
     return [
       IconSlideAction(
-        caption: "Message",
+        caption: AppLocalization.of(context).message,
         color: Colors.green,
         icon: Icons.message,
         onTap: () {
+          var recipient = userBloc.user.userName == order.merchant
+              ? order.customer
+              : order.merchant;
+
           Navigator.of(context).pushNamed('/compose_message', arguments: {
-            'recipient': order.merchant,
-            'subject': "Order: Ref #123488752627",
+            'recipient': recipient,
+            'subject': AppLocalization.of(context).orderDetail +
+                " : " +
+                AppLocalization.of(context).ref +
+                " #${order.id}",
           });
         },
       ),
@@ -373,7 +386,7 @@ class _OrdersListState extends State<OrdersList> {
     );
     if (result) {
 //      bool done = await _auth.rejectPaymentRequests(order);
-      var done = true;
+      var done = false;
       if (done) {
         _showSnackBar(
             context, AppLocalization.of(context).paymentRequestRejected);

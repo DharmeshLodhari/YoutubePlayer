@@ -36,8 +36,7 @@ class _RegistrationState extends State<Registration> {
   Widget build(BuildContext context) {
     return WillPopScope(
         onWillPop: () async {
-          Navigator.pop(context);
-          return false;
+          return true;
         },
         child: Scaffold(
             backgroundColor: lightBlue(),

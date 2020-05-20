@@ -50,7 +50,8 @@ class _SplashScreenState extends State<SplashScreen> {
         });
         getLoggedInUser();
       } else {
-        Toast.show("Internet Connection is not available", context,
+        Toast.show(
+            AppLocalization.of(context).internetConnectionNotAvailable, context,
             gravity: Toast.BOTTOM, backgroundColor: darkBlue());
         setState(() {
           hasConnection = false;
@@ -132,12 +133,13 @@ class _SplashScreenState extends State<SplashScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   NoItemInList(
-                    msg: "No Internet Connection !!",
+                    msg: AppLocalization.of(context)
+                        .internetConnectionNotAvailable,
                   ),
                   MaterialButton(
                     color: darkBlue(),
                     child: Text(
-                      "Retry",
+                      AppLocalization.of(context).retry,
                       style: TextStyle(color: Colors.white),
                     ),
                     onPressed: checkConnection,

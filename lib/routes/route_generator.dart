@@ -24,7 +24,6 @@ import 'package:Slydo/screens/product_detail_page.dart';
 import 'package:Slydo/screens/request_payments_list.dart';
 import 'package:Slydo/screens/scan_qr_code.dart';
 import 'package:Slydo/screens/search_auto_complete.dart';
-import 'package:Slydo/screens/search_backup.dart';
 import 'package:Slydo/screens/service_detail_page.dart';
 import 'package:Slydo/screens/settings.dart';
 import 'package:Slydo/screens/transaction_detail_page.dart';
@@ -162,12 +161,6 @@ class RouteGenerator {
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
         );
-      case '/search-user':
-        return PageTransition(
-          child: SearchAll(),
-          type: PageTransitionType.downToUp,
-          curve: Curves.ease,
-        );
       case '/search-auto':
         return PageTransition(
           child: SearchAutoComplete(),
@@ -197,12 +190,6 @@ class RouteGenerator {
           child: EditProduct(
             arguments: settings.arguments,
           ),
-          type: PageTransitionType.downToUp,
-          curve: Curves.ease,
-        );
-      case '/search_user':
-        return PageTransition(
-          child: SearchAll(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
         );

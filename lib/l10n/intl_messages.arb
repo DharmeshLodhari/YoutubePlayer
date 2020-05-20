@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2020-05-15T14:38:37.512444",
+  "@@last_modified": "2020-05-20T15:25:34.326277",
   "addBankAccountMsg": "Add A Bank Account",
   "@addBankAccountMsg": {
     "type": "text",
@@ -75,7 +75,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "verifyYourIdentity": "Verify your identity",
+  "verifyYourIdentity": "Verify Your Identity",
   "@verifyYourIdentity": {
     "type": "text",
     "placeholders": {}
@@ -1127,6 +1127,321 @@
   },
   "noTransactionDoneThisWeek": "No Transactions done this week",
   "@noTransactionDoneThisWeek": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "bvnVerification": "BVN Verification",
+  "@bvnVerification": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "enterYourBVNNUmber": "Enter Your BVN Number",
+  "@enterYourBVNNUmber": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "invalidBVNNumber": "Invalid BVN Number",
+  "@invalidBVNNumber": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "verify": "Verify",
+  "@verify": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "re": "Re",
+  "@re": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "addAddress": "Add Address",
+  "@addAddress": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "addressLine1": "Address Line 1",
+  "@addressLine1": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "invalidAddress": "Invalid Address",
+  "@invalidAddress": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "addressLine2": "Address Line 2",
+  "@addressLine2": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "city": "City",
+  "@city": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "invalidCity": "Invalid City",
+  "@invalidCity": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "state": "State",
+  "@state": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "invalidState": "Invalid State",
+  "@invalidState": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "addressAddedSuccessFully": "Address Added Successfully",
+  "@addressAddedSuccessFully": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "ref": "Ref",
+  "@ref": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "cardPayment": "Card Payment",
+  "@cardPayment": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "cardNumber": "Card Number",
+  "@cardNumber": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "expiredDate": "Expied Date",
+  "@expiredDate": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "cvv": "CVV",
+  "@cvv": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "cardHolder": "Card Holder",
+  "@cardHolder": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "topUp": "Top Up",
+  "@topUp": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "invalidDetail": "Invalid Detail",
+  "@invalidDetail": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "basket": "Basket",
+  "@basket": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "shoppingCartIsEmpty": "Shopping Cart Is Empty !!",
+  "@shoppingCartIsEmpty": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "total": "Total",
+  "@total": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "buy": "Buy",
+  "@buy": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "pleaseAddSomeItemsFirst": "Please Add Some Items First !!",
+  "@pleaseAddSomeItemsFirst": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "remove": "Remove",
+  "@remove": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "confirmation": "Confirmation",
+  "@confirmation": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "areYouSureWantToPlaceThisOrderFor": "Are You Sure Want To Place this Order For",
+  "@areYouSureWantToPlaceThisOrderFor": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "place": "PLACE",
+  "@place": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "orderDetail": "Order Detail",
+  "@orderDetail": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "enterYourNoteHere": "Enter Your Note Here",
+  "@enterYourNoteHere": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "noSpecialNoteAttached": "No Special Note Attached",
+  "@noSpecialNoteAttached": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "newOrder": "New Order",
+  "@newOrder": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "awaitingPayment": "Awaiting Payment",
+  "@awaitingPayment": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "canceled": "Canceled",
+  "@canceled": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "completed": "Completed",
+  "@completed": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "onHold": "On Hold",
+  "@onHold": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "pending": "Pending",
+  "@pending": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "processing": "Processing",
+  "@processing": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "itemIsRemovedSuccessfullyFromCart": "Item is Removed Successfully From Cart",
+  "@itemIsRemovedSuccessfullyFromCart": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "orders": "Orders",
+  "@orders": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "noOrdersPresent": "No Orders Present !!",
+  "@noOrdersPresent": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "youCanNotPurchaseThisItem": "You Can Not Purchase This Item !!",
+  "@youCanNotPurchaseThisItem": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "share": "Share",
+  "@share": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "seeAll": "See all",
+  "@seeAll": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "buyNow": "Buy Now",
+  "@buyNow": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "providersOtherService": "Provider's Other Services",
+  "@providersOtherService": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "incomeExpenditure": "Income/Expenditure",
+  "@incomeExpenditure": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "weekRange": "Week Range",
+  "@weekRange": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "profile": "Profile",
+  "@profile": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "bank": "Bank",
+  "@bank": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "myStore": "My Store",
+  "@myStore": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "myProfile": "MyProfile",
+  "@myProfile": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "updateAvatar": "Update Avatar",
+  "@updateAvatar": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "address": "Address",
+  "@address": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "bankAccounts": "Bank Accounts",
+  "@bankAccounts": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "info": "Info",
+  "@info": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "areYouSureWantToDeleteThisItem": "Are You Sure Want To Delete This Item ?",
+  "@areYouSureWantToDeleteThisItem": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "retry": "Retry",
+  "@retry": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "bvnTermsAndCondition": "By clicking Register you are agreeing to the Terms and Conditions.",
+  "@bvnTermsAndCondition": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "documentVerificationTermsAndCondition": "By clicking Register you are agreeing to the Terms and Conditions.",
+  "@documentVerificationTermsAndCondition": {
     "type": "text",
     "placeholders": {}
   }

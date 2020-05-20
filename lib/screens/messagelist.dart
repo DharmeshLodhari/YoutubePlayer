@@ -96,39 +96,33 @@ class _MessageListState extends State<MessageList> {
     // refresh the list when lifecycle called onResume method
     _onRefreshOnResume();
 
-    return WillPopScope(
-        onWillPop: () async {
-          Navigator.pop(context);
-          Navigator.pushNamed(context, '/dashboard');
-          return false;
+    return Scaffold(
+      key: _scaffoldMessageKey,
+      backgroundColor: lightBlue(),
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: darkBlue(),
+        title: Text(AppLocalization.of(context).messages),
+        actions: <Widget>[_threeItemPopup()],
+      ),
+      body: SmartRefresher(
+          enablePullDown: true,
+          header: WaterDropHeader(
+            complete: Container(),
+            waterDropColor: darkBlue(),
+          ),
+          controller: _refreshController,
+          onRefresh: _onRefresh,
+          child: _buildMessageList()),
+      floatingActionButton: FloatingActionButton(
+        heroTag: "compose_message",
+        backgroundColor: darkBlue(),
+        child: Icon(Icons.message),
+        onPressed: () {
+          Navigator.of(context).pushNamed("/compose_message");
         },
-        child: Scaffold(
-          key: _scaffoldMessageKey,
-          backgroundColor: lightBlue(),
-          appBar: AppBar(
-            automaticallyImplyLeading: false,
-            backgroundColor: darkBlue(),
-            title: Text(AppLocalization.of(context).messages),
-            actions: <Widget>[_threeItemPopup()],
-          ),
-          body: SmartRefresher(
-              enablePullDown: true,
-              header: WaterDropHeader(
-                complete: Container(),
-                waterDropColor: darkBlue(),
-              ),
-              controller: _refreshController,
-              onRefresh: _onRefresh,
-              child: _buildMessageList()),
-          floatingActionButton: FloatingActionButton(
-            heroTag: "compose_message",
-            backgroundColor: darkBlue(),
-            child: Icon(Icons.message),
-            onPressed: () {
-              Navigator.of(context).pushNamed("/compose_message");
-            },
-          ),
-        ));
+      ),
+    );
   }
 
   Widget _threeItemPopup() => PopupMenuButton(
@@ -237,8 +231,10 @@ class _MessageListState extends State<MessageList> {
         child: new Opacity(
             opacity: isLoading ? 1.0 : 00,
             child: isLoading
-                ? new CircularProgressIndicator(
-                    backgroundColor: Colors.white,
+                ? CircularProgressIndicator(
+                    strokeWidth: 2.5,
+                    valueColor: AlwaysStoppedAnimation(Colors.white),
+                    backgroundColor: lightBlue(),
                   )
                 : Container()),
       ),
@@ -282,8 +278,6 @@ class _MessageListState extends State<MessageList> {
     }
   }
 
-  //TODO:starred, archived, delete, markedAsread
-
   void handleSlideAnimationChanged(Animation<double> slideAnimation) {}
 
   void handleSlideIsOpenChanged(bool isOpen) {}
@@ -295,10 +289,10 @@ class _MessageListState extends State<MessageList> {
 
   List<Widget> listActionSlideActions(
       PartialMessage partialMessage, int index) {
-    return [displayArchviedUnArchivedButton(partialMessage, index)];
+    return [displayArchivedUnArchivedButton(partialMessage, index)];
   }
 
-  Widget displayArchviedUnArchivedButton(
+  Widget displayArchivedUnArchivedButton(
       PartialMessage partialMessage, int index) {
     // this variable is responsible for the message which is user seeing isRecipient is seeing message
     // or isSender is seeing message we got that user and check if it is recipient then

@@ -181,7 +181,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           color: Colors.white,
         ),
         onPressed: () {
-          Navigator.pushNamed(context, "/dashboard",
+          Navigator.popAndPushNamed(context, "/dashboard",
               arguments: {"dashboardIndex": 2});
         },
       ),
@@ -247,7 +247,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     debugPrint("Data From Product Page : $data");
                     await _auth.addItemToShoppingCart(data);
                   } else {
-                    Toast.show("You can not Purchase this item !!", context,
+                    Toast.show(
+                        AppLocalization.of(context).youCanNotPurchaseThisItem,
+                        context,
                         textColor: Colors.white,
                         backgroundColor: darkBlue(),
                         duration: Toast.LENGTH_LONG);
@@ -474,7 +476,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     );
   }
 
-  _buildAvailableFromAndShareWidgets() {
+  Widget _buildAvailableFromAndShareWidgets() {
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: 12.0,
@@ -509,7 +511,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               children: <Widget>[
                 Icon(Icons.share),
                 SizedBox(width: 12),
-                Text("Share")
+                Text(AppLocalization.of(context).share)
               ],
             ),
             onPressed: () {
@@ -559,7 +561,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 child: Padding(
                   padding: const EdgeInsets.only(right: 12.0),
                   child: Text(
-                    "See all",
+                    AppLocalization.of(context).seeAll,
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 12,
@@ -594,7 +596,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     );
   }
 
-  _buildBuyButtonWidget() {
+  Widget _buildBuyButtonWidget() {
     return Expanded(
       child: Container(
         decoration: BoxDecoration(
@@ -608,7 +610,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         child: FlatButton(
           color: Colors.white,
           child: Text(
-            "Buy Now",
+            AppLocalization.of(context).buyNow,
             style: TextStyle(color: lightBlue()),
           ),
           onPressed: () {
@@ -616,7 +618,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               getRecipient();
               navigateToSendPayment();
             } else {
-              Toast.show("You can not Purchase this item !!", context,
+              Toast.show(AppLocalization.of(context).youCanNotPurchaseThisItem,
+                  context,
                   textColor: Colors.white,
                   backgroundColor: darkBlue(),
                   duration: Toast.LENGTH_LONG);

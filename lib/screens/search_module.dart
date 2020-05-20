@@ -1,4 +1,4 @@
-//TODO: ADD APP LOCALIZATION
+
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
@@ -203,49 +203,42 @@ class _SearchModuleState extends State<SearchModule> {
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
 
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.pop(context);
-        Navigator.pushNamed(context, '/dashboard');
-        return false;
-      },
-      child: Scaffold(
-        key: _scaffoldSearchKey,
-        backgroundColor: lightBlue(),
-        resizeToAvoidBottomInset: true,
-        appBar: AppBar(
-          titleSpacing: 0,
-          backgroundColor: darkBlue(),
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Expanded(child: autoComplete()),
-            ],
-          ),
-          automaticallyImplyLeading: true,
-          leading: icon,
-          actions: <Widget>[
-            IconButton(
-              key: popupMenuBtnKey,
-              icon: Icon(
-                Icons.more_vert,
-                color: Colors.white,
-              ),
-              onPressed: () {
-                popUpMenu();
-              },
-            )
+    return Scaffold(
+      key: _scaffoldSearchKey,
+      backgroundColor: lightBlue(),
+      resizeToAvoidBottomInset: true,
+      appBar: AppBar(
+        titleSpacing: 0,
+        backgroundColor: darkBlue(),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Expanded(child: autoComplete()),
           ],
         ),
-        body: Container(
-          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-          child: Column(
-            children: <Widget>[
-              Expanded(
-                child: _buildResultList(),
-              ),
-            ],
-          ),
+        automaticallyImplyLeading: true,
+        leading: icon,
+        actions: <Widget>[
+          IconButton(
+            key: popupMenuBtnKey,
+            icon: Icon(
+              Icons.more_vert,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              popUpMenu();
+            },
+          )
+        ],
+      ),
+      body: Container(
+        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        child: Column(
+          children: <Widget>[
+            Expanded(
+              child: _buildResultList(),
+            ),
+          ],
         ),
       ),
     );
@@ -285,8 +278,10 @@ class _SearchModuleState extends State<SearchModule> {
       child: new Center(
         child: new Opacity(
           opacity: isLoading ? 1.0 : 00,
-          child: new CircularProgressIndicator(
-            backgroundColor: Colors.white,
+          child: CircularProgressIndicator(
+            strokeWidth: 2.5,
+            valueColor: AlwaysStoppedAnimation(Colors.white),
+            backgroundColor: lightBlue(),
           ),
         ),
       ),
@@ -473,7 +468,9 @@ class _SearchModuleState extends State<SearchModule> {
         placeholder: (context, url) => imageUrl == ""
             ? Icon(Icons.person)
             : CircularProgressIndicator(
-                backgroundColor: Colors.white,
+                strokeWidth: 2.5,
+                valueColor: AlwaysStoppedAnimation(Colors.white),
+                backgroundColor: lightBlue(),
               ),
       ),
     );
@@ -616,7 +613,9 @@ class _SearchModuleState extends State<SearchModule> {
         placeholder: (context, url) => imageUrl == ""
             ? Icon(Icons.person)
             : CircularProgressIndicator(
-                backgroundColor: Colors.white,
+                strokeWidth: 2.5,
+                valueColor: AlwaysStoppedAnimation(Colors.white),
+                backgroundColor: lightBlue(),
               ),
       ),
     );
@@ -842,7 +841,7 @@ class _SearchModuleState extends State<SearchModule> {
   List<Widget> listActionSlideActions1(Product product) {
     return [
       IconSlideAction(
-          caption: "BUY",
+          caption: AppLocalization.of(context).buy,
           color: Colors.green,
           icon: Icons.shopping_basket,
           onTap: () async {
@@ -873,7 +872,7 @@ class _SearchModuleState extends State<SearchModule> {
   List<Widget> listSecondaryActions2(Service service) {
     return [
       IconSlideAction(
-        caption: "Message",
+        caption: AppLocalization.of(context).message,
         color: Colors.green,
         icon: Icons.message,
         onTap: () async {
@@ -889,7 +888,7 @@ class _SearchModuleState extends State<SearchModule> {
   List<Widget> listActionSlideActions2(Service service) {
     return [
       IconSlideAction(
-          caption: "BUY",
+          caption: AppLocalization.of(context).buy,
           color: Colors.green,
           icon: Icons.shopping_basket,
           onTap: () async {

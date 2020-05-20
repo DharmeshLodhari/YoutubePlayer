@@ -2,6 +2,8 @@ import 'package:Slydo/models/transactions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
+import '../colors.dart';
+
 class UserTile extends StatelessWidget {
   final Transaction user;
   UserTile({this.user});
@@ -32,7 +34,9 @@ class UserTile extends StatelessWidget {
                 placeholder: (context, url) => user.avatar == ""
                     ? Icon(Icons.person)
                     : CircularProgressIndicator(
-                        backgroundColor: Colors.white,
+                        strokeWidth: 2.5,
+                        valueColor: AlwaysStoppedAnimation(Colors.white),
+                        backgroundColor: lightBlue(),
                       ),
               ),
             ),

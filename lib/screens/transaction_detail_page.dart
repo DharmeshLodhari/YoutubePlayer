@@ -141,7 +141,9 @@ class _TransactionDetailState extends State<TransactionDetail> {
         placeholder: (context, url) => transaction.avatar == ""
             ? Icon(Icons.person)
             : CircularProgressIndicator(
-                backgroundColor: Colors.white,
+                strokeWidth: 2.5,
+                valueColor: AlwaysStoppedAnimation(Colors.white),
+                backgroundColor: lightBlue(),
               ),
       ),
     );

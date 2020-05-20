@@ -1,3 +1,4 @@
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_credit_card/credit_card_widget.dart';
@@ -37,9 +38,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        Navigator.pushNamed(context, '/dashboard',
-            arguments: {"dashboardIndex": 5});
-        return false;
+        return true;
       },
       child: Scaffold(
         key: cardPaymentPageKey,
@@ -47,7 +46,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
         appBar: AppBar(
           automaticallyImplyLeading: true,
           backgroundColor: darkBlue(),
-          title: Text("Card Payment"),
+          title: Text(AppLocalization.of(context).cardPayment),
         ),
         body: Column(
           children: <Widget>[
@@ -95,7 +94,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                           borderSide: BorderSide(color: darkBlue())),
                       hintStyle: TextStyle(color: darkBlue()),
                       labelStyle: TextStyle(color: darkBlue()),
-                      labelText: 'Card number',
+                      labelText: AppLocalization.of(context).cardNumber,
                       hintText: 'xxxx xxxx xxxx xxxx',
                     ),
                     keyboardType: TextInputType.number,
@@ -126,7 +125,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                             borderSide: BorderSide(color: darkBlue())),
                         hintStyle: TextStyle(color: darkBlue()),
                         labelStyle: TextStyle(color: darkBlue()),
-                        labelText: 'Expired Date',
+                        labelText: AppLocalization.of(context).expiredDate,
                         hintText: 'MM/YY'),
                     keyboardType: TextInputType.number,
                     textInputAction: TextInputAction.next,
@@ -157,7 +156,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                           borderSide: BorderSide(color: darkBlue())),
                       hintStyle: TextStyle(color: darkBlue()),
                       labelStyle: TextStyle(color: darkBlue()),
-                      labelText: 'CVV',
+                      labelText: AppLocalization.of(context).cvv,
                       hintText: 'XXXX',
                     ),
                     keyboardType: TextInputType.number,
@@ -188,7 +187,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                           borderSide: BorderSide(color: darkBlue())),
                       hintStyle: TextStyle(color: darkBlue()),
                       labelStyle: TextStyle(color: darkBlue()),
-                      labelText: 'Card Holder',
+                      labelText: AppLocalization.of(context).cardHolder,
                     ),
                     keyboardType: TextInputType.text,
                     textInputAction: TextInputAction.next,
@@ -218,8 +217,8 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                             borderSide: BorderSide(color: darkBlue())),
                         hintStyle: TextStyle(color: darkBlue()),
                         labelStyle: TextStyle(color: darkBlue()),
-                        labelText: 'Amount',
-                        hintText: "Enter Amount"),
+                        labelText: AppLocalization.of(context).amount,
+                        hintText: AppLocalization.of(context).enterAmount),
                     keyboardType: TextInputType.number,
                     textInputAction: TextInputAction.next,
                     onChanged: (val) {
@@ -231,7 +230,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                       try {
                         int.parse(val);
                       } catch (e) {
-                        return "Invalid Amount";
+                        return AppLocalization.of(context).invalidAmount;
                       }
                       return null;
                     },
@@ -245,14 +244,16 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                     minWidth: double.infinity,
                     color: darkBlue(),
                     child: Text(
-                      "Top Up",
+                      AppLocalization.of(context).topUp,
                       style: TextStyle(color: Colors.white),
                     ),
                     onPressed: () {
                       if (formKey.currentState.validate()) {
                         sendPaymentData();
                       } else {
-                        Toast.show("Invalid Input !!", context,
+                        Toast.show(
+                            AppLocalization.of(context).invalidDetails + " !!",
+                            context,
                             textColor: Colors.white,
                             backgroundColor: darkBlue());
                       }
@@ -268,12 +269,16 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
   void sendPaymentData() {
     _auth.topUpAccountByCC({"data": "data"}).then((value) {
       if (value == true) {
-        Toast.show("Top Up Done !!! ", context,
-            textColor: Colors.white, backgroundColor: darkBlue());
-        Navigator.pushNamed(context, "/dashboard",
-            arguments: {"dashboardIndex": 5});
+        Toast.show(
+            AppLocalization.of(context).topUp +
+                " " +
+                AppLocalization.of(context).done,
+            context,
+            textColor: Colors.white,
+            backgroundColor: darkBlue());
+        Navigator.pop(context);
       } else {
-        Toast.show("Top Up Not Done !!! ", context,
+        Toast.show(AppLocalization.of(context).somethingWentWrong, context,
             textColor: Colors.white, backgroundColor: darkBlue());
       }
     });

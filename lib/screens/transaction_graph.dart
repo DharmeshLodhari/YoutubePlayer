@@ -152,7 +152,9 @@ class _TransactionGraphState extends State<TransactionGraph> {
                   ? Expanded(
                       child: Center(
                         child: CircularProgressIndicator(
-                          backgroundColor: Colors.white,
+                          strokeWidth: 2.5,
+                          valueColor: AlwaysStoppedAnimation(Colors.white),
+                          backgroundColor: lightBlue(),
                         ),
                       ),
                     )
@@ -219,7 +221,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
   Widget lineGraph() {
     return Column(children: <Widget>[
       Text(
-        "Income/Expenditure",
+        AppLocalization.of(context).incomeExpenditure,
         style: TextStyle(
           fontSize: 16.0,
           fontWeight: FontWeight.bold,
@@ -417,7 +419,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
       padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
       child: Column(children: <Widget>[
         Text(
-          "Week Range",
+          AppLocalization.of(context).weekRange,
           style: TextStyle(
             fontSize: 18.0,
             fontWeight: FontWeight.bold,

@@ -31,8 +31,7 @@ class _AddAccountState extends State<AddAccount> {
 
     return WillPopScope(
       onWillPop: () async {
-        Navigator.pop(context);
-        return false;
+        return true;
       },
       child: Scaffold(
         backgroundColor: lightBlue(),

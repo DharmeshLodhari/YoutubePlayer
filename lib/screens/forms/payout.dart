@@ -42,8 +42,7 @@ class _PayoutState extends State<Payout> {
 
     return WillPopScope(
       onWillPop: () async {
-        Navigator.pop(context);
-        return false;
+        return true;
       },
       child: Scaffold(
         backgroundColor: lightBlue(),
@@ -114,7 +113,9 @@ class _PayoutState extends State<Payout> {
                 bankAccountBloc.bankAccount.bankAvatar == ""
                     ? Icon(Icons.account_balance)
                     : CircularProgressIndicator(
-                        backgroundColor: Colors.white,
+                        strokeWidth: 2.5,
+                        valueColor: AlwaysStoppedAnimation(Colors.white),
+                        backgroundColor: lightBlue(),
                       ),
           ),
         ),
@@ -201,8 +202,13 @@ class _PayoutState extends State<Payout> {
                       isValidCallback: () {
                         showDialog(
                             context: context,
-                            builder: (context) =>
-                                Center(child: CircularProgressIndicator()));
+                            builder: (context) => Center(
+                                    child: CircularProgressIndicator(
+                                  strokeWidth: 2.5,
+                                  valueColor:
+                                      AlwaysStoppedAnimation(Colors.white),
+                                  backgroundColor: lightBlue(),
+                                )));
 
                         _auth.accountPayout(data).then((value) {
                           response = value;

@@ -92,9 +92,7 @@ class _TransactionListState extends State<TransactionList> {
 
     return WillPopScope(
       onWillPop: () async {
-        Navigator.popAndPushNamed(context, "/dashboard",
-            arguments: {"dashboardIndex": 5});
-        return false;
+        return true;
       },
       child: Scaffold(
         key: _scaffoldTransactionKey,
@@ -231,8 +229,10 @@ class _TransactionListState extends State<TransactionList> {
       child: new Center(
         child: new Opacity(
           opacity: isLoading ? 1.0 : 00,
-          child: new CircularProgressIndicator(
-            backgroundColor: Colors.white,
+          child: CircularProgressIndicator(
+            strokeWidth: 2.5,
+            valueColor: AlwaysStoppedAnimation(Colors.white),
+            backgroundColor: lightBlue(),
           ),
         ),
       ),

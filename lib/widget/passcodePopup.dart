@@ -31,7 +31,7 @@ class PassCodePopup {
                       AppLocalization.of(context).enterPassCode,
                       style: TextStyle(color: Colors.white),
                     ),
-                    passwordEnteredCallback: _onPasscodeEntered,
+                    passwordEnteredCallback: _onPassCodeEntered,
                     cancelButton: FlatButton(
                       padding: EdgeInsets.all(0),
                       child: Text(
@@ -64,8 +64,8 @@ class PassCodePopup {
             ));
   }
 
-  _onPasscodeEntered(String enteredPasscode) {
-    bool isValid = userBloc.user.password == enteredPasscode;
+  _onPassCodeEntered(String enteredPassCode) {
+    bool isValid = userBloc.user.password == enteredPassCode;
     _verificationNotifier.add(isValid);
   }
 }

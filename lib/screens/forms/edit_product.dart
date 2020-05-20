@@ -67,7 +67,7 @@ class _EditProductState extends State<EditProduct> {
     _auth.getProduct(productId).then((value) {
       setState(() {
         currentProduct = value;
-        // asssigning to our edit controllers
+        // assigning to our edit controllers
 
         productTitleController.text = currentProduct.name;
         productDescriptionController.text = currentProduct.description;
@@ -79,7 +79,6 @@ class _EditProductState extends State<EditProduct> {
         productImagesFromServer.addAll(currentProduct.serverImages);
         productName = currentProduct.name;
         productCategory = currentProduct.category;
-        debugPrint("product catagory : " + currentProduct.category);
         productCondition = currentProduct.condition;
         productPrice = currentProduct.price;
         productDescription = currentProduct.description;

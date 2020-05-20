@@ -1,6 +1,5 @@
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/models/user.dart';
-import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 
 class UserBloc extends ChangeNotifier {
@@ -122,7 +121,6 @@ class BasketBloc extends ChangeNotifier {
   // will accept products and services
   List<Map<String, dynamic>> _items = List<Map<String, dynamic>>();
   int _total = 0;
-  final _auth = AuthService();
 
   int get total => _total;
 

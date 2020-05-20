@@ -1,4 +1,4 @@
-//TODO: ADD APP LOCALIZATION
+
 import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
@@ -105,103 +105,95 @@ class _UserDashboardState extends State<UserDashboard> {
       storeLocked = false;
     }
 
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.pushNamed(
-          context,
-          '/dashboard',
-        );
-        return false;
-      },
-      child: Scaffold(
-        key: _scaffoldSettingKey,
-        backgroundColor: lightBlue(),
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          backgroundColor: darkBlue(),
-          title: Row(
-            children: <Widget>[
-              displayUserAvatar(),
-              Expanded(child: SizedBox(width: 10)),
-              Text(AppLocalization.of(context).explore),
-              Expanded(child: SizedBox(width: 10)),
-            ],
-          ),
-          titleSpacing: 0,
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.power_settings_new, color: Colors.white),
-              onPressed: () {
-                logoutUser(bankAccountBloc);
-              },
-              tooltip: AppLocalization.of(context).logout,
-            ),
+    return Scaffold(
+      key: _scaffoldSettingKey,
+      backgroundColor: lightBlue(),
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: darkBlue(),
+        title: Row(
+          children: <Widget>[
+            displayUserAvatar(),
+            Expanded(child: SizedBox(width: 10)),
+            Text(AppLocalization.of(context).explore),
+            Expanded(child: SizedBox(width: 10)),
           ],
         ),
-        body: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: Container(
-            color: lightBlue(),
-            margin: EdgeInsets.symmetric(horizontal: 10),
-            child: Center(
-              child: Column(
-                children: <Widget>[
-                  SizedBox(height: 20),
-                  displayAccountBalance(isLocked),
-                  SizedBox(height: 15),
+        titleSpacing: 0,
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.power_settings_new, color: Colors.white),
+            onPressed: () {
+              logoutUser(bankAccountBloc);
+            },
+            tooltip: AppLocalization.of(context).logout,
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Container(
+          color: lightBlue(),
+          margin: EdgeInsets.symmetric(horizontal: 10),
+          child: Center(
+            child: Column(
+              children: <Widget>[
+                SizedBox(height: 20),
+                displayAccountBalance(isLocked),
+                SizedBox(height: 15),
 
-                  //ROW 1
-                  rowIconButtons(
-                    iconButton(
-                      Icons.person,
-                      "Profile",
-                      () {
-                        Platform.isAndroid
-                            ? profileAndroidSheet()
-                            : profileIOSSheet();
-                      },
-                    ),
-                    iconButton(
-                      Icons.language,
-                      "Language",
-                      () {
-                        changeLanguage();
-                      },
-                    ),
-                    iconButton(
-                      Icons.shopping_cart,
-                      "Orders",
-                      () {
-                        Navigator.pushNamed(context, '/orders-list');
-                      },
-                    ),
+                //ROW 1
+                rowIconButtons(
+                  iconButton(
+                    Icons.person,
+                    AppLocalization.of(context).profile,
+                    () {
+                      Platform.isAndroid
+                          ? profileAndroidSheet()
+                          : profileIOSSheet();
+                    },
                   ),
+                  iconButton(
+                    Icons.language,
+                    AppLocalization.of(context).language,
+                    () {
+                      changeLanguage();
+                    },
+                  ),
+                  iconButton(
+                    Icons.shopping_cart,
+                    AppLocalization.of(context).orders,
+                    () {
+                      Navigator.pushNamed(context, '/orders-list');
+                    },
+                  ),
+                ),
 
-                  //ROW 2
-                  rowIconButtons(
-                      iconButton(Icons.account_balance_wallet, "Transactions",
-                          () {
-                        PassCodePopup(
-                            context: context,
-                            isValidCallback: () {
-                              Navigator.pushNamed(context, "/transactions");
-                            },
-                            cancelCallBack: () {
-                              Navigator.pop(context);
-                            });
-                      }),
-                      iconButton(
-                        Icons.account_balance,
-                        "Bank",
-                        () {
-                          Platform.isIOS ? bankIOSSheet() : bankAndroidSheet();
-                        },
-                      ),
-                      myStore()),
+                //ROW 2
+                rowIconButtons(
+                    iconButton(Icons.account_balance_wallet,
+                        AppLocalization.of(context).transactions, () {
+                      PassCodePopup(
+                          context: context,
+                          isValidCallback: () {
+                            Navigator.pushNamed(context, "/transactions");
+                          },
+                          cancelCallBack: () {
+                            Navigator.pop(context);
+                          });
+                    }),
+                    iconButton(
+                      Icons.account_balance,
+                      AppLocalization.of(context).bank,
+                      () {
+                        Platform.isIOS ? bankIOSSheet() : bankAndroidSheet();
+                      },
+                    ),
+                    myStore()),
 
-                  //ROW 3
-                  rowIconButtons(
-                      Container(),
+                //ROW 3
+                rowIconButtons(
+                    Container(),
 //TODO: FIND BATTER WAY TO ACCEPT CREDIT CARD  PAYMENT WITH OUT US WITH IN FOR THIS
 //                    iconButton(
 //                      Icons.credit_card,
@@ -210,14 +202,13 @@ class _UserDashboardState extends State<UserDashboard> {
 //                        Navigator.pushNamed(context, "/card-payment-page");
 //                      },
 //                    ),
-                      Container(),
-                      Container()),
-                  SizedBox(
-                    height: 16,
-                  ),
-                  _infoTile(),
-                ],
-              ),
+                    Container(),
+                    Container()),
+                SizedBox(
+                  height: 16,
+                ),
+                _infoTile(),
+              ],
             ),
           ),
         ),
@@ -230,7 +221,7 @@ class _UserDashboardState extends State<UserDashboard> {
       children: <Widget>[
         iconButton(
           Icons.store_mall_directory,
-          "My Store",
+          AppLocalization.of(context).myStore,
           () {
             storeLocked
                 ? null
@@ -259,9 +250,14 @@ class _UserDashboardState extends State<UserDashboard> {
 
   Widget displayUserAvatar() {
     return isLoading
-        ? Center(
-            child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation(Colors.white),
+        ? Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Center(
+              child: CircularProgressIndicator(
+                strokeWidth: 2.5,
+                valueColor: AlwaysStoppedAnimation(Colors.white),
+                backgroundColor: lightBlue(),
+              ),
             ),
           )
         : Padding(
@@ -278,7 +274,9 @@ class _UserDashboardState extends State<UserDashboard> {
                   placeholder: (context, url) => userBloc.user.avatar == ""
                       ? Icon(Icons.person)
                       : CircularProgressIndicator(
-                          backgroundColor: Colors.white,
+                          strokeWidth: 2.5,
+                          valueColor: AlwaysStoppedAnimation(Colors.white),
+                          backgroundColor: lightBlue(),
                         ),
                 ),
               ),
@@ -408,7 +406,6 @@ class _UserDashboardState extends State<UserDashboard> {
             userBloc.user = value;
             setState(() {
               isLoading = false;
-              Navigator.pop(context);
             });
           });
         } catch (err) {
@@ -455,12 +452,12 @@ class _UserDashboardState extends State<UserDashboard> {
       String languageCode = sharedPreferences.getString("language");
       setState(() {
         language = getLanguageByLanguageCode(languageCode);
-        debugPrint("Setted language: => " + language.name);
+        debugPrint("Set language: => " + language.name);
       });
     } else {
       setState(() {
         language = getLanguageByLanguageCode("en");
-        debugPrint("Setted default language: => " + language.name);
+        debugPrint("Set default language: => " + language.name);
       });
     }
   }
@@ -506,25 +503,32 @@ class _UserDashboardState extends State<UserDashboard> {
                 child: Wrap(
                   children: <Widget>[
                     ListTile(
-                      title: Center(child: Text("My Profile")),
+                      title: Center(
+                          child: Text(AppLocalization.of(context).myProfile)),
                       onTap: () {
                         _auth
                             .fetchCustomerProfile(userBloc.user.userName)
                             .then((user) {
+                          Navigator.pop(context);
                           Navigator.pushNamed(context, '/profile',
                               arguments: {"searchedUser": user});
                         });
                       },
                     ),
                     ListTile(
-                      title: Center(child: Text("Update Avatar")),
+                      title: Center(
+                          child:
+                              Text(AppLocalization.of(context).updateAvatar)),
                       onTap: () {
+                        Navigator.pop(context);
                         pickImage(userBloc);
                       },
                     ),
                     ListTile(
-                      title: Center(child: Text("Address")),
+                      title: Center(
+                          child: Text(AppLocalization.of(context).address)),
                       onTap: () {
+                        Navigator.pop(context);
                         Navigator.pushNamed(
                           context,
                           '/user-address',
@@ -549,20 +553,26 @@ class _UserDashboardState extends State<UserDashboard> {
               child: Wrap(
                 children: <Widget>[
                   ListTile(
-                    title: Center(child: Text("Bank Accounts")),
+                    title: Center(
+                        child: Text(AppLocalization.of(context).bankAccounts)),
                     onTap: () {
+                      Navigator.pop(context);
                       Navigator.pushNamed(context, "/bank-account-list");
                     },
                   ),
                   ListTile(
-                    title: Center(child: Text("Payout List")),
+                    title: Center(
+                        child: Text(AppLocalization.of(context).payoutList)),
                     onTap: () {
+                      Navigator.pop(context);
                       Navigator.pushNamed(context, "/payout-list");
                     },
                   ),
                   ListTile(
-                    title: Center(child: Text("Payout")),
+                    title:
+                        Center(child: Text(AppLocalization.of(context).payout)),
                     onTap: () {
+                      Navigator.pop(context);
                       Navigator.pushNamed(context, "/payout");
                     },
                   ),
@@ -579,26 +589,26 @@ class _UserDashboardState extends State<UserDashboard> {
       child: CupertinoActionSheet(
         actions: <Widget>[
           CupertinoActionSheetAction(
-            child: const Text('My Profile'),
+            child: Text(AppLocalization.of(context).myProfile),
             onPressed: () {
               Navigator.pop(context, 'My Profile');
             },
           ),
           CupertinoActionSheetAction(
-            child: const Text('Update Avatar'),
+            child: Text(AppLocalization.of(context).updateAvatar),
             onPressed: () {
               Navigator.pop(context, 'Update Avatar');
             },
           ),
           CupertinoActionSheetAction(
-            child: const Text('Address'),
+            child: Text(AppLocalization.of(context).address),
             onPressed: () {
               Navigator.pop(context, 'Address');
             },
           ),
         ],
         cancelButton: CupertinoActionSheetAction(
-          child: const Text('Cancel'),
+          child: Text(AppLocalization.of(context).cancel),
           isDefaultAction: true,
           onPressed: () {
             Navigator.pop(context, 'Cancel');
@@ -614,26 +624,26 @@ class _UserDashboardState extends State<UserDashboard> {
       child: CupertinoActionSheet(
         actions: <Widget>[
           CupertinoActionSheetAction(
-            child: const Text('Bank Accounts'),
+            child: Text(AppLocalization.of(context).bankAccounts),
             onPressed: () {
               Navigator.pop(context, 'Bank Accounts');
             },
           ),
           CupertinoActionSheetAction(
-            child: const Text('Payout List'),
+            child: Text(AppLocalization.of(context).payoutList),
             onPressed: () {
               Navigator.pop(context, 'Payout List');
             },
           ),
           CupertinoActionSheetAction(
-            child: const Text('Payout'),
+            child: Text(AppLocalization.of(context).payout),
             onPressed: () {
               Navigator.pop(context, 'Payout');
             },
           ),
         ],
         cancelButton: CupertinoActionSheetAction(
-          child: const Text('Cancel'),
+          child: Text(AppLocalization.of(context).cancel),
           isDefaultAction: true,
           onPressed: () {
             Navigator.pop(context, 'Cancel');
@@ -689,14 +699,18 @@ class _UserDashboardState extends State<UserDashboard> {
                 child: Wrap(
                   children: <Widget>[
                     ListTile(
-                      title: Center(child: Text("Add Product")),
+                      title: Center(
+                          child: Text(AppLocalization.of(context).addProduct)),
                       onTap: () {
+                        Navigator.pop(context);
                         Navigator.pushNamed(context, '/add-product');
                       },
                     ),
                     ListTile(
-                      title: Center(child: Text("Add Service")),
+                      title: Center(
+                          child: Text(AppLocalization.of(context).addService)),
                       onTap: () {
+                        Navigator.pop(context);
                         Navigator.pushNamed(context, '/add-service');
                       },
                     ),
@@ -712,20 +726,20 @@ class _UserDashboardState extends State<UserDashboard> {
       child: CupertinoActionSheet(
         actions: <Widget>[
           CupertinoActionSheetAction(
-            child: const Text('Add Product'),
+            child: Text(AppLocalization.of(context).addProduct),
             onPressed: () {
               Navigator.pop(context, 'Add Product');
             },
           ),
           CupertinoActionSheetAction(
-            child: const Text('Add Service'),
+            child: Text(AppLocalization.of(context).addService),
             onPressed: () {
               Navigator.pop(context, 'Add Service');
             },
           ),
         ],
         cancelButton: CupertinoActionSheetAction(
-          child: const Text('Cancel'),
+          child: Text(AppLocalization.of(context).cancel),
           isDefaultAction: true,
           onPressed: () {
             Navigator.pop(context, 'Cancel');

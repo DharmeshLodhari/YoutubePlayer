@@ -164,7 +164,7 @@ class _UserProfileState extends State<UserProfile> {
           textStyle: filterValue == 'Info'
               ? TextStyle(color: lightBlue(), fontSize: 10)
               : TextStyle(color: Colors.white, fontSize: 10),
-          title: "Info",
+          title: AppLocalization.of(context).info,
           image: Icon(
             Icons.computer,
             color: filterValue == 'Info' ? lightBlue() : Colors.white,
@@ -467,8 +467,10 @@ class _UserProfileState extends State<UserProfile> {
         child: new Opacity(
             opacity: isProductLoading ? 1.0 : 00,
             child: isProductLoading
-                ? new CircularProgressIndicator(
-                    backgroundColor: Colors.white,
+                ? CircularProgressIndicator(
+                    strokeWidth: 2.5,
+                    valueColor: AlwaysStoppedAnimation(Colors.white),
+                    backgroundColor: lightBlue(),
                   )
                 : Container()),
       ),
@@ -556,8 +558,10 @@ class _UserProfileState extends State<UserProfile> {
         child: new Opacity(
             opacity: isServiceLoading ? 1.0 : 00,
             child: isServiceLoading
-                ? new CircularProgressIndicator(
-                    backgroundColor: Colors.white,
+                ? CircularProgressIndicator(
+                    strokeWidth: 2.5,
+                    valueColor: AlwaysStoppedAnimation(Colors.white),
+                    backgroundColor: lightBlue(),
                   )
                 : Container()),
       ),

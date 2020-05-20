@@ -6,6 +6,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../colors.dart';
+
 // ignore: must_be_immutable
 class OrderTile extends StatelessWidget {
   UserBloc userBloc;
@@ -23,7 +25,7 @@ class OrderTile extends StatelessWidget {
             padding: EdgeInsets.symmetric(vertical: 8),
             child: ListTile(
                 leading: getLeading(),
-                title: getTitle(),
+                title: getTitle(context),
                 trailing: order.totalPrice.length > 6 ? null : getTrailing(),
                 subtitle: getSubtitle(context)),
           ),
@@ -59,15 +61,17 @@ class OrderTile extends StatelessWidget {
         placeholder: (context, url) => getAvatar() == ""
             ? Icon(Icons.person)
             : CircularProgressIndicator(
-                backgroundColor: Colors.white,
+                strokeWidth: 2.5,
+                valueColor: AlwaysStoppedAnimation(Colors.white),
+                backgroundColor: lightBlue(),
               ),
       ),
     );
   }
 
-  Widget getTitle() {
+  Widget getTitle(context) {
     return Text(
-      "Ref # : ${order.id}",
+      AppLocalization.of(context).ref + " # : ${order.id}",
       style: TextStyle(
           color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
     );

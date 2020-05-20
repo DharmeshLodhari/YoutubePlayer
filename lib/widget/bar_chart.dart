@@ -1,6 +1,7 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/date_time_and_money_converter.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -80,7 +81,9 @@ class _BarChartState extends State<BarChart> {
                   children: <Widget>[
                     SizedBox(height: 125.0),
                     CircularProgressIndicator(
-                      backgroundColor: Colors.white,
+                      strokeWidth: 2.5,
+                      valueColor: AlwaysStoppedAnimation(Colors.white),
+                      backgroundColor: lightBlue(),
                     ),
                     SizedBox(height: 125.0),
                   ],
@@ -100,7 +103,7 @@ class _BarChartState extends State<BarChart> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text(
-                "Expenditure",
+                AppLocalization.of(context).expenditure,
                 style: TextStyle(
                   fontSize: 20.0,
                   fontWeight: FontWeight.bold,

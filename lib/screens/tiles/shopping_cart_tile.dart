@@ -4,6 +4,8 @@ import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
+import '../colors.dart';
+
 // ignore: must_be_immutable
 class ShoppingCartTileForProduct extends StatefulWidget {
   Product item;
@@ -70,9 +72,11 @@ class _ShoppingCartTileForProductState
           filterQuality: FilterQuality.high,
           placeholder: (context, url) => product.serverImages.isNotEmpty
               ? Icon(Icons.widgets)
-              : CircularProgressIndicator(
-                  backgroundColor: Colors.white,
-                ),
+              :CircularProgressIndicator(
+            strokeWidth: 2.5,
+            valueColor: AlwaysStoppedAnimation(Colors.white),
+            backgroundColor: lightBlue(),
+          ),
         ),
       ),
     );
@@ -148,7 +152,9 @@ class _ShoppingCartTileForProductState
       children: <Widget>[
         Text(
           "${product.shortDescription.length > 20 ? product.shortDescription.substring(0, 20) : product.shortDescription}",
-          style: TextStyle(color: Colors.grey[600]),
+          style: TextStyle(
+            color: Colors.grey[600],
+          ),
         ),
         SizedBox(
           height: 2,
@@ -260,9 +266,11 @@ class _ShoppingCartTileForServiceState
           filterQuality: FilterQuality.high,
           placeholder: (context, url) => service.serverImages.isNotEmpty
               ? Icon(Icons.widgets)
-              : CircularProgressIndicator(
-                  backgroundColor: Colors.white,
-                ),
+              :CircularProgressIndicator(
+            strokeWidth: 2.5,
+            valueColor: AlwaysStoppedAnimation(Colors.white),
+            backgroundColor: lightBlue(),
+          ),
         ),
       ),
     );

@@ -50,7 +50,9 @@ class _BankAccountTileState extends State<BankAccountTile> {
                     color: darkBlue(),
                   )
                 : CircularProgressIndicator(
-                    backgroundColor: Colors.white,
+                    strokeWidth: 2.5,
+                    valueColor: AlwaysStoppedAnimation(Colors.white),
+                    backgroundColor: lightBlue(),
                   ),
           ),
         ),

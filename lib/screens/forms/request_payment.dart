@@ -49,7 +49,7 @@ class _RequestPaymentState extends State<RequestPayment> {
   String recipient;
   final locationService = LocationService();
 
-  //variables for categorie
+  //variables for categories
   bool isLoading = true;
   List<String> paymentCategoriesTest = List();
   String selectedCategory;
@@ -114,6 +114,7 @@ class _RequestPaymentState extends State<RequestPayment> {
     return WillPopScope(
       onWillPop: () async {
         _payee = null;
+        customerProfileBloc.customer = null;
         return true;
       },
       child: Scaffold(
@@ -131,7 +132,9 @@ class _RequestPaymentState extends State<RequestPayment> {
         body: isLoading
             ? Center(
                 child: CircularProgressIndicator(
-                  backgroundColor: Colors.white,
+                  strokeWidth: 2.5,
+                  valueColor: AlwaysStoppedAnimation(Colors.white),
+                  backgroundColor: lightBlue(),
                 ),
               )
             : SingleChildScrollView(
@@ -248,7 +251,6 @@ class _RequestPaymentState extends State<RequestPayment> {
       enabled: isFromProfile,
       focusNode: _recipientFocus,
       textCapitalization: TextCapitalization.none,
-//      initialValue: isFromProfile ? null : _payee.userName,
       cursorColor: darkBlue(),
       validator: (value) {
         if (!isFromProfile && value != _payee.userName) {
@@ -256,7 +258,6 @@ class _RequestPaymentState extends State<RequestPayment> {
         }
         return null;
       },
-      //
       autofocus: false,
       obscureText: false,
       decoration: InputDecoration(
@@ -272,7 +273,6 @@ class _RequestPaymentState extends State<RequestPayment> {
               borderRadius: BorderRadius.all(Radius.circular(4)),
               borderSide: BorderSide(
                   width: 1, color: Colors.white, style: BorderStyle.solid))),
-
       onChanged: (val) {
         setState(() {
           if (!isFromProfile && _payee != null) {
@@ -468,11 +468,20 @@ class _RequestPaymentState extends State<RequestPayment> {
                       isValidCallback: () {
                         showDialog(
                             context: context,
-                            builder: (context) =>
-                                Center(child: CircularProgressIndicator()));
+                            builder: (context) => Center(
+                                    child: CircularProgressIndicator(
+                                  strokeWidth: 2.5,
+                                  valueColor:
+                                      AlwaysStoppedAnimation(Colors.white),
+                                  backgroundColor: lightBlue(),
+                                )));
                         _auth.createPaymentRequests(data).then((value) {
                           response = value;
                           if (response.statusCode == 201) {
+                            //Pop Circular Progress Indicator
+                            Navigator.pop(context);
+                            //Pop request payment page
+                            Navigator.pop(context);
                             Navigator.of(context).popAndPushNamed('/dashboard',
                                 arguments: {'dashboardIndex': 1});
                           } else if (response.statusCode == 500) {

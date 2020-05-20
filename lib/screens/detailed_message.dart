@@ -54,7 +54,6 @@ class _DetailedMessageState extends State<DetailedMessage> {
     userBloc = Provider.of<UserBloc>(context);
     return WillPopScope(
       onWillPop: () async {
-        Navigator.pop(context);
         return true;
       },
       child: Scaffold(
@@ -67,7 +66,9 @@ class _DetailedMessageState extends State<DetailedMessage> {
         body: isLoading
             ? Center(
                 child: CircularProgressIndicator(
-                  backgroundColor: Colors.white,
+                  strokeWidth: 2.5,
+                  valueColor: AlwaysStoppedAnimation(Colors.white),
+                  backgroundColor: lightBlue(),
                 ),
               )
             : SingleChildScrollView(
@@ -119,7 +120,6 @@ class _DetailedMessageState extends State<DetailedMessage> {
       height: 50,
       width: double.infinity,
       child: ListTile(
-//        contentPadding: EdgeInsets.symmetric(horizontal: 15),
         leading: getLeading(),
         title: getSender(),
         subtitle: getRecipientWidget(),
@@ -151,7 +151,9 @@ class _DetailedMessageState extends State<DetailedMessage> {
         placeholder: (context, url) => message.senderAvatar == ""
             ? Icon(Icons.person)
             : CircularProgressIndicator(
-                backgroundColor: Colors.white,
+                strokeWidth: 2.5,
+                valueColor: AlwaysStoppedAnimation(Colors.white),
+                backgroundColor: lightBlue(),
               ),
       ),
     );

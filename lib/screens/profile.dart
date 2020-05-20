@@ -152,7 +152,6 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                   pinned: true,
                   expandedHeight: 220.0,
                   actions: actionButtons(),
-//                bottom: tabBar(),
                   title: Text(searchedUser.userName),
                   titleSpacing: 0,
                   flexibleSpace: FlexibleSpaceBar(
@@ -421,8 +420,10 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
         child: new Opacity(
             opacity: isProductLoading ? 1.0 : 00,
             child: isProductLoading
-                ? new CircularProgressIndicator(
-                    backgroundColor: Colors.white,
+                ? CircularProgressIndicator(
+                    strokeWidth: 2.5,
+                    valueColor: AlwaysStoppedAnimation(Colors.white),
+                    backgroundColor: lightBlue(),
                   )
                 : Container()),
       ),
@@ -510,8 +511,10 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
         child: new Opacity(
             opacity: isServiceLoading ? 1.0 : 00,
             child: isServiceLoading
-                ? new CircularProgressIndicator(
-                    backgroundColor: Colors.white,
+                ? CircularProgressIndicator(
+                    strokeWidth: 2.5,
+                    valueColor: AlwaysStoppedAnimation(Colors.white),
+                    backgroundColor: lightBlue(),
                   )
                 : Container()),
       ),
@@ -575,7 +578,9 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
             placeholder: (context, url) => searchedUser.avatar == ""
                 ? Icon(Icons.person)
                 : CircularProgressIndicator(
-                    backgroundColor: Colors.white,
+                    strokeWidth: 2.5,
+                    valueColor: AlwaysStoppedAnimation(Colors.white),
+                    backgroundColor: lightBlue(),
                   ),
           ),
         ),

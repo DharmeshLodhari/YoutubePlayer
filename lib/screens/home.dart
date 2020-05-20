@@ -2,13 +2,11 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
-import 'package:Slydo/widget/dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:toast/toast.dart';
 
 class Home extends StatefulWidget {
@@ -23,49 +21,33 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     final UserBloc userBloc = Provider.of<UserBloc>(context);
 
-    return WillPopScope(
-      onWillPop: () async {
-        bool result = await showDialogBox(
-          context: context,
-          title: AppLocalization.of(context).exit,
-          description: AppLocalization.of(context).areYouSureWantToExit,
-          actionOne: AppLocalization.of(context).yes,
-          actionTwo: AppLocalization.of(context).no,
-          type: AlertType.none,
-        );
-        if (result) {
-          SystemChannels.platform.invokeMethod<void>('SystemNavigator.pop');
-        }
-        return false;
-      },
-      child: Scaffold(
-        key: _scaffoldHomeKey,
-        resizeToAvoidBottomInset: true,
-        backgroundColor: lightBlue(),
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          backgroundColor: darkBlue(),
-          title: Center(child: Text(AppLocalization.of(context).home)),
-          leading: displayUserAvatar(userBloc),
-          actions: <Widget>[
-            displayQRCodeButton(),
-          ],
-        ),
-        body: Center(
-          child: SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: Container(
-              color: lightBlue(),
-              padding: EdgeInsets.all(30),
-              child: Center(
-                child: Column(
-                  children: <Widget>[
-                    SizedBox(height: 10),
-                    displayUserInfo(userBloc),
-                    SizedBox(height: 30),
-                    displayPaymentButtons()
-                  ],
-                ),
+    return Scaffold(
+      key: _scaffoldHomeKey,
+      resizeToAvoidBottomInset: true,
+      backgroundColor: lightBlue(),
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: darkBlue(),
+        title: Center(child: Text(AppLocalization.of(context).home)),
+        leading: displayUserAvatar(userBloc),
+        actions: <Widget>[
+          displayQRCodeButton(),
+        ],
+      ),
+      body: Center(
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Container(
+            color: lightBlue(),
+            padding: EdgeInsets.all(30),
+            child: Center(
+              child: Column(
+                children: <Widget>[
+                  SizedBox(height: 10),
+                  displayUserInfo(userBloc),
+                  SizedBox(height: 30),
+                  displayPaymentButtons()
+                ],
               ),
             ),
           ),
@@ -90,7 +72,9 @@ class _HomeState extends State<Home> {
                   fit: BoxFit.fitWidth,
                   filterQuality: FilterQuality.high,
                   placeholder: (context, url) => CircularProgressIndicator(
-                    backgroundColor: Colors.white,
+                    strokeWidth: 2.5,
+                    valueColor: AlwaysStoppedAnimation(Colors.white),
+                    backgroundColor: lightBlue(),
                   ),
                 )),
             ButtonBar(
@@ -244,7 +228,9 @@ class _HomeState extends State<Home> {
             placeholder: (context, url) => userBloc.user.avatar == ""
                 ? Icon(Icons.person)
                 : CircularProgressIndicator(
-                    backgroundColor: Colors.white,
+                    strokeWidth: 2.5,
+                    valueColor: AlwaysStoppedAnimation(Colors.white),
+                    backgroundColor: lightBlue(),
                   ),
           ),
         ),

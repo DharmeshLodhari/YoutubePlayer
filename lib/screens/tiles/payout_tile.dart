@@ -4,11 +4,12 @@ import 'package:Slydo/models/payout.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
+import '../colors.dart';
+
 class PayoutTile extends StatelessWidget {
   final Payout payout;
   PayoutTile({this.payout});
 
-  //TODO: amount, payout date time, status
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -27,7 +28,9 @@ class PayoutTile extends StatelessWidget {
               placeholder: (context, url) => payout.bankLogo == ""
                   ? Icon(Icons.account_balance)
                   : CircularProgressIndicator(
-                      backgroundColor: Colors.white,
+                      strokeWidth: 2.5,
+                      valueColor: AlwaysStoppedAnimation(Colors.white),
+                      backgroundColor: lightBlue(),
                     ),
             ),
           ),

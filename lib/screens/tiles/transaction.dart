@@ -6,6 +6,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../colors.dart';
+
 class PaymentRequestTile extends StatelessWidget {
   final PaymentRequest paymentRequest;
   PaymentRequestTile({this.paymentRequest});
@@ -43,7 +45,9 @@ class PaymentRequestTile extends StatelessWidget {
         placeholder: (context, url) => paymentRequest.avatar == ""
             ? Icon(Icons.person)
             : CircularProgressIndicator(
-                backgroundColor: Colors.white,
+                strokeWidth: 2.5,
+                valueColor: AlwaysStoppedAnimation(Colors.white),
+                backgroundColor: lightBlue(),
               ),
       ),
     );
@@ -145,10 +149,8 @@ class TransactionTile extends StatelessWidget {
           trailing:
               transaction.amount.toString().length > 6 ? null : getAmount(),
           onTap: () {
-//            if (userBloc.user.setting.enableTransactionDetailPage) {
             Navigator.of(context).pushNamed('/transaction-detail',
                 arguments: {'transaction': transaction});
-//            }
           },
         ),
       ),
@@ -175,7 +177,9 @@ class TransactionTile extends StatelessWidget {
         placeholder: (context, url) => transaction.avatar == ""
             ? Icon(Icons.person)
             : CircularProgressIndicator(
-                backgroundColor: Colors.white,
+                strokeWidth: 2.5,
+                valueColor: AlwaysStoppedAnimation(Colors.white),
+                backgroundColor: lightBlue(),
               ),
       ),
     );
