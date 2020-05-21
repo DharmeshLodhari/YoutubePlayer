@@ -1,4 +1,3 @@
-
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
@@ -83,7 +82,19 @@ class _SearchModuleState extends State<SearchModule> {
     searchItemTextController.addListener(() {
       if (searchItemTextController.text.length >= 5) {
         autoCompleteSearchText = searchItemTextController.text;
-        getAutoCompleteUser();
+
+        setState(() {
+          count = 0;
+          next = "";
+          previous = "";
+          results.clear();
+          noItemInList = false;
+          debugPrint("count = $count");
+          debugPrint("next = $next");
+          debugPrint("previous = $previous");
+          debugPrint("results = $results");
+          getList();
+        });
       }
       if (results.isNotEmpty || searchItemTextController.text.length != 0) {
         if (mounted) {
@@ -302,6 +313,12 @@ class _SearchModuleState extends State<SearchModule> {
         next = result['next'];
         previous = result['previous'];
         List tempList = result['results'];
+        debugPrint(
+            "searchItemTextController.text = ${searchItemTextController.text}");
+        debugPrint("count = $count");
+        debugPrint("next = $next");
+        debugPrint("previous = $previous");
+        debugPrint("tempList = $tempList");
         if (mounted) {
           setState(() {
             isLoading = false;
@@ -323,13 +340,6 @@ class _SearchModuleState extends State<SearchModule> {
               Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
         ));
-      }
-    } else {
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-          getList();
-        });
       }
     }
   }
@@ -644,28 +654,6 @@ class _SearchModuleState extends State<SearchModule> {
     );
   }
 
-  void getAutoCompleteUser() async {
-    try {
-      if (mounted) {
-        setState(() {
-          results = [];
-        });
-      }
-
-      String url = getSearchUrl(autoCompleteSearchText);
-      var result = await _auth.searchEndpoint(url);
-
-      next = result['next'];
-      count = result['count'];
-      previous = result['previous'];
-      var data = result['results'];
-
-      loadUsers(data);
-    } catch (error) {
-      debugPrint(error.toString());
-    }
-  }
-
   void loadUsers(List data) {
     switch (filterValue) {
       case "Users":
@@ -738,19 +726,13 @@ class _SearchModuleState extends State<SearchModule> {
           onFieldSubmitted: (val) {
             if (mounted) {
               setState(() {
-                results = [];
-              });
-            }
-            if (next != null) {
-              if (mounted) {
-                setState(() {
-                  count = 0;
-                  next = "";
-                  previous = "";
-                  results = [];
-                });
+                count = 0;
+                next = "";
+                previous = "";
+                results.clear();
+                noItemInList = false;
                 getList();
-              }
+              });
             }
           },
         ),
