@@ -39,3 +39,7 @@ pubspec.lock
 android/key.properties
 android/app/key.jks
 local.properties
+
+app.android-arm.symbols
+app.android-arm64.symbols
+app.android-x64.symbols
