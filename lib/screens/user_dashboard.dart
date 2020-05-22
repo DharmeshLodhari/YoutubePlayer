@@ -40,7 +40,7 @@ class _UserDashboardState extends State<UserDashboard> {
 
   bool isLoading = false;
   bool storeLocked = true;
-  bool isLocked;
+  bool isLocked = true;
   Language language;
   String accountBalance = "";
 
@@ -83,7 +83,7 @@ class _UserDashboardState extends State<UserDashboard> {
   @override
   void initState() {
     setState(() {
-      isLocked = arguments['isLocked'];
+      isLocked = arguments['isLocked'] ?? true;
     });
     if (!isLocked) {
       getAccountBalance();

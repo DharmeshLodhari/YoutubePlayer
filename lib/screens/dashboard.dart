@@ -39,7 +39,9 @@ class _DashboardState extends State<Dashboard> {
     setState(() {
       if (arguments != null) {
         int indexFromRoute = arguments['dashboardIndex'];
+
         isLocked = arguments['isLocked'] != null ? arguments['isLocked'] : true;
+
         if (indexFromRoute != null) {
           setState(() {
             _currentIndex = indexFromRoute;
