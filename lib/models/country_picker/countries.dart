@@ -3,24 +3,24 @@ import 'country.dart';
 // to add a new country please enable it by uncomment it
 
 final List<Country> countryList = [
-  Country(
-    isoCode: "IE",
-    phoneCode: "353",
-    name: "Ireland",
-    iso3Code: "IRL",
-  ),
+//  Country(
+//    isoCode: "IE",
+//    phoneCode: "353",
+//    name: "Ireland",
+//    iso3Code: "IRL",
+//  ),
   Country(
     isoCode: "NG",
     phoneCode: "234",
     name: "Nigeria",
     iso3Code: "NGA",
   ),
-  Country(
-    isoCode: "GB",
-    phoneCode: "44",
-    name: "United Kingdom",
-    iso3Code: "GBR",
-  ),
+//  Country(
+//    isoCode: "GB",
+//    phoneCode: "44",
+//    name: "United Kingdom",
+//    iso3Code: "GBR",
+//  ),
 //  Country(
 //    isoCode: "AF",
 //    phoneCode: "93",

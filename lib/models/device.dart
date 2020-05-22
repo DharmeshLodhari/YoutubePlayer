@@ -21,15 +21,15 @@ class Language {
 
 List<Language> languages = <Language>[
   Language('English', 'en'),
-  Language('Spanish', 'es'),
-  Language('French', 'fr'),
-  Language('Portuguese', 'pt'),
-  Language('Hausa', "ha"),
-  Language('Yoruba', "yo"),
-  Language('Zulu', 'zu'),
-  Language('Swahili', "sw"),
-  Language('Arabic', "ar"),
-  Language('Amharic', "am"),
+//  Language('Spanish', 'es'),
+//  Language('French', 'fr'),
+//  Language('Portuguese', 'pt'),
+//  Language('Hausa', "ha"),
+//  Language('Yoruba', "yo"),
+//  Language('Zulu', 'zu'),
+//  Language('Swahili', "sw"),
+//  Language('Arabic', "ar"),
+//  Language('Amharic', "am"),
 ];
 
 Language getLanguageByLanguageCode(String languageCode) {

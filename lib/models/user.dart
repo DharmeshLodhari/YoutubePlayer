@@ -123,7 +123,7 @@ class Payee {
       this.userName,
       this.avatar,
       this.qrCode,
-      this.currency = "€"});
+      this.currency = "₦"});
 }
 
 class CustomerProfile {

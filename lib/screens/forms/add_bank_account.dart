@@ -56,7 +56,7 @@ class _AddAccountState extends State<AddAccount> {
                   Text(
                     AppLocalization.of(context).bankAccountTerms,
                     style: TextStyle(
-                      color: Colors.red,
+                      color: darkBlue(),
                     ),
                   ),
                   SizedBox(height: 20),
@@ -270,7 +270,7 @@ class _AddAccountState extends State<AddAccount> {
             child: Text(
           AppLocalization.of(context).bankAccountUserAgreeTerm,
           style: TextStyle(
-            color: Colors.red,
+            color: darkBlue(),
           ),
         ))
       ],

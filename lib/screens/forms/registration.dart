@@ -25,7 +25,7 @@ class _RegistrationState extends State<Registration> {
 
   List<DropdownMenuItem> dropDownList = new List<DropdownMenuItem>();
   int selectedCountry = 0;
-  Country _selectedDialogCountry = CountryPickerUtils.getCountryByIsoCode('IE');
+  Country _selectedDialogCountry = CountryPickerUtils.getCountryByIsoCode('NG');
 
   bool isUserAgree = false;
 
@@ -59,9 +59,7 @@ class _RegistrationState extends State<Registration> {
                     ),
                     Text(
                       AppLocalization.of(context).termsForRegistration,
-                      style: TextStyle(
-                        color: Colors.red,
-                      ),
+                      style: TextStyle(color: darkBlue()),
                     ),
                     SizedBox(
                       height: 10,

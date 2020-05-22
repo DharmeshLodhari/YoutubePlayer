@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2020-05-20T15:25:34.326277",
+  "@@last_modified": "2020-05-22T20:30:54.354235",
   "addBankAccountMsg": "Add A Bank Account",
   "@addBankAccountMsg": {
     "type": "text",
@@ -1442,6 +1442,31 @@
   },
   "documentVerificationTermsAndCondition": "By clicking Register you are agreeing to the Terms and Conditions.",
   "@documentVerificationTermsAndCondition": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "termsForRegistration": "This Phone Number Should Be The Number Associated With your BVN",
+  "@termsForRegistration": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "termsForUserAgreeCheckBox": "I Agree That If I Give Mismatch Number To My BVN I Will Be solely Responsible For The Consequence.",
+  "@termsForUserAgreeCheckBox": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "termsForName": "This Name Must Match The Name On Your BVN",
+  "@termsForName": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "bankAccountTerms": "This Bank Account Must Match Your BVN And Phone Number Registered With Slydo.",
+  "@bankAccountTerms": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "bankAccountUserAgreeTerm": "Putting Misleading Info May Results In Delays Or Lost of Money.",
+  "@bankAccountUserAgreeTerm": {
     "type": "text",
     "placeholders": {}
   }

@@ -63,7 +63,9 @@ class _SignUpState extends State<SignUp> {
                   SizedBox(height: 10),
                   Text(
                     AppLocalization.of(context).termsForName,
-                    style: TextStyle(color: Colors.red),
+                    style: TextStyle(
+                      color: darkBlue(),
+                    ),
                   ),
                   SizedBox(height: 10),
                   getFullNameField(),
