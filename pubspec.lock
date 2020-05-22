@@ -272,13 +272,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.7.5"
-  flutter_local_notifications:
-    dependency: "direct main"
-    description:
-      name: flutter_local_notifications
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.6.1"
   flutter_localizations:
     dependency: "direct main"
     description: flutter
@@ -594,7 +587,7 @@ packages:
       name: qr_code_scanner
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.12"
+    version: "0.0.13"
   quiver:
     dependency: transitive
     description:
