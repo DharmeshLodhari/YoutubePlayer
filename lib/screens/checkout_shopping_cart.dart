@@ -1,4 +1,3 @@
-
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
@@ -99,7 +98,8 @@ class _ShoppingCartState extends State<ShoppingCart> {
           controller: _refreshController,
           onRefresh: _onRefresh,
           child: _buildBodyOfCart()),
-      floatingActionButton: checkoutWidget(),
+      floatingActionButton:
+          basketBloc.total == 0 ? Container() : checkoutWidget(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
