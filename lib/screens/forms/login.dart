@@ -371,9 +371,7 @@ class _UserLoginState extends State<UserLogin> {
         'dashboardIndex': 1,
       });
     } else if (payload == "/transaction") {
-      Navigator.of(context).pushNamed('/dashboard', arguments: {
-        'dashboardIndex': 2,
-      });
+      Navigator.of(context).pushNamed('/transactions');
     } else if (payload.length > 15 &&
         payload.substring(0, 16) == "/detail_message/") {
       //this variable will fetch the id of message from the response

@@ -186,18 +186,24 @@ class _SplashScreenState extends State<SplashScreen> {
               if (_user != null) {
                 _auth.getBankAccounts().then((accounts) {
                   try {
-                    _bankAccount = accounts[0];
+                    if (accounts.isNotEmpty) {
+                      _bankAccount = accounts[0];
+                    }
+
                     if (_bankAccount != null) {
                       bankAccountBloc.bankAccount = _bankAccount;
                       if (_user.isVerified == true) {
                         //initialize shoppingcart
                         initializeShoppingCart();
-                        Navigator.of(context).pushNamed('/dashboard',
-                            arguments: {'dashboardIndex': 0});
+                        Navigator.of(context).pushNamed('/dashboard');
                       } else {
                         Navigator.of(context)
                             .popAndPushNamed('/bvn-verification');
                       }
+                    } else {
+                      //initialize shoppingcart
+                      initializeShoppingCart();
+                      Navigator.of(context).pushNamed('/dashboard');
                     }
                   } catch (e) {
                     debugPrint(e.toString());
