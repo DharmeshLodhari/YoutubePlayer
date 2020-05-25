@@ -534,6 +534,17 @@ class _UserDashboardState extends State<UserDashboard> {
                         );
                       },
                     ),
+                    //TODO: APP LOCALIZATION
+                    ListTile(
+                      title: Center(child: Text("Friends")),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.pushNamed(
+                          context,
+                          '/friends-dashboard',
+                        );
+                      },
+                    ),
                   ],
                 ),
               ));
@@ -605,6 +616,12 @@ class _UserDashboardState extends State<UserDashboard> {
               Navigator.pop(context, 'Address');
             },
           ),
+          CupertinoActionSheetAction(
+            child: Text("Friends"),
+            onPressed: () {
+              Navigator.pop(context, "Friends");
+            },
+          ),
         ],
         cancelButton: CupertinoActionSheetAction(
           child: Text(AppLocalization.of(context).cancel),
@@ -670,6 +687,11 @@ class _UserDashboardState extends State<UserDashboard> {
           Navigator.pushNamed(
             context,
             '/user-address',
+          );
+        } else if (value == "Friends") {
+          Navigator.pushNamed(
+            context,
+            '/friends-dashboard',
           );
         } else if (value == "Bank Accounts") {
           Navigator.pushNamed(context, "/bank-account-list");

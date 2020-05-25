@@ -34,9 +34,11 @@ class _DetailedMessageState extends State<DetailedMessage> {
   void fetchMessage() async {
     await _auth.getMessage(id).then((value) {
       message = value;
-      setState(() {
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     });
   }
 

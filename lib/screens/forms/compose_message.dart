@@ -211,11 +211,17 @@ class _ComposeMessageState extends State<ComposeMessage> {
     var avatarImage;
     var qrCodeImage;
     if (messageReceiver != null) {
-      avatarImage = CachedNetworkImage(
-        imageUrl: messageReceiver.avatar,
-        colorBlendMode: BlendMode.darken,
-        fit: BoxFit.fitWidth,
-        filterQuality: FilterQuality.high,
+      avatarImage = Container(
+        height: 50,
+        width: 50,
+        child: ClipOval(
+          child: CachedNetworkImage(
+            imageUrl: messageReceiver.avatar,
+            colorBlendMode: BlendMode.darken,
+            fit: BoxFit.fill,
+            filterQuality: FilterQuality.high,
+          ),
+        ),
       );
       qrCodeImage = CachedNetworkImage(
         imageUrl: messageReceiver.qrCode,

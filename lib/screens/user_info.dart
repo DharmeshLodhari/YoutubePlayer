@@ -120,9 +120,8 @@ class _UserInfoState extends State<UserInfo> {
                   backgroundColor: lightBlue(),
                 ),
               )),
-          ButtonBar(
-            mainAxisSize: MainAxisSize.max,
-            alignment: MainAxisAlignment.spaceBetween,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               FlatButton(
                   onPressed: () {},
@@ -142,6 +141,95 @@ class _UserInfoState extends State<UserInfo> {
                       style: TextStyle(color: Colors.black, fontSize: 14))),
             ],
           ),
+          SizedBox(
+            height: 8,
+          ),
+          _userBloc.user.userName != user.userName
+              ? Divider(
+                  color: darkBlue(),
+                  height: 0,
+                )
+              : Container(),
+          _userBloc.user.userName != user.userName
+              ? Container(
+                  height: 45,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      Expanded(
+                        child: Container(
+                          height: double.infinity,
+                          child: InkWell(
+                            onTap: () {
+                              Toast.show("Friend Request Sent", context,
+                                  gravity: Toast.CENTER,
+                                  duration: Toast.LENGTH_LONG,
+                                  backgroundColor: darkBlue());
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Icon(Icons.group_add, color: Colors.black),
+                                SizedBox(
+                                  width: 8,
+                                ),
+                                Text(
+                                  "Add Friend",
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 14),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: 0.5,
+                        height: double.infinity,
+                        color: darkBlue(),
+                      ),
+                      Expanded(
+                        child: Container(
+                          height: double.infinity,
+                          child: InkWell(
+                            onTap: () {
+                              Toast.show("${user.fullName} is Blocked", context,
+                                  gravity: Toast.CENTER,
+                                  duration: Toast.LENGTH_LONG,
+                                  backgroundColor: darkBlue(),
+                                  textColor: Colors.white);
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Stack(
+                                  children: <Widget>[
+                                    Icon(
+                                      Icons.group,
+                                      color: Colors.black,
+                                    ),
+                                    Icon(
+                                      Icons.block,
+                                      color: Colors.red,
+                                    )
+                                  ],
+                                ),
+                                SizedBox(
+                                  width: 8,
+                                ),
+                                Text(
+                                  "Block User",
+                                  style: TextStyle(color: Colors.redAccent),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : Container(),
         ],
       ),
     );

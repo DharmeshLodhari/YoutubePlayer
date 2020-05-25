@@ -17,6 +17,7 @@ import 'package:Slydo/screens/forms/reset_password.dart';
 import 'package:Slydo/screens/forms/send_payment.dart';
 import 'package:Slydo/screens/forms/signup.dart';
 import 'package:Slydo/screens/forms/user_address.dart';
+import 'package:Slydo/screens/friends_module/friends_dashboard.dart';
 import 'package:Slydo/screens/order_detail_page.dart';
 import 'package:Slydo/screens/orders_list.dart';
 import 'package:Slydo/screens/payout_transactions.dart';
@@ -322,6 +323,12 @@ class RouteGenerator {
       case '/user-address':
         return PageTransition(
           child: UserAddress(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+        );
+      case '/friends-dashboard':
+        return PageTransition(
+          child: FriendsDashboard(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
         );

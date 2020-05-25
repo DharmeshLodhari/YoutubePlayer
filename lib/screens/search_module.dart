@@ -205,9 +205,7 @@ class _SearchModuleState extends State<SearchModule> {
     }
   }
 
-  void onDismiss() {
-    debugPrint('Menu is dismiss');
-  }
+  void onDismiss() {}
 
   @override
   Widget build(BuildContext context) {
@@ -380,12 +378,19 @@ class _SearchModuleState extends State<SearchModule> {
         userName: object["username"],
         type: object['type'] ?? 'user');
 
-    var avatarImage = CachedNetworkImage(
-      imageUrl: user.avatar,
-      colorBlendMode: BlendMode.darken,
-      fit: BoxFit.fitWidth,
-      filterQuality: FilterQuality.high,
-    );
+    Widget avatarImage = Container(
+        height: 50,
+        width: 50,
+        child: ClipOval(
+          child: CachedNetworkImage(
+            imageUrl: user.avatar == ""
+                ? "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png"
+                : user.avatar,
+            colorBlendMode: BlendMode.darken,
+            fit: BoxFit.fitWidth,
+            filterQuality: FilterQuality.high,
+          ),
+        ));
 
     Widget tile = Card(
       semanticContainer: true,

@@ -219,9 +219,7 @@ class _UserProfileState extends State<UserProfile> {
     }
   }
 
-  void onDismiss() {
-    debugPrint('Menu is dismiss');
-  }
+  void onDismiss() {}
 
   @override
   Widget build(BuildContext context) {

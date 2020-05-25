@@ -210,11 +210,17 @@ class _RequestPaymentState extends State<RequestPayment> {
     var avatarImage;
     var qrCodeImage;
     if (_payee != null) {
-      avatarImage = CachedNetworkImage(
-        imageUrl: _payee.avatar,
-        colorBlendMode: BlendMode.darken,
-        fit: BoxFit.fitWidth,
-        filterQuality: FilterQuality.high,
+      avatarImage = Container(
+        height: 50,
+        width: 50,
+        child: ClipOval(
+          child: CachedNetworkImage(
+            imageUrl: _payee.avatar,
+            colorBlendMode: BlendMode.darken,
+            fit: BoxFit.fill,
+            filterQuality: FilterQuality.high,
+          ),
+        ),
       );
 
       qrCodeImage = CachedNetworkImage(

@@ -430,9 +430,17 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   }
 }
 
-class VerticalListItem extends StatelessWidget {
+class VerticalListItem extends StatefulWidget {
   VerticalListItem(this.paymentRequest);
   final PaymentRequest paymentRequest;
+
+  @override
+  _VerticalListItemState createState() => _VerticalListItemState();
+}
+
+class _VerticalListItemState extends State<VerticalListItem> {
+  bool isExpanded = false;
+  final _auth = AuthService();
 
   @override
   Widget build(BuildContext context) {
@@ -441,10 +449,126 @@ class VerticalListItem extends StatelessWidget {
           Slidable.of(context)?.renderingMode == SlidableRenderingMode.none
               ? Slidable.of(context)?.open()
               : Slidable.of(context)?.close(),
+      onLongPress: () {
+        setState(() {
+          if (isExpanded) {
+            isExpanded = false;
+          } else {
+            isExpanded = true;
+          }
+        });
+      },
       child: Container(
         color: lightBlue(),
-        child: PaymentRequestTile(paymentRequest: paymentRequest),
+        child: PaymentRequestTile(
+            paymentRequest: widget.paymentRequest,
+            isExpanded: isExpanded,
+            expandedWidget: expandedWidget()),
       ),
+    );
+  }
+
+  Widget expandedWidget() {
+    return Container(
+      height: 40,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Container(
+            height: 0.5,
+            color: darkBlue(),
+          ),
+          Expanded(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Expanded(child: sendMessageButton()),
+                Container(
+                  width: 0.5,
+                  color: darkBlue(),
+                  height: 40,
+                ),
+                Expanded(child: blockUserButton()),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget sendMessageButton() {
+    return MaterialButton(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Icon(
+            Icons.message,
+            color: darkBlue(),
+          ),
+          SizedBox(
+            width: 10,
+          ),
+          Text(
+            "Message",
+            style: TextStyle(color: darkBlue()),
+          ),
+        ],
+      ),
+      onPressed: () {
+        _auth.fetchCustomerProfile(widget.paymentRequest.payee).then((user) {
+          setState(() {
+            isExpanded = false;
+          });
+          Navigator.of(context).pushNamed('/compose_message', arguments: {
+            'recipient': user.userName,
+            'subject': "",
+          });
+        });
+      },
+    );
+  }
+
+  Widget blockUserButton() {
+    return MaterialButton(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Stack(
+            children: <Widget>[
+              Icon(
+                Icons.group,
+                color: Colors.black,
+              ),
+              Icon(
+                Icons.block,
+                color: Colors.red,
+              )
+            ],
+          ),
+          SizedBox(
+            width: 10,
+          ),
+          Text(
+            "Block User",
+            style: TextStyle(color: Colors.redAccent),
+          ),
+        ],
+      ),
+      onPressed: () {
+        _auth.fetchCustomerProfile(widget.paymentRequest.payee).then((user) {
+          _auth.blockUser(user).then((result) {
+            setState(() {
+              isExpanded = false;
+            });
+            if (result) {
+              Toast.show("${widget.paymentRequest.payee} is Blocked", context);
+            } else {
+              Toast.show("Error occurs", context);
+            }
+          });
+        });
+      },
     );
   }
 }

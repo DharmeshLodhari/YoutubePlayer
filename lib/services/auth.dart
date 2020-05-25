@@ -531,7 +531,6 @@ class AuthService {
 
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
-
     if (response.statusCode == 200) {
       List<PaymentRequest> paymentRequests = [];
       // This variable will hold list of transactions we got from server
@@ -1478,8 +1477,6 @@ class AuthService {
   // List of Orders
   Future<dynamic> listOrders(
       String next, String previous, String filterValue) async {
-    Map<String, String> knownCustomers = {};
-
     var url = "";
     if (next == null) {
       return null;
@@ -1552,7 +1549,6 @@ class AuthService {
     var url = baseUrl + "/api/v1/shopping-cart/";
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
-    debugPrint("Status Code : ${response.statusCode}");
     var jsonData = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
@@ -1581,7 +1577,7 @@ class AuthService {
     var _data = jsonEncode(data);
     var headers = await getAuthHeaders();
     var response = await http.patch(url, headers: headers, body: _data);
-    debugPrint("data posted : ${_data}");
+    debugPrint("data posted : $_data");
     debugPrint("Status Code : ${response.statusCode}");
     debugPrint("response body : ${response.body}");
     if (response.statusCode == 200) {
@@ -1704,5 +1700,138 @@ class AuthService {
     } else {
       return items;
     }
+  }
+
+  //Friends List
+
+  Future<Map<String, dynamic>> listFriends(String next, String previous) async {
+    var url = baseUrl + "/api/v1/search/users/?search=" + "abiola";
+    if (next == null) {
+      return null;
+    }
+    if (next != "") {
+      url = next;
+    }
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": jsonData["results"],
+      };
+      return result;
+    } else {
+      var jsonData = json.decode(response.body);
+      throw jsonData;
+    }
+  }
+
+  Future<Map<String, dynamic>> listFriendRequests(
+      String next, String previous) async {
+    var url = baseUrl + "/api/v1/search/users/?search=" + "abiola";
+    if (next == null) {
+      return null;
+    }
+    if (next != "") {
+      url = next;
+    }
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": jsonData["results"],
+      };
+      return result;
+    } else {
+      var jsonData = json.decode(response.body);
+      throw jsonData;
+    }
+  }
+
+  Future<Map<String, dynamic>> listBlockUsers(
+      String next, String previous) async {
+    var url = baseUrl + "/api/v1/search/users/?search=" + "abiola";
+    if (next == null) {
+      return null;
+    }
+    if (next != "") {
+      url = next;
+    }
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": jsonData["results"],
+      };
+      return result;
+    } else {
+      var jsonData = json.decode(response.body);
+      throw jsonData;
+    }
+  }
+
+  Future<bool> blockUser(CustomerProfile user) async {
+    var url = baseUrl + "/api/v1/friends/";
+    var data = {"user": user.userName};
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await http.post(url, headers: headers, body: _data);
+    if (response.statusCode == 200) {
+      return true;
+    }
+    return true;
+  }
+
+  Future<bool> unFriendUser(CustomerProfile user) async {
+    var url = baseUrl + "/api/v1/friends/";
+    var data = {"user": user.userName};
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await http.post(url, headers: headers, body: _data);
+    if (response.statusCode == 200) {
+      return true;
+    }
+    return true;
+  }
+
+  Future<bool> acceptFriendRequest(CustomerProfile user) async {
+    var url = baseUrl + "/api/v1/friends/";
+    var data = {"user": user.userName};
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await http.post(url, headers: headers, body: _data);
+    if (response.statusCode == 200) {
+      return true;
+    }
+    return true;
+  }
+
+  Future<bool> unBlockUser(CustomerProfile user) async {
+    var url = baseUrl + "/api/v1/friends/";
+    var data = {"user": user.userName};
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await http.post(url, headers: headers, body: _data);
+    if (response.statusCode == 200) {
+      return true;
+    }
+    return true;
   }
 }

@@ -262,6 +262,7 @@ class _TransactionDetailState extends State<TransactionDetail> {
   }
 
   void goToMap() {
+    debugPrint("go to Map Called !");
     MapsLauncher.launchCoordinates(double.parse(transaction.latitude),
         double.parse(transaction.longitude));
   }

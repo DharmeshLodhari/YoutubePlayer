@@ -8,26 +8,37 @@ import 'package:provider/provider.dart';
 
 import '../colors.dart';
 
-class PaymentRequestTile extends StatelessWidget {
+// ignore: must_be_immutable
+class PaymentRequestTile extends StatefulWidget {
   final PaymentRequest paymentRequest;
-  PaymentRequestTile({this.paymentRequest});
+  bool isExpanded = false;
+  Widget expandedWidget = Container();
+  PaymentRequestTile(
+      {this.paymentRequest, this.isExpanded, this.expandedWidget});
 
+  @override
+  _PaymentRequestTileState createState() => _PaymentRequestTileState();
+}
+
+class _PaymentRequestTileState extends State<PaymentRequestTile> {
   @override
   Widget build(BuildContext context) {
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Padding(
             padding: EdgeInsets.symmetric(vertical: 8),
             child: ListTile(
                 leading: getLeading(),
                 title: getTitle(),
-                trailing: paymentRequest.amount.toString().length > 6
+                trailing: widget.paymentRequest.amount.toString().length > 6
                     ? null
                     : getTrailing(),
                 subtitle: getSubtitle(context)),
           ),
+          widget.isExpanded ? widget.expandedWidget : Container(),
         ],
       ),
     );
@@ -36,13 +47,13 @@ class PaymentRequestTile extends StatelessWidget {
   Widget getLeading() {
     return ClipOval(
       child: CachedNetworkImage(
-        imageUrl: paymentRequest.avatar,
+        imageUrl: widget.paymentRequest.avatar,
         height: 50,
         width: 50,
         colorBlendMode: BlendMode.darken,
         fit: BoxFit.cover,
         filterQuality: FilterQuality.high,
-        placeholder: (context, url) => paymentRequest.avatar == ""
+        placeholder: (context, url) => widget.paymentRequest.avatar == ""
             ? Icon(Icons.person)
             : CircularProgressIndicator(
                 strokeWidth: 2.5,
@@ -55,7 +66,7 @@ class PaymentRequestTile extends StatelessWidget {
 
   Widget getTitle() {
     return Text(
-      "${paymentRequest.payee.length > 17 ? paymentRequest.payee.substring(0, 17) : paymentRequest.payee}",
+      "${widget.paymentRequest.payee.length > 17 ? widget.paymentRequest.payee.substring(0, 17) : widget.paymentRequest.payee}",
       style: TextStyle(
           color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
     );
@@ -66,19 +77,19 @@ class PaymentRequestTile extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          worldCurrencies[paymentRequest.currency] + " ",
+          worldCurrencies[widget.paymentRequest.currency] + " ",
           style: TextStyle(
               fontFamily: "Roboto",
-              color: paymentRequest.isCredit
+              color: widget.paymentRequest.isCredit
                   ? Colors.grey[600]
                   : Colors.green[400],
               fontWeight: FontWeight.bold,
               fontSize: 15),
         ),
         Text(
-          paymentRequest.amount.toString(),
+          widget.paymentRequest.amount.toString(),
           style: TextStyle(
-              color: paymentRequest.isCredit
+              color: widget.paymentRequest.isCredit
                   ? Colors.grey[600]
                   : Colors.green[400],
               fontWeight: FontWeight.bold,
@@ -93,13 +104,13 @@ class PaymentRequestTile extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-          "${paymentRequest.description.length > 20 ? paymentRequest.description.substring(0, 20) : paymentRequest.description}",
+          "${widget.paymentRequest.description.length > 20 ? widget.paymentRequest.description.substring(0, 20) : widget.paymentRequest.description}",
           style: TextStyle(color: Colors.grey[600]),
         ),
         SizedBox(
           height: 2,
         ),
-        paymentRequest.amount.toString().length > 6
+        widget.paymentRequest.amount.toString().length > 6
             ? getTrailing()
             : Container(),
         getDateTime(context)
@@ -108,7 +119,7 @@ class PaymentRequestTile extends StatelessWidget {
   }
 
   Widget getDateTime(BuildContext context) {
-    DateTime requestTime = DateTime.parse(paymentRequest.createdAt);
+    DateTime requestTime = DateTime.parse(widget.paymentRequest.createdAt);
 
     return Row(
       children: <Widget>[

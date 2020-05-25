@@ -1,10 +1,8 @@
-
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
-import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
@@ -12,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:toast/toast.dart';
 
 import 'tiles/order_tile.dart';
@@ -334,21 +331,8 @@ class _OrdersListState extends State<OrdersList> {
 
   void handleSlideIsOpenChanged(bool isOpen) {}
 
-  void _showSnackBar(BuildContext context, String text) {
-    _scaffoldPaymentListKey.currentState
-        .showSnackBar(SnackBar(content: Text(text)));
-  }
-
   List<Widget> listSecondaryActions(Order order, int index) {
-    return [
-      IconSlideAction(
-          caption: AppLocalization.of(context).cancel,
-          color: Colors.red,
-          icon: Icons.cancel,
-          onTap: () async {
-//            rejectOrder(order, index);
-          }),
-    ];
+    return [];
   }
 
   List<Widget> listActionSlideActions(Order order, int index) {
@@ -372,34 +356,6 @@ class _OrdersListState extends State<OrdersList> {
         },
       ),
     ];
-  }
-
-  Future<void> rejectOrder(Order order, int index) async {
-    bool result = await showDialogBox(
-      context: context,
-      title: AppLocalization.of(context).reject,
-      description:
-          AppLocalization.of(context).areYouSureWantToRejectThisPayment,
-      actionOne: AppLocalization.of(context).yes,
-      actionTwo: AppLocalization.of(context).no,
-      type: AlertType.warning,
-    );
-    if (result) {
-//      bool done = await _auth.rejectPaymentRequests(order);
-      var done = false;
-      if (done) {
-        _showSnackBar(
-            context, AppLocalization.of(context).paymentRequestRejected);
-        setState(() {
-          orderList.removeAt(index);
-          if (orderList.length <= 9) {
-            getList();
-          }
-        });
-      } else {
-        _showSnackBar(context, AppLocalization.of(context).error);
-      }
-    }
   }
 
   Widget _getSlidableWithLists(BuildContext context, Order order, int index) {

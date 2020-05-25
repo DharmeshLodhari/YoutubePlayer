@@ -1,4 +1,3 @@
-
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
@@ -182,9 +181,7 @@ class _SearchAutoCompleteState extends State<SearchAutoComplete> {
     });
   }
 
-  void onDismiss() {
-    debugPrint('Menu is dismiss');
-  }
+  void onDismiss() {}
 
   @override
   Widget build(BuildContext context) {
