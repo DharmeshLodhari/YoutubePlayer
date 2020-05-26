@@ -1823,6 +1823,18 @@ class AuthService {
     return true;
   }
 
+  Future<bool> rejectFriendRequest(CustomerProfile user) async {
+    var url = baseUrl + "/api/v1/friends/";
+    var data = {"user": user.userName};
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await http.post(url, headers: headers, body: _data);
+    if (response.statusCode == 200) {
+      return true;
+    }
+    return true;
+  }
+
   Future<bool> unBlockUser(CustomerProfile user) async {
     var url = baseUrl + "/api/v1/friends/";
     var data = {"user": user.userName};

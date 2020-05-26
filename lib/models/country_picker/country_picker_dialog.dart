@@ -203,14 +203,20 @@ class SingleChoiceDialogState extends State<CountryPickerDialog> {
       decoration:
           widget.searchInputDecoration ?? InputDecoration(hintText: 'Search'),
       onChanged: (String value) {
-        setState(() {
-          _filteredCountries = _allCountries
-              .where((Country country) =>
-                  country.name.toLowerCase().startsWith(value.toLowerCase()) ||
-                  country.phoneCode.startsWith(value) ||
-                  country.isoCode.toLowerCase().startsWith(value.toLowerCase()))
-              .toList();
-        });
+        if (mounted) {
+          setState(() {
+            _filteredCountries = _allCountries
+                .where((Country country) =>
+                    country.name
+                        .toLowerCase()
+                        .startsWith(value.toLowerCase()) ||
+                    country.phoneCode.startsWith(value) ||
+                    country.isoCode
+                        .toLowerCase()
+                        .startsWith(value.toLowerCase()))
+                .toList();
+          });
+        }
       },
     );
   }

@@ -80,9 +80,12 @@ class _SendPaymentState extends State<SendPayment> {
     _recipientFocus
       ..addListener(() {
         if (!_recipientFocus.hasFocus) {
-          setState(() {
-            _recipientController.text = _recipientController.text.toLowerCase();
-          });
+          if (mounted) {
+            setState(() {
+              _recipientController.text =
+                  _recipientController.text.toLowerCase();
+            });
+          }
         }
       });
     fetchCategory();
@@ -109,7 +112,7 @@ class _SendPaymentState extends State<SendPayment> {
 
   void initializeDisplayCard() {
     if (!isFromProfile) {
-      if (customerProfileBloc.customer.userName != null) {
+      if (customerProfileBloc.customer != null) {
         if (mounted) {
           setState(() {
             _payee = customerProfileBloc.customer;

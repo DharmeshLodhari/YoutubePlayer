@@ -55,9 +55,11 @@ class _UserLoginState extends State<UserLogin> {
     _sharedPreferences = await SharedPreferences.getInstance();
 
     if (_sharedPreferences != null) {
-      setState(() {
-        isChecked = _sharedPreferences.getBool('isChecked') ?? false;
-      });
+      if (mounted) {
+        setState(() {
+          isChecked = _sharedPreferences.getBool('isChecked') ?? false;
+        });
+      }
       isRemember = isChecked;
 
       if (isChecked) {
@@ -162,9 +164,11 @@ class _UserLoginState extends State<UserLogin> {
         return AppLocalization.of(context).invalidPhoneNumber;
       },
       onChanged: (val) {
-        setState(() {
-          phoneNumber = val.trim();
-        });
+        if (mounted) {
+          setState(() {
+            phoneNumber = val.trim();
+          });
+        }
       },
     );
   }
@@ -192,9 +196,11 @@ class _UserLoginState extends State<UserLogin> {
           ? AppLocalization.of(context).invalidPhoneNumber
           : null,
       onChanged: (val) {
-        setState(() {
-          password = val.trim();
-        });
+        if (mounted) {
+          setState(() {
+            password = val.trim();
+          });
+        }
       },
     );
   }
@@ -218,15 +224,17 @@ class _UserLoginState extends State<UserLogin> {
       children: <Widget>[
         Checkbox(
           onChanged: (value) {
-            setState(() {
-              if (value == true) {
-                isChecked = true;
-                isRemember = true;
-              } else {
-                isChecked = false;
-                isRemember = false;
-              }
-            });
+            if (mounted) {
+              setState(() {
+                if (value == true) {
+                  isChecked = true;
+                  isRemember = true;
+                } else {
+                  isChecked = false;
+                  isRemember = false;
+                }
+              });
+            }
           },
           activeColor: Colors.white,
           value: isChecked,
@@ -458,6 +466,14 @@ class _UserLoginState extends State<UserLogin> {
     if (Platform.isIOS) {
       _firebaseMessaging.requestNotificationPermissions(
           const IosNotificationSettings(sound: true, badge: true, alert: true));
+
+      _firebaseMessaging.onIosSettingsRegistered
+          .listen((IosNotificationSettings settings) {
+        debugPrint("Settings registered: $settings");
+      });
+      _firebaseMessaging.getToken().then((String token) {
+        debugPrint("firebase IOS token : $token");
+      });
     }
 
     _firebaseMessaging.configure(

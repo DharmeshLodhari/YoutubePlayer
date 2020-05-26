@@ -138,9 +138,11 @@ class _FriendRequestListState extends State<FriendRequestList> {
   void getList() async {
     if (!isLoading) {
       if (next != null && !isLoading) {
-        setState(() {
-          isLoading = true;
-        });
+        if (mounted) {
+          setState(() {
+            isLoading = true;
+          });
+        }
         Map<String, dynamic> result =
             await _auth.listFriendRequests(next, previous);
         count = result['count'];
@@ -156,15 +158,19 @@ class _FriendRequestListState extends State<FriendRequestList> {
           user.qrCode = element["qr_code"] ?? "";
           convertedIntoUserList.add(user);
         });
-        setState(() {
-          isLoading = false;
-          friendRequestList.addAll(convertedIntoUserList);
-        });
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+            friendRequestList.addAll(convertedIntoUserList);
+          });
+        }
       }
       if (friendRequestList.isEmpty) {
-        setState(() {
-          noItemInList = true;
-        });
+        if (mounted) {
+          setState(() {
+            noItemInList = true;
+          });
+        }
       } else if (next == null && friendRequestList.length > 6) {
         _scaffoldFriendRequestListKey.currentState.showSnackBar(SnackBar(
           content:
@@ -173,10 +179,12 @@ class _FriendRequestListState extends State<FriendRequestList> {
         ));
       }
     } else {
-      setState(() {
-        isLoading = false;
-        getList();
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+          getList();
+        });
+      }
     }
   }
 
@@ -190,15 +198,15 @@ class _FriendRequestListState extends State<FriendRequestList> {
   }
 
   List<Widget> listSecondaryActions(CustomerProfile user, int index) {
-    String caption = "Block";
+    String caption = "Reject";
 
     return [
       IconSlideAction(
           caption: caption,
           color: Colors.red,
-          icon: Icons.block,
+          icon: Icons.cancel,
           onTap: () async {
-            blockUserAlert(user, index);
+            rejectRequestAlert(user, index);
           }),
     ];
   }
@@ -216,20 +224,21 @@ class _FriendRequestListState extends State<FriendRequestList> {
     ];
   }
 
-  void blockUserAlert(CustomerProfile user, int index) async {
+  void rejectRequestAlert(CustomerProfile user, int index) async {
     bool result = await showDialogBox(
       context: context,
-      title: "Block",
-      description: "Are You Sure Want To Block ${user.fullName}",
+      title: "Reject",
+      description: "Are You Sure Want To Reject Request From ${user.fullName}",
       actionOne: AppLocalization.of(context).yes,
       actionTwo: AppLocalization.of(context).no,
       type: AlertType.warning,
     );
     if (result) {
-      bool done = await _auth.blockUser(user);
+      bool done = await _auth.rejectFriendRequest(user);
       done = true;
       if (done) {
-        _showSnackBar(context, "${user.fullName} is Blocked Successfully");
+        _showSnackBar(
+            context, "Request From ${user.fullName} is Rejected Successfully");
         setState(() {
           friendRequestList.removeAt(index);
           if (friendRequestList.length <= 9) {
@@ -254,8 +263,7 @@ class _FriendRequestListState extends State<FriendRequestList> {
     if (result) {
       bool done = await _auth.acceptFriendRequest(user);
       if (done) {
-        _showSnackBar(
-            context, "${user.fullName} is Added to Your Friend List");
+        _showSnackBar(context, "${user.fullName} is Added to Your Friend List");
         setState(() {
           friendRequestList.removeAt(index);
           if (friendRequestList.length <= 9) {

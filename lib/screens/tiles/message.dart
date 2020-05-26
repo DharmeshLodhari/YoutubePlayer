@@ -8,9 +8,12 @@ import 'package:provider/provider.dart';
 
 import '../colors.dart';
 
+// ignore: must_be_immutable
 class MessageTile extends StatefulWidget {
   final PartialMessage partialMessage;
-  MessageTile({this.partialMessage});
+  bool isExpanded = false;
+  Widget expandedWidget = Container();
+  MessageTile({this.partialMessage, this.isExpanded, this.expandedWidget});
 
   @override
   _MessageTileState createState() =>
@@ -28,13 +31,19 @@ class _MessageTileState extends State<MessageTile> {
     userBloc = Provider.of<UserBloc>(context);
     return Card(
       margin: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 8),
-        child: ListTile(
-            leading: getLeading(),
-            title: getTitle(),
-            trailing: getTrailing(),
-            subtitle: getSubtitle()),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 8),
+            child: ListTile(
+                leading: getLeading(),
+                title: getTitle(),
+                trailing: getTrailing(),
+                subtitle: getSubtitle()),
+          ),
+          widget.isExpanded ? widget.expandedWidget : Container(),
+        ],
       ),
     );
   }

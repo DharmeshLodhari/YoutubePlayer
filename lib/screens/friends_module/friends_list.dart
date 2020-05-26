@@ -133,9 +133,11 @@ class _FriendsListState extends State<FriendsList> {
   void getList() async {
     if (!isLoading) {
       if (next != null && !isLoading) {
-        setState(() {
-          isLoading = true;
-        });
+        if (mounted) {
+          setState(() {
+            isLoading = true;
+          });
+        }
         Map<String, dynamic> result = await _auth.listFriends(next, previous);
         count = result['count'];
         next = result['next'];
@@ -150,15 +152,19 @@ class _FriendsListState extends State<FriendsList> {
           user.qrCode = element["qr_code"] ?? "";
           convertedIntoUserList.add(user);
         });
-        setState(() {
-          isLoading = false;
-          friendsList.addAll(convertedIntoUserList);
-        });
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+            friendsList.addAll(convertedIntoUserList);
+          });
+        }
       }
       if (friendsList.isEmpty) {
-        setState(() {
-          noItemInList = true;
-        });
+        if (mounted) {
+          setState(() {
+            noItemInList = true;
+          });
+        }
       } else if (next == null && friendsList.length > 6) {
         _scaffoldFriendsListKey.currentState.showSnackBar(SnackBar(
           content:
@@ -167,10 +173,12 @@ class _FriendsListState extends State<FriendsList> {
         ));
       }
     } else {
-      setState(() {
-        isLoading = false;
-        getList();
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+          getList();
+        });
+      }
     }
   }
 

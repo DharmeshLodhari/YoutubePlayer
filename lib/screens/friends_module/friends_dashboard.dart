@@ -19,7 +19,7 @@ class _FriendsDashboardState extends State<FriendsDashboard> {
   //popupmenu variables
   PopupMenu popUpMenuWidget;
   GlobalKey popupMenuBtnKeyForMenu = GlobalKey();
-  var filterValue = "Friends";
+  var filterValue = "My Contacts";
 
   void popUpMenu() {
     popUpMenuWidget = PopupMenu(
@@ -35,32 +35,36 @@ class _FriendsDashboardState extends State<FriendsDashboard> {
   List<MenuItem> getMenuItems() {
     var menuItems = [
       MenuItem(
-          textStyle: filterValue == 'Friends'
-              ? TextStyle(color: lightBlue(), fontSize: 10)
-              : TextStyle(color: Colors.white, fontSize: 10),
-          title: "Friends",
-          image: Icon(
-            Icons.group,
-            color: filterValue == 'Friends' ? lightBlue() : Colors.white,
-          )),
+        textStyle: filterValue == 'My Contacts'
+            ? TextStyle(color: lightBlue(), fontSize: 10)
+            : TextStyle(color: Colors.white, fontSize: 10),
+        title: "My Contacts",
+        image: Icon(
+          Icons.group,
+          color: filterValue == 'My Contacts' ? lightBlue() : Colors.white,
+        ),
+      ),
     ];
 
     menuItems.add(
       MenuItem(
-          textStyle: filterValue == 'Request List'
+          textStyle: filterValue == 'Requests'
               ? TextStyle(color: lightBlue(), fontSize: 10)
               : TextStyle(color: Colors.white, fontSize: 10),
-          title: "Request List",
+          title: "Requests",
           image: Icon(
             Icons.group_add,
-            color: filterValue == 'Request List' ? lightBlue() : Colors.white,
+            color: filterValue == 'Requests' ? lightBlue() : Colors.white,
           )),
     );
     menuItems.add(
       MenuItem(
           textStyle: filterValue == 'Blocked List'
               ? TextStyle(color: lightBlue(), fontSize: 10)
-              : TextStyle(color: Colors.white, fontSize: 10),
+              : TextStyle(
+                  color: Colors.white,
+                  fontSize: 10,
+                ),
           title: "Blocked List",
           image: Stack(children: <Widget>[
             Center(
@@ -91,11 +95,12 @@ class _FriendsDashboardState extends State<FriendsDashboard> {
     if (mounted) {
       setState(() {
         filterValue = item.menuTitle;
-        if (filterValue == "Friends") {
+
+        if (item.menuImage == Icon(Icons.group)) {
           currentIndex = 0;
-        } else if (filterValue == "Request List") {
+        } else if (item.menuImage == Icon(Icons.group_add)) {
           currentIndex = 1;
-        } else if (filterValue == "Blocked List") {
+        } else if (item.menuImage is Stack) {
           currentIndex = 2;
         }
       });
@@ -116,7 +121,10 @@ class _FriendsDashboardState extends State<FriendsDashboard> {
           automaticallyImplyLeading: true,
           backgroundColor: darkBlue(),
           titleSpacing: 0,
-          title: Text(filterValue),
+          title: Text(
+            filterValue,
+            maxLines: 1,
+          ),
           actions: <Widget>[
             IconButton(
               key: popupMenuBtnKeyForMenu,

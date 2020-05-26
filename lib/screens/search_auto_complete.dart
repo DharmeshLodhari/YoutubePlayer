@@ -192,6 +192,7 @@ class _SearchAutoCompleteState extends State<SearchAutoComplete> {
 
     return WillPopScope(
       onWillPop: () async {
+        customerProfileBloc.customer = null;
         return true;
       },
       child: Scaffold(
@@ -283,26 +284,32 @@ class _SearchAutoCompleteState extends State<SearchAutoComplete> {
   void getList() async {
     if (!isLoading) {
       if (next != null && !isLoading) {
-        setState(() {
-          isLoading = true;
-        });
+        if (mounted) {
+          setState(() {
+            isLoading = true;
+          });
+        }
         Map<String, dynamic> result = await _auth.searchEndpointPagination(
             getSearchUrl(autoCompleteTextController.text), next, previous);
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
         List tempList = result['results'];
-        setState(() {
-          isLoading = false;
-          tempList.forEach((result) {
-            results.add(getResultTile(result));
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+            tempList.forEach((result) {
+              results.add(getResultTile(result));
+            });
           });
-        });
+        }
       }
       if (results.isEmpty) {
-        setState(() {
-          noItemInList = true;
-        });
+        if (mounted) {
+          setState(() {
+            noItemInList = true;
+          });
+        }
       } else if (next == null && results.length > 6) {
         _scaffoldSearchKey.currentState.showSnackBar(SnackBar(
           content:
@@ -311,10 +318,12 @@ class _SearchAutoCompleteState extends State<SearchAutoComplete> {
         ));
       }
     } else {
-      setState(() {
-        isLoading = false;
-        getList();
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+          getList();
+        });
+      }
     }
   }
 

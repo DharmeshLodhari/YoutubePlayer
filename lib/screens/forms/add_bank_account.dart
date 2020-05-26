@@ -115,9 +115,11 @@ class _AddAccountState extends State<AddAccount> {
       elevation: 16,
       style: TextStyle(color: Colors.black),
       onChanged: (String val) {
-        setState(() {
-          bankName = val.trim();
-        });
+        if (mounted) {
+          setState(() {
+            bankName = val.trim();
+          });
+        }
       },
       items: banks.map((bank) {
         return DropdownMenuItem(
@@ -153,9 +155,11 @@ class _AddAccountState extends State<AddAccount> {
           ? AppLocalization.of(context).validationTextMessage
           : null,
       onChanged: (val) {
-        setState(() {
-          accountName = val;
-        });
+        if (mounted) {
+          setState(() {
+            accountName = val;
+          });
+        }
       },
     );
   }
@@ -182,9 +186,11 @@ class _AddAccountState extends State<AddAccount> {
           ? AppLocalization.of(context).validationTextMessage1
           : null,
       onChanged: (val) {
-        setState(() {
-          accountNumber = val;
-        });
+        if (mounted) {
+          setState(() {
+            accountNumber = val;
+          });
+        }
       },
     );
   }
@@ -193,9 +199,11 @@ class _AddAccountState extends State<AddAccount> {
     return Switch(
       value: isDefault,
       onChanged: (value) {
-        setState(() {
-          isDefault = value;
-        });
+        if (mounted) {
+          setState(() {
+            isDefault = value;
+          });
+        }
       },
       activeTrackColor: darkBlue(),
       activeColor: darkBlue(),
@@ -233,9 +241,11 @@ class _AddAccountState extends State<AddAccount> {
 
               Navigator.of(context).pushNamed('/bank-account-list');
             } else {
-              setState(() {
-                errorMessage = AppLocalization.of(context).errorMsg1;
-              });
+              if (mounted) {
+                setState(() {
+                  errorMessage = AppLocalization.of(context).errorMsg1;
+                });
+              }
             }
           } else {
             var msg = AppLocalization.of(context).errorMsg2;
@@ -261,9 +271,11 @@ class _AddAccountState extends State<AddAccount> {
           value: isUserAgree,
           activeColor: darkBlue(),
           onChanged: (value) {
-            setState(() {
-              isUserAgree = value;
-            });
+            if (mounted) {
+              setState(() {
+                isUserAgree = value;
+              });
+            }
           },
         ),
         Expanded(

@@ -6,7 +6,6 @@ import 'package:Slydo/services/auth.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
@@ -34,6 +33,7 @@ class _UserInfoState extends State<UserInfo> {
     _userBloc = Provider.of<UserBloc>(context);
     return WillPopScope(
       onWillPop: () async {
+        customerProfileBloc.customer = null;
         return true;
       },
       child: Scaffold(
@@ -50,8 +50,7 @@ class _UserInfoState extends State<UserInfo> {
                 SizedBox(
                   height: 30,
                 ),
-                displayUserNameAndContect(),
-                SizedBox(height: 10),
+//                displayUserNameAndContect(),
                 displayUserInfo(),
                 SizedBox(height: 30),
                 displayPaymentButtons()
@@ -65,6 +64,7 @@ class _UserInfoState extends State<UserInfo> {
 
   Widget displayUserNameAndContect() {
     return Card(
+      margin: EdgeInsets.symmetric(vertical: 0, horizontal: 8),
       child: ListTile(
           leading: ClipOval(
             child: Container(
@@ -104,11 +104,26 @@ class _UserInfoState extends State<UserInfo> {
 
   Widget displayUserInfo() {
     return Card(
+      margin: EdgeInsets.symmetric(vertical: 0, horizontal: 8),
       elevation: 4.0,
       child: Column(
         children: <Widget>[
+          ListTile(
+              leading: ClipOval(
+                child: Container(
+                  height: 45,
+                  width: 45,
+                  child: CachedNetworkImage(
+                    imageUrl: user.avatar,
+                    fit: BoxFit.fill,
+                  ),
+                ),
+              ),
+              title: Text(user.fullName),
+              subtitle: Text(user.userName),
+              trailing: getTrailing()),
           Container(
-              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 40),
+              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
               child: CachedNetworkImage(
                 imageUrl: user.qrCode,
                 colorBlendMode: BlendMode.darken,
@@ -120,27 +135,6 @@ class _UserInfoState extends State<UserInfo> {
                   backgroundColor: lightBlue(),
                 ),
               )),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              FlatButton(
-                  onPressed: () {},
-                  child: Text(user.fullName,
-                      style: TextStyle(color: Colors.black, fontSize: 14))),
-              FlatButton.icon(
-                  onPressed: () {
-                    Clipboard.setData(new ClipboardData(
-                        text: baseUrl + "/api/v1/customer/" + user.userName));
-                    Toast.show(AppLocalization.of(context).copied, context,
-                        gravity: Toast.CENTER,
-                        duration: Toast.LENGTH_LONG,
-                        backgroundColor: darkBlue());
-                  },
-                  icon: Icon(Icons.content_copy, color: Colors.black),
-                  label: Text(AppLocalization.of(context).copyUrl,
-                      style: TextStyle(color: Colors.black, fontSize: 14))),
-            ],
-          ),
           SizedBox(
             height: 8,
           ),
@@ -174,7 +168,7 @@ class _UserInfoState extends State<UserInfo> {
                                   width: 8,
                                 ),
                                 Text(
-                                  "Add Friend",
+                                  "Add Contact",
                                   style: TextStyle(
                                       color: Colors.black, fontSize: 14),
                                 ),

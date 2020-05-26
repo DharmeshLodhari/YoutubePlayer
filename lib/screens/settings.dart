@@ -43,15 +43,19 @@ class _SettingsListState extends State<SettingsList> {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     if (sharedPreferences.containsKey("language")) {
       String languageCode = sharedPreferences.getString("language");
-      setState(() {
-        language = getLanguageByLanguageCode(languageCode);
-        debugPrint("Set language: => " + language.name);
-      });
+      if (mounted) {
+        setState(() {
+          language = getLanguageByLanguageCode(languageCode);
+          debugPrint("Set language: => " + language.name);
+        });
+      }
     } else {
-      setState(() {
-        language = getLanguageByLanguageCode("en");
-        debugPrint("Set default language: => " + language.name);
-      });
+      if (mounted) {
+        setState(() {
+          language = getLanguageByLanguageCode("en");
+          debugPrint("Set default language: => " + language.name);
+        });
+      }
     }
   }
 
@@ -67,9 +71,11 @@ class _SettingsListState extends State<SettingsList> {
 
   Future<void> _initPackageInfo() async {
     final PackageInfo info = await PackageInfo.fromPlatform();
-    setState(() {
-      _packageInfo = info;
-    });
+    if (mounted) {
+      setState(() {
+        _packageInfo = info;
+      });
+    }
   }
 
   Widget _infoTile() {
@@ -96,9 +102,11 @@ class _SettingsListState extends State<SettingsList> {
 
   @override
   void initState() {
-    setState(() {
-      isLocked = arguments['isLocked'];
-    });
+    if (mounted) {
+      setState(() {
+        isLocked = arguments['isLocked'];
+      });
+    }
     if (!isLocked) {
       getAccountBalance();
     }
@@ -278,10 +286,10 @@ class _SettingsListState extends State<SettingsList> {
                   placeholder: (context, url) => userBloc.user.avatar == ""
                       ? Icon(Icons.person)
                       : CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    valueColor: AlwaysStoppedAnimation(Colors.white),
-                    backgroundColor: lightBlue(),
-                  ),
+                          strokeWidth: 2.5,
+                          valueColor: AlwaysStoppedAnimation(Colors.white),
+                          backgroundColor: lightBlue(),
+                        ),
                 ),
               ),
         trailing: IconButton(
@@ -318,9 +326,11 @@ class _SettingsListState extends State<SettingsList> {
 
   Widget displayBankAccountTile(BankAccountBloc bankAccountBloc) {
     if (bankAccountBloc.bankAccount.bankName != null) {
-      setState(() {
-        _account = true;
-      });
+      if (mounted) {
+        setState(() {
+          _account = true;
+        });
+      }
       return BankAccountTile(account: bankAccountBloc.bankAccount);
     } else {
       return Container();
@@ -360,9 +370,11 @@ class _SettingsListState extends State<SettingsList> {
       final file = await ImagePicker.pickImage(source: imageSource);
       if (file != null) {
         try {
-          setState(() {
-            isLoading = true;
-          });
+          if (mounted) {
+            setState(() {
+              isLoading = true;
+            });
+          }
           // Get user current login info so we can reuse it to login
           var dbUser = await _auth.getUser();
           var phoneNumber = dbUser.phoneNumber;
@@ -374,9 +386,11 @@ class _SettingsListState extends State<SettingsList> {
           // Get New updated user data and set new user data to userBloc
           await _auth.authenticate(phoneNumber, password).then((value) {
             userBloc.user = value;
-            setState(() {
-              isLoading = false;
-            });
+            if (mounted) {
+              setState(() {
+                isLoading = false;
+              });
+            }
           });
         } catch (err) {}
       }
@@ -388,9 +402,11 @@ class _SettingsListState extends State<SettingsList> {
     SharedPreferences _sharedPreferences;
     await _auth.logOut();
     bankAccountBloc.bankAccount = BankAccount();
-    setState(() {
-      _account = false;
-    });
+    if (mounted) {
+      setState(() {
+        _account = false;
+      });
+    }
     _sharedPreferences = await SharedPreferences.getInstance();
     _sharedPreferences.setBool('isLoggedOut', true);
 
@@ -412,9 +428,11 @@ class _SettingsListState extends State<SettingsList> {
     await _auth.getAccountBalance().then((value) {
       var data = value;
       var spendableBalance = data["spendable_balance"];
-      setState(() {
-        accountBalance = spendableBalance.toString();
-      });
+      if (mounted) {
+        setState(() {
+          accountBalance = spendableBalance.toString();
+        });
+      }
     });
   }
 
@@ -648,12 +666,14 @@ class _SettingsListState extends State<SettingsList> {
                       groupValue: language,
                       value: data,
                       onChanged: (lang) {
-                        setState(() {
-                          language = lang;
-                          setLanguage(lang);
-                          Navigator.pop(context);
-                          saveIntoSharedPreference(lang);
-                        });
+                        if (mounted) {
+                          setState(() {
+                            language = lang;
+                            setLanguage(lang);
+                            Navigator.pop(context);
+                            saveIntoSharedPreference(lang);
+                          });
+                        }
                       },
                     );
                   }).toList(),
@@ -663,16 +683,18 @@ class _SettingsListState extends State<SettingsList> {
   }
 
   void setLanguage(Language language) {
-    setState(() {
-      AppLocalization.load(Locale(language.languageCode, ""));
-      Toast.show(
-        AppLocalization.of(context).languageSwitchedTo + " ${language.name}",
-        context,
-        duration: Toast.LENGTH_LONG,
-        textColor: Colors.white,
-        backgroundColor: darkBlue(),
-      );
-    });
+    if (mounted) {
+      setState(() {
+        AppLocalization.load(Locale(language.languageCode, ""));
+        Toast.show(
+          AppLocalization.of(context).languageSwitchedTo + " ${language.name}",
+          context,
+          duration: Toast.LENGTH_LONG,
+          textColor: Colors.white,
+          backgroundColor: darkBlue(),
+        );
+      });
+    }
   }
 
   //to save language in shared preference when user change the language

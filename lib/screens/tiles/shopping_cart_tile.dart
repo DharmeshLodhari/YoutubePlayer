@@ -72,11 +72,11 @@ class _ShoppingCartTileForProductState
           filterQuality: FilterQuality.high,
           placeholder: (context, url) => product.serverImages.isNotEmpty
               ? Icon(Icons.widgets)
-              :CircularProgressIndicator(
-            strokeWidth: 2.5,
-            valueColor: AlwaysStoppedAnimation(Colors.white),
-            backgroundColor: lightBlue(),
-          ),
+              : CircularProgressIndicator(
+                  strokeWidth: 2.5,
+                  valueColor: AlwaysStoppedAnimation(Colors.white),
+                  backgroundColor: lightBlue(),
+                ),
         ),
       ),
     );
@@ -266,11 +266,11 @@ class _ShoppingCartTileForServiceState
           filterQuality: FilterQuality.high,
           placeholder: (context, url) => service.serverImages.isNotEmpty
               ? Icon(Icons.widgets)
-              :CircularProgressIndicator(
-            strokeWidth: 2.5,
-            valueColor: AlwaysStoppedAnimation(Colors.white),
-            backgroundColor: lightBlue(),
-          ),
+              : CircularProgressIndicator(
+                  strokeWidth: 2.5,
+                  valueColor: AlwaysStoppedAnimation(Colors.white),
+                  backgroundColor: lightBlue(),
+                ),
         ),
       ),
     );

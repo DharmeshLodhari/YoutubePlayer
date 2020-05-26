@@ -1,11 +1,9 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/colors.dart';
-import 'package:Slydo/services/auth.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
@@ -29,26 +27,23 @@ class _HomeState extends State<Home> {
         automaticallyImplyLeading: false,
         backgroundColor: darkBlue(),
         title: Center(child: Text(AppLocalization.of(context).home)),
-        leading: displayUserAvatar(userBloc),
         actions: <Widget>[
           displayQRCodeButton(),
         ],
       ),
-      body: Center(
-        child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: Container(
-            color: lightBlue(),
-            padding: EdgeInsets.all(30),
-            child: Center(
-              child: Column(
-                children: <Widget>[
-                  SizedBox(height: 10),
-                  displayUserInfo(userBloc),
-                  SizedBox(height: 30),
-                  displayPaymentButtons()
-                ],
-              ),
+      body: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Container(
+          color: lightBlue(),
+          padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+          child: Center(
+            child: Column(
+              children: <Widget>[
+                SizedBox(height: 30),
+                displayUserInfo(userBloc),
+                SizedBox(height: 30),
+                displayPaymentButtons()
+              ],
             ),
           ),
         ),
@@ -59,17 +54,40 @@ class _HomeState extends State<Home> {
   Widget displayUserInfo(userBloc) {
     return Center(
       child: Card(
-        semanticContainer: true,
+        margin: EdgeInsets.symmetric(vertical: 0, horizontal: 8),
         elevation: 4.0,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
+            ListTile(
+              leading: ClipOval(
+                child: Container(
+                  height: 45,
+                  width: 45,
+                  child: CachedNetworkImage(
+                    imageUrl: userBloc.user.avatar,
+                    fit: BoxFit.fill,
+                  ),
+                ),
+              ),
+              title: Text(
+                userBloc.user.fullName,
+                maxLines: 1,
+              ),
+              subtitle: Text(
+                userBloc.user.userName,
+                maxLines: 1,
+              ),
+            ),
             Container(
-                padding: EdgeInsets.all(40),
+                height: 250,
+                width: 250,
                 child: CachedNetworkImage(
+                  width: double.infinity,
+                  height: double.infinity,
                   imageUrl: userBloc.user.qrCode,
                   colorBlendMode: BlendMode.darken,
-                  fit: BoxFit.fitWidth,
+                  fit: BoxFit.fill,
                   filterQuality: FilterQuality.high,
                   placeholder: (context, url) => CircularProgressIndicator(
                     strokeWidth: 2.5,
@@ -77,29 +95,8 @@ class _HomeState extends State<Home> {
                     backgroundColor: lightBlue(),
                   ),
                 )),
-            ButtonBar(
-              mainAxisSize: MainAxisSize.max,
-              alignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                FlatButton(
-                    onPressed: () {},
-                    child: Text(userBloc.user.fullName,
-                        style: TextStyle(color: Colors.black, fontSize: 14))),
-                FlatButton.icon(
-                    onPressed: () {
-                      Clipboard.setData(new ClipboardData(
-                          text: baseUrl +
-                              "/api/v1/customer/" +
-                              userBloc.user.userName));
-                      Toast.show(AppLocalization.of(context).copied, context,
-                          gravity: Toast.CENTER,
-                          duration: Toast.LENGTH_LONG,
-                          backgroundColor: darkBlue());
-                    },
-                    icon: Icon(Icons.content_copy, color: Colors.black),
-                    label: Text(AppLocalization.of(context).copyUrl,
-                        style: TextStyle(color: Colors.black, fontSize: 14))),
-              ],
+            SizedBox(
+              height: 20,
             ),
           ],
         ),
@@ -208,31 +205,6 @@ class _HomeState extends State<Home> {
           height: 24.0,
           width: 24.0,
           color: Colors.white,
-        ),
-      ),
-    );
-  }
-
-  Widget displayUserAvatar(userBloc) {
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: GestureDetector(
-        child: ClipOval(
-          child: CachedNetworkImage(
-            imageUrl: userBloc.user.avatar,
-            height: 40,
-            width: 40,
-            colorBlendMode: BlendMode.darken,
-            fit: BoxFit.cover,
-            filterQuality: FilterQuality.high,
-            placeholder: (context, url) => userBloc.user.avatar == ""
-                ? Icon(Icons.person)
-                : CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    valueColor: AlwaysStoppedAnimation(Colors.white),
-                    backgroundColor: lightBlue(),
-                  ),
-          ),
         ),
       ),
     );

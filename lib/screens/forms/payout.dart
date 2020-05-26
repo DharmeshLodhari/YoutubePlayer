@@ -168,9 +168,11 @@ class _PayoutState extends State<Payout> {
           return AppLocalization.of(context).invalidAmount;
         },
         onChanged: (val) {
-          setState(() {
-            amount = int.parse(val);
-          });
+          if (mounted) {
+            setState(() {
+              amount = int.parse(val);
+            });
+          }
         },
       ),
     );
@@ -216,14 +218,16 @@ class _PayoutState extends State<Payout> {
                             Navigator.of(context).pushNamed('/payout-list');
                           } else if (response.statusCode == 500) {
                             Navigator.pop(context);
-                            setState(() {
-                              errorMessage =
-                                  AppLocalization.of(context).serverError;
-                              Toast.show(errorMessage, context,
-                                  gravity: Toast.TOP,
-                                  backgroundColor: darkBlue(),
-                                  textColor: Colors.white);
-                            });
+                            if (mounted) {
+                              setState(() {
+                                errorMessage =
+                                    AppLocalization.of(context).serverError;
+                                Toast.show(errorMessage, context,
+                                    gravity: Toast.TOP,
+                                    backgroundColor: darkBlue(),
+                                    textColor: Colors.white);
+                              });
+                            }
                           } else if (response.statusCode == 700) {
                             Navigator.pop(context);
                             Navigator.pushNamed(context, "/bvn-verification");
@@ -232,14 +236,16 @@ class _PayoutState extends State<Payout> {
                             Navigator.pushNamed(context, "/add-document");
                           } else {
                             Navigator.pop(context);
-                            setState(() {
-                              errorMessage = AppLocalization.of(context)
-                                  .somethingWentWrong;
-                              Toast.show(errorMessage, context,
-                                  gravity: Toast.TOP,
-                                  backgroundColor: darkBlue(),
-                                  textColor: Colors.white);
-                            });
+                            if (mounted) {
+                              setState(() {
+                                errorMessage = AppLocalization.of(context)
+                                    .somethingWentWrong;
+                                Toast.show(errorMessage, context,
+                                    gravity: Toast.TOP,
+                                    backgroundColor: darkBlue(),
+                                    textColor: Colors.white);
+                              });
+                            }
                           }
                         });
                       },
@@ -286,9 +292,11 @@ class _PayoutState extends State<Payout> {
     await _auth.getAccountBalance().then((value) {
       var data = value;
       var spendableBalance = data["spendable_balance"];
-      setState(() {
-        accountBalance = spendableBalance;
-      });
+      if (mounted) {
+        setState(() {
+          accountBalance = spendableBalance;
+        });
+      }
     });
   }
 }

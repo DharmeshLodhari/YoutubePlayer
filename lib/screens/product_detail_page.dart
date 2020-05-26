@@ -47,9 +47,11 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   @override
   void initState() {
-    setState(() {
-      product = arguments['product'];
-    });
+    if (mounted) {
+      setState(() {
+        product = arguments['product'];
+      });
+    }
     fetchProduct(product.id.toString());
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
@@ -79,14 +81,18 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             type: "products", userId: product.seller, exclude: product.id)
         .then((value) {
       if (value.isNotEmpty) {
-        setState(() {
-          isOtherItemIsEmpty = false;
-          sellersOtherItems = value;
-        });
+        if (mounted) {
+          setState(() {
+            isOtherItemIsEmpty = false;
+            sellersOtherItems = value;
+          });
+        }
       } else {
-        setState(() {
-          isOtherItemIsEmpty = true;
-        });
+        if (mounted) {
+          setState(() {
+            isOtherItemIsEmpty = true;
+          });
+        }
       }
     });
     isOtherItemFetched = true;
@@ -98,37 +104,43 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     basketBloc = Provider.of<BasketBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
     isValidCustomer = userBloc.user.userName != product.seller;
-    return Scaffold(
-      backgroundColor: lightBlue(),
-      appBar: AppBar(
-        actions: <Widget>[messageSellerWidget(), goToBasket()],
-        backgroundColor: darkBlue(),
-        titleSpacing: 0,
-        title: Row(
-          children: <Widget>[
-            getUserProfile(),
-            Expanded(
-              child: SizedBox(
-                width: 14,
+    return WillPopScope(
+      onWillPop: () async {
+        customerProfileBloc.customer = null;
+        return true;
+      },
+      child: Scaffold(
+        backgroundColor: lightBlue(),
+        appBar: AppBar(
+          actions: <Widget>[messageSellerWidget(), goToBasket()],
+          backgroundColor: darkBlue(),
+          titleSpacing: 0,
+          title: Row(
+            children: <Widget>[
+              getUserProfile(),
+              Expanded(
+                child: SizedBox(
+                  width: 14,
+                ),
               ),
-            ),
-            Text(
-              AppLocalization.of(context).productDetail,
-              style: TextStyle(
-                color: Colors.white,
+              Text(
+                AppLocalization.of(context).productDetail,
+                style: TextStyle(
+                  color: Colors.white,
+                ),
               ),
-            ),
-            Expanded(
-              child: SizedBox(
-                width: 14,
+              Expanded(
+                child: SizedBox(
+                  width: 14,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
+        floatingActionButton: addToCart(),
+        body: _buildProductDetailsPage(context),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       ),
-      floatingActionButton: addToCart(),
-      body: _buildProductDetailsPage(context),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 
@@ -332,9 +344,11 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   autoPlay: false,
                   aspectRatio: 1.2,
                   onPageChanged: (index, _) {
-                    setState(() {
-                      _current = index;
-                    });
+                    if (mounted) {
+                      setState(() {
+                        _current = index;
+                      });
+                    }
                   }),
               items: imgList
                   .map((item) => Container(

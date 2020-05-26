@@ -117,16 +117,18 @@ class _UserProfileState extends State<UserProfile> {
   @override
   void initState() {
     searchedUser = arguments['searchedUser'];
-    setState(() {
-      currentIndex = arguments['index'] ?? 0;
-      if (currentIndex == 0) {
-        filterValue = "Info";
-      } else if (currentIndex == 1) {
-        filterValue = "Products";
-      } else if (currentIndex == 2) {
-        filterValue = "Services";
-      }
-    });
+    if (mounted) {
+      setState(() {
+        currentIndex = arguments['index'] ?? 0;
+        if (currentIndex == 0) {
+          filterValue = "Info";
+        } else if (currentIndex == 1) {
+          filterValue = "Products";
+        } else if (currentIndex == 2) {
+          filterValue = "Services";
+        }
+      });
+    }
 
     this.getProductList();
     _productScrollController.addListener(() {
@@ -241,27 +243,7 @@ class _UserProfileState extends State<UserProfile> {
           titleSpacing: 0,
           title: Row(
             children: <Widget>[
-              ClipOval(
-                child: Container(
-                  height: 40,
-                  width: 40,
-                  child: CachedNetworkImage(
-                    imageUrl: searchedUser.avatar,
-                    fit: BoxFit.fill,
-                  ),
-                ),
-              ),
-              Expanded(
-                child: SizedBox(
-                  width: 10,
-                ),
-              ),
               Text(searchedUser.fullName),
-              Expanded(
-                child: SizedBox(
-                  width: 10,
-                ),
-              ),
             ],
           ),
           actions: <Widget>[
@@ -478,9 +460,11 @@ class _UserProfileState extends State<UserProfile> {
   void getProductList() async {
     if (!isProductLoading) {
       if (productNext != null && !isProductLoading) {
-        setState(() {
-          isProductLoading = true;
-        });
+        if (mounted) {
+          setState(() {
+            isProductLoading = true;
+          });
+        }
         Map<String, dynamic> result = await _auth.listProductsBySeller(
             productNext, productPrevious,
             userId: searchedUser.userName);
@@ -488,16 +472,20 @@ class _UserProfileState extends State<UserProfile> {
         productNext = result['next'];
         productPrevious = result['previous'];
         var tempList = result['results'];
-        setState(() {
-          noProductInList = false;
-          isProductLoading = false;
-          productList.addAll(tempList);
-        });
+        if (mounted) {
+          setState(() {
+            noProductInList = false;
+            isProductLoading = false;
+            productList.addAll(tempList);
+          });
+        }
       }
       if (productList.isEmpty) {
-        setState(() {
-          noProductInList = true;
-        });
+        if (mounted) {
+          setState(() {
+            noProductInList = true;
+          });
+        }
       } else if (productNext == null && productList.length > 6) {
         _productScaffoldKey.currentState.showSnackBar(SnackBar(
           content:
@@ -506,10 +494,12 @@ class _UserProfileState extends State<UserProfile> {
         ));
       }
     } else {
-      setState(() {
-        isProductLoading = false;
-        getProductList();
-      });
+      if (mounted) {
+        setState(() {
+          isProductLoading = false;
+          getProductList();
+        });
+      }
     }
   }
 

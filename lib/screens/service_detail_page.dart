@@ -49,9 +49,11 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
 
   @override
   void initState() {
-    setState(() {
-      service = arguments['service'];
-    });
+    if (mounted) {
+      setState(() {
+        service = arguments['service'];
+      });
+    }
     fetchService(service.id.toString());
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
@@ -66,10 +68,12 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
 
   void fetchService(String serviceId) async {
     _auth.getService(serviceId).then((value) {
-      setState(() {
-        service = value;
-        imgList = service.serverImages;
-      });
+      if (mounted) {
+        setState(() {
+          service = value;
+          imgList = service.serverImages;
+        });
+      }
     });
   }
 
@@ -79,14 +83,18 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
             type: "services", userId: service.provider, exclude: service.id)
         .then((value) {
       if (value.isNotEmpty) {
-        setState(() {
-          isOtherItemIsEmpty = false;
-          sellersOtherItems = value;
-        });
+        if (mounted) {
+          setState(() {
+            isOtherItemIsEmpty = false;
+            sellersOtherItems = value;
+          });
+        }
       } else {
-        setState(() {
-          isOtherItemIsEmpty = true;
-        });
+        if (mounted) {
+          setState(() {
+            isOtherItemIsEmpty = true;
+          });
+        }
       }
     });
     isOtherItemFetched = true;
@@ -98,37 +106,43 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     userBloc = Provider.of<UserBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
     isValidCustomer = userBloc.user.userName != service.provider;
-    return Scaffold(
-      backgroundColor: lightBlue(),
-      appBar: AppBar(
-        titleSpacing: 0,
-        actions: <Widget>[messageSellerWidget(), goToBasket()],
-        backgroundColor: darkBlue(),
-        title: Row(
-          children: <Widget>[
-            getUserProfile(),
-            Expanded(
-              child: SizedBox(
-                width: 14,
+    return WillPopScope(
+      onWillPop: () async {
+        customerProfileBloc.customer = null;
+        return true;
+      },
+      child: Scaffold(
+        backgroundColor: lightBlue(),
+        appBar: AppBar(
+          titleSpacing: 0,
+          actions: <Widget>[messageSellerWidget(), goToBasket()],
+          backgroundColor: darkBlue(),
+          title: Row(
+            children: <Widget>[
+              getUserProfile(),
+              Expanded(
+                child: SizedBox(
+                  width: 14,
+                ),
               ),
-            ),
-            Text(
-              AppLocalization.of(context).serviceDetail,
-              style: TextStyle(
-                color: Colors.white,
+              Text(
+                AppLocalization.of(context).serviceDetail,
+                style: TextStyle(
+                  color: Colors.white,
+                ),
               ),
-            ),
-            Expanded(
-              child: SizedBox(
-                width: 14,
+              Expanded(
+                child: SizedBox(
+                  width: 14,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
+        floatingActionButton: addToCart(),
+        body: _buildServiceDetailsPage(context),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       ),
-      floatingActionButton: addToCart(),
-      body: _buildServiceDetailsPage(context),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 
@@ -339,9 +353,11 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                   autoPlay: false,
                   aspectRatio: 1.2,
                   onPageChanged: (index, _) {
-                    setState(() {
-                      _current = index;
-                    });
+                    if (mounted) {
+                      setState(() {
+                        _current = index;
+                      });
+                    }
                   }),
               items: imgList
                   .map((item) => Container(

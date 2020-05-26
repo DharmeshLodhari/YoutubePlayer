@@ -161,9 +161,11 @@ class _SignUpState extends State<SignUp> {
           ? AppLocalization.of(context).enterValidNameMatchingAccountNumber
           : null,
       onChanged: (val) {
-        setState(() {
-          fullName = val.trim();
-        });
+        if (mounted) {
+          setState(() {
+            fullName = val.trim();
+          });
+        }
       },
     );
   }
@@ -198,9 +200,11 @@ class _SignUpState extends State<SignUp> {
       validator: (val) =>
           val.length != 4 ? AppLocalization.of(context).invalidPassword : null,
       onChanged: (val) {
-        setState(() {
-          password1 = val.trim();
-        });
+        if (mounted) {
+          setState(() {
+            password1 = val.trim();
+          });
+        }
       },
     );
   }
@@ -241,9 +245,11 @@ class _SignUpState extends State<SignUp> {
         return null;
       },
       onChanged: (val) {
-        setState(() {
-          password2 = val.trim();
-        });
+        if (mounted) {
+          setState(() {
+            password2 = val.trim();
+          });
+        }
       },
     );
   }

@@ -267,23 +267,29 @@ class _OrdersListState extends State<OrdersList> {
   void getList() async {
     if (!isLoading) {
       if (next != null && !isLoading) {
-        setState(() {
-          isLoading = true;
-        });
+        if (mounted) {
+          setState(() {
+            isLoading = true;
+          });
+        }
         var result = await _auth.listOrders(next, previous, filterValue);
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
         var tempList = result['results'];
-        setState(() {
-          isLoading = false;
-          orderList.addAll(tempList);
-        });
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+            orderList.addAll(tempList);
+          });
+        }
       }
       if (orderList.isEmpty) {
-        setState(() {
-          noItemInList = true;
-        });
+        if (mounted) {
+          setState(() {
+            noItemInList = true;
+          });
+        }
       } else if (next == null && orderList.length > 6) {
         _scaffoldPaymentListKey.currentState.showSnackBar(SnackBar(
           content:
@@ -292,10 +298,12 @@ class _OrdersListState extends State<OrdersList> {
         ));
       }
     } else {
-      setState(() {
-        isLoading = false;
-        getList();
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+          getList();
+        });
+      }
     }
   }
 

@@ -182,27 +182,29 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
           return list;
         },
         onSelected: (Object object) {
-          setState(() {
-            if (object != 1) {
-              filterValue = object;
-              filterValue = object;
-              switch (filterValue) {
-                case "received":
-                  toMe = true;
-                  fromMe = false;
-                  break;
-                case "sent":
-                  toMe = false;
-                  fromMe = true;
-                  break;
-                default:
-                  toMe = false;
-                  fromMe = false;
-                  break;
+          if (mounted) {
+            setState(() {
+              if (object != 1) {
+                filterValue = object;
+                filterValue = object;
+                switch (filterValue) {
+                  case "received":
+                    toMe = true;
+                    fromMe = false;
+                    break;
+                  case "sent":
+                    toMe = false;
+                    fromMe = true;
+                    break;
+                  default:
+                    toMe = false;
+                    fromMe = false;
+                    break;
+                }
+                _onRefresh();
               }
-              _onRefresh();
-            }
-          });
+            });
+          }
         },
       );
 
@@ -247,24 +249,30 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   void getList() async {
     if (!isLoading) {
       if (next != null && !isLoading) {
-        setState(() {
-          isLoading = true;
-        });
+        if (mounted) {
+          setState(() {
+            isLoading = true;
+          });
+        }
         Map<String, dynamic> result =
             await _auth.listPaymentRequests(next, previous, toMe, fromMe);
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
         var tempList = result['results'];
-        setState(() {
-          isLoading = false;
-          requestPaymentList.addAll(tempList);
-        });
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+            requestPaymentList.addAll(tempList);
+          });
+        }
       }
       if (requestPaymentList.isEmpty) {
-        setState(() {
-          noItemInList = true;
-        });
+        if (mounted) {
+          setState(() {
+            noItemInList = true;
+          });
+        }
       } else if (next == null && requestPaymentList.length > 6) {
         _scaffoldPaymentListKey.currentState.showSnackBar(SnackBar(
           content:
@@ -273,10 +281,12 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         ));
       }
     } else {
-      setState(() {
-        isLoading = false;
-        getList();
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+          getList();
+        });
+      }
     }
   }
 
@@ -366,12 +376,14 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       if (response.statusCode == 200) {
         _showSnackBar(
             context, AppLocalization.of(context).paymentRequestAccepted);
-        setState(() {
-          requestPaymentList.removeAt(index);
-          if (requestPaymentList.length <= 9) {
-            getList();
-          }
-        });
+        if (mounted) {
+          setState(() {
+            requestPaymentList.removeAt(index);
+            if (requestPaymentList.length <= 9) {
+              getList();
+            }
+          });
+        }
       } else if (response.statusCode == 500) {
         Toast.show(AppLocalization.of(context).serverError, context,
             gravity: Toast.TOP,
@@ -403,12 +415,14 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       if (done) {
         _showSnackBar(
             context, AppLocalization.of(context).paymentRequestRejected);
-        setState(() {
-          requestPaymentList.removeAt(index);
-          if (requestPaymentList.length <= 9) {
-            getList();
-          }
-        });
+        if (mounted) {
+          setState(() {
+            requestPaymentList.removeAt(index);
+            if (requestPaymentList.length <= 9) {
+              getList();
+            }
+          });
+        }
       } else {
         _showSnackBar(context, AppLocalization.of(context).error);
       }
@@ -450,13 +464,15 @@ class _VerticalListItemState extends State<VerticalListItem> {
               ? Slidable.of(context)?.open()
               : Slidable.of(context)?.close(),
       onLongPress: () {
-        setState(() {
-          if (isExpanded) {
-            isExpanded = false;
-          } else {
-            isExpanded = true;
-          }
-        });
+        if (mounted) {
+          setState(() {
+            if (isExpanded) {
+              isExpanded = false;
+            } else {
+              isExpanded = true;
+            }
+          });
+        }
       },
       child: Container(
         color: lightBlue(),
@@ -517,9 +533,11 @@ class _VerticalListItemState extends State<VerticalListItem> {
       ),
       onPressed: () {
         _auth.fetchCustomerProfile(widget.paymentRequest.payee).then((user) {
-          setState(() {
-            isExpanded = false;
-          });
+          if (mounted) {
+            setState(() {
+              isExpanded = false;
+            });
+          }
           Navigator.of(context).pushNamed('/compose_message', arguments: {
             'recipient': user.userName,
             'subject': "",
@@ -558,9 +576,11 @@ class _VerticalListItemState extends State<VerticalListItem> {
       onPressed: () {
         _auth.fetchCustomerProfile(widget.paymentRequest.payee).then((user) {
           _auth.blockUser(user).then((result) {
-            setState(() {
-              isExpanded = false;
-            });
+            if (mounted) {
+              setState(() {
+                isExpanded = false;
+              });
+            }
             if (result) {
               Toast.show("${widget.paymentRequest.payee} is Blocked", context);
             } else {

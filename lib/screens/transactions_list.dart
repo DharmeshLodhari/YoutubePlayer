@@ -1,11 +1,13 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/screens/tiles/transaction.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:toast/toast.dart';
@@ -20,6 +22,7 @@ class _TransactionListState extends State<TransactionList> {
       new GlobalKey<ScaffoldState>();
   // Get list of users transactions
   final _auth = AuthService();
+  SlidableController slidableController;
   int count = 0;
   String next = "";
   String previous = "";
@@ -36,6 +39,8 @@ class _TransactionListState extends State<TransactionList> {
   bool moneyOut = false;
   bool moneyIn = false;
 
+  CustomerProfileBloc customerProfileBloc;
+
   @override
   void initState() {
     getList();
@@ -47,6 +52,10 @@ class _TransactionListState extends State<TransactionList> {
         getList();
       }
     });
+    slidableController = SlidableController(
+      onSlideAnimationChanged: handleSlideAnimationChanged,
+      onSlideIsOpenChanged: handleSlideIsOpenChanged,
+    );
   }
 
   // refresh the list when lifecycle called onResume method
@@ -90,8 +99,11 @@ class _TransactionListState extends State<TransactionList> {
     // refresh the list when lifecycle called onResume method
     _onRefreshOnResume();
 
+    customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
+
     return WillPopScope(
       onWillPop: () async {
+        customerProfileBloc.customer = null;
         return true;
       },
       child: Scaffold(
@@ -132,9 +144,8 @@ class _TransactionListState extends State<TransactionList> {
               if (index == transactionList.length) {
                 return _buildIndicator();
               } else {
-                return TransactionTile(
-                  transaction: transactionList[index],
-                );
+                return _getSlidableWithLists(
+                    context, transactionList[index], index);
               }
             },
             controller: _scrollController,
@@ -200,26 +211,28 @@ class _TransactionListState extends State<TransactionList> {
           return list;
         },
         onSelected: (Object object) {
-          setState(() {
-            if (object != 1) {
-              filterValue = object;
-              switch (filterValue) {
-                case "received":
-                  moneyIn = true;
-                  moneyOut = false;
-                  break;
-                case "sent":
-                  moneyIn = false;
-                  moneyOut = true;
-                  break;
-                default:
-                  moneyIn = false;
-                  moneyOut = false;
-                  break;
+          if (mounted) {
+            setState(() {
+              if (object != 1) {
+                filterValue = object;
+                switch (filterValue) {
+                  case "received":
+                    moneyIn = true;
+                    moneyOut = false;
+                    break;
+                  case "sent":
+                    moneyIn = false;
+                    moneyOut = true;
+                    break;
+                  default:
+                    moneyIn = false;
+                    moneyOut = false;
+                    break;
+                }
+                _onRefresh();
               }
-              _onRefresh();
-            }
-          });
+            });
+          }
         },
       );
 
@@ -242,24 +255,30 @@ class _TransactionListState extends State<TransactionList> {
   void getList() async {
     if (!isLoading) {
       if (next != null && !isLoading) {
-        setState(() {
-          isLoading = true;
-        });
+        if (mounted) {
+          setState(() {
+            isLoading = true;
+          });
+        }
         Map<String, dynamic> result =
             await _auth.getTransactions(next, previous, moneyIn, moneyOut);
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
         var tempList = result['results'];
-        setState(() {
-          isLoading = false;
-          transactionList.addAll(tempList);
-        });
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+            transactionList.addAll(tempList);
+          });
+        }
       }
       if (transactionList.isEmpty) {
-        setState(() {
-          noItemInList = true;
-        });
+        if (mounted) {
+          setState(() {
+            noItemInList = true;
+          });
+        }
       } else if (next == null && transactionList.length > 6) {
         _scaffoldTransactionKey.currentState.showSnackBar(SnackBar(
           content:
@@ -268,10 +287,12 @@ class _TransactionListState extends State<TransactionList> {
         ));
       }
     } else {
-      setState(() {
-        isLoading = false;
-        getList();
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+          getList();
+        });
+      }
     }
   }
 
@@ -283,6 +304,212 @@ class _TransactionListState extends State<TransactionList> {
       ),
       onPressed: () {
         Navigator.of(context).pushNamed("/transaction-graph");
+      },
+    );
+  }
+
+  void handleSlideAnimationChanged(Animation<double> value) {}
+
+  void handleSlideIsOpenChanged(bool value) {}
+
+  List<Widget> listSecondaryActions(Transaction transaction) {
+    String caption = AppLocalization.of(context).send;
+    return [
+      IconSlideAction(
+          caption: caption,
+          color: Colors.green,
+          icon: Icons.send,
+          onTap: () async {
+            customerProfileBloc.customer =
+                await _auth.fetchCustomerProfile(transaction.payee);
+            Navigator.of(context).pushNamed('/send-payment',
+                arguments: <String, bool>{
+                  'isFromProfile': false,
+                  'isRequest': false
+                });
+          }),
+    ];
+  }
+
+  List<Widget> listActionSlideActions(Transaction transaction) {
+    return [
+      IconSlideAction(
+        caption: AppLocalization.of(context).request,
+        color: Colors.green,
+        icon: Icons.event_note,
+        onTap: () async {
+          customerProfileBloc.customer =
+              await _auth.fetchCustomerProfile(transaction.payee);
+          Navigator.of(context).pushNamed('/request-payment',
+              arguments: <String, bool>{
+                'isFromProfile': false,
+                'isRequest': true
+              });
+        },
+      ),
+    ];
+  }
+
+  Widget _getSlidableWithLists(
+      BuildContext context, Transaction transaction, int index) {
+    return Slidable(
+      key: Key(transaction.payee),
+      controller: slidableController,
+      direction: Axis.horizontal,
+      actionPane: SlidableBehindActionPane(),
+      actionExtentRatio: 0.25,
+      child: VerticalListItem(transaction),
+      actions: listActionSlideActions(transaction),
+      secondaryActions: listSecondaryActions(transaction),
+    );
+  }
+}
+
+class VerticalListItem extends StatefulWidget {
+  VerticalListItem(this.transaction);
+  final Transaction transaction;
+
+  @override
+  _VerticalListItemState createState() => _VerticalListItemState();
+}
+
+class _VerticalListItemState extends State<VerticalListItem> {
+  bool isExpanded = false;
+  final _auth = AuthService();
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () =>
+          Slidable.of(context)?.renderingMode == SlidableRenderingMode.none
+              ? Slidable.of(context)?.open()
+              : Slidable.of(context)?.close(),
+      onLongPress: () {
+        if (mounted) {
+          setState(() {
+            if (isExpanded) {
+              isExpanded = false;
+            } else {
+              isExpanded = true;
+            }
+          });
+        }
+      },
+      child: Container(
+        color: lightBlue(),
+        child: TransactionTile(
+          transaction: widget.transaction,
+          isExpanded: isExpanded,
+          expandedWidget: expandedWidget(),
+        ),
+      ),
+    );
+  }
+
+  Widget expandedWidget() {
+    return Container(
+      height: 40,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Container(
+            height: 0.5,
+            color: darkBlue(),
+          ),
+          Expanded(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Expanded(child: sendMessageButton()),
+                Container(
+                  width: 0.5,
+                  color: darkBlue(),
+                  height: 40,
+                ),
+                Expanded(child: blockUserButton()),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget sendMessageButton() {
+    return MaterialButton(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Icon(
+            Icons.message,
+            color: darkBlue(),
+          ),
+          SizedBox(
+            width: 10,
+          ),
+          Text(
+            "Message",
+            style: TextStyle(color: darkBlue()),
+          ),
+        ],
+      ),
+      onPressed: () {
+        _auth.fetchCustomerProfile(widget.transaction.payee).then((user) {
+          if (mounted) {
+            setState(() {
+              isExpanded = false;
+            });
+          }
+          Navigator.of(context).pushNamed('/compose_message', arguments: {
+            'recipient': user.userName,
+            'subject': "",
+          });
+        });
+      },
+    );
+  }
+
+  Widget blockUserButton() {
+    return MaterialButton(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Stack(
+            children: <Widget>[
+              Icon(
+                Icons.group,
+                color: Colors.black,
+              ),
+              Icon(
+                Icons.block,
+                color: Colors.red,
+              )
+            ],
+          ),
+          SizedBox(
+            width: 10,
+          ),
+          Text(
+            "Block User",
+            style: TextStyle(color: Colors.redAccent),
+          ),
+        ],
+      ),
+      onPressed: () {
+        _auth.fetchCustomerProfile(widget.transaction.payee).then((user) {
+          _auth.blockUser(user).then((result) {
+            if (mounted) {
+              setState(() {
+                isExpanded = false;
+              });
+            }
+            if (result) {
+              Toast.show("${widget.transaction.payee} is Blocked", context);
+            } else {
+              Toast.show("Error occurs", context);
+            }
+          });
+        });
       },
     );
   }

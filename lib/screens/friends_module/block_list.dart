@@ -137,9 +137,11 @@ class _BlockListState extends State<BlockList> {
   void getList() async {
     if (!isLoading) {
       if (next != null && !isLoading) {
-        setState(() {
-          isLoading = true;
-        });
+        if (mounted) {
+          setState(() {
+            isLoading = true;
+          });
+        }
         Map<String, dynamic> result =
             await _auth.listBlockUsers(next, previous);
         count = result['count'];
@@ -155,15 +157,19 @@ class _BlockListState extends State<BlockList> {
           user.qrCode = element["qr_code"] ?? "";
           convertedIntoUserList.add(user);
         });
-        setState(() {
-          isLoading = false;
-          blockList.addAll(convertedIntoUserList);
-        });
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+            blockList.addAll(convertedIntoUserList);
+          });
+        }
       }
       if (blockList.isEmpty) {
-        setState(() {
-          noItemInList = true;
-        });
+        if (mounted) {
+          setState(() {
+            noItemInList = true;
+          });
+        }
       } else if (next == null && blockList.length > 6) {
         _scaffoldBlockListKey.currentState.showSnackBar(SnackBar(
           content:
@@ -172,10 +178,12 @@ class _BlockListState extends State<BlockList> {
         ));
       }
     } else {
-      setState(() {
-        isLoading = false;
-        getList();
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+          getList();
+        });
+      }
     }
   }
 

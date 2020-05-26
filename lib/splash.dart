@@ -45,17 +45,21 @@ class _SplashScreenState extends State<SplashScreen> {
       var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
-        setState(() {
-          hasConnection = true;
-        });
+        if (mounted) {
+          setState(() {
+            hasConnection = true;
+          });
+        }
         getLoggedInUser();
       } else {
         Toast.show(
             AppLocalization.of(context).internetConnectionNotAvailable, context,
             gravity: Toast.BOTTOM, backgroundColor: darkBlue());
-        setState(() {
-          hasConnection = false;
-        });
+        if (mounted) {
+          setState(() {
+            hasConnection = false;
+          });
+        }
       }
     });
   }

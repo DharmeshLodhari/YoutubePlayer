@@ -68,32 +68,34 @@ class _EditServiceState extends State<EditService> {
 
     //fetchProductFrom id to edit
     _auth.getService(serviceId).then((value) {
-      setState(() {
-        currentService = value;
-        // asssigning to our edit controllers
+      if (mounted) {
+        setState(() {
+          currentService = value;
+          // asssigning to our edit controllers
 
-        serviceTitleController.text = currentService.name;
-        serviceDescriptionController.text = currentService.description;
-        servicePriceController.text = currentService.price;
-        serviceShortDescriptionController.text =
-            currentService.shortDescription;
+          serviceTitleController.text = currentService.name;
+          serviceDescriptionController.text = currentService.description;
+          servicePriceController.text = currentService.price;
+          serviceShortDescriptionController.text =
+              currentService.shortDescription;
 
-        serviceImagesFromServer.addAll(currentService.serverImages);
-        serviceName = currentService.name;
-        serviceCategory = currentService.category;
-        servicePrice = currentService.price;
-        serviceDescription = currentService.description;
-        serviceIsAvailable = currentService.isAvailable;
-        serviceAvailableFrom = currentService.availableFrom;
-        serviceShortDescription = currentService.shortDescription;
+          serviceImagesFromServer.addAll(currentService.serverImages);
+          serviceName = currentService.name;
+          serviceCategory = currentService.category;
+          servicePrice = currentService.price;
+          serviceDescription = currentService.description;
+          serviceIsAvailable = currentService.isAvailable;
+          serviceAvailableFrom = currentService.availableFrom;
+          serviceShortDescription = currentService.shortDescription;
 
-        // assigning the dropdown from currentProduct
-        serviceCategories.forEach((catagory) {
-          if (catagory.name == currentService.category) {
-            selectedServiceCategory = catagory;
-          }
+          // assigning the dropdown from currentProduct
+          serviceCategories.forEach((catagory) {
+            if (catagory.name == currentService.category) {
+              selectedServiceCategory = catagory;
+            }
+          });
         });
-      });
+      }
     }).catchError((error) {
       Toast.show(
         error.toString(),
@@ -252,9 +254,11 @@ class _EditServiceState extends State<EditService> {
     if (imageSource != null) {
       ImagePicker.pickImage(source: imageSource).then((value) {
         if (value != null) {
-          setState(() {
-            serviceLocalImages.add(value);
-          });
+          if (mounted) {
+            setState(() {
+              serviceLocalImages.add(value);
+            });
+          }
         }
       });
     }
@@ -289,9 +293,11 @@ class _EditServiceState extends State<EditService> {
               size: 20,
             ),
             onPressed: () {
-              setState(() {
-                serviceLocalImages.removeAt(index);
-              });
+              if (mounted) {
+                setState(() {
+                  serviceLocalImages.removeAt(index);
+                });
+              }
             },
           ),
         )
@@ -332,9 +338,11 @@ class _EditServiceState extends State<EditService> {
                   currentService.getImageId(serviceImagesFromServer[index]);
               _auth.deleteProductOrServiceImage(imageId).then((value) {
                 if (value) {
-                  setState(() {
-                    serviceImagesFromServer.removeAt(index);
-                  });
+                  if (mounted) {
+                    setState(() {
+                      serviceImagesFromServer.removeAt(index);
+                    });
+                  }
                 }
               }).catchError((error) {
                 debugPrint("ERROR" + error.toString());
@@ -469,10 +477,12 @@ class _EditServiceState extends State<EditService> {
           hint: Text(AppLocalization.of(context).selectCategory),
           value: selectedServiceCategory,
           onChanged: (ServiceCatagory value) {
-            setState(() {
-              selectedServiceCategory = value;
-              serviceCategory = selectedServiceCategory.name;
-            });
+            if (mounted) {
+              setState(() {
+                selectedServiceCategory = value;
+                serviceCategory = selectedServiceCategory.name;
+              });
+            }
           },
           items: serviceCategories.map((ServiceCatagory category) {
             return DropdownMenuItem<ServiceCatagory>(
@@ -633,9 +643,11 @@ class _EditServiceState extends State<EditService> {
           activeColor: Colors.white,
           checkColor: darkBlue(),
           onChanged: (value) {
-            setState(() {
-              serviceIsAvailable = value;
-            });
+            if (mounted) {
+              setState(() {
+                serviceIsAvailable = value;
+              });
+            }
           },
         ),
         Text(
@@ -659,9 +671,12 @@ class _EditServiceState extends State<EditService> {
               DateTime.now().year, DateTime.now().month, DateTime.now().day),
           lastDate: DateTime(2101),
         ).then((value) {
-          setState(() {
-            serviceAvailableFrom = DateTime(value.year, value.month, value.day);
-          });
+          if (mounted) {
+            setState(() {
+              serviceAvailableFrom =
+                  DateTime(value.year, value.month, value.day);
+            });
+          }
         }).catchError((error) {});
       },
       child: Card(

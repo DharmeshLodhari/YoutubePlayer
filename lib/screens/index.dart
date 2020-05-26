@@ -31,147 +31,149 @@ class _IndexState extends State<Index> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() {
-        isIntroDone = arguments != null ? arguments['isIntroDone'] : false;
-        pageModel = [
-          PageViewModel(
-            decoration: PageDecoration(
-                pageColor: lightBlue(),
-                imagePadding: EdgeInsets.fromLTRB(0.0, 70, 0, 0),
-                titlePadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
-                contentPadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
-                descriptionPadding: EdgeInsets.fromLTRB(20, 30, 20, 0)),
-            titleWidget: Text(
-              AppLocalization.of(context).scanQrCode,
-              style: TextStyle(
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white),
-            ),
-            bodyWidget: Column(
-              children: <Widget>[
-                Text(
-                  AppLocalization.of(context).introMsg1,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white),
+      if (mounted) {
+        setState(() {
+          isIntroDone = arguments != null ? arguments['isIntroDone'] : false;
+          pageModel = [
+            PageViewModel(
+              decoration: PageDecoration(
+                  pageColor: lightBlue(),
+                  imagePadding: EdgeInsets.fromLTRB(0.0, 70, 0, 0),
+                  titlePadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
+                  contentPadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
+                  descriptionPadding: EdgeInsets.fromLTRB(20, 30, 20, 0)),
+              titleWidget: Text(
+                AppLocalization.of(context).scanQrCode,
+                style: TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
+              ),
+              bodyWidget: Column(
+                children: <Widget>[
+                  Text(
+                    AppLocalization.of(context).introMsg1,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white),
+                  ),
+                ],
+              ),
+              image: Padding(
+                padding: EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
+                child: Image.asset(
+                  'assets/images/Group16@2x.png',
+                  scale: 1,
                 ),
-              ],
-            ),
-            image: Padding(
-              padding: EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
-              child: Image.asset(
-                'assets/images/Group16@2x.png',
-                scale: 1,
               ),
             ),
-          ),
-          PageViewModel(
-            decoration: PageDecoration(
-                pageColor: lightBlue(),
-                imagePadding: EdgeInsets.fromLTRB(0.0, 70, 0, 0),
-                titlePadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
-                contentPadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
-                descriptionPadding: EdgeInsets.fromLTRB(20, 30, 20, 0)),
-            titleWidget: Text(
-              AppLocalization.of(context).sendPayment,
-              style: TextStyle(
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white),
-            ),
-            bodyWidget: Column(
-              children: <Widget>[
-                Text(
-                  AppLocalization.of(context).introMsg2,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white),
+            PageViewModel(
+              decoration: PageDecoration(
+                  pageColor: lightBlue(),
+                  imagePadding: EdgeInsets.fromLTRB(0.0, 70, 0, 0),
+                  titlePadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
+                  contentPadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
+                  descriptionPadding: EdgeInsets.fromLTRB(20, 30, 20, 0)),
+              titleWidget: Text(
+                AppLocalization.of(context).sendPayment,
+                style: TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
+              ),
+              bodyWidget: Column(
+                children: <Widget>[
+                  Text(
+                    AppLocalization.of(context).introMsg2,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white),
+                  ),
+                ],
+              ),
+              image: Padding(
+                padding: EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
+                child: Image.asset(
+                  'assets/images/Group15@2x.png',
+                  scale: 1,
                 ),
-              ],
-            ),
-            image: Padding(
-              padding: EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
-              child: Image.asset(
-                'assets/images/Group15@2x.png',
-                scale: 1,
               ),
             ),
-          ),
-          PageViewModel(
-            decoration: PageDecoration(
-                pageColor: lightBlue(),
-                imagePadding: EdgeInsets.fromLTRB(0.0, 70, 0, 0),
-                titlePadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
-                contentPadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
-                descriptionPadding: EdgeInsets.fromLTRB(20, 30, 20, 0)),
-            titleWidget: Text(
-              AppLocalization.of(context).viewTransactions,
-              style: TextStyle(
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white),
-            ),
-            bodyWidget: Column(
-              children: <Widget>[
-                Text(
-                  AppLocalization.of(context).introMsg2,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white),
+            PageViewModel(
+              decoration: PageDecoration(
+                  pageColor: lightBlue(),
+                  imagePadding: EdgeInsets.fromLTRB(0.0, 70, 0, 0),
+                  titlePadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
+                  contentPadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
+                  descriptionPadding: EdgeInsets.fromLTRB(20, 30, 20, 0)),
+              titleWidget: Text(
+                AppLocalization.of(context).viewTransactions,
+                style: TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
+              ),
+              bodyWidget: Column(
+                children: <Widget>[
+                  Text(
+                    AppLocalization.of(context).introMsg2,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white),
+                  ),
+                ],
+              ),
+              image: Padding(
+                padding: EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
+                child: Image.asset(
+                  'assets/images/Group14@2x.png',
+                  scale: 1,
                 ),
-              ],
-            ),
-            image: Padding(
-              padding: EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
-              child: Image.asset(
-                'assets/images/Group14@2x.png',
-                scale: 1,
               ),
             ),
-          ),
-          PageViewModel(
-            decoration: PageDecoration(
-                pageColor: lightBlue(),
-                imagePadding: EdgeInsets.fromLTRB(0.0, 70, 0, 0),
-                titlePadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
-                contentPadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
-                descriptionPadding: EdgeInsets.fromLTRB(20, 30, 20, 0)),
-            titleWidget: Text(
-              AppLocalization.of(context).viewTransactions,
-              style: TextStyle(
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white),
-            ),
-            bodyWidget: Column(
-              children: <Widget>[
-                Text(
-                  AppLocalization.of(context).introMsg2,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white),
+            PageViewModel(
+              decoration: PageDecoration(
+                  pageColor: lightBlue(),
+                  imagePadding: EdgeInsets.fromLTRB(0.0, 70, 0, 0),
+                  titlePadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
+                  contentPadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
+                  descriptionPadding: EdgeInsets.fromLTRB(20, 30, 20, 0)),
+              titleWidget: Text(
+                AppLocalization.of(context).viewTransactions,
+                style: TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
+              ),
+              bodyWidget: Column(
+                children: <Widget>[
+                  Text(
+                    AppLocalization.of(context).introMsg2,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white),
+                  ),
+                ],
+              ),
+              image: Padding(
+                padding: EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
+                child: Image.asset(
+                  'assets/images/Group13@2x.png',
+                  scale: 1,
                 ),
-              ],
-            ),
-            image: Padding(
-              padding: EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
-              child: Image.asset(
-                'assets/images/Group13@2x.png',
-                scale: 1,
               ),
             ),
-          ),
-        ];
-      });
+          ];
+        });
+      }
     });
   }
 
@@ -288,14 +290,18 @@ class _IndexState extends State<Index> {
             activeShape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(25.0))),
         onDone: () {
-          setState(() {
-            isIntroDone = true;
-          });
+          if (mounted) {
+            setState(() {
+              isIntroDone = true;
+            });
+          }
         },
         onChange: (index) {
-          setState(() {
-            currentIndex = index;
-          });
+          if (mounted) {
+            setState(() {
+              currentIndex = index;
+            });
+          }
         },
         pages: pageModel,
       );

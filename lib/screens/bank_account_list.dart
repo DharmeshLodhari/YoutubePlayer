@@ -166,24 +166,30 @@ class _BankAccountListState extends State<BankAccountList> {
   void getList() async {
     if (!isLoading) {
       if (next != null && !isLoading) {
-        setState(() {
-          isLoading = true;
-        });
+        if (mounted) {
+          setState(() {
+            isLoading = true;
+          });
+        }
         Map<String, dynamic> result =
             await _auth.getBankAccountsPagination(next, previous);
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
         var tempList = result['results'];
-        setState(() {
-          isLoading = false;
-          bankAccountList.addAll(tempList);
-        });
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+            bankAccountList.addAll(tempList);
+          });
+        }
       }
       if (bankAccountList.isEmpty) {
-        setState(() {
-          noItemInList = true;
-        });
+        if (mounted) {
+          setState(() {
+            noItemInList = true;
+          });
+        }
       } else if (next == null && bankAccountList.length > 6) {
         _scaffoldKey.currentState.showSnackBar(SnackBar(
           content:

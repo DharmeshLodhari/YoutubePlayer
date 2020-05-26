@@ -244,25 +244,31 @@ class _MessageListState extends State<MessageList> {
   void getList() async {
     if (!isLoading) {
       if (next != null && !isLoading) {
-        setState(() {
-          isLoading = true;
-        });
+        if (mounted) {
+          setState(() {
+            isLoading = true;
+          });
+        }
         Map<String, dynamic> result =
             await _auth.listMessages(next, previous, filter: filterValue);
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
         var tempList = result['results'];
-        setState(() {
-          noItemInList = false;
-          isLoading = false;
-          messageList.addAll(tempList);
-        });
+        if (mounted) {
+          setState(() {
+            noItemInList = false;
+            isLoading = false;
+            messageList.addAll(tempList);
+          });
+        }
       }
       if (messageList.isEmpty) {
-        setState(() {
-          noItemInList = true;
-        });
+        if (mounted) {
+          setState(() {
+            noItemInList = true;
+          });
+        }
       } else if (next == null && messageList.length > 6) {
         _scaffoldMessageKey.currentState.showSnackBar(SnackBar(
           content:
@@ -271,10 +277,12 @@ class _MessageListState extends State<MessageList> {
         ));
       }
     } else {
-      setState(() {
-        isLoading = false;
-        getList();
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+          getList();
+        });
+      }
     }
   }
 
@@ -414,21 +422,144 @@ class _MessageListState extends State<MessageList> {
   }
 }
 
-class VerticalListItem extends StatelessWidget {
+class VerticalListItem extends StatefulWidget {
   VerticalListItem(this.partialMessage);
   final PartialMessage partialMessage;
 
   @override
+  _VerticalListItemState createState() => _VerticalListItemState();
+}
+
+class _VerticalListItemState extends State<VerticalListItem> {
+  final _auth = AuthService();
+  bool isExpanded = false;
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-        Navigator.of(context)
-            .pushNamed('/detail_message', arguments: {'id': partialMessage.id});
+        Navigator.of(context).pushNamed('/detail_message',
+            arguments: {'id': widget.partialMessage.id});
+      },
+      onLongPress: () {
+        setState(() {
+          if (isExpanded) {
+            isExpanded = false;
+          } else {
+            isExpanded = true;
+          }
+        });
       },
       child: Container(
         color: lightBlue(),
-        child: MessageTile(partialMessage: partialMessage),
+        child: MessageTile(
+            partialMessage: widget.partialMessage,
+            isExpanded: isExpanded,
+            expandedWidget: expandedWidget()),
       ),
+    );
+  }
+
+  Widget expandedWidget() {
+    return Container(
+      height: 40,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Container(
+            height: 0.5,
+            color: darkBlue(),
+          ),
+          Expanded(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Expanded(child: sendMessageButton()),
+                Container(
+                  width: 0.5,
+                  color: darkBlue(),
+                  height: 40,
+                ),
+                Expanded(child: blockUserButton()),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget sendMessageButton() {
+    return MaterialButton(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Icon(
+            Icons.message,
+            color: darkBlue(),
+          ),
+          SizedBox(
+            width: 10,
+          ),
+          Text(
+            "Message",
+            style: TextStyle(color: darkBlue()),
+          ),
+        ],
+      ),
+      onPressed: () {
+        _auth.fetchCustomerProfile(widget.partialMessage.sender).then((user) {
+          setState(() {
+            isExpanded = false;
+          });
+          Navigator.of(context).pushNamed('/compose_message', arguments: {
+            'recipient': user.userName,
+            'subject': "",
+          });
+        });
+      },
+    );
+  }
+
+  Widget blockUserButton() {
+    return MaterialButton(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Stack(
+            children: <Widget>[
+              Icon(
+                Icons.group,
+                color: Colors.black,
+              ),
+              Icon(
+                Icons.block,
+                color: Colors.red,
+              )
+            ],
+          ),
+          SizedBox(
+            width: 10,
+          ),
+          Text(
+            "Block User",
+            style: TextStyle(color: Colors.redAccent),
+          ),
+        ],
+      ),
+      onPressed: () {
+        _auth.fetchCustomerProfile(widget.partialMessage.sender).then((user) {
+          _auth.blockUser(user).then((result) {
+            setState(() {
+              isExpanded = false;
+            });
+            if (result) {
+              Toast.show("${widget.partialMessage.sender} is Blocked", context);
+            } else {
+              Toast.show("Error occurs", context);
+            }
+          });
+        });
+      },
     );
   }
 }

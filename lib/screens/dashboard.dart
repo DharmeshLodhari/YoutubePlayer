@@ -36,29 +36,32 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   void initState() {
-    setState(() {
-      if (arguments != null) {
-        int indexFromRoute = arguments['dashboardIndex'];
+    if (mounted) {
+      setState(() {
+        if (arguments != null) {
+          int indexFromRoute = arguments['dashboardIndex'];
 
-        isLocked = arguments['isLocked'] != null ? arguments['isLocked'] : true;
+          isLocked =
+              arguments['isLocked'] != null ? arguments['isLocked'] : true;
 
-        if (indexFromRoute != null) {
-          setState(() {
-            _currentIndex = indexFromRoute;
-          });
+          if (indexFromRoute != null) {
+            setState(() {
+              _currentIndex = indexFromRoute;
+            });
+          }
         }
-      }
-      screens = [
-        Home(),
-        PaymentRequestList(),
-        ShoppingCart(),
-        SearchModule(),
-        MessageList(),
-        UserDashboard(
-          arguments: {'isLocked': isLocked},
-        ),
-      ];
-    });
+        screens = [
+          Home(),
+          PaymentRequestList(),
+          ShoppingCart(),
+          SearchModule(),
+          MessageList(),
+          UserDashboard(
+            arguments: {'isLocked': isLocked},
+          ),
+        ];
+      });
+    }
 
     super.initState();
   }
@@ -120,9 +123,11 @@ class _DashboardState extends State<Dashboard> {
         }
 
         if (_currentIndex != 0) {
-          setState(() {
-            _currentIndex = 0;
-          });
+          if (mounted) {
+            setState(() {
+              _currentIndex = 0;
+            });
+          }
         }
         return false;
       },
@@ -134,9 +139,11 @@ class _DashboardState extends State<Dashboard> {
           elevation: 0.0,
           currentIndex: _currentIndex,
           onTap: (index) {
-            setState(() {
-              _currentIndex = index;
-            });
+            if (mounted) {
+              setState(() {
+                _currentIndex = index;
+              });
+            }
           },
           items: [
             BottomNavigationBarItem(
@@ -185,8 +192,10 @@ class _DashboardState extends State<Dashboard> {
   }
 
   changeIndex(index) {
-    setState(() {
-      _currentIndex = index;
-    });
+    if (mounted) {
+      setState(() {
+        _currentIndex = index;
+      });
+    }
   }
 }

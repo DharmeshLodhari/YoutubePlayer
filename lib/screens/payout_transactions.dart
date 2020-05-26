@@ -149,23 +149,29 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
   void getList() async {
     if (!isLoading) {
       if (next != null && !isLoading) {
-        setState(() {
-          isLoading = true;
-        });
+        if (mounted) {
+          setState(() {
+            isLoading = true;
+          });
+        }
         Map<String, dynamic> result = await _auth.getPayoutList(next, previous);
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
         var tempList = result['results'];
-        setState(() {
-          isLoading = false;
-          payoutList.addAll(tempList);
-        });
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+            payoutList.addAll(tempList);
+          });
+        }
       }
       if (payoutList.isEmpty) {
-        setState(() {
-          noItemInList = true;
-        });
+        if (mounted) {
+          setState(() {
+            noItemInList = true;
+          });
+        }
       } else if (next == null && payoutList.length > 6) {
         _scaffoldKey.currentState.showSnackBar(SnackBar(
           content:

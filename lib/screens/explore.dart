@@ -188,23 +188,31 @@ class _ExploreListState extends State<ExploreList> {
     if (isSearchBoxOpen && searchController.text.length >= 3) {
       fetchSearchResult();
       FocusScope.of(context).unfocus();
-      setState(() {
-        isValidSearch = true;
-      });
+      if (mounted) {
+        setState(() {
+          isValidSearch = true;
+        });
+      }
     }
     if (searchController.text.length < 3) {
-      setState(() {
-        isValidSearch = false;
-      });
+      if (mounted) {
+        setState(() {
+          isValidSearch = false;
+        });
+      }
     }
     if (isSearchBoxOpen && searchController.text.length == 0) {
-      setState(() {
-        isSearchBoxOpen = false;
-      });
+      if (mounted) {
+        setState(() {
+          isSearchBoxOpen = false;
+        });
+      }
     } else {
-      setState(() {
-        isSearchBoxOpen = true;
-      });
+      if (mounted) {
+        setState(() {
+          isSearchBoxOpen = true;
+        });
+      }
     }
   }
 

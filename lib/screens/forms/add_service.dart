@@ -162,9 +162,11 @@ class _AddServiceState extends State<AddService> {
     if (imageSource != null) {
       ImagePicker.pickImage(source: imageSource).then((value) {
         if (value != null) {
-          setState(() {
-            serviceImages.add(value);
-          });
+          if (mounted) {
+            setState(() {
+              serviceImages.add(value);
+            });
+          }
         }
       });
     }
@@ -199,9 +201,11 @@ class _AddServiceState extends State<AddService> {
               size: 20,
             ),
             onPressed: () {
-              setState(() {
-                serviceImages.removeAt(index);
-              });
+              if (mounted) {
+                setState(() {
+                  serviceImages.removeAt(index);
+                });
+              }
             },
           ),
         )
@@ -315,10 +319,12 @@ class _AddServiceState extends State<AddService> {
           hint: Text(AppLocalization.of(context).selectCategory),
           value: selectedServiceCategory,
           onChanged: (ServiceCatagory value) {
-            setState(() {
-              selectedServiceCategory = value;
-              serviceCategory = selectedServiceCategory.name;
-            });
+            if (mounted) {
+              setState(() {
+                selectedServiceCategory = value;
+                serviceCategory = selectedServiceCategory.name;
+              });
+            }
           },
           items: serviceCategories.map((ServiceCatagory category) {
             return DropdownMenuItem<ServiceCatagory>(
@@ -462,9 +468,11 @@ class _AddServiceState extends State<AddService> {
           activeColor: Colors.white,
           checkColor: darkBlue(),
           onChanged: (value) {
-            setState(() {
-              serviceIsAvailable = value;
-            });
+            if (mounted) {
+              setState(() {
+                serviceIsAvailable = value;
+              });
+            }
           },
         ),
         Text(
@@ -488,9 +496,12 @@ class _AddServiceState extends State<AddService> {
               DateTime.now().year, DateTime.now().month, DateTime.now().day),
           lastDate: DateTime(2101),
         ).then((value) {
-          setState(() {
-            serviceAvailableFrom = DateTime(value.year, value.month, value.day);
-          });
+          if (mounted) {
+            setState(() {
+              serviceAvailableFrom =
+                  DateTime(value.year, value.month, value.day);
+            });
+          }
         }).catchError((error) {});
       },
       child: Card(

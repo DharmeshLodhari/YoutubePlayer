@@ -65,41 +65,43 @@ class _EditProductState extends State<EditProduct> {
   void fetchProduct() async {
     //fetchProductFrom id to edit
     _auth.getProduct(productId).then((value) {
-      setState(() {
-        currentProduct = value;
-        // assigning to our edit controllers
+      if (mounted) {
+        setState(() {
+          currentProduct = value;
+          // assigning to our edit controllers
 
-        productTitleController.text = currentProduct.name;
-        productDescriptionController.text = currentProduct.description;
-        productPriceController.text = currentProduct.price;
-        productManufacturerController.text = currentProduct.manufacturer;
-        productShortDescriptionController.text =
-            currentProduct.shortDescription;
+          productTitleController.text = currentProduct.name;
+          productDescriptionController.text = currentProduct.description;
+          productPriceController.text = currentProduct.price;
+          productManufacturerController.text = currentProduct.manufacturer;
+          productShortDescriptionController.text =
+              currentProduct.shortDescription;
 
-        productImagesFromServer.addAll(currentProduct.serverImages);
-        productName = currentProduct.name;
-        productCategory = currentProduct.category;
-        productCondition = currentProduct.condition;
-        productPrice = currentProduct.price;
-        productDescription = currentProduct.description;
-        productManufacturer = currentProduct.manufacturer;
-        productShortDescription = currentProduct.shortDescription;
-        productIsAvailable = currentProduct.isAvailable;
-        productAvailableFrom = currentProduct.availableFrom;
+          productImagesFromServer.addAll(currentProduct.serverImages);
+          productName = currentProduct.name;
+          productCategory = currentProduct.category;
+          productCondition = currentProduct.condition;
+          productPrice = currentProduct.price;
+          productDescription = currentProduct.description;
+          productManufacturer = currentProduct.manufacturer;
+          productShortDescription = currentProduct.shortDescription;
+          productIsAvailable = currentProduct.isAvailable;
+          productAvailableFrom = currentProduct.availableFrom;
 
-        // assigning the dropdown from currentProduct
-        productCategories.forEach((catagory) {
-          if (catagory.name == currentProduct.category) {
-            selectedProductCategory = catagory;
-          }
+          // assigning the dropdown from currentProduct
+          productCategories.forEach((catagory) {
+            if (catagory.name == currentProduct.category) {
+              selectedProductCategory = catagory;
+            }
+          });
+
+          conditions.forEach((condition) {
+            if (condition.name == currentProduct.condition) {
+              selectedProductCondition = condition;
+            }
+          });
         });
-
-        conditions.forEach((condition) {
-          if (condition.name == currentProduct.condition) {
-            selectedProductCondition = condition;
-          }
-        });
-      });
+      }
     }).catchError((error) {
       Toast.show(
         error.toString(),
@@ -266,9 +268,11 @@ class _EditProductState extends State<EditProduct> {
     if (imageSource != null) {
       ImagePicker.pickImage(source: imageSource).then((value) {
         if (value != null) {
-          setState(() {
-            productLocalImages.add(value);
-          });
+          if (mounted) {
+            setState(() {
+              productLocalImages.add(value);
+            });
+          }
         }
       });
     }
@@ -303,9 +307,11 @@ class _EditProductState extends State<EditProduct> {
               size: 20,
             ),
             onPressed: () {
-              setState(() {
-                productLocalImages.removeAt(index);
-              });
+              if (mounted) {
+                setState(() {
+                  productLocalImages.removeAt(index);
+                });
+              }
             },
           ),
         )
@@ -346,9 +352,11 @@ class _EditProductState extends State<EditProduct> {
                   currentProduct.getImageId(productImagesFromServer[index]);
               _auth.deleteProductOrServiceImage(imageId).then((value) {
                 if (value) {
-                  setState(() {
-                    productImagesFromServer.removeAt(index);
-                  });
+                  if (mounted) {
+                    setState(() {
+                      productImagesFromServer.removeAt(index);
+                    });
+                  }
                 }
               }).catchError((error) {
                 debugPrint("ERROR" + error.toString());
@@ -483,10 +491,12 @@ class _EditProductState extends State<EditProduct> {
           hint: Text(AppLocalization.of(context).selectCategory),
           value: selectedProductCategory,
           onChanged: (ProductCategory value) {
-            setState(() {
-              selectedProductCategory = value;
-              productCategory = selectedProductCategory.name;
-            });
+            if (mounted) {
+              setState(() {
+                selectedProductCategory = value;
+                productCategory = selectedProductCategory.name;
+              });
+            }
           },
           items: productCategories.map((ProductCategory category) {
             return DropdownMenuItem<ProductCategory>(
@@ -547,10 +557,12 @@ class _EditProductState extends State<EditProduct> {
           hint: Text(AppLocalization.of(context).productCondition),
           value: selectedProductCondition,
           onChanged: (ProductCondition value) {
-            setState(() {
-              selectedProductCondition = value;
-              productCondition = selectedProductCondition.name;
-            });
+            if (mounted) {
+              setState(() {
+                selectedProductCondition = value;
+                productCondition = selectedProductCondition.name;
+              });
+            }
           },
           items: conditions.map((ProductCondition productCondition) {
             return DropdownMenuItem<ProductCondition>(
@@ -715,9 +727,11 @@ class _EditProductState extends State<EditProduct> {
           activeColor: Colors.white,
           checkColor: darkBlue(),
           onChanged: (value) {
-            setState(() {
-              productIsAvailable = value;
-            });
+            if (mounted) {
+              setState(() {
+                productIsAvailable = value;
+              });
+            }
           },
         ),
         Text(
@@ -741,9 +755,12 @@ class _EditProductState extends State<EditProduct> {
               DateTime.now().year, DateTime.now().month, DateTime.now().day),
           lastDate: DateTime(2101),
         ).then((value) {
-          setState(() {
-            productAvailableFrom = DateTime(value.year, value.month, value.day);
-          });
+          if (mounted) {
+            setState(() {
+              productAvailableFrom =
+                  DateTime(value.year, value.month, value.day);
+            });
+          }
         }).catchError((error) {});
       },
       child: Card(

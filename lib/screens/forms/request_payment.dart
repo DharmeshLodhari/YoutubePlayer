@@ -70,9 +70,12 @@ class _RequestPaymentState extends State<RequestPayment> {
     _recipientFocus
       ..addListener(() {
         if (!_recipientFocus.hasFocus) {
-          setState(() {
-            _recipientController.text = _recipientController.text.toLowerCase();
-          });
+          if (mounted) {
+            setState(() {
+              _recipientController.text =
+                  _recipientController.text.toLowerCase();
+            });
+          }
         }
       });
     fetchCategory();
@@ -81,13 +84,17 @@ class _RequestPaymentState extends State<RequestPayment> {
   }
 
   void initializeDisplayCard() {
-    if (!isFromProfile) {
-      if (customerProfileBloc.customer.userName != null) {
-        setState(() {
-          _payee = customerProfileBloc.customer;
-          recipient = _payee.userName;
-          _recipientController.text = recipient;
-        });
+    if (mounted) {
+      if (!isFromProfile) {
+        if (customerProfileBloc.customer != null) {
+          if (mounted) {
+            setState(() {
+              _payee = customerProfileBloc.customer;
+              recipient = _payee.userName;
+              _recipientController.text = recipient;
+            });
+          }
+        }
       }
     }
   }
@@ -280,13 +287,15 @@ class _RequestPaymentState extends State<RequestPayment> {
               borderSide: BorderSide(
                   width: 1, color: Colors.white, style: BorderStyle.solid))),
       onChanged: (val) {
-        setState(() {
-          if (!isFromProfile && _payee != null) {
-            recipient = _payee.userName;
-          } else {
-            recipient = val.toLowerCase();
-          }
-        });
+        if (mounted) {
+          setState(() {
+            if (!isFromProfile && _payee != null) {
+              recipient = _payee.userName;
+            } else {
+              recipient = val.toLowerCase();
+            }
+          });
+        }
       },
     );
   }
@@ -336,16 +345,20 @@ class _RequestPaymentState extends State<RequestPayment> {
       onTap: () async {
         if (recipient != null) {
           var customerProfile = await _auth.fetchCustomerProfile(recipient);
-          setState(() {
-            _payee = customerProfile;
-            isValidPayee = _payee.userName != userBloc.user.userName;
-          });
+          if (mounted) {
+            setState(() {
+              _payee = customerProfile;
+              isValidPayee = _payee.userName != userBloc.user.userName;
+            });
+          }
         }
       },
       onChanged: (val) {
-        setState(() {
-          amount = int.parse(val);
-        });
+        if (mounted) {
+          setState(() {
+            amount = int.parse(val);
+          });
+        }
       },
     );
   }
@@ -378,9 +391,11 @@ class _RequestPaymentState extends State<RequestPayment> {
           ),
           value: selectedCategory,
           onChanged: (String value) {
-            setState(() {
-              selectedCategory = value;
-            });
+            if (mounted) {
+              setState(() {
+                selectedCategory = value;
+              });
+            }
           },
           items: paymentCategoriesTest.map((String category) {
             return DropdownMenuItem<String>(
@@ -419,9 +434,11 @@ class _RequestPaymentState extends State<RequestPayment> {
               borderSide: BorderSide(
                   width: 1, color: Colors.white, style: BorderStyle.solid))),
       onChanged: (val) {
-        setState(() {
-          reference = val;
-        });
+        if (mounted) {
+          setState(() {
+            reference = val;
+          });
+        }
       },
     );
   }
@@ -435,18 +452,22 @@ class _RequestPaymentState extends State<RequestPayment> {
           FocusScope.of(context).unfocus();
 
           if (!isValidPayee) {
-            setState(() {
-              errorMessage = AppLocalization.of(context).invalidRecipient;
-              return;
-            });
-          }
-
-          if (recipient == _payee.userName) {
-            if (!isValidPayee) {
+            if (mounted) {
               setState(() {
                 errorMessage = AppLocalization.of(context).invalidRecipient;
                 return;
               });
+            }
+          }
+
+          if (recipient == _payee.userName) {
+            if (!isValidPayee) {
+              if (mounted) {
+                setState(() {
+                  errorMessage = AppLocalization.of(context).invalidRecipient;
+                  return;
+                });
+              }
             }
 
             if (isValidPayee &&
@@ -492,14 +513,16 @@ class _RequestPaymentState extends State<RequestPayment> {
                                 arguments: {'dashboardIndex': 1});
                           } else if (response.statusCode == 500) {
                             Navigator.pop(context);
-                            setState(() {
-                              errorMessage =
-                                  AppLocalization.of(context).serverError;
-                              Toast.show(errorMessage, context,
-                                  gravity: Toast.TOP,
-                                  backgroundColor: darkBlue(),
-                                  textColor: Colors.white);
-                            });
+                            if (mounted) {
+                              setState(() {
+                                errorMessage =
+                                    AppLocalization.of(context).serverError;
+                                Toast.show(errorMessage, context,
+                                    gravity: Toast.TOP,
+                                    backgroundColor: darkBlue(),
+                                    textColor: Colors.white);
+                              });
+                            }
                           } else if (response.statusCode == 700) {
                             Navigator.pop(context);
                             Navigator.pushNamed(context, "/bvn-verification");
@@ -508,14 +531,16 @@ class _RequestPaymentState extends State<RequestPayment> {
                             Navigator.pushNamed(context, "/add-document");
                           } else {
                             Navigator.pop(context);
-                            setState(() {
-                              errorMessage = AppLocalization.of(context)
-                                  .somethingWentWrong;
-                              Toast.show(errorMessage, context,
-                                  gravity: Toast.TOP,
-                                  backgroundColor: darkBlue(),
-                                  textColor: Colors.white);
-                            });
+                            if (mounted) {
+                              setState(() {
+                                errorMessage = AppLocalization.of(context)
+                                    .somethingWentWrong;
+                                Toast.show(errorMessage, context,
+                                    gravity: Toast.TOP,
+                                    backgroundColor: darkBlue(),
+                                    textColor: Colors.white);
+                              });
+                            }
                           }
                         });
                       },

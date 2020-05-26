@@ -419,10 +419,10 @@ class _UserDashboardState extends State<UserDashboard> {
         context: context,
         builder: (context) => AlertDialog(
               title: Text(AppLocalization.of(context).selectYourLanguage),
+              contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               content: Container(
-                height: MediaQuery.of(context).size.height / 2,
-                width: MediaQuery.of(context).size.width - 100,
                 child: ListView(
+                  shrinkWrap: true,
                   children: languages.map((data) {
                     return RadioListTile(
                       selected: language.languageCode == data.languageCode,
@@ -516,8 +516,8 @@ class _UserDashboardState extends State<UserDashboard> {
                     ),
                     ListTile(
                       title: Center(
-                          child:
-                              Text(AppLocalization.of(context).updateAvatar)),
+                        child: Text("Update My Avatar"),
+                      ),
                       onTap: () {
                         Navigator.pop(context);
                         pickImage(userBloc);
@@ -525,7 +525,8 @@ class _UserDashboardState extends State<UserDashboard> {
                     ),
                     ListTile(
                       title: Center(
-                          child: Text(AppLocalization.of(context).address)),
+                        child: Text("My Address"),
+                      ),
                       onTap: () {
                         Navigator.pop(context);
                         Navigator.pushNamed(
@@ -536,7 +537,7 @@ class _UserDashboardState extends State<UserDashboard> {
                     ),
                     //TODO: APP LOCALIZATION
                     ListTile(
-                      title: Center(child: Text("Friends")),
+                      title: Center(child: Text("My Contacts")),
                       onTap: () {
                         Navigator.pop(context);
                         Navigator.pushNamed(
@@ -605,21 +606,21 @@ class _UserDashboardState extends State<UserDashboard> {
             },
           ),
           CupertinoActionSheetAction(
-            child: Text(AppLocalization.of(context).updateAvatar),
+            child: Text("Update My Avatar"),
             onPressed: () {
-              Navigator.pop(context, 'Update Avatar');
+              Navigator.pop(context, 'Update My Avatar');
             },
           ),
           CupertinoActionSheetAction(
-            child: Text(AppLocalization.of(context).address),
+            child: Text("My Address"),
             onPressed: () {
-              Navigator.pop(context, 'Address');
+              Navigator.pop(context, 'My Address');
             },
           ),
           CupertinoActionSheetAction(
-            child: Text("Friends"),
+            child: Text("My Contacts"),
             onPressed: () {
-              Navigator.pop(context, "Friends");
+              Navigator.pop(context, "Contacts");
             },
           ),
         ],
@@ -688,7 +689,7 @@ class _UserDashboardState extends State<UserDashboard> {
             context,
             '/user-address',
           );
-        } else if (value == "Friends") {
+        } else if (value == "Contacts") {
           Navigator.pushNamed(
             context,
             '/friends-dashboard',

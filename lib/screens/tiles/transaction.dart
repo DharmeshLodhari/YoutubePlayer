@@ -141,36 +141,51 @@ class _PaymentRequestTileState extends State<PaymentRequestTile> {
 }
 
 // ignore: must_be_immutable
-class TransactionTile extends StatelessWidget {
-  UserBloc userBloc;
+class TransactionTile extends StatefulWidget {
   final Transaction transaction;
-  TransactionTile({this.transaction});
+  bool isExpanded = false;
+  Widget expandedWidget = Container();
+  TransactionTile({this.transaction, this.isExpanded, this.expandedWidget});
+
+  @override
+  _TransactionTileState createState() => _TransactionTileState();
+}
+
+class _TransactionTileState extends State<TransactionTile> {
+  UserBloc userBloc;
 
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 8),
-        child: ListTile(
-          title: getTitle(),
-          subtitle: getSubTitle(context),
-          leading: getLeading(),
-          trailing:
-              transaction.amount.toString().length > 6 ? null : getAmount(),
-          onTap: () {
-            Navigator.of(context).pushNamed('/transaction-detail',
-                arguments: {'transaction': transaction});
-          },
-        ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 8),
+            child: ListTile(
+              title: getTitle(),
+              subtitle: getSubTitle(context),
+              leading: getLeading(),
+              trailing: widget.transaction.amount.toString().length > 6
+                  ? null
+                  : getAmount(),
+              onTap: () {
+                Navigator.of(context).pushNamed('/transaction-detail',
+                    arguments: {'transaction': widget.transaction});
+              },
+            ),
+          ),
+          widget.isExpanded ? widget.expandedWidget : Container(),
+        ],
       ),
     );
   }
 
   Widget getTitle() {
     return Text(
-      "${transaction.payee.length > 17 ? transaction.payee.substring(0, 17) : transaction.payee}",
+      "${widget.transaction.payee.length > 17 ? widget.transaction.payee.substring(0, 17) : widget.transaction.payee}",
       style: TextStyle(
           color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
     );
@@ -179,13 +194,13 @@ class TransactionTile extends StatelessWidget {
   Widget getLeading() {
     return ClipOval(
       child: CachedNetworkImage(
-        imageUrl: transaction.avatar,
+        imageUrl: widget.transaction.avatar,
         height: 50,
         width: 50,
         colorBlendMode: BlendMode.darken,
         fit: BoxFit.cover,
         filterQuality: FilterQuality.high,
-        placeholder: (context, url) => transaction.avatar == ""
+        placeholder: (context, url) => widget.transaction.avatar == ""
             ? Icon(Icons.person)
             : CircularProgressIndicator(
                 strokeWidth: 2.5,
@@ -201,19 +216,21 @@ class TransactionTile extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          worldCurrencies[transaction.currency] + " ",
+          worldCurrencies[widget.transaction.currency] + " ",
           style: TextStyle(
               fontFamily: "Roboto",
-              color:
-                  transaction.isCredit ? Colors.grey[600] : Colors.green[400],
+              color: widget.transaction.isCredit
+                  ? Colors.grey[600]
+                  : Colors.green[400],
               fontWeight: FontWeight.bold,
               fontSize: 15),
         ),
         Text(
-          transaction.amount.toString(),
+          widget.transaction.amount.toString(),
           style: TextStyle(
-              color:
-                  transaction.isCredit ? Colors.grey[600] : Colors.green[400],
+              color: widget.transaction.isCredit
+                  ? Colors.grey[600]
+                  : Colors.green[400],
               fontWeight: FontWeight.bold,
               fontSize: 15),
         ),
@@ -226,18 +243,20 @@ class TransactionTile extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-            "${transaction.description.length > 20 ? transaction.description.substring(0, 20) : transaction.description}"),
+            "${widget.transaction.description.length > 20 ? widget.transaction.description.substring(0, 20) : widget.transaction.description}"),
         SizedBox(
           height: 2,
         ),
-        transaction.amount.toString().length > 6 ? getAmount() : Container(),
+        widget.transaction.amount.toString().length > 6
+            ? getAmount()
+            : Container(),
         getDateTime(context),
       ],
     );
   }
 
   Widget getDateTime(BuildContext context) {
-    DateTime transactionTime = DateTime.parse(transaction.createdAt);
+    DateTime transactionTime = DateTime.parse(widget.transaction.createdAt);
 
     return Row(
       children: <Widget>[
