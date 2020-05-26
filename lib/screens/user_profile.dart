@@ -396,18 +396,14 @@ class _UserProfileState extends State<UserProfile> {
                           ListTile(
                               dense: true,
                               title: Text(
-                                productList[index].name.length > 35
-                                    ? productList[index].name.substring(0, 35)
-                                    : productList[index].name,
+                                productList[index].name,
+                                maxLines: 1,
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 15),
                               ),
                               subtitle: Text(
-                                productList[index].shortDescription.length > 35
-                                    ? productList[index]
-                                        .shortDescription
-                                        .substring(0, 35)
-                                    : productList[index].shortDescription,
+                                productList[index].shortDescription,
+                                maxLines: 1,
                                 style: TextStyle(
                                   color: Colors.grey,
                                   fontSize: 13,
@@ -646,16 +642,14 @@ class _UserProfileState extends State<UserProfile> {
                 ListTile(
                     dense: true,
                     title: Text(
-                      serviceList[index].name.length > 35
-                          ? serviceList[index].name.substring(0, 35)
-                          : serviceList[index].name,
+                      serviceList[index].name,
+                      maxLines: 1,
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                     ),
                     subtitle: Text(
-                      serviceList[index].shortDescription.length > 35
-                          ? serviceList[index].shortDescription.substring(0, 35)
-                          : serviceList[index].shortDescription,
+                      serviceList[index].shortDescription,
+                      maxLines: 1,
                       style: TextStyle(
                         color: Colors.grey,
                         fontSize: 13,

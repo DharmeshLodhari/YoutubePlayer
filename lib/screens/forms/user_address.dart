@@ -279,8 +279,7 @@ class _UserAddressState extends State<UserAddress> {
                 textColor: Colors.white,
                 duration: Toast.LENGTH_LONG,
               );
-              Navigator.of(context)
-                  .pushNamed('/dashboard', arguments: {'dashboardIndex': 5});
+              Navigator.pop(context);
             });
           } else {
             setState(() {

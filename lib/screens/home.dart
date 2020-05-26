@@ -89,10 +89,12 @@ class _HomeState extends State<Home> {
                   colorBlendMode: BlendMode.darken,
                   fit: BoxFit.fill,
                   filterQuality: FilterQuality.high,
-                  placeholder: (context, url) => CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    valueColor: AlwaysStoppedAnimation(Colors.white),
-                    backgroundColor: lightBlue(),
+                  placeholder: (context, url) => Center(
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.5,
+                      valueColor: AlwaysStoppedAnimation(Colors.white),
+                      backgroundColor: lightBlue(),
+                    ),
                   ),
                 )),
             SizedBox(

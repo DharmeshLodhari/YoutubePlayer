@@ -199,7 +199,10 @@ class _SplashScreenState extends State<SplashScreen> {
                       if (_user.isVerified == true) {
                         //initialize shoppingcart
                         initializeShoppingCart();
-                        Navigator.of(context).pushNamed('/dashboard');
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                          "/dashboard",
+                          (Route<dynamic> route) => false,
+                        );
                       } else {
                         Navigator.of(context)
                             .popAndPushNamed('/bvn-verification');
@@ -207,7 +210,10 @@ class _SplashScreenState extends State<SplashScreen> {
                     } else {
                       //initialize shoppingcart
                       initializeShoppingCart();
-                      Navigator.of(context).pushNamed('/dashboard');
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                        "/dashboard",
+                        (Route<dynamic> route) => false,
+                      );
                     }
                   } catch (e) {
                     debugPrint(e.toString());

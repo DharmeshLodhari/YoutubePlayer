@@ -321,9 +321,9 @@ class _UserLoginState extends State<UserLogin> {
           if (_user.isVerified == true) {
             //to initializeShoppingCart
             initializeShoppingCart();
-            Navigator.of(context).pushNamed(
-              '/dashboard',
-              arguments: {'dashboardIndex': 0},
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              "/dashboard",
+              (Route<dynamic> route) => false,
             );
           } else {
             Navigator.of(context).popAndPushNamed('/bvn-verification');
@@ -375,9 +375,11 @@ class _UserLoginState extends State<UserLogin> {
 
     debugPrint("payload : $payload");
     if (payload == "/request-payment") {
-      Navigator.of(context).pushNamed('/dashboard', arguments: {
-        'dashboardIndex': 1,
-      });
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        "/dashboard",
+        (Route<dynamic> route) => false,
+        arguments: {"dashboardIndex": 1},
+      );
     } else if (payload == "/transaction") {
       Navigator.of(context).pushNamed('/transactions');
     } else if (payload.length > 15 &&

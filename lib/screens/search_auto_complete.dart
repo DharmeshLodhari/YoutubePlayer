@@ -576,7 +576,8 @@ class _SearchAutoCompleteState extends State<SearchAutoComplete> {
 
   Widget getTitle(Product product) {
     return Text(
-      "${product.name.length > 17 ? product.name.substring(0, 17) : product.name}",
+      "${product.name}",
+      maxLines: 1,
       style: TextStyle(
           color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
     );
@@ -609,7 +610,8 @@ class _SearchAutoCompleteState extends State<SearchAutoComplete> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-          "${product.shortDescription.length > 20 ? product.shortDescription.substring(0, 20) : product.shortDescription}",
+          "${product.shortDescription}",
+          maxLines: 1,
           style: TextStyle(color: Colors.grey[600]),
         ),
         SizedBox(
@@ -678,15 +680,13 @@ class _SearchAutoCompleteState extends State<SearchAutoComplete> {
           ),
         ),
         title: Text(
-          object["name"].length > 20
-              ? object["name"].substring(0, 20)
-              : object["name"],
+          object["name"],
+          maxLines: 1,
           style: TextStyle(color: darkBlue(), fontWeight: FontWeight.bold),
         ),
         subtitle: Text(
-          object["short_description"].length > 20
-              ? object["short_description"].substring(0, 20)
-              : object["short_description"],
+          object["short_description"],
+          maxLines: 1,
         ),
         trailing: isOwner
             ? IconButton(

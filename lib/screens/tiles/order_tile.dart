@@ -4,6 +4,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../colors.dart';
@@ -38,9 +39,7 @@ class OrderTile extends StatelessWidget {
     var customerOrMerchant = order.customer == userBloc.user.userName
         ? order.merchant
         : order.customer;
-    return customerOrMerchant.length > 17
-        ? customerOrMerchant.substring(0, 17)
-        : customerOrMerchant;
+    return customerOrMerchant;
   }
 
   String getAvatar() {
@@ -107,6 +106,7 @@ class OrderTile extends StatelessWidget {
         Text(
           getCustomerOrMerchant(),
           style: TextStyle(color: Colors.grey[600]),
+          maxLines: 1,
         ),
         SizedBox(
           height: 2,
@@ -118,23 +118,19 @@ class OrderTile extends StatelessWidget {
   }
 
   Widget getDateTime(BuildContext context) {
-    DateTime requestTime = DateTime.parse(order.createdAt);
-
-    return Row(
-      children: <Widget>[
-        Text(
-          AppLocalization.of(context).date +
-              ": ${requestTime.day}/${requestTime.month}/${requestTime.year}",
-          style: TextStyle(fontSize: 10, color: Colors.grey[600]),
-        ),
-        SizedBox(
-          width: 15,
-        ),
-        Text(
-            AppLocalization.of(context).time +
-                ": ${requestTime.hour}:${requestTime.minute}",
-            style: TextStyle(fontSize: 10, color: Colors.grey[600])),
-      ],
+    DateTime orderTime = DateTime.parse(order.createdAt);
+    String date = DateFormat("hh:mm a").format(orderTime);
+    String time = DateFormat("dd/MM/yyyy").format(orderTime);
+    return Text(
+      AppLocalization.of(context).date +
+          ": $date" +
+          "  " +
+          AppLocalization.of(context).time +
+          ": " +
+          time,
+      softWrap: false,
+      overflow: TextOverflow.visible,
+      style: TextStyle(fontSize: 10, color: Colors.grey[600]),
     );
   }
 }

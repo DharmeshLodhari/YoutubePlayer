@@ -127,7 +127,6 @@ class _ComposeMessageState extends State<ComposeMessage> {
                           fontWeight: FontWeight.bold,
                           fontSize: 16),
                     ),
-//                    SizedBox(height: 10),
                   ],
                 ),
               ),
@@ -161,13 +160,15 @@ class _ComposeMessageState extends State<ComposeMessage> {
               });
             }
             if (_formKey.currentState.validate()) {
-              Navigator.of(context).popAndPushNamed("/dashboard",
-                  arguments: {"dashboardIndex": 4});
-              if (isReplyMessage) {
-                Navigator.of(context).popAndPushNamed("/dashboard",
-                    arguments: {"dashboardIndex": 4});
-              }
               if (userBloc.user.userName != recipient) {
+                showDialog(
+                    context: context,
+                    builder: (context) => Center(
+                            child: CircularProgressIndicator(
+                          strokeWidth: 2.5,
+                          valueColor: AlwaysStoppedAnimation(Colors.white),
+                          backgroundColor: lightBlue(),
+                        )));
                 try {
                   var data = {
                     "sender": userBloc.user.userName,
@@ -175,8 +176,24 @@ class _ComposeMessageState extends State<ComposeMessage> {
                     "body": message,
                     "subject": subject,
                   };
-                  _auth.sendMessage(data);
+                  _auth.sendMessage(data).then((value) {
+                    if (value) {
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                        "/dashboard",
+                        (Route<dynamic> route) => false,
+                        arguments: {"dashboardIndex": 4},
+                      );
+                    } else {
+                      Navigator.pop(context);
+                      var msg = AppLocalization.of(context).error;
+                      Toast.show(msg, context,
+                          gravity: Toast.CENTER,
+                          backgroundColor: darkBlue(),
+                          textColor: Colors.white);
+                    }
+                  });
                 } catch (e) {
+                  Navigator.pop(context);
                   Toast.show(e, context,
                       gravity: Toast.BOTTOM, backgroundColor: darkBlue());
                 }
@@ -322,6 +339,12 @@ class _ComposeMessageState extends State<ComposeMessage> {
           ),
         ),
       ),
+      validator: (val) {
+        if (val.length == 0) {
+          return "Subject Should Not Be Empty ";
+        }
+        return null;
+      },
       onTap: () async {
         if (recipient != null) {
           var customerProfile = await _auth.fetchCustomerProfile(recipient);
@@ -364,6 +387,12 @@ class _ComposeMessageState extends State<ComposeMessage> {
         setState(() {
           message = val;
         });
+      },
+      validator: (val) {
+        if (val.length == 0) {
+          return "Message Should Not Be Empty ";
+        }
+        return null;
       },
     );
   }

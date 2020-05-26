@@ -4,6 +4,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../colors.dart';
@@ -66,7 +67,8 @@ class _PaymentRequestTileState extends State<PaymentRequestTile> {
 
   Widget getTitle() {
     return Text(
-      "${widget.paymentRequest.payee.length > 17 ? widget.paymentRequest.payee.substring(0, 17) : widget.paymentRequest.payee}",
+      "${widget.paymentRequest.payee}",
+      maxLines: 1,
       style: TextStyle(
           color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
     );
@@ -104,8 +106,9 @@ class _PaymentRequestTileState extends State<PaymentRequestTile> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-          "${widget.paymentRequest.description.length > 20 ? widget.paymentRequest.description.substring(0, 20) : widget.paymentRequest.description}",
+          "${widget.paymentRequest.description}",
           style: TextStyle(color: Colors.grey[600]),
+          maxLines: 1,
         ),
         SizedBox(
           height: 2,
@@ -120,22 +123,18 @@ class _PaymentRequestTileState extends State<PaymentRequestTile> {
 
   Widget getDateTime(BuildContext context) {
     DateTime requestTime = DateTime.parse(widget.paymentRequest.createdAt);
-
-    return Row(
-      children: <Widget>[
-        Text(
-          AppLocalization.of(context).date +
-              ": ${requestTime.day}/${requestTime.month}/${requestTime.year}",
-          style: TextStyle(fontSize: 10, color: Colors.grey[600]),
-        ),
-        SizedBox(
-          width: 15,
-        ),
-        Text(
-            AppLocalization.of(context).time +
-                ": ${requestTime.hour}:${requestTime.minute}",
-            style: TextStyle(fontSize: 10, color: Colors.grey[600])),
-      ],
+    String date = DateFormat("dd/MM/yyyy").format(requestTime);
+    String time = DateFormat("hh:mm a").format(requestTime);
+    return Text(
+      AppLocalization.of(context).date +
+          ": $date" +
+          "  " +
+          AppLocalization.of(context).time +
+          ": " +
+          time,
+      softWrap: false,
+      overflow: TextOverflow.visible,
+      style: TextStyle(fontSize: 10, color: Colors.grey[600]),
     );
   }
 }
@@ -185,7 +184,8 @@ class _TransactionTileState extends State<TransactionTile> {
 
   Widget getTitle() {
     return Text(
-      "${widget.transaction.payee.length > 17 ? widget.transaction.payee.substring(0, 17) : widget.transaction.payee}",
+      "${widget.transaction.payee}",
+      maxLines: 1,
       style: TextStyle(
           color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
     );
@@ -243,7 +243,9 @@ class _TransactionTileState extends State<TransactionTile> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-            "${widget.transaction.description.length > 20 ? widget.transaction.description.substring(0, 20) : widget.transaction.description}"),
+          "${widget.transaction.description}",
+          maxLines: 1,
+        ),
         SizedBox(
           height: 2,
         ),
@@ -257,22 +259,18 @@ class _TransactionTileState extends State<TransactionTile> {
 
   Widget getDateTime(BuildContext context) {
     DateTime transactionTime = DateTime.parse(widget.transaction.createdAt);
-
-    return Row(
-      children: <Widget>[
-        Text(
-          AppLocalization.of(context).date +
-              ": ${transactionTime.day}/${transactionTime.month}/${transactionTime.year}",
-          style: TextStyle(fontSize: 10, color: Colors.grey[600]),
-        ),
-        SizedBox(
-          width: 15,
-        ),
-        Text(
-            AppLocalization.of(context).time +
-                ": ${transactionTime.hour}:${transactionTime.minute}",
-            style: TextStyle(fontSize: 10, color: Colors.grey[600])),
-      ],
+    String date = DateFormat("dd/MM/yyyy").format(transactionTime);
+    String time = DateFormat("hh:mm a").format(transactionTime);
+    return Text(
+      AppLocalization.of(context).date +
+          ": $date" +
+          "  " +
+          AppLocalization.of(context).time +
+          ": " +
+          time,
+      softWrap: false,
+      overflow: TextOverflow.visible,
+      style: TextStyle(fontSize: 10, color: Colors.grey[600]),
     );
   }
 }

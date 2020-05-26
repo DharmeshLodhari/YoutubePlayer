@@ -283,6 +283,10 @@ class _SendPaymentState extends State<SendPayment> {
               subtitle: Text(_payee.userName),
               leading: avatarImage,
               trailing: qrCodeImage,
+              onTap: () {
+                Navigator.pushNamed(context, '/profile',
+                    arguments: {"searchedUser": _payee});
+              },
             ),
           );
   }

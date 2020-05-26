@@ -82,12 +82,16 @@ class CustomerTile extends StatelessWidget {
             dense: true,
             title: Text(
               user.fullName,
+              maxLines: 1,
               style: TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
                   fontSize: 15),
             ),
-            subtitle: Text(user.userName),
+            subtitle: Text(
+              user.userName,
+              maxLines: 1,
+            ),
             leading: avatarImage,
           ),
         ));

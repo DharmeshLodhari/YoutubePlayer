@@ -241,9 +241,8 @@ class _BankAccountListState extends State<BankAccountList> {
             height: 8,
           ),
           Text(
-            account.bankName.length >= 30
-                ? account.bankName.substring(0, 30)
-                : account.bankName,
+            account.bankName,
+            maxLines: 1,
             style: TextStyle(
                 color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
           ),

@@ -193,8 +193,11 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           color: Colors.white,
         ),
         onPressed: () {
-          Navigator.popAndPushNamed(context, "/dashboard",
-              arguments: {"dashboardIndex": 2});
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            "/dashboard",
+            (Route<dynamic> route) => false,
+            arguments: {"dashboardIndex": 2},
+          );
         },
       ),
     );

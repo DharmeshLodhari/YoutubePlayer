@@ -4,6 +4,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:provider/provider.dart';
 
@@ -99,31 +100,30 @@ class _TransactionDetailState extends State<TransactionDetail> {
 
   Widget getDescriptionWidget() {
     return Text(
-        "${transaction.description.length > 15 ? transaction.description.substring(0, 15) : transaction.description}");
+      "${transaction.description}",
+      maxLines: 1,
+    );
   }
 
   Widget getSubtitle() {
     DateTime transactionTime = DateTime.parse(transaction.createdAt);
+    String date = DateFormat("dd/MM/yyyy").format(transactionTime);
+    String time = DateFormat("hh:mm a").format(transactionTime);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         getAmount(),
-        Row(
-          children: <Widget>[
-            Text(
-              AppLocalization.of(context).date +
-                  ": ${transactionTime.day}/${transactionTime.month}/${transactionTime.year}",
-              style: TextStyle(fontSize: 10, color: Colors.grey[600]),
-            ),
-            SizedBox(
-              width: 15,
-            ),
-            Text(
-                AppLocalization.of(context).time +
-                    ": ${transactionTime.hour}:${transactionTime.minute}",
-                style: TextStyle(fontSize: 10, color: Colors.grey[600])),
-          ],
+        Text(
+          AppLocalization.of(context).date +
+              ": $date" +
+              "  " +
+              AppLocalization.of(context).time +
+              ": " +
+              time,
+          softWrap: false,
+          overflow: TextOverflow.visible,
+          style: TextStyle(fontSize: 10, color: Colors.grey[600]),
         ),
       ],
     );

@@ -97,13 +97,17 @@ class _DetailedMessageState extends State<DetailedMessage> {
       padding: const EdgeInsets.all(8.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text(
-            message.subject,
-            style: TextStyle(
-              fontSize: 22,
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
+          Expanded(
+            child: Text(
+              message.subject,
+              style: TextStyle(
+                fontSize: 22,
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+              maxLines: 1,
             ),
           ),
           Text(getDate(),
@@ -137,8 +141,10 @@ class _DetailedMessageState extends State<DetailedMessage> {
   }
 
   Widget getRecipientWidget() {
-    return Text(AppLocalization.of(context).to +
-        ": ${message.recipient.length > 15 ? message.recipient.substring(0, 15) : message.recipient}");
+    return Text(
+      AppLocalization.of(context).to + ": ${message.recipient}",
+      maxLines: 1,
+    );
   }
 
   getLeading() {

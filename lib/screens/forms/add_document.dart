@@ -435,7 +435,10 @@ class _AddDocumentState extends State<AddDocument> {
                             .then((user) {
                           if (user.isVerified) {
                             userBloc.user = user;
-                            Navigator.of(context).popAndPushNamed('/dashboard');
+                            Navigator.of(context).pushNamedAndRemoveUntil(
+                              "/dashboard",
+                              (Route<dynamic> route) => false,
+                            );
                           }
                         });
                       });

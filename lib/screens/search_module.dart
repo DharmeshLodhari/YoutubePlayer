@@ -398,10 +398,14 @@ class _SearchModuleState extends State<SearchModule> {
         dense: true,
         title: Text(
           user.fullName,
+          maxLines: 1,
           style: TextStyle(
               color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
         ),
-        subtitle: Text(user.userName),
+        subtitle: Text(
+          user.userName,
+          maxLines: 1,
+        ),
         leading: avatarImage,
       ),
     );
@@ -493,7 +497,8 @@ class _SearchModuleState extends State<SearchModule> {
 
   Widget getTitle(Product product) {
     return Text(
-      "${product.name.length > 17 ? product.name.substring(0, 17) : product.name}",
+      "${product.name}",
+      maxLines: 1,
       style: TextStyle(
           color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
     );
@@ -527,7 +532,8 @@ class _SearchModuleState extends State<SearchModule> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-          "${product.shortDescription.length > 20 ? product.shortDescription.substring(0, 20) : product.shortDescription}",
+          "${product.shortDescription}",
+          maxLines: 1,
           style: TextStyle(color: Colors.grey[600]),
         ),
         SizedBox(
@@ -546,6 +552,7 @@ class _SearchModuleState extends State<SearchModule> {
       children: <Widget>[
         Text(
           product.seller,
+          maxLines: 1,
           style: TextStyle(fontSize: 10, color: Colors.grey[600]),
         ),
       ],
@@ -585,15 +592,13 @@ class _SearchModuleState extends State<SearchModule> {
         contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 8),
         leading: getLeadingService(service, object),
         title: Text(
-          object["name"].length > 20
-              ? object["name"].substring(0, 20)
-              : object["name"],
+          object["name"],
+          maxLines: 1,
           style: TextStyle(color: darkBlue(), fontWeight: FontWeight.bold),
         ),
         subtitle: Text(
-          object["short_description"].length > 20
-              ? object["short_description"].substring(0, 20)
-              : object["short_description"],
+          object["short_description"],
+          maxLines: 1,
         ),
         trailing: service.price.toString().length > 6
             ? null

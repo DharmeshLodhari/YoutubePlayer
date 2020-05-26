@@ -283,7 +283,10 @@ class _SignUpState extends State<SignUp> {
                   var user = value;
                   userBloc.user = user;
                   Navigator.pop(context);
-                  Navigator.of(context).popAndPushNamed('/dashboard');
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    "/dashboard",
+                    (Route<dynamic> route) => false,
+                  );
                 });
               }
             });

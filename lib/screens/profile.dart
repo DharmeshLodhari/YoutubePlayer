@@ -369,18 +369,14 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                           ListTile(
                               dense: true,
                               title: Text(
-                                productList[index].name.length > 35
-                                    ? productList[index].name.substring(0, 35)
-                                    : productList[index].name,
+                                productList[index].name,
+                                maxLines: 1,
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 15),
                               ),
                               subtitle: Text(
-                                productList[index].shortDescription.length > 35
-                                    ? productList[index]
-                                        .shortDescription
-                                        .substring(0, 35)
-                                    : productList[index].shortDescription,
+                                productList[index].shortDescription,
+                                maxLines: 1,
                                 style: TextStyle(
                                   color: Colors.grey,
                                   fontSize: 13,
@@ -585,15 +581,13 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
           ),
         ),
         title: Text(
-          serviceList[index].name.length > 20
-              ? serviceList[index].name.substring(0, 20)
-              : serviceList[index].name,
+          serviceList[index].name,
+          maxLines: 1,
           style: TextStyle(color: darkBlue(), fontWeight: FontWeight.bold),
         ),
         subtitle: Text(
-          serviceList[index].shortDescription.length > 20
-              ? serviceList[index].shortDescription.substring(0, 20)
-              : serviceList[index].shortDescription,
+          serviceList[index].shortDescription,
+          maxLines: 1,
         ),
         trailing: isOwner
             ? IconButton(

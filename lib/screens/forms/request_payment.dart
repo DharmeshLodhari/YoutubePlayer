@@ -254,6 +254,10 @@ class _RequestPaymentState extends State<RequestPayment> {
               subtitle: Text(_payee.userName),
               leading: avatarImage,
               trailing: qrCodeImage,
+              onTap: () {
+                Navigator.pushNamed(context, '/profile',
+                    arguments: {"searchedUser": _payee});
+              },
             ),
           );
   }
@@ -509,8 +513,11 @@ class _RequestPaymentState extends State<RequestPayment> {
                             Navigator.pop(context);
                             //Pop request payment page
                             Navigator.pop(context);
-                            Navigator.of(context).popAndPushNamed('/dashboard',
-                                arguments: {'dashboardIndex': 1});
+                            Navigator.of(context).pushNamedAndRemoveUntil(
+                              "/dashboard",
+                              (Route<dynamic> route) => false,
+                              arguments: {"dashboardIndex": 1},
+                            );
                           } else if (response.statusCode == 500) {
                             Navigator.pop(context);
                             if (mounted) {

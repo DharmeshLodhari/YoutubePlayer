@@ -121,8 +121,11 @@ class _AccountBalanceTileState extends State<AccountBalanceTile> {
               PassCodePopup(
                   context: context,
                   isValidCallback: () {
-                    Navigator.of(context).pushNamed('/dashboard',
-                        arguments: {'dashboardIndex': 5, 'isLocked': false});
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                      "/dashboard",
+                      (Route<dynamic> route) => false,
+                      arguments: {"dashboardIndex": 5, "isLocked": false},
+                    );
                   },
                   cancelCallBack: () {
                     Navigator.pop(context);
@@ -133,8 +136,11 @@ class _AccountBalanceTileState extends State<AccountBalanceTile> {
               widget.onTap();
             } else {
               setState(() {
-                Navigator.of(context).pushNamed('/dashboard',
-                    arguments: {'dashboardIndex': 5, 'isLocked': true});
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  "/dashboard",
+                  (Route<dynamic> route) => false,
+                  arguments: {"dashboardIndex": 5, "isLocked": true},
+                );
                 widget.isLocked = true;
               });
             }

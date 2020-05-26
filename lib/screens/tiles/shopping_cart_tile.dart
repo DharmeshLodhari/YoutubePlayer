@@ -100,7 +100,8 @@ class _ShoppingCartTileForProductState
 
   Widget getTitle() {
     return Text(
-      "${product.name.length > 17 ? product.name.substring(0, 17) : product.name}",
+      "${product.name}",
+      maxLines: 1,
       style: TextStyle(
           color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
     );
@@ -151,7 +152,8 @@ class _ShoppingCartTileForProductState
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-          "${product.shortDescription.length > 20 ? product.shortDescription.substring(0, 20) : product.shortDescription}",
+          "${product.shortDescription}",
+          maxLines: 1,
           style: TextStyle(
             color: Colors.grey[600],
           ),
@@ -294,7 +296,8 @@ class _ShoppingCartTileForServiceState
 
   Widget getTitle() {
     return Text(
-      "${service.name.length > 17 ? service.name.substring(0, 17) : service.name}",
+      "${service.name}",
+      maxLines: 1,
       style: TextStyle(
           color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
     );
@@ -345,7 +348,8 @@ class _ShoppingCartTileForServiceState
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-          "${service.shortDescription.length > 20 ? service.shortDescription.substring(0, 20) : service.shortDescription}",
+          "${service.shortDescription}",
+          maxLines: 1,
           style: TextStyle(color: Colors.grey[600]),
         ),
         SizedBox(
