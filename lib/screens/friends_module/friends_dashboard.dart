@@ -95,12 +95,11 @@ class _FriendsDashboardState extends State<FriendsDashboard> {
     if (mounted) {
       setState(() {
         filterValue = item.menuTitle;
-
-        if (item.menuImage == Icon(Icons.group)) {
+        if (filterValue == "Friends") {
           currentIndex = 0;
-        } else if (item.menuImage == Icon(Icons.group_add)) {
+        } else if (filterValue == "Request List") {
           currentIndex = 1;
-        } else if (item.menuImage is Stack) {
+        } else if (filterValue == "Blocked List") {
           currentIndex = 2;
         }
       });
