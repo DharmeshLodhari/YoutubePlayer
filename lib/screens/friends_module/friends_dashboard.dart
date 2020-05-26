@@ -92,18 +92,16 @@ class _FriendsDashboardState extends State<FriendsDashboard> {
   }
 
   void onClickMenu(MenuItemProvider item) {
-    if (mounted) {
-      setState(() {
-        filterValue = item.menuTitle;
-        if (filterValue == "Friends") {
-          currentIndex = 0;
-        } else if (filterValue == "Request List") {
-          currentIndex = 1;
-        } else if (filterValue == "Blocked List") {
-          currentIndex = 2;
-        }
-      });
-    }
+    setState(() {
+      filterValue = item.menuTitle;
+      if (filterValue == "My Contacts") {
+        currentIndex = 0;
+      } else if (filterValue == "Requests") {
+        currentIndex = 1;
+      } else if (filterValue == "Blocked List") {
+        currentIndex = 2;
+      }
+    });
   }
 
   void onDismiss() {}
