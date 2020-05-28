@@ -418,6 +418,13 @@ class _BankAccountListState extends State<BankAccountList> {
   void handleSlideAnimationChanged(Animation<double> slideAnimation) {}
 
   void handleSlideIsOpenChanged(bool isOpen) {}
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _refreshController.dispose();
+    super.dispose();
+  }
 }
 
 class VerticalListItem extends StatelessWidget {

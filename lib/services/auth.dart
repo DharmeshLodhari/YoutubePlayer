@@ -205,7 +205,7 @@ class AuthService {
 
   // Fetch user profile
   Future<CustomerProfile> fetchCustomerProfile(String userName) async {
-    var url = baseUrl + "/api/v1/user/customer/" + userName;
+    var url = baseUrl + "/api/v1/user/customer/" + userName.trim();
     var uuid = Uuid();
     var transactionId = uuid.v4();
     var headers = {

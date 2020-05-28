@@ -663,4 +663,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       },
     );
   }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 }

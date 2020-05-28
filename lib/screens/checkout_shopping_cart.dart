@@ -440,6 +440,12 @@ class _ShoppingCartState extends State<ShoppingCart> {
       }
     });
   }
+
+  @override
+  void dispose() {
+    _refreshController.dispose();
+    super.dispose();
+  }
 }
 
 // ignore: must_be_immutable

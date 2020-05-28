@@ -295,4 +295,15 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
       isCvvFocused = cvvFocusNode.hasFocus;
     });
   }
+
+  @override
+  void dispose() {
+    _cardNumberController.dispose();
+    _expiryDateController.dispose();
+    _cardHolderNameController.dispose();
+    _amountController.dispose();
+    _cvvCodeController.dispose();
+    cvvFocusNode.dispose();
+    super.dispose();
+  }
 }

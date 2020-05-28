@@ -348,6 +348,12 @@ class _RequestPaymentState extends State<RequestPayment> {
       },
       onTap: () async {
         if (recipient != null) {
+          recipient = recipient.trim();
+          if (mounted) {
+            setState(() {
+              _recipientController.text = recipient;
+            });
+          }
           var customerProfile = await _auth.fetchCustomerProfile(recipient);
           if (mounted) {
             setState(() {
@@ -483,13 +489,13 @@ class _RequestPaymentState extends State<RequestPayment> {
                   userLocation = await locationService.getLocation();
 
                   var data = {
-                    "from_customer": userBloc.user.userName,
-                    "to_customer": recipient,
+                    "from_customer": userBloc.user.userName.trim(),
+                    "to_customer": recipient.trim(),
                     "currency": userBloc.user.currency,
-                    "amount": amount.toString(),
-                    "category": selectedCategory,
-                    "notes": reference,
-                    "description": reference,
+                    "amount": amount.toString().trim(),
+                    "category": selectedCategory.trim(),
+                    "notes": reference.trim(),
+                    "description": reference.trim(),
                     "latitude": userLocation.latitude,
                     "longitude": userLocation.longitude,
                   };
@@ -598,5 +604,12 @@ class _RequestPaymentState extends State<RequestPayment> {
           gravity: Toast.CENTER);
       return false;
     }
+  }
+
+  @override
+  void dispose() {
+    _recipientController.dispose();
+    _recipientFocus.dispose();
+    super.dispose();
   }
 }

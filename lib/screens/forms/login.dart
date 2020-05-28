@@ -564,4 +564,11 @@ class _UserLoginState extends State<UserLogin> {
     debugPrint("notification from IOS getnotification $notification");
     return notification;
   }
+
+  @override
+  void dispose() {
+    phoneNumberController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 }

@@ -294,4 +294,13 @@ class _UserAddressState extends State<UserAddress> {
       ),
     );
   }
+
+  @override
+  void dispose() {
+    addressLineOneController.dispose();
+    addressLineTwoController.dispose();
+    cityController.dispose();
+    stateController.dispose();
+    super.dispose();
+  }
 }

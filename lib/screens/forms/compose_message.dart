@@ -172,9 +172,9 @@ class _ComposeMessageState extends State<ComposeMessage> {
                 try {
                   var data = {
                     "sender": userBloc.user.userName,
-                    "recipient": recipient,
-                    "body": message,
-                    "subject": subject,
+                    "recipient": recipient.trim(),
+                    "body": message.trim(),
+                    "subject": subject.trim(),
                   };
                   _auth.sendMessage(data).then((value) {
                     if (value) {
@@ -347,6 +347,12 @@ class _ComposeMessageState extends State<ComposeMessage> {
       },
       onTap: () async {
         if (recipient != null) {
+          recipient = recipient.trim();
+          if (mounted) {
+            setState(() {
+              _recipientController.text = recipient;
+            });
+          }
           var customerProfile = await _auth.fetchCustomerProfile(recipient);
           setState(() {
             messageReceiver = customerProfile;

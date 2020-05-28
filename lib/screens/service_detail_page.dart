@@ -657,4 +657,10 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       },
     );
   }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 }

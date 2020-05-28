@@ -31,7 +31,7 @@ class _SplashScreenState extends State<SplashScreen> {
   BasketBloc basketBloc;
 
   // bool for to check if internet connection is available or not
-  var hasConnection = false;
+  var hasConnection = true;
 
   @override
   void initState() {
@@ -117,41 +117,42 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     basketBloc = Provider.of<BasketBloc>(context);
-    return Container(
-      color: lightBlue(),
-      child: hasConnection
-          ? SpinKitChasingDots(
+    return hasConnection
+        ? Container(
+            color: lightBlue(),
+            child: Center(
+                child: SpinKitChasingDots(
               color: Colors.white,
               size: 100.0,
               duration: Duration(milliseconds: 4000),
-            )
-          : Scaffold(
-              backgroundColor: lightBlue(),
-              appBar: AppBar(
-                title: Text('Slydo'),
-                backgroundColor: darkBlue(),
-                elevation: 0.0,
-                automaticallyImplyLeading: false,
-              ),
-              body: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  NoItemInList(
-                    msg: AppLocalization.of(context)
-                        .internetConnectionNotAvailable,
-                  ),
-                  MaterialButton(
-                    color: darkBlue(),
-                    child: Text(
-                      AppLocalization.of(context).retry,
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    onPressed: checkConnection,
-                  )
-                ],
-              ),
+            )),
+          )
+        : Scaffold(
+            backgroundColor: lightBlue(),
+            appBar: AppBar(
+              title: Text('Slydo'),
+              backgroundColor: darkBlue(),
+              elevation: 0.0,
+              automaticallyImplyLeading: false,
             ),
-    );
+            body: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                NoItemInList(
+                  msg: AppLocalization.of(context)
+                      .internetConnectionNotAvailable,
+                ),
+                MaterialButton(
+                  color: darkBlue(),
+                  child: Text(
+                    AppLocalization.of(context).retry,
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onPressed: checkConnection,
+                )
+              ],
+            ),
+          );
   }
 
   Future<void> getLoggedInUser() async {

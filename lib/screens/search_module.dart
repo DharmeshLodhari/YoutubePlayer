@@ -906,6 +906,13 @@ class _SearchModuleState extends State<SearchModule> {
   void handleSlideAnimationChanged2(Animation<double> slideAnimation) {}
 
   void handleSlideIsOpenChanged2(bool isOpen) {}
+
+  @override
+  void dispose() {
+    searchItemTextController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
 }
 
 // ignore: must_be_immutable

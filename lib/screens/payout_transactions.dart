@@ -181,4 +181,11 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
       }
     }
   }
+
+  @override
+  void dispose() {
+    _refreshController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
 }

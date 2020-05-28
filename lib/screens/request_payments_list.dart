@@ -442,6 +442,13 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       secondaryActions: listSecondaryActions(paymentRequest, index),
     );
   }
+
+  @override
+  void dispose() {
+    _refreshController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
 }
 
 class VerticalListItem extends StatefulWidget {

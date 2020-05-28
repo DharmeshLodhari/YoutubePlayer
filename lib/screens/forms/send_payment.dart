@@ -379,6 +379,12 @@ class _SendPaymentState extends State<SendPayment> {
       },
       onTap: () async {
         if (recipient != null) {
+          recipient = recipient.trim();
+          if (mounted) {
+            setState(() {
+              _recipientController.text = recipient;
+            });
+          }
           await _auth.fetchCustomerProfile(recipient).then((customerProfile) {
             if (customerProfile != null) {
               setState(() {
@@ -518,12 +524,12 @@ class _SendPaymentState extends State<SendPayment> {
                   deviceData = await getDeviceInfo();
                   var data = {
                     "from_customer": userBloc.user.userName,
-                    "to_customer": recipient,
+                    "to_customer": recipient.trim(),
                     "currency": userBloc.user.currency,
-                    "amount": amount.toString(),
-                    "category": selectedCategory,
-                    "notes": reference,
-                    "description": reference,
+                    "amount": amount.toString().trim(),
+                    "category": selectedCategory.trim(),
+                    "notes": reference.trim(),
+                    "description": reference.trim(),
                     "latitude": userLocation.latitude,
                     "longitude": userLocation.longitude,
                     "deviceData": deviceData
@@ -634,5 +640,14 @@ class _SendPaymentState extends State<SendPayment> {
           gravity: Toast.CENTER);
       return false;
     }
+  }
+
+  @override
+  void dispose() {
+    _recipientController.dispose();
+    _amountController.dispose();
+    _referenceController.dispose();
+    _recipientFocus.dispose();
+    super.dispose();
   }
 }

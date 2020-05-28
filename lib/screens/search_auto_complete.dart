@@ -854,6 +854,13 @@ class _SearchAutoCompleteState extends State<SearchAutoComplete> {
       itemSubmitted: (item) {},
     );
   }
+
+  @override
+  void dispose() {
+    autoCompleteTextController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
 }
 
 // ignore: must_be_immutable

@@ -363,6 +363,13 @@ class _TransactionListState extends State<TransactionList> {
       secondaryActions: listSecondaryActions(transaction),
     );
   }
+
+  @override
+  void dispose() {
+    _refreshController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
 }
 
 class VerticalListItem extends StatefulWidget {

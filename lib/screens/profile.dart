@@ -616,6 +616,15 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
   String getDisplayImage(int index, List<Product> productList) {
     return productList[index].serverImages[0];
   }
+
+  @override
+  void dispose() {
+    _productScrollController.dispose();
+    _productsRefreshController.dispose();
+    _servicesRefreshController.dispose();
+    _servicesRefreshController.dispose();
+    super.dispose();
+  }
 }
 
 class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {

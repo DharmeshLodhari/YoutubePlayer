@@ -420,9 +420,8 @@ class _UserDashboardState extends State<UserDashboard> {
         builder: (context) => AlertDialog(
               title: Text(AppLocalization.of(context).selectYourLanguage),
               contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-              content: Container(
-                child: ListView(
-                  shrinkWrap: true,
+              content: SingleChildScrollView(
+                child: Column(
                   children: languages.map((data) {
                     return RadioListTile(
                       selected: language.languageCode == data.languageCode,

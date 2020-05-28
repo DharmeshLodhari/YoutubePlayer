@@ -378,6 +378,13 @@ class _OrdersListState extends State<OrdersList> {
       secondaryActions: listSecondaryActions(order, index),
     );
   }
+
+  @override
+  void dispose() {
+    _refreshController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
 }
 
 class VerticalListItem extends StatelessWidget {

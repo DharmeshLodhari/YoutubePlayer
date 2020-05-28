@@ -289,6 +289,13 @@ class _ContactRequestListState extends State<ContactRequestList> {
       secondaryActions: listSecondaryActions(user, index),
     );
   }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _refreshController.dispose();
+    super.dispose();
+  }
 }
 
 class VerticalListItem extends StatelessWidget {

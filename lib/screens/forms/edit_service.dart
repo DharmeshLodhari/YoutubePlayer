@@ -731,4 +731,14 @@ class _EditServiceState extends State<EditService> {
       });
     }
   }
+
+  @override
+  void dispose() {
+    serviceTitleController.dispose();
+    serviceDescriptionController.dispose();
+    serviceShortDescriptionController.dispose();
+    servicePriceController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
 }

@@ -420,6 +420,13 @@ class _MessageListState extends State<MessageList> {
       secondaryActions: listSecondaryActions(partialMessage, index),
     );
   }
+
+  @override
+  void dispose() {
+    _refreshController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
 }
 
 class VerticalListItem extends StatefulWidget {

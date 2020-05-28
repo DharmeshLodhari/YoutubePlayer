@@ -823,6 +823,7 @@ class _EditProductState extends State<EditProduct> {
     productShortDescriptionController.dispose();
     productManufacturerController.dispose();
     productPriceController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 }
