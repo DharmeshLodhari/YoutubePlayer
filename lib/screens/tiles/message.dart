@@ -11,9 +11,8 @@ import '../colors.dart';
 // ignore: must_be_immutable
 class MessageTile extends StatefulWidget {
   final PartialMessage partialMessage;
-  bool isExpanded = false;
   Widget expandedWidget = Container();
-  MessageTile({this.partialMessage, this.isExpanded, this.expandedWidget});
+  MessageTile({this.partialMessage, this.expandedWidget});
 
   @override
   _MessageTileState createState() =>
@@ -42,7 +41,7 @@ class _MessageTileState extends State<MessageTile> {
                 trailing: getTrailing(),
                 subtitle: getSubtitle()),
           ),
-          widget.isExpanded ? widget.expandedWidget : Container(),
+          widget.expandedWidget,
         ],
       ),
     );

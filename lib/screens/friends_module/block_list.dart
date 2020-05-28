@@ -98,7 +98,7 @@ class _BlockListState extends State<BlockList> {
   Widget _buildFriendsList() {
     return noItemInList
         ? NoItemInList(
-            msg: "No Blocked Users",
+            msg: "No Blocked Contacts",
           )
         : ListView.builder(
             padding: EdgeInsets.symmetric(
@@ -203,9 +203,9 @@ class _BlockListState extends State<BlockList> {
   List<Widget> listActionSlideActions(CustomerProfile user, int index) {
     return [
       IconSlideAction(
-        caption: "UnBlock",
+        caption: "Unblock",
         color: Colors.green,
-        icon: Icons.block,
+        icon: Icons.thumb_up,
         onTap: () {
           unBlockUserAlert(user, index);
         },
@@ -216,8 +216,8 @@ class _BlockListState extends State<BlockList> {
   void unBlockUserAlert(CustomerProfile user, int index) async {
     bool result = await showDialogBox(
       context: context,
-      title: "UnBlock",
-      description: "Are You Sure Want To UnBlock ${user.fullName}",
+      title: "Unblock",
+      description: "Are You Sure Want To Unblock ${user.fullName}",
       actionOne: AppLocalization.of(context).yes,
       actionTwo: AppLocalization.of(context).no,
       type: AlertType.warning,
@@ -226,7 +226,7 @@ class _BlockListState extends State<BlockList> {
       bool done = await _auth.unBlockUser(user);
       done = true;
       if (done) {
-        _showSnackBar(context, "${user.fullName} is UnBlocked Successfully");
+        _showSnackBar(context, "${user.fullName} is Unblocked Successfully");
         setState(() {
           blockList.removeAt(index);
           if (blockList.length <= 9) {

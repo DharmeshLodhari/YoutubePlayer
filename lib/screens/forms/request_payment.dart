@@ -196,7 +196,7 @@ class _RequestPaymentState extends State<RequestPayment> {
 
   Widget displayQRCodeButton() {
     return Padding(
-      padding: const EdgeInsets.only(right: 4.0),
+      padding: const EdgeInsets.all(8),
       child: InkWell(
         onTap: () {
           Navigator.of(context)

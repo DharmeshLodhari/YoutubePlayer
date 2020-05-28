@@ -396,4 +396,12 @@ class _ComposeMessageState extends State<ComposeMessage> {
       },
     );
   }
+
+  @override
+  void dispose() {
+    _recipientController.dispose();
+    _recipientFocus.dispose();
+    _subjectController.dispose();
+    super.dispose();
+  }
 }

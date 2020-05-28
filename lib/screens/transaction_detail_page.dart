@@ -1,12 +1,11 @@
 import 'package:Slydo/data/currency.dart';
-import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/transactions.dart';
+import 'package:Slydo/services/auth.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:maps_launcher/maps_launcher.dart';
-import 'package:provider/provider.dart';
 
 import 'colors.dart';
 
@@ -22,9 +21,8 @@ class TransactionDetail extends StatefulWidget {
 class _TransactionDetailState extends State<TransactionDetail> {
   var arguments;
   Transaction transaction;
-  UserBloc userBloc;
-
   _TransactionDetailState({this.arguments});
+  final _auth = AuthService();
 
   @override
   void initState() {
@@ -47,7 +45,6 @@ class _TransactionDetailState extends State<TransactionDetail> {
 
   @override
   Widget build(BuildContext context) {
-    userBloc = Provider.of<UserBloc>(context);
     return WillPopScope(
       onWillPop: () async {
         return true;
@@ -94,6 +91,12 @@ class _TransactionDetailState extends State<TransactionDetail> {
         leading: getLeading(),
         title: getSender(),
         subtitle: getSubtitle(),
+        onTap: () async {
+          _auth.fetchCustomerProfile(transaction.payee).then((user) {
+            Navigator.pushNamed(context, '/profile',
+                arguments: {"searchedUser": user});
+          });
+        },
       ),
     );
   }

@@ -12,10 +12,8 @@ import '../colors.dart';
 // ignore: must_be_immutable
 class PaymentRequestTile extends StatefulWidget {
   final PaymentRequest paymentRequest;
-  bool isExpanded = false;
   Widget expandedWidget = Container();
-  PaymentRequestTile(
-      {this.paymentRequest, this.isExpanded, this.expandedWidget});
+  PaymentRequestTile({this.paymentRequest, this.expandedWidget});
 
   @override
   _PaymentRequestTileState createState() => _PaymentRequestTileState();
@@ -39,7 +37,7 @@ class _PaymentRequestTileState extends State<PaymentRequestTile> {
                     : getTrailing(),
                 subtitle: getSubtitle(context)),
           ),
-          widget.isExpanded ? widget.expandedWidget : Container(),
+          widget.expandedWidget
         ],
       ),
     );
@@ -142,9 +140,8 @@ class _PaymentRequestTileState extends State<PaymentRequestTile> {
 // ignore: must_be_immutable
 class TransactionTile extends StatefulWidget {
   final Transaction transaction;
-  bool isExpanded = false;
   Widget expandedWidget = Container();
-  TransactionTile({this.transaction, this.isExpanded, this.expandedWidget});
+  TransactionTile({this.transaction, this.expandedWidget});
 
   @override
   _TransactionTileState createState() => _TransactionTileState();
@@ -176,7 +173,7 @@ class _TransactionTileState extends State<TransactionTile> {
               },
             ),
           ),
-          widget.isExpanded ? widget.expandedWidget : Container(),
+          widget.expandedWidget,
         ],
       ),
     );

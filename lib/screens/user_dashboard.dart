@@ -537,7 +537,7 @@ class _UserDashboardState extends State<UserDashboard> {
                     ),
                     //TODO: APP LOCALIZATION
                     ListTile(
-                      title: Center(child: Text("My Contacts")),
+                      title: Center(child: Text("My Contacts/Request")),
                       onTap: () {
                         Navigator.pop(context);
                         Navigator.pushNamed(
@@ -618,9 +618,9 @@ class _UserDashboardState extends State<UserDashboard> {
             },
           ),
           CupertinoActionSheetAction(
-            child: Text("My Contacts"),
+            child: Text("My Contacts/Request"),
             onPressed: () {
-              Navigator.pop(context, "Contacts");
+              Navigator.pop(context, "My Contacts");
             },
           ),
         ],
@@ -682,14 +682,14 @@ class _UserDashboardState extends State<UserDashboard> {
             Navigator.pushNamed(context, '/profile',
                 arguments: {"searchedUser": user});
           });
-        } else if (value == "Update Avatar") {
+        } else if (value == "Update My Avatar") {
           pickImage(userBloc);
-        } else if (value == "Address") {
+        } else if (value == "My Address") {
           Navigator.pushNamed(
             context,
             '/user-address',
           );
-        } else if (value == "Contacts") {
+        } else if (value == "My Contacts") {
           Navigator.pushNamed(
             context,
             '/friends-dashboard',

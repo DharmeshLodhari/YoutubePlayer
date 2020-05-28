@@ -532,4 +532,10 @@ class _AddServiceState extends State<AddService> {
       ),
     );
   }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 }

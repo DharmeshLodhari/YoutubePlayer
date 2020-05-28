@@ -453,4 +453,10 @@ class _AddDocumentState extends State<AddDocument> {
       ],
     );
   }
+
+  @override
+  void dispose() {
+    _formsPageViewController.dispose();
+    super.dispose();
+  }
 }

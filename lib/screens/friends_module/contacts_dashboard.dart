@@ -1,25 +1,25 @@
 //TODO: APP LOCALIZATION
 import 'package:Slydo/screens/friends_module/block_list.dart';
-import 'package:Slydo/screens/friends_module/friend_request_list.dart';
-import 'package:Slydo/screens/friends_module/friends_list.dart';
+import 'package:Slydo/screens/friends_module/contact_request_list.dart';
+import 'package:Slydo/screens/friends_module/contacts_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:popup_menu/popup_menu.dart';
 
 import '../colors.dart';
 
-class FriendsDashboard extends StatefulWidget {
+class ContactsDashboard extends StatefulWidget {
   @override
-  _FriendsDashboardState createState() => _FriendsDashboardState();
+  _ContactsDashboardState createState() => _ContactsDashboardState();
 }
 
-class _FriendsDashboardState extends State<FriendsDashboard> {
+class _ContactsDashboardState extends State<ContactsDashboard> {
   int currentIndex = 0;
 
   //popupmenu variables
   PopupMenu popUpMenuWidget;
   GlobalKey popupMenuBtnKeyForMenu = GlobalKey();
-  var filterValue = "My Contacts";
+  var filterValue = "Contacts";
 
   void popUpMenu() {
     popUpMenuWidget = PopupMenu(
@@ -35,13 +35,13 @@ class _FriendsDashboardState extends State<FriendsDashboard> {
   List<MenuItem> getMenuItems() {
     var menuItems = [
       MenuItem(
-        textStyle: filterValue == 'My Contacts'
+        textStyle: filterValue == 'Contacts'
             ? TextStyle(color: lightBlue(), fontSize: 10)
             : TextStyle(color: Colors.white, fontSize: 10),
-        title: "My Contacts",
+        title: "Contacts",
         image: Icon(
           Icons.group,
-          color: filterValue == 'My Contacts' ? lightBlue() : Colors.white,
+          color: filterValue == 'Contacts' ? lightBlue() : Colors.white,
         ),
       ),
     ];
@@ -59,20 +59,19 @@ class _FriendsDashboardState extends State<FriendsDashboard> {
     );
     menuItems.add(
       MenuItem(
-          textStyle: filterValue == 'Blocked List'
+          textStyle: filterValue == 'Blocked'
               ? TextStyle(color: lightBlue(), fontSize: 10)
               : TextStyle(
                   color: Colors.white,
                   fontSize: 10,
                 ),
-          title: "Blocked List",
+          title: "Blocked",
           image: Stack(children: <Widget>[
             Center(
               child: Icon(
                 Icons.group,
-                color: filterValue == 'Blocked List'
-                    ? lightBlue()
-                    : Colors.grey[100],
+                color:
+                    filterValue == 'Blocked' ? lightBlue() : Colors.grey[100],
               ),
             ),
             Center(
@@ -94,11 +93,11 @@ class _FriendsDashboardState extends State<FriendsDashboard> {
   void onClickMenu(MenuItemProvider item) {
     setState(() {
       filterValue = item.menuTitle;
-      if (filterValue == "My Contacts") {
+      if (filterValue == "Contacts") {
         currentIndex = 0;
       } else if (filterValue == "Requests") {
         currentIndex = 1;
-      } else if (filterValue == "Blocked List") {
+      } else if (filterValue == "Blocked") {
         currentIndex = 2;
       }
     });
@@ -144,8 +143,8 @@ class _FriendsDashboardState extends State<FriendsDashboard> {
     return IndexedStack(
       index: currentIndex,
       children: [
-        FriendsList(),
-        FriendRequestList(),
+        ContactsList(),
+        ContactRequestList(),
         BlockList(),
       ],
     );

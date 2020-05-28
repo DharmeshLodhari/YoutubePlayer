@@ -478,38 +478,41 @@ class _VerticalListItemState extends State<VerticalListItem> {
         color: lightBlue(),
         child: PaymentRequestTile(
             paymentRequest: widget.paymentRequest,
-            isExpanded: isExpanded,
             expandedWidget: expandedWidget()),
       ),
     );
   }
 
   Widget expandedWidget() {
-    return Container(
-      height: 40,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Container(
-            height: 0.5,
-            color: darkBlue(),
-          ),
-          Expanded(
-            child: Row(
+    return AnimatedContainer(
+      duration: Duration(milliseconds: 300),
+      height: isExpanded ? 42 : 0,
+      curve: Curves.fastOutSlowIn,
+      child: isExpanded
+          ? Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                Expanded(child: sendMessageButton()),
                 Container(
-                  width: 0.5,
+                  height: 0.5,
                   color: darkBlue(),
-                  height: 40,
                 ),
-                Expanded(child: blockUserButton()),
+                Expanded(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Expanded(child: sendMessageButton()),
+                      Container(
+                        width: 0.5,
+                        color: darkBlue(),
+                        height: 40,
+                      ),
+                      Expanded(child: blockUserButton()),
+                    ],
+                  ),
+                ),
               ],
-            ),
-          ),
-        ],
-      ),
+            )
+          : Container(),
     );
   }
 

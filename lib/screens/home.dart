@@ -184,7 +184,7 @@ class _HomeState extends State<Home> {
 
   Widget displayQRCodeButton() {
     return Padding(
-      padding: const EdgeInsets.only(right: 4.0),
+      padding: const EdgeInsets.all(8),
       child: InkWell(
         onTap: () {
           Connectivity().checkConnectivity().then((value) {

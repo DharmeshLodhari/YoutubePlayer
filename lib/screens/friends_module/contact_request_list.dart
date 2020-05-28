@@ -14,25 +14,30 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:toast/toast.dart';
 
-class FriendsList extends StatefulWidget {
+class ContactRequestList extends StatefulWidget {
   @override
-  _FriendsListState createState() => _FriendsListState();
+  _ContactRequestListState createState() => _ContactRequestListState();
 }
 
-class _FriendsListState extends State<FriendsList> {
-  final GlobalKey<ScaffoldState> _scaffoldFriendsListKey =
+class _ContactRequestListState extends State<ContactRequestList> {
+  final GlobalKey<ScaffoldState> _scaffoldContactRequestListKey =
       new GlobalKey<ScaffoldState>();
   final _auth = AuthService();
   SlidableController slidableController;
   int count = 0;
   String next = "";
   String previous = "";
-  List friendsList = [];
+  List contactRequestList = [];
   ScrollController _scrollController = new ScrollController();
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isLoading = false;
   bool noItemInList = false;
+
+  // variables for to getting filter requestPaymentList
+  String filterValue = "all";
+  bool fromMe = false;
+  bool toMe = false;
 
   @protected
   void initState() {
@@ -60,7 +65,7 @@ class _FriendsListState extends State<FriendsList> {
         count = 0;
         next = "";
         previous = "";
-        friendsList = [];
+        contactRequestList = [];
         noItemInList = false;
         getList();
         _refreshController.refreshCompleted();
@@ -76,7 +81,7 @@ class _FriendsListState extends State<FriendsList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldFriendsListKey,
+      key: _scaffoldContactRequestListKey,
       backgroundColor: lightBlue(),
       body: SmartRefresher(
           enablePullDown: true,
@@ -93,20 +98,20 @@ class _FriendsListState extends State<FriendsList> {
   Widget _buildFriendsList() {
     return noItemInList
         ? NoItemInList(
-            msg: "Currently You Have No Any Friends",
+            msg: "Currently You Have No Any Contact Request",
           )
         : ListView.builder(
             padding: EdgeInsets.symmetric(
               vertical: 4,
             ),
             //+1 for progressbar
-            itemCount: friendsList.length + 1,
+            itemCount: contactRequestList.length + 1,
             itemBuilder: (BuildContext context, int index) {
-              if (index == friendsList.length) {
+              if (index == contactRequestList.length) {
                 return _buildIndicator();
               } else {
                 return _getSlidableWithLists(
-                    context, friendsList[index], index);
+                    context, contactRequestList[index], index);
               }
             },
             controller: _scrollController,
@@ -138,7 +143,8 @@ class _FriendsListState extends State<FriendsList> {
             isLoading = true;
           });
         }
-        Map<String, dynamic> result = await _auth.listFriends(next, previous);
+        Map<String, dynamic> result =
+            await _auth.listFriendRequests(next, previous);
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
@@ -155,18 +161,18 @@ class _FriendsListState extends State<FriendsList> {
         if (mounted) {
           setState(() {
             isLoading = false;
-            friendsList.addAll(convertedIntoUserList);
+            contactRequestList.addAll(convertedIntoUserList);
           });
         }
       }
-      if (friendsList.isEmpty) {
+      if (contactRequestList.isEmpty) {
         if (mounted) {
           setState(() {
             noItemInList = true;
           });
         }
-      } else if (next == null && friendsList.length > 6) {
-        _scaffoldFriendsListKey.currentState.showSnackBar(SnackBar(
+      } else if (next == null && contactRequestList.length > 6) {
+        _scaffoldContactRequestListKey.currentState.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
@@ -187,53 +193,55 @@ class _FriendsListState extends State<FriendsList> {
   void handleSlideIsOpenChanged(bool isOpen) {}
 
   void _showSnackBar(BuildContext context, String text) {
-    _scaffoldFriendsListKey.currentState
+    _scaffoldContactRequestListKey.currentState
         .showSnackBar(SnackBar(content: Text(text)));
   }
 
   List<Widget> listSecondaryActions(CustomerProfile user, int index) {
+    String caption = "Reject";
+
     return [
       IconSlideAction(
-        caption: "Block",
-        color: Colors.red,
-        icon: Icons.block,
-        onTap: () {
-          blockUserAlert(user, index);
-        },
-      ),
+          caption: caption,
+          color: Colors.red,
+          icon: Icons.cancel,
+          onTap: () async {
+            rejectRequestAlert(user, index);
+          }),
     ];
   }
 
   List<Widget> listActionSlideActions(CustomerProfile user, int index) {
     return [
       IconSlideAction(
-        caption: "UnFriend",
-        color: Colors.red,
-        icon: Icons.remove_circle,
+        caption: "Accept",
+        color: Colors.green,
+        icon: Icons.group_add,
         onTap: () {
-          unFriendUserAlert(user, index);
+          acceptFriendRequestAlert(user, index);
         },
       ),
     ];
   }
 
-  void blockUserAlert(CustomerProfile user, int index) async {
+  void rejectRequestAlert(CustomerProfile user, int index) async {
     bool result = await showDialogBox(
       context: context,
-      title: "Block",
-      description: "Are You Sure Want To Block ${user.fullName}",
+      title: "Reject",
+      description: "Are You Sure Want To Reject Request From ${user.fullName}",
       actionOne: AppLocalization.of(context).yes,
       actionTwo: AppLocalization.of(context).no,
       type: AlertType.warning,
     );
     if (result) {
-      bool done = await _auth.blockUser(user);
+      bool done = await _auth.rejectFriendRequest(user);
       done = true;
       if (done) {
-        _showSnackBar(context, "${user.fullName} is Blocked Successfully");
+        _showSnackBar(
+            context, "Request From ${user.fullName} is Rejected Successfully");
         setState(() {
-          friendsList.removeAt(index);
-          if (friendsList.length <= 9) {
+          contactRequestList.removeAt(index);
+          if (contactRequestList.length <= 9) {
             getList();
           }
         });
@@ -243,23 +251,22 @@ class _FriendsListState extends State<FriendsList> {
     }
   }
 
-  Future<void> unFriendUserAlert(CustomerProfile user, int index) async {
+  Future<void> acceptFriendRequestAlert(CustomerProfile user, int index) async {
     bool result = await showDialogBox(
       context: context,
-      title: "UnFriend",
-      description: "Are You Sure Want To Unfriend ${user.fullName}",
+      title: "Accept",
+      description: "Are You Sure Want To Accept ${user.fullName} as Friend",
       actionOne: AppLocalization.of(context).yes,
       actionTwo: AppLocalization.of(context).no,
       type: AlertType.warning,
     );
     if (result) {
-      bool done = await _auth.unFriendUser(user);
+      bool done = await _auth.acceptFriendRequest(user);
       if (done) {
-        _showSnackBar(
-            context, "${user.fullName} is Removed From Your Friend List");
+        _showSnackBar(context, "${user.fullName} is Added to Your Friend List");
         setState(() {
-          friendsList.removeAt(index);
-          if (friendsList.length <= 9) {
+          contactRequestList.removeAt(index);
+          if (contactRequestList.length <= 9) {
             getList();
           }
         });
@@ -291,8 +298,10 @@ class VerticalListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, '/profile',
-          arguments: {"searchedUser": user}),
+      onTap: () =>
+          Slidable.of(context)?.renderingMode == SlidableRenderingMode.none
+              ? Slidable.of(context)?.open()
+              : Slidable.of(context)?.close(),
       child: Container(
         color: lightBlue(),
         child: CustomerTile(user: user),

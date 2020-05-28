@@ -590,4 +590,10 @@ class _AddProductState extends State<AddProduct> {
       ),
     );
   }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 }

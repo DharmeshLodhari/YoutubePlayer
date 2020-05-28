@@ -815,4 +815,14 @@ class _EditProductState extends State<EditProduct> {
       });
     }
   }
+
+  @override
+  void dispose() {
+    productTitleController.dispose();
+    productDescriptionController.dispose();
+    productShortDescriptionController.dispose();
+    productManufacturerController.dispose();
+    productPriceController.dispose();
+    super.dispose();
+  }
 }
