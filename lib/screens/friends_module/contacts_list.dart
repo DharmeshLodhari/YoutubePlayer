@@ -303,7 +303,7 @@ class VerticalListItem extends StatelessWidget {
           arguments: {"searchedUser": user}),
       child: Container(
         color: lightBlue(),
-        child: CustomerTile(user: user),
+        child: UserTile(user: user),
       ),
     );
   }

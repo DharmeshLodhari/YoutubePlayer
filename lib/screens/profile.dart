@@ -27,7 +27,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
   _ProfileState({this.arguments});
   TabController _tabController;
   int currentIndex = 0;
-  CustomerProfile searchedUser;
+  CustomerProfile user;
 
   // this variable will responsible for is the user is owner of the products and add
   // edit button on the product if user is owner
@@ -109,11 +109,11 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
 
   @override
   void initState() {
-    searchedUser = arguments['searchedUser'];
-    debugPrint(searchedUser.fullName);
-    debugPrint(searchedUser.userName);
-    debugPrint(searchedUser.qrCode);
-    debugPrint(searchedUser.avatar);
+    user = arguments['searchedUser'];
+    debugPrint(user.fullName);
+    debugPrint(user.userName);
+    debugPrint(user.qrCode);
+    debugPrint(user.avatar);
 
     this.getProductList();
     _productScrollController.addListener(() {
@@ -139,7 +139,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
 
-    if (userBloc.user.userName == searchedUser.userName) {
+    if (userBloc.user.userName == user.userName) {
       isOwner = true;
     }
 
@@ -152,17 +152,17 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                   pinned: true,
                   expandedHeight: 220.0,
                   actions: actionButtons(),
-                  title: Text(searchedUser.userName),
+                  title: Text(user.userName),
                   titleSpacing: 0,
                   flexibleSpace: FlexibleSpaceBar(
                       centerTitle: true,
-                      title: Text(searchedUser.fullName,
+                      title: Text(user.fullName,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 20.0,
                           )),
                       background: Image.network(
-                        searchedUser.avatar,
+                        user.avatar,
                         fit: BoxFit.cover,
                       ))),
               SliverPersistentHeader(
@@ -228,7 +228,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
               ),
               onPressed: () {
                 Navigator.of(context).pushNamed('/compose_message', arguments: {
-                  'recipient': searchedUser.userName,
+                  'recipient': user.userName,
                   'subject': "",
                 });
               },
@@ -434,7 +434,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
         });
         Map<String, dynamic> result = await _auth.listProductsBySeller(
             productNext, productPrevious,
-            userId: searchedUser.userName);
+            userId: user.userName);
         productCount = result['count'];
         productNext = result['next'];
         productPrevious = result['previous'];
@@ -525,7 +525,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
         });
         Map<String, dynamic> result = await _auth.listServicesByProvider(
             serviceNext, servicePrevious,
-            userId: searchedUser.userName);
+            userId: user.userName);
         serviceCount = result['count'];
         serviceNext = result['next'];
         servicePrevious = result['previous'];
@@ -571,7 +571,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
             colorBlendMode: BlendMode.darken,
             fit: BoxFit.cover,
             filterQuality: FilterQuality.high,
-            placeholder: (context, url) => searchedUser.avatar == ""
+            placeholder: (context, url) => user.avatar == ""
                 ? Icon(Icons.person)
                 : CircularProgressIndicator(
                     strokeWidth: 2.5,

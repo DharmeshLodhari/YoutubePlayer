@@ -413,24 +413,40 @@ class _ShoppingCartState extends State<ShoppingCart> {
                   var response =
                       await _auth.makePaymentForCartOrder({"orders": orders});
                   if (response.statusCode == 200) {
-                    Navigator.popAndPushNamed(context, '/orders-list');
+                    Navigator.popAndPushNamed(
+                      context,
+                      '/orders-list',
+                    );
                   } else if (response.statusCode == 500) {
                     Navigator.pop(context);
-                    Toast.show(AppLocalization.of(context).serverError, context,
-                        gravity: Toast.TOP,
-                        backgroundColor: darkBlue(),
-                        textColor: Colors.white);
+                    Toast.show(
+                      AppLocalization.of(context).serverError,
+                      context,
+                      gravity: Toast.TOP,
+                      backgroundColor: darkBlue(),
+                      textColor: Colors.white,
+                    );
                   } else if (response.statusCode == 700) {
                     Navigator.pop(context);
-                    Navigator.pushNamed(context, "/bvn-verification");
+                    Navigator.pushNamed(
+                      context,
+                      "/bvn-verification",
+                    );
                   } else if (response.statusCode == 800) {
                     Navigator.pop(context);
-                    Navigator.pushNamed(context, "/add-document");
+                    Navigator.pushNamed(
+                      context,
+                      "/add-document",
+                    );
                   } else {
-                    debugPrint("MakePaymentForCartOrder Unsuccessful");
+                    debugPrint(
+                      "MakePaymentForCartOrder Unsuccessful",
+                    );
                   }
                 } else {
-                  debugPrint("Could Not Place The Order");
+                  debugPrint(
+                    "Could Not Place The Order",
+                  );
                 }
               },
               cancelCallBack: () {

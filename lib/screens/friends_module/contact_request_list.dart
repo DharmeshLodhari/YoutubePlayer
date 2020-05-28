@@ -34,11 +34,6 @@ class _ContactRequestListState extends State<ContactRequestList> {
   bool isLoading = false;
   bool noItemInList = false;
 
-  // variables for to getting filter requestPaymentList
-  String filterValue = "all";
-  bool fromMe = false;
-  bool toMe = false;
-
   @protected
   void initState() {
     this.getList();
@@ -311,7 +306,7 @@ class VerticalListItem extends StatelessWidget {
               : Slidable.of(context)?.close(),
       child: Container(
         color: lightBlue(),
-        child: CustomerTile(user: user),
+        child: UserTile(user: user),
       ),
     );
   }

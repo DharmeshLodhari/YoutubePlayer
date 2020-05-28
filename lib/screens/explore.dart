@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/colors.dart';
-import 'package:Slydo/screens/tiles/user.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:flutter/material.dart';
 
@@ -87,10 +86,13 @@ class _ExploreListState extends State<ExploreList> {
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return ListView.builder(
-                    itemCount: snapshot.data.length,
-                    itemBuilder: (BuildContext context, int index) => UserTile(
-                          user: snapshot.data[index],
-                        ));
+                  itemCount: snapshot.data.length,
+                  itemBuilder: (BuildContext context, int index) => Container(
+                    height: 50,
+                    width: double.infinity,
+                    color: Colors.white,
+                  ),
+                );
               }
               return LoadingIndicator();
             })
