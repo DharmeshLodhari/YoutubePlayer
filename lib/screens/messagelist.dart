@@ -511,7 +511,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
             width: 10,
           ),
           Text(
-            "Message",
+            AppLocalization.of(context).message,
             style: TextStyle(color: darkBlue()),
           ),
         ],
@@ -551,7 +551,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
             width: 10,
           ),
           Text(
-            "Block User",
+            AppLocalization.of(context).blockUser,
             style: TextStyle(color: Colors.redAccent),
           ),
         ],
@@ -563,9 +563,12 @@ class _VerticalListItemState extends State<VerticalListItem> {
               isExpanded = false;
             });
             if (result) {
-              Toast.show("${widget.partialMessage.sender} is Blocked", context);
+              Toast.show(
+                  "${widget.partialMessage.sender} " +
+                      AppLocalization.of(context).isBlocked,
+                  context);
             } else {
-              Toast.show("Error occurs", context);
+              Toast.show(AppLocalization.of(context).error, context);
             }
           });
         });

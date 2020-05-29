@@ -155,7 +155,10 @@ class _UserInfoState extends State<UserInfo> {
                           height: double.infinity,
                           child: InkWell(
                             onTap: () {
-                              Toast.show("Friend Request Sent", context,
+                              Toast.show(
+                                  AppLocalization.of(context)
+                                      .contactRequestSent,
+                                  context,
                                   gravity: Toast.CENTER,
                                   duration: Toast.LENGTH_LONG,
                                   backgroundColor: darkBlue());
@@ -168,7 +171,7 @@ class _UserInfoState extends State<UserInfo> {
                                   width: 8,
                                 ),
                                 Text(
-                                  "Add Contact",
+                                  AppLocalization.of(context).addContact,
                                   style: TextStyle(
                                       color: Colors.black, fontSize: 14),
                                 ),
@@ -187,7 +190,10 @@ class _UserInfoState extends State<UserInfo> {
                           height: double.infinity,
                           child: InkWell(
                             onTap: () {
-                              Toast.show("${user.fullName} is Blocked", context,
+                              Toast.show(
+                                  "${user.fullName} " +
+                                      AppLocalization.of(context).isBlocked,
+                                  context,
                                   gravity: Toast.CENTER,
                                   duration: Toast.LENGTH_LONG,
                                   backgroundColor: darkBlue(),
@@ -212,7 +218,7 @@ class _UserInfoState extends State<UserInfo> {
                                   width: 8,
                                 ),
                                 Text(
-                                  "Block User",
+                                  AppLocalization.of(context).blockUser,
                                   style: TextStyle(color: Colors.redAccent),
                                 ),
                               ],

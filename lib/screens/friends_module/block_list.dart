@@ -1,4 +1,3 @@
-//TODO: APP LOCALIZATION
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:Slydo/screens/colors.dart';
@@ -93,7 +92,7 @@ class _BlockListState extends State<BlockList> {
   Widget _buildFriendsList() {
     return noItemInList
         ? NoItemInList(
-            msg: "No Blocked Contacts",
+            msg: AppLocalization.of(context).noBlockedContacts,
           )
         : ListView.builder(
             padding: EdgeInsets.symmetric(
@@ -198,7 +197,7 @@ class _BlockListState extends State<BlockList> {
   List<Widget> listActionSlideActions(CustomerProfile user, int index) {
     return [
       IconSlideAction(
-        caption: "Unblock",
+        caption: AppLocalization.of(context).unblock,
         color: Colors.green,
         icon: Icons.thumb_up,
         onTap: () {
@@ -211,8 +210,9 @@ class _BlockListState extends State<BlockList> {
   void unBlockUserAlert(CustomerProfile user, int index) async {
     bool result = await showDialogBox(
       context: context,
-      title: "Unblock",
-      description: "Are You Sure Want To Unblock ${user.fullName}",
+      title: AppLocalization.of(context).unblock,
+      description: AppLocalization.of(context).areYouSureWantToUnblock +
+          " ${user.fullName}",
       actionOne: AppLocalization.of(context).yes,
       actionTwo: AppLocalization.of(context).no,
       type: AlertType.warning,
@@ -221,7 +221,10 @@ class _BlockListState extends State<BlockList> {
       bool done = await _auth.unBlockUser(user);
       done = true;
       if (done) {
-        _showSnackBar(context, "${user.fullName} is Unblocked Successfully");
+        _showSnackBar(
+            context,
+            "${user.fullName} " +
+                AppLocalization.of(context).isUnblockedSuccessfully);
         setState(() {
           blockList.removeAt(index);
           if (blockList.length <= 9) {

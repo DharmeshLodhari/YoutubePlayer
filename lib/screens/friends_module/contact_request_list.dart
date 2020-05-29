@@ -1,4 +1,3 @@
-//TODO: APP LOCALIZATION
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:Slydo/screens/colors.dart';
@@ -93,7 +92,8 @@ class _ContactRequestListState extends State<ContactRequestList> {
   Widget _buildFriendsList() {
     return noItemInList
         ? NoItemInList(
-            msg: "Currently You Have No Any Contact Request",
+            msg:
+                AppLocalization.of(context).currentlyYouHaveNoAnyContactRequest,
           )
         : ListView.builder(
             padding: EdgeInsets.symmetric(
@@ -193,7 +193,7 @@ class _ContactRequestListState extends State<ContactRequestList> {
   }
 
   List<Widget> listSecondaryActions(CustomerProfile user, int index) {
-    String caption = "Reject";
+    String caption = AppLocalization.of(context).reject;
 
     return [
       IconSlideAction(
@@ -209,7 +209,7 @@ class _ContactRequestListState extends State<ContactRequestList> {
   List<Widget> listActionSlideActions(CustomerProfile user, int index) {
     return [
       IconSlideAction(
-        caption: "Accept",
+        caption: AppLocalization.of(context).accept,
         color: Colors.green,
         icon: Icons.group_add,
         onTap: () {
@@ -222,8 +222,10 @@ class _ContactRequestListState extends State<ContactRequestList> {
   void rejectRequestAlert(CustomerProfile user, int index) async {
     bool result = await showDialogBox(
       context: context,
-      title: "Reject",
-      description: "Are You Sure Want To Reject Request From ${user.fullName}",
+      title: AppLocalization.of(context).reject,
+      description:
+          AppLocalization.of(context).areYouSureWantToRejectRequestFrom +
+              " ${user.fullName}",
       actionOne: AppLocalization.of(context).yes,
       actionTwo: AppLocalization.of(context).no,
       type: AlertType.warning,
@@ -233,7 +235,10 @@ class _ContactRequestListState extends State<ContactRequestList> {
       done = true;
       if (done) {
         _showSnackBar(
-            context, "Request From ${user.fullName} is Rejected Successfully");
+            context,
+            AppLocalization.of(context).requestFrom +
+                " ${user.fullName} " +
+                AppLocalization.of(context).isRejectedSuccessfully);
         setState(() {
           contactRequestList.removeAt(index);
           if (contactRequestList.length <= 9) {
@@ -249,8 +254,10 @@ class _ContactRequestListState extends State<ContactRequestList> {
   Future<void> acceptFriendRequestAlert(CustomerProfile user, int index) async {
     bool result = await showDialogBox(
       context: context,
-      title: "Accept",
-      description: "Are You Sure Want To Accept ${user.fullName} as Friend",
+      title: AppLocalization.of(context).accept,
+      description: AppLocalization.of(context).areYouSureWantToAdd +
+          " ${user.fullName} " +
+          AppLocalization.of(context).inYourContacts,
       actionOne: AppLocalization.of(context).yes,
       actionTwo: AppLocalization.of(context).no,
       type: AlertType.warning,
@@ -258,7 +265,10 @@ class _ContactRequestListState extends State<ContactRequestList> {
     if (result) {
       bool done = await _auth.acceptFriendRequest(user);
       if (done) {
-        _showSnackBar(context, "${user.fullName} is Added to Your Friend List");
+        _showSnackBar(
+            context,
+            "${user.fullName} " +
+                AppLocalization.of(context).isAddedToYourContactList);
         setState(() {
           contactRequestList.removeAt(index);
           if (contactRequestList.length <= 9) {

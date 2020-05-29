@@ -747,7 +747,7 @@ class AppLocalization {
 
   String get archive {
     return Intl.message(
-      "",
+      "Archive",
       name: "archive",
     );
   }
@@ -2129,6 +2129,200 @@ class AppLocalization {
     return Intl.message(
       "Putting Misleading Info May Results In Delays Or Lost of Money.",
       name: "bankAccountUserAgreeTerm",
+    );
+  }
+
+  //block_list
+  String get noBlockedContacts {
+    return Intl.message(
+      "No Blocked Contacts",
+      name: "noBlockedContacts",
+    );
+  }
+
+  String get unblock {
+    return Intl.message(
+      "Unblock",
+      name: "unblock",
+    );
+  }
+
+  String get areYouSureWantToUnblock {
+    return Intl.message(
+      "Are You Sure Want To Unblock",
+      name: "areYouSureWantToUnblock",
+    );
+  }
+
+  String get isUnblockedSuccessfully {
+    return Intl.message(
+      "is Unblocked Successfully",
+      name: "isUnblockedSuccessfully",
+    );
+  }
+
+  //contact_request_list
+  String get currentlyYouHaveNoAnyContactRequest {
+    return Intl.message(
+      "Currently You Have No Any Contact Request",
+      name: "currentlyYouHaveNoAnyContactRequest",
+    );
+  }
+
+  String get areYouSureWantToRejectRequestFrom {
+    return Intl.message(
+      "Are You Sure Want To Reject Request From",
+      name: "areYouSureWantToRejectRequestFrom",
+    );
+  }
+
+  String get requestFrom {
+    return Intl.message(
+      "Request From",
+      name: "requestFrom",
+    );
+  }
+
+  String get isRejectedSuccessfully {
+    return Intl.message(
+      "is Rejected Successfully",
+      name: "isRejectedSuccessfully",
+    );
+  }
+
+  String get areYouSureWantToAdd {
+    return Intl.message(
+      "Are You Sure Want To Add",
+      name: "areYouSureWantToAdd",
+    );
+  }
+
+  String get inYourContacts {
+    return Intl.message(
+      "In Your Contacts",
+      name: "inYourContacts",
+    );
+  }
+
+  String get isAddedToYourContactList {
+    return Intl.message(
+      "is Added to your Contact List",
+      name: "isAddedToYourContactList",
+    );
+  }
+
+  //contacts_dashboard
+  String get contacts {
+    return Intl.message(
+      "Contacts",
+      name: "contacts",
+    );
+  }
+
+  String get blocked {
+    return Intl.message(
+      "Blocked",
+      name: "blocked",
+    );
+  }
+
+  //contacts_list
+  String get currentlyYouHaveNoAnyContacts {
+    return Intl.message(
+      "Currently You Have No Any Contacts",
+      name: "currentlyYouHaveNoAnyContacts",
+    );
+  }
+
+  String get block {
+    return Intl.message(
+      "Block",
+      name: "block",
+    );
+  }
+
+  String get areYouSureWantToBlock {
+    return Intl.message(
+      "Are You Sure Want To Block",
+      name: "areYouSureWantToBlock",
+    );
+  }
+
+  String get isBlockedSuccessfully {
+    return Intl.message(
+      "is blocked Successfully",
+      name: "isBlockedSuccessfully",
+    );
+  }
+
+  String get areYouSureWantToDelete {
+    return Intl.message(
+      "Are You Sure Want To Delete",
+      name: "areYouSureWantToDelete",
+    );
+  }
+
+  String get fromYouContactList {
+    return Intl.message(
+      "From Your Contact List",
+      name: "fromYouContactList",
+    );
+  }
+
+  String get isRemovedSuccessfully {
+    return Intl.message(
+      "is Removed From Contact List Successfully",
+      name: "isRemovedSuccessfully",
+    );
+  }
+
+  String get blockUser {
+    return Intl.message(
+      "Block User",
+      name: "blockUser",
+    );
+  }
+
+  String get isBlocked {
+    return Intl.message(
+      "is Blocked",
+      name: "isBlocked",
+    );
+  }
+
+  //user_dashboard
+  String get updateMyAvatar {
+    return Intl.message(
+      "Update My Avatar",
+      name: "updateMyAvatar",
+    );
+  }
+
+  String get myAddress {
+    return Intl.message(
+      "My Address",
+      name: "myAddress",
+    );
+  }
+
+  String get myContactsAndRequest {
+    return Intl.message(
+      "My Contacts/Request",
+      name: "myContactsAndRequest",
+    );
+  }
+
+  String get addContact {
+    return Intl.message(
+      "Add Contact",
+      name: "addContact",
+    );
+  }
+
+  String get contactRequestSent {
+    return Intl.message(
+      "Contact Request Sent",
+      name: "contactRequestSent",
     );
   }
 }

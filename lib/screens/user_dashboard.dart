@@ -515,7 +515,7 @@ class _UserDashboardState extends State<UserDashboard> {
                     ),
                     ListTile(
                       title: Center(
-                        child: Text("Update My Avatar"),
+                        child: Text(AppLocalization.of(context).updateMyAvatar),
                       ),
                       onTap: () {
                         Navigator.pop(context);
@@ -524,7 +524,7 @@ class _UserDashboardState extends State<UserDashboard> {
                     ),
                     ListTile(
                       title: Center(
-                        child: Text("My Address"),
+                        child: Text(AppLocalization.of(context).myAddress),
                       ),
                       onTap: () {
                         Navigator.pop(context);
@@ -534,9 +534,10 @@ class _UserDashboardState extends State<UserDashboard> {
                         );
                       },
                     ),
-                    //TODO: APP LOCALIZATION
                     ListTile(
-                      title: Center(child: Text("My Contacts/Request")),
+                      title: Center(
+                          child: Text(AppLocalization.of(context)
+                              .myContactsAndRequest)),
                       onTap: () {
                         Navigator.pop(context);
                         Navigator.pushNamed(
@@ -605,19 +606,19 @@ class _UserDashboardState extends State<UserDashboard> {
             },
           ),
           CupertinoActionSheetAction(
-            child: Text("Update My Avatar"),
+            child: Text(AppLocalization.of(context).updateMyAvatar),
             onPressed: () {
               Navigator.pop(context, 'Update My Avatar');
             },
           ),
           CupertinoActionSheetAction(
-            child: Text("My Address"),
+            child: Text(AppLocalization.of(context).myAddress),
             onPressed: () {
               Navigator.pop(context, 'My Address');
             },
           ),
           CupertinoActionSheetAction(
-            child: Text("My Contacts/Request"),
+            child: Text(AppLocalization.of(context).myContactsAndRequest),
             onPressed: () {
               Navigator.pop(context, "My Contacts");
             },

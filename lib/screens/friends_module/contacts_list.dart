@@ -1,4 +1,3 @@
-//TODO: APP LOCALIZATION
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:Slydo/screens/colors.dart';
@@ -93,7 +92,7 @@ class _ContactsListState extends State<ContactsList> {
   Widget _buildFriendsList() {
     return noItemInList
         ? NoItemInList(
-            msg: "Currently You Have No Any Contacts",
+            msg: AppLocalization.of(context).currentlyYouHaveNoAnyContacts,
           )
         : ListView.builder(
             padding: EdgeInsets.symmetric(
@@ -194,7 +193,7 @@ class _ContactsListState extends State<ContactsList> {
   List<Widget> listSecondaryActions(CustomerProfile user, int index) {
     return [
       IconSlideAction(
-        caption: "Block",
+        caption: AppLocalization.of(context).block,
         color: Colors.grey[600],
         icon: Icons.block,
         onTap: () {
@@ -207,7 +206,7 @@ class _ContactsListState extends State<ContactsList> {
   List<Widget> listActionSlideActions(CustomerProfile user, int index) {
     return [
       IconSlideAction(
-        caption: "Delete",
+        caption: AppLocalization.of(context).delete,
         color: Colors.red,
         icon: Icons.remove_circle,
         onTap: () {
@@ -220,8 +219,9 @@ class _ContactsListState extends State<ContactsList> {
   void blockUserAlert(CustomerProfile user, int index) async {
     bool result = await showDialogBox(
       context: context,
-      title: "Block",
-      description: "Are You Sure Want To Block ${user.fullName}",
+      title: AppLocalization.of(context).block,
+      description: AppLocalization.of(context).areYouSureWantToBlock +
+          " ${user.fullName}",
       actionOne: AppLocalization.of(context).yes,
       actionTwo: AppLocalization.of(context).no,
       type: AlertType.warning,
@@ -230,7 +230,10 @@ class _ContactsListState extends State<ContactsList> {
       bool done = await _auth.blockUser(user);
       done = true;
       if (done) {
-        _showSnackBar(context, "${user.fullName} is Blocked Successfully");
+        _showSnackBar(
+            context,
+            "${user.fullName} " +
+                AppLocalization.of(context).isBlockedSuccessfully);
         setState(() {
           contactsList.removeAt(index);
           if (contactsList.length <= 9) {
@@ -246,9 +249,10 @@ class _ContactsListState extends State<ContactsList> {
   Future<void> unFriendUserAlert(CustomerProfile user, int index) async {
     bool result = await showDialogBox(
       context: context,
-      title: "Delete",
-      description:
-          "Are You Sure You Want To Delete ${user.fullName} From Your Contacts",
+      title: AppLocalization.of(context).delete,
+      description: AppLocalization.of(context).areYouSureWantToDelete +
+          " ${user.fullName} " +
+          AppLocalization.of(context).fromYouContactList,
       actionOne: AppLocalization.of(context).yes,
       actionTwo: AppLocalization.of(context).no,
       type: AlertType.warning,
@@ -257,7 +261,9 @@ class _ContactsListState extends State<ContactsList> {
       bool done = await _auth.unFriendUser(user);
       if (done) {
         _showSnackBar(
-            context, "${user.fullName} is Removed From Your Contacts List");
+            context,
+            "${user.fullName} " +
+                AppLocalization.of(context).isRemovedSuccessfully);
         setState(() {
           contactsList.removeAt(index);
           if (contactsList.length <= 9) {

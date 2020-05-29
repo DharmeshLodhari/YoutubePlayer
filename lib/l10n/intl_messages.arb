@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2020-05-22T20:30:54.354235",
+  "@@last_modified": "2020-05-29T13:46:13.280106",
   "addBankAccountMsg": "Add A Bank Account",
   "@addBankAccountMsg": {
     "type": "text",
@@ -505,7 +505,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "archive": "",
+  "archive": "Archive",
   "@archive": {
     "type": "text",
     "placeholders": {}
@@ -1467,6 +1467,141 @@
   },
   "bankAccountUserAgreeTerm": "Putting Misleading Info May Results In Delays Or Lost of Money.",
   "@bankAccountUserAgreeTerm": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "noBlockedContacts": "No Blocked Contacts",
+  "@noBlockedContacts": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "unblock": "Unblock",
+  "@unblock": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "areYouSureWantToUnblock": "Are You Sure Want To Unblock",
+  "@areYouSureWantToUnblock": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "isUnblockedSuccessfully": "is Unblocked Successfully",
+  "@isUnblockedSuccessfully": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "currentlyYouHaveNoAnyContactRequest": "Currently You Have No Any Contact Request",
+  "@currentlyYouHaveNoAnyContactRequest": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "areYouSureWantToRejectRequestFrom": "Are You Sure Want To Reject Request From",
+  "@areYouSureWantToRejectRequestFrom": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "requestFrom": "Request From",
+  "@requestFrom": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "isRejectedSuccessfully": "is Rejected Successfully",
+  "@isRejectedSuccessfully": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "areYouSureWantToAdd": "Are You Sure Want To Add",
+  "@areYouSureWantToAdd": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "inYourContacts": "In Your Contacts",
+  "@inYourContacts": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "isAddedToYourContactList": "is Added to your Contact List",
+  "@isAddedToYourContactList": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "contacts": "Contacts",
+  "@contacts": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "blocked": "Blocked",
+  "@blocked": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "currentlyYouHaveNoAnyContacts": "Currently You Have No Any Contacts",
+  "@currentlyYouHaveNoAnyContacts": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "block": "Block",
+  "@block": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "areYouSureWantToBlock": "Are You Sure Want To Block",
+  "@areYouSureWantToBlock": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "isBlockedSuccessfully": "is blocked Successfully",
+  "@isBlockedSuccessfully": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "areYouSureWantToDelete": "Are You Sure Want To Delete",
+  "@areYouSureWantToDelete": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "fromYouContactList": "From Your Contact List",
+  "@fromYouContactList": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "isRemovedSuccessfully": "is Removed From Contact List Successfully",
+  "@isRemovedSuccessfully": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "blockUser": "Block User",
+  "@blockUser": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "isBlocked": "is Blocked",
+  "@isBlocked": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "updateMyAvatar": "Update My Avatar",
+  "@updateMyAvatar": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "myAddress": "My Address",
+  "@myAddress": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "myContactsAndRequest": "My Contacts/Request",
+  "@myContactsAndRequest": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "addContact": "Add Contact",
+  "@addContact": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "contactRequestSent": "Contact Request Sent",
+  "@contactRequestSent": {
     "type": "text",
     "placeholders": {}
   }

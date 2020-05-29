@@ -1,4 +1,4 @@
-//TODO: APP LOCALIZATION
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/friends_module/block_list.dart';
 import 'package:Slydo/screens/friends_module/contact_request_list.dart';
 import 'package:Slydo/screens/friends_module/contacts_list.dart';
@@ -35,43 +35,48 @@ class _ContactsDashboardState extends State<ContactsDashboard> {
   List<MenuItem> getMenuItems() {
     var menuItems = [
       MenuItem(
-        textStyle: filterValue == 'Contacts'
+        textStyle: filterValue == AppLocalization.of(context).contacts
             ? TextStyle(color: lightBlue(), fontSize: 10)
             : TextStyle(color: Colors.white, fontSize: 10),
-        title: "Contacts",
+        title: AppLocalization.of(context).contacts,
         image: Icon(
           Icons.group,
-          color: filterValue == 'Contacts' ? lightBlue() : Colors.white,
+          color: filterValue == AppLocalization.of(context).contacts
+              ? lightBlue()
+              : Colors.white,
         ),
       ),
     ];
 
     menuItems.add(
       MenuItem(
-          textStyle: filterValue == 'Requests'
+          textStyle: filterValue == AppLocalization.of(context).requests
               ? TextStyle(color: lightBlue(), fontSize: 10)
               : TextStyle(color: Colors.white, fontSize: 10),
-          title: "Requests",
+          title: AppLocalization.of(context).requests,
           image: Icon(
             Icons.group_add,
-            color: filterValue == 'Requests' ? lightBlue() : Colors.white,
+            color: filterValue == AppLocalization.of(context).requests
+                ? lightBlue()
+                : Colors.white,
           )),
     );
     menuItems.add(
       MenuItem(
-          textStyle: filterValue == 'Blocked'
+          textStyle: filterValue == AppLocalization.of(context).blocked
               ? TextStyle(color: lightBlue(), fontSize: 10)
               : TextStyle(
                   color: Colors.white,
                   fontSize: 10,
                 ),
-          title: "Blocked",
+          title: AppLocalization.of(context).blocked,
           image: Stack(children: <Widget>[
             Center(
               child: Icon(
                 Icons.group,
-                color:
-                    filterValue == 'Blocked' ? lightBlue() : Colors.grey[100],
+                color: filterValue == AppLocalization.of(context).blocked
+                    ? lightBlue()
+                    : Colors.grey[100],
               ),
             ),
             Center(
@@ -93,11 +98,11 @@ class _ContactsDashboardState extends State<ContactsDashboard> {
   void onClickMenu(MenuItemProvider item) {
     setState(() {
       filterValue = item.menuTitle;
-      if (filterValue == "Contacts") {
+      if (filterValue == AppLocalization.of(context).contacts) {
         currentIndex = 0;
-      } else if (filterValue == "Requests") {
+      } else if (filterValue == AppLocalization.of(context).requests) {
         currentIndex = 1;
-      } else if (filterValue == "Blocked") {
+      } else if (filterValue == AppLocalization.of(context).blocked) {
         currentIndex = 2;
       }
     });
@@ -107,6 +112,9 @@ class _ContactsDashboardState extends State<ContactsDashboard> {
 
   @override
   Widget build(BuildContext context) {
+    if (filterValue == 'Contacts')
+      filterValue = AppLocalization.of(context).contacts;
+
     return WillPopScope(
       onWillPop: () async {
         return true;
