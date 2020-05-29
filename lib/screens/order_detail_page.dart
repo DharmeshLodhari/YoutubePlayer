@@ -428,7 +428,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   getItemTileUi(int index) {
-    debugPrint("${consumable[index]["item"].serverImages}");
     if (consumable[index]["type"] == "product") {
       return ShoppingCartTileForProduct(
         consumable[index],

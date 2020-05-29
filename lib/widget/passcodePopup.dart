@@ -32,7 +32,7 @@ class PassCodePopup {
                       style: TextStyle(color: Colors.white),
                     ),
                     passwordEnteredCallback: _onPassCodeEntered,
-                    cancelButton: FlatButton(
+                    cancelButton: Container(
                       padding: EdgeInsets.all(0),
                       child: Text(
                         AppLocalization.of(context).cancel,
@@ -42,7 +42,7 @@ class PassCodePopup {
                         ),
                       ),
                     ),
-                    deleteButton: FlatButton(
+                    deleteButton: Container(
                       padding: EdgeInsets.all(0),
                       child: Text(
                         AppLocalization.of(context).delete,

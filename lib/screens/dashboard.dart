@@ -74,12 +74,10 @@ class _DashboardState extends State<Dashboard> {
       padding:
           basketBloc.items.length == 0 ? EdgeInsets.all(0) : EdgeInsets.all(4),
       position: BadgePosition(right: 6, top: 6),
-      child: IconButton(
-        padding: EdgeInsets.all(0),
-        icon: Icon(
-          Icons.shopping_cart,
-          color: Colors.white,
-        ),
+      // ignore: required onPressed
+      child: Icon(
+        Icons.shopping_cart,
+        color: Colors.white,
       ),
     );
   }

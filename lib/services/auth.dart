@@ -1342,7 +1342,6 @@ class AuthService {
     var jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
       Service service = createService(jsonData);
-      debugPrint("jsondata :$jsonData");
       return service;
     } else {
       throw jsonData;
@@ -1519,7 +1518,6 @@ class AuthService {
     if (response.statusCode == 200) {
       List items = List();
       var data = jsonData["results"];
-      debugPrint("data: $data");
       for (int i = 0; i < data.length; i++) {
         if (data[i]["item"].containsKey("manufacturer")) {
           var product = Product.fromJson(data[i]["item"]);
@@ -1644,7 +1642,6 @@ class AuthService {
     var jsonData = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
-      debugPrint("address: " + jsonData.toString());
       return Address.fromJson(jsonData);
     }
     return Address(

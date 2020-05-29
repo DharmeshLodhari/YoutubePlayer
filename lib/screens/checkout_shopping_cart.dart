@@ -247,7 +247,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
       "id": mapData["item"].id,
       "qty": mapData["qty"],
     };
-    debugPrint("Data From incresing the  item : $data");
+    debugPrint("Data From increasing the  item : $data");
     await _auth.addItemToShoppingCart(data);
   }
 

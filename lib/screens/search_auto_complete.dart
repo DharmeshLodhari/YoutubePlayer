@@ -509,11 +509,6 @@ class _SearchAutoCompleteState extends State<SearchAutoComplete> {
     product.manufacturer = object['manufacturer'];
     product.serverImages = [];
 
-    bool isOwner = false;
-    if (object['seller'] == userBloc.user.userName) {
-      isOwner = true;
-    }
-
     return _getSlidableWithLists1(
         context, productCard(product, object), product);
   }
@@ -713,7 +708,6 @@ class _SearchAutoCompleteState extends State<SearchAutoComplete> {
   }
 
   void getAutoCompleteUser() async {
-    debugPrint("getAutoComplete called!!");
     try {
       setState(() {
         results = [];

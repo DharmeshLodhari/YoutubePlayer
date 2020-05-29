@@ -430,11 +430,6 @@ class _SearchModuleState extends State<SearchModule> {
     product.manufacturer = object['manufacturer'];
     product.serverImages = [];
 
-    bool isOwner = false;
-    if (object['seller'] == userBloc.user.userName) {
-      isOwner = true;
-    }
-
     return _getSlidableWithLists1(
         context, productCard(product, object), product);
   }
@@ -574,10 +569,6 @@ class _SearchModuleState extends State<SearchModule> {
     service.description = "";
     service.availableFrom = DateTime.now();
 
-    bool isOwner = false;
-    if (object['provider'] == userBloc.user.userName) {
-      isOwner = true;
-    }
     return _getSlidableWithLists2(
         context, getServiceCard(service, object), service);
   }

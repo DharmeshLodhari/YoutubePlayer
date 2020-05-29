@@ -222,11 +222,9 @@ class _UserDashboardState extends State<UserDashboard> {
           Icons.store_mall_directory,
           AppLocalization.of(context).myStore,
           () {
-            storeLocked
-                ? null
-                : Platform.isIOS
-                    ? storeItemIOSSheet()
-                    : storeItemAndroidSheet();
+            if (storeLocked) {
+              Platform.isIOS ? storeItemIOSSheet() : storeItemAndroidSheet();
+            }
           },
         ),
         storeLocked
@@ -396,7 +394,6 @@ class _UserDashboardState extends State<UserDashboard> {
           var phoneNumber = dbUser.phoneNumber;
           var password = dbUser.password;
 
-          debugPrint(file.toString());
           // Upload Image new image
           await _auth.updateCustomerAvatar(file);
 
@@ -675,7 +672,6 @@ class _UserDashboardState extends State<UserDashboard> {
       context: context,
       builder: (BuildContext context) => child,
     ).then((String value) {
-      debugPrint(value);
       if (value != null) {
         if (value == "My Profile") {
           _auth.fetchCustomerProfile(userBloc.user.userName).then((user) {
