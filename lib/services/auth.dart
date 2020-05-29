@@ -1715,8 +1715,6 @@ class AuthService {
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
 
-    debugPrint("status code: ${response.statusCode}");
-
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
 
@@ -1744,8 +1742,6 @@ class AuthService {
     }
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
-
-    debugPrint("status code: ${response.statusCode}");
 
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
@@ -1775,7 +1771,6 @@ class AuthService {
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
 
-    debugPrint("status code: ${response.statusCode}");
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
 
