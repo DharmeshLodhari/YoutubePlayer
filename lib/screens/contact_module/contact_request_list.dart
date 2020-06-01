@@ -1,3 +1,4 @@
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:Slydo/screens/colors.dart';
@@ -9,24 +10,26 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:toast/toast.dart';
 
-class ContactsList extends StatefulWidget {
+class ContactRequestList extends StatefulWidget {
   @override
-  _ContactsListState createState() => _ContactsListState();
+  _ContactRequestListState createState() => _ContactRequestListState();
 }
 
-class _ContactsListState extends State<ContactsList> {
-  final GlobalKey<ScaffoldState> _scaffoldContactsListKey =
+class _ContactRequestListState extends State<ContactRequestList> {
+  final GlobalKey<ScaffoldState> _scaffoldContactRequestListKey =
       new GlobalKey<ScaffoldState>();
+  UserBloc userBloc;
   final _auth = AuthService();
   SlidableController slidableController;
   int count = 0;
   String next = "";
   String previous = "";
-  List contactsList = [];
+  List contactRequestList = [];
   ScrollController _scrollController = new ScrollController();
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
@@ -59,7 +62,7 @@ class _ContactsListState extends State<ContactsList> {
         count = 0;
         next = "";
         previous = "";
-        contactsList = [];
+        contactRequestList = [];
         noItemInList = false;
         getList();
         _refreshController.refreshCompleted();
@@ -74,8 +77,9 @@ class _ContactsListState extends State<ContactsList> {
 
   @override
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
     return Scaffold(
-      key: _scaffoldContactsListKey,
+      key: _scaffoldContactRequestListKey,
       backgroundColor: lightBlue(),
       body: SmartRefresher(
           enablePullDown: true,
@@ -92,20 +96,21 @@ class _ContactsListState extends State<ContactsList> {
   Widget _buildFriendsList() {
     return noItemInList
         ? NoItemInList(
-            msg: AppLocalization.of(context).currentlyYouHaveNoAnyContacts,
+            msg:
+                AppLocalization.of(context).currentlyYouHaveNoAnyContactRequest,
           )
         : ListView.builder(
             padding: EdgeInsets.symmetric(
               vertical: 4,
             ),
             //+1 for progressbar
-            itemCount: contactsList.length + 1,
+            itemCount: contactRequestList.length + 1,
             itemBuilder: (BuildContext context, int index) {
-              if (index == contactsList.length) {
+              if (index == contactRequestList.length) {
                 return _buildIndicator();
               } else {
                 return _getSlidableWithLists(
-                    context, contactsList[index], index);
+                    context, contactRequestList[index], index);
               }
             },
             controller: _scrollController,
@@ -129,6 +134,14 @@ class _ContactsListState extends State<ContactsList> {
     );
   }
 
+  Map<String, dynamic> cleanDisplayData(var data) {
+    if (data["from_user"]["username"] == userBloc.user.userName){
+      return data["to_user"];
+    }else {
+      return data["from_user"];
+    }
+  }
+
   void getList() async {
     if (!isLoading) {
       if (next != null && !isLoading) {
@@ -137,35 +150,38 @@ class _ContactsListState extends State<ContactsList> {
             isLoading = true;
           });
         }
-        Map<String, dynamic> result = await _auth.listFriends(next, previous);
+        Map<String, dynamic> result =
+            await _auth.listContactRequests(next, previous);
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
         List tempList = result['results'];
         List<CustomerProfile> convertedIntoUserList = List<CustomerProfile>();
         tempList.forEach((element) {
+          var data = cleanDisplayData(element);
+          debugPrint(data.toString());
           CustomerProfile user = CustomerProfile();
-          user.fullName = element["full_name"] ?? "";
-          user.userName = element["username"] ?? "";
-          user.avatar = element["avatar"] ?? "";
-          user.qrCode = element["qr_code"] ?? "";
+          user.fullName = data["full_name"] ?? "";
+          user.userName = data["username"] ?? "";
+          user.avatar = data["avatar"] ?? "";
+          user.qrCode = data["qr_code"] ?? "";
           convertedIntoUserList.add(user);
         });
         if (mounted) {
           setState(() {
             isLoading = false;
-            contactsList.addAll(convertedIntoUserList);
+            contactRequestList.addAll(convertedIntoUserList);
           });
         }
       }
-      if (contactsList.isEmpty) {
+      if (contactRequestList.isEmpty) {
         if (mounted) {
           setState(() {
             noItemInList = true;
           });
         }
-      } else if (next == null && contactsList.length > 6) {
-        _scaffoldContactsListKey.currentState.showSnackBar(SnackBar(
+      } else if (next == null && contactRequestList.length > 6) {
+        _scaffoldContactRequestListKey.currentState.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
@@ -186,57 +202,60 @@ class _ContactsListState extends State<ContactsList> {
   void handleSlideIsOpenChanged(bool isOpen) {}
 
   void _showSnackBar(BuildContext context, String text) {
-    _scaffoldContactsListKey.currentState
+    _scaffoldContactRequestListKey.currentState
         .showSnackBar(SnackBar(content: Text(text)));
   }
 
   List<Widget> listSecondaryActions(CustomerProfile user, int index) {
+    String caption = AppLocalization.of(context).reject;
+
     return [
       IconSlideAction(
-        caption: AppLocalization.of(context).block,
-        color: Colors.grey[600],
-        icon: Icons.block,
-        onTap: () {
-          blockUserAlert(user, index);
-        },
-      ),
+          caption: caption,
+          color: Colors.red,
+          icon: Icons.cancel,
+          onTap: () async {
+            rejectRequestAlert(user, index);
+          }),
     ];
   }
 
   List<Widget> listActionSlideActions(CustomerProfile user, int index) {
     return [
       IconSlideAction(
-        caption: AppLocalization.of(context).delete,
-        color: Colors.red,
-        icon: Icons.remove_circle,
+        caption: AppLocalization.of(context).accept,
+        color: Colors.green,
+        icon: Icons.group_add,
         onTap: () {
-          unFriendUserAlert(user, index);
+          acceptFriendRequestAlert(user, index);
         },
       ),
     ];
   }
 
-  void blockUserAlert(CustomerProfile user, int index) async {
+  void rejectRequestAlert(CustomerProfile user, int index) async {
     bool result = await showDialogBox(
       context: context,
-      title: AppLocalization.of(context).block,
-      description: AppLocalization.of(context).areYouSureWantToBlock +
-          " ${user.fullName}",
+      title: AppLocalization.of(context).reject,
+      description:
+          AppLocalization.of(context).areYouSureWantToRejectRequestFrom +
+              " ${user.fullName}",
       actionOne: AppLocalization.of(context).yes,
       actionTwo: AppLocalization.of(context).no,
       type: AlertType.warning,
     );
     if (result) {
-      bool done = await _auth.blockUser(user);
+      bool done = await _auth.rejectContactRequest(user);
       done = true;
       if (done) {
         _showSnackBar(
             context,
-            "${user.fullName} " +
-                AppLocalization.of(context).isBlockedSuccessfully);
+            AppLocalization.of(context).requestFrom +
+                " ${user.fullName} " +
+                AppLocalization.of(context).isRejectedSuccessfully);
         setState(() {
-          contactsList.removeAt(index);
-          if (contactsList.length <= 9) {
+          contactRequestList.removeAt(index);
+          if (contactRequestList.length <= 9) {
             getList();
           }
         });
@@ -246,27 +265,27 @@ class _ContactsListState extends State<ContactsList> {
     }
   }
 
-  Future<void> unFriendUserAlert(CustomerProfile user, int index) async {
+  Future<void> acceptFriendRequestAlert(CustomerProfile user, int index) async {
     bool result = await showDialogBox(
       context: context,
-      title: AppLocalization.of(context).delete,
-      description: AppLocalization.of(context).areYouSureWantToDelete +
+      title: AppLocalization.of(context).accept,
+      description: AppLocalization.of(context).areYouSureWantToAdd +
           " ${user.fullName} " +
-          AppLocalization.of(context).fromYouContactList,
+          AppLocalization.of(context).inYourContacts,
       actionOne: AppLocalization.of(context).yes,
       actionTwo: AppLocalization.of(context).no,
       type: AlertType.warning,
     );
     if (result) {
-      bool done = await _auth.unFriendUser(user);
+      bool done = await _auth.acceptContactRequest(user);
       if (done) {
         _showSnackBar(
             context,
             "${user.fullName} " +
-                AppLocalization.of(context).isRemovedSuccessfully);
+                AppLocalization.of(context).isAddedToYourContactList);
         setState(() {
-          contactsList.removeAt(index);
-          if (contactsList.length <= 9) {
+          contactRequestList.removeAt(index);
+          if (contactRequestList.length <= 9) {
             getList();
           }
         });
@@ -305,8 +324,10 @@ class VerticalListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, '/profile',
-          arguments: {"searchedUser": user}),
+      onTap: () =>
+          Slidable.of(context)?.renderingMode == SlidableRenderingMode.none
+              ? Slidable.of(context)?.open()
+              : Slidable.of(context)?.close(),
       child: Container(
         color: lightBlue(),
         child: UserTile(user: user),

@@ -1701,8 +1701,8 @@ class AuthService {
 
   //Friends List
 
-  Future<Map<String, dynamic>> listFriends(String next, String previous) async {
-    var url = baseUrl + "/api/v1/search/users/?search=" + "abiola";
+  Future<Map<String, dynamic>> contacts(String next, String previous) async {
+    var url = baseUrl + "/api/v1/user/contacts/";
     if (next == null) {
       return null;
     }
@@ -1713,7 +1713,7 @@ class AuthService {
     var response = await http.get(url, headers: headers);
 
     if (response.statusCode == 200) {
-      var jsonData = json.decode(response.body);
+      var jsonData = json.decode(response.body) ?? {};
 
       Map<String, dynamic> result = {
         "count": jsonData["count"],
@@ -1728,37 +1728,22 @@ class AuthService {
     }
   }
 
-  Future<Map<String, dynamic>> listFriendRequests(
-      String next, String previous) async {
-    var url = baseUrl + "/api/v1/search/users/?search=" + "abiola";
-    if (next == null) {
-      return null;
-    }
-    if (next != "") {
-      url = next;
-    }
+  Future<bool> removeFromContactList(CustomerProfile user) async {
+    var url = baseUrl + "/api/v1/user/contacts/remove-from-contact/";
+    var data = {"user": user.userName};
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
-
+    var _data = jsonEncode(data);
+    var response = await http.patch(url, headers: headers, body: _data);
     if (response.statusCode == 200) {
-      var jsonData = json.decode(response.body);
-
-      Map<String, dynamic> result = {
-        "count": jsonData["count"],
-        "next": jsonData["next"],
-        "previous": jsonData["previous"],
-        "results": jsonData["results"],
-      };
-      return result;
-    } else {
-      var jsonData = json.decode(response.body);
-      throw jsonData;
+      return true;
     }
+    return true;
   }
 
+  // Block Contact
   Future<Map<String, dynamic>> listBlockUsers(
       String next, String previous) async {
-    var url = baseUrl + "/api/v1/search/users/?search=" + "abiola";
+    var url = baseUrl + "/api/v1/user/contacts/list-block-contact/";
     if (next == null) {
       return null;
     }
@@ -1772,7 +1757,7 @@ class AuthService {
       var jsonData = json.decode(response.body);
 
       Map<String, dynamic> result = {
-        "count": jsonData["count"],
+        "count":jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
         "results": jsonData["results"],
@@ -1785,62 +1770,81 @@ class AuthService {
   }
 
   Future<bool> blockUser(CustomerProfile user) async {
-    var url = baseUrl + "/api/v1/friends/";
+    var url = baseUrl + "/api/v1/user/contacts/block-contact/";
     var data = {"user": user.userName};
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
-    var response = await http.post(url, headers: headers, body: _data);
+    var response = await http.patch(url, headers: headers, body: _data);
     if (response.statusCode == 200) {
       return true;
     }
     return true;
   }
-
-  Future<bool> unFriendUser(CustomerProfile user) async {
-    var url = baseUrl + "/api/v1/friends/";
-    var data = {"user": user.userName};
-    var headers = await getAuthHeaders();
-    var _data = jsonEncode(data);
-    var response = await http.post(url, headers: headers, body: _data);
-    if (response.statusCode == 200) {
-      return true;
-    }
-    return true;
-  }
-
-  Future<bool> acceptFriendRequest(CustomerProfile user) async {
-    var url = baseUrl + "/api/v1/friends/";
-    var data = {"user": user.userName};
-    var headers = await getAuthHeaders();
-    var _data = jsonEncode(data);
-    var response = await http.post(url, headers: headers, body: _data);
-    if (response.statusCode == 200) {
-      return true;
-    }
-    return true;
-  }
-
-  Future<bool> rejectFriendRequest(CustomerProfile user) async {
-    var url = baseUrl + "/api/v1/friends/";
-    var data = {"user": user.userName};
-    var headers = await getAuthHeaders();
-    var _data = jsonEncode(data);
-    var response = await http.post(url, headers: headers, body: _data);
-    if (response.statusCode == 200) {
-      return true;
-    }
-    return true;
-  }
-
+  
   Future<bool> unBlockUser(CustomerProfile user) async {
-    var url = baseUrl + "/api/v1/friends/";
+    var url = baseUrl + "/api/v1/user/contacts/unblock-contact/";
     var data = {"user": user.userName};
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
-    var response = await http.post(url, headers: headers, body: _data);
+    var response = await http.patch(url, headers: headers, body: _data);
     if (response.statusCode == 200) {
       return true;
     }
     return true;
   }
+  
+
+  // Contact Request
+  Future<Map<String, dynamic>> listContactRequests(
+      String next, String previous) async {
+    var url = baseUrl + "/api/v1/user/contact-request/";
+    if (next == null) {
+      return null;
+    }
+    if (next != "") {
+      url = next;
+    }
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": jsonData["results"],
+      };
+      return result;
+    } else {
+      var jsonData = json.decode(response.body);
+      throw jsonData;
+    }
+  }
+  
+  Future<bool> acceptContactRequest(CustomerProfile user) async {
+    var url = baseUrl + "/api/v1/user/contact-request/accept/";
+    var data = {"user": user.userName};
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await http.patch(url, headers: headers, body: _data);
+    if (response.statusCode == 200) {
+      return true;
+    }
+    return true;
+  }
+
+  Future<bool> rejectContactRequest(CustomerProfile user) async {
+    var url = baseUrl + "/api/v1/user/contact-request/cancel-or-reject/";
+    var data = {"user": user.userName};
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await http.patch(url, headers: headers, body: _data);
+    if (response.statusCode == 200) {
+      return true;
+    }
+    return true;
+  }
+
 }

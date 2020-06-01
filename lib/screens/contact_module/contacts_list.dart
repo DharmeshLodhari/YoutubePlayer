@@ -13,20 +13,20 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:toast/toast.dart';
 
-class ContactRequestList extends StatefulWidget {
+class ContactsList extends StatefulWidget {
   @override
-  _ContactRequestListState createState() => _ContactRequestListState();
+  _ContactsListState createState() => _ContactsListState();
 }
 
-class _ContactRequestListState extends State<ContactRequestList> {
-  final GlobalKey<ScaffoldState> _scaffoldContactRequestListKey =
+class _ContactsListState extends State<ContactsList> {
+  final GlobalKey<ScaffoldState> _scaffoldContactsListKey =
       new GlobalKey<ScaffoldState>();
   final _auth = AuthService();
   SlidableController slidableController;
   int count = 0;
   String next = "";
   String previous = "";
-  List contactRequestList = [];
+  List contactsList = [];
   ScrollController _scrollController = new ScrollController();
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
@@ -59,7 +59,7 @@ class _ContactRequestListState extends State<ContactRequestList> {
         count = 0;
         next = "";
         previous = "";
-        contactRequestList = [];
+        contactsList = [];
         noItemInList = false;
         getList();
         _refreshController.refreshCompleted();
@@ -75,7 +75,7 @@ class _ContactRequestListState extends State<ContactRequestList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldContactRequestListKey,
+      key: _scaffoldContactsListKey,
       backgroundColor: lightBlue(),
       body: SmartRefresher(
           enablePullDown: true,
@@ -92,21 +92,20 @@ class _ContactRequestListState extends State<ContactRequestList> {
   Widget _buildFriendsList() {
     return noItemInList
         ? NoItemInList(
-            msg:
-                AppLocalization.of(context).currentlyYouHaveNoAnyContactRequest,
+            msg: AppLocalization.of(context).currentlyYouHaveNoAnyContacts,
           )
         : ListView.builder(
             padding: EdgeInsets.symmetric(
               vertical: 4,
             ),
             //+1 for progressbar
-            itemCount: contactRequestList.length + 1,
+            itemCount: contactsList.length + 1,
             itemBuilder: (BuildContext context, int index) {
-              if (index == contactRequestList.length) {
+              if (index == contactsList.length) {
                 return _buildIndicator();
               } else {
                 return _getSlidableWithLists(
-                    context, contactRequestList[index], index);
+                    context, contactsList[index], index);
               }
             },
             controller: _scrollController,
@@ -138,8 +137,7 @@ class _ContactRequestListState extends State<ContactRequestList> {
             isLoading = true;
           });
         }
-        Map<String, dynamic> result =
-            await _auth.listFriendRequests(next, previous);
+        Map<String, dynamic> result = await _auth.contacts(next, previous);
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
@@ -156,18 +154,18 @@ class _ContactRequestListState extends State<ContactRequestList> {
         if (mounted) {
           setState(() {
             isLoading = false;
-            contactRequestList.addAll(convertedIntoUserList);
+            contactsList.addAll(convertedIntoUserList);
           });
         }
       }
-      if (contactRequestList.isEmpty) {
+      if (contactsList.isEmpty) {
         if (mounted) {
           setState(() {
             noItemInList = true;
           });
         }
-      } else if (next == null && contactRequestList.length > 6) {
-        _scaffoldContactRequestListKey.currentState.showSnackBar(SnackBar(
+      } else if (next == null && contactsList.length > 6) {
+        _scaffoldContactsListKey.currentState.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
@@ -188,60 +186,57 @@ class _ContactRequestListState extends State<ContactRequestList> {
   void handleSlideIsOpenChanged(bool isOpen) {}
 
   void _showSnackBar(BuildContext context, String text) {
-    _scaffoldContactRequestListKey.currentState
+    _scaffoldContactsListKey.currentState
         .showSnackBar(SnackBar(content: Text(text)));
   }
 
   List<Widget> listSecondaryActions(CustomerProfile user, int index) {
-    String caption = AppLocalization.of(context).reject;
-
     return [
       IconSlideAction(
-          caption: caption,
-          color: Colors.red,
-          icon: Icons.cancel,
-          onTap: () async {
-            rejectRequestAlert(user, index);
-          }),
+        caption: AppLocalization.of(context).block,
+        color: Colors.grey[600],
+        icon: Icons.block,
+        onTap: () {
+          blockUserAlert(user, index);
+        },
+      ),
     ];
   }
 
   List<Widget> listActionSlideActions(CustomerProfile user, int index) {
     return [
       IconSlideAction(
-        caption: AppLocalization.of(context).accept,
-        color: Colors.green,
-        icon: Icons.group_add,
+        caption: AppLocalization.of(context).delete,
+        color: Colors.red,
+        icon: Icons.remove_circle,
         onTap: () {
-          acceptFriendRequestAlert(user, index);
+          unFriendUserAlert(user, index);
         },
       ),
     ];
   }
 
-  void rejectRequestAlert(CustomerProfile user, int index) async {
+  void blockUserAlert(CustomerProfile user, int index) async {
     bool result = await showDialogBox(
       context: context,
-      title: AppLocalization.of(context).reject,
-      description:
-          AppLocalization.of(context).areYouSureWantToRejectRequestFrom +
-              " ${user.fullName}",
+      title: AppLocalization.of(context).block,
+      description: AppLocalization.of(context).areYouSureWantToBlock +
+          " ${user.fullName}",
       actionOne: AppLocalization.of(context).yes,
       actionTwo: AppLocalization.of(context).no,
       type: AlertType.warning,
     );
     if (result) {
-      bool done = await _auth.rejectFriendRequest(user);
+      bool done = await _auth.blockUser(user);
       done = true;
       if (done) {
         _showSnackBar(
             context,
-            AppLocalization.of(context).requestFrom +
-                " ${user.fullName} " +
-                AppLocalization.of(context).isRejectedSuccessfully);
+            "${user.fullName} " +
+                AppLocalization.of(context).isBlockedSuccessfully);
         setState(() {
-          contactRequestList.removeAt(index);
-          if (contactRequestList.length <= 9) {
+          contactsList.removeAt(index);
+          if (contactsList.length <= 9) {
             getList();
           }
         });
@@ -251,27 +246,27 @@ class _ContactRequestListState extends State<ContactRequestList> {
     }
   }
 
-  Future<void> acceptFriendRequestAlert(CustomerProfile user, int index) async {
+  Future<void> unFriendUserAlert(CustomerProfile user, int index) async {
     bool result = await showDialogBox(
       context: context,
-      title: AppLocalization.of(context).accept,
-      description: AppLocalization.of(context).areYouSureWantToAdd +
+      title: AppLocalization.of(context).delete,
+      description: AppLocalization.of(context).areYouSureWantToDelete +
           " ${user.fullName} " +
-          AppLocalization.of(context).inYourContacts,
+          AppLocalization.of(context).fromYouContactList,
       actionOne: AppLocalization.of(context).yes,
       actionTwo: AppLocalization.of(context).no,
       type: AlertType.warning,
     );
     if (result) {
-      bool done = await _auth.acceptFriendRequest(user);
+      bool done = await _auth.removeFromContactList(user);
       if (done) {
         _showSnackBar(
             context,
             "${user.fullName} " +
-                AppLocalization.of(context).isAddedToYourContactList);
+                AppLocalization.of(context).isRemovedSuccessfully);
         setState(() {
-          contactRequestList.removeAt(index);
-          if (contactRequestList.length <= 9) {
+          contactsList.removeAt(index);
+          if (contactsList.length <= 9) {
             getList();
           }
         });
@@ -310,10 +305,8 @@ class VerticalListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () =>
-          Slidable.of(context)?.renderingMode == SlidableRenderingMode.none
-              ? Slidable.of(context)?.open()
-              : Slidable.of(context)?.close(),
+      onTap: () => Navigator.pushNamed(context, '/profile',
+          arguments: {"searchedUser": user}),
       child: Container(
         color: lightBlue(),
         child: UserTile(user: user),

@@ -1,7 +1,7 @@
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/friends_module/block_list.dart';
-import 'package:Slydo/screens/friends_module/contact_request_list.dart';
-import 'package:Slydo/screens/friends_module/contacts_list.dart';
+import 'package:Slydo/screens/contact_module/block_list.dart';
+import 'package:Slydo/screens/contact_module/contact_request_list.dart';
+import 'package:Slydo/screens/contact_module/contacts_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:popup_menu/popup_menu.dart';

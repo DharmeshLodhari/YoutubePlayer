@@ -17,7 +17,7 @@ import 'package:Slydo/screens/forms/reset_password.dart';
 import 'package:Slydo/screens/forms/send_payment.dart';
 import 'package:Slydo/screens/forms/signup.dart';
 import 'package:Slydo/screens/forms/user_address.dart';
-import 'package:Slydo/screens/friends_module/contacts_dashboard.dart';
+import 'package:Slydo/screens/contact_module/contacts_dashboard.dart';
 import 'package:Slydo/screens/order_detail_page.dart';
 import 'package:Slydo/screens/orders_list.dart';
 import 'package:Slydo/screens/payout_transactions.dart';
