@@ -1737,7 +1737,21 @@ class AuthService {
     if (response.statusCode == 200) {
       return true;
     }
-    return true;
+    return false;
+  }
+
+  // Check if user is the the checker's list of contact
+  Future<bool> checkInContactList(String user, String checker) async {
+    // Note that the checker is the request.user making this request.
+    var url = baseUrl + "/api/v1/user/contacts/check-in-contact/";
+    var data = {"checker": checker, "user": user};
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await http.patch(url, headers: headers, body: _data);
+    if (response.statusCode == 200) {
+      return true;
+    }
+    return false;
   }
 
   // Block Contact
@@ -1778,7 +1792,7 @@ class AuthService {
     if (response.statusCode == 200) {
       return true;
     }
-    return true;
+    return false;
   }
   
   Future<bool> unBlockUser(CustomerProfile user) async {
@@ -1790,7 +1804,7 @@ class AuthService {
     if (response.statusCode == 200) {
       return true;
     }
-    return true;
+    return false;
   }
   
 
@@ -1832,7 +1846,7 @@ class AuthService {
     if (response.statusCode == 200) {
       return true;
     }
-    return true;
+    return false;
   }
 
   Future<bool> rejectContactRequest(CustomerProfile user) async {
@@ -1844,7 +1858,7 @@ class AuthService {
     if (response.statusCode == 200) {
       return true;
     }
-    return true;
+    return false;
   }
 
 }
