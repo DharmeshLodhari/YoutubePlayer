@@ -22,6 +22,61 @@ class _UserInfoState extends State<UserInfo> {
   UserBloc _userBloc;
   _UserInfoState({this.user});
 
+  bool isLoading = true;
+  bool isInContactList = false;
+  bool isInRequestList = false;
+  final auth = AuthService();
+  int counter = 0;
+
+  void checkCurrentUserIsInContact() async {
+    if (_userBloc.user.userName != user.userName) {
+      _auth
+          .checkInContactList(user.userName, _userBloc.user.userName)
+          .then((value) {
+        if (mounted) {
+          setState(() {
+            if (value) {
+              isInContactList = true;
+              debugPrint("is In Contact : $isInContactList");
+            }
+          });
+        }
+      });
+    }
+  }
+
+  void checkCurrentUserIsInRequestList() async {
+    if (_userBloc.user.userName != user.userName) {
+      _auth
+        ..checkInRequest(user.userName).then((value) {
+          if (mounted) {
+            setState(() {
+              if (value) {
+                isInRequestList = true;
+                debugPrint("is In Request List : $isInRequestList");
+              }
+            });
+          }
+        });
+    }
+  }
+
+  void checkCurrentUserState() {
+    if (mounted) {
+      setState(() {
+        isInRequestList = false;
+        isInContactList = false;
+      });
+    }
+    checkCurrentUserIsInContact();
+    checkCurrentUserIsInRequestList();
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   final GlobalKey<ScaffoldState> _scaffoldUserInfoKey =
       new GlobalKey<ScaffoldState>();
 
@@ -31,6 +86,10 @@ class _UserInfoState extends State<UserInfo> {
   Widget build(BuildContext context) {
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
     _userBloc = Provider.of<UserBloc>(context);
+    if (counter == 0) {
+      checkCurrentUserState();
+      counter++;
+    }
     return WillPopScope(
       onWillPop: () async {
         customerProfileBloc.customer = null;
@@ -151,35 +210,12 @@ class _UserInfoState extends State<UserInfo> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
                       Expanded(
-                        child: Container(
-                          height: double.infinity,
-                          child: InkWell(
-                            onTap: () {
-                              Toast.show(
-                                  AppLocalization.of(context)
-                                      .contactRequestSent,
-                                  context,
-                                  gravity: Toast.CENTER,
-                                  duration: Toast.LENGTH_LONG,
-                                  backgroundColor: darkBlue());
-                            },
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Icon(Icons.group_add, color: Colors.black),
-                                SizedBox(
-                                  width: 8,
-                                ),
-                                Text(
-                                  AppLocalization.of(context).addContact,
-                                  style: TextStyle(
-                                      color: Colors.black, fontSize: 14),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
+                          child: isLoading
+                              ? CircularProgressIndicator(
+                                  valueColor:
+                                      AlwaysStoppedAnimation(Colors.white),
+                                )
+                              : contactActionButtons()),
                       Container(
                         width: 0.5,
                         height: double.infinity,
@@ -233,6 +269,117 @@ class _UserInfoState extends State<UserInfo> {
         ],
       ),
     );
+  }
+
+  Widget contactActionButtons() {
+    return Container(
+      height: double.infinity,
+      child: InkWell(
+          onTap: contactPrimaryActionCall(), child: contactPrimaryAction()),
+    );
+  }
+
+  Widget contactPrimaryAction() {
+    if (isInContactList) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Icon(Icons.remove_circle, color: Colors.red),
+          SizedBox(
+            width: 8,
+          ),
+          Text(
+            "Remove Contact",
+            style: TextStyle(color: Colors.red, fontSize: 14),
+          ),
+        ],
+      );
+    } else if (isInRequestList) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Icon(Icons.close, color: Colors.red),
+          SizedBox(
+            width: 8,
+          ),
+          Text(
+            "Cancel Request",
+            style: TextStyle(color: Colors.red, fontSize: 14),
+          ),
+        ],
+      );
+    }
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Icon(Icons.group_add, color: Colors.black),
+        SizedBox(
+          width: 8,
+        ),
+        Text(
+          AppLocalization.of(context).addContact,
+          style: TextStyle(color: Colors.black, fontSize: 14),
+        ),
+      ],
+    );
+  }
+
+  Function contactPrimaryActionCall() {
+    if (isInContactList) {
+      return () {
+        _auth.removeFromContactList(user).then((value) {
+          if (value) {
+            Toast.show(
+                "Contact Remove From Your Contact List Successfully .", context,
+                gravity: Toast.CENTER,
+                duration: Toast.LENGTH_LONG,
+                backgroundColor: darkBlue());
+            checkCurrentUserState();
+          } else {
+            Toast.show(
+                "Contact is Removed From Your Contact List Unsuccessfully .",
+                context,
+                gravity: Toast.CENTER,
+                duration: Toast.LENGTH_LONG,
+                backgroundColor: darkBlue());
+          }
+        });
+      };
+    } else if (isInRequestList) {
+      return () {
+        _auth.rejectContactRequest(user).then((value) {
+          if (value) {
+            Toast.show("Contact request Canceled", context,
+                gravity: Toast.CENTER,
+                duration: Toast.LENGTH_LONG,
+                backgroundColor: darkBlue());
+          } else {
+            Toast.show("Contact request Canceled unsuccessfully", context,
+                gravity: Toast.CENTER,
+                duration: Toast.LENGTH_LONG,
+                backgroundColor: darkBlue());
+          }
+          checkCurrentUserState();
+        });
+      };
+    }
+    return () {
+      _auth.makeContactRequest(user).then((value) {
+        if (value) {
+          Toast.show(AppLocalization.of(context).contactRequestSent, context,
+              gravity: Toast.CENTER,
+              duration: Toast.LENGTH_LONG,
+              backgroundColor: darkBlue());
+        } else {
+          checkCurrentUserIsInContact();
+          Toast.show("Request Not Sent.. ", context,
+              gravity: Toast.CENTER,
+              duration: Toast.LENGTH_LONG,
+              backgroundColor: darkBlue());
+        }
+        checkCurrentUserState();
+      });
+    };
   }
 
   Widget displayPaymentButtons() {

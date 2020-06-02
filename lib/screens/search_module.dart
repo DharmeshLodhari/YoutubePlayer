@@ -89,10 +89,6 @@ class _SearchModuleState extends State<SearchModule> {
           previous = "";
           results.clear();
           noItemInList = false;
-          debugPrint("count = $count");
-          debugPrint("next = $next");
-          debugPrint("previous = $previous");
-          debugPrint("results = $results");
           getList();
         });
       }
@@ -311,12 +307,6 @@ class _SearchModuleState extends State<SearchModule> {
         next = result['next'];
         previous = result['previous'];
         List tempList = result['results'];
-        debugPrint(
-            "searchItemTextController.text = ${searchItemTextController.text}");
-        debugPrint("count = $count");
-        debugPrint("next = $next");
-        debugPrint("previous = $previous");
-        debugPrint("tempList = $tempList");
         if (mounted) {
           setState(() {
             isLoading = false;
@@ -378,6 +368,7 @@ class _SearchModuleState extends State<SearchModule> {
         userName: object["username"],
         type: object['type'] ?? 'user');
 
+    debugPrint("user avatar: ${user.avatar} ");
     Widget avatarImage = Container(
         height: 50,
         width: 50,
@@ -389,6 +380,13 @@ class _SearchModuleState extends State<SearchModule> {
             colorBlendMode: BlendMode.darken,
             fit: BoxFit.fitWidth,
             filterQuality: FilterQuality.high,
+            placeholder: (context, _) => CachedNetworkImage(
+              imageUrl:
+                  "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png",
+              colorBlendMode: BlendMode.darken,
+              fit: BoxFit.fitWidth,
+              filterQuality: FilterQuality.high,
+            ),
           ),
         ));
 

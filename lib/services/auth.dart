@@ -1754,6 +1754,31 @@ class AuthService {
     return false;
   }
 
+  Future<bool> checkInRequest(String user) async {
+    // Note that the checker is the request.user making this request.
+    var url = baseUrl + "/api/v1/user/contact-request/check-in-request/";
+    var data = {"to_user": user};
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await http.patch(url, headers: headers, body: _data);
+    if (response.statusCode == 200) {
+      return true;
+    }
+    return false;
+  }
+
+  Future<bool> makeContactRequest(CustomerProfile user) async {
+    var url = baseUrl + "/api/v1/user/contact-request/";
+    var data = {"to_user": user.userName};
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await http.post(url, headers: headers, body: _data);
+    if (response.statusCode == 201) {
+      return true;
+    }
+    return false;
+  }
+
   // Block Contact
   Future<Map<String, dynamic>> listBlockUsers(
       String next, String previous) async {
@@ -1771,7 +1796,7 @@ class AuthService {
       var jsonData = json.decode(response.body);
 
       Map<String, dynamic> result = {
-        "count":jsonData["count"],
+        "count": jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
         "results": jsonData["results"],
@@ -1794,7 +1819,7 @@ class AuthService {
     }
     return false;
   }
-  
+
   Future<bool> unBlockUser(CustomerProfile user) async {
     var url = baseUrl + "/api/v1/user/contacts/unblock-contact/";
     var data = {"user": user.userName};
@@ -1806,7 +1831,6 @@ class AuthService {
     }
     return false;
   }
-  
 
   // Contact Request
   Future<Map<String, dynamic>> listContactRequests(
@@ -1836,7 +1860,7 @@ class AuthService {
       throw jsonData;
     }
   }
-  
+
   Future<bool> acceptContactRequest(CustomerProfile user) async {
     var url = baseUrl + "/api/v1/user/contact-request/accept/";
     var data = {"user": user.userName};
@@ -1860,5 +1884,4 @@ class AuthService {
     }
     return false;
   }
-
 }
