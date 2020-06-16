@@ -217,8 +217,8 @@ class _TransactionTileState extends State<TransactionTile> {
           style: TextStyle(
               fontFamily: "Roboto",
               color: widget.transaction.isCredit
-                  ? Colors.grey[600]
-                  : Colors.green[400],
+                  ? Colors.green[400]
+                  : Colors.grey[600],
               fontWeight: FontWeight.bold,
               fontSize: 15),
         ),
@@ -226,8 +226,8 @@ class _TransactionTileState extends State<TransactionTile> {
           widget.transaction.amount.toString(),
           style: TextStyle(
               color: widget.transaction.isCredit
-                  ? Colors.grey[600]
-                  : Colors.green[400],
+                  ? Colors.green[400]
+                  : Colors.grey[600],
               fontWeight: FontWeight.bold,
               fontSize: 15),
         ),

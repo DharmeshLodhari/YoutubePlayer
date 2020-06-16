@@ -6,6 +6,7 @@ import 'package:Slydo/screens/tiles/transaction.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/passcodePopup.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -372,30 +373,35 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       type: AlertType.warning,
     );
     if (result) {
-      var response = await _auth.acceptPaymentRequests(paymentRequest);
-      if (response.statusCode == 200) {
-        _showSnackBar(
-            context, AppLocalization.of(context).paymentRequestAccepted);
-        if (mounted) {
-          setState(() {
-            requestPaymentList.removeAt(index);
-            if (requestPaymentList.length <= 9) {
-              getList();
+      PassCodePopup(
+          context: context,
+          isValidCallback: () async {
+            var response = await _auth.acceptPaymentRequests(paymentRequest);
+            if (response.statusCode == 200) {
+              _showSnackBar(
+                  context, AppLocalization.of(context).paymentRequestAccepted);
+              if (mounted) {
+                setState(() {
+                  requestPaymentList.removeAt(index);
+                  if (requestPaymentList.length <= 9) {
+                    getList();
+                  }
+                });
+              }
+            } else if (response.statusCode == 500) {
+              Toast.show(AppLocalization.of(context).serverError, context,
+                  gravity: Toast.TOP,
+                  backgroundColor: darkBlue(),
+                  textColor: Colors.white);
+            } else if (response.statusCode == 700) {
+              Navigator.pushNamed(context, "/bvn-verification");
+            } else if (response.statusCode == 800) {
+              Navigator.pushNamed(context, "/add-document");
+            } else {
+              _showSnackBar(context, AppLocalization.of(context).error);
             }
-          });
-        }
-      } else if (response.statusCode == 500) {
-        Toast.show(AppLocalization.of(context).serverError, context,
-            gravity: Toast.TOP,
-            backgroundColor: darkBlue(),
-            textColor: Colors.white);
-      } else if (response.statusCode == 700) {
-        Navigator.pushNamed(context, "/bvn-verification");
-      } else if (response.statusCode == 800) {
-        Navigator.pushNamed(context, "/add-document");
-      } else {
-        _showSnackBar(context, AppLocalization.of(context).error);
-      }
+          },
+          cancelCallBack: () {});
     }
   }
 
