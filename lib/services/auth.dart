@@ -234,7 +234,8 @@ class AuthService {
   Future<CustomerProfile> updateCustomerAvatar(File avatar) async {
     User user = await getUser();
     var headers = await getAuthHeaders();
-    var url = secureBaseUrl + "/api/v1/user/update-avatar/" + user.userName + "/";
+    var url =
+        secureBaseUrl + "/api/v1/user/update-avatar/" + user.userName + "/";
 
     if (avatar != null) {
       var avatarPath = avatar.path;
@@ -388,7 +389,8 @@ class AuthService {
 
   // delete single bankaccount
   Future<bool> deleteBankAccount(String id) async {
-    var url = secureBaseUrl + "/api/v1/transactions/delete-bank-account/" + id + "/";
+    var url =
+        secureBaseUrl + "/api/v1/transactions/delete-bank-account/" + id + "/";
     var headers = await getAuthHeaders();
     var response = await http.delete(url, headers: headers);
     if (response.statusCode == 204) {
@@ -800,7 +802,8 @@ class AuthService {
 
   // it will update the message actions:  [Archived,UnArchived,Starred,UnStarred]
   Future<bool> updateMessage(String id, String action) async {
-    var url = secureBaseUrl + "/api/v1/messaging/update/" + id + "/" + action + "/";
+    var url =
+        secureBaseUrl + "/api/v1/messaging/update/" + id + "/" + action + "/";
     var headers = await getAuthHeaders();
     var response = await http.patch(url, headers: headers);
     var jsonData = json.decode(response.body);
@@ -1417,8 +1420,9 @@ class AuthService {
   // Transactions graph and Category
   Future<Map<String, dynamic>> getTransactionWeeklyReport(
       String weekNumber) async {
-    var url =
-        secureBaseUrl + "/api/v1/transactions/transaction-filter/?week=" + weekNumber;
+    var url = secureBaseUrl +
+        "/api/v1/transactions/transaction-filter/?week=" +
+        weekNumber;
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
     if (response.statusCode == 200) {
@@ -1880,6 +1884,17 @@ class AuthService {
     var _data = jsonEncode(data);
     var response = await http.patch(url, headers: headers, body: _data);
     if (response.statusCode == 200) {
+      return true;
+    }
+    return false;
+  }
+
+  Future<bool> upgradeUserProfile(Map<String, dynamic> data) async {
+    var url = secureBaseUrl + "/api/v1/user/upgrade-user-account/";
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await http.post(url, headers: headers, body: _data);
+    if (response.statusCode == 201) {
       return true;
     }
     return false;

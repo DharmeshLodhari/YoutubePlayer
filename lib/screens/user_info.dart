@@ -25,6 +25,7 @@ class _UserInfoState extends State<UserInfo> {
   bool isLoading = true;
   bool isInContactList = false;
   bool isInRequestList = false;
+  bool profileValue = false;
   final auth = AuthService();
   int counter = 0;
 
@@ -112,7 +113,8 @@ class _UserInfoState extends State<UserInfo> {
 //                displayUserNameAndContect(),
                 displayUserInfo(),
                 SizedBox(height: 30),
-                displayPaymentButtons()
+                displayPaymentButtons(),
+                displayUserProfileUpgradeOptions()
               ],
             ),
           ),
@@ -493,6 +495,87 @@ class _UserInfoState extends State<UserInfo> {
                   ),
           ),
         ),
+      ),
+    );
+  }
+
+  displayUserProfileUpgradeOptions() {
+    return Card(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 0),
+            child: Row(
+              children: <Widget>[
+                Radio(
+                  groupValue: profileValue,
+                  onChanged: (value) {
+                    setState(() {
+                      if (profileValue) {
+                        profileValue = false;
+                      } else {
+                        profileValue = true;
+                      }
+                    });
+                  },
+                ),
+                Text("Developer"),
+              ],
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 0),
+            child: Row(
+              children: <Widget>[
+                Radio(
+                  groupValue: profileValue,
+                  onChanged: (value) {
+                    setState(() {
+                      if (profileValue) {
+                        profileValue = false;
+                      } else {
+                        profileValue = true;
+                      }
+                    });
+                  },
+                ),
+                Text("Business"),
+              ],
+            ),
+          ),
+          MaterialButton(
+            child: Text(
+              "Upgrade Profile",
+              style: TextStyle(color: Colors.white),
+            ),
+            color: darkBlue(),
+            onPressed: () {
+              Navigator.pushNamed(context, "/upgrade-user-profile");
+            },
+          ),
+          MaterialButton(
+            child: Text(
+              "Developer",
+              style: TextStyle(color: Colors.white),
+            ),
+            color: darkBlue(),
+            onPressed: () {
+              Navigator.pushNamed(context, "/developer");
+            },
+          ),
+          MaterialButton(
+            child: Text(
+              "Business",
+              style: TextStyle(color: Colors.white),
+            ),
+            color: darkBlue(),
+            onPressed: () {
+              Navigator.pushNamed(context, "/business");
+            },
+          ),
+        ],
       ),
     );
   }

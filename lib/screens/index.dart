@@ -266,7 +266,7 @@ class _IndexState extends State<Index> {
   Widget showHomeBackground() {
     return Container(
       child: Image.asset(
-        'assets/images/index.png',
+        'assets/images/slydo_desk.png',
         fit: BoxFit.cover,
       ),
     );
