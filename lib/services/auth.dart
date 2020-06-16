@@ -13,7 +13,7 @@ import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
-final String baseUrl = "http://api.slydo.co";
+final String baseUrl = "https://api.slydo.co";
 final String secureBaseUrl = "https://api.slydo.co";
 final String localHostUrl = "https://127.0.0.1:8080";
 
@@ -66,7 +66,7 @@ class AuthService {
     // a user instance which we should pass around throughout the application as
     // the auth user.
 
-    var url = baseUrl + "/api/v1/user/auth/get-token/";
+    var url = secureBaseUrl + "/api/v1/user/auth/get-token/";
     var uuid = Uuid();
     var transactionId = uuid.v4();
     var headers = {
@@ -102,7 +102,7 @@ class AuthService {
       var jsonData = jsonResponse["user"];
       jsonData["password"] = password;
       jsonData["url"] =
-          baseUrl + "/api/v1/user/customer/" + jsonData["username"];
+          secureBaseUrl + "/api/v1/user/customer/" + jsonData["username"];
       // Delete user from db if one exist
       await deleteUsers();
       User user = await createUser(
@@ -133,7 +133,7 @@ class AuthService {
 
   // Log user out
   Future<void> logOut() async {
-    var url = baseUrl + "/api/v1/user/auth/logout/";
+    var url = secureBaseUrl + "/api/v1/user/auth/logout/";
     var headers = await getAuthHeaders();
     await http.get(url, headers: headers);
     await deleteUsers();
@@ -205,7 +205,7 @@ class AuthService {
 
   // Fetch user profile
   Future<CustomerProfile> fetchCustomerProfile(String userName) async {
-    var url = baseUrl + "/api/v1/user/customer/" + userName.trim();
+    var url = secureBaseUrl + "/api/v1/user/customer/" + userName.trim();
     var uuid = Uuid();
     var transactionId = uuid.v4();
     var headers = {
@@ -234,7 +234,7 @@ class AuthService {
   Future<CustomerProfile> updateCustomerAvatar(File avatar) async {
     User user = await getUser();
     var headers = await getAuthHeaders();
-    var url = baseUrl + "/api/v1/user/update-avatar/" + user.userName + "/";
+    var url = secureBaseUrl + "/api/v1/user/update-avatar/" + user.userName + "/";
 
     if (avatar != null) {
       var avatarPath = avatar.path;
@@ -275,7 +275,7 @@ class AuthService {
 
   Future<User> verifyUserDetail(File documentPhoto, File userPhoto) async {
     var headers = await getAuthHeaders();
-    var url = baseUrl + "/api/v1/user/kyc/";
+    var url = secureBaseUrl + "/api/v1/user/kyc/";
 
     if (documentPhoto != null && userPhoto != null) {
       var document = documentPhoto.path;
@@ -326,7 +326,7 @@ class AuthService {
   // Register the user with the backend servers
   Future<bool> userRegistration(Map _body) async {
     var data = {};
-    var url = baseUrl + "/api/v1/user/account/";
+    var url = secureBaseUrl + "/api/v1/user/account/";
 
     // Convert to what the server is expecting
     data["password1"] = _body["password1"];
@@ -359,7 +359,7 @@ class AuthService {
 
   // List the users bank accounts
   Future<List<BankAccount>> getBankAccounts() async {
-    var url = baseUrl + "/api/v1/transactions/bank-accounts-list/";
+    var url = secureBaseUrl + "/api/v1/transactions/bank-accounts-list/";
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
 
@@ -388,7 +388,7 @@ class AuthService {
 
   // delete single bankaccount
   Future<bool> deleteBankAccount(String id) async {
-    var url = baseUrl + "/api/v1/transactions/delete-bank-account/" + id + "/";
+    var url = secureBaseUrl + "/api/v1/transactions/delete-bank-account/" + id + "/";
     var headers = await getAuthHeaders();
     var response = await http.delete(url, headers: headers);
     if (response.statusCode == 204) {
@@ -399,7 +399,7 @@ class AuthService {
   }
 
   Future<bool> addBankAccount(Map data) async {
-    var url = baseUrl + "/api/v1/transactions/add-bank-account/";
+    var url = secureBaseUrl + "/api/v1/transactions/add-bank-account/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.post(url, headers: headers, body: _data);
@@ -408,7 +408,7 @@ class AuthService {
 
   // update bank account information
   Future<bool> updateBankAccount(Map data) async {
-    var url = baseUrl +
+    var url = secureBaseUrl +
         "/api/v1/transactions/set-default-bank-account/" +
         data['uuid'] +
         "/";
@@ -435,7 +435,7 @@ class AuthService {
       return null;
     }
     if (next == "") {
-      url = baseUrl + "/api/v1/transactions/bank-accounts-list/";
+      url = secureBaseUrl + "/api/v1/transactions/bank-accounts-list/";
     } else {
       url = next;
     }
@@ -475,7 +475,7 @@ class AuthService {
   // Accept Payment with POST method with empty data  post
   Future<http.Response> acceptPaymentRequests(
       PaymentRequest paymentRequest) async {
-    var url = baseUrl + "/api/v1/transactions/request-payment/accept/";
+    var url = secureBaseUrl + "/api/v1/transactions/request-payment/accept/";
     var data = {"id": paymentRequest.id};
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
@@ -485,7 +485,7 @@ class AuthService {
 
   // Patch payment status with empty data  patch
   Future<bool> rejectPaymentRequests(PaymentRequest paymentRequest) async {
-    var url = baseUrl +
+    var url = secureBaseUrl +
         "/api/v1/transactions/request-payment/update/" +
         paymentRequest.id +
         "/";
@@ -502,7 +502,7 @@ class AuthService {
 
   // Create Payment request with data from user input  post method  return true / false
   Future<http.Response> createPaymentRequests(Map data) async {
-    var url = baseUrl + "/api/v1/transactions/request-payment/create/";
+    var url = secureBaseUrl + "/api/v1/transactions/request-payment/create/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.post(url, headers: headers, body: _data);
@@ -518,7 +518,7 @@ class AuthService {
       return null;
     }
     if (next == "") {
-      url = baseUrl + "/api/v1/transactions/request-payment/list/";
+      url = secureBaseUrl + "/api/v1/transactions/request-payment/list/";
       if (toMe) {
         url = url + "?to_me=true";
       }
@@ -587,7 +587,7 @@ class AuthService {
       return null;
     }
     if (next == "") {
-      url = baseUrl + "/api/v1/transactions/list/";
+      url = secureBaseUrl + "/api/v1/transactions/list/";
       if (moneyIn) {
         url = url + "?money_in=true";
       }
@@ -655,7 +655,7 @@ class AuthService {
 
   //Send payment to backend
   Future<http.Response> makePayment(Map data) async {
-    var url = baseUrl + "/api/v1/transactions/make-payment/";
+    var url = secureBaseUrl + "/api/v1/transactions/make-payment/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.post(url, headers: headers, body: _data);
@@ -664,7 +664,7 @@ class AuthService {
 
   //send payment of the order to particular sellers
   Future<http.Response> makePaymentForCartOrder(var data) async {
-    var url = baseUrl + "/api/v1/transactions/make-payment-for-orders/";
+    var url = secureBaseUrl + "/api/v1/transactions/make-payment-for-orders/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.post(url, headers: headers, body: _data);
@@ -673,7 +673,7 @@ class AuthService {
 
   //Send payout to backend
   Future<http.Response> accountPayout(Map data) async {
-    var url = baseUrl + "/api/v1/transactions/payout/";
+    var url = secureBaseUrl + "/api/v1/transactions/payout/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.post(url, headers: headers, body: _data);
@@ -688,7 +688,7 @@ class AuthService {
       return null;
     }
     if (next == "") {
-      url = baseUrl + "/api/v1/transactions/payout/";
+      url = secureBaseUrl + "/api/v1/transactions/payout/";
     } else {
       url = next;
     }
@@ -731,7 +731,7 @@ class AuthService {
 
   //register device
   Future<bool> registerDevice(Map data) async {
-    var url = baseUrl + "/api/v1/notification/register-device/";
+    var url = secureBaseUrl + "/api/v1/notification/register-device/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
 
@@ -741,7 +741,7 @@ class AuthService {
 
   // it will unregister the device from server
   Future<bool> unRegisterDevice() async {
-    var url = baseUrl + "/api/v1/notification/unregister-device/";
+    var url = secureBaseUrl + "/api/v1/notification/unregister-device/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode({});
     var response;
@@ -755,7 +755,7 @@ class AuthService {
 
   // it will tell the server our app is in which state
   Future<bool> updateAppState(Map data) async {
-    var url = baseUrl + "/api/v1/notification/update-app-state/";
+    var url = secureBaseUrl + "/api/v1/notification/update-app-state/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response;
@@ -773,7 +773,7 @@ class AuthService {
 
   // Get Account Balance
   Future<Map> getAccountBalance() async {
-    var url = baseUrl + "/api/v1/transactions/check-account-balance/";
+    var url = secureBaseUrl + "/api/v1/transactions/check-account-balance/";
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
     if (response.statusCode == 200) {
@@ -786,7 +786,7 @@ class AuthService {
 
   // Send email to user.
   Future<bool> sendMessage(Map data) async {
-    var url = baseUrl + "/api/v1/messaging/send/";
+    var url = secureBaseUrl + "/api/v1/messaging/send/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.post(url, body: _data, headers: headers);
@@ -800,7 +800,7 @@ class AuthService {
 
   // it will update the message actions:  [Archived,UnArchived,Starred,UnStarred]
   Future<bool> updateMessage(String id, String action) async {
-    var url = baseUrl + "/api/v1/messaging/update/" + id + "/" + action + "/";
+    var url = secureBaseUrl + "/api/v1/messaging/update/" + id + "/" + action + "/";
     var headers = await getAuthHeaders();
     var response = await http.patch(url, headers: headers);
     var jsonData = json.decode(response.body);
@@ -814,7 +814,7 @@ class AuthService {
 
   // it will delete the message
   Future<bool> deleteMessage(String id) async {
-    var url = baseUrl + "/api/v1/messaging/delete/" + id + "/";
+    var url = secureBaseUrl + "/api/v1/messaging/delete/" + id + "/";
     var headers = await getAuthHeaders();
     var response = await http.delete(url, headers: headers);
     if (response.statusCode == 204) {
@@ -826,7 +826,7 @@ class AuthService {
 
   // Get single message
   Future<Message> getMessage(String id) async {
-    var url = baseUrl + "/api/v1/messaging/read/" + id + "/";
+    var url = secureBaseUrl + "/api/v1/messaging/read/" + id + "/";
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
     var jsonData = json.decode(response.body);
@@ -860,7 +860,7 @@ class AuthService {
       return null;
     }
     if (next == "") {
-      url = baseUrl + "/api/v1/messaging/list/" + filter + "/";
+      url = secureBaseUrl + "/api/v1/messaging/list/" + filter + "/";
     } else {
       url = next;
     }
@@ -917,7 +917,7 @@ class AuthService {
 
   // it will register the phone number to get OTP
   Future<bool> registerPhoneNumber(String phoneNumber) async {
-    var url = baseUrl + "/api/v1/sms/register-phone-number";
+    var url = secureBaseUrl + "/api/v1/sms/register-phone-number";
     var headers = getNonAuthHeader();
     var data = {
       "phone": phoneNumber,
@@ -938,7 +938,7 @@ class AuthService {
       String phoneNumber,
       String otp,
       String passwordToken) async {
-    var url = baseUrl + "/api/v1/sms/verify";
+    var url = secureBaseUrl + "/api/v1/sms/verify";
     var headers = getNonAuthHeader();
     var data = {
       "phone": phoneNumber,
@@ -959,7 +959,7 @@ class AuthService {
   // it will verify the phone number to  OTP
   Future<bool> passwordReset(String passwordOne, String passwordTwo,
       String phoneNumber, String resetToken) async {
-    var url = baseUrl + "/api/v1/user/auth/password-reset/";
+    var url = secureBaseUrl + "/api/v1/user/auth/password-reset/";
     var headers = getNonAuthHeader();
     var data = {
       "password1": passwordOne,
@@ -1004,7 +1004,7 @@ class AuthService {
   // delete product and service image
 
   Future<bool> deleteProductOrServiceImage(String imageId) async {
-    var url = baseUrl + "/api/v1/images/" + imageId + "/";
+    var url = secureBaseUrl + "/api/v1/images/" + imageId + "/";
     var headers = await getAuthHeaders();
     var response = await http.delete(
       url,
@@ -1027,7 +1027,7 @@ class AuthService {
       return null;
     }
     if (next == "") {
-      url = baseUrl + "/api/v1/products/by-seller/" + userId + "/";
+      url = secureBaseUrl + "/api/v1/products/by-seller/" + userId + "/";
     } else {
       url = next;
     }
@@ -1072,7 +1072,7 @@ class AuthService {
   // Add Product
   Future<bool> addProduct(Product product) async {
     var headers = await getAuthHeaders();
-    var url = baseUrl + "/api/v1/products/";
+    var url = secureBaseUrl + "/api/v1/products/";
 
     //create multipart request for POST or PATCH method
     var request = http.MultipartRequest("POST", Uri.parse(url));
@@ -1112,7 +1112,7 @@ class AuthService {
   // Edit Product
   Future<bool> editProduct(Product product) async {
     var headers = await getAuthHeaders();
-    var url = baseUrl + "/api/v1/products/" + product.id.toString() + "/";
+    var url = secureBaseUrl + "/api/v1/products/" + product.id.toString() + "/";
 
     //create multipart request for POST or PATCH method
     var request = http.MultipartRequest("PATCH", Uri.parse(url));
@@ -1154,7 +1154,7 @@ class AuthService {
 
   // Get single product
   Future<Product> getProduct(String id) async {
-    var url = baseUrl + "/api/v1/products/" + id + "/";
+    var url = secureBaseUrl + "/api/v1/products/" + id + "/";
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
     var jsonData = json.decode(response.body);
@@ -1168,7 +1168,7 @@ class AuthService {
 
   // delete single product
   Future<bool> deleteProduct(String id) async {
-    var url = baseUrl + "/api/v1/products/" + id + "/";
+    var url = secureBaseUrl + "/api/v1/products/" + id + "/";
     var headers = await getAuthHeaders();
     var response = await http.delete(
       url,
@@ -1214,7 +1214,7 @@ class AuthService {
       return null;
     }
     if (next == "") {
-      url = baseUrl + "/api/v1/services/by-provider/" + userId + "/";
+      url = secureBaseUrl + "/api/v1/services/by-provider/" + userId + "/";
     } else {
       url = next;
     }
@@ -1254,7 +1254,7 @@ class AuthService {
   // addService
   Future<bool> addService(Service service) async {
     var headers = await getAuthHeaders();
-    var url = baseUrl + "/api/v1/services/";
+    var url = secureBaseUrl + "/api/v1/services/";
 
     //create multipart request for POST or PATCH method
     var request = http.MultipartRequest("POST", Uri.parse(url));
@@ -1294,7 +1294,7 @@ class AuthService {
 // edit service
   Future<bool> editService(Service service) async {
     var headers = await getAuthHeaders();
-    var url = baseUrl + "/api/v1/services/" + service.id.toString() + "/";
+    var url = secureBaseUrl + "/api/v1/services/" + service.id.toString() + "/";
 
     //create multipart request for POST or PATCH method
     var request = http.MultipartRequest("PATCH", Uri.parse(url));
@@ -1336,7 +1336,7 @@ class AuthService {
 
 // Get single service
   Future<Service> getService(String id) async {
-    var url = baseUrl + "/api/v1/services/" + id + "/";
+    var url = secureBaseUrl + "/api/v1/services/" + id + "/";
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
     var jsonData = json.decode(response.body);
@@ -1350,7 +1350,7 @@ class AuthService {
 
   // delete single service
   Future<bool> deleteService(String id) async {
-    var url = baseUrl + "/api/v1/services/" + id + "/";
+    var url = secureBaseUrl + "/api/v1/services/" + id + "/";
     var headers = await getAuthHeaders();
     var response = await http.delete(
       url,
@@ -1418,7 +1418,7 @@ class AuthService {
   Future<Map<String, dynamic>> getTransactionWeeklyReport(
       String weekNumber) async {
     var url =
-        baseUrl + "/api/v1/transactions/transaction-filter/?week=" + weekNumber;
+        secureBaseUrl + "/api/v1/transactions/transaction-filter/?week=" + weekNumber;
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
     if (response.statusCode == 200) {
@@ -1431,7 +1431,7 @@ class AuthService {
   }
 
   Future<Map<String, dynamic>> getPaymentCategory() async {
-    var url = baseUrl + "/api/v1/transactions/payment-category/";
+    var url = secureBaseUrl + "/api/v1/transactions/payment-category/";
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
     if (response.statusCode == 200) {
@@ -1451,7 +1451,7 @@ class AuthService {
   Future<bool> updateOrderStatus(String value, String orderId) async {
     var data = {"status": value};
     var _data = jsonEncode(data);
-    var url = baseUrl + "/api/v1/order/" + orderId + "/update-status/";
+    var url = secureBaseUrl + "/api/v1/order/" + orderId + "/update-status/";
     var headers = await getAuthHeaders();
     var response = await http.patch(url, headers: headers, body: _data);
     if (response.statusCode == 200) {
@@ -1464,7 +1464,7 @@ class AuthService {
   Future<bool> updateOrderNote(String note, String orderId) async {
     var data = {"note": note};
     var _data = jsonEncode(data);
-    var url = baseUrl + "/api/v1/order/" + orderId + "/add-note/";
+    var url = secureBaseUrl + "/api/v1/order/" + orderId + "/add-note/";
     var headers = await getAuthHeaders();
     var response = await http.patch(url, headers: headers, body: _data);
     if (response.statusCode == 200) {
@@ -1481,7 +1481,7 @@ class AuthService {
       return null;
     }
     if (next == "") {
-      url = baseUrl + "/api/v1/order/";
+      url = secureBaseUrl + "/api/v1/order/";
       if (filterValue != "" && filterValue != null) {
         url = url + "?status__iexact=$filterValue";
       }
@@ -1511,7 +1511,7 @@ class AuthService {
 
   // Get single Order
   Future<dynamic> getOrder(String id) async {
-    var url = baseUrl + "/api/v1/order/" + id + "/";
+    var url = secureBaseUrl + "/api/v1/order/" + id + "/";
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
     var jsonData = json.decode(response.body);
@@ -1544,7 +1544,7 @@ class AuthService {
 
   //ShoppingCart
   Future<List> getShoppingCart() async {
-    var url = baseUrl + "/api/v1/shopping-cart/";
+    var url = secureBaseUrl + "/api/v1/shopping-cart/";
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
     var jsonData = jsonDecode(response.body);
@@ -1556,7 +1556,7 @@ class AuthService {
   }
 
   Future<bool> addItemToShoppingCart(Map data) async {
-    var url = baseUrl + "/api/v1/shopping-cart/add-item/";
+    var url = secureBaseUrl + "/api/v1/shopping-cart/add-item/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.patch(url, headers: headers, body: _data);
@@ -1571,7 +1571,7 @@ class AuthService {
   }
 
   Future<bool> removeItemToShoppingCart(Map data) async {
-    var url = baseUrl + "/api/v1/shopping-cart/remove-item/";
+    var url = secureBaseUrl + "/api/v1/shopping-cart/remove-item/";
     var _data = jsonEncode(data);
     var headers = await getAuthHeaders();
     var response = await http.patch(url, headers: headers, body: _data);
@@ -1586,7 +1586,7 @@ class AuthService {
 
   //place shopping cart order
   Future<dynamic> placeOrderOfShoppingCart(Map data) async {
-    var url = baseUrl + "/api/v1/shopping-cart/";
+    var url = secureBaseUrl + "/api/v1/shopping-cart/";
     var _data = jsonEncode(data);
     var headers = await getAuthHeaders();
     var response = await http.post(url, headers: headers, body: _data);
@@ -1624,7 +1624,7 @@ class AuthService {
 
   // top up slydo account
   Future<bool> topUpAccountByCC(Map data) async {
-    var url = baseUrl + "/api/v1/transactions/top-up/";
+    var url = secureBaseUrl + "/api/v1/transactions/top-up/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.post(url, headers: headers, body: _data);
@@ -1636,7 +1636,7 @@ class AuthService {
   }
 
   Future<Address> fetchUserAddress() async {
-    var url = baseUrl + "/api/v1/user/address/";
+    var url = secureBaseUrl + "/api/v1/user/address/";
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
     var jsonData = jsonDecode(response.body);
@@ -1654,7 +1654,7 @@ class AuthService {
   }
 
   Future<bool> addUserAddress(Map data) async {
-    var url = baseUrl + "/api/v1/user/address/";
+    var url = secureBaseUrl + "/api/v1/user/address/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.post(url, headers: headers, body: _data);
@@ -1673,7 +1673,7 @@ class AuthService {
         ? "sellers-other-products"
         : "providers-other-services";
 
-    var url = "$baseUrl/api/v1/$type/$urlPart/$userId/?exclude=$exclude";
+    var url = "$secureBaseUrl/api/v1/$type/$urlPart/$userId/?exclude=$exclude";
 
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
@@ -1702,7 +1702,7 @@ class AuthService {
   //Friends List
 
   Future<Map<String, dynamic>> contacts(String next, String previous) async {
-    var url = baseUrl + "/api/v1/user/contacts/";
+    var url = secureBaseUrl + "/api/v1/user/contacts/";
     if (next == null) {
       return null;
     }
@@ -1729,7 +1729,7 @@ class AuthService {
   }
 
   Future<bool> removeFromContactList(CustomerProfile user) async {
-    var url = baseUrl + "/api/v1/user/contacts/remove-from-contact/";
+    var url = secureBaseUrl + "/api/v1/user/contacts/remove-from-contact/";
     var data = {"user": user.userName};
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
@@ -1743,7 +1743,7 @@ class AuthService {
   // Check if user is the the checker's list of contact
   Future<bool> checkInContactList(String user, String checker) async {
     // Note that the checker is the request.user making this request.
-    var url = baseUrl + "/api/v1/user/contacts/check-in-contact/";
+    var url = secureBaseUrl + "/api/v1/user/contacts/check-in-contact/";
     var data = {"checker": checker, "user": user};
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
@@ -1756,7 +1756,7 @@ class AuthService {
 
   Future<bool> checkInRequest(String user) async {
     // Note that the checker is the request.user making this request.
-    var url = baseUrl + "/api/v1/user/contact-request/check-in-request/";
+    var url = secureBaseUrl + "/api/v1/user/contact-request/check-in-request/";
     var data = {"to_user": user};
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
@@ -1768,7 +1768,7 @@ class AuthService {
   }
 
   Future<bool> makeContactRequest(CustomerProfile user) async {
-    var url = baseUrl + "/api/v1/user/contact-request/";
+    var url = secureBaseUrl + "/api/v1/user/contact-request/";
     var data = {"to_user": user.userName};
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
@@ -1782,7 +1782,7 @@ class AuthService {
   // Block Contact
   Future<Map<String, dynamic>> listBlockUsers(
       String next, String previous) async {
-    var url = baseUrl + "/api/v1/user/contacts/list-block-contact/";
+    var url = secureBaseUrl + "/api/v1/user/contacts/list-block-contact/";
     if (next == null) {
       return null;
     }
@@ -1809,7 +1809,7 @@ class AuthService {
   }
 
   Future<bool> blockUser(CustomerProfile user) async {
-    var url = baseUrl + "/api/v1/user/contacts/block-contact/";
+    var url = secureBaseUrl + "/api/v1/user/contacts/block-contact/";
     var data = {"user": user.userName};
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
@@ -1821,7 +1821,7 @@ class AuthService {
   }
 
   Future<bool> unBlockUser(CustomerProfile user) async {
-    var url = baseUrl + "/api/v1/user/contacts/unblock-contact/";
+    var url = secureBaseUrl + "/api/v1/user/contacts/unblock-contact/";
     var data = {"user": user.userName};
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
@@ -1835,7 +1835,7 @@ class AuthService {
   // Contact Request
   Future<Map<String, dynamic>> listContactRequests(
       String next, String previous) async {
-    var url = baseUrl + "/api/v1/user/contact-request/";
+    var url = secureBaseUrl + "/api/v1/user/contact-request/";
     if (next == null) {
       return null;
     }
@@ -1862,7 +1862,7 @@ class AuthService {
   }
 
   Future<bool> acceptContactRequest(CustomerProfile user) async {
-    var url = baseUrl + "/api/v1/user/contact-request/accept/";
+    var url = secureBaseUrl + "/api/v1/user/contact-request/accept/";
     var data = {"user": user.userName};
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
@@ -1874,7 +1874,7 @@ class AuthService {
   }
 
   Future<bool> rejectContactRequest(CustomerProfile user) async {
-    var url = baseUrl + "/api/v1/user/contact-request/cancel-or-reject/";
+    var url = secureBaseUrl + "/api/v1/user/contact-request/cancel-or-reject/";
     var data = {"user": user.userName};
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
