@@ -56,7 +56,7 @@ class _SendPaymentState extends State<SendPayment> {
 
   //variables for categorie
   bool isLoading = true;
-  List<String> paymentCategoriesTest = List();
+  List<String> paymentCategories = List();
   String selectedCategory;
   BasketBloc basketBloc;
 
@@ -140,7 +140,7 @@ class _SendPaymentState extends State<SendPayment> {
         setState(() {
           List categoriesList = result["results"]["data"];
           categoriesList.forEach((data) {
-            paymentCategoriesTest.add(data["name"]);
+            paymentCategories.add(data["name"]);
           });
           isLoading = false;
         });
@@ -437,7 +437,7 @@ class _SendPaymentState extends State<SendPayment> {
                 selectedCategory = value;
               });
             },
-            items: paymentCategoriesTest.map((String category) {
+            items: paymentCategories.map((String category) {
               return DropdownMenuItem<String>(
                 value: category,
                 child: Padding(

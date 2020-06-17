@@ -1900,4 +1900,30 @@ class AuthService {
     }
     return false;
   }
+
+  Future<Map<String, dynamic>> getUserProfileUpgradeDetails() async {
+//    var url = secureBaseUrl + "/api/v1/transactions/payment-category/";
+//    var headers = await getAuthHeaders();
+//    var response = await http.get(url, headers: headers);
+//    if (response.statusCode == 200) {
+//      var jsonData = json.decode(response.body);
+//
+//      Map<String, dynamic> result = {
+//        "results": jsonData["results"],
+//      };
+//      return result;
+//    } else {
+//      var jsonData = json.decode(response.body);
+//      throw jsonData;
+//    }
+
+    return {
+      "results": {
+        "data": [
+          {"name": "Business", "price": "100"},
+          {"name": "Developer", "price": "200"},
+        ]
+      }
+    };
+  }
 }

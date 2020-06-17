@@ -267,7 +267,28 @@ class _UserInfoState extends State<UserInfo> {
                     ],
                   ),
                 )
-              : Container(),
+              : Container(
+                  child: Container(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(
+                          "User Profile Type :",
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        Text(
+                          user.type.toUpperCase(),
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 8.0,
+                      vertical: 8.0,
+                    ),
+                  ),
+                ),
         ],
       ),
     );
@@ -499,84 +520,22 @@ class _UserInfoState extends State<UserInfo> {
     );
   }
 
-  displayUserProfileUpgradeOptions() {
-    return Card(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Container(
-            padding: EdgeInsets.symmetric(vertical: 0),
-            child: Row(
-              children: <Widget>[
-                Radio(
-                  groupValue: profileValue,
-                  onChanged: (value) {
-                    setState(() {
-                      if (profileValue) {
-                        profileValue = false;
-                      } else {
-                        profileValue = true;
-                      }
-                    });
-                  },
-                ),
-                Text("Developer"),
-              ],
-            ),
-          ),
-          Container(
-            padding: EdgeInsets.symmetric(vertical: 0),
-            child: Row(
-              children: <Widget>[
-                Radio(
-                  groupValue: profileValue,
-                  onChanged: (value) {
-                    setState(() {
-                      if (profileValue) {
-                        profileValue = false;
-                      } else {
-                        profileValue = true;
-                      }
-                    });
-                  },
-                ),
-                Text("Business"),
-              ],
-            ),
-          ),
-          MaterialButton(
-            child: Text(
-              "Upgrade Profile",
-              style: TextStyle(color: Colors.white),
-            ),
-            color: darkBlue(),
-            onPressed: () {
-              Navigator.pushNamed(context, "/upgrade-user-profile");
-            },
-          ),
-          MaterialButton(
-            child: Text(
-              "Developer",
-              style: TextStyle(color: Colors.white),
-            ),
-            color: darkBlue(),
-            onPressed: () {
-              Navigator.pushNamed(context, "/developer");
-            },
-          ),
-          MaterialButton(
-            child: Text(
-              "Business",
-              style: TextStyle(color: Colors.white),
-            ),
-            color: darkBlue(),
-            onPressed: () {
-              Navigator.pushNamed(context, "/business");
-            },
-          ),
-        ],
+  Widget displayUserProfileUpgradeOptions() {
+    return MaterialButton(
+      minWidth: double.infinity,
+      height: 40,
+      child: Text(
+        "Upgrade Profile",
+        style: TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          fontSize: 16,
+        ),
       ),
+      color: darkBlue(),
+      onPressed: () {
+        Navigator.pushNamed(context, "/upgrade-user-profile");
+      },
     );
   }
 }
