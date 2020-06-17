@@ -197,11 +197,19 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
       ),
       color: darkBlue(),
       onPressed: () {
+        print("clicked");
+//        var data = {
+//          "type": selectedType,
+//          "business_name": businessName,
+//          "default_category": selectedCategory
+//        };
         var data = {
-          "type": selectedType,
-          "business_name": businessName,
-          "default_category": selectedCategory
+          "account_type": "Business",
+          "business_name": "Big Tech",
+          "default_payment_type": "Shopping",
         };
+
+
 
         _auth.upgradeUserProfile(data).then((result) {
           if (result) {}
