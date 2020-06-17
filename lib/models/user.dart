@@ -32,11 +32,12 @@ class User {
   String phoneNumber;
   String fullName;
   String userName;
+  String type;
   String avatar;
   String qrCode;
   String password;
   String currency;
-  String type;
+
   bool isVerified;
   final Setting setting = Setting(
       enableService: true,
@@ -51,11 +52,11 @@ class User {
     this.phoneNumber,
     this.fullName,
     this.userName,
+    this.type,
     this.avatar,
     this.qrCode,
     this.password,
     this.currency = "₦",
-    this.type = "User",
     this.isVerified = false,
   });
 

@@ -241,10 +241,9 @@ class _UserProfileState extends State<UserProfile> {
           automaticallyImplyLeading: true,
           backgroundColor: darkBlue(),
           titleSpacing: 0,
-          title: Row(
-            children: <Widget>[
-              Text(searchedUser.fullName),
-            ],
+          title: Text(
+            searchedUser.fullName,
+            maxLines: 1,
           ),
           actions: <Widget>[
             IconButton(

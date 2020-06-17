@@ -280,12 +280,29 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
         };
         _auth.upgradeUserProfile(data).then((result) {
           if (result) {
-            Navigator.pop(context);
             Toast.show(
                 "Request sent !! Your Profile Will Be Updated Soon !!", context,
                 textColor: Colors.white, backgroundColor: darkBlue());
+
+            _auth
+                .authenticate(userBloc.user.phoneNumber, userBloc.user.password)
+                .then((newUser) {
+              print(newUser.type);
+              if (mounted) {
+                setState(() {
+                  userBloc.user = newUser;
+                });
+              }
+
+              _auth.fetchCustomerProfile(userBloc.user.userName).then((user) {
+                Navigator.pop(context);
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/profile',
+                    arguments: {"searchedUser": user});
+              });
+            });
           } else {
-            Toast.show("Request Fail Try After Some Time", context,
+            Toast.show("Something Went Wrong !!", context,
                 textColor: Colors.white, backgroundColor: darkBlue());
           }
         });

@@ -100,7 +100,7 @@ class _UserDashboardState extends State<UserDashboard> {
     bankAccountBloc = Provider.of<BankAccountBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
 
-    if (userBloc.user.isBusinessUser()) {
+    if (userBloc.user.type != "User") {
       storeLocked = false;
     }
 
@@ -114,7 +114,10 @@ class _UserDashboardState extends State<UserDashboard> {
           children: <Widget>[
             displayUserAvatar(),
             Expanded(child: SizedBox(width: 10)),
-            Text(AppLocalization.of(context).explore),
+            Text(
+              AppLocalization.of(context).explore,
+              maxLines: 1,
+            ),
             Expanded(child: SizedBox(width: 10)),
           ],
         ),
@@ -222,7 +225,7 @@ class _UserDashboardState extends State<UserDashboard> {
           Icons.store_mall_directory,
           AppLocalization.of(context).myStore,
           () {
-            if (storeLocked) {
+            if (!storeLocked) {
               Platform.isIOS ? storeItemIOSSheet() : storeItemAndroidSheet();
             }
           },

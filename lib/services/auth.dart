@@ -27,6 +27,7 @@ class AuthService {
     String phoneNumber,
     String fullName,
     String username,
+    String type,
     String avatar,
     String qrCode,
     String password,
@@ -40,6 +41,7 @@ class AuthService {
       phoneNumber: phoneNumber,
       fullName: fullName,
       userName: username,
+      type: type,
       avatar: avatar,
       qrCode: qrCode,
       password: password,
@@ -111,12 +113,14 @@ class AuthService {
         jsonData["phone_number"],
         jsonData["full_name"],
         jsonData["username"],
+        jsonData["account_type"],
         jsonData["avatar"],
         jsonData["qr_code"],
         jsonData["password"],
         jsonData["default_currency"],
         jsonData["is_verified"] ?? false,
       );
+      print(jsonData);
 
       return user;
     }
@@ -309,6 +313,7 @@ class AuthService {
           jsonData["phone_number"],
           jsonData["full_name"],
           jsonData["username"],
+          jsonData["account_type"],
           jsonData["avatar"],
           jsonData["qr_code"],
           jsonData["password"],

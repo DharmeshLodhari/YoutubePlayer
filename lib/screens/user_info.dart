@@ -110,7 +110,6 @@ class _UserInfoState extends State<UserInfo> {
                 SizedBox(
                   height: 30,
                 ),
-//                displayUserNameAndContect(),
                 displayUserInfo(),
                 SizedBox(height: 30),
                 displayPaymentButtons(),
@@ -270,16 +269,23 @@ class _UserInfoState extends State<UserInfo> {
               : Container(
                   child: Container(
                     child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Text(
-                          "User Profile Type :",
-                          style: TextStyle(fontSize: 16),
-                        ),
-                        Text(
-                          user.type.toUpperCase(),
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
+                        Row(
+                          children: <Widget>[
+                            ClipOval(
+                              child: Container(
+                                color: Colors.green,
+                                height: 15,
+                                width: 15,
+                              ),
+                            ),
+                            SizedBox(
+                              width: 8,
+                            ),
+                            displayUserType()
+                          ],
                         ),
                       ],
                     ),
@@ -292,6 +298,16 @@ class _UserInfoState extends State<UserInfo> {
         ],
       ),
     );
+  }
+
+  Widget displayUserType() {
+    if (_userBloc.user.userName == user.userName) {
+      return Text(
+        _userBloc.user.type,
+        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      );
+    }
+    return Container();
   }
 
   Widget contactActionButtons() {
@@ -521,21 +537,26 @@ class _UserInfoState extends State<UserInfo> {
   }
 
   Widget displayUserProfileUpgradeOptions() {
-    return MaterialButton(
-      minWidth: double.infinity,
-      height: 40,
-      child: Text(
-        "Upgrade Profile",
-        style: TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-          fontSize: 16,
-        ),
-      ),
-      color: darkBlue(),
-      onPressed: () {
-        Navigator.pushNamed(context, "/upgrade-user-profile");
-      },
-    );
+    if (_userBloc.user.userName == user.userName) {
+      return _userBloc.user.type == "User"
+          ? MaterialButton(
+              minWidth: double.infinity,
+              height: 40,
+              child: Text(
+                "Upgrade Profile",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+              color: darkBlue(),
+              onPressed: () {
+                Navigator.pushNamed(context, "/upgrade-user-profile");
+              },
+            )
+          : Container();
+    }
+    return Container();
   }
 }
