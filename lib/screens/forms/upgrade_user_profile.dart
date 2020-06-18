@@ -101,23 +101,23 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
                       mainAxisSize: MainAxisSize.max,
                       children: <Widget>[
                         SizedBox(
-                          height: 40,
+                          height: 30,
                         ),
                         getUpgradeProfileType(),
                         SizedBox(
-                          height: 15,
+                          height: 10,
                         ),
                         getBusinessName(),
                         SizedBox(
-                          height: 15,
+                          height: 10,
                         ),
                         getCategoryField(),
                         SizedBox(
-                          height: 15,
+                          height: 10,
                         ),
                         getAmount(),
                         SizedBox(
-                          height: 15,
+                          height: 25,
                         ),
                         submitButton()
                       ],
@@ -130,143 +130,171 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
   }
 
   Widget getUpgradeProfileType() {
-    return Card(
-      margin: EdgeInsets.all(0),
-      child: Container(
-        padding: EdgeInsets.all(8),
-        width: double.infinity,
-        child: DropdownButton<String>(
-          isExpanded: true,
-          underline: Divider(
-            color: Colors.transparent,
-          ),
-          hint: Row(
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(left: 8.0),
-                child: Icon(
-                  Icons.supervised_user_circle,
-                  color: Colors.grey[600],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 16.0),
-                child: Text("Profile Type"),
-              ),
-            ],
-          ),
-          value: selectedType,
-          onChanged: (value) {
-            setState(() {
-              selectedType = value;
-              type.forEach((element) {
-                if (element["name"] == selectedType) {
-                  price = element["price"];
-                }
-              });
-            });
-          },
-          items: type.map((type) {
-            return DropdownMenuItem<String>(
-              value: type["name"],
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 0),
-                child: Text(
-                  type["name"],
-                  style: TextStyle(color: Colors.black),
-                ),
-              ),
-            );
-          }).toList(),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text("Account Type"),
+        SizedBox(
+          height: 4,
         ),
-      ),
+        Card(
+          margin: EdgeInsets.all(0),
+          child: Container(
+            padding: EdgeInsets.all(8),
+            width: double.infinity,
+            child: DropdownButton<String>(
+              isExpanded: true,
+              underline: Divider(
+                color: Colors.transparent,
+              ),
+              hint: Row(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: Icon(
+                      Icons.supervised_user_circle,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16.0),
+                    child: Text("Profile Type"),
+                  ),
+                ],
+              ),
+              value: selectedType,
+              onChanged: (value) {
+                setState(() {
+                  selectedType = value;
+                  type.forEach((element) {
+                    if (element["name"] == selectedType) {
+                      price = element["price"];
+                    }
+                  });
+                });
+              },
+              items: type.map((type) {
+                return DropdownMenuItem<String>(
+                  value: type["name"],
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 0),
+                    child: Text(
+                      type["name"],
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
   Widget getBusinessName() {
-    return TextFormField(
-      autofocus: false,
-      obscureText: false,
-      keyboardType: TextInputType.text,
-      decoration: InputDecoration(
-          prefixIcon: Icon(Icons.person),
-          fillColor: Colors.white,
-          filled: true,
-          hintText: "Business name",
-          labelStyle: TextStyle(
-            color: Colors.black,
-            fontSize: 16,
+    return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text("Business Name"),
+          SizedBox(
+            height: 4,
           ),
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.green, style: BorderStyle.solid))),
-      validator: (val) => val.length < 5
-          ? AppLocalization.of(context).validationTextMessage
-          : null,
-      onChanged: (val) {
-        if (mounted) {
-          setState(() {
-            businessName = val;
-          });
-        }
-      },
-    );
+          TextFormField(
+            autofocus: false,
+            obscureText: false,
+            keyboardType: TextInputType.text,
+            decoration: InputDecoration(
+                prefixIcon: Icon(Icons.person),
+                fillColor: Colors.white,
+                filled: true,
+                hintText: "Business name",
+                labelStyle: TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                ),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(4)),
+                    borderSide: BorderSide(
+                        width: 1,
+                        color: Colors.green,
+                        style: BorderStyle.solid))),
+            validator: (val) => val.length < 5
+                ? AppLocalization.of(context).validationTextMessage
+                : null,
+            onChanged: (val) {
+              if (mounted) {
+                setState(() {
+                  businessName = val;
+                });
+              }
+            },
+          ),
+        ]);
   }
 
   Widget getCategoryField() {
-    return Card(
-      margin: EdgeInsets.all(0),
-      child: Container(
-        padding: EdgeInsets.all(8),
-        width: double.infinity,
-        child: DropdownButton<String>(
-          isExpanded: true,
-          underline: Divider(
-            color: Colors.transparent,
-          ),
-          hint: Row(
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(left: 8.0),
-                child: Icon(
-                  Icons.category,
-                  color: Colors.grey[600],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 16.0),
-                child: Text(AppLocalization.of(context).category),
-              ),
-            ],
-          ),
-          value: selectedCategory,
-          onChanged: (String value) {
-            setState(() {
-              selectedCategory = value;
-            });
-          },
-          items: paymentCategories.map((String category) {
-            return DropdownMenuItem<String>(
-              value: category,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 0),
-                child: Text(
-                  category,
-                  style: TextStyle(color: Colors.black),
-                ),
-              ),
-            );
-          }).toList(),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text("Default Payment Type "),
+        SizedBox(
+          height: 4,
         ),
-      ),
+        Card(
+          margin: EdgeInsets.all(0),
+          child: Container(
+            padding: EdgeInsets.all(8),
+            width: double.infinity,
+            child: DropdownButton<String>(
+              isExpanded: true,
+              underline: Divider(
+                color: Colors.transparent,
+              ),
+              hint: Row(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: Icon(
+                      Icons.category,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16.0),
+                    child: Text(AppLocalization.of(context).category),
+                  ),
+                ],
+              ),
+              value: selectedCategory,
+              onChanged: (String value) {
+                setState(() {
+                  selectedCategory = value;
+                });
+              },
+              items: paymentCategories.map((String category) {
+                return DropdownMenuItem<String>(
+                  value: category,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 0),
+                    child: Text(
+                      category,
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
   Widget submitButton() {
     return MaterialButton(
       minWidth: double.infinity,
-      height: 40,
+      height: 42,
       child: Text(
         "Submit",
         style: TextStyle(color: Colors.white, fontSize: 16),
@@ -311,34 +339,52 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
   }
 
   Widget getAmount() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.only(left: 8.0),
-          child: Text(
-            "Price:",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-          ),
+        Text("Amount To Be Paid"),
+        SizedBox(
+          height: 4,
         ),
-        Row(
-          children: <Widget>[
-            Text(
-              worldCurrencies[userBloc.user.currency] + " ",
-              style: TextStyle(
-                fontFamily: "Roboto",
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-              ),
+        Card(
+          margin: EdgeInsets.symmetric(horizontal: 0),
+          child: Container(
+            padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text(
+                  "Price:",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    color: darkBlue(),
+                  ),
+                ),
+                Row(
+                  children: <Widget>[
+                    Text(
+                      worldCurrencies[userBloc.user.currency] + " ",
+                      style: TextStyle(
+                        fontFamily: "Roboto",
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        color: darkBlue(),
+                      ),
+                    ),
+                    Text(
+                      price,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        color: darkBlue(),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            Padding(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: Text(
-                price,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-              ),
-            ),
-          ],
+          ),
         ),
       ],
     );

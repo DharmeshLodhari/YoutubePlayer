@@ -113,7 +113,7 @@ class _UserInfoState extends State<UserInfo> {
                 displayUserInfo(),
                 SizedBox(height: 30),
                 displayPaymentButtons(),
-                displayUserProfileUpgradeOptions()
+                displayUserProfileUpgradeOptions(),
               ],
             ),
           ),
@@ -276,7 +276,11 @@ class _UserInfoState extends State<UserInfo> {
                           children: <Widget>[
                             ClipOval(
                               child: Container(
-                                color: Colors.green,
+                                color: _userBloc.user.type != "User"
+                                    ? _userBloc.user.type == "Business"
+                                        ? Colors.green
+                                        : Color.fromRGBO(255, 169, 57, 1)
+                                    : lightBlue(),
                                 height: 15,
                                 width: 15,
                               ),
@@ -541,7 +545,7 @@ class _UserInfoState extends State<UserInfo> {
       return _userBloc.user.type == "User"
           ? MaterialButton(
               minWidth: double.infinity,
-              height: 40,
+              height: 42,
               child: Text(
                 "Upgrade Profile",
                 style: TextStyle(

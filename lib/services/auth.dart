@@ -120,8 +120,6 @@ class AuthService {
         jsonData["default_currency"],
         jsonData["is_verified"] ?? false,
       );
-      print(jsonData);
-
       return user;
     }
     return User(
