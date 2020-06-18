@@ -516,8 +516,6 @@ class AuthService {
 
   Future<Map<String, dynamic>> listPaymentRequests(
       String next, String previous, bool toMe, bool fromMe) async {
-    Map<String, String> knownCustomers = {};
-
     var url = "";
     if (next == null) {
       return null;
@@ -549,25 +547,21 @@ class AuthService {
             : false;
 
         var payee = isCredit ? item["from_customer"] : item['to_customer'];
+        var avatar = isCredit
+            ? item["from_customer_avatar"]
+            : item['to_customer_avatar'];
 
-        try {
-          if (knownCustomers.containsKey(payee) == false) {
-            var customer = await fetchCustomerProfile(payee);
-            knownCustomers[payee] = customer.avatar;
-          }
-          var avatar = knownCustomers[payee];
-          PaymentRequest paymentRequest = PaymentRequest(
-              status: item['status'],
-              id: item['id'].toString(),
-              description: item['description'],
-              payee: payee,
-              avatar: avatar,
-              currency: item['currency'],
-              createdAt: item['created_at'],
-              amount: item['amount'],
-              isCredit: isCredit);
-          paymentRequests.add(paymentRequest);
-        } catch (Exception) {}
+        PaymentRequest paymentRequest = PaymentRequest(
+            status: item['status'],
+            id: item['id'].toString(),
+            description: item['description'],
+            payee: payee,
+            avatar: avatar,
+            currency: item['currency'],
+            createdAt: item['created_at'],
+            amount: item['amount'],
+            isCredit: isCredit);
+        paymentRequests.add(paymentRequest);
       }
 
       Map<String, dynamic> result = {
@@ -602,7 +596,6 @@ class AuthService {
     } else {
       url = next;
     }
-    Map<String, String> knownCustomers = {};
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
 
@@ -620,29 +613,25 @@ class AuthService {
             : false;
 
         var payee = isCredit ? item["from_customer"] : item['to_customer'];
+        var avatar = isCredit
+            ? item["from_customer_avatar"]
+            : item['to_customer_avatar'];
 
-        try {
-          if (knownCustomers.containsKey(payee) == false) {
-            var customer = await fetchCustomerProfile(payee);
-            knownCustomers[payee] = customer.avatar;
-          }
-          var avatar = knownCustomers[payee];
-          Transaction transaction = Transaction(
-              status: item['status'],
-              uuid: item['slug'],
-              description: item['description'],
-              payee: payee,
-              avatar: avatar,
-              currency: item['currency'],
-              createdAt: item['created_at'],
-              category: item['category'],
-              note: item['notes'],
-              latitude: item['latitude'] ?? "",
-              longitude: item['longitude'] ?? "",
-              amount: item['amount'],
-              isCredit: isCredit);
-          transactions.add(transaction);
-        } catch (Exception) {}
+        Transaction transaction = Transaction(
+            status: item['status'],
+            uuid: item['slug'],
+            description: item['description'],
+            payee: payee,
+            avatar: avatar,
+            currency: item['currency'],
+            createdAt: item['created_at'],
+            category: item['category'],
+            note: item['notes'],
+            latitude: item['latitude'] ?? "",
+            longitude: item['longitude'] ?? "",
+            amount: item['amount'],
+            isCredit: isCredit);
+        transactions.add(transaction);
       }
       Map<String, dynamic> result = {
         "count": jsonData["count"],
