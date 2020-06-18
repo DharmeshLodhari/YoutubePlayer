@@ -208,7 +208,7 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
                 prefixIcon: Icon(Icons.person),
                 fillColor: Colors.white,
                 filled: true,
-                hintText: "Business name",
+                hintText: "Enter Your Business name",
                 labelStyle: TextStyle(
                   color: Colors.black,
                   fontSize: 16,
