@@ -318,16 +318,16 @@ class _UserLoginState extends State<UserLogin> {
             });
           }
 
-          if (_user.isVerified == true) {
-            //to initializeShoppingCart
-            initializeShoppingCart();
-            Navigator.of(context).pushNamedAndRemoveUntil(
-              "/dashboard",
-              (Route<dynamic> route) => false,
-            );
-          } else {
-            Navigator.of(context).popAndPushNamed('/bvn-verification');
-          }
+//          if (_user.isVerified == true) {
+          //to initializeShoppingCart
+          initializeShoppingCart();
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            "/dashboard",
+            (Route<dynamic> route) => false,
+          );
+//          } else {
+//            Navigator.of(context).popAndPushNamed('/bvn-verification');
+//          }
         } else {
           Navigator.pop(context);
           Toast.show(AppLocalization.of(context).userIsNotRegistered, context,
