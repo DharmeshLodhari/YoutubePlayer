@@ -30,6 +30,7 @@ class _IndexState extends State<Index> {
   @override
   void initState() {
     super.initState();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         setState(() {
@@ -202,32 +203,30 @@ class _IndexState extends State<Index> {
   }
 
   Widget homeScreen() {
-    return Center(
-      child: Container(
-        color: lightBlue(),
-        padding: EdgeInsets.all(24),
-        child: Center(
-          child: Column(
-            children: <Widget>[
-              SizedBox(height: 100),
-              showHomeBackground(),
-              SizedBox(height: 20),
-              Text(
-                  AppLocalization.of(context)
-                      .anEasyWayToAcceptAndReceivePayment,
-                  style: TextStyle(color: Colors.white, fontSize: 20)),
-              Expanded(child: SizedBox(height: 20)),
-              Expanded(
-                child: Row(
-                  children: <Widget>[
-                    Expanded(flex: 3, child: loginButton()),
-                    Expanded(flex: 1, child: SizedBox(height: 10)),
-                    Expanded(flex: 3, child: registerButton()),
-                  ],
-                ),
-              )
-            ],
-          ),
+    return Container(
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+      color: lightBlue(),
+      padding: EdgeInsets.all(24),
+      child: Center(
+        child: Column(
+          children: <Widget>[
+            SizedBox(height: 100),
+            showHomeBackground(),
+            SizedBox(height: 20),
+            Text(AppLocalization.of(context).anEasyWayToAcceptAndReceivePayment,
+                style: TextStyle(color: Colors.white, fontSize: 20)),
+            Expanded(child: SizedBox(height: 20)),
+            Expanded(
+              child: Row(
+                children: <Widget>[
+                  Expanded(flex: 3, child: loginButton()),
+                  Expanded(flex: 1, child: SizedBox(height: 10)),
+                  Expanded(flex: 3, child: registerButton()),
+                ],
+              ),
+            )
+          ],
         ),
       ),
     );
@@ -264,11 +263,32 @@ class _IndexState extends State<Index> {
   }
 
   Widget showHomeBackground() {
-    return Container(
-      child: Image.asset(
-        'assets/images/slydo_desk.png',
+    return Expanded(
+      flex: 4,
+      child: Container(
+          child: Image.asset(
+        'assets/images/slydo_desk_min.png',
         fit: BoxFit.cover,
-      ),
+        frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+          if (wasSynchronouslyLoaded) {
+            return child;
+          } else {
+            return AnimatedSwitcher(
+              duration: const Duration(milliseconds: 500),
+              child: frame != null
+                  ? child
+                  : Container(
+                      color: lightBlue(),
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation(darkBlue()),
+                        ),
+                      ),
+                    ),
+            );
+          }
+        },
+      )),
     );
   }
 

@@ -860,6 +860,7 @@ class AuthService {
       url = next;
     }
     var headers = await getAuthHeaders();
+
     var response = await http.get(url, headers: headers);
 
     if (response.statusCode == 200) {

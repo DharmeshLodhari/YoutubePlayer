@@ -215,7 +215,9 @@ class _PayoutState extends State<Payout> {
                         _auth.accountPayout(data).then((value) {
                           response = value;
                           if (response.statusCode == 201) {
-                            Navigator.of(context).pushNamed('/payout-list');
+                            Navigator.pop(context);
+                            Navigator.of(context)
+                                .popAndPushNamed('/payout-list');
                           } else if (response.statusCode == 500) {
                             Navigator.pop(context);
                             if (mounted) {

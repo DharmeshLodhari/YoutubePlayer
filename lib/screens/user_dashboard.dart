@@ -575,16 +575,26 @@ class _UserDashboardState extends State<UserDashboard> {
                     title: Center(
                         child: Text(AppLocalization.of(context).payoutList)),
                     onTap: () {
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, "/payout-list");
+                      PassCodePopup(
+                          context: context,
+                          isValidCallback: () {
+                            Navigator.pop(context);
+                            Navigator.pushNamed(context, "/payout-list");
+                          },
+                          cancelCallBack: () {});
                     },
                   ),
                   ListTile(
                     title:
                         Center(child: Text(AppLocalization.of(context).payout)),
                     onTap: () {
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, "/payout");
+                      PassCodePopup(
+                          context: context,
+                          isValidCallback: () {
+                            Navigator.pop(context);
+                            Navigator.pushNamed(context, "/payout");
+                          },
+                          cancelCallBack: () {});
                     },
                   ),
                 ],
@@ -696,9 +706,19 @@ class _UserDashboardState extends State<UserDashboard> {
         } else if (value == "Bank Accounts") {
           Navigator.pushNamed(context, "/bank-account-list");
         } else if (value == "Payout List") {
-          Navigator.pushNamed(context, "/payout-list");
+          PassCodePopup(
+              context: context,
+              isValidCallback: () {
+                Navigator.pushNamed(context, "/payout-list");
+              },
+              cancelCallBack: () {});
         } else if (value == "Payout") {
-          Navigator.pushNamed(context, "/payout");
+          PassCodePopup(
+              context: context,
+              isValidCallback: () {
+                Navigator.pushNamed(context, "/payout");
+              },
+              cancelCallBack: () {});
         } else if (value == "Add Product") {
           Navigator.pushNamed(context, '/add-product');
         } else if (value == "Add Service") {

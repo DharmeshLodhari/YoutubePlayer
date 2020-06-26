@@ -56,7 +56,7 @@ class _AddAccountState extends State<AddAccount> {
                   Text(
                     AppLocalization.of(context).bankAccountTerms,
                     style: TextStyle(
-                      color: darkBlue(),
+                      color: Colors.white,
                     ),
                   ),
                   SizedBox(height: 20),
@@ -66,7 +66,10 @@ class _AddAccountState extends State<AddAccount> {
                   SizedBox(height: 10),
                   getAccountNumber(),
                   SizedBox(height: 20),
-                  Text(AppLocalization.of(context).setDefaultAccountMsg),
+                  Text(
+                    AppLocalization.of(context).setDefaultAccountMsg,
+                    style: TextStyle(color: Colors.white),
+                  ),
                   checkButton(),
                   SizedBox(height: 10),
                   errorMessage != ""
@@ -238,8 +241,8 @@ class _AddAccountState extends State<AddAccount> {
                   }
                 } catch (e) {}
               });
-
-              Navigator.of(context).pushNamed('/bank-account-list');
+              Navigator.pop(context);
+              Navigator.of(context).popAndPushNamed('/bank-account-list');
             } else {
               if (mounted) {
                 setState(() {
@@ -282,7 +285,7 @@ class _AddAccountState extends State<AddAccount> {
             child: Text(
           AppLocalization.of(context).bankAccountUserAgreeTerm,
           style: TextStyle(
-            color: darkBlue(),
+            color: Colors.white,
           ),
         ))
       ],
