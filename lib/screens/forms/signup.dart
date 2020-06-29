@@ -175,7 +175,7 @@ class _SignUpState extends State<SignUp> {
       autofocus: false,
       obscureText: true,
       keyboardType: TextInputType.number,
-      maxLength: 4,
+      maxLength: 6,
       maxLengthEnforced: true,
       decoration: InputDecoration(
         prefixIcon: Icon(Icons.lock),
@@ -197,8 +197,7 @@ class _SignUpState extends State<SignUp> {
           ),
         ),
       ),
-      validator: (val) =>
-          val.length != 4 ? AppLocalization.of(context).invalidPassword : null,
+      validator: validatepassword1,
       onChanged: (val) {
         if (mounted) {
           setState(() {
@@ -209,11 +208,26 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
+  String validatepassword1(String val) {
+    var matcher = RegExp(
+      r'^(.)\1{1,}$',
+      caseSensitive: true,
+    );
+    if (val.length != 6) {
+      return AppLocalization.of(context).invalidPassword;
+    } else if (val == "123456" || val == "012345") {
+      return "you can not set this type of password";
+    } else if (matcher.hasMatch(val)) {
+      return "you can not set this type of password";
+    }
+    return null;
+  }
+
   Widget getPassword2Field() {
     return TextFormField(
       autofocus: false,
       obscureText: true,
-      maxLength: 4,
+      maxLength: 6,
       maxLengthEnforced: true,
       keyboardType: TextInputType.number,
       decoration: InputDecoration(
@@ -236,14 +250,7 @@ class _SignUpState extends State<SignUp> {
           ),
         ),
       ),
-      validator: (val) {
-        if (val.length != 4) {
-          return AppLocalization.of(context).invalidPassword;
-        } else if (val != password1) {
-          return AppLocalization.of(context).passwordMismatch;
-        }
-        return null;
-      },
+      validator: validatepassword2,
       onChanged: (val) {
         if (mounted) {
           setState(() {
@@ -252,6 +259,23 @@ class _SignUpState extends State<SignUp> {
         }
       },
     );
+  }
+
+  String validatepassword2(String val) {
+    var matcher = RegExp(
+      r'^(.)\1{1,}$',
+      caseSensitive: true,
+    );
+    if (val.length != 6) {
+      return AppLocalization.of(context).invalidPassword;
+    } else if (val != password1) {
+      return AppLocalization.of(context).passwordMismatch;
+    } else if (val == "123456" || val == "012345") {
+      return "you can not set this type of password";
+    } else if (matcher.hasMatch(val)) {
+      return "you can not set this type of password";
+    }
+    return null;
   }
 
   Widget getSubmitButton() {
