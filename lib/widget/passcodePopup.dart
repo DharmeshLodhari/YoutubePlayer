@@ -53,7 +53,7 @@ class PassCodePopup {
                       ),
                     ),
                     shouldTriggerVerification: _verificationNotifier.stream,
-                    passwordDigits: 4,
+                    passwordDigits: 6,
                     isValidCallback: isValidCallback,
                     cancelCallback: cancelCallBack,
                     keyboardUIConfig:

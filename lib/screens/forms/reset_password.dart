@@ -70,7 +70,7 @@ class _ResetPasswordState extends State<ResetPassword> {
     return TextFormField(
       cursorColor: darkBlue(),
       autofocus: false,
-      maxLength: 4,
+      maxLength: 6,
       maxLengthEnforced: true,
       obscureText: true,
       keyboardType: TextInputType.number,
@@ -90,8 +90,8 @@ class _ResetPasswordState extends State<ResetPassword> {
       validator: (val) {
         if (val.isEmpty) {
           return AppLocalization.of(context).passwordShouldNotEmpty;
-        } else if (val.length != 4) {
-          return AppLocalization.of(context).passwordMustBeOfFourDigit;
+        } else if (val.length != 6) {
+          return "Password must be of 6 digit";
         }
         return null;
       },
@@ -106,7 +106,7 @@ class _ResetPasswordState extends State<ResetPassword> {
       cursorColor: darkBlue(),
       autofocus: false,
       obscureText: true,
-      maxLength: 4,
+      maxLength: 6,
       maxLengthEnforced: true,
       keyboardType: TextInputType.number,
       decoration: InputDecoration(
@@ -125,8 +125,8 @@ class _ResetPasswordState extends State<ResetPassword> {
       validator: (val) {
         if (val.isEmpty) {
           return AppLocalization.of(context).passwordShouldNotEmpty;
-        } else if (val.length != 4) {
-          return AppLocalization.of(context).passwordMustBeOfFourDigit;
+        } else if (val.length != 6) {
+          return "Password must be of 6 digit";
         } else if (newPassword != confirmPassword) {
           return AppLocalization.of(context).passwordMismatch;
         }

@@ -192,9 +192,8 @@ class _UserLoginState extends State<UserLogin> {
               borderRadius: BorderRadius.all(Radius.circular(4)),
               borderSide: BorderSide(
                   width: 1, color: Colors.white, style: BorderStyle.solid))),
-      validator: (val) => val.length < 4
-          ? AppLocalization.of(context).invalidPhoneNumber
-          : null,
+      validator: (val) =>
+          val.length < 4 ? AppLocalization.of(context).invalidPassword : null,
       onChanged: (val) {
         if (mounted) {
           setState(() {
