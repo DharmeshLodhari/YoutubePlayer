@@ -331,9 +331,11 @@ class _UserInfoState extends State<UserInfo> {
           SizedBox(
             width: 8,
           ),
-          Text(
-            "Remove Contact",
-            style: TextStyle(color: Colors.red, fontSize: 14),
+          Expanded(
+            child: Text(
+              "Remove Connection",
+              style: TextStyle(color: Colors.red, fontSize: 14),
+            ),
           ),
         ],
       );
@@ -345,9 +347,11 @@ class _UserInfoState extends State<UserInfo> {
           SizedBox(
             width: 8,
           ),
-          Text(
-            "Cancel Request",
-            style: TextStyle(color: Colors.red, fontSize: 14),
+          Expanded(
+            child: Text(
+              "Cancel Request",
+              style: TextStyle(color: Colors.red, fontSize: 14),
+            ),
           ),
         ],
       );
@@ -359,9 +363,11 @@ class _UserInfoState extends State<UserInfo> {
         SizedBox(
           width: 8,
         ),
-        Text(
-          AppLocalization.of(context).addContact,
-          style: TextStyle(color: Colors.black, fontSize: 14),
+        Expanded(
+          child: Text(
+            "Add Connection",
+            style: TextStyle(color: Colors.black, fontSize: 14),
+          ),
         ),
       ],
     );
@@ -373,14 +379,15 @@ class _UserInfoState extends State<UserInfo> {
         _auth.removeFromContactList(user).then((value) {
           if (value) {
             Toast.show(
-                "Contact Remove From Your Contact List Successfully .", context,
+                "Connection Remove From Your Connection List Successfully .",
+                context,
                 gravity: Toast.CENTER,
                 duration: Toast.LENGTH_LONG,
                 backgroundColor: darkBlue());
             checkCurrentUserState();
           } else {
             Toast.show(
-                "Contact is Removed From Your Contact List Unsuccessfully .",
+                "Connection is Removed From Your Connection List Unsuccessfully .",
                 context,
                 gravity: Toast.CENTER,
                 duration: Toast.LENGTH_LONG,
@@ -392,12 +399,12 @@ class _UserInfoState extends State<UserInfo> {
       return () {
         _auth.rejectContactRequest(user).then((value) {
           if (value) {
-            Toast.show("Contact request Canceled", context,
+            Toast.show("Connection request Canceled", context,
                 gravity: Toast.CENTER,
                 duration: Toast.LENGTH_LONG,
                 backgroundColor: darkBlue());
           } else {
-            Toast.show("Contact request Canceled unsuccessfully", context,
+            Toast.show("Connection request Canceled unsuccessfully", context,
                 gravity: Toast.CENTER,
                 duration: Toast.LENGTH_LONG,
                 backgroundColor: darkBlue());
@@ -409,7 +416,7 @@ class _UserInfoState extends State<UserInfo> {
     return () {
       _auth.makeContactRequest(user).then((value) {
         if (value) {
-          Toast.show(AppLocalization.of(context).contactRequestSent, context,
+          Toast.show("Connection Request Sent !!", context,
               gravity: Toast.CENTER,
               duration: Toast.LENGTH_LONG,
               backgroundColor: darkBlue());

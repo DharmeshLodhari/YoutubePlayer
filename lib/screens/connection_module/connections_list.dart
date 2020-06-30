@@ -13,12 +13,12 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:toast/toast.dart';
 
-class ContactsList extends StatefulWidget {
+class ConnectionList extends StatefulWidget {
   @override
-  _ContactsListState createState() => _ContactsListState();
+  _ConnectionListState createState() => _ConnectionListState();
 }
 
-class _ContactsListState extends State<ContactsList> {
+class _ConnectionListState extends State<ConnectionList> {
   final GlobalKey<ScaffoldState> _scaffoldContactsListKey =
       new GlobalKey<ScaffoldState>();
   final _auth = AuthService();
@@ -26,7 +26,7 @@ class _ContactsListState extends State<ContactsList> {
   int count = 0;
   String next = "";
   String previous = "";
-  List contactsList = [];
+  List connectionsList = [];
   ScrollController _scrollController = new ScrollController();
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
@@ -59,7 +59,7 @@ class _ContactsListState extends State<ContactsList> {
         count = 0;
         next = "";
         previous = "";
-        contactsList = [];
+        connectionsList = [];
         noItemInList = false;
         getList();
         _refreshController.refreshCompleted();
@@ -92,20 +92,20 @@ class _ContactsListState extends State<ContactsList> {
   Widget _buildFriendsList() {
     return noItemInList
         ? NoItemInList(
-            msg: AppLocalization.of(context).currentlyYouHaveNoAnyContacts,
+            msg: "You Have No Connections",
           )
         : ListView.builder(
             padding: EdgeInsets.symmetric(
               vertical: 4,
             ),
             //+1 for progressbar
-            itemCount: contactsList.length + 1,
+            itemCount: connectionsList.length + 1,
             itemBuilder: (BuildContext context, int index) {
-              if (index == contactsList.length) {
+              if (index == connectionsList.length) {
                 return _buildIndicator();
               } else {
                 return _getSlidableWithLists(
-                    context, contactsList[index], index);
+                    context, connectionsList[index], index);
               }
             },
             controller: _scrollController,
@@ -154,17 +154,17 @@ class _ContactsListState extends State<ContactsList> {
         if (mounted) {
           setState(() {
             isLoading = false;
-            contactsList.addAll(convertedIntoUserList);
+            connectionsList.addAll(convertedIntoUserList);
           });
         }
       }
-      if (contactsList.isEmpty) {
+      if (connectionsList.isEmpty) {
         if (mounted) {
           setState(() {
             noItemInList = true;
           });
         }
-      } else if (next == null && contactsList.length > 6) {
+      } else if (next == null && connectionsList.length > 6) {
         _scaffoldContactsListKey.currentState.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
@@ -235,8 +235,8 @@ class _ContactsListState extends State<ContactsList> {
             "${user.fullName} " +
                 AppLocalization.of(context).isBlockedSuccessfully);
         setState(() {
-          contactsList.removeAt(index);
-          if (contactsList.length <= 9) {
+          connectionsList.removeAt(index);
+          if (connectionsList.length <= 9) {
             getList();
           }
         });
@@ -252,7 +252,7 @@ class _ContactsListState extends State<ContactsList> {
       title: AppLocalization.of(context).delete,
       description: AppLocalization.of(context).areYouSureWantToDelete +
           " ${user.fullName} " +
-          AppLocalization.of(context).fromYouContactList,
+          "From Your Connection List",
       actionOne: AppLocalization.of(context).yes,
       actionTwo: AppLocalization.of(context).no,
       type: AlertType.warning,
@@ -265,8 +265,8 @@ class _ContactsListState extends State<ContactsList> {
             "${user.fullName} " +
                 AppLocalization.of(context).isRemovedSuccessfully);
         setState(() {
-          contactsList.removeAt(index);
-          if (contactsList.length <= 9) {
+          connectionsList.removeAt(index);
+          if (connectionsList.length <= 9) {
             getList();
           }
         });

@@ -1,4 +1,3 @@
-import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:Slydo/screens/colors.dart';
@@ -10,26 +9,24 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:toast/toast.dart';
 
-class ContactRequestList extends StatefulWidget {
+class BlockList extends StatefulWidget {
   @override
-  _ContactRequestListState createState() => _ContactRequestListState();
+  _BlockListState createState() => _BlockListState();
 }
 
-class _ContactRequestListState extends State<ContactRequestList> {
-  final GlobalKey<ScaffoldState> _scaffoldContactRequestListKey =
+class _BlockListState extends State<BlockList> {
+  final GlobalKey<ScaffoldState> _scaffoldBlockListKey =
       new GlobalKey<ScaffoldState>();
-  UserBloc userBloc;
   final _auth = AuthService();
   SlidableController slidableController;
   int count = 0;
   String next = "";
   String previous = "";
-  List contactRequestList = [];
+  List blockList = [];
   ScrollController _scrollController = new ScrollController();
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
@@ -62,7 +59,7 @@ class _ContactRequestListState extends State<ContactRequestList> {
         count = 0;
         next = "";
         previous = "";
-        contactRequestList = [];
+        blockList = [];
         noItemInList = false;
         getList();
         _refreshController.refreshCompleted();
@@ -77,9 +74,8 @@ class _ContactRequestListState extends State<ContactRequestList> {
 
   @override
   Widget build(BuildContext context) {
-    userBloc = Provider.of<UserBloc>(context);
     return Scaffold(
-      key: _scaffoldContactRequestListKey,
+      key: _scaffoldBlockListKey,
       backgroundColor: lightBlue(),
       body: SmartRefresher(
           enablePullDown: true,
@@ -96,21 +92,19 @@ class _ContactRequestListState extends State<ContactRequestList> {
   Widget _buildFriendsList() {
     return noItemInList
         ? NoItemInList(
-            msg:
-                AppLocalization.of(context).currentlyYouHaveNoAnyContactRequest,
+            msg: "No Blocked Users",
           )
         : ListView.builder(
             padding: EdgeInsets.symmetric(
               vertical: 4,
             ),
             //+1 for progressbar
-            itemCount: contactRequestList.length + 1,
+            itemCount: blockList.length + 1,
             itemBuilder: (BuildContext context, int index) {
-              if (index == contactRequestList.length) {
+              if (index == blockList.length) {
                 return _buildIndicator();
               } else {
-                return _getSlidableWithLists(
-                    context, contactRequestList[index], index);
+                return _getSlidableWithLists(context, blockList[index], index);
               }
             },
             controller: _scrollController,
@@ -134,14 +128,6 @@ class _ContactRequestListState extends State<ContactRequestList> {
     );
   }
 
-  Map<String, dynamic> cleanDisplayData(var data) {
-    if (data["from_user"]["username"] == userBloc.user.userName){
-      return data["to_user"];
-    }else {
-      return data["from_user"];
-    }
-  }
-
   void getList() async {
     if (!isLoading) {
       if (next != null && !isLoading) {
@@ -151,37 +137,35 @@ class _ContactRequestListState extends State<ContactRequestList> {
           });
         }
         Map<String, dynamic> result =
-            await _auth.listContactRequests(next, previous);
+            await _auth.listBlockUsers(next, previous);
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
         List tempList = result['results'];
         List<CustomerProfile> convertedIntoUserList = List<CustomerProfile>();
         tempList.forEach((element) {
-          var data = cleanDisplayData(element);
-          debugPrint(data.toString());
           CustomerProfile user = CustomerProfile();
-          user.fullName = data["full_name"] ?? "";
-          user.userName = data["username"] ?? "";
-          user.avatar = data["avatar"] ?? "";
-          user.qrCode = data["qr_code"] ?? "";
+          user.fullName = element["full_name"] ?? "";
+          user.userName = element["username"] ?? "";
+          user.avatar = element["avatar"] ?? "";
+          user.qrCode = element["qr_code"] ?? "";
           convertedIntoUserList.add(user);
         });
         if (mounted) {
           setState(() {
             isLoading = false;
-            contactRequestList.addAll(convertedIntoUserList);
+            blockList.addAll(convertedIntoUserList);
           });
         }
       }
-      if (contactRequestList.isEmpty) {
+      if (blockList.isEmpty) {
         if (mounted) {
           setState(() {
             noItemInList = true;
           });
         }
-      } else if (next == null && contactRequestList.length > 6) {
-        _scaffoldContactRequestListKey.currentState.showSnackBar(SnackBar(
+      } else if (next == null && blockList.length > 6) {
+        _scaffoldBlockListKey.currentState.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
@@ -202,90 +186,48 @@ class _ContactRequestListState extends State<ContactRequestList> {
   void handleSlideIsOpenChanged(bool isOpen) {}
 
   void _showSnackBar(BuildContext context, String text) {
-    _scaffoldContactRequestListKey.currentState
+    _scaffoldBlockListKey.currentState
         .showSnackBar(SnackBar(content: Text(text)));
   }
 
   List<Widget> listSecondaryActions(CustomerProfile user, int index) {
-    String caption = AppLocalization.of(context).reject;
-
-    return [
-      IconSlideAction(
-          caption: caption,
-          color: Colors.red,
-          icon: Icons.cancel,
-          onTap: () async {
-            rejectRequestAlert(user, index);
-          }),
-    ];
+    return [];
   }
 
   List<Widget> listActionSlideActions(CustomerProfile user, int index) {
     return [
       IconSlideAction(
-        caption: AppLocalization.of(context).accept,
+        caption: AppLocalization.of(context).unblock,
         color: Colors.green,
-        icon: Icons.group_add,
+        icon: Icons.thumb_up,
         onTap: () {
-          acceptFriendRequestAlert(user, index);
+          unBlockUserAlert(user, index);
         },
       ),
     ];
   }
 
-  void rejectRequestAlert(CustomerProfile user, int index) async {
+  void unBlockUserAlert(CustomerProfile user, int index) async {
     bool result = await showDialogBox(
       context: context,
-      title: AppLocalization.of(context).reject,
-      description:
-          AppLocalization.of(context).areYouSureWantToRejectRequestFrom +
-              " ${user.fullName}",
+      title: AppLocalization.of(context).unblock,
+      description: AppLocalization.of(context).areYouSureWantToUnblock +
+          " ${user.fullName}",
       actionOne: AppLocalization.of(context).yes,
       actionTwo: AppLocalization.of(context).no,
       type: AlertType.warning,
     );
     if (result) {
-      bool done = await _auth.rejectContactRequest(user);
+      bool done = await _auth.unBlockUser(user);
       done = true;
       if (done) {
         _showSnackBar(
             context,
-            AppLocalization.of(context).requestFrom +
-                " ${user.fullName} " +
-                AppLocalization.of(context).isRejectedSuccessfully);
-        setState(() {
-          contactRequestList.removeAt(index);
-          if (contactRequestList.length <= 9) {
-            getList();
-          }
-        });
-      } else {
-        _showSnackBar(context, AppLocalization.of(context).error);
-      }
-    }
-  }
-
-  Future<void> acceptFriendRequestAlert(CustomerProfile user, int index) async {
-    bool result = await showDialogBox(
-      context: context,
-      title: AppLocalization.of(context).accept,
-      description: AppLocalization.of(context).areYouSureWantToAdd +
-          " ${user.fullName} " +
-          AppLocalization.of(context).inYourContacts,
-      actionOne: AppLocalization.of(context).yes,
-      actionTwo: AppLocalization.of(context).no,
-      type: AlertType.warning,
-    );
-    if (result) {
-      bool done = await _auth.acceptContactRequest(user);
-      if (done) {
-        _showSnackBar(
-            context,
             "${user.fullName} " +
-                AppLocalization.of(context).isAddedToYourContactList);
+                AppLocalization.of(context).isUnblockedSuccessfully);
         setState(() {
-          contactRequestList.removeAt(index);
-          if (contactRequestList.length <= 9) {
+          blockList.removeAt(index);
+          if (blockList.length <= 9) {
             getList();
           }
         });

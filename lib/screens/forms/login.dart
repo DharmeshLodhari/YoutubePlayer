@@ -13,6 +13,7 @@ import 'package:Slydo/widget/dialog.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:pinput/pin_put/pin_put.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
@@ -42,6 +43,8 @@ class _UserLoginState extends State<UserLogin> {
 
   // creating a instance of the databaseHelper
   DatabaseHelper _db = DatabaseHelper();
+
+  final FocusNode _pinPutFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -105,7 +108,9 @@ class _UserLoginState extends State<UserLogin> {
                   displayImage(),
                   phoneNumberField(),
                   SizedBox(height: 20.0),
-                  passwordField(),
+//                  passwordField(),
+//                  SizedBox(height: 20.0),
+                  darkRoundedPinPut(),
                   SizedBox(height: 20.0),
                   rememberLogin(),
                   SizedBox(height: 15),
@@ -201,6 +206,35 @@ class _UserLoginState extends State<UserLogin> {
           });
         }
       },
+    );
+  }
+
+  Widget darkRoundedPinPut() {
+    BoxDecoration pinPutDecoration = BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(5),
+        border: Border.all(color: darkBlue()));
+    return PinPut(
+      eachFieldWidth: 45,
+      eachFieldHeight: 45,
+      obscureText: '•',
+      onChanged: (val) {
+        if (mounted) {
+          setState(() {
+            password = val.trim();
+          });
+        }
+      },
+      validator: (val) =>
+          val.length < 4 ? AppLocalization.of(context).invalidPassword : null,
+      fieldsCount: 6,
+      focusNode: _pinPutFocusNode,
+      controller: passwordController,
+      submittedFieldDecoration: pinPutDecoration,
+      selectedFieldDecoration: pinPutDecoration,
+      followingFieldDecoration: pinPutDecoration,
+      pinAnimationType: PinAnimationType.scale,
+      textStyle: TextStyle(color: darkBlue(), fontSize: 30),
     );
   }
 

@@ -1,6 +1,6 @@
 import 'package:Slydo/screens/bank_account_list.dart';
 import 'package:Slydo/screens/card_payment_page.dart';
-import 'package:Slydo/screens/contact_module/contacts_dashboard.dart';
+import 'package:Slydo/screens/connection_module/connections_dashboard.dart';
 import 'package:Slydo/screens/dashboard.dart';
 import 'package:Slydo/screens/explore.dart';
 import 'package:Slydo/screens/forms/add_bank_account.dart';
@@ -329,7 +329,7 @@ class RouteGenerator {
         );
       case '/friends-dashboard':
         return PageTransition(
-          child: ContactsDashboard(),
+          child: ConnectionDashboard(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
         );

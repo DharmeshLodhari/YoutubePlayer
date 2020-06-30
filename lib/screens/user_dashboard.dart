@@ -535,9 +535,7 @@ class _UserDashboardState extends State<UserDashboard> {
                       },
                     ),
                     ListTile(
-                      title: Center(
-                          child: Text(AppLocalization.of(context)
-                              .myContactsAndRequest)),
+                      title: Center(child: Text("My Connections/Request")),
                       onTap: () {
                         Navigator.pop(context);
                         Navigator.pushNamed(
@@ -628,9 +626,9 @@ class _UserDashboardState extends State<UserDashboard> {
             },
           ),
           CupertinoActionSheetAction(
-            child: Text(AppLocalization.of(context).myContactsAndRequest),
+            child: Text("My Connections/Request"),
             onPressed: () {
-              Navigator.pop(context, "My Contacts");
+              Navigator.pop(context, "My Connections");
             },
           ),
         ],
@@ -698,7 +696,7 @@ class _UserDashboardState extends State<UserDashboard> {
             context,
             '/user-address',
           );
-        } else if (value == "My Contacts") {
+        } else if (value == "My Connections") {
           Navigator.pushNamed(
             context,
             '/friends-dashboard',

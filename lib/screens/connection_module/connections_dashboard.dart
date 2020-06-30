@@ -1,25 +1,25 @@
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/contact_module/block_list.dart';
-import 'package:Slydo/screens/contact_module/contact_request_list.dart';
-import 'package:Slydo/screens/contact_module/contacts_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:popup_menu/popup_menu.dart';
 
 import '../colors.dart';
+import 'block_list.dart';
+import 'connection_request_list.dart';
+import 'connections_list.dart';
 
-class ContactsDashboard extends StatefulWidget {
+class ConnectionDashboard extends StatefulWidget {
   @override
-  _ContactsDashboardState createState() => _ContactsDashboardState();
+  _ConnectionDashboardState createState() => _ConnectionDashboardState();
 }
 
-class _ContactsDashboardState extends State<ContactsDashboard> {
+class _ConnectionDashboardState extends State<ConnectionDashboard> {
   int currentIndex = 0;
 
   //popupmenu variables
   PopupMenu popUpMenuWidget;
   GlobalKey popupMenuBtnKeyForMenu = GlobalKey();
-  var filterValue = "Contacts";
+  var filterValue = "Connections";
 
   void popUpMenu() {
     popUpMenuWidget = PopupMenu(
@@ -35,15 +35,13 @@ class _ContactsDashboardState extends State<ContactsDashboard> {
   List<MenuItem> getMenuItems() {
     var menuItems = [
       MenuItem(
-        textStyle: filterValue == AppLocalization.of(context).contacts
+        textStyle: filterValue == "Connections"
             ? TextStyle(color: lightBlue(), fontSize: 10)
             : TextStyle(color: Colors.white, fontSize: 10),
-        title: AppLocalization.of(context).contacts,
+        title: "Connections",
         image: Icon(
           Icons.group,
-          color: filterValue == AppLocalization.of(context).contacts
-              ? lightBlue()
-              : Colors.white,
+          color: filterValue == "Connections" ? lightBlue() : Colors.white,
         ),
       ),
     ];
@@ -98,7 +96,7 @@ class _ContactsDashboardState extends State<ContactsDashboard> {
   void onClickMenu(MenuItemProvider item) {
     setState(() {
       filterValue = item.menuTitle;
-      if (filterValue == AppLocalization.of(context).contacts) {
+      if (filterValue == "Connections") {
         currentIndex = 0;
       } else if (filterValue == AppLocalization.of(context).requests) {
         currentIndex = 1;
@@ -112,8 +110,7 @@ class _ContactsDashboardState extends State<ContactsDashboard> {
 
   @override
   Widget build(BuildContext context) {
-    if (filterValue == 'Contacts')
-      filterValue = AppLocalization.of(context).contacts;
+    if (filterValue == 'Connections') filterValue = "Connections";
 
     return WillPopScope(
       onWillPop: () async {
@@ -151,8 +148,8 @@ class _ContactsDashboardState extends State<ContactsDashboard> {
     return IndexedStack(
       index: currentIndex,
       children: [
-        ContactsList(),
-        ContactRequestList(),
+        ConnectionList(),
+        ConnectionRequestList(),
         BlockList(),
       ],
     );
