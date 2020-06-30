@@ -133,7 +133,8 @@ class _UserProfileState extends State<UserProfile> {
     this.getProductList();
     _productScrollController.addListener(() {
       if (_productScrollController.position.pixels ==
-          _productScrollController.position.maxScrollExtent) {
+              _productScrollController.position.maxScrollExtent &&
+          _productScrollController.position.pixels != 0) {
         getProductList();
       }
     });
@@ -141,7 +142,8 @@ class _UserProfileState extends State<UserProfile> {
     this.getServiceList();
     _serviceScrollController.addListener(() {
       if (_serviceScrollController.position.pixels ==
-          _serviceScrollController.position.maxScrollExtent) {
+              _serviceScrollController.position.maxScrollExtent &&
+          _serviceScrollController.position.pixels != 0) {
         getServiceList();
       }
     });
@@ -488,13 +490,6 @@ class _UserProfileState extends State<UserProfile> {
           duration: Duration(milliseconds: 500),
         ));
       }
-    } else {
-      if (mounted) {
-        setState(() {
-          isProductLoading = false;
-          getProductList();
-        });
-      }
     }
   }
 
@@ -554,9 +549,11 @@ class _UserProfileState extends State<UserProfile> {
   void getServiceList() async {
     if (!isServiceLoading) {
       if (serviceNext != null && !isServiceLoading) {
-        setState(() {
-          isServiceLoading = true;
-        });
+        if (mounted) {
+          setState(() {
+            isServiceLoading = true;
+          });
+        }
         Map<String, dynamic> result = await _auth.listServicesByProvider(
             serviceNext, servicePrevious,
             userId: searchedUser.userName);
@@ -564,16 +561,20 @@ class _UserProfileState extends State<UserProfile> {
         serviceNext = result['next'];
         servicePrevious = result['previous'];
         var tempList = result['results'];
-        setState(() {
-          noServiceInList = false;
-          isServiceLoading = false;
-          serviceList.addAll(tempList);
-        });
+        if (mounted) {
+          setState(() {
+            noServiceInList = false;
+            isServiceLoading = false;
+            serviceList.addAll(tempList);
+          });
+        }
       }
       if (serviceList.isEmpty) {
-        setState(() {
-          noServiceInList = true;
-        });
+        if (mounted) {
+          setState(() {
+            noServiceInList = true;
+          });
+        }
       } else if (serviceNext == null && serviceList.length > 6) {
         _serviceScaffoldKey.currentState.showSnackBar(SnackBar(
           content:
@@ -581,11 +582,6 @@ class _UserProfileState extends State<UserProfile> {
           duration: Duration(milliseconds: 500),
         ));
       }
-    } else {
-      setState(() {
-        isServiceLoading = false;
-        getServiceList();
-      });
     }
   }
 

@@ -35,7 +35,8 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
     super.initState();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
+              _scrollController.position.maxScrollExtent &&
+          _scrollController.position.pixels != 0) {
         getList();
       }
     });

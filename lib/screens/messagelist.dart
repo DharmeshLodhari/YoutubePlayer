@@ -44,7 +44,8 @@ class _MessageListState extends State<MessageList> {
 
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
+              _scrollController.position.maxScrollExtent &&
+          _scrollController.position.pixels != 0) {
         getList();
       }
     });
@@ -275,13 +276,6 @@ class _MessageListState extends State<MessageList> {
               Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
         ));
-      }
-    } else {
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-          getList();
-        });
       }
     }
   }

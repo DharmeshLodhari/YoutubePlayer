@@ -72,7 +72,8 @@ class _SearchModuleState extends State<SearchModule> {
     );
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
+              _scrollController.position.maxScrollExtent &&
+          _scrollController.position.pixels != 0) {
         if (next != null) {
           getList();
         }
@@ -368,7 +369,6 @@ class _SearchModuleState extends State<SearchModule> {
         userName: object["username"],
         type: object['type'] ?? 'user');
 
-    debugPrint("user avatar: ${user.avatar} ");
     Widget avatarImage = Container(
         height: 50,
         width: 50,

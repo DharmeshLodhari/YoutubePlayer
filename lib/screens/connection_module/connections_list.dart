@@ -39,7 +39,8 @@ class _ConnectionListState extends State<ConnectionList> {
     super.initState();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
+              _scrollController.position.maxScrollExtent &&
+          _scrollController.position.pixels != 0) {
         getList();
       }
     });
@@ -170,13 +171,6 @@ class _ConnectionListState extends State<ConnectionList> {
               Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
         ));
-      }
-    } else {
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-          getList();
-        });
       }
     }
   }
