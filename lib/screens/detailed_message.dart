@@ -198,12 +198,8 @@ class _DetailedMessageState extends State<DetailedMessage> {
               : Icon(Icons.unarchive),
       onPressed: () async {
         var action = isRecipient
-            ? message.isArchivedByRecipient
-                ? AppLocalization.of(context).unarchive
-                : AppLocalization.of(context).archive
-            : message.isArchivedBySender
-                ? AppLocalization.of(context).unarchive
-                : AppLocalization.of(context).archive;
+            ? message.isArchivedByRecipient ? "unarchive" : "archive"
+            : message.isArchivedBySender ? "unarchive" : "archive";
         await _auth.updateMessage(message.id, action);
         setState(() {
           if (isRecipient) {

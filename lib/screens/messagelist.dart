@@ -326,12 +326,8 @@ class _MessageListState extends State<MessageList> {
                     ),
           onPressed: () async {
             var action = isRecipient
-                ? partialMessage.isArchivedByRecipient
-                    ? AppLocalization.of(context).unarchive
-                    : AppLocalization.of(context).archive
-                : partialMessage.isArchivedBySender
-                    ? AppLocalization.of(context).unarchive
-                    : AppLocalization.of(context).archive;
+                ? partialMessage.isArchivedByRecipient ? "unarchive" : "archive"
+                : partialMessage.isArchivedBySender ? "unarchive" : "archive";
             await _auth.updateMessage(partialMessage.id, action);
             setState(() {
               if (isRecipient) {
