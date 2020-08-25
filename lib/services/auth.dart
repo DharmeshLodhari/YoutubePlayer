@@ -993,7 +993,6 @@ class AuthService {
     product.sellerAvatar = item["seller_avatar"];
     product.price = item['price'].toString();
     product.currency = item["currency"];
-
     return product;
   }
 

@@ -27,6 +27,9 @@ class _TransactionGraphState extends State<TransactionGraph> {
   bool isLoading = true;
   final _auth = AuthService();
 
+  // variable for flipping state management
+  bool isFlipped = false;
+
   //variable for week
   int week;
   DateTime start;
@@ -171,8 +174,8 @@ class _TransactionGraphState extends State<TransactionGraph> {
       key: cardKey,
       flipOnTouch: false,
       direction: FlipDirection.VERTICAL,
-      front: firstSide(),
-      back: secondSide(),
+      front: isFlipped ? secondSide() : firstSide(),
+      back: isFlipped ? firstSide() : secondSide(),
     );
   }
 
@@ -486,6 +489,11 @@ class _TransactionGraphState extends State<TransactionGraph> {
       icon: Icon(Icons.flip),
       onPressed: () {
         cardKey.currentState.toggleCard();
+        if (!cardKey.currentState.isFront && !isFlipped) {
+          isFlipped = true;
+        } else {
+          isFlipped = false;
+        }
       },
     );
   }
