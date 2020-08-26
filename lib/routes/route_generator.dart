@@ -33,6 +33,7 @@ import 'package:Slydo/screens/transaction_graph.dart';
 import 'package:Slydo/screens/transactions_list.dart';
 import 'package:Slydo/screens/user_dashboard.dart';
 import 'package:Slydo/screens/user_profile.dart';
+import 'package:Slydo/screens/verify_OTP.dart';
 import 'package:Slydo/splash.dart';
 import 'package:Slydo/widget/resultReturningPasswordPopup.dart';
 import 'package:flutter/material.dart';
@@ -80,6 +81,12 @@ class RouteGenerator {
       case '/new-registration':
         return PageTransition(
           child: Registration(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+        );
+      case '/verify-registration-otp':
+        return PageTransition(
+          child: VerifyOTPScreen(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
         );

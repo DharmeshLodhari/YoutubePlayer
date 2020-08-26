@@ -2,12 +2,14 @@ import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../widget/LoadingIndicator.dart';
 
@@ -43,61 +45,247 @@ class _SignUpState extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    return Scaffold(
-        backgroundColor: lightBlue(),
-        resizeToAvoidBottomInset: true,
+//    return Scaffold(
+//        backgroundColor: lightBlue(),
+//        resizeToAvoidBottomInset: true,
+//        appBar: AppBar(
+//          title: Text(AppLocalization.of(context).signUp),
+//          backgroundColor: darkBlue(),
+//          elevation: 0.0,
+//        ),
+//        body: Center(
+//          child: SingleChildScrollView(
+//            scrollDirection: Axis.vertical,
+//            padding: EdgeInsets.symmetric(horizontal: 40.0),
+//            child: Form(
+//              key: _formKey,
+//              child: Column(
+//                children: <Widget>[
+//                  getPhoneNumberField(),
+//                  SizedBox(height: 10),
+//                  Text(
+//                    AppLocalization.of(context).termsForName,
+//                    style: TextStyle(
+//                      color: darkBlue(),
+//                    ),
+//                  ),
+//                  SizedBox(height: 10),
+//                  getFullNameField(),
+//                  SizedBox(height: 10),
+//                  Container(
+//                    child: Align(
+//                        alignment: Alignment.centerLeft,
+//                        child: Text(
+//                            AppLocalization.of(context).useFourDigitNumber)),
+//                  ),
+//                  SizedBox(height: 10),
+//                  getPassword1Field(),
+//                  SizedBox(height: 10),
+//                  getPassword2Field(),
+//                  SizedBox(height: 10),
+//                  InkWell(
+//                    child: Container(
+//                      child:
+//                          Text(AppLocalization.of(context).termsAndCondition),
+//                    ),
+//                    onTap: () {
+//                      launch('http://slydo.co/terms');
+//                    },
+//                  ),
+//                  SizedBox(height: 10),
+//                  getSubmitButton(),
+//                  SizedBox(height: 50),
+//                ],
+//              ),
+//            ),
+//          ),
+//        ));
+    return WillPopScope(
+      onWillPop: () {
+        if (FocusScope.of(context).hasFocus) {
+          FocusScope.of(context).unfocus();
+        }
+        return Future.value(true);
+      },
+      child: Scaffold(
+        backgroundColor: whiteBackground,
         appBar: AppBar(
-          title: Text(AppLocalization.of(context).signUp),
-          backgroundColor: darkBlue(),
-          elevation: 0.0,
+          backgroundColor: whiteBackground,
+          elevation: 0,
+          leading: IconButton(
+            icon: Icon(
+              Icons.keyboard_arrow_left,
+              color: navyBlue,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
         ),
-        body: Center(
-          child: SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            padding: EdgeInsets.symmetric(horizontal: 40.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: <Widget>[
-                  getPhoneNumberField(),
-                  SizedBox(height: 10),
-                  Text(
-                    AppLocalization.of(context).termsForName,
-                    style: TextStyle(
-                      color: darkBlue(),
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  getFullNameField(),
-                  SizedBox(height: 10),
-                  Container(
-                    child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                            AppLocalization.of(context).useFourDigitNumber)),
-                  ),
-                  SizedBox(height: 10),
-                  getPassword1Field(),
-                  SizedBox(height: 10),
-                  getPassword2Field(),
-                  SizedBox(height: 10),
-                  InkWell(
+        body: SingleChildScrollView(
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            height: MediaQuery.of(context).size.height -
+                (AppBar().preferredSize.height +
+                    MediaQuery.of(context).padding.top),
+            width: MediaQuery.of(context).size.width,
+            child: Column(
+              children: <Widget>[
+                Expanded(
+                  child: Form(
                     child: Container(
-                      child:
-                          Text(AppLocalization.of(context).termsAndCondition),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          appIcon(),
+                          Expanded(
+                              flex: 1,
+                              child: SizedBox(
+                                height: 10,
+                              )),
+                          registerTitle(),
+                          Expanded(
+                              flex: 2,
+                              child: SizedBox(
+                                height: 10,
+                              )),
+                          registrationNote(),
+                          Expanded(
+                              flex: 1,
+                              child: SizedBox(
+                                height: 10,
+                              )),
+                          phoneNumberField(),
+                          Expanded(
+                              flex: 1,
+                              child: SizedBox(
+                                height: 10,
+                              )),
+                          fullNameField(),
+                          Expanded(
+                              flex: 1,
+                              child: SizedBox(
+                                height: 10,
+                              )),
+                          passwordField(),
+                          Expanded(
+                              flex: 1,
+                              child: SizedBox(
+                                height: 10,
+                              )),
+                          confirmPasswordField(),
+                          Expanded(
+                              flex: 1,
+                              child: SizedBox(
+                                height: 10,
+                              )),
+                          registerBtn(),
+                          Expanded(
+                              flex: 1,
+                              child: SizedBox(
+                                height: 10,
+                              )),
+                        ],
+                      ),
                     ),
-                    onTap: () {
-                      launch('http://slydo.co/terms');
-                    },
                   ),
-                  SizedBox(height: 10),
-                  getSubmitButton(),
-                  SizedBox(height: 50),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-        ));
+        ),
+      ),
+    );
+  }
+
+  Widget appIcon() {
+    return Container(
+      child: Image.asset(
+        "assets/images/app_logo_navyBlue.png",
+        height: MediaQuery.of(context).size.height / 16,
+        frameBuilder: imageFrameBuilder,
+      ),
+    );
+  }
+
+  Widget registerTitle() {
+    return Container(
+      child: Row(
+        children: <Widget>[
+          Text(
+            "Register to ",
+            style: TextStyle(
+                fontSize: 22, fontWeight: FontWeight.w700, color: blackFont),
+          ),
+          Text(
+            "Slydo",
+            style: TextStyle(
+                fontSize: 22, fontWeight: FontWeight.w700, color: navyBlue),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget registrationNote() {
+    return Container(
+      child: Text(
+        "Please enter your phone number. This phone number must be the one registered with your BVN",
+        style: TextStyle(fontSize: 14, color: darkGrey),
+      ),
+    );
+  }
+
+  Widget phoneNumberField() {
+    return CustomizedTextFormField(
+      labelColor: darkGrey,
+      labelText: "Phone number",
+      type: TextInputType.phone,
+      validator: (val) {
+        if (val.isNotEmpty && val.length == 13) {
+          return null;
+        }
+        return AppLocalization.of(context).invalidPhoneNumber;
+      },
+    );
+  }
+
+  Widget fullNameField() {
+    return CustomizedTextFormField(
+      labelColor: darkGrey,
+      labelText: "Full number",
+      type: TextInputType.text,
+    );
+  }
+
+  Widget passwordField() {
+    return CustomizedTextFormField(
+      labelColor: darkGrey,
+      labelText: "New Password",
+      type: TextInputType.number,
+    );
+  }
+
+  Widget confirmPasswordField() {
+    return CustomizedTextFormField(
+      labelColor: darkGrey,
+      labelText: "Confirm password",
+      type: TextInputType.number,
+    );
+  }
+
+  Widget registerBtn() {
+    return CurvedButton(
+      onPressed: () {
+        Navigator.of(context).pushNamedAndRemoveUntil(
+          "/index",
+          (Route<dynamic> route) => false,
+        );
+      },
+      text: "Register",
+      textColor: Colors.white,
+      backgroundColor: navyBlue,
+    );
   }
 
   Widget getPhoneNumberField() {

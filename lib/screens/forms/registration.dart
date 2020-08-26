@@ -5,6 +5,9 @@ import 'package:Slydo/models/country_picker/country.dart';
 import 'package:Slydo/models/country_picker/country_picker_dialog.dart';
 import 'package:Slydo/models/country_picker/utils.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -29,60 +32,226 @@ class _RegistrationState extends State<Registration> {
 
   bool isUserAgree = false;
 
+  TextEditingController phoneNumberController;
+
   @override
   void initState() {
+    phoneNumberController = TextEditingController();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+//    return WillPopScope(
+//        onWillPop: () async {
+//          return true;
+//        },
+//        child: Scaffold(
+//            backgroundColor: lightBlue(),
+//            resizeToAvoidBottomInset: true,
+//            appBar: AppBar(
+//                title: Center(child: Text(AppLocalization.of(context).signUp)),
+//                backgroundColor: darkBlue()),
+//            body: SingleChildScrollView(
+//              padding: EdgeInsets.symmetric(vertical: 40.0, horizontal: 40.0),
+//              scrollDirection: Axis.vertical,
+//              child: Form(
+//                key: _formKey,
+//                child: Column(
+//                  children: <Widget>[
+//                    getCountryDropdown(),
+//                    SizedBox(
+//                      height: 10,
+//                    ),
+//                    Text(
+//                      AppLocalization.of(context).termsForRegistration,
+//                      style: TextStyle(color: darkBlue()),
+//                    ),
+//                    SizedBox(
+//                      height: 10,
+//                    ),
+//                    getPhoneNumberWidget(),
+//                    isOTPSent
+//                        ? SizedBox(
+//                            height: 10,
+//                          )
+//                        : Container(),
+//                    isOTPSent ? getVerificationOTPWidget() : Container(),
+//                    SizedBox(
+//                      height: 20,
+//                    ),
+//                    getUserAgreeCheckBoxWidget(),
+//                    SizedBox(
+//                      height: 20,
+//                    ),
+//                    submitButton()
+//                  ],
+//                ),
+//              ),
+//            )));
     return WillPopScope(
-        onWillPop: () async {
-          return true;
-        },
-        child: Scaffold(
-            backgroundColor: lightBlue(),
-            resizeToAvoidBottomInset: true,
-            appBar: AppBar(
-                title: Center(child: Text(AppLocalization.of(context).signUp)),
-                backgroundColor: darkBlue()),
-            body: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(vertical: 40.0, horizontal: 40.0),
-              scrollDirection: Axis.vertical,
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: <Widget>[
-                    getCountryDropdown(),
-                    SizedBox(
-                      height: 10,
+      onWillPop: () {
+        if (FocusScope.of(context).hasFocus) {
+          FocusScope.of(context).unfocus();
+        }
+        return Future.value(true);
+      },
+      child: Scaffold(
+        backgroundColor: whiteBackground,
+        appBar: AppBar(
+          backgroundColor: whiteBackground,
+          elevation: 0,
+          leading: IconButton(
+            icon: Icon(
+              Icons.keyboard_arrow_left,
+              color: navyBlue,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ),
+        body: SingleChildScrollView(
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            child: Column(
+              children: <Widget>[
+                Expanded(
+                  flex: 6,
+                  child: Form(
+                    child: Container(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          appIcon(),
+                          Expanded(
+                              flex: 1,
+                              child: SizedBox(
+                                height: 10,
+                              )),
+                          registerTitle(),
+                          Expanded(
+                              flex: 1,
+                              child: SizedBox(
+                                height: 10,
+                              )),
+                          registrationNote(),
+                          Expanded(
+                              flex: 2,
+                              child: SizedBox(
+                                height: 10,
+                              )),
+                          selectCountryField(),
+                          Expanded(
+                              flex: 1,
+                              child: SizedBox(
+                                height: 10,
+                              )),
+                          phoneNumberField(),
+                          Expanded(
+                              flex: 1,
+                              child: SizedBox(
+                                height: 10,
+                              )),
+                          userAgreementField(),
+                          Expanded(
+                              flex: 2,
+                              child: SizedBox(
+                                height: 10,
+                              )),
+                          continueBtn(),
+                        ],
+                      ),
                     ),
-                    Text(
-                      AppLocalization.of(context).termsForRegistration,
-                      style: TextStyle(color: darkBlue()),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    getPhoneNumberWidget(),
-                    isOTPSent
-                        ? SizedBox(
-                            height: 10,
-                          )
-                        : Container(),
-                    isOTPSent ? getVerificationOTPWidget() : Container(),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    getUserAgreeCheckBoxWidget(),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    submitButton()
-                  ],
+                  ),
                 ),
-              ),
-            )));
+                Expanded(
+                    flex: 4,
+                    child: SizedBox(
+                      height: 10,
+                    ))
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget appIcon() {
+    return Container(
+      child: Image.asset(
+        "assets/images/app_logo_navyBlue.png",
+        height: MediaQuery.of(context).size.height / 16,
+        frameBuilder: imageFrameBuilder,
+      ),
+    );
+  }
+
+  Widget registerTitle() {
+    return Container(
+      child: Row(
+        children: <Widget>[
+          Text(
+            "Register to ",
+            style: TextStyle(
+                fontSize: 22, fontWeight: FontWeight.w700, color: blackFont),
+          ),
+          Text(
+            "Slydo",
+            style: TextStyle(
+                fontSize: 22, fontWeight: FontWeight.w700, color: navyBlue),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget registrationNote() {
+    return Container(
+      child: Text(
+        "Please enter your phone number. This phone number must be the one registered with your BVN",
+        style: TextStyle(fontSize: 14, color: darkGrey),
+      ),
+    );
+  }
+
+  Widget selectCountryField() {
+    return Container(
+      child: getCountryDropdown(),
+    );
+  }
+
+  Widget phoneNumberField() {
+    return CustomizedTextFormField(
+      labelColor: darkGrey,
+      labelText: "Phone number",
+      type: TextInputType.phone,
+      controller: phoneNumberController,
+      validator: (val) {
+        if (val.isNotEmpty && val.length == 13) {
+          return null;
+        }
+        return AppLocalization.of(context).invalidPhoneNumber;
+      },
+    );
+  }
+
+  Widget userAgreementField() {
+    return getUserAgreeCheckBoxWidget();
+  }
+
+  Widget continueBtn() {
+    return CurvedButton(
+      onPressed: () {
+        Navigator.of(context).pushNamed("/verify-registration-otp");
+      },
+      text: "Continue",
+      textColor: Colors.white,
+      backgroundColor: navyBlue,
+    );
   }
 
   getPhoneNumberWidget() {
@@ -222,29 +391,36 @@ class _RegistrationState extends State<Registration> {
     }
   }
 
-  getCountryDropdown() {
-    return Card(
-      margin: EdgeInsets.all(0),
-      borderOnForeground: true,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.fromLTRB(8.0, 8.0, 0, 0),
-            child: Center(
-              child: Text(
-                AppLocalization.of(context).selectYourCountry,
-                style: TextStyle(color: darkBlue()),
-              ),
-            ),
-          ),
-          ListTile(
-            contentPadding: EdgeInsets.fromLTRB(8, 0, 0, 0),
+  Widget getCountryDropdown() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          AppLocalization.of(context).selectYourCountry,
+          style: TextStyle(color: darkGrey, fontSize: 14),
+        ),
+        SizedBox(
+          height: 6,
+        ),
+        Card(
+          elevation: 0,
+          color: whiteBackground,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: BorderSide(color: greyBorderColor)),
+          margin: EdgeInsets.all(0),
+          borderOnForeground: true,
+          child: ListTile(
+            dense: true,
             onTap: isOTPSent ? () {} : _openCountryPickerDialog,
             title: _buildDialogItem(_selectedDialogCountry),
+            trailing: Icon(
+              Icons.keyboard_arrow_down,
+              color: darkGrey,
+            ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -253,9 +429,18 @@ class _RegistrationState extends State<Registration> {
       children: <Widget>[
         CountryPickerUtils.getDefaultFlagImage(country),
         SizedBox(width: 8.0),
-        Text("+${country.phoneCode}"),
+        Text(
+          "+${country.phoneCode}",
+          style: TextStyle(
+              fontSize: 16, fontWeight: FontWeight.w600, color: blackFont),
+        ),
         SizedBox(width: 8.0),
-        Flexible(child: Text(country.name))
+        Flexible(
+            child: Text(
+          country.name,
+          style: TextStyle(
+              fontSize: 16, fontWeight: FontWeight.w600, color: blackFont),
+        ))
       ],
     );
   }
@@ -280,22 +465,51 @@ class _RegistrationState extends State<Registration> {
 
   Widget getUserAgreeCheckBoxWidget() {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Checkbox(
-          activeColor: darkBlue(),
-          value: isUserAgree,
-          onChanged: (value) {
-            setState(() {
-              isUserAgree = value;
-            });
-          },
+        ClipRRect(
+          clipBehavior: Clip.antiAliasWithSaveLayer,
+          borderRadius: BorderRadius.all(Radius.circular(5)),
+          child: SizedBox(
+            width: Checkbox.width - 1.5,
+            height: Checkbox.width - 1.5,
+            child: Container(
+              decoration: new BoxDecoration(
+                border: Border.all(
+                  color: greyBorderColor,
+                  width: 1,
+                ),
+                borderRadius: new BorderRadius.circular(5),
+              ),
+              child: Theme(
+                data: ThemeData(
+                  unselectedWidgetColor: Colors.transparent,
+                ),
+                child: Checkbox(
+                  value: isUserAgree,
+                  onChanged: (value) {
+                    isUserAgree = value;
+                    setState(() {});
+                  },
+                  activeColor: navyBlue,
+                  checkColor: Colors.white,
+                  materialTapTargetSize: MaterialTapTargetSize.padded,
+                ),
+              ),
+            ),
+          ),
         ),
         SizedBox(
-          width: 8,
+          width: 12,
         ),
         Expanded(
-            child: Text(AppLocalization.of(context).termsForUserAgreeCheckBox)),
+          child: Text(
+            AppLocalization.of(context).termsForUserAgreeCheckBox,
+            style: TextStyle(
+              color: blackFont,
+              fontSize: 14,
+            ),
+          ),
+        ),
       ],
     );
   }
