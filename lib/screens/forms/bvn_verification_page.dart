@@ -3,7 +3,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../colors.dart';
+import '../../utils/colors.dart';
 
 class BvnVerificationPage extends StatefulWidget {
   @override

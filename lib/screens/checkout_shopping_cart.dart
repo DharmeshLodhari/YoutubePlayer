@@ -14,7 +14,7 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:toast/toast.dart';
 
-import 'colors.dart';
+import '../utils/colors.dart';
 
 class ShoppingCart extends StatefulWidget {
   @override

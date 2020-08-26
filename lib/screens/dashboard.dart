@@ -12,7 +12,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
-import '../screens/colors.dart';
+import '../utils/colors.dart';
 import 'home.dart';
 import 'request_payments_list.dart';
 

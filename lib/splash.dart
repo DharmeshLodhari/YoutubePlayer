@@ -1,6 +1,6 @@
 import 'package:Slydo/models/store.dart';
-import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:devicelocale/devicelocale.dart';
@@ -119,7 +119,7 @@ class _SplashScreenState extends State<SplashScreen> {
     basketBloc = Provider.of<BasketBloc>(context);
     return hasConnection
         ? Container(
-            color: lightBlue(),
+            color: navyBlue,
             child: Center(
                 child: SpinKitChasingDots(
               color: Colors.white,

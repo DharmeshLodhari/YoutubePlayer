@@ -10,7 +10,7 @@ import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'colors.dart';
+import '../utils/colors.dart';
 
 class TransactionGraph extends StatefulWidget {
   @override

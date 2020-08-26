@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_credit_card/credit_card_widget.dart';
 import 'package:toast/toast.dart';
 
-import 'colors.dart';
+import '../utils/colors.dart';
 
 class CardPaymentPage extends StatefulWidget {
   @override

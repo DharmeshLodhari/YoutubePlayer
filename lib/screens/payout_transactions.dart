@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:toast/toast.dart';
 
-import 'colors.dart';
+import '../utils/colors.dart';
 
 class PayoutTransactions extends StatefulWidget {
   @override

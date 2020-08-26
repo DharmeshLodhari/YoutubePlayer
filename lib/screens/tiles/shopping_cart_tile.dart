@@ -4,7 +4,7 @@ import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
-import '../colors.dart';
+import '../../utils/colors.dart';
 
 // ignore: must_be_immutable
 class ShoppingCartTileForProduct extends StatefulWidget {

@@ -4,7 +4,7 @@ import 'package:Slydo/models/payout.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
-import '../colors.dart';
+import '../../utils/colors.dart';
 
 class PayoutTile extends StatelessWidget {
   final Payout payout;

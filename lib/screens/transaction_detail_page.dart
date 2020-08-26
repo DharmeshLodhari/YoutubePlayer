@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 
-import 'colors.dart';
+import '../utils/colors.dart';
 
 // ignore: must_be_immutable
 class TransactionDetail extends StatefulWidget {

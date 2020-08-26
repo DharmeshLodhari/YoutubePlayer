@@ -1,13 +1,15 @@
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/colors.dart';
+import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:introduction_screen/introduction_screen.dart';
+import 'package:page_view_indicators/page_view_indicators.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
-import 'colors.dart';
+import '../utils/colors.dart';
 
 // ignore: must_be_immutable
 class Index extends StatefulWidget {
@@ -20,12 +22,15 @@ class Index extends StatefulWidget {
 
 class _IndexState extends State<Index> {
   var arguments;
+
   _IndexState(
       {this.arguments}); // for Checking if User  start App first time or come back from logout button
+
   bool isIntroDone = false;
-  //intro screen page index
-  int currentIndex = 0;
-  List<PageViewModel> pageModel;
+  int introScreenCount = 4;
+
+  var _pageController = PageController();
+  var _currentPageNotifier = ValueNotifier<int>(0);
 
   @override
   void initState() {
@@ -35,144 +40,6 @@ class _IndexState extends State<Index> {
       if (mounted) {
         setState(() {
           isIntroDone = arguments != null ? arguments['isIntroDone'] : false;
-          pageModel = [
-            PageViewModel(
-              decoration: PageDecoration(
-                  pageColor: lightBlue(),
-                  imagePadding: EdgeInsets.fromLTRB(0.0, 70, 0, 0),
-                  titlePadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
-                  contentPadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
-                  descriptionPadding: EdgeInsets.fromLTRB(20, 30, 20, 0)),
-              titleWidget: Text(
-                AppLocalization.of(context).scanQrCode,
-                style: TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white),
-              ),
-              bodyWidget: Column(
-                children: <Widget>[
-                  Text(
-                    AppLocalization.of(context).introMsg1,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white),
-                  ),
-                ],
-              ),
-              image: Padding(
-                padding: EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
-                child: Image.asset(
-                  'assets/images/Group16@2x.png',
-                  scale: 1,
-                ),
-              ),
-            ),
-            PageViewModel(
-              decoration: PageDecoration(
-                  pageColor: lightBlue(),
-                  imagePadding: EdgeInsets.fromLTRB(0.0, 70, 0, 0),
-                  titlePadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
-                  contentPadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
-                  descriptionPadding: EdgeInsets.fromLTRB(20, 30, 20, 0)),
-              titleWidget: Text(
-                AppLocalization.of(context).sendPayment,
-                style: TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white),
-              ),
-              bodyWidget: Column(
-                children: <Widget>[
-                  Text(
-                    AppLocalization.of(context).introMsg2,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white),
-                  ),
-                ],
-              ),
-              image: Padding(
-                padding: EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
-                child: Image.asset(
-                  'assets/images/Group15@2x.png',
-                  scale: 1,
-                ),
-              ),
-            ),
-            PageViewModel(
-              decoration: PageDecoration(
-                  pageColor: lightBlue(),
-                  imagePadding: EdgeInsets.fromLTRB(0.0, 70, 0, 0),
-                  titlePadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
-                  contentPadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
-                  descriptionPadding: EdgeInsets.fromLTRB(20, 30, 20, 0)),
-              titleWidget: Text(
-                AppLocalization.of(context).viewTransactions,
-                style: TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white),
-              ),
-              bodyWidget: Column(
-                children: <Widget>[
-                  Text(
-                    AppLocalization.of(context).introMsg2,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white),
-                  ),
-                ],
-              ),
-              image: Padding(
-                padding: EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
-                child: Image.asset(
-                  'assets/images/Group14@2x.png',
-                  scale: 1,
-                ),
-              ),
-            ),
-            PageViewModel(
-              decoration: PageDecoration(
-                  pageColor: lightBlue(),
-                  imagePadding: EdgeInsets.fromLTRB(0.0, 70, 0, 0),
-                  titlePadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
-                  contentPadding: EdgeInsets.fromLTRB(0.0, 30, 0, 0),
-                  descriptionPadding: EdgeInsets.fromLTRB(20, 30, 20, 0)),
-              titleWidget: Text(
-                AppLocalization.of(context).viewTransactions,
-                style: TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white),
-              ),
-              bodyWidget: Column(
-                children: <Widget>[
-                  Text(
-                    AppLocalization.of(context).introMsg2,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white),
-                  ),
-                ],
-              ),
-              image: Padding(
-                padding: EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
-                child: Image.asset(
-                  'assets/images/Group13@2x.png',
-                  scale: 1,
-                ),
-              ),
-            ),
-          ];
         });
       }
     });
@@ -203,31 +70,94 @@ class _IndexState extends State<Index> {
   }
 
   Widget homeScreen() {
-    return Container(
-      height: MediaQuery.of(context).size.height,
-      width: MediaQuery.of(context).size.width,
-      color: lightBlue(),
-      padding: EdgeInsets.all(24),
-      child: Center(
-        child: Column(
-          children: <Widget>[
-            SizedBox(height: 100),
-            showHomeBackground(),
-            SizedBox(height: 20),
-            Text(AppLocalization.of(context).anEasyWayToAcceptAndReceivePayment,
-                style: TextStyle(color: Colors.white, fontSize: 20)),
-            Expanded(child: SizedBox(height: 20)),
-            Expanded(
-              child: Row(
-                children: <Widget>[
-                  Expanded(flex: 3, child: loginButton()),
-                  Expanded(flex: 1, child: SizedBox(height: 10)),
-                  Expanded(flex: 3, child: registerButton()),
-                ],
-              ),
-            )
-          ],
-        ),
+    return Scaffold(
+      backgroundColor: navyBlue,
+      body: Stack(
+        children: <Widget>[
+          Positioned(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                Image.asset(
+                  "assets/images/index_screen.png",
+                  fit: BoxFit.cover,
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              children: <Widget>[
+                Expanded(
+                  flex: 6,
+                  child: Column(
+                    children: <Widget>[
+                      Expanded(
+                        flex: 10,
+                        child: SizedBox(
+                          height: 10,
+                        ),
+                      ),
+                      appIcon(),
+                      Expanded(
+                        child: SizedBox(
+                          height: 10,
+                        ),
+                      ),
+                      Text("Welcome to Slydo",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 22,
+                              fontWeight: FontWeight.w700)),
+                      Expanded(
+                        flex: 2,
+                        child: SizedBox(
+                          height: 10,
+                        ),
+                      ),
+                      CurvedButton(
+                        backgroundColor: Colors.white,
+                        onPressed: () {
+                          Navigator.of(context).pushNamed('/login');
+                        },
+                        text: "Log in",
+                        textColor: HexColor("#3F61DB"),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      CurvedButton(
+                        backgroundColor: Color.fromARGB(38, 255, 255, 255),
+                        onPressed: () {
+                          Navigator.of(context).pushNamed('/new-registration');
+                        },
+                        text: "Register",
+                        textColor: Colors.white,
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+//                Row(
+//                  children: <Widget>[
+//                    Expanded(flex: 3, child: loginButton()),
+//                    Expanded(flex: 1, child: SizedBox(height: 10)),
+//                    Expanded(flex: 3, child: registerButton()),
+//                  ],
+//                )
+                    ],
+                  ),
+                ),
+                Expanded(
+                  flex: 4,
+                  child: SizedBox(
+                    height: 10,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -262,69 +192,329 @@ class _IndexState extends State<Index> {
     );
   }
 
-  Widget showHomeBackground() {
-    return Expanded(
-      flex: 4,
-      child: Container(
-          child: Image.asset(
-        'assets/images/slydo_desk_min.png',
-        fit: BoxFit.cover,
-        frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-          if (wasSynchronouslyLoaded) {
-            return child;
-          } else {
-            return AnimatedSwitcher(
-              duration: const Duration(milliseconds: 500),
-              child: frame != null
-                  ? child
-                  : Container(
-                      color: lightBlue(),
-                      child: Center(
-                        child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation(darkBlue()),
-                        ),
-                      ),
-                    ),
-            );
-          }
-        },
-      )),
+  Widget appIcon() {
+    return Container(
+        child: Image.asset(
+      'assets/images/app_logo.png',
+      height: MediaQuery.of(context).size.height / 10,
+      frameBuilder: imageFrameBuilder,
+    ));
+  }
+
+  Widget introScreen() {
+    return Stack(
+      children: <Widget>[
+        _buildPageView(),
+        _buildCircleIndicator(),
+        _buildSkipButton()
+      ],
     );
   }
 
-  introScreen() {
-    try {
-      return IntroductionScreen(
-        initialPage: currentIndex,
-        showSkipButton: true,
-        skip: Text(AppLocalization.of(context).skip,
-            style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white)),
-        done: Text(AppLocalization.of(context).done,
-            style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white)),
-        dotsDecorator: DotsDecorator(
-            size: const Size.square(10.0),
-            activeSize: const Size(20.0, 10.0),
-            activeColor: darkBlue(),
-            color: Colors.black26,
-            spacing: const EdgeInsets.symmetric(horizontal: 3.0),
-            activeShape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(25.0))),
-        onDone: () {
-          if (mounted) {
-            setState(() {
-              isIntroDone = true;
-            });
-          }
+  Widget _buildPageView() {
+    return Container(
+      color: Colors.black87,
+      child: PageView(
+        controller: _pageController,
+        onPageChanged: (int index) {
+          _currentPageNotifier.value = index;
+          setState(() {});
         },
-        onChange: (index) {
-          if (mounted) {
-            setState(() {
-              currentIndex = index;
-            });
-          }
-        },
-        pages: pageModel,
-      );
-    } catch (e) {}
+        children: <Widget>[
+          firstScreen(),
+          secondScreen(),
+          thirdScreen(),
+          fourthScreen()
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCircleIndicator() {
+    return Positioned(
+      left: 0.0,
+      right: 0.0,
+      bottom: 20.0,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: CirclePageIndicator(
+          size: 6,
+          selectedSize: 6,
+          dotColor: HexColor('#BEC2F4'),
+          selectedDotColor: navyBlue,
+          itemCount: introScreenCount,
+          currentPageNotifier: _currentPageNotifier,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSkipButton() {
+    return Positioned(
+      right: 20.0,
+      top: MediaQuery.of(context).padding.top + 20,
+      child: skipButton(),
+    );
+  }
+
+  Widget firstScreen() {
+    return Scaffold(
+      backgroundColor: whiteBackground,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: <Widget>[
+          Expanded(
+            flex: 1,
+            child: Container(),
+          ),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 30),
+            child: Image.asset(
+              "assets/images/intro_images/screen_one.png",
+              frameBuilder: imageFrameBuilder,
+            ),
+          ),
+          Expanded(
+              flex: 2,
+              child: Container(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Expanded(
+                      flex: 1,
+                      child: SizedBox(
+                        height: 10,
+                      ),
+                    ),
+                    Text(
+                      "Scan QR Code",
+                      textAlign: TextAlign.center,
+                      style:
+                          TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 40),
+                      child: Text(
+                        "Slydo allows you to send and receive payments instantly in Africa.",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 14, color: darkGrey, height: 1.5),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 2,
+                      child: SizedBox(
+                        height: 10,
+                      ),
+                    ),
+                  ],
+                ),
+              )),
+        ],
+      ),
+    );
+  }
+
+  Widget secondScreen() {
+    return Scaffold(
+      backgroundColor: whiteBackground,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: <Widget>[
+          Expanded(
+            flex: 1,
+            child: Container(),
+          ),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 30),
+            child: Image.asset(
+              "assets/images/intro_images/screen_two.png",
+              frameBuilder: imageFrameBuilder,
+            ),
+          ),
+          Expanded(
+              flex: 2,
+              child: Container(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Expanded(
+                      flex: 1,
+                      child: SizedBox(
+                        height: 10,
+                      ),
+                    ),
+                    Text(
+                      "Send Payment",
+                      textAlign: TextAlign.center,
+                      style:
+                          TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 40),
+                      child: Text(
+                        "Slydo allows you to send and receive payments instantly in Africa.",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 14, color: darkGrey, height: 1.5),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 2,
+                      child: SizedBox(
+                        height: 10,
+                      ),
+                    ),
+                  ],
+                ),
+              )),
+        ],
+      ),
+    );
+  }
+
+  Widget thirdScreen() {
+    return Scaffold(
+      backgroundColor: whiteBackground,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: <Widget>[
+          Expanded(
+            flex: 1,
+            child: Container(),
+          ),
+          Container(
+            child: Image.asset(
+              "assets/images/intro_images/screen_three.png",
+              frameBuilder: imageFrameBuilder,
+            ),
+          ),
+          Expanded(
+              flex: 2,
+              child: Container(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Expanded(
+                      flex: 1,
+                      child: SizedBox(
+                        height: 10,
+                      ),
+                    ),
+                    Text(
+                      "View Transactions",
+                      textAlign: TextAlign.center,
+                      style:
+                          TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 40),
+                      child: Text(
+                        "Slydo allows you to send and receive payments instantly in Africa.",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 14, color: darkGrey, height: 1.5),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 2,
+                      child: SizedBox(
+                        height: 10,
+                      ),
+                    ),
+                  ],
+                ),
+              )),
+        ],
+      ),
+    );
+  }
+
+  Widget fourthScreen() {
+    return Scaffold(
+      backgroundColor: whiteBackground,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: <Widget>[
+          Expanded(
+            flex: 1,
+            child: Container(),
+          ),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 30),
+            child: Image.asset(
+              "assets/images/intro_images/screen_four.png",
+              frameBuilder: imageFrameBuilder,
+            ),
+          ),
+          Expanded(
+              flex: 2,
+              child: Container(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Expanded(
+                      flex: 1,
+                      child: SizedBox(
+                        height: 10,
+                      ),
+                    ),
+                    Text(
+                      "Send Payment",
+                      textAlign: TextAlign.center,
+                      style:
+                          TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 40),
+                      child: Text(
+                        "Slydo allows you to send and receive payments instantly in Africa.",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 14, color: darkGrey, height: 1.5),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 2,
+                      child: SizedBox(
+                        height: 10,
+                      ),
+                    ),
+                  ],
+                ),
+              )),
+        ],
+      ),
+    );
+  }
+
+  Widget skipButton() {
+    return GestureDetector(
+      child: Text(
+        _currentPageNotifier.value == 3 ? "Done" : "Skip",
+        style: TextStyle(fontSize: 14, color: darkGrey),
+      ),
+      onTap: () {
+        if (_currentPageNotifier.value != 3) {
+          _pageController.animateToPage(3,
+              duration: Duration(seconds: 1), curve: Curves.easeIn);
+        } else {
+          isIntroDone = true;
+          setState(() {});
+        }
+      },
+    );
   }
 }

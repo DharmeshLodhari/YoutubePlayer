@@ -3,7 +3,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/models/user.dart';
-import 'package:Slydo/screens/colors.dart';
+import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/location_service.dart';
 import 'package:Slydo/widget/passcodePopup.dart';

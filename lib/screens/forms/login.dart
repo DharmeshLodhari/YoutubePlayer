@@ -5,10 +5,13 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/models/transactions.dart';
-import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/device_info.dart';
+import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -25,7 +28,7 @@ class UserLogin extends StatefulWidget {
 
 class _UserLoginState extends State<UserLogin> {
   bool isRemember = false;
-  final _formKey = GlobalKey<FormState>();
+  final _loginFormKey = GlobalKey<FormState>();
   final _auth = AuthService();
   String phoneNumber = '';
   String password = '';
@@ -86,245 +89,272 @@ class _UserLoginState extends State<UserLogin> {
         if (FocusScope.of(context).hasFocus) {
           FocusScope.of(context).unfocus();
         }
-
         return Future.value(true);
       },
       child: Scaffold(
-          backgroundColor: lightBlue(),
-          resizeToAvoidBottomInset: true,
-          appBar: AppBar(
-            title: Text(AppLocalization.of(context).login),
-            backgroundColor: darkBlue(),
-            elevation: 0.0,
-          ),
-          body: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 40.0),
-            scrollDirection: Axis.vertical,
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  displayImage(),
-                  phoneNumberField(),
-                  SizedBox(height: 20.0),
-//                  passwordField(),
-//                  SizedBox(height: 20.0),
-                  darkRoundedPinPut(),
-                  SizedBox(height: 20.0),
-                  rememberLogin(),
-                  SizedBox(height: 15),
-                  forgotPasswordButton(),
-                  SizedBox(height: 20),
-                  submitButton(context),
-                ],
-              ),
+        backgroundColor: whiteBackground,
+        appBar: AppBar(
+          backgroundColor: whiteBackground,
+          elevation: 0,
+          leading: IconButton(
+            icon: Icon(
+              Icons.keyboard_arrow_left,
+              color: navyBlue,
             ),
-          )),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ),
+        body: SingleChildScrollView(
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            child: Column(
+              children: <Widget>[
+                Expanded(
+                  flex: 6,
+                  child: Form(
+                    key: _loginFormKey,
+                    child: Container(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          appIcon(),
+                          Expanded(
+                              flex: 1,
+                              child: SizedBox(
+                                height: 10,
+                              )),
+                          loginTitle(),
+                          Expanded(
+                              flex: 4,
+                              child: SizedBox(
+                                height: 10,
+                              )),
+                          phoneNumberField(),
+                          Expanded(
+                              flex: 1,
+                              child: SizedBox(
+                                height: 10,
+                              )),
+                          passwordPinFiled(),
+                          Expanded(
+                              flex: 1,
+                              child: SizedBox(
+                                height: 10,
+                              )),
+                          rememberMeAndForgotPasswordField(),
+                          Expanded(
+                              flex: 4,
+                              child: SizedBox(
+                                height: 10,
+                              )),
+                          loginBtnField(),
+                          Expanded(
+                              flex: 1,
+                              child: SizedBox(
+                                height: 10,
+                              )),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                    flex: 4,
+                    child: SizedBox(
+                      height: 10,
+                    ))
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 
-  Widget displayImage() {
+  Widget appIcon() {
     return Container(
-      margin: EdgeInsets.all(20.0),
-      padding: EdgeInsets.fromLTRB(10.0, 0.0, 10, 0),
-      alignment: Alignment.topCenter,
-      width: 200,
-      height: 200,
-      decoration: BoxDecoration(
-        color: Colors.transparent,
-      ),
       child: Image.asset(
-        'assets/images/icon2.png',
-        fit: BoxFit.cover,
+        "assets/images/app_logo_navyBlue.png",
+        height: MediaQuery.of(context).size.height / 16,
+        frameBuilder: imageFrameBuilder,
+      ),
+    );
+  }
+
+  Widget loginTitle() {
+    return Container(
+      child: Row(
+        children: <Widget>[
+          Text(
+            "Log in to ",
+            style: TextStyle(
+                fontSize: 22, fontWeight: FontWeight.w700, color: blackFont),
+          ),
+          Text(
+            "Slydo",
+            style: TextStyle(
+                fontSize: 22, fontWeight: FontWeight.w700, color: navyBlue),
+          ),
+        ],
       ),
     );
   }
 
   Widget phoneNumberField() {
-    return TextFormField(
+    return CustomizedTextFormField(
+      labelColor: darkGrey,
+      labelText: "Phone number",
+      type: TextInputType.phone,
       controller: phoneNumberController,
-      cursorColor: darkBlue(),
-      autofocus: false,
-      obscureText: false,
-      keyboardType: TextInputType.phone,
-      decoration: InputDecoration(
-          prefixIcon: Icon(
-              Platform.isAndroid ? Icons.phone_android : Icons.phone_iphone),
-          fillColor: Colors.white,
-          filled: true,
-          hintText: AppLocalization.of(context).phoneNumber,
-          labelStyle: TextStyle(
-            color: darkBlue(),
-            fontSize: 16,
-          ),
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
       validator: (val) {
         if (val.isNotEmpty && val.length == 13) {
           return null;
         }
         return AppLocalization.of(context).invalidPhoneNumber;
       },
-      onChanged: (val) {
-        if (mounted) {
-          setState(() {
-            phoneNumber = val.trim();
-          });
-        }
-      },
     );
   }
 
-  Widget passwordField() {
-    return TextFormField(
-      controller: passwordController,
-      autofocus: false,
-      obscureText: true,
-      keyboardType: TextInputType.number,
-      decoration: InputDecoration(
-          prefixIcon: Icon(Icons.lock),
-          fillColor: Colors.white,
-          filled: true,
-          hintText: AppLocalization.of(context).password,
-          labelStyle: TextStyle(
-            color: darkBlue(),
-            fontSize: 16,
-          ),
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
-      validator: (val) =>
-          val.length < 4 ? AppLocalization.of(context).invalidPassword : null,
-      onChanged: (val) {
-        if (mounted) {
-          setState(() {
-            password = val.trim();
-          });
-        }
-      },
-    );
-  }
-
-  Widget darkRoundedPinPut() {
+  Widget passwordPinFiled() {
     BoxDecoration pinPutDecoration = BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(5),
-        border: Border.all(color: darkBlue()));
-    return PinPut(
-      eachFieldWidth: 45,
-      eachFieldHeight: 45,
-      obscureText: '•',
-      onChanged: (val) {
-        if (mounted) {
-          setState(() {
-            password = val.trim();
-          });
-        }
-      },
-      validator: (val) =>
-          val.length < 4 ? AppLocalization.of(context).invalidPassword : null,
-      fieldsCount: 6,
-      focusNode: _pinPutFocusNode,
-      controller: passwordController,
-      submittedFieldDecoration: pinPutDecoration,
-      selectedFieldDecoration: pinPutDecoration,
-      followingFieldDecoration: pinPutDecoration,
-      pinAnimationType: PinAnimationType.scale,
-      textStyle: TextStyle(color: darkBlue(), fontSize: 30),
-    );
-  }
-
-  Widget submitButton(context) {
-    return ButtonTheme(
-      minWidth: double.infinity,
-      child: MaterialButton(
-        onPressed: login,
-        textColor: Colors.white,
-        color: darkBlue(),
-        height: 50,
-        child: Text(AppLocalization.of(context).login),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: greyBorderColor));
+    return Container(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            "Password",
+            style: TextStyle(fontSize: 14, color: darkGrey),
+          ),
+          SizedBox(
+            height: 6.0,
+          ),
+          PinPut(
+            eachFieldWidth: 45,
+            eachFieldHeight: 45,
+            obscureText: '•',
+            validator: (val) => val.length < 4
+                ? AppLocalization.of(context).invalidPassword
+                : null,
+            fieldsCount: 6,
+            focusNode: _pinPutFocusNode,
+            controller: passwordController,
+            submittedFieldDecoration: pinPutDecoration,
+            selectedFieldDecoration: pinPutDecoration,
+            followingFieldDecoration: pinPutDecoration,
+            pinAnimationType: PinAnimationType.scale,
+            textStyle: TextStyle(color: blackFont, fontSize: 35),
+          ),
+        ],
       ),
     );
   }
 
-  Widget rememberLogin() {
+  Widget rememberMeAndForgotPasswordField() {
+    return Container(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          rememberMeField(),
+          forgotPasswordField(),
+        ],
+      ),
+    );
+  }
+
+  Widget rememberMeField() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        Checkbox(
-          onChanged: (value) {
-            if (mounted) {
-              setState(() {
-                if (value == true) {
-                  isChecked = true;
-                  isRemember = true;
-                } else {
-                  isChecked = false;
-                  isRemember = false;
-                }
-              });
-            }
-          },
-          activeColor: Colors.white,
-          value: isChecked,
-          checkColor: darkBlue(),
-        ),
-        Expanded(
-          child: Text(
-            AppLocalization.of(context).rememberMe,
-            style: TextStyle(color: Colors.white),
+        ClipRRect(
+          clipBehavior: Clip.antiAliasWithSaveLayer,
+          borderRadius: BorderRadius.all(Radius.circular(5)),
+          child: SizedBox(
+            width: Checkbox.width - 1.5,
+            height: Checkbox.width - 1.5,
+            child: Container(
+              decoration: new BoxDecoration(
+                border: Border.all(
+                  color: greyBorderColor,
+                  width: 1,
+                ),
+                borderRadius: new BorderRadius.circular(5),
+              ),
+              child: Theme(
+                data: ThemeData(
+                  unselectedWidgetColor: Colors.transparent,
+                ),
+                child: Checkbox(
+                  value: isChecked,
+                  onChanged: (value) {
+                    if (mounted) {
+                      if (value == true) {
+                        isChecked = true;
+                        isRemember = true;
+                      } else {
+                        isChecked = false;
+                        isRemember = false;
+                      }
+                      setState(() {});
+                    }
+                  },
+                  activeColor: navyBlue,
+                  checkColor: Colors.white,
+                  materialTapTargetSize: MaterialTapTargetSize.padded,
+                ),
+              ),
+            ),
           ),
-        )
+        ),
+        SizedBox(
+          width: 12,
+        ),
+        Text(
+          AppLocalization.of(context).rememberMe,
+          style: TextStyle(color: blackFont, fontSize: 14),
+        ),
       ],
     );
   }
 
-  Widget logo() {
-    return Center(
-      child: SizedBox(
-        width: 100,
-        height: 100,
-        child: Image.asset('assets/images/android-chrome-192x192.png'),
+  Widget forgotPasswordField() {
+    return Container(
+        child: GestureDetector(
+      onTap: () {
+        Navigator.of(context).pushNamed('/forgot-password');
+      },
+      child: Text(
+        AppLocalization.of(context).forgotPassword,
+        style: TextStyle(
+            fontSize: 14, fontWeight: FontWeight.w600, color: navyBlue),
       ),
-    );
+    ));
   }
 
-  void isRememberChecked() async {
-    bool isLoggedOut = await _sharedPreferences.setBool('isLoggedOut', false);
-    if (isRemember) {
-      await _sharedPreferences.clear();
-      bool isCheckedSet =
-          await _sharedPreferences.setBool('isChecked', isChecked);
-      bool usernameSet =
-          await _sharedPreferences.setString('username', phoneNumber);
-      bool passwordSet =
-          await _sharedPreferences.setString('password', password);
-
-      if (!isCheckedSet || !isLoggedOut || !usernameSet || !passwordSet) {
-        Toast.show(AppLocalization.of(context).userIsNotSaved, context);
-      }
-    } else {
-      bool isSuccessFullyStored =
-          await _sharedPreferences.setBool('isChecked', isChecked);
-      if (!isSuccessFullyStored) {
-        Toast.show(AppLocalization.of(context).userIsNotSaved, context);
-      }
-    }
+  Widget loginBtnField() {
+    return CurvedButton(
+      backgroundColor: navyBlue,
+      textColor: Colors.white,
+      text: "Log in",
+      onPressed: login,
+    );
   }
 
   void login() async {
     final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
     final BankAccountBloc bankAccountBloc =
         Provider.of<BankAccountBloc>(context, listen: false);
-    if (_formKey.currentState.validate()) {
+    if (_loginFormKey.currentState.validate()) {
       showDialog(context: context, builder: (context) => LoadingIndicator());
 
       var _user;
       BankAccount _bankAccount;
+      phoneNumber = phoneNumberController.text.trim();
+      password = passwordController.text.trim();
 
       _auth.authenticate(phoneNumber, password).then((value) {
         _user = value;
@@ -372,6 +402,29 @@ class _UserLoginState extends State<UserLogin> {
     }
   }
 
+  void isRememberChecked() async {
+    bool isLoggedOut = await _sharedPreferences.setBool('isLoggedOut', false);
+    if (isRemember) {
+      await _sharedPreferences.clear();
+      bool isCheckedSet =
+          await _sharedPreferences.setBool('isChecked', isChecked);
+      bool usernameSet =
+          await _sharedPreferences.setString('username', phoneNumber);
+      bool passwordSet =
+          await _sharedPreferences.setString('password', password);
+
+      if (!isCheckedSet || !isLoggedOut || !usernameSet || !passwordSet) {
+        Toast.show(AppLocalization.of(context).userIsNotSaved, context);
+      }
+    } else {
+      bool isSuccessFullyStored =
+          await _sharedPreferences.setBool('isChecked', isChecked);
+      if (!isSuccessFullyStored) {
+        Toast.show(AppLocalization.of(context).userIsNotSaved, context);
+      }
+    }
+  }
+
   void initializeShoppingCart() async {
     debugPrint("initializeShoppingCart called");
     List items = await _auth.getShoppingCart();
@@ -379,23 +432,6 @@ class _UserLoginState extends State<UserLogin> {
       String type = element is Product ? "product" : "service";
       basketBloc.addItemToCart(item: element, type: type);
     });
-  }
-
-  Widget forgotPasswordButton() {
-    return GestureDetector(
-      onTap: () {
-        Navigator.of(context).pushNamed('/forgot-password');
-      },
-      child: Align(
-        alignment: Alignment.centerRight,
-        child: Text(
-          AppLocalization.of(context).forgotPassword,
-          style: TextStyle(
-            decoration: TextDecoration.underline,
-          ),
-        ),
-      ),
-    );
   }
 
   // ignore: missing_return

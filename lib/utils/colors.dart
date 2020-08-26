@@ -19,3 +19,9 @@ HexColor lightBlue() {
 HexColor darkBlue() {
   return HexColor('#0d1b46');
 }
+
+Color navyBlue = HexColor("#3F61DB");
+Color whiteBackground = HexColor("#F9F8F8");
+Color blackFont = HexColor("#030F36");
+Color darkGrey = HexColor("#75818F");
+Color greyBorderColor = HexColor("#DDE1E7");

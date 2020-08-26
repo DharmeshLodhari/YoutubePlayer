@@ -1,6 +1,6 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/models/store.dart';
-import 'package:Slydo/screens/colors.dart';
+import 'package:Slydo/utils/colors.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 

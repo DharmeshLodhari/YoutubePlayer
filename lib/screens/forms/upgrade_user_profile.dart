@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
-import '../colors.dart';
+import '../../utils/colors.dart';
 
 class UpgradeUserProfile extends StatefulWidget {
   @override

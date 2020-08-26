@@ -10,7 +10,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
-import '../colors.dart';
+import '../../utils/colors.dart';
 
 class AddService extends StatefulWidget {
   @override

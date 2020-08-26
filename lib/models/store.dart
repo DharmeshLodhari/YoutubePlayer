@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:Slydo/screens/colors.dart';
+import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 class Product {

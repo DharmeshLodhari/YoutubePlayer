@@ -10,7 +10,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
-import 'colors.dart';
+import '../utils/colors.dart';
 
 // ignore: must_be_immutable
 class OrderDetailPage extends StatefulWidget {

@@ -13,7 +13,7 @@ import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 import 'package:toast/toast.dart';
 
-import 'colors.dart';
+import '../utils/colors.dart';
 
 // ignore: must_be_immutable
 class ServiceDetailPage extends StatefulWidget {

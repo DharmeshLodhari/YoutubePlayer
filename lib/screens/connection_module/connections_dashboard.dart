@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:popup_menu/popup_menu.dart';
 
-import '../colors.dart';
+import '../../utils/colors.dart';
 import 'block_list.dart';
 import 'connection_request_list.dart';
 import 'connections_list.dart';

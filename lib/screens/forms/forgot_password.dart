@@ -4,7 +4,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 
-import '../colors.dart';
+import '../../utils/colors.dart';
 
 class ForgotPassword extends StatefulWidget {
   @override

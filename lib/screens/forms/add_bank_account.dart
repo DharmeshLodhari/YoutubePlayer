@@ -1,8 +1,8 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/models/bank.dart';
 import 'package:Slydo/models/transactions.dart';
-import 'package:Slydo/screens/colors.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';

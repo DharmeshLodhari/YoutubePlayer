@@ -100,14 +100,7 @@ class MyApp extends StatelessWidget {
         onGenerateRoute: RouteGenerator.generateRoute,
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          fontFamily: "CircularStd",
-          textTheme: TextTheme(
-            body1: TextStyle(
-              color: Colors.black87,
-              wordSpacing: 0.2,
-              height: 1.2,
-            ),
-          ),
+          fontFamily: "OpenSans",
         ),
       ),
     );

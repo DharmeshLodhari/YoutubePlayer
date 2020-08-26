@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import '../colors.dart';
+import '../../utils/colors.dart';
 
 // ignore: must_be_immutable
 class OrderTile extends StatelessWidget {
