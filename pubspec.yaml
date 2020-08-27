@@ -122,6 +122,10 @@ flutter:
         - asset: assets/fonts/OpenSans-ExtraBold.ttf
           weight: 800
 
+    - family:  SlydoAppIcon
+      fonts:
+        - asset: fonts/SlydoAppIcon.ttf
+
   #   - family: Trajan Pro
   #     fonts:
   #       - asset: fonts/TrajanPro.ttf
