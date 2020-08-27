@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 // ignore: must_be_immutable
 class CustomizedTextFormField extends StatefulWidget {
   Function validator;
+  Function onChange;
   TextEditingController controller;
   TextInputType type;
   bool obscureText;
@@ -15,6 +16,7 @@ class CustomizedTextFormField extends StatefulWidget {
 
   CustomizedTextFormField({
     this.validator,
+    this.onChange,
     this.controller,
     this.type = TextInputType.text,
     this.obscureText = false,
@@ -129,6 +131,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
           obscureText: widget.obscureText,
           maxLength: widget.maxLength,
           onChanged: (val) {
+            if (widget.onChange != null) widget.onChange(val);
             setState(() {});
           },
         ),

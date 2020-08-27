@@ -281,6 +281,7 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
+  // validate password
   String validatePassword1(String val) {
     var matcher = RegExp(
       r'^(.)\1{1,}$',
@@ -296,6 +297,7 @@ class _SignUpState extends State<SignUp> {
     return null;
   }
 
+  // validate confirm password
   String validatePassword2(String val) {
     var matcher = RegExp(
       r'^(.)\1{1,}$',
@@ -313,6 +315,7 @@ class _SignUpState extends State<SignUp> {
     return null;
   }
 
+  // validate the all field in the form then authenticate user and navigate him to dashboard screen
   void registerUser() async {
     if (FocusScope.of(context).hasFocus) {
       FocusScope.of(context).unfocus();

@@ -109,12 +109,14 @@ class _UserLoginState extends State<UserLogin> {
         body: SingleChildScrollView(
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 20),
-            height: MediaQuery.of(context).size.height,
+            height: MediaQuery.of(context).size.height -
+                (AppBar().preferredSize.height +
+                    MediaQuery.of(context).padding.top),
             width: MediaQuery.of(context).size.width,
             child: Column(
               children: <Widget>[
                 Expanded(
-                  flex: 6,
+                  flex: 7,
                   child: Form(
                     key: _loginFormKey,
                     child: Container(
@@ -122,51 +124,23 @@ class _UserLoginState extends State<UserLogin> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           appIcon(),
-                          Expanded(
-                              flex: 1,
-                              child: SizedBox(
-                                height: 10,
-                              )),
+                          flexibleSpace(flex: 1),
                           loginTitle(),
-                          Expanded(
-                              flex: 4,
-                              child: SizedBox(
-                                height: 10,
-                              )),
+                          flexibleSpace(flex: 4),
                           phoneNumberField(),
-                          Expanded(
-                              flex: 1,
-                              child: SizedBox(
-                                height: 10,
-                              )),
+                          flexibleSpace(flex: 1),
                           passwordPinFiled(),
-                          Expanded(
-                              flex: 1,
-                              child: SizedBox(
-                                height: 10,
-                              )),
+                          flexibleSpace(flex: 1),
                           rememberMeAndForgotPasswordField(),
-                          Expanded(
-                              flex: 4,
-                              child: SizedBox(
-                                height: 10,
-                              )),
+                          flexibleSpace(flex: 4),
                           loginBtnField(),
-                          Expanded(
-                              flex: 1,
-                              child: SizedBox(
-                                height: 10,
-                              )),
+                          flexibleSpace(flex: 2),
                         ],
                       ),
                     ),
                   ),
                 ),
-                Expanded(
-                    flex: 4,
-                    child: SizedBox(
-                      height: 10,
-                    ))
+                flexibleSpace(flex: 3),
               ],
             ),
           ),

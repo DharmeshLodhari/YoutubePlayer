@@ -1,21 +1,29 @@
+import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:pinput/pin_put/pin_put.dart';
 
+// ignore: must_be_immutable
 class VerifyOTPScreen extends StatefulWidget {
+  var arguments;
+  VerifyOTPScreen({this.arguments});
   @override
   _VerifyOTPScreenState createState() => _VerifyOTPScreenState();
 }
 
 class _VerifyOTPScreenState extends State<VerifyOTPScreen> {
-  var passwordController;
-
+  TextEditingController otpController;
+  String phoneNumber = '';
   FocusNode _pinPutFocusNode;
+  final _auth = AuthService();
+
+  final _verifyOtpFormKey = GlobalKey<FormState>();
 
   @override
   void initState() {
-    passwordController = TextEditingController();
+    otpController = TextEditingController();
+    phoneNumber = widget.arguments['phoneNumber'];
     _pinPutFocusNode = FocusNode();
     super.initState();
   }
@@ -47,46 +55,34 @@ class _VerifyOTPScreenState extends State<VerifyOTPScreen> {
         body: SingleChildScrollView(
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 20),
-            height: MediaQuery.of(context).size.height,
+            height: MediaQuery.of(context).size.height -
+                (AppBar().preferredSize.height +
+                    MediaQuery.of(context).padding.top),
             width: MediaQuery.of(context).size.width,
             child: Column(
               children: <Widget>[
                 Expanded(
-                  flex: 1,
+                  flex: 6,
                   child: Form(
+                    key: _verifyOtpFormKey,
                     child: Container(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           verifyOTPTitle(),
-                          Expanded(
-                              flex: 1,
-                              child: SizedBox(
-                                height: 10,
-                              )),
+                          flexibleSpace(flex: 1),
                           expirationNote(),
-                          Expanded(
-                              flex: 3,
-                              child: SizedBox(
-                                height: 10,
-                              )),
+                          flexibleSpace(flex: 3),
                           otpFillUpField(),
-                          Expanded(
-                              flex: 2,
-                              child: SizedBox(
-                                height: 10,
-                              )),
+                          flexibleSpace(flex: 2),
                           verifyBtn(),
+                          flexibleSpace(flex: 1),
                         ],
                       ),
                     ),
                   ),
                 ),
-                Expanded(
-                    flex: 1,
-                    child: SizedBox(
-                      height: 10,
-                    ))
+                flexibleSpace(flex: 4),
               ],
             ),
           ),
@@ -157,19 +153,25 @@ class _VerifyOTPScreenState extends State<VerifyOTPScreen> {
           side: BorderSide(color: whiteBackground)),
       shadowColor: whiteBackground,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 42, vertical: 28),
+        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 28),
         child: PinPut(
-          eachFieldWidth: 45,
+          eachFieldWidth: 40,
           eachFieldHeight: 45,
-          fieldsCount: 4,
+          fieldsCount: 6,
           focusNode: _pinPutFocusNode,
-          controller: passwordController,
+          controller: otpController,
           submittedFieldDecoration: navyBlueBorder,
           selectedFieldDecoration: grayBorder,
           followingFieldDecoration: grayBorder,
           pinAnimationType: PinAnimationType.scale,
           textStyle: TextStyle(
               color: blackFont, fontSize: 32, fontWeight: FontWeight.w600),
+          validator: (val) {
+            if (val.length != 6) {
+              return "Please enter code that sent to you";
+            }
+            return null;
+          },
         ),
       ),
     );
@@ -177,14 +179,24 @@ class _VerifyOTPScreenState extends State<VerifyOTPScreen> {
 
   Widget verifyBtn() {
     return CurvedButton(
-      onPressed: () {
-        Navigator.of(context).popAndPushNamed('/register', arguments: {
-          'phoneNumber': "+353877120700",
-        });
-      },
+      onPressed: verifyOTP,
       text: "Verify",
       textColor: Colors.white,
       backgroundColor: navyBlue,
     );
+  }
+
+  void verifyOTP() {
+    if (_verifyOtpFormKey.currentState.validate()) {
+      String enteredOTP = otpController.text.trim();
+      String passwordToken = "false";
+      _auth
+          .verifyPhoneNumber(phoneNumber, enteredOTP, passwordToken)
+          .then((value) {
+        Navigator.of(context).popAndPushNamed('/register', arguments: {
+          'phoneNumber': phoneNumber,
+        });
+      });
+    }
   }
 }

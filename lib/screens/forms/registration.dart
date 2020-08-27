@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/country_picker/country.dart';
 import 'package:Slydo/models/country_picker/country_picker_dialog.dart';
@@ -19,20 +17,19 @@ class Registration extends StatefulWidget {
 }
 
 class _RegistrationState extends State<Registration> {
-  bool isOTPSent = false;
-  final _formKey = GlobalKey<FormState>();
-  String sentOTP = "";
-  String enteredPhoneNumber = "";
+  final _registrationFormKey = GlobalKey<FormState>();
+
   String phoneNumberWithCountryCode = "";
   final _auth = AuthService();
 
-  List<DropdownMenuItem> dropDownList = new List<DropdownMenuItem>();
-  int selectedCountry = 0;
   Country _selectedDialogCountry = CountryPickerUtils.getCountryByIsoCode('NG');
 
   bool isUserAgree = false;
 
   TextEditingController phoneNumberController;
+
+  // this variable is responsible to enable and disable submit btn
+  bool isValid = false;
 
   @override
   void initState() {
@@ -42,53 +39,6 @@ class _RegistrationState extends State<Registration> {
 
   @override
   Widget build(BuildContext context) {
-//    return WillPopScope(
-//        onWillPop: () async {
-//          return true;
-//        },
-//        child: Scaffold(
-//            backgroundColor: lightBlue(),
-//            resizeToAvoidBottomInset: true,
-//            appBar: AppBar(
-//                title: Center(child: Text(AppLocalization.of(context).signUp)),
-//                backgroundColor: darkBlue()),
-//            body: SingleChildScrollView(
-//              padding: EdgeInsets.symmetric(vertical: 40.0, horizontal: 40.0),
-//              scrollDirection: Axis.vertical,
-//              child: Form(
-//                key: _formKey,
-//                child: Column(
-//                  children: <Widget>[
-//                    getCountryDropdown(),
-//                    SizedBox(
-//                      height: 10,
-//                    ),
-//                    Text(
-//                      AppLocalization.of(context).termsForRegistration,
-//                      style: TextStyle(color: darkBlue()),
-//                    ),
-//                    SizedBox(
-//                      height: 10,
-//                    ),
-//                    getPhoneNumberWidget(),
-//                    isOTPSent
-//                        ? SizedBox(
-//                            height: 10,
-//                          )
-//                        : Container(),
-//                    isOTPSent ? getVerificationOTPWidget() : Container(),
-//                    SizedBox(
-//                      height: 20,
-//                    ),
-//                    getUserAgreeCheckBoxWidget(),
-//                    SizedBox(
-//                      height: 20,
-//                    ),
-//                    submitButton()
-//                  ],
-//                ),
-//              ),
-//            )));
     return WillPopScope(
       onWillPop: () {
         if (FocusScope.of(context).hasFocus) {
@@ -114,64 +64,40 @@ class _RegistrationState extends State<Registration> {
         body: SingleChildScrollView(
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 20),
-            height: MediaQuery.of(context).size.height,
+            height: MediaQuery.of(context).size.height -
+                (AppBar().preferredSize.height +
+                    MediaQuery.of(context).padding.top),
             width: MediaQuery.of(context).size.width,
             child: Column(
               children: <Widget>[
                 Expanded(
-                  flex: 6,
+                  flex: 7,
                   child: Form(
+                    key: _registrationFormKey,
                     child: Container(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           appIcon(),
-                          Expanded(
-                              flex: 1,
-                              child: SizedBox(
-                                height: 10,
-                              )),
+                          flexibleSpace(flex: 1),
                           registerTitle(),
-                          Expanded(
-                              flex: 1,
-                              child: SizedBox(
-                                height: 10,
-                              )),
+                          flexibleSpace(flex: 1),
                           registrationNote(),
-                          Expanded(
-                              flex: 2,
-                              child: SizedBox(
-                                height: 10,
-                              )),
+                          flexibleSpace(flex: 2),
                           selectCountryField(),
-                          Expanded(
-                              flex: 1,
-                              child: SizedBox(
-                                height: 10,
-                              )),
+                          flexibleSpace(flex: 1),
                           phoneNumberField(),
-                          Expanded(
-                              flex: 1,
-                              child: SizedBox(
-                                height: 10,
-                              )),
+                          flexibleSpace(flex: 1),
                           userAgreementField(),
-                          Expanded(
-                              flex: 2,
-                              child: SizedBox(
-                                height: 10,
-                              )),
+                          flexibleSpace(flex: 2),
                           continueBtn(),
+                          flexibleSpace(flex: 1),
                         ],
                       ),
                     ),
                   ),
                 ),
-                Expanded(
-                    flex: 4,
-                    child: SizedBox(
-                      height: 10,
-                    ))
+                flexibleSpace(flex: 3)
               ],
             ),
           ),
@@ -230,13 +156,44 @@ class _RegistrationState extends State<Registration> {
       labelText: "Phone number",
       type: TextInputType.phone,
       controller: phoneNumberController,
-      validator: (val) {
-        if (val.isNotEmpty && val.length == 13) {
-          return null;
-        }
-        return AppLocalization.of(context).invalidPhoneNumber;
+      validator: validatePhoneNumber,
+      onChange: (val) {
+        validateField();
       },
     );
+  }
+
+  String validatePhoneNumber(number) {
+    if (number.startsWith("0")) {
+      return AppLocalization.of(context).invalidPhoneNumber;
+    }
+    if (number.contains('+') ||
+        number.contains('-') ||
+        number.contains('*') ||
+        number.contains('#') ||
+        number.contains(',') ||
+        number.contains(';') ||
+        number.contains('(') ||
+        number.contains(')') ||
+        number.contains('/') ||
+        number.contains('N') ||
+        number.contains(' ')) {
+      return "Please enter phone number without country code";
+    }
+    if (number.isNotEmpty && number.length >= 9) {
+      return null;
+    }
+    return AppLocalization.of(context).invalidPhoneNumber;
+  }
+
+  void validateField() {
+    if (phoneNumberController.text.length >= 9 && isUserAgree) {
+      isValid = true;
+      setState(() {});
+    } else {
+      isValid = false;
+      setState(() {});
+    }
   }
 
   Widget userAgreementField() {
@@ -244,224 +201,40 @@ class _RegistrationState extends State<Registration> {
   }
 
   Widget continueBtn() {
-    return CurvedButton(
-      onPressed: () {
-        Navigator.of(context).pushNamed("/verify-registration-otp");
-      },
-      text: "Continue",
-      textColor: Colors.white,
-      backgroundColor: navyBlue,
-    );
-  }
-
-  getPhoneNumberWidget() {
-    return TextFormField(
-      cursorColor: darkBlue(),
-      enabled: isOTPSent ? false : true,
-      autofocus: false,
-      obscureText: false,
-      keyboardType: TextInputType.phone,
-      decoration: InputDecoration(
-          prefixIcon: Icon(
-              Platform.isAndroid ? Icons.phone_android : Icons.phone_iphone),
-          fillColor: Colors.white,
-          filled: true,
-          prefixText: "+" + _selectedDialogCountry.phoneCode,
-          hintText: AppLocalization.of(context).enterYourPhoneNumber,
-          labelStyle: TextStyle(
-            color: darkBlue(),
-            fontSize: 16,
-          ),
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
-      validator: (val) {
-        if (val.isNotEmpty && val.length >= 9) {
-          return null;
-        }
-        if (val.startsWith("0")) {
-          return AppLocalization.of(context).invalidPhoneNumber;
-        }
-        if (val.contains('+') ||
-            val.contains('-') ||
-            val.contains('*') ||
-            val.contains('#') ||
-            val.contains(',') ||
-            val.contains(';') ||
-            val.contains('(') ||
-            val.contains(')') ||
-            val.contains('/') ||
-            val.contains('N') ||
-            val.contains(' ')) {
-          return AppLocalization.of(context).invalidPhoneNumber;
-        }
-        return AppLocalization.of(context).invalidPhoneNumber;
-      },
-      onChanged: (val) {
-        enteredPhoneNumber = val;
-      },
-    );
-  }
-
-  Widget getVerificationOTPWidget() {
-    return TextFormField(
-      cursorColor: darkBlue(),
-      autofocus: false,
-      obscureText: false,
-      keyboardType: TextInputType.phone,
-      decoration: InputDecoration(
-          prefixIcon: Icon(Icons.dialpad),
-          fillColor: Colors.white,
-          filled: true,
-          hintText: AppLocalization.of(context).enterYourOtpHere,
-          labelStyle: TextStyle(
-            color: darkBlue(),
-            fontSize: 16,
-          ),
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
-      validator: (val) {
-        if (val.isEmpty) {
-          return AppLocalization.of(context).pleaseEnterOtp;
-        } else if (val.length != 6 || val != sentOTP) {
-          return AppLocalization.of(context).invalidOtp;
-        }
-        return null;
-      },
-      onChanged: (val) {
-        sentOTP = val;
-      },
-    );
-  }
-
-  Widget submitButton() {
-    return isUserAgree && enteredPhoneNumber.length == 9
-        ? ButtonTheme(
-            minWidth: double.infinity,
-            child: MaterialButton(
-              onPressed: isOTPSent ? verifyOTP : sendOTP,
-              textColor: Colors.white,
-              color: darkBlue(),
-              height: 50,
-              child: Text(isOTPSent
-                  ? AppLocalization.of(context).verifyOtp
-                  : AppLocalization.of(context).continueMsg),
-            ),
+    return isValid
+        ? CurvedButton(
+            onPressed: continuePressed,
+            text: "Continue",
+            textColor: Colors.white,
+            backgroundColor: navyBlue,
           )
-        : Container();
+        : Container(
+            height: 42,
+          );
   }
 
-  void verifyOTP() {
-    //final phoneNumber with countrycode
-    phoneNumberWithCountryCode =
-        "+" + _selectedDialogCountry.phoneCode + enteredPhoneNumber;
+  void continuePressed() {
+    //adding country code and '+' sign to phoneNumber
+    phoneNumberWithCountryCode = "+" +
+        _selectedDialogCountry.phoneCode +
+        phoneNumberController.text.trim();
 
     //for closing the keypad if it is open
     if (FocusScope.of(context).hasFocus) {
       FocusScope.of(context).unfocus();
     }
 
-    if (_formKey.currentState.validate()) {
-      String passwordToken = "false";
-      _auth
-          .verifyPhoneNumber(phoneNumberWithCountryCode, sentOTP, passwordToken)
-          .then((value) {
-        Navigator.of(context).popAndPushNamed('/register', arguments: {
-          'phoneNumber': phoneNumberWithCountryCode,
-        });
-      });
-    }
-  }
-
-  void sendOTP() {
-    //for closing the keypad if it is open
-    if (FocusScope.of(context).hasFocus) {
-      FocusScope.of(context).unfocus();
-    }
-
-    if (_formKey.currentState.validate() && isUserAgree) {
+    if (_registrationFormKey.currentState.validate() && isUserAgree) {
       _auth.registerPhoneNumber(phoneNumberWithCountryCode).then((value) {
-        setState(() {
-          isOTPSent = true;
-        });
+        Navigator.of(context).pushNamed(
+          "/verify-registration-otp",
+          arguments: {
+            "phoneNumber": phoneNumberWithCountryCode,
+          },
+        );
       });
     }
   }
-
-  Widget getCountryDropdown() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          AppLocalization.of(context).selectYourCountry,
-          style: TextStyle(color: darkGrey, fontSize: 14),
-        ),
-        SizedBox(
-          height: 6,
-        ),
-        Card(
-          elevation: 0,
-          color: whiteBackground,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-              side: BorderSide(color: greyBorderColor)),
-          margin: EdgeInsets.all(0),
-          borderOnForeground: true,
-          child: ListTile(
-            dense: true,
-            onTap: isOTPSent ? () {} : _openCountryPickerDialog,
-            title: _buildDialogItem(_selectedDialogCountry),
-            trailing: Icon(
-              Icons.keyboard_arrow_down,
-              color: darkGrey,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDialogItem(Country country) {
-    return Row(
-      children: <Widget>[
-        CountryPickerUtils.getDefaultFlagImage(country),
-        SizedBox(width: 8.0),
-        Text(
-          "+${country.phoneCode}",
-          style: TextStyle(
-              fontSize: 16, fontWeight: FontWeight.w600, color: blackFont),
-        ),
-        SizedBox(width: 8.0),
-        Flexible(
-            child: Text(
-          country.name,
-          style: TextStyle(
-              fontSize: 16, fontWeight: FontWeight.w600, color: blackFont),
-        ))
-      ],
-    );
-  }
-
-  void _openCountryPickerDialog() => showDialog(
-        context: context,
-        builder: (context) => Theme(
-          data: Theme.of(context).copyWith(primaryColor: Colors.pink),
-          child: CountryPickerDialog(
-            titlePadding: EdgeInsets.all(8.0),
-            searchCursorColor: Colors.pinkAccent,
-            searchInputDecoration:
-                InputDecoration(hintText: AppLocalization.of(context).search),
-            isSearchable: true,
-            title: Text(AppLocalization.of(context).selectYourPhoneCode),
-            onValuePicked: (Country country) =>
-                setState(() => _selectedDialogCountry = country),
-            itemBuilder: _buildDialogItem,
-          ),
-        ),
-      );
 
   Widget getUserAgreeCheckBoxWidget() {
     return Row(
@@ -488,6 +261,7 @@ class _RegistrationState extends State<Registration> {
                   value: isUserAgree,
                   onChanged: (value) {
                     isUserAgree = value;
+                    validateField();
                     setState(() {});
                   },
                   activeColor: navyBlue,
@@ -510,6 +284,79 @@ class _RegistrationState extends State<Registration> {
             ),
           ),
         ),
+      ],
+    );
+  }
+
+  Widget getCountryDropdown() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          AppLocalization.of(context).selectYourCountry,
+          style: TextStyle(color: darkGrey, fontSize: 14),
+        ),
+        SizedBox(
+          height: 6,
+        ),
+        Card(
+          elevation: 0,
+          color: whiteBackground,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: BorderSide(color: greyBorderColor)),
+          margin: EdgeInsets.all(0),
+          borderOnForeground: true,
+          child: ListTile(
+            dense: true,
+            onTap: _openCountryPickerDialog,
+            title: _buildDialogItem(_selectedDialogCountry),
+            trailing: Icon(
+              Icons.keyboard_arrow_down,
+              color: darkGrey,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  //showing select country dialog
+  void _openCountryPickerDialog() => showDialog(
+        context: context,
+        builder: (context) => Theme(
+          data: Theme.of(context).copyWith(primaryColor: Colors.pink),
+          child: CountryPickerDialog(
+            titlePadding: EdgeInsets.all(8.0),
+            searchCursorColor: Colors.pinkAccent,
+            searchInputDecoration:
+                InputDecoration(hintText: AppLocalization.of(context).search),
+            isSearchable: true,
+            title: Text(AppLocalization.of(context).selectYourPhoneCode),
+            onValuePicked: (Country country) =>
+                setState(() => _selectedDialogCountry = country),
+            itemBuilder: _buildDialogItem,
+          ),
+        ),
+      );
+
+  Widget _buildDialogItem(Country country) {
+    return Row(
+      children: <Widget>[
+        CountryPickerUtils.getDefaultFlagImage(country),
+        SizedBox(width: 8.0),
+        Text(
+          "+${country.phoneCode}",
+          style: TextStyle(
+              fontSize: 16, fontWeight: FontWeight.w600, color: blackFont),
+        ),
+        SizedBox(width: 8.0),
+        Flexible(
+            child: Text(
+          country.name,
+          style: TextStyle(
+              fontSize: 16, fontWeight: FontWeight.w600, color: blackFont),
+        ))
       ],
     );
   }

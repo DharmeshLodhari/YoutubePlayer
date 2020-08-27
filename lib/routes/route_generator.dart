@@ -91,7 +91,7 @@ class RouteGenerator {
         );
       case '/verify-registration-otp':
         return PageTransition(
-          child: VerifyOTPScreen(),
+          child: VerifyOTPScreen(arguments: settings.arguments),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
           settings: settings,
