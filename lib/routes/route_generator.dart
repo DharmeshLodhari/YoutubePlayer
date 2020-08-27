@@ -55,12 +55,14 @@ class RouteGenerator {
           child: UserLogin(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/splash':
         return PageTransition(
           child: SplashScreen(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/index':
         return PageTransition(
@@ -69,6 +71,7 @@ class RouteGenerator {
           ),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/dashboard':
         return PageTransition(
@@ -77,18 +80,21 @@ class RouteGenerator {
           ),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/new-registration':
         return PageTransition(
           child: Registration(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/verify-registration-otp':
         return PageTransition(
           child: VerifyOTPScreen(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/register':
         return PageTransition(
@@ -97,36 +103,42 @@ class RouteGenerator {
           ),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/add-document':
         return PageTransition(
           child: AddDocument(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/home':
         return PageTransition(
           child: Home(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/accounts':
         return PageTransition(
           child: PaymentRequestList(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/transactions':
         return PageTransition(
           child: TransactionList(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/transaction-graph':
         return PageTransition(
           child: TransactionGraph(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/transaction-detail':
         return PageTransition(
@@ -135,18 +147,21 @@ class RouteGenerator {
           ),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/settings':
         return PageTransition(
           child: SettingsList(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/add-account':
         return PageTransition(
           child: AddAccount(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/send-payment':
         return PageTransition(
@@ -155,6 +170,7 @@ class RouteGenerator {
           ),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/request-payment':
         return PageTransition(
@@ -163,36 +179,42 @@ class RouteGenerator {
           ),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/explore':
         return PageTransition(
           child: ExploreList(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/search-auto':
         return PageTransition(
           child: SearchAutoComplete(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/profile':
         return PageTransition(
           child: UserProfile(arguments: settings.arguments),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/product':
         return PageTransition(
           child: ProductDetailPage(arguments: settings.arguments),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/add-product':
         return PageTransition(
           child: AddProduct(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/edit-product':
         return PageTransition(
@@ -201,6 +223,7 @@ class RouteGenerator {
           ),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/service-detail':
         return PageTransition(
@@ -209,12 +232,14 @@ class RouteGenerator {
           ),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/add-service':
         return PageTransition(
           child: AddService(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/edit-service':
         return PageTransition(
@@ -223,6 +248,7 @@ class RouteGenerator {
           ),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/compose_message':
         return PageTransition(
@@ -231,6 +257,7 @@ class RouteGenerator {
           ),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/detail_message':
         return PageTransition(
@@ -239,24 +266,28 @@ class RouteGenerator {
           ),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/resultPasswordPopup':
         return PageTransition(
           child: ResultReturningPasswordPopup(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/add-bank-account':
         return PageTransition(
           child: AddAccount(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/bank-account-list':
         return PageTransition(
           child: BankAccountList(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/scan-qr':
         return PageTransition(
@@ -265,24 +296,28 @@ class RouteGenerator {
           ),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/payout':
         return PageTransition(
           child: Payout(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/payout-list':
         return PageTransition(
           child: PayoutTransactions(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/forgot-password':
         return PageTransition(
           child: ForgotPassword(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/reset-password':
         return PageTransition(
@@ -291,60 +326,70 @@ class RouteGenerator {
           ),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/shopping-cart':
         return PageTransition(
           child: ShoppingCart(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/user-dashboard':
         return PageTransition(
           child: UserDashboard(arguments: settings.arguments),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/orders-list':
         return PageTransition(
           child: OrdersList(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/order-detail-page':
         return PageTransition(
           child: OrderDetailPage(arguments: settings.arguments),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/bvn-verification':
         return PageTransition(
           child: BvnVerificationPage(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/card-payment-page':
         return PageTransition(
           child: CardPaymentPage(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/user-address':
         return PageTransition(
           child: UserAddress(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/friends-dashboard':
         return PageTransition(
           child: ConnectionDashboard(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
       case '/upgrade-user-profile':
         return PageTransition(
           child: UpgradeUserProfile(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
+          settings: settings,
         );
 
       default:

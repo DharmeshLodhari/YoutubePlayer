@@ -14,3 +14,13 @@ Widget imageFrameBuilder(BuildContext context, Widget child, int frame,
     curve: Curves.easeOut,
   );
 }
+
+Widget flexibleSpace({int flex = 1}) {
+  return Expanded(
+    flex: flex,
+    child: SizedBox(
+      height: 10,
+      width: 10,
+    ),
+  );
+}
