@@ -4,13 +4,11 @@ import 'package:Slydo/screens/checkout_shopping_cart.dart';
 import 'package:Slydo/screens/messagelist.dart';
 import 'package:Slydo/screens/search_module.dart';
 import 'package:Slydo/screens/user_dashboard.dart';
-import 'package:Slydo/widget/dialog.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:badges/badges.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 
 import '../utils/colors.dart';
 import 'home.dart';
@@ -27,6 +25,10 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
+  //newUI Variables
+  PageController _pageController;
+  DashboardBloc _dashboardBloc;
+
   int _currentIndex = 0;
   var arguments;
   static var isLocked = true;
@@ -61,6 +63,8 @@ class _DashboardState extends State<Dashboard> {
           ),
         ];
       });
+
+      _pageController = PageController(initialPage: _currentIndex);
     }
 
     super.initState();
@@ -104,88 +108,118 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     basketBloc = Provider.of<BasketBloc>(context);
-    return WillPopScope(
-      onWillPop: () async {
-        if (_currentIndex == 0) {
-          bool result = await showDialogBox(
-            context: context,
-            title: AppLocalization.of(context).exit,
-            description: AppLocalization.of(context).areYouSureWantToExit,
-            actionOne: AppLocalization.of(context).yes,
-            actionTwo: AppLocalization.of(context).no,
-            type: AlertType.none,
-          );
-          if (result) {
-            SystemChannels.platform.invokeMethod<void>('SystemNavigator.pop');
-          }
-        }
+    _dashboardBloc = Provider.of<DashboardBloc>(context);
+//    return WillPopScope(
+//      onWillPop: () async {
+//        if (_currentIndex == 0) {
+//          bool result = await showDialogBox(
+//            context: context,
+//            title: AppLocalization.of(context).exit,
+//            description: AppLocalization.of(context).areYouSureWantToExit,
+//            actionOne: AppLocalization.of(context).yes,
+//            actionTwo: AppLocalization.of(context).no,
+//            type: AlertType.none,
+//          );
+//          if (result) {
+//            SystemChannels.platform.invokeMethod<void>('SystemNavigator.pop');
+//          }
+//        }
+//
+//        if (_currentIndex != 0) {
+//          if (mounted) {
+//            setState(() {
+//              _currentIndex = 0;
+//            });
+//          }
+//        }
+//        return false;
+//      },
+//      child: Scaffold(
+//        body: IndexedStack(index: _currentIndex, children: screens),
+//        bottomNavigationBar: BottomNavigationBar(
+//          backgroundColor: lightBlue(),
+//          fixedColor: lightBlue(),
+//          elevation: 0.0,
+//          currentIndex: _currentIndex,
+//          onTap: (index) {
+//            if (mounted) {
+//              setState(() {
+//                _currentIndex = index;
+//              });
+//            }
+//          },
+//          items: [
+//            BottomNavigationBarItem(
+//              backgroundColor: lightBlue(),
+//              icon: Icon(
+//                Icons.home,
+//                color: Colors.white,
+//              ),
+//              title: Text(AppLocalization.of(context).home,
+//                  style: TextStyle(color: Colors.white, fontSize: 12)),
+//            ),
+//            BottomNavigationBarItem(
+//              backgroundColor: lightBlue(),
+//              icon: Icon(Icons.notifications, color: Colors.white),
+//              title: Text(AppLocalization.of(context).requests,
+//                  style: TextStyle(color: Colors.white, fontSize: 12)),
+//            ),
+//            BottomNavigationBarItem(
+//              backgroundColor: lightBlue(),
+//              icon: goToBasket(),
+//              title: Text(AppLocalization.of(context).basket,
+//                  style: TextStyle(color: Colors.white, fontSize: 12)),
+//            ),
+//            BottomNavigationBarItem(
+//              backgroundColor: lightBlue(),
+//              icon: Icon(Icons.search, color: Colors.white),
+//              title: Text(AppLocalization.of(context).search,
+//                  style: TextStyle(color: Colors.white, fontSize: 12)),
+//            ),
+//            BottomNavigationBarItem(
+//              backgroundColor: lightBlue(),
+//              icon: Icon(Icons.email, color: Colors.white),
+//              title: Text(AppLocalization.of(context).messages,
+//                  style: TextStyle(color: Colors.white, fontSize: 12)),
+//            ),
+//            BottomNavigationBarItem(
+//              backgroundColor: lightBlue(),
+//              icon: Icon(Icons.settings, color: Colors.white),
+//              title: Text(AppLocalization.of(context).explore,
+//                  style: TextStyle(color: Colors.white, fontSize: 12)),
+//            ),
+//          ],
+//        ),
+//      ),
+//    );
 
-        if (_currentIndex != 0) {
-          if (mounted) {
-            setState(() {
-              _currentIndex = 0;
-            });
-          }
-        }
-        return false;
-      },
-      child: Scaffold(
-        body: IndexedStack(index: _currentIndex, children: screens),
-        bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: lightBlue(),
-          fixedColor: lightBlue(),
-          elevation: 0.0,
-          currentIndex: _currentIndex,
-          onTap: (index) {
-            if (mounted) {
-              setState(() {
-                _currentIndex = index;
-              });
-            }
-          },
-          items: [
-            BottomNavigationBarItem(
-              backgroundColor: lightBlue(),
-              icon: Icon(
-                Icons.home,
-                color: Colors.white,
-              ),
-              title: Text(AppLocalization.of(context).home,
-                  style: TextStyle(color: Colors.white, fontSize: 12)),
-            ),
-            BottomNavigationBarItem(
-              backgroundColor: lightBlue(),
-              icon: Icon(Icons.notifications, color: Colors.white),
-              title: Text(AppLocalization.of(context).requests,
-                  style: TextStyle(color: Colors.white, fontSize: 12)),
-            ),
-            BottomNavigationBarItem(
-              backgroundColor: lightBlue(),
-              icon: goToBasket(),
-              title: Text(AppLocalization.of(context).basket,
-                  style: TextStyle(color: Colors.white, fontSize: 12)),
-            ),
-            BottomNavigationBarItem(
-              backgroundColor: lightBlue(),
-              icon: Icon(Icons.search, color: Colors.white),
-              title: Text(AppLocalization.of(context).search,
-                  style: TextStyle(color: Colors.white, fontSize: 12)),
-            ),
-            BottomNavigationBarItem(
-              backgroundColor: lightBlue(),
-              icon: Icon(Icons.email, color: Colors.white),
-              title: Text(AppLocalization.of(context).messages,
-                  style: TextStyle(color: Colors.white, fontSize: 12)),
-            ),
-            BottomNavigationBarItem(
-              backgroundColor: lightBlue(),
-              icon: Icon(Icons.settings, color: Colors.white),
-              title: Text(AppLocalization.of(context).explore,
-                  style: TextStyle(color: Colors.white, fontSize: 12)),
-            ),
-          ],
-        ),
+//    Container(
+//      color: Colors.deepOrange,
+//      padding: EdgeInsets.symmetric(horizontal: 20),
+//      height: MediaQuery.of(context).size.height -
+//          (AppBar().preferredSize.height),
+//      width: MediaQuery.of(context).size.width,
+//      child: Container(),
+//    ),
+
+    return Scaffold(
+      backgroundColor: whiteBackground,
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (index) {
+          _dashboardBloc.index = index;
+        },
+        children: <Widget>[
+          Home(),
+          PaymentRequestList(),
+          SearchModule(),
+          ShoppingCart(),
+          UserDashboard(
+            arguments: {'isLocked': isLocked},
+          ),
+        ],
       ),
+      bottomNavigationBar: bottomNavigationBar(),
     );
   }
 
@@ -195,5 +229,108 @@ class _DashboardState extends State<Dashboard> {
         _currentIndex = index;
       });
     }
+  }
+
+  Widget bottomNavigationBar() {
+    return Theme(
+      data: Theme.of(context).copyWith(
+        splashColor: Colors.white,
+        highlightColor: Colors.white,
+      ),
+      child: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        selectedFontSize: 0,
+        iconSize: 0,
+        unselectedFontSize: 10,
+        showSelectedLabels: false,
+        backgroundColor: Colors.white,
+        elevation: 5,
+        currentIndex: _dashboardBloc.index,
+        onTap: (index) {
+          _dashboardBloc.index = index;
+          _pageController.animateToPage(_dashboardBloc.index,
+              duration: Duration(milliseconds: 300), curve: Curves.linear);
+        },
+        items: [
+          bottomNavigationBarItem(
+            icon: SlydoAppIcon.home,
+            title: AppLocalization.of(context).home,
+          ),
+          bottomNavigationBarItem(
+            icon: SlydoAppIcon.receive,
+            title: AppLocalization.of(context).requests,
+          ),
+          bottomNavigationBarItem(
+            icon: SlydoAppIcon.search,
+            title: AppLocalization.of(context).search,
+          ),
+          bottomNavigationBarItem(
+            icon: SlydoAppIcon.cart,
+            title: AppLocalization.of(context).basket,
+          ),
+          bottomNavigationBarItem(
+            icon: SlydoAppIcon.user,
+            title: AppLocalization.of(context).explore,
+          ),
+        ],
+      ),
+    );
+  }
+
+  // to create BottomNavigationBarItem
+  BottomNavigationBarItem bottomNavigationBarItem(
+      {IconData icon, String title}) {
+    return BottomNavigationBarItem(
+      icon: Container(
+        height: 50,
+        width: 60,
+        child: Icon(
+          icon,
+          color: blackFont,
+          size: 16,
+        ),
+      ),
+      title: Container(),
+      activeIcon: activeIcon(icon: icon, title: title),
+    );
+  }
+
+  // How BottomNavigationBarItem will look when active
+  Widget activeIcon({IconData icon, String title}) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        height: 50,
+        width: 60,
+        color: navyBlue,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            SizedBox(
+              height: 4,
+            ),
+            Expanded(
+              child: Icon(
+                icon,
+                color: Colors.white,
+                size: 16,
+              ),
+            ),
+            SizedBox(
+              height: 4,
+            ),
+            Expanded(
+              child: Text(
+                title,
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

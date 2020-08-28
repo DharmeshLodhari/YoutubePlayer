@@ -4,6 +4,7 @@ import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/screens/tiles/transaction.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/passcodePopup.dart';
@@ -101,27 +102,113 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
     // refresh the list when lifecycle called onResume method\
     _onRefreshOnResume();
 
+//    return Scaffold(
+//      key: _scaffoldPaymentListKey,
+//      backgroundColor: lightBlue(),
+//      appBar: AppBar(
+//        automaticallyImplyLeading: false,
+//        backgroundColor: darkBlue(),
+//        title: Text(AppLocalization.of(context).paymentRequests),
+//        actions: <Widget>[
+//          sendRequestButton(),
+//          _threeItemPopup(),
+//        ],
+//      ),
+//      body: SmartRefresher(
+//          enablePullDown: true,
+//          header: WaterDropHeader(
+//            complete: Container(),
+//            waterDropColor: darkBlue(),
+//          ),
+//          controller: _refreshController,
+//          onRefresh: _onRefresh,
+//          child: _buildRequestPaymentList()),
+//    );
     return Scaffold(
       key: _scaffoldPaymentListKey,
-      backgroundColor: lightBlue(),
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: darkBlue(),
-        title: Text(AppLocalization.of(context).paymentRequests),
-        actions: <Widget>[
-          sendRequestButton(),
-          _threeItemPopup(),
-        ],
-      ),
-      body: SmartRefresher(
-          enablePullDown: true,
-          header: WaterDropHeader(
-            complete: Container(),
-            waterDropColor: darkBlue(),
+      resizeToAvoidBottomInset: true,
+      backgroundColor: whiteBackground,
+      appBar: appBar(),
+      body: Container(
+        height: MediaQuery.of(context).size.height -
+            (AppBar().preferredSize.height),
+        width: MediaQuery.of(context).size.width,
+        color: whiteBackground,
+        child: Container(
+          child: ListView.builder(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            itemBuilder: (context, index) => Container(
+                height: 80,
+                width: double.infinity,
+                child: Card(
+                  color: Colors.white,
+                )),
           ),
-          controller: _refreshController,
-          onRefresh: _onRefresh,
-          child: _buildRequestPaymentList()),
+        ),
+      ),
+    );
+  }
+
+  Widget appBar() {
+    return AppBar(
+      elevation: 0,
+      titleSpacing: 16,
+      backgroundColor: Colors.transparent,
+      title: Text(
+        "Payment request",
+        style: TextStyle(
+            color: blackFont, fontSize: 22, fontWeight: FontWeight.w700),
+      ),
+      actions: <Widget>[
+        paymentRequestBtn(),
+        SizedBox(
+          width: 10.0,
+        ),
+        menuBtn(),
+        SizedBox(
+          width: 10.0,
+        ),
+      ],
+    );
+  }
+
+  Widget paymentRequestBtn() {
+    return SizedBox(
+      height: 34,
+      width: 34,
+      child: Card(
+        color: lightGrey,
+        elevation: 0,
+        margin: EdgeInsets.symmetric(vertical: 10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Icon(
+          SlydoAppIcon.add,
+          size: 16,
+          color: blackFont,
+        ),
+      ),
+    );
+  }
+
+  Widget menuBtn() {
+    return SizedBox(
+      height: 34,
+      width: 34,
+      child: Card(
+        color: lightGrey,
+        elevation: 0,
+        margin: EdgeInsets.symmetric(vertical: 10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Icon(
+          SlydoAppIcon.menu,
+          size: 16,
+          color: blackFont,
+        ),
+      ),
     );
   }
 

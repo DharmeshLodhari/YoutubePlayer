@@ -59,6 +59,9 @@ void main() async {
           ChangeNotifierProvider<AddressBloc>.value(
             value: AddressBloc(),
           ),
+          ChangeNotifierProvider<DashboardBloc>.value(
+            value: DashboardBloc(),
+          ),
         ], child: MyApp()),
       );
     }, onError: (exception, stack) {

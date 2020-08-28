@@ -577,6 +577,10 @@ class _UserLoginState extends State<UserLogin> {
     );
   }
 
+//  I/flutter ( 9569): onMessage: {notification: {title: Payment Received, body: Received NGN5}, data: {actions: /transaction, dir: auto, image: https://slydo-assets.s3.amazonaws.com/media/customer/avatar/77d91cd9345d4f50bb88d29c412eb0f7.jpg, vibrate: [200,100,200,100,200,100,400]}}
+//  I/flutter ( 9569): notification from android getnotification {body: Received NGN5, title: Payment Received, vibrate: [200,100,200,100,200,100,400], icon: null, badge: null, sound: null, link: null, tag: null, dir: auto, actions: /transaction, image: https://slydo-assets.s3.amazonaws.com/media/customer/avatar/77d91cd9345d4f50bb88d29c412eb0f7.jpg}
+//  I/flutter ( 9569): Notification From onMessage:  {body: Received NGN5, title: Payment Received, vibrate: [200,100,200,100,200,100,400], icon: null, badge: null, sound: null, link: null, tag: null, dir: auto, actions: /transaction, image: https://slydo-assets.s3.amazonaws.com/media/customer/avatar/77d91cd9345d4f50bb88d29c412eb0f7.jpg}
+
   Map<String, dynamic> getAndroidNotification(Map<String, dynamic> message) {
     Map<String, dynamic> notification = {};
     notification["body"] = message['notification']['body'];
