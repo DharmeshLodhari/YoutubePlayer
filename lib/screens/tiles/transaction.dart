@@ -23,7 +23,8 @@ class _PaymentRequestTileState extends State<PaymentRequestTile> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
@@ -47,8 +48,8 @@ class _PaymentRequestTileState extends State<PaymentRequestTile> {
     return ClipOval(
       child: CachedNetworkImage(
         imageUrl: widget.paymentRequest.avatar,
-        height: 50,
-        width: 50,
+        height: 48,
+        width: 48,
         colorBlendMode: BlendMode.darken,
         fit: BoxFit.cover,
         filterQuality: FilterQuality.high,
@@ -64,11 +65,14 @@ class _PaymentRequestTileState extends State<PaymentRequestTile> {
   }
 
   Widget getTitle() {
-    return Text(
-      "${widget.paymentRequest.payee}",
-      maxLines: 1,
-      style: TextStyle(
-          color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+    return Padding(
+      padding: EdgeInsets.only(bottom: 2),
+      child: Text(
+        "${widget.paymentRequest.payee}",
+        maxLines: 1,
+        style: TextStyle(
+            color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+      ),
     );
   }
 
@@ -77,14 +81,14 @@ class _PaymentRequestTileState extends State<PaymentRequestTile> {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          worldCurrencies[widget.paymentRequest.currency] + " ",
+          worldCurrencies[widget.paymentRequest.currency],
           style: TextStyle(
               fontFamily: "Roboto",
               color: widget.paymentRequest.isCredit
                   ? Colors.grey[600]
                   : Colors.green[400],
               fontWeight: FontWeight.bold,
-              fontSize: 15),
+              fontSize: 14),
         ),
         Text(
           widget.paymentRequest.amount.toString(),
@@ -93,7 +97,7 @@ class _PaymentRequestTileState extends State<PaymentRequestTile> {
                   ? Colors.grey[600]
                   : Colors.green[400],
               fontWeight: FontWeight.bold,
-              fontSize: 15),
+              fontSize: 14),
         ),
       ],
     );
@@ -105,11 +109,8 @@ class _PaymentRequestTileState extends State<PaymentRequestTile> {
       children: <Widget>[
         Text(
           "${widget.paymentRequest.description}",
-          style: TextStyle(color: Colors.grey[600]),
+          style: TextStyle(color: darkGrey, fontSize: 12),
           maxLines: 1,
-        ),
-        SizedBox(
-          height: 2,
         ),
         widget.paymentRequest.amount.toString().length > 6
             ? getTrailing()
@@ -124,15 +125,10 @@ class _PaymentRequestTileState extends State<PaymentRequestTile> {
     String date = DateFormat("dd/MM/yyyy").format(requestTime);
     String time = DateFormat("hh:mm a").format(requestTime);
     return Text(
-      AppLocalization.of(context).date +
-          ": $date" +
-          "  " +
-          AppLocalization.of(context).time +
-          ": " +
-          time,
+      "$date • $time",
       softWrap: false,
       overflow: TextOverflow.visible,
-      style: TextStyle(fontSize: 10, color: Colors.grey[600]),
+      style: TextStyle(color: darkGrey, fontSize: 12),
     );
   }
 }

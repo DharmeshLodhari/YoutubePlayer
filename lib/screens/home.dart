@@ -139,17 +139,23 @@ class _HomeState extends State<Home> {
     return SizedBox(
       height: 34,
       width: 34,
-      child: Card(
-        elevation: 0,
-        color: lightGrey.withOpacity(0.1),
-        margin: EdgeInsets.symmetric(vertical: 10),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+      child: InkWell(
+        child: Card(
+          elevation: 0,
+          color: lightGrey.withOpacity(0.1),
+          margin: EdgeInsets.symmetric(vertical: 10),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(
+            SlydoAppIcon.qr_code,
+            size: 16,
+          ),
         ),
-        child: Icon(
-          SlydoAppIcon.qr_code,
-          size: 16,
-        ),
+        onTap: () {
+          Navigator.of(context)
+              .pushNamed('/scan-qr', arguments: {'isRequest': false});
+        },
       ),
     );
   }
@@ -158,17 +164,22 @@ class _HomeState extends State<Home> {
     return SizedBox(
       height: 34,
       width: 34,
-      child: Card(
-        elevation: 0,
-        color: lightGrey.withOpacity(0.1),
-        margin: EdgeInsets.symmetric(vertical: 10),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+      child: InkWell(
+        child: Card(
+          elevation: 0,
+          color: lightGrey.withOpacity(0.1),
+          margin: EdgeInsets.symmetric(vertical: 10),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(
+            SlydoAppIcon.message,
+            size: 16,
+          ),
         ),
-        child: Icon(
-          SlydoAppIcon.message,
-          size: 16,
-        ),
+        onTap: () {
+          Navigator.of(context).pushNamed('/message-list');
+        },
       ),
     );
   }
@@ -264,63 +275,90 @@ class _HomeState extends State<Home> {
   }
 
   Widget requestPaymentButton() {
-    return Row(
-      children: <Widget>[
-        SizedBox(
-          height: 50,
-          width: 50,
-          child: Card(
-            elevation: 0,
-            color: navyBlue.withOpacity(0.1),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+    return Theme(
+      data: Theme.of(context).copyWith(
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+      ),
+      child: InkWell(
+        child: Row(
+          children: <Widget>[
+            SizedBox(
+              height: 50,
+              width: 50,
+              child: Card(
+                elevation: 0,
+                color: navyBlue.withOpacity(0.1),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  SlydoAppIcon.receive,
+                  size: 20,
+                  color: navyBlue,
+                ),
+              ),
             ),
-            child: Icon(
-              SlydoAppIcon.receive,
-              size: 20,
-              color: navyBlue,
+            SizedBox(
+              width: 12,
             ),
-          ),
+            Text(
+              "Request",
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+            ),
+          ],
         ),
-        SizedBox(
-          width: 12,
-        ),
-        Text(
-          "Request",
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-        ),
-      ],
+        onTap: () {
+          Navigator.of(context).pushNamed('/request-payment',
+              arguments: <String, bool>{
+                'isFromProfile': true,
+                'isRequest': true
+              });
+        },
+      ),
     );
   }
 
   Widget sendPaymentButton() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        SizedBox(
-          height: 50,
-          width: 50,
-          child: Card(
-            elevation: 0,
-            color: naturalGreen.withOpacity(0.1),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+    return Theme(
+      data: Theme.of(context).copyWith(
+        splashColor: Colors.white,
+        highlightColor: Colors.white,
+      ),
+      child: InkWell(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            SizedBox(
+              height: 50,
+              width: 50,
+              child: Card(
+                elevation: 0,
+                color: naturalGreen.withOpacity(0.1),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  SlydoAppIcon.send,
+                  size: 20,
+                  color: naturalGreen,
+                ),
+              ),
             ),
-            child: Icon(
-              SlydoAppIcon.send,
-              size: 20,
-              color: naturalGreen,
+            SizedBox(
+              width: 12,
             ),
-          ),
+            Text(
+              "Send",
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+            ),
+          ],
         ),
-        SizedBox(
-          width: 12,
-        ),
-        Text(
-          "Send",
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-        ),
-      ],
+        onTap: () {
+          Navigator.of(context).pushNamed('/send-payment',
+              arguments: <String, bool>{'isFromProfile': true});
+        },
+      ),
     );
   }
 

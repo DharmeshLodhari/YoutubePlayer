@@ -28,3 +28,4 @@ Color darkGrey = HexColor("#75818F");
 Color lightGrey = HexColor("#FBFBFF");
 Color greyBorderColor = HexColor("#DDE1E7");
 Color dividerColor = HexColor("#EBEDFC");
+Color mateRad = HexColor("#F35B46");
