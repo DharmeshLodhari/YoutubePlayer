@@ -5,6 +5,7 @@ import 'package:Slydo/models/store.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -209,43 +210,147 @@ class _SearchModuleState extends State<SearchModule> {
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
 
+    // return Scaffold(
+    //   key: _scaffoldSearchKey,
+    //   backgroundColor: lightBlue(),
+    //   resizeToAvoidBottomInset: true,
+    //   appBar: AppBar(
+    //     titleSpacing: 0,
+    //     backgroundColor: darkBlue(),
+    //     title: Row(
+    //       mainAxisAlignment: MainAxisAlignment.start,
+    //       children: <Widget>[
+    //         Expanded(child: autoComplete()),
+    //       ],
+    //     ),
+    //     automaticallyImplyLeading: true,
+    //     leading: icon,
+    //     actions: <Widget>[
+    //       IconButton(
+    //         key: popupMenuBtnKey,
+    //         icon: Icon(
+    //           Icons.more_vert,
+    //           color: Colors.white,
+    //         ),
+    //         onPressed: () {
+    //           popUpMenu();
+    //         },
+    //       )
+    //     ],
+    //   ),
+    //   body: Container(
+    //     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+    //     child: Column(
+    //       children: <Widget>[
+    //         Expanded(
+    //           child: _buildResultList(),
+    //         ),
+    //       ],
+    //     ),
+    //   ),
+    // );
     return Scaffold(
       key: _scaffoldSearchKey,
-      backgroundColor: lightBlue(),
       resizeToAvoidBottomInset: true,
-      appBar: AppBar(
-        titleSpacing: 0,
-        backgroundColor: darkBlue(),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Expanded(child: autoComplete()),
-          ],
-        ),
-        automaticallyImplyLeading: true,
-        leading: icon,
-        actions: <Widget>[
-          IconButton(
-            key: popupMenuBtnKey,
-            icon: Icon(
-              Icons.more_vert,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              popUpMenu();
-            },
-          )
+      backgroundColor: whiteBackground,
+      appBar: appBar(),
+      body: Column(
+        children: [
+          searchBox(),
+          Expanded(
+            child: _buildResultList(),
+          ),
         ],
       ),
-      body: Container(
-        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-        child: Column(
-          children: <Widget>[
-            Expanded(
-              child: _buildResultList(),
-            ),
-          ],
+    );
+  }
+
+  Widget searchBox() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      height: 80,
+      child: TextFormField(
+        style: TextStyle(
+          fontSize: 16,
+          color: blackFont,
+          fontWeight: FontWeight.w600,
         ),
+        cursorWidth: 1.5,
+        cursorColor: navyBlue,
+        decoration: InputDecoration(
+          contentPadding: EdgeInsets.symmetric(vertical: 10),
+          prefixIcon: searchTypeSelection(),
+          prefix: Padding(
+            padding: EdgeInsets.only(left: 12),
+          ),
+          suffixIcon: searchIcon(),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: dividerColor,
+              width: 1.0,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: navyBlue,
+              width: 1.0,
+            ),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: dividerColor,
+              width: 1.0,
+            ),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: dividerColor,
+              width: 1.0,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget searchTypeSelection() {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(10), bottomLeft: Radius.circular(10)),
+        color: navyBlue,
+      ),
+      child: Icon(
+        SlydoAppIcon.circle_user,
+        color: Colors.white,
+        size: 16,
+      ),
+    );
+  }
+
+  Widget searchIcon() {
+    return IconButton(
+      icon: Icon(
+        SlydoAppIcon.search,
+        color: darkGrey,
+        size: 16,
+      ),
+    );
+  }
+
+  Widget appBar() {
+    return AppBar(
+      elevation: 0,
+      titleSpacing: 16,
+      backgroundColor: whiteBackground,
+      title: Text(
+        "Search",
+        style: TextStyle(
+            color: blackFont, fontSize: 22, fontWeight: FontWeight.w700),
       ),
     );
   }

@@ -57,7 +57,7 @@ class PassCodePopup {
                     isValidCallback: isValidCallback,
                     cancelCallback: cancelCallBack,
                     keyboardUIConfig:
-                        KeyboardUIConfig(deleteButtonMargin: EdgeInsets.all(8)),
+                        KeyboardUIConfig(keyboardRowMargin: EdgeInsets.all(8)),
                   ),
                 ),
               ],

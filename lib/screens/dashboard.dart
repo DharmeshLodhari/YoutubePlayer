@@ -244,7 +244,7 @@ class _DashboardState extends State<Dashboard> {
         unselectedFontSize: 10,
         showSelectedLabels: false,
         backgroundColor: Colors.white,
-        elevation: 5,
+        elevation: 10,
         currentIndex: _dashboardBloc.index,
         onTap: (index) {
           _dashboardBloc.index = index;

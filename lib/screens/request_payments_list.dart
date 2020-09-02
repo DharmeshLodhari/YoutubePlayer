@@ -5,7 +5,7 @@ import 'package:Slydo/screens/tiles/transaction.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
-import 'package:Slydo/widget/arrow_clipper.dart';
+import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/passcodePopup.dart';
@@ -46,22 +46,10 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   bool fromMe = false;
   bool toMe = false;
 
-  GlobalKey _key = LabeledGlobalKey("button_icon");
-  OverlayEntry _overlayEntry;
-  Size buttonSize;
-  Offset buttonPosition;
-  bool isMenuOpen = false;
-  List<Icon> icons = [
-    Icon(Icons.person),
-    Icon(Icons.settings),
-    Icon(Icons.credit_card),
-  ];
-
-  findButton() {
-    RenderBox renderBox = _key.currentContext.findRenderObject();
-    buttonSize = renderBox.size;
-    buttonPosition = renderBox.localToGlobal(Offset.zero);
-  }
+  GlobalKey _key = LabeledGlobalKey("paymentRequestListPopUpMenu");
+  CustomizedPopUpMenu menu;
+  int selectedMenuItemIndex = 0;
+  bool isPopMenuOpen = false;
 
   @protected
   void initState() {
@@ -110,15 +98,56 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         _refreshController.refreshCompleted();
       } else {
         Toast.show(
-            AppLocalization.of(context).internetConnectionNotAvailable, context,
+            AppLocalization
+                .of(context)
+                .internetConnectionNotAvailable, context,
             gravity: Toast.BOTTOM, backgroundColor: darkBlue());
         _refreshController.refreshCompleted();
       }
     });
   }
 
+  void menuItemSelectionChange(String value, int index) {
+    selectedMenuItemIndex = index;
+    debugPrint("selectedMenuItemIndex $selectedMenuItemIndex");
+    setState(() {});
+    switch (value) {
+      case "received":
+        toMe = true;
+        fromMe = false;
+        break;
+      case "sent":
+        toMe = false;
+        fromMe = true;
+        break;
+      default:
+        toMe = false;
+        fromMe = false;
+        break;
+    }
+    _onRefresh();
+  }
+
+  void menuStateChange(bool isOpen) {
+    isPopMenuOpen = isOpen;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
+    menu = CustomizedPopUpMenu(
+      buttonKey: _key,
+      context: context,
+      children: [
+        CustomizedPopUpMenuItem(title: "All", value: "all"),
+        CustomizedPopUpMenuItem(title: "Received", value: "received"),
+        CustomizedPopUpMenuItem(title: "Sent", value: "sent"),
+      ],
+      selectedIndex: selectedMenuItemIndex,
+    );
+    menu.onChange = menuItemSelectionChange;
+    menu.menuState = menuStateChange;
+
     // refresh the list when lifecycle called onResume method\
     _onRefreshOnResume();
 
@@ -157,13 +186,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         ),
         controller: _refreshController,
         onRefresh: _onRefresh,
-        child: Container(
-            height: MediaQuery.of(context).size.height -
-                ((2 * AppBar().preferredSize.height) +
-                    MediaQuery.of(context).padding.top),
-            width: MediaQuery.of(context).size.width,
-            color: whiteBackground,
-            child: _buildRequestPaymentList()),
+        child: _buildRequestPaymentList(),
       ),
     );
   }
@@ -183,10 +206,10 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         SizedBox(
           width: 10.0,
         ),
-        menuBtn(),
-        SizedBox(
-          width: 10.0,
-        ),
+        // menuBtn(),
+        // SizedBox(
+        //   width: 10.0,
+        // ),
         menuBtnTest(),
         SizedBox(
           width: 16,
@@ -255,198 +278,13 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
     );
   }
 
-  void openMenu() {
-    findButton();
-    _overlayEntry = _overlayEntryBuilder();
-    Overlay.of(context).insert(_overlayEntry);
-    isMenuOpen = !isMenuOpen;
-  }
-
-  void closeMenu() {
-    _overlayEntry.remove();
-    isMenuOpen = !isMenuOpen;
-  }
-
-  OverlayEntry _overlayEntryBuilder() {
-    bool isChecked = false;
-
-    return OverlayEntry(
-      builder: (context) {
-        return Positioned(
-          top: buttonPosition.dy + buttonSize.height - 15,
-          right: 16,
-          width: 180,
-          child: Material(
-            color: Colors.transparent,
-            child: Stack(
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(top: 15.0),
-                  child: Card(
-                    elevation: 2,
-                    margin: EdgeInsets.zero,
-                    child: Container(
-                      width: 180,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Theme(
-                        data: ThemeData(
-                          iconTheme: IconThemeData(
-                            color: Colors.white,
-                          ),
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            GestureDetector(
-                              onTap: () {},
-                              child: Container(
-                                child: ListTile(
-                                  enabled: true,
-                                  contentPadding: EdgeInsets.symmetric(
-                                      horizontal: 16, vertical: 0),
-                                  dense: true,
-                                  title: Text(
-                                    "Filter",
-                                    style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                        color: blackFont),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Divider(
-                              thickness: 1,
-                              color: greyBorderColor,
-                              height: 0,
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                closeMenu();
-                              },
-                              child: Container(
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 16, vertical: 4),
-                                  child: ListTile(
-                                    contentPadding: EdgeInsets.symmetric(
-                                        horizontal: 8, vertical: 0),
-                                    dense: true,
-                                    title: Text(
-                                      "All",
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          color: navyBlue),
-                                    ),
-                                    trailing: Icon(
-                                      SlydoAppIcon.checked,
-                                      size: 12,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                isChecked = !isChecked;
-                                setState(() {});
-//                                closeMenu();
-                              },
-                              child: Container(
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 16, vertical: 0),
-                                  child: ListTile(
-                                    contentPadding: EdgeInsets.symmetric(
-                                        horizontal: 8, vertical: 0),
-                                    dense: true,
-                                    title: Text(
-                                      "Received",
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          color: navyBlue),
-                                    ),
-                                    trailing: Icon(
-                                      SlydoAppIcon.checked,
-                                      size: 12,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                closeMenu();
-                              },
-                              child: Container(
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 16, vertical: 4),
-                                  child: ListTile(
-                                    contentPadding: EdgeInsets.symmetric(
-                                        horizontal: 8, vertical: 0),
-                                    dense: true,
-                                    title: Text(
-                                      "Sent",
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          color: navyBlue),
-                                    ),
-                                    trailing: Icon(
-                                      SlydoAppIcon.checked,
-                                      size: 12,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(right: 6.0),
-                  child: Align(
-                    alignment: Alignment.topRight,
-                    child: ClipPath(
-                      clipper: ArrowClipper(),
-                      child: Card(
-                        elevation: 2,
-                        margin: EdgeInsets.zero,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                          ),
-                          width: 17,
-                          height: 17,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   Widget menuBtnTest() {
     return SizedBox(
       key: _key,
       height: 34,
       width: 34,
       child: Card(
-        color: lightGrey,
+        color: isPopMenuOpen ? navyBlue : lightGrey,
         elevation: 0,
         margin: EdgeInsets.symmetric(vertical: 10),
         shape: RoundedRectangleBorder(
@@ -455,21 +293,17 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         child: IconButton(
           icon: Icon(
             Icons.more_vert,
-            color: Colors.black,
+            color: isPopMenuOpen ? Colors.white : Colors.black,
+            size: 20,
           ),
           onPressed: () {
-            if (isMenuOpen) {
-              closeMenu();
+            if (menu.isMenuOpen) {
+              menu.closeMenu();
             } else {
-              openMenu();
+              menu.openMenu();
             }
           },
         ),
-//             child: Icon(
-//            SlydoAppIcon.menu,
-//            size: 16,
-//            color: blackFont,
-//          ),
       ),
     );
   }
@@ -590,9 +424,9 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
             opacity: isLoading ? 1.0 : 00,
             child: isLoading
                 ? CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    valueColor: AlwaysStoppedAnimation(Colors.white),
-                    backgroundColor: lightBlue(),
+              strokeWidth: 2.5,
+              valueColor: AlwaysStoppedAnimation(navyBlue),
+              backgroundColor: whiteBackground,
                   )
                 : Container()),
       ),

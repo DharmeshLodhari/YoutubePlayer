@@ -25,21 +25,27 @@ class _PaymentRequestTileState extends State<PaymentRequestTile> {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 8),
-            child: ListTile(
-                leading: getLeading(),
-                title: getTitle(),
-                trailing: widget.paymentRequest.amount.toString().length > 6
-                    ? null
-                    : getTrailing(),
-                subtitle: getSubtitle(context)),
-          ),
-          widget.expandedWidget
-        ],
+      shadowColor: dividerColor,
+      child: Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: dividerColor, width: 0.5)),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 8),
+              child: ListTile(
+                  leading: getLeading(),
+                  title: getTitle(),
+                  trailing: widget.paymentRequest.amount.toString().length > 6
+                      ? null
+                      : getTrailing(),
+                  subtitle: getSubtitle(context)),
+            ),
+            widget.expandedWidget
+          ],
+        ),
       ),
     );
   }
@@ -84,18 +90,14 @@ class _PaymentRequestTileState extends State<PaymentRequestTile> {
           worldCurrencies[widget.paymentRequest.currency],
           style: TextStyle(
               fontFamily: "Roboto",
-              color: widget.paymentRequest.isCredit
-                  ? Colors.grey[600]
-                  : Colors.green[400],
+              color: widget.paymentRequest.isCredit ? navyBlue : blackFont,
               fontWeight: FontWeight.bold,
               fontSize: 14),
         ),
         Text(
           widget.paymentRequest.amount.toString(),
           style: TextStyle(
-              color: widget.paymentRequest.isCredit
-                  ? Colors.grey[600]
-                  : Colors.green[400],
+              color: widget.paymentRequest.isCredit ? navyBlue : blackFont,
               fontWeight: FontWeight.bold,
               fontSize: 14),
         ),
