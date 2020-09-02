@@ -635,7 +635,7 @@ class _SearchModuleState extends State<SearchModule> {
           elevation: 1,
           shadowColor: dividerColor,
           shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           margin: EdgeInsets.zero,
           child: Column(
             children: <Widget>[
@@ -645,9 +645,7 @@ class _SearchModuleState extends State<SearchModule> {
                   dense: true,
                   leading: getLeading(product, object),
                   title: getTitle(product),
-                  trailing: product.price
-                      .toString()
-                      .length > 6
+                  trailing: product.price.toString().length > 6
                       ? null
                       : getTrailing(product),
                   subtitle: getSubtitle(product),
