@@ -7,6 +7,7 @@ import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -256,7 +257,13 @@ class _SearchModuleState extends State<SearchModule> {
       appBar: appBar(),
       body: Column(
         children: [
+          SizedBox(
+            height: 6,
+          ),
           searchBox(),
+          SizedBox(
+            height: 16,
+          ),
           Expanded(
             child: _buildResultList(),
           ),
@@ -268,52 +275,64 @@ class _SearchModuleState extends State<SearchModule> {
   Widget searchBox() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16),
-      height: 80,
       child: TextFormField(
-        style: TextStyle(
-          fontSize: 16,
-          color: blackFont,
-          fontWeight: FontWeight.w600,
-        ),
-        cursorWidth: 1.5,
-        cursorColor: navyBlue,
-        decoration: InputDecoration(
-          contentPadding: EdgeInsets.symmetric(vertical: 10),
-          prefixIcon: searchTypeSelection(),
-          prefix: Padding(
-            padding: EdgeInsets.only(left: 12),
+          key: textFormField,
+          controller: searchItemTextController,
+          style: TextStyle(
+            fontSize: 16,
+            color: blackFont,
+            fontWeight: FontWeight.w600,
           ),
-          suffixIcon: searchIcon(),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(
-              color: dividerColor,
-              width: 1.0,
+          cursorWidth: 1.5,
+          cursorColor: navyBlue,
+          decoration: InputDecoration(
+            contentPadding: EdgeInsets.symmetric(vertical: 10),
+            prefixIcon: searchTypeSelection(),
+            prefix: Padding(
+              padding: EdgeInsets.only(left: 12),
+            ),
+            suffixIcon: searchIcon(),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: dividerColor,
+                width: 1.0,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: navyBlue,
+                width: 1.0,
+              ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: dividerColor,
+                width: 1.0,
+              ),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: dividerColor,
+                width: 1.0,
+              ),
             ),
           ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(
-              color: navyBlue,
-              width: 1.0,
-            ),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(
-              color: dividerColor,
-              width: 1.0,
-            ),
-          ),
-          focusedErrorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(
-              color: dividerColor,
-              width: 1.0,
-            ),
-          ),
-        ),
-      ),
+          onFieldSubmitted: (val) {
+            if (mounted) {
+              count = 0;
+              next = "";
+              previous = "";
+              results.clear();
+              noItemInList = false;
+              setState(() {});
+              getList();
+              FocusScope.of(context).unfocus();
+            }
+          }),
     );
   }
 
@@ -339,6 +358,18 @@ class _SearchModuleState extends State<SearchModule> {
         color: darkGrey,
         size: 16,
       ),
+      onPressed: () {
+        if (mounted) {
+          count = 0;
+          next = "";
+          previous = "";
+          results.clear();
+          noItemInList = false;
+          setState(() {});
+          getList();
+          FocusScope.of(context).unfocus();
+        }
+      },
     );
   }
 
@@ -355,6 +386,34 @@ class _SearchModuleState extends State<SearchModule> {
     );
   }
 
+  // Widget _buildResultList() {
+  //   return isSearchIsEmpty
+  //       ? NoItemInList(
+  //           msg: AppLocalization.of(context).pleaseTypeSomethingToGetResult,
+  //         )
+  //       : noItemInList
+  //           ? NoItemInList(
+  //               msg: AppLocalization.of(context).noResultFound,
+  //             )
+  //           : ListView.builder(
+  //               //+1 for progressbar
+  //               itemCount: results.length + 1,
+  //               // ignore: missing_return
+  //               itemBuilder: (BuildContext context, int index) {
+  //                 if (index == results.length) {
+  //                   return _buildIndicator();
+  //                 } else {
+  //                   try {
+  //                     return results[index];
+  //                   } catch (error) {
+  //                     debugPrint(error);
+  //                   }
+  //                 }
+  //               },
+  //               controller: _scrollController,
+  //             );
+  // }
+
   Widget _buildResultList() {
     return isSearchIsEmpty
         ? NoItemInList(
@@ -364,22 +423,24 @@ class _SearchModuleState extends State<SearchModule> {
             ? NoItemInList(
                 msg: AppLocalization.of(context).noResultFound,
               )
-            : ListView.builder(
-                //+1 for progressbar
-                itemCount: results.length + 1,
-                // ignore: missing_return
-                itemBuilder: (BuildContext context, int index) {
-                  if (index == results.length) {
-                    return _buildIndicator();
-                  } else {
-                    try {
-                      return results[index];
-                    } catch (error) {
-                      debugPrint(error);
+            : Container(
+                child: ListView.builder(
+                  //+1 for progressbar
+                  itemCount: results.length + 1,
+                  // ignore: missing_return
+                  itemBuilder: (BuildContext context, int index) {
+                    if (index == results.length) {
+                      return _buildIndicator();
+                    } else {
+                      try {
+                        return results[index];
+                      } catch (error) {
+                        debugPrint(error);
+                      }
                     }
-                  }
-                },
-                controller: _scrollController,
+                  },
+                  controller: _scrollController,
+                ),
               );
   }
 
@@ -391,8 +452,8 @@ class _SearchModuleState extends State<SearchModule> {
           opacity: isLoading ? 1.0 : 00,
           child: CircularProgressIndicator(
             strokeWidth: 2.5,
-            valueColor: AlwaysStoppedAnimation(Colors.white),
-            backgroundColor: lightBlue(),
+            valueColor: AlwaysStoppedAnimation(navyBlue),
+            backgroundColor: whiteBackground,
           ),
         ),
       ),
@@ -537,27 +598,67 @@ class _SearchModuleState extends State<SearchModule> {
         context, productCard(product, object), product);
   }
 
+  // Widget productCard(Product product, var object) {
+  //   return Card(
+  //     child: Container(
+  //       child: Column(
+  //         children: <Widget>[
+  //           Padding(
+  //             padding: EdgeInsets.symmetric(vertical: 8),
+  //             child: ListTile(
+  //               leading: getLeading(product, object),
+  //               title: getTitle(product),
+  //               trailing: product.price.toString().length > 6
+  //                   ? null
+  //                   : getTrailing(product),
+  //               subtitle: getSubtitle(product),
+  //               onTap: () {
+  //                 Navigator.pushNamed(context, '/product',
+  //                     arguments: {"product": product});
+  //               },
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
   Widget productCard(Product product, var object) {
-    return Card(
+    return Container(
+      color: whiteBackground,
+      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
       child: Container(
-        child: Column(
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 8),
-              child: ListTile(
-                leading: getLeading(product, object),
-                title: getTitle(product),
-                trailing: product.price.toString().length > 6
-                    ? null
-                    : getTrailing(product),
-                subtitle: getSubtitle(product),
-                onTap: () {
-                  Navigator.pushNamed(context, '/product',
-                      arguments: {"product": product});
-                },
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: dividerColor, width: 1)),
+        child: Card(
+          elevation: 1,
+          shadowColor: dividerColor,
+          shape:
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          margin: EdgeInsets.zero,
+          child: Column(
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: ListTile(
+                  dense: true,
+                  leading: getLeading(product, object),
+                  title: getTitle(product),
+                  trailing: product.price
+                      .toString()
+                      .length > 6
+                      ? null
+                      : getTrailing(product),
+                  subtitle: getSubtitle(product),
+                  onTap: () {
+                    Navigator.pushNamed(context, '/product',
+                        arguments: {"product": product});
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -598,7 +699,7 @@ class _SearchModuleState extends State<SearchModule> {
       "${product.name}",
       maxLines: 1,
       style: TextStyle(
-          color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+          color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),
     );
   }
 
@@ -607,19 +708,17 @@ class _SearchModuleState extends State<SearchModule> {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          worldCurrencies[product.currency] + ' ',
+          worldCurrencies[product.currency],
           style: TextStyle(
               fontFamily: "Roboto",
-              color: Colors.grey[600],
+              color: blackFont,
               fontWeight: FontWeight.bold,
-              fontSize: 15),
+              fontSize: 14),
         ),
         Text(
           product.price.toString(),
           style: TextStyle(
-              color: Colors.grey[600],
-              fontWeight: FontWeight.bold,
-              fontSize: 15),
+              color: blackFont, fontWeight: FontWeight.bold, fontSize: 14),
         ),
       ],
     );
@@ -632,7 +731,7 @@ class _SearchModuleState extends State<SearchModule> {
         Text(
           "${product.shortDescription}",
           maxLines: 1,
-          style: TextStyle(color: Colors.grey[600]),
+          style: TextStyle(color: darkGrey, fontSize: 12),
         ),
         SizedBox(
           height: 2,
@@ -651,7 +750,7 @@ class _SearchModuleState extends State<SearchModule> {
         Text(
           product.seller,
           maxLines: 1,
-          style: TextStyle(fontSize: 10, color: Colors.grey[600]),
+          style: TextStyle(color: darkGrey, fontSize: 10),
         ),
       ],
     );
@@ -804,6 +903,7 @@ class _SearchModuleState extends State<SearchModule> {
       children: <Widget>[
         TextFormField(
           key: textFormField,
+          controller: searchItemTextController,
           decoration: InputDecoration(
             contentPadding: EdgeInsets.all(10),
             hintText: hint,
@@ -826,7 +926,6 @@ class _SearchModuleState extends State<SearchModule> {
             filled: true,
           ),
           style: TextStyle(color: Colors.black, fontSize: 16),
-          controller: searchItemTextController,
           onFieldSubmitted: (val) {
             if (mounted) {
               setState(() {
@@ -910,40 +1009,69 @@ class _SearchModuleState extends State<SearchModule> {
 
   List<Widget> listSecondaryActions1(Product product) {
     return [
-      IconSlideAction(
-        caption: "Message",
-        color: Colors.green,
-        icon: Icons.message,
+      SlideActionButton(
+        icon: SlydoAppIcon.cart,
+        onTap: () async {
+          customerProfileBloc.customer =
+          await _auth.fetchCustomerProfile(product.seller);
+          Navigator.of(context).pushNamed('/send-payment', arguments: {
+            'isFromProfile': false,
+            'isRequest': false,
+            'product': product
+          });
+        },
+        title: AppLocalization
+            .of(context)
+            .buy,
+        backgroundColor: naturalGreen,
+        slideController: slidableController1,
+      ),
+      // IconSlideAction(
+      //   caption: "Message",
+      //   color: Colors.green,
+      //   icon: Icons.message,
+      //   onTap: () async {
+      //     Navigator.of(context).pushNamed('/compose_message', arguments: {
+      //       'recipient': product.seller,
+      //       'subject': product.name,
+      //     });
+      //   },
+      // ),
+    ];
+  }
+
+  List<Widget> listActionSlideActions1(Product product) {
+    return [
+      SlideActionButton(
+        icon: SlydoAppIcon.text_message,
         onTap: () async {
           Navigator.of(context).pushNamed('/compose_message', arguments: {
             'recipient': product.seller,
             'subject': product.name,
           });
         },
+        title: "Message",
+        backgroundColor: navyBlue,
+        slideController: slidableController1,
       ),
+      // IconSlideAction(
+      //     caption: AppLocalization.of(context).buy,
+      //     color: Colors.green,
+      //     icon: Icons.shopping_basket,
+      //     onTap: () async {
+      //       customerProfileBloc.customer =
+      //           await _auth.fetchCustomerProfile(product.seller);
+      //       Navigator.of(context).pushNamed('/send-payment', arguments: {
+      //         'isFromProfile': false,
+      //         'isRequest': false,
+      //         'product': product
+      //       });
+      //     }),
     ];
   }
 
-  List<Widget> listActionSlideActions1(Product product) {
-    return [
-      IconSlideAction(
-          caption: AppLocalization.of(context).buy,
-          color: Colors.green,
-          icon: Icons.shopping_basket,
-          onTap: () async {
-            customerProfileBloc.customer =
-                await _auth.fetchCustomerProfile(product.seller);
-            Navigator.of(context).pushNamed('/send-payment', arguments: {
-              'isFromProfile': false,
-              'isRequest': false,
-              'product': product
-            });
-          }),
-    ];
-  }
-
-  Widget _getSlidableWithLists2(
-      BuildContext context, Widget searchCard, Service service) {
+  Widget _getSlidableWithLists2(BuildContext context, Widget searchCard,
+      Service service) {
     return Slidable(
       controller: slidableController2,
       direction: Axis.horizontal,
@@ -1044,10 +1172,7 @@ class VerticalListItem1 extends StatelessWidget {
         Navigator.pushNamed(context, '/product',
             arguments: {"product": product});
       },
-      child: Container(
-        color: lightBlue(),
-        child: child,
-      ),
+      child: child,
     );
   }
 }
