@@ -226,7 +226,7 @@ class CustomizedPopUpMenu {
     return Column(
       children: List.generate(
         children.length,
-            (index) {
+        (index) {
           bool isSelected = index == selectedIndex;
           return GestureDetector(
             onTap: () {
@@ -254,13 +254,13 @@ class CustomizedPopUpMenu {
         color: isSelected ? lightGrey : Colors.white,
         borderRadius: isLast
             ? BorderRadius.only(
-          bottomLeft: Radius.circular(
-            10.0,
-          ),
-          bottomRight: Radius.circular(
-            10.0,
-          ),
-        )
+                bottomLeft: Radius.circular(
+                  10.0,
+                ),
+                bottomRight: Radius.circular(
+                  10.0,
+                ),
+              )
             : null,
       ),
       child: Container(

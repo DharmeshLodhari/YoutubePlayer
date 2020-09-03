@@ -423,10 +423,10 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
             opacity: isLoading ? 1.0 : 00,
             child: isLoading
                 ? CircularProgressIndicator(
-              strokeWidth: 2.5,
-              valueColor: AlwaysStoppedAnimation(navyBlue),
-              backgroundColor: whiteBackground,
-            )
+                    strokeWidth: 2.5,
+                    valueColor: AlwaysStoppedAnimation(navyBlue),
+                    backgroundColor: whiteBackground,
+                  )
                 : Container()),
       ),
     );
