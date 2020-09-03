@@ -286,14 +286,14 @@ class CustomizedPopUpMenu {
               ),
               Expanded(
                   child: SizedBox(
-                    width: 10,
-                  )),
+                width: 10,
+              )),
               isSelected
                   ? Icon(
-                SlydoAppIcon.checked,
-                size: 12,
-                color: navyBlue,
-              )
+                      SlydoAppIcon.checked,
+                      size: 12,
+                      color: navyBlue,
+                    )
                   : Container(),
             ],
           ),
