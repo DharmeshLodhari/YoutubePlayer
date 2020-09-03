@@ -292,14 +292,13 @@ class _ShoppingCartTileForServiceState
           colorBlendMode: BlendMode.darken,
           fit: BoxFit.fitWidth,
           filterQuality: FilterQuality.high,
-          placeholder: (context, url) =>
-          service.serverImages.isNotEmpty
+          placeholder: (context, url) => service.serverImages.isNotEmpty
               ? Icon(Icons.widgets)
               : CircularProgressIndicator(
-            strokeWidth: 2.5,
-            valueColor: AlwaysStoppedAnimation(Colors.white),
-            backgroundColor: lightBlue(),
-          ),
+                  strokeWidth: 2.5,
+                  valueColor: AlwaysStoppedAnimation(Colors.white),
+                  backgroundColor: lightBlue(),
+                ),
         ),
       ),
     );
