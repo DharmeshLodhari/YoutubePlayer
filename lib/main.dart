@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_generator.dart';
 import 'package:Slydo/services/app_life_cycle.dart';
+import 'package:Slydo/utils/colors.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -104,6 +105,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           fontFamily: "OpenSans",
+          textSelectionHandleColor: navyBlue,
         ),
       ),
     );

@@ -6,6 +6,7 @@ import 'package:Slydo/models/user.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -57,6 +58,11 @@ class _SearchModuleState extends State<SearchModule> {
   ScrollController _scrollController = new ScrollController();
   bool isLoading = false;
   bool noItemInList = false;
+
+  GlobalKey _key = LabeledGlobalKey("searchTypeSelectionKey");
+  CustomizedPopUpMenu searchTypeSelectionMenu;
+  int selectedMenuItemIndex = 0;
+  bool isPopMenuOpen = false;
 
   @override
   void initState() {
@@ -206,8 +212,48 @@ class _SearchModuleState extends State<SearchModule> {
 
   void onDismiss() {}
 
+  void menuItemSelectionChange(String value, int index) {
+    selectedMenuItemIndex = index;
+    debugPrint("selectedMenuItemIndex $selectedMenuItemIndex");
+
+    searchItemTextController.text = "";
+    count = 0;
+    next = "";
+    previous = "";
+    results.clear();
+    noItemInList = false;
+    filterValue = value;
+
+    setState(() {});
+  }
+
+  void menuStateChange(bool isOpen) {
+    isPopMenuOpen = isOpen;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
+    searchTypeSelectionMenu = CustomizedPopUpMenu(
+        buttonKey: _key,
+        context: context,
+        hasIcon: true,
+        children: [
+          CustomizedPopUpMenuItemWithIcon(
+              title: "User", value: "Users", icon: SlydoAppIcon.user),
+          CustomizedPopUpMenuItemWithIcon(
+              title: "Product", value: "Products", icon: SlydoAppIcon.product),
+          CustomizedPopUpMenuItemWithIcon(
+              title: "Service", value: "Services", icon: SlydoAppIcon.note_2),
+        ],
+        selectedIndex: selectedMenuItemIndex,
+        left: 16,
+        arrowPosition: Alignment.topLeft,
+        arrowLeftPadding: 16,
+        top: 14);
+    searchTypeSelectionMenu.onChange = menuItemSelectionChange;
+    searchTypeSelectionMenu.menuState = menuStateChange;
+
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
 
@@ -253,7 +299,7 @@ class _SearchModuleState extends State<SearchModule> {
     return Scaffold(
       key: _scaffoldSearchKey,
       resizeToAvoidBottomInset: true,
-      backgroundColor: whiteBackground,
+      backgroundColor: Colors.white,
       appBar: appBar(),
       body: Column(
         children: [
@@ -275,64 +321,71 @@ class _SearchModuleState extends State<SearchModule> {
   Widget searchBox() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16),
-      child: TextFormField(
-          key: textFormField,
-          controller: searchItemTextController,
-          style: TextStyle(
-            fontSize: 16,
-            color: blackFont,
-            fontWeight: FontWeight.w600,
-          ),
-          cursorWidth: 1.5,
-          cursorColor: navyBlue,
-          decoration: InputDecoration(
-            contentPadding: EdgeInsets.symmetric(vertical: 10),
-            prefixIcon: searchTypeSelection(),
-            prefix: Padding(
-              padding: EdgeInsets.only(left: 12),
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          textSelectionHandleColor: navyBlue,
+        ),
+        child: TextFormField(
+            key: textFormField,
+            controller: searchItemTextController,
+            style: TextStyle(
+              fontSize: 16,
+              color: blackFont,
+              fontWeight: FontWeight.w600,
             ),
-            suffixIcon: searchIcon(),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: dividerColor,
-                width: 1.0,
+            cursorWidth: 1.5,
+            cursorColor: navyBlue,
+            decoration: InputDecoration(
+              fillColor: Colors.white,
+              filled: true,
+              contentPadding: EdgeInsets.symmetric(vertical: 10),
+              prefixIcon: searchTypeSelection(),
+              prefix: Padding(
+                padding: EdgeInsets.only(left: 12),
+              ),
+              suffixIcon: searchIcon(),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: dividerColor,
+                  width: 1.0,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: navyBlue,
+                  width: 1.0,
+                ),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: dividerColor,
+                  width: 1.0,
+                ),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: dividerColor,
+                  width: 1.0,
+                ),
               ),
             ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: navyBlue,
-                width: 1.0,
-              ),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: dividerColor,
-                width: 1.0,
-              ),
-            ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: dividerColor,
-                width: 1.0,
-              ),
-            ),
-          ),
-          onFieldSubmitted: (val) {
-            if (mounted) {
-              count = 0;
-              next = "";
-              previous = "";
-              results.clear();
-              noItemInList = false;
-              setState(() {});
-              getList();
-              FocusScope.of(context).unfocus();
-            }
-          }),
+            onFieldSubmitted: (val) {
+              if (mounted) {
+                count = 0;
+                next = "";
+                previous = "";
+                results.clear();
+                noItemInList = false;
+                setState(() {});
+                getList();
+                FocusScope.of(context).unfocus();
+              }
+            }),
+      ),
     );
   }
 
@@ -343,12 +396,31 @@ class _SearchModuleState extends State<SearchModule> {
             topLeft: Radius.circular(10), bottomLeft: Radius.circular(10)),
         color: navyBlue,
       ),
-      child: Icon(
-        SlydoAppIcon.circle_user,
-        color: Colors.white,
-        size: 16,
+      child: IconButton(
+        key: _key,
+        icon: Icon(
+          getSearchTypeIcon(),
+          color: Colors.white,
+          size: 16,
+        ),
+        onPressed: () {
+          if (searchTypeSelectionMenu.isMenuOpen) {
+            searchTypeSelectionMenu.closeMenu();
+          } else {
+            searchTypeSelectionMenu.openMenu();
+          }
+        },
       ),
     );
+  }
+
+  IconData getSearchTypeIcon() {
+    if (selectedMenuItemIndex == 2) {
+      return SlydoAppIcon.note_2;
+    } else if (selectedMenuItemIndex == 1) {
+      return SlydoAppIcon.product;
+    }
+    return SlydoAppIcon.user;
   }
 
   Widget searchIcon() {
@@ -377,7 +449,7 @@ class _SearchModuleState extends State<SearchModule> {
     return AppBar(
       elevation: 0,
       titleSpacing: 16,
-      backgroundColor: whiteBackground,
+      backgroundColor: Colors.white,
       title: Text(
         "Search",
         style: TextStyle(
@@ -464,9 +536,8 @@ class _SearchModuleState extends State<SearchModule> {
     if (!isLoading) {
       if (next != null && !isLoading) {
         if (mounted) {
-          setState(() {
-            isLoading = true;
-          });
+          isLoading = true;
+          setState(() {});
         }
         Map<String, dynamic> result = await _auth.searchEndpointPagination(
             getSearchUrl(searchItemTextController.text), next, previous);
@@ -475,19 +546,19 @@ class _SearchModuleState extends State<SearchModule> {
         previous = result['previous'];
         List tempList = result['results'];
         if (mounted) {
-          setState(() {
-            isLoading = false;
+          isLoading = false;
+          try {
             tempList.forEach((result) {
               results.add(getResultTile(result));
             });
-          });
+          } catch (e) {}
+          setState(() {});
         }
       }
       if (results.isEmpty) {
         if (mounted) {
-          setState(() {
-            noItemInList = true;
-          });
+          noItemInList = true;
+          setState(() {});
         }
       } else if (next == null && results.length > 6) {
         _scaffoldSearchKey.currentState.showSnackBar(SnackBar(
@@ -535,9 +606,56 @@ class _SearchModuleState extends State<SearchModule> {
         userName: object["username"],
         type: object['type'] ?? 'user');
 
-    Widget avatarImage = Container(
-        height: 50,
-        width: 50,
+    return _getSlidableWithLists(context, userCard(user), user);
+  }
+
+  Widget userCard(CustomerProfile user) {
+    return Container(
+      color: Colors.white,
+      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+      child: Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: dividerColor, width: 1)),
+        child: Card(
+          elevation: 1,
+          shadowColor: dividerColor,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          margin: EdgeInsets.zero,
+          child: Column(
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: ListTile(
+                  dense: true,
+                  title: Text(
+                    user.fullName,
+                    maxLines: 1,
+                    style: TextStyle(
+                        color: blackFont,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14),
+                  ),
+                  subtitle: Text(
+                    user.userName,
+                    maxLines: 1,
+                    style: TextStyle(color: darkGrey, fontSize: 12),
+                  ),
+                  leading: getUserLeading(user),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget getUserLeading(CustomerProfile user) {
+    return Container(
+        height: 48,
+        width: 48,
         child: ClipOval(
           child: CachedNetworkImage(
             imageUrl: user.avatar == ""
@@ -555,26 +673,6 @@ class _SearchModuleState extends State<SearchModule> {
             ),
           ),
         ));
-
-    Widget tile = Card(
-      semanticContainer: true,
-      child: ListTile(
-        dense: true,
-        title: Text(
-          user.fullName,
-          maxLines: 1,
-          style: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
-        ),
-        subtitle: Text(
-          user.userName,
-          maxLines: 1,
-        ),
-        leading: avatarImage,
-      ),
-    );
-
-    return _getSlidableWithLists(context, tile, user);
   }
 
   Widget getProductTile(var object) {
@@ -625,7 +723,7 @@ class _SearchModuleState extends State<SearchModule> {
   // }
   Widget productCard(Product product, var object) {
     return Container(
-      color: whiteBackground,
+      color: Colors.white,
       padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
       child: Container(
         decoration: BoxDecoration(
@@ -635,7 +733,7 @@ class _SearchModuleState extends State<SearchModule> {
           elevation: 1,
           shadowColor: dividerColor,
           shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           margin: EdgeInsets.zero,
           child: Column(
             children: <Widget>[
@@ -645,10 +743,12 @@ class _SearchModuleState extends State<SearchModule> {
                   dense: true,
                   leading: getLeading(product, object),
                   title: getTitle(product),
-                  trailing: product.price.toString().length > 6
+                  trailing: product.price
+                      .toString()
+                      .length > 6
                       ? null
-                      : getTrailing(product),
-                  subtitle: getSubtitle(product),
+                      : getTrailingProduct(product),
+                  subtitle: getSubtitleProduct(product),
                   onTap: () {
                     Navigator.pushNamed(context, '/product',
                         arguments: {"product": product});
@@ -673,23 +773,32 @@ class _SearchModuleState extends State<SearchModule> {
     if (imageUrl == "") {
       imageUrl = "https://homepages.cae.wisc.edu/~ece533/images/peppers.png";
     }
-    return ClipOval(
-      child: CachedNetworkImage(
-        imageUrl: imageUrl,
-        height: 50,
-        width: 50,
-        colorBlendMode: BlendMode.darken,
-        fit: BoxFit.cover,
-        filterQuality: FilterQuality.high,
-        placeholder: (context, url) => imageUrl == ""
-            ? Icon(Icons.person)
-            : CircularProgressIndicator(
-                strokeWidth: 2.5,
-                valueColor: AlwaysStoppedAnimation(Colors.white),
-                backgroundColor: lightBlue(),
-              ),
-      ),
-    );
+    return Container(
+        height: 57,
+        width: 57,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: CachedNetworkImage(
+            imageUrl: imageUrl,
+            height: 48,
+            width: 48,
+            colorBlendMode: BlendMode.darken,
+            fit: BoxFit.cover,
+            filterQuality: FilterQuality.high,
+            placeholder: (context, url) =>
+            imageUrl == ""
+                ? Icon(Icons.person)
+                : CircularProgressIndicator(
+              strokeWidth: 2.5,
+              valueColor: AlwaysStoppedAnimation(Colors.white),
+              backgroundColor: lightBlue(),
+            ),
+          ),
+        ));
   }
 
   Widget getTitle(Product product) {
@@ -701,7 +810,7 @@ class _SearchModuleState extends State<SearchModule> {
     );
   }
 
-  Widget getTrailing(Product product) {
+  Widget getTrailingProduct(Product product) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
@@ -722,10 +831,13 @@ class _SearchModuleState extends State<SearchModule> {
     );
   }
 
-  Widget getSubtitle(Product product) {
+  Widget getSubtitleProduct(Product product) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
+        SizedBox(
+          height: 2,
+        ),
         Text(
           "${product.shortDescription}",
           maxLines: 1,
@@ -734,15 +846,17 @@ class _SearchModuleState extends State<SearchModule> {
         SizedBox(
           height: 2,
         ),
-        product.price.toString().length > 6
-            ? getTrailing(product)
+        product.price
+            .toString()
+            .length > 6
+            ? getTrailingProduct(product)
             : Container(),
-        getSellerName(product)
+        getSellerNameProduct(product)
       ],
     );
   }
 
-  Widget getSellerName(Product product) {
+  Widget getSellerNameProduct(Product product) {
     return Row(
       children: <Widget>[
         Text(
@@ -774,30 +888,49 @@ class _SearchModuleState extends State<SearchModule> {
   }
 
   Widget getServiceCard(Service service, var object) {
-    return Card(
-      elevation: 4,
-      clipBehavior: Clip.antiAliasWithSaveLayer,
+    return Container(
       color: Colors.white,
-      child: ListTile(
-        dense: true,
-        contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 8),
-        leading: getLeadingService(service, object),
-        title: Text(
-          object["name"],
-          maxLines: 1,
-          style: TextStyle(color: darkBlue(), fontWeight: FontWeight.bold),
+      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+      child: Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: dividerColor, width: 1)),
+        child: Card(
+          elevation: 1,
+          shadowColor: dividerColor,
+          shape:
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          margin: EdgeInsets.zero,
+          child: Column(
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: ListTile(
+                  dense: true,
+                  leading: getLeadingService(service, object),
+                  title: Text(
+                    object["name"],
+                    maxLines: 1,
+                    style: TextStyle(
+                        color: blackFont,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600),
+                  ),
+                  subtitle: getSubtitleService(service),
+                  trailing: service.price
+                      .toString()
+                      .length > 6
+                      ? null
+                      : getTrailingService(service),
+                  onTap: () {
+                    Navigator.of(context).pushNamed('/service-detail',
+                        arguments: {"service": service});
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
-        subtitle: Text(
-          object["short_description"],
-          maxLines: 1,
-        ),
-        trailing: service.price.toString().length > 6
-            ? null
-            : getTrailingService(service),
-        onTap: () {
-          Navigator.of(context)
-              .pushNamed('/service-detail', arguments: {"service": service});
-        },
       ),
     );
   }
@@ -813,22 +946,67 @@ class _SearchModuleState extends State<SearchModule> {
     if (imageUrl == "") {
       imageUrl = "https://homepages.cae.wisc.edu/~ece533/images/peppers.png";
     }
-    return ClipOval(
-      child: CachedNetworkImage(
-        imageUrl: imageUrl,
-        height: 50,
-        width: 50,
-        colorBlendMode: BlendMode.darken,
-        fit: BoxFit.cover,
-        filterQuality: FilterQuality.high,
-        placeholder: (context, url) => imageUrl == ""
-            ? Icon(Icons.person)
-            : CircularProgressIndicator(
-                strokeWidth: 2.5,
-                valueColor: AlwaysStoppedAnimation(Colors.white),
-                backgroundColor: lightBlue(),
-              ),
+    return Container(
+      height: 57,
+      width: 57,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
       ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: CachedNetworkImage(
+          imageUrl: imageUrl,
+          colorBlendMode: BlendMode.darken,
+          fit: BoxFit.fitWidth,
+          filterQuality: FilterQuality.high,
+          placeholder: (context, url) =>
+          imageUrl == ""
+              ? Icon(Icons.person)
+              : CircularProgressIndicator(
+            strokeWidth: 2.5,
+            valueColor: AlwaysStoppedAnimation(Colors.white),
+            backgroundColor: lightBlue(),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget getSubtitleService(Service service) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        SizedBox(
+          height: 2,
+        ),
+        Text(
+          "${service.shortDescription}",
+          maxLines: 1,
+          style: TextStyle(color: darkGrey, fontSize: 12),
+        ),
+        SizedBox(
+          height: 2,
+        ),
+        service.price
+            .toString()
+            .length > 6
+            ? getTrailingService(service)
+            : Container(),
+        getProviderNameService(service)
+      ],
+    );
+  }
+
+  Widget getProviderNameService(Service service) {
+    return Row(
+      children: <Widget>[
+        Text(
+          service.provider,
+          maxLines: 1,
+          style: TextStyle(color: darkGrey, fontSize: 10),
+        ),
+      ],
     );
   }
 
@@ -837,19 +1015,17 @@ class _SearchModuleState extends State<SearchModule> {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          worldCurrencies[service.currency] + ' ',
+          worldCurrencies[service.currency],
           style: TextStyle(
               fontFamily: "Roboto",
-              color: Colors.grey[600],
+              color: blackFont,
               fontWeight: FontWeight.bold,
-              fontSize: 15),
+              fontSize: 14),
         ),
         Text(
           service.price.toString(),
           style: TextStyle(
-              color: Colors.grey[600],
-              fontWeight: FontWeight.bold,
-              fontSize: 15),
+              color: blackFont, fontWeight: FontWeight.bold, fontSize: 14),
         ),
       ],
     );
@@ -955,40 +1131,60 @@ class _SearchModuleState extends State<SearchModule> {
   }
 
   List<Widget> listSecondaryActions(CustomerProfile user) {
-    String caption = AppLocalization.of(context).send;
     return [
-      IconSlideAction(
-          caption: caption,
-          color: Colors.green,
-          icon: Icons.send,
-          onTap: () async {
-            customerProfileBloc.customer =
-                await _auth.fetchCustomerProfile(user.userName);
-            Navigator.of(context).pushNamed('/send-payment',
-                arguments: <String, bool>{
-                  'isFromProfile': false,
-                  'isRequest': false
-                });
-          }),
+      SlideActionButton(
+        icon: SlydoAppIcon.send,
+        onTap: () async {
+          customerProfileBloc.customer =
+          await _auth.fetchCustomerProfile(user.userName);
+          Navigator.of(context).pushNamed('/send-payment',
+              arguments: <String, bool>{
+                'isFromProfile': false,
+                'isRequest': false
+              });
+        },
+        title: AppLocalization
+            .of(context)
+            .send,
+        backgroundColor: naturalGreen,
+        slideController: slidableController,
+      ),
     ];
   }
 
   List<Widget> listActionSlideActions(CustomerProfile user) {
     return [
-      IconSlideAction(
-        caption: AppLocalization.of(context).request,
-        color: Colors.green,
-        icon: Icons.event_note,
+      SlideActionButton(
+        icon: SlydoAppIcon.receive,
         onTap: () async {
           customerProfileBloc.customer =
-              await _auth.fetchCustomerProfile(user.userName);
+          await _auth.fetchCustomerProfile(user.userName);
           Navigator.of(context).pushNamed('/request-payment',
               arguments: <String, bool>{
                 'isFromProfile': false,
                 'isRequest': true
               });
         },
+        title: AppLocalization
+            .of(context)
+            .request,
+        backgroundColor: naturalGreen,
+        slideController: slidableController,
       ),
+      // IconSlideAction(
+      //   caption: AppLocalization.of(context).request,
+      //   color: Colors.green,
+      //   icon: Icons.event_note,
+      //   onTap: () async {
+      //     customerProfileBloc.customer =
+      //         await _auth.fetchCustomerProfile(user.userName);
+      //     Navigator.of(context).pushNamed('/request-payment',
+      //         arguments: <String, bool>{
+      //           'isFromProfile': false,
+      //           'isRequest': true
+      //         });
+      //   },
+      // ),
     ];
   }
 
@@ -1083,10 +1279,34 @@ class _SearchModuleState extends State<SearchModule> {
 
   List<Widget> listSecondaryActions2(Service service) {
     return [
-      IconSlideAction(
-        caption: AppLocalization.of(context).message,
-        color: Colors.green,
-        icon: Icons.message,
+      SlideActionButton(
+          title: AppLocalization
+              .of(context)
+              .buy,
+          backgroundColor: naturalGreen,
+          slideController: slidableController2,
+          icon: SlydoAppIcon.cart,
+          onTap: () async {
+            customerProfileBloc.customer =
+            await _auth.fetchCustomerProfile(service.provider);
+            Navigator.of(context).pushNamed('/send-payment', arguments: {
+              'isFromProfile': false,
+              'isRequest': false,
+              'service': service
+            });
+          }),
+    ];
+  }
+
+  List<Widget> listActionSlideActions2(Service service) {
+    return [
+      SlideActionButton(
+        title: AppLocalization
+            .of(context)
+            .message,
+        backgroundColor: navyBlue,
+        slideController: slidableController2,
+        icon: SlydoAppIcon.text_message,
         onTap: () async {
           Navigator.of(context).pushNamed('/compose_message', arguments: {
             'recipient': service.provider,
@@ -1094,24 +1314,6 @@ class _SearchModuleState extends State<SearchModule> {
           });
         },
       ),
-    ];
-  }
-
-  List<Widget> listActionSlideActions2(Service service) {
-    return [
-      IconSlideAction(
-          caption: AppLocalization.of(context).buy,
-          color: Colors.green,
-          icon: Icons.shopping_basket,
-          onTap: () async {
-            customerProfileBloc.customer =
-                await _auth.fetchCustomerProfile(service.provider);
-            Navigator.of(context).pushNamed('/send-payment', arguments: {
-              'isFromProfile': false,
-              'isRequest': false,
-              'service': service
-            });
-          }),
     ];
   }
 
@@ -1149,10 +1351,7 @@ class VerticalListItem extends StatelessWidget {
         Navigator.pushNamed(context, '/profile',
             arguments: {"searchedUser": user});
       },
-      child: Container(
-        color: lightBlue(),
-        child: child,
-      ),
+      child: child,
     );
   }
 }

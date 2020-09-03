@@ -26,6 +26,7 @@ Color whiteBackground = HexColor("#F9F8F8");
 Color blackFont = HexColor("#030F36");
 Color darkGrey = HexColor("#75818F");
 Color lightGrey = HexColor("#FBFBFF");
+Color iconBtnGrey = HexColor("#F8F9FF");
 Color greyBorderColor = HexColor("#DDE1E7");
 Color dividerColor = HexColor("#EBEDFC");
 Color mateRad = HexColor("#F35B46");

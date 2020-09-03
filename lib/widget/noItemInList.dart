@@ -21,7 +21,10 @@ class NoItemInList extends StatelessWidget {
               padding: const EdgeInsets.all(8.0),
               child: Text(
                 msg,
-                style: TextStyle(color: Colors.white, fontSize: 18),
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600),
               ),
             )
           ],

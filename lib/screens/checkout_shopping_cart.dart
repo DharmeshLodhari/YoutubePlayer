@@ -4,8 +4,10 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/screens/tiles/shopping_cart_tile.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/passcodePopup.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -78,22 +80,40 @@ class _ShoppingCartState extends State<ShoppingCart> {
     basketBloc = Provider.of<BasketBloc>(context);
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
+    // return Scaffold(
+    //   key: _scaffoldKey,
+    //   backgroundColor: lightBlue(),
+    //   appBar: AppBar(
+    //     automaticallyImplyLeading: false,
+    //     backgroundColor: darkBlue(),
+    //     title: Text(AppLocalization.of(context).basket),
+    //     actions: <Widget>[
+    //       addItemToBasket(),
+    //     ],
+    //   ),
+    //   body: SmartRefresher(
+    //       enablePullDown: true,
+    //       header: WaterDropHeader(
+    //         complete: Container(),
+    //         waterDropColor: darkBlue(),
+    //       ),
+    //       controller: _refreshController,
+    //       onRefresh: _onRefresh,
+    //       child: _buildBodyOfCart()),
+    //   floatingActionButton:
+    //       basketBloc.total == 0 ? Container() : checkoutWidget(),
+    //   floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    // );
+
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: lightBlue(),
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: darkBlue(),
-        title: Text(AppLocalization.of(context).basket),
-        actions: <Widget>[
-          addItemToBasket(),
-        ],
-      ),
+      backgroundColor: Colors.white,
+      appBar: appBar(),
       body: SmartRefresher(
           enablePullDown: true,
           header: WaterDropHeader(
             complete: Container(),
-            waterDropColor: darkBlue(),
+            waterDropColor: navyBlue,
           ),
           controller: _refreshController,
           onRefresh: _onRefresh,
@@ -101,6 +121,43 @@ class _ShoppingCartState extends State<ShoppingCart> {
       floatingActionButton:
           basketBloc.total == 0 ? Container() : checkoutWidget(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    );
+  }
+
+  Widget appBar() {
+    return AppBar(
+      elevation: 0,
+      titleSpacing: 16,
+      backgroundColor: Colors.white,
+      title: Text(
+        AppLocalization.of(context).basket,
+        style: TextStyle(
+            color: blackFont, fontSize: 22, fontWeight: FontWeight.w700),
+      ),
+      actions: <Widget>[
+        scanQRCodeBtn(),
+        SizedBox(
+          width: 16,
+        ),
+      ],
+    );
+  }
+
+  Widget scanQRCodeBtn() {
+    return RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
+      icon: Icon(
+        SlydoAppIcon.qr_code,
+        size: 16,
+        color: blackFont,
+      ),
+      onTap: () {
+        Navigator.of(context)
+            .pushNamed('/scan-qr', arguments: {'isRequest': false});
+      },
+      backgroundColor: iconBtnGrey,
+      enableMargin: true,
     );
   }
 

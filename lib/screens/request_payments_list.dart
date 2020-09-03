@@ -98,9 +98,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         _refreshController.refreshCompleted();
       } else {
         Toast.show(
-            AppLocalization
-                .of(context)
-                .internetConnectionNotAvailable, context,
+            AppLocalization.of(context).internetConnectionNotAvailable, context,
             gravity: Toast.BOTTOM, backgroundColor: darkBlue());
         _refreshController.refreshCompleted();
       }
@@ -144,6 +142,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         CustomizedPopUpMenuItem(title: "Sent", value: "sent"),
       ],
       selectedIndex: selectedMenuItemIndex,
+      right: 16,
     );
     menu.onChange = menuItemSelectionChange;
     menu.menuState = menuStateChange;
@@ -176,7 +175,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
     return Scaffold(
       key: _scaffoldPaymentListKey,
       resizeToAvoidBottomInset: true,
-      backgroundColor: whiteBackground,
+      backgroundColor: Colors.white,
       appBar: appBar(),
       body: SmartRefresher(
         enablePullDown: true,
@@ -195,7 +194,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
     return AppBar(
       elevation: 0,
       titleSpacing: 16,
-      backgroundColor: Colors.transparent,
+      backgroundColor: Colors.white,
       title: Text(
         "Payment request",
         style: TextStyle(
@@ -210,7 +209,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         // SizedBox(
         //   width: 10.0,
         // ),
-        menuBtnTest(),
+        popUpMenuButton(),
         SizedBox(
           width: 16,
         ),
@@ -234,7 +233,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
               'isFromProfile': true
             });
       },
-      backgroundColor: lightGrey,
+      backgroundColor: iconBtnGrey,
       enableMargin: true,
     );
 
@@ -278,13 +277,13 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
     );
   }
 
-  Widget menuBtnTest() {
+  Widget popUpMenuButton() {
     return SizedBox(
       key: _key,
       height: 34,
       width: 34,
       child: Card(
-        color: isPopMenuOpen ? navyBlue : lightGrey,
+        color: isPopMenuOpen ? navyBlue : iconBtnGrey,
         elevation: 0,
         margin: EdgeInsets.symmetric(vertical: 10),
         shape: RoundedRectangleBorder(
@@ -427,7 +426,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
               strokeWidth: 2.5,
               valueColor: AlwaysStoppedAnimation(navyBlue),
               backgroundColor: whiteBackground,
-                  )
+            )
                 : Container()),
       ),
     );
@@ -683,7 +682,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
         }
       },
       child: Container(
-        color: whiteBackground,
+        color: Colors.white,
         child: PaymentRequestTile(
             paymentRequest: widget.paymentRequest,
             expandedWidget: expandedWidget()),
