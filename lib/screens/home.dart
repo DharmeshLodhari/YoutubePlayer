@@ -55,12 +55,12 @@ class _HomeState extends State<Home> {
     return Scaffold(
       key: _scaffoldHomeKey,
       resizeToAvoidBottomInset: true,
-      backgroundColor: whiteBackground,
+      backgroundColor: Colors.white,
       body: Container(
         height: MediaQuery.of(context).size.height -
             (AppBar().preferredSize.height),
         width: MediaQuery.of(context).size.width,
-        color: whiteBackground,
+        color: Colors.white,
         child: Stack(
           children: <Widget>[
             backgroundScreen(),

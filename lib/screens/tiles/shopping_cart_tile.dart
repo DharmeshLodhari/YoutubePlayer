@@ -1,8 +1,11 @@
 import 'package:Slydo/data/currency.dart';
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/models/store.dart';
+import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../utils/colors.dart';
 
@@ -11,11 +14,9 @@ class ShoppingCartTileForProduct extends StatefulWidget {
   Product item;
   String type;
   int qty;
-  Function onIncreaseQty;
-  Function onDecreaseQty;
+  int index;
 
-  ShoppingCartTileForProduct(Map<String, dynamic> item,
-      {this.onDecreaseQty, this.onIncreaseQty}) {
+  ShoppingCartTileForProduct(Map<String, dynamic> item, {this.index}) {
     type = item["type"];
     this.item = item["item"];
     qty = item["qty"];
@@ -30,9 +31,15 @@ class _ShoppingCartTileForProductState
     extends State<ShoppingCartTileForProduct> {
   Product product;
   int qty;
+  var basketBloc;
+  var _auth = AuthService();
+
   _ShoppingCartTileForProductState({this.product, this.qty});
+
   @override
   Widget build(BuildContext context) {
+    basketBloc = Provider.of<BasketBloc>(context);
+
     return Container(
       color: Colors.white,
       child: Card(
@@ -136,8 +143,7 @@ class _ShoppingCartTileForProductState
                   color: blackFont,
                 ),
                 onTap: () {
-                  widget.onDecreaseQty();
-                  setState(() {});
+                  removeItem(widget.index);
                 }),
             Expanded(
               child: SizedBox(
@@ -161,8 +167,7 @@ class _ShoppingCartTileForProductState
                   color: blackFont,
                 ),
                 onTap: () {
-                  widget.onIncreaseQty();
-                  setState(() {});
+                  addItem(widget.index);
                 }),
           ],
         ),
@@ -221,6 +226,49 @@ class _ShoppingCartTileForProductState
       product.seller,
       style: TextStyle(fontSize: 10, color: darkGrey),
     );
+  }
+
+  void addItem(int index) async {
+    String type =
+        basketBloc.items[index]["item"] is Product ? "product" : "service";
+    basketBloc.addItemToCart(item: basketBloc.items[index]["item"], type: type);
+    var mapData;
+    basketBloc.items.forEach((element) {
+      if (element["item"].id == basketBloc.items[index]["item"].id) {
+        mapData = element;
+        return;
+      }
+    });
+    Map data = {
+      "type": type,
+      "id": mapData["item"].id,
+      "qty": mapData["qty"],
+    };
+    debugPrint("Data From increasing the  item : $data");
+
+    await _auth.addItemToShoppingCart(data);
+  }
+
+  void removeItem(int index) async {
+    String type =
+        basketBloc.items[index]["item"] is Product ? "product" : "service";
+
+    var mapData;
+    basketBloc.items.forEach((element) {
+      if (element["item"].id == basketBloc.items[index]["item"].id) {
+        mapData = element;
+        return;
+      }
+    });
+    Map data = {
+      "type": type,
+      "id": mapData["item"].id,
+      "qty": mapData["qty"] - 1,
+    };
+
+    debugPrint("Data send From Remove Button : $data");
+    basketBloc.removeItemFromCart(basketBloc.items[index]["item"]);
+    await _auth.removeItemToShoppingCart(data);
   }
 }
 

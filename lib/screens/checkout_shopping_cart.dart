@@ -306,14 +306,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
     if (basketBloc.items[index]["item"] is Product) {
       return ShoppingCartTileForProduct(
         basketBloc.items[index],
-        onDecreaseQty: () {
-          removeItem(index);
-          debugPrint("im called!!");
-        },
-        onIncreaseQty: () {
-          addItem(index);
-          debugPrint("im called Add!!");
-        },
+        index: index,
       );
     }
     return ShoppingCartTileForService(
