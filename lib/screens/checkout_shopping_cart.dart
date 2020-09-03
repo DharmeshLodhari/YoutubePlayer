@@ -174,49 +174,118 @@ class _ShoppingCartState extends State<ShoppingCart> {
   }
 
   Widget checkoutWidget() {
+    // return Card(
+    //   elevation: 5,
+    //   margin: EdgeInsets.symmetric(horizontal: 16),
+    //   child: Container(
+    //     padding: EdgeInsets.symmetric(horizontal: 8),
+    //     color: Colors.white,
+    //     child: Row(
+    //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //       children: <Widget>[
+    //         Row(
+    //           children: <Widget>[
+    //             Text(AppLocalization.of(context).total),
+    //             Text(
+    //               " : " + worldCurrencies[userBloc.user.currency] + " ",
+    //               style: TextStyle(
+    //                 fontFamily: "Roboto",
+    //               ),
+    //             ),
+    //             Text(
+    //               basketBloc.total.toString(),
+    //               style: TextStyle(fontSize: 18),
+    //             ),
+    //           ],
+    //         ),
+    //         MaterialButton(
+    //           color: darkBlue(),
+    //           child: Text(
+    //             AppLocalization.of(context).buy,
+    //             style: TextStyle(color: Colors.white),
+    //           ),
+    //           onPressed: () {
+    //             if (basketBloc.items.length != 0) {
+    //               addNoteDialog();
+    //             } else {
+    //               Toast.show(
+    //                   AppLocalization.of(context).pleaseAddSomeItemsFirst,
+    //                   context,
+    //                   textColor: Colors.white,
+    //                   backgroundColor: darkBlue(),
+    //                   duration: Toast.LENGTH_LONG,
+    //                   gravity: Toast.CENTER);
+    //             }
+    //           },
+    //         )
+    //       ],
+    //     ),
+    //   ),
+    // );
     return Card(
       elevation: 5,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       margin: EdgeInsets.symmetric(horizontal: 16),
+      shadowColor: iconBtnGrey,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 8),
-        color: Colors.white,
+        decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: iconBtnGrey, width: 1)),
+        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Row(
               children: <Widget>[
-                Text(AppLocalization.of(context).total),
                 Text(
-                  " : " + worldCurrencies[userBloc.user.currency] + " ",
+                  AppLocalization.of(context).total + " : ",
+                  style: TextStyle(fontSize: 14, color: blackFont),
+                ),
+                Text(
+                  worldCurrencies[userBloc.user.currency],
                   style: TextStyle(
-                    fontFamily: "Roboto",
-                  ),
+                      fontFamily: "Roboto",
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold),
                 ),
                 Text(
                   basketBloc.total.toString(),
-                  style: TextStyle(fontSize: 18),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
-            MaterialButton(
-              color: darkBlue(),
-              child: Text(
-                AppLocalization.of(context).buy,
-                style: TextStyle(color: Colors.white),
+            Expanded(
+                child: SizedBox(
+              width: 10,
+            )),
+            Expanded(
+              child: MaterialButton(
+                height: 40,
+                color: navyBlue,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+                child: Text(
+                  "Pay",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16),
+                ),
+                onPressed: () {
+                  if (basketBloc.items.length != 0) {
+                    addNoteDialog();
+                  } else {
+                    Toast.show(
+                        AppLocalization.of(context).pleaseAddSomeItemsFirst,
+                        context,
+                        textColor: Colors.white,
+                        backgroundColor: darkBlue(),
+                        duration: Toast.LENGTH_LONG,
+                        gravity: Toast.CENTER);
+                  }
+                },
               ),
-              onPressed: () {
-                if (basketBloc.items.length != 0) {
-                  addNoteDialog();
-                } else {
-                  Toast.show(
-                      AppLocalization.of(context).pleaseAddSomeItemsFirst,
-                      context,
-                      textColor: Colors.white,
-                      backgroundColor: darkBlue(),
-                      duration: Toast.LENGTH_LONG,
-                      gravity: Toast.CENTER);
-                }
-              },
             )
           ],
         ),
@@ -237,10 +306,26 @@ class _ShoppingCartState extends State<ShoppingCart> {
     if (basketBloc.items[index]["item"] is Product) {
       return ShoppingCartTileForProduct(
         basketBloc.items[index],
+        onDecreaseQty: () {
+          removeItem(index);
+          debugPrint("im called!!");
+        },
+        onIncreaseQty: () {
+          addItem(index);
+          debugPrint("im called Add!!");
+        },
       );
     }
     return ShoppingCartTileForService(
       basketBloc.items[index],
+      onDecreaseQty: () {
+        removeItem(index);
+        debugPrint("im called s!!");
+      },
+      onIncreaseQty: () {
+        addItem(index);
+        debugPrint("im called sa!!");
+      },
     );
   }
 
@@ -547,10 +632,7 @@ class VerticalListItem extends StatelessWidget {
               arguments: {"service": service});
         }
       },
-      child: Container(
-        color: lightBlue(),
-        child: child,
-      ),
+      child: child,
     );
   }
 }

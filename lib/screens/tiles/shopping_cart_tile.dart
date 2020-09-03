@@ -1,6 +1,6 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/models/store.dart';
-import 'package:badges/badges.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
@@ -11,11 +11,16 @@ class ShoppingCartTileForProduct extends StatefulWidget {
   Product item;
   String type;
   int qty;
-  ShoppingCartTileForProduct(Map<String, dynamic> item) {
+  Function onIncreaseQty;
+  Function onDecreaseQty;
+
+  ShoppingCartTileForProduct(Map<String, dynamic> item,
+      {this.onDecreaseQty, this.onIncreaseQty}) {
     type = item["type"];
     this.item = item["item"];
     qty = item["qty"];
   }
+
   @override
   _ShoppingCartTileForProductState createState() =>
       _ShoppingCartTileForProductState(product: item, qty: qty);
@@ -28,47 +33,46 @@ class _ShoppingCartTileForProductState
   _ShoppingCartTileForProductState({this.product, this.qty});
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-      child: Column(
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 8),
-            child: ListTile(
-                leading: getLeading(),
-                title: getTitle(),
-                trailing:
-                    product.price.toString().length > 6 ? null : getTrailing(),
-                subtitle: getSubtitle(context)),
+    return Container(
+      color: Colors.white,
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+        shadowColor: iconBtnGrey,
+        child: Container(
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: iconBtnGrey, width: 1)),
+          child: Column(
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: ListTile(
+                  leading: getLeading(),
+                  title: getTitle(),
+                  trailing: getTrailing(),
+                  subtitle: getSubtitle(context),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 
   Widget getLeading() {
-    return Badge(
-      animationType: BadgeAnimationType.slide,
-      badgeContent: Text(
-        qty.toString(),
-        style: TextStyle(
-          fontSize: 10,
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      badgeColor: Colors.green,
-      padding: EdgeInsets.all(4),
-      position: BadgePosition(right: 0, top: 0),
-      child: ClipOval(
+    return Container(
+      height: 57,
+      width: 57,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
         child: CachedNetworkImage(
           imageUrl: product.serverImages.isNotEmpty
               ? product.serverImages.first
               : "https://homepages.cae.wisc.edu/~ece533/images/peppers.png",
-          height: 50,
-          width: 50,
           colorBlendMode: BlendMode.darken,
-          fit: BoxFit.cover,
+          fit: BoxFit.fitWidth,
           filterQuality: FilterQuality.high,
           placeholder: (context, url) => product.serverImages.isNotEmpty
               ? Icon(Icons.widgets)
@@ -82,56 +86,87 @@ class _ShoppingCartTileForProductState
     );
   }
 
-  getHeight() {
-    if (qty.toString().length == 1) {
-      return 15.0;
-    } else if (qty.toString().length == 2) {
-      return 15.0;
-    }
-  }
-
-  getWidth() {
-    if (qty.toString().length == 1) {
-      return 15.0;
-    } else if (qty.toString().length == 2) {
-      return 18.0;
-    }
-  }
-
   Widget getTitle() {
     return Text(
       "${product.name}",
       maxLines: 1,
       style: TextStyle(
-          color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+          color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),
     );
   }
 
   Widget getTrailing() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Text(
-              worldCurrencies[product.currency],
-              style: TextStyle(
-                  color: Colors.grey[600],
-                  fontFamily: "Roboto",
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14),
+    // return Column(
+    //   mainAxisAlignment: MainAxisAlignment.center,
+    //   children: <Widget>[
+    //     Row(
+    //       mainAxisSize: MainAxisSize.min,
+    //       children: <Widget>[
+    //         Text(
+    //           worldCurrencies[product.currency],
+    //           style: TextStyle(
+    //               color: Colors.grey[600],
+    //               fontFamily: "Roboto",
+    //               fontWeight: FontWeight.bold,
+    //               fontSize: 14),
+    //         ),
+    //         Text(
+    //           ' ' + getProductPrice(),
+    //           style: TextStyle(
+    //               color: Colors.grey[600],
+    //               fontWeight: FontWeight.bold,
+    //               fontSize: 14),
+    //         ),
+    //       ],
+    //     ),
+    //   ],
+    // );
+    return Container(
+      width: 100,
+      color: Colors.transparent,
+      child: Center(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            RoundedBackgroundIcon(
+                backgroundColor: iconBtnGrey,
+                icon: Icon(
+                  Icons.remove,
+                  color: blackFont,
+                ),
+                onTap: () {
+                  widget.onDecreaseQty();
+                  setState(() {});
+                }),
+            Expanded(
+              child: SizedBox(
+                width: 10,
+              ),
             ),
             Text(
-              ' ' + getProductPrice(),
+              qty.toString(),
               style: TextStyle(
-                  color: Colors.grey[600],
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14),
+                  fontSize: 14, fontWeight: FontWeight.w600, color: blackFont),
             ),
+            Expanded(
+              child: SizedBox(
+                width: 10,
+              ),
+            ),
+            RoundedBackgroundIcon(
+                backgroundColor: iconBtnGrey,
+                icon: Icon(
+                  Icons.add,
+                  color: blackFont,
+                ),
+                onTap: () {
+                  widget.onIncreaseQty();
+                  setState(() {});
+                }),
           ],
         ),
-      ],
+      ),
     );
   }
 
@@ -151,13 +186,6 @@ class _ShoppingCartTileForProductState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(
-          "${product.shortDescription}",
-          maxLines: 1,
-          style: TextStyle(
-            color: Colors.grey[600],
-          ),
-        ),
         SizedBox(
           height: 2,
         ),
@@ -174,30 +202,24 @@ class _ShoppingCartTileForProductState
         Text(
           worldCurrencies[product.currency],
           style: TextStyle(
-            color: Colors.grey[600],
-            fontFamily: "Roboto",
-            fontWeight: FontWeight.bold,
-          ),
+              color: blackFont,
+              fontFamily: "Roboto",
+              fontWeight: FontWeight.w600,
+              fontSize: 14),
         ),
         Text(
-          ' ' + getTotalPrice(),
+          getTotalPrice(),
           style: TextStyle(
-            color: Colors.grey[600],
-            fontWeight: FontWeight.bold,
-          ),
+              color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),
         ),
       ],
     );
   }
 
   Widget getSellerName(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        Text(
-          product.seller,
-          style: TextStyle(fontSize: 10, color: Colors.grey[600]),
-        ),
-      ],
+    return Text(
+      product.seller,
+      style: TextStyle(fontSize: 10, color: darkGrey),
     );
   }
 }
@@ -207,11 +229,16 @@ class ShoppingCartTileForService extends StatefulWidget {
   Service item;
   String type;
   int qty;
-  ShoppingCartTileForService(Map<String, dynamic> item) {
+  Function onIncreaseQty;
+  Function onDecreaseQty;
+
+  ShoppingCartTileForService(Map<String, dynamic> item,
+      {this.onDecreaseQty, this.onIncreaseQty}) {
     type = item["type"];
     this.item = item["item"];
     qty = item["qty"] ?? 0;
   }
+
   @override
   _ShoppingCartTileForServiceState createState() =>
       _ShoppingCartTileForServiceState(service: item, qty: qty);
@@ -224,74 +251,58 @@ class _ShoppingCartTileForServiceState
   _ShoppingCartTileForServiceState({this.service, this.qty});
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-      child: Column(
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 8),
-            child: ListTile(
-                leading: getLeading(),
-                title: getTitle(),
-                trailing:
-                    service.price.toString().length > 6 ? null : getTrailing(),
-                subtitle: getSubtitle(context)),
+    return Container(
+      color: Colors.white,
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+        shadowColor: iconBtnGrey,
+        child: Container(
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: iconBtnGrey, width: 1)),
+          child: Column(
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: ListTile(
+                  leading: getLeading(),
+                  title: getTitle(),
+                  trailing: getTrailing(),
+                  subtitle: getSubtitle(context),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 
   Widget getLeading() {
-    return Badge(
-      animationType: BadgeAnimationType.slide,
-      badgeContent: Text(
-        qty.toString(),
-        style: TextStyle(
-          fontSize: 10,
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      badgeColor: Colors.green,
-      padding: EdgeInsets.all(4),
-      position: BadgePosition(right: 0, top: 0),
-      child: ClipOval(
+    return Container(
+      height: 57,
+      width: 57,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
         child: CachedNetworkImage(
           imageUrl: service.serverImages.isNotEmpty
               ? service.serverImages.first
               : "https://homepages.cae.wisc.edu/~ece533/images/peppers.png",
-          height: 50,
-          width: 50,
           colorBlendMode: BlendMode.darken,
-          fit: BoxFit.cover,
+          fit: BoxFit.fitWidth,
           filterQuality: FilterQuality.high,
-          placeholder: (context, url) => service.serverImages.isNotEmpty
+          placeholder: (context, url) =>
+          service.serverImages.isNotEmpty
               ? Icon(Icons.widgets)
               : CircularProgressIndicator(
-                  strokeWidth: 2.5,
-                  valueColor: AlwaysStoppedAnimation(Colors.white),
-                  backgroundColor: lightBlue(),
-                ),
+            strokeWidth: 2.5,
+            valueColor: AlwaysStoppedAnimation(Colors.white),
+            backgroundColor: lightBlue(),
+          ),
         ),
       ),
     );
-  }
-
-  getHeight() {
-    if (qty.toString().length == 1) {
-      return 15.0;
-    } else if (qty.toString().length == 2) {
-      return 15.0;
-    }
-  }
-
-  getWidth() {
-    if (qty.toString().length == 1) {
-      return 15.0;
-    } else if (qty.toString().length == 2) {
-      return 18.0;
-    }
   }
 
   Widget getTitle() {
@@ -299,35 +310,58 @@ class _ShoppingCartTileForServiceState
       "${service.name}",
       maxLines: 1,
       style: TextStyle(
-          color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+          color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),
     );
   }
 
   Widget getTrailing() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Text(
-              worldCurrencies[service.currency],
-              style: TextStyle(
-                  color: Colors.grey[600],
-                  fontFamily: "Roboto",
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14),
+    return Container(
+      width: 100,
+      color: Colors.transparent,
+      child: Center(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            RoundedBackgroundIcon(
+                backgroundColor: iconBtnGrey,
+                icon: Icon(
+                  Icons.remove,
+                  color: blackFont,
+                ),
+                onTap: () {
+                  widget.onDecreaseQty();
+                  setState(() {});
+                }),
+            Expanded(
+              child: SizedBox(
+                width: 10,
+              ),
             ),
             Text(
-              ' ' + getProductPrice(),
+              qty.toString(),
               style: TextStyle(
-                  color: Colors.grey[600],
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14),
+                  fontSize: 14, fontWeight: FontWeight.w600, color: blackFont),
             ),
+            Expanded(
+              child: SizedBox(
+                width: 10,
+              ),
+            ),
+            RoundedBackgroundIcon(
+              backgroundColor: iconBtnGrey,
+              icon: Icon(
+                Icons.add,
+                color: blackFont,
+              ),
+              onTap: () {
+                widget.onIncreaseQty();
+                setState(() {});
+              },
+            )
           ],
         ),
-      ],
+      ),
     );
   }
 
@@ -347,11 +381,6 @@ class _ShoppingCartTileForServiceState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(
-          "${service.shortDescription}",
-          maxLines: 1,
-          style: TextStyle(color: Colors.grey[600]),
-        ),
         SizedBox(
           height: 2,
         ),
@@ -368,30 +397,24 @@ class _ShoppingCartTileForServiceState
         Text(
           worldCurrencies[service.currency],
           style: TextStyle(
-            color: Colors.grey[600],
-            fontFamily: "Roboto",
-            fontWeight: FontWeight.bold,
-          ),
+              color: blackFont,
+              fontFamily: "Roboto",
+              fontWeight: FontWeight.w600,
+              fontSize: 14),
         ),
         Text(
-          ' ' + getTotalPrice(),
+          getTotalPrice(),
           style: TextStyle(
-            color: Colors.grey[600],
-            fontWeight: FontWeight.bold,
-          ),
+              color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),
         ),
       ],
     );
   }
 
   Widget getSellerName(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        Text(
-          service.provider,
-          style: TextStyle(fontSize: 10, color: Colors.grey[600]),
-        ),
-      ],
+    return Text(
+      service.provider,
+      style: TextStyle(fontSize: 10, color: darkGrey),
     );
   }
 }

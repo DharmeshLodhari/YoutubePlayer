@@ -106,6 +106,8 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           fontFamily: "OpenSans",
           textSelectionHandleColor: navyBlue,
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
         ),
       ),
     );
