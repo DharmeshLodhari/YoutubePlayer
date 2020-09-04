@@ -487,7 +487,7 @@ class _SettingsListState extends State<SettingsList> {
         dense: true,
         leading: ClipOval(
             child: Image.asset(
-              "assets/images/appIcon.png",
+          "assets/images/appIcon.png",
           height: 45,
           width: 45,
         )),
