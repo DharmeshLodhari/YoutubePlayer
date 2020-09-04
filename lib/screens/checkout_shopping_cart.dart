@@ -5,6 +5,7 @@ import 'package:Slydo/models/store.dart';
 import 'package:Slydo/screens/tiles/shopping_cart_tile.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/passcodePopup.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
@@ -488,11 +489,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
                 showDialog(
                   context: context,
                   builder: (context) => Center(
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2.5,
-                      valueColor: AlwaysStoppedAnimation(Colors.white),
-                      backgroundColor: lightBlue(),
-                    ),
+                    child: CircularLoadingIndicator(),
                   ),
                 );
 

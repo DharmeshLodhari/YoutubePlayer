@@ -2,6 +2,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/message.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -29,20 +30,28 @@ class _MessageTileState extends State<MessageTile> {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
     return Card(
-      margin: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 8),
-            child: ListTile(
-                leading: getLeading(),
-                title: getTitle(),
-                trailing: getTrailing(),
-                subtitle: getSubtitle()),
-          ),
-          widget.expandedWidget,
-        ],
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      shadowColor: dividerColor,
+      child: Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: dividerColor, width: 0.5)),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 8),
+              child: ListTile(
+                  dense: true,
+                  leading: getLeading(),
+                  title: getTitle(),
+                  trailing: getTrailing(),
+                  subtitle: getSubtitle()),
+            ),
+            widget.expandedWidget,
+          ],
+        ),
       ),
     );
   }
@@ -51,8 +60,8 @@ class _MessageTileState extends State<MessageTile> {
     return ClipOval(
       child: CachedNetworkImage(
         imageUrl: partialMessage.senderAvatar,
-        height: 50,
-        width: 50,
+        height: 48,
+        width: 48,
         colorBlendMode: BlendMode.darken,
         fit: BoxFit.cover,
         filterQuality: FilterQuality.high,
@@ -68,12 +77,16 @@ class _MessageTileState extends State<MessageTile> {
   }
 
   Widget getTitle() {
-    return Text(
-      partialMessage.subject,
-      style: TextStyle(
-          color: partialMessage.isRead ? Colors.grey[600] : Colors.black,
-          fontWeight: FontWeight.bold,
-          fontSize: 15),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 2.0),
+      child: Text(
+        partialMessage.subject,
+        maxLines: 1,
+        style: TextStyle(
+            color: partialMessage.isRead ? darkGrey : Colors.black,
+            fontWeight: FontWeight.bold,
+            fontSize: 15),
+      ),
     );
   }
 
@@ -86,25 +99,43 @@ class _MessageTileState extends State<MessageTile> {
     return IconButton(
       icon: isRecipient
           ? partialMessage.isStarredByRecipient
-              ? Icon(
-                  Icons.star,
-                  color: Colors.orangeAccent,
-                )
-              : Icon(Icons.star_border)
+          ? Icon(
+        SlydoAppIcon.star,
+        color: starYellow,
+        size: 20,
+      )
+          : Icon(
+        SlydoAppIcon.star,
+        color: greyBorderColor,
+        size: 20,
+      )
           : partialMessage.isStarredBySender
-              ? Icon(
-                  Icons.star,
-                  color: Colors.orangeAccent,
-                )
-              : Icon(Icons.star_border),
+          ? Icon(
+        SlydoAppIcon.star,
+        color: starYellow,
+        size: 20,
+      )
+          : Icon(
+        SlydoAppIcon.star,
+        color: greyBorderColor,
+        size: 20,
+      ),
       onPressed: () async {
         var action = isRecipient
             ? partialMessage.isStarredByRecipient
-                ? AppLocalization.of(context).unstar
-                : AppLocalization.of(context).star
+            ? AppLocalization
+            .of(context)
+            .unstar
+            : AppLocalization
+            .of(context)
+            .star
             : partialMessage.isStarredBySender
-                ? AppLocalization.of(context).unstar
-                : AppLocalization.of(context).star;
+            ? AppLocalization
+            .of(context)
+            .unstar
+            : AppLocalization
+            .of(context)
+            .star;
         await _auth.updateMessage(partialMessage.id, action);
         setState(() {
           if (isRecipient) {
@@ -122,19 +153,21 @@ class _MessageTileState extends State<MessageTile> {
   Widget getSubtitle() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
           partialMessage.subtitle,
           style: TextStyle(
-            color: Colors.grey[600],
+            color: darkGrey,
+            fontSize: 12,
           ),
-        ),
-        SizedBox(
-          height: 2,
         ),
         Text(
           partialMessage.timeStamp,
-          style: TextStyle(color: Colors.grey, fontSize: 10),
+          style: TextStyle(
+            color: darkGrey,
+            fontSize: 10,
+          ),
         ),
       ],
     );

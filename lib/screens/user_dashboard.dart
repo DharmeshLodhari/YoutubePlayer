@@ -9,6 +9,7 @@ import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/passcodePopup.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -388,7 +389,7 @@ class _UserDashboardState extends State<UserDashboard> {
           icon: SlydoAppIcon.user,
           title: "Profile",
           onTap: () {
-            Platform.isAndroid ? profileAndroidSheet() : profileIOSSheet();
+            profileAndroidSheet();
           },
           iconColor: HexColor("#9B51E0"),
         )),
@@ -413,7 +414,7 @@ class _UserDashboardState extends State<UserDashboard> {
           title: "My store",
           onTap: () {
             if (!storeLocked) {
-              Platform.isIOS ? storeItemIOSSheet() : storeItemAndroidSheet();
+              storeItemAndroidSheet();
             }
           },
           iconColor: HexColor("#46CE7C"),
@@ -449,7 +450,7 @@ class _UserDashboardState extends State<UserDashboard> {
           icon: SlydoAppIcon.bank,
           title: "Bank",
           onTap: () {
-            Platform.isIOS ? bankIOSSheet() : bankAndroidSheet();
+            bankAndroidSheet();
           },
           iconColor: HexColor("#F35B46"),
         )),
@@ -461,7 +462,8 @@ class _UserDashboardState extends State<UserDashboard> {
           icon: SlydoAppIcon.translation,
           title: "Language",
           onTap: () {
-            changeLanguage();
+            // changeLanguage();
+            changeLanguageBottomSheet();
           },
           iconColor: HexColor("#5218E9"),
         )),
@@ -578,11 +580,7 @@ class _UserDashboardState extends State<UserDashboard> {
         ? Padding(
             padding: const EdgeInsets.all(10.0),
             child: Center(
-              child: CircularProgressIndicator(
-                strokeWidth: 2.5,
-                valueColor: AlwaysStoppedAnimation(Colors.white),
-                backgroundColor: lightBlue(),
-              ),
+              child: CircularLoadingIndicator(),
             ),
           )
         : Padding(
@@ -598,11 +596,7 @@ class _UserDashboardState extends State<UserDashboard> {
                   filterQuality: FilterQuality.high,
                   placeholder: (context, url) => userBloc.user.avatar == ""
                       ? Icon(Icons.person)
-                      : CircularProgressIndicator(
-                          strokeWidth: 2.5,
-                          valueColor: AlwaysStoppedAnimation(Colors.white),
-                          backgroundColor: lightBlue(),
-                        ),
+                      : CircularLoadingIndicator(),
                 ),
               ),
             ),
@@ -1137,38 +1131,7 @@ class _UserDashboardState extends State<UserDashboard> {
     );
   }
 
-  void changeLanguageBottomSheet() async {
-    await showDialog<Language>(
-        context: context,
-        builder: (context) =>
-            AlertDialog(
-              title: Text(AppLocalization
-                  .of(context)
-                  .selectYourLanguage),
-              contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-              content: SingleChildScrollView(
-                child: Column(
-                  children: languages.map((data) {
-                    return RadioListTile(
-                      selected: language.languageCode == data.languageCode,
-                      title: Text(data.name),
-                      activeColor: darkBlue(),
-                      groupValue: language,
-                      value: data,
-                      onChanged: (lang) {
-                        setState(() {
-                          language = lang;
-                          setLanguage(lang);
-                          Navigator.pop(context);
-                          saveIntoSharedPreference(lang);
-                        });
-                      },
-                    );
-                  }).toList(),
-                ),
-              ),
-            ));
-
+  void changeLanguageBottomSheet() {
     showModalBottomSheet<void>(
         backgroundColor: Colors.transparent,
         context: context,
@@ -1208,6 +1171,8 @@ class _UserDashboardState extends State<UserDashboard> {
                         onTap: () {
                           language = data;
                           setLanguage(data);
+                          Navigator.pop(context);
+                          saveIntoSharedPreference(data);
                         });
                   }).toList(),
                 ),

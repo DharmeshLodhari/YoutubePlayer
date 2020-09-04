@@ -1,3 +1,4 @@
+import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 class LoadingIndicator extends StatelessWidget {
@@ -19,6 +20,17 @@ class LoadingIndicator extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class CircularLoadingIndicator extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return CircularProgressIndicator(
+      strokeWidth: 2.5,
+      valueColor: AlwaysStoppedAnimation(navyBlue),
+      backgroundColor: Colors.transparent,
     );
   }
 }

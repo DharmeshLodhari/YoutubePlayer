@@ -5,6 +5,7 @@ import 'package:Slydo/screens/tiles/transaction.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/noItemInList.dart';
@@ -421,13 +422,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       child: new Center(
         child: new Opacity(
             opacity: isLoading ? 1.0 : 00,
-            child: isLoading
-                ? CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    valueColor: AlwaysStoppedAnimation(navyBlue),
-                    backgroundColor: whiteBackground,
-                  )
-                : Container()),
+            child: isLoading ? CircularLoadingIndicator() : Container()),
       ),
     );
   }

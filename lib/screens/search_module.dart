@@ -6,6 +6,7 @@ import 'package:Slydo/models/user.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
@@ -522,11 +523,7 @@ class _SearchModuleState extends State<SearchModule> {
       child: new Center(
         child: new Opacity(
           opacity: isLoading ? 1.0 : 00,
-          child: CircularProgressIndicator(
-            strokeWidth: 2.5,
-            valueColor: AlwaysStoppedAnimation(navyBlue),
-            backgroundColor: whiteBackground,
-          ),
+          child: CircularLoadingIndicator(),
         ),
       ),
     );
@@ -789,11 +786,7 @@ class _SearchModuleState extends State<SearchModule> {
             filterQuality: FilterQuality.high,
             placeholder: (context, url) => imageUrl == ""
                 ? Icon(Icons.person)
-                : CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    valueColor: AlwaysStoppedAnimation(Colors.white),
-                    backgroundColor: lightBlue(),
-                  ),
+                : CircularLoadingIndicator(),
           ),
         ));
   }
@@ -953,19 +946,14 @@ class _SearchModuleState extends State<SearchModule> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(10),
         child: CachedNetworkImage(
-          imageUrl: imageUrl,
-          colorBlendMode: BlendMode.darken,
-          fit: BoxFit.fill,
-          filterQuality: FilterQuality.high,
-          placeholder: (context, url) =>
-          imageUrl == ""
-              ? Icon(Icons.person)
-              : CircularProgressIndicator(
-            strokeWidth: 2.5,
-            valueColor: AlwaysStoppedAnimation(Colors.white),
-            backgroundColor: lightBlue(),
-          ),
-        ),
+            imageUrl: imageUrl,
+            colorBlendMode: BlendMode.darken,
+            fit: BoxFit.fill,
+            filterQuality: FilterQuality.high,
+            placeholder: (context, url) =>
+            imageUrl == ""
+                ? Icon(Icons.person)
+                : CircularLoadingIndicator()),
       ),
     );
   }

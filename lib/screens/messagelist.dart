@@ -1,11 +1,16 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/message.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/screens/tiles/message.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -37,6 +42,11 @@ class _MessageListState extends State<MessageList> {
   String filterValue = "all";
   UserBloc userBloc;
   RefreshBlocForMessages _refreshBloc;
+
+  GlobalKey _key = LabeledGlobalKey("messageListPopUpMenu");
+  CustomizedPopUpMenu menu;
+  int selectedMenuItemIndex = 0;
+  bool isPopMenuOpen = false;
 
   @protected
   void initState() {
@@ -84,41 +94,110 @@ class _MessageListState extends State<MessageList> {
         _refreshController.refreshCompleted();
       } else {
         Toast.show(
-            AppLocalization.of(context).internetConnectionNotAvailable, context,
+            AppLocalization
+                .of(context)
+                .internetConnectionNotAvailable, context,
             gravity: Toast.BOTTOM, backgroundColor: darkBlue());
         _refreshController.refreshCompleted();
       }
     });
   }
 
+  void menuItemSelectionChange(String value, int index) {
+    selectedMenuItemIndex = index;
+    debugPrint("selectedMenuItemIndex $selectedMenuItemIndex");
+    filterValue = value;
+    setState(() {});
+    _onRefresh();
+  }
+
+  void menuStateChange(bool isOpen) {
+    isPopMenuOpen = isOpen;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+
+    menu = CustomizedPopUpMenu(
+      buttonKey: _key,
+      context: context,
+      children: [
+        CustomizedPopUpMenuItem(
+            title: AppLocalization
+                .of(context)
+                .all, value: "all"),
+        CustomizedPopUpMenuItem(
+            title: AppLocalization
+                .of(context)
+                .archived, value: "archived"),
+        CustomizedPopUpMenuItem(
+            title: AppLocalization
+                .of(context)
+                .sent, value: "sent"),
+        CustomizedPopUpMenuItem(
+            title: AppLocalization
+                .of(context)
+                .starred, value: "starred"),
+      ],
+      selectedIndex: selectedMenuItemIndex,
+      right: 16,
+    );
+    menu.onChange = menuItemSelectionChange;
+    menu.menuState = menuStateChange;
+
     // refresh the list when lifecycle called onResume method
     _onRefreshOnResume();
 
+    // return Scaffold(
+    //   key: _scaffoldMessageKey,
+    //   backgroundColor: lightBlue(),
+    //   appBar: AppBar(
+    //     automaticallyImplyLeading: false,
+    //     backgroundColor: darkBlue(),
+    //     title: Text(AppLocalization.of(context).messages),
+    //     actions: <Widget>[_threeItemPopup()],
+    //   ),
+    //   body: SmartRefresher(
+    //       enablePullDown: true,
+    //       header: WaterDropHeader(
+    //         complete: Container(),
+    //         waterDropColor: darkBlue(),
+    //       ),
+    //       controller: _refreshController,
+    //       onRefresh: _onRefresh,
+    //       child: _buildMessageList()),
+    //   floatingActionButton: FloatingActionButton(
+    //     heroTag: "compose_message",
+    //     backgroundColor: darkBlue(),
+    //     child: Icon(Icons.message),
+    //     onPressed: () {
+    //       Navigator.of(context).pushNamed("/compose_message");
+    //     },
+    //   ),
+    // );
     return Scaffold(
       key: _scaffoldMessageKey,
-      backgroundColor: lightBlue(),
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: darkBlue(),
-        title: Text(AppLocalization.of(context).messages),
-        actions: <Widget>[_threeItemPopup()],
-      ),
+      backgroundColor: Colors.white,
+      appBar: appBar(),
       body: SmartRefresher(
           enablePullDown: true,
           header: WaterDropHeader(
             complete: Container(),
-            waterDropColor: darkBlue(),
+            waterDropColor: navyBlue,
           ),
           controller: _refreshController,
           onRefresh: _onRefresh,
           child: _buildMessageList()),
       floatingActionButton: FloatingActionButton(
         heroTag: "compose_message",
-        backgroundColor: darkBlue(),
-        child: Icon(Icons.message),
+        backgroundColor: navyBlue,
+        isExtended: false,
+        child: Icon(
+          SlydoAppIcon.text_message,
+          size: 20,
+        ),
         onPressed: () {
           Navigator.of(context).pushNamed("/compose_message");
         },
@@ -126,7 +205,70 @@ class _MessageListState extends State<MessageList> {
     );
   }
 
-  Widget _threeItemPopup() => PopupMenuButton(
+  Widget appBar() {
+    return AppBar(
+      elevation: 0,
+      backgroundColor: Colors.white,
+      titleSpacing: 0,
+      automaticallyImplyLeading: false,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      title: Text(
+        AppLocalization
+            .of(context)
+            .messages,
+        style: TextStyle(
+            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+      ),
+      actions: <Widget>[
+        popUpMenuButton(),
+        SizedBox(
+          width: 16,
+        ),
+      ],
+    );
+  }
+
+  Widget popUpMenuButton() {
+    return SizedBox(
+      key: _key,
+      height: 34,
+      width: 34,
+      child: Card(
+        color: isPopMenuOpen ? navyBlue : iconBtnGrey,
+        elevation: 0,
+        margin: EdgeInsets.symmetric(vertical: 10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: IconButton(
+          icon: Icon(
+            Icons.more_vert,
+            color: isPopMenuOpen ? Colors.white : Colors.black,
+            size: 20,
+          ),
+          onPressed: () {
+            if (menu.isMenuOpen) {
+              menu.closeMenu();
+            } else {
+              menu.openMenu();
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _threeItemPopup() =>
+      PopupMenuButton(
         padding: EdgeInsets.all(0),
         captureInheritedThemes: true,
         itemBuilder: (context) {
@@ -226,18 +368,12 @@ class _MessageListState extends State<MessageList> {
   }
 
   Widget _buildIndicator() {
-    return new Padding(
+    return Padding(
       padding: const EdgeInsets.all(8.0),
       child: new Center(
         child: new Opacity(
             opacity: isLoading ? 1.0 : 00,
-            child: isLoading
-                ? CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    valueColor: AlwaysStoppedAnimation(Colors.white),
-                    backgroundColor: lightBlue(),
-                  )
-                : Container()),
+            child: isLoading ? CircularLoadingIndicator() : Container()),
       ),
     );
   }
@@ -301,46 +437,61 @@ class _MessageListState extends State<MessageList> {
     // we are showing and modifying archive icon by message's isArchivedByRecipient property and if it sender then
     // we are showing and modifying archive icon by message's isArchivedBySender property
     bool isRecipient = userBloc.user.userName == partialMessage.recipient;
-    return Container(
-        height: double.infinity,
-        color: Colors.green,
-        child: IconButton(
-          icon: isRecipient
-              ? partialMessage.isArchivedByRecipient
-                  ? Icon(
-                      Icons.archive,
-                      color: Colors.white,
-                    )
-                  : Icon(
-                      Icons.unarchive,
-                      color: Colors.white,
-                    )
-              : partialMessage.isArchivedBySender
-                  ? Icon(
-                      Icons.archive,
-                      color: Colors.white,
-                    )
-                  : Icon(
-                      Icons.unarchive,
-                      color: Colors.white,
-                    ),
-          onPressed: () async {
-            var action = isRecipient
-                ? partialMessage.isArchivedByRecipient ? "unarchive" : "archive"
-                : partialMessage.isArchivedBySender ? "unarchive" : "archive";
-            await _auth.updateMessage(partialMessage.id, action);
-            setState(() {
-              if (isRecipient) {
-                partialMessage.isArchivedByRecipient =
-                    partialMessage.isArchivedByRecipient ? false : true;
-              } else {
-                partialMessage.isArchivedBySender =
-                    partialMessage.isArchivedBySender ? false : true;
-              }
-            });
-            slidableController.activeState.close();
-          },
-        ));
+
+    IconData actionIcon = isRecipient
+        ? partialMessage.isArchivedByRecipient ? Icons.archive : Icons.unarchive
+        : partialMessage.isArchivedBySender ? Icons.archive : Icons.unarchive;
+
+    String actionText = isRecipient
+        ? partialMessage.isArchivedByRecipient ? "Unarchive" : "Archive"
+        : partialMessage.isArchivedBySender ? "Unarchive" : "Archive";
+
+    // return Container(
+    //     height: double.infinity,
+    //     color: Colors.green,
+    //     child: IconButton(
+    //       icon: Icon(
+    //         actionIcon,
+    //         color: Colors.white,
+    //       ),
+    //       onPressed: () async {
+    //         var action = isRecipient
+    //             ? partialMessage.isArchivedByRecipient ? "unarchive" : "archive"
+    //             : partialMessage.isArchivedBySender ? "unarchive" : "archive";
+    //         await _auth.updateMessage(partialMessage.id, action);
+    //         setState(() {
+    //           if (isRecipient) {
+    //             partialMessage.isArchivedByRecipient =
+    //                 partialMessage.isArchivedByRecipient ? false : true;
+    //           } else {
+    //             partialMessage.isArchivedBySender =
+    //                 partialMessage.isArchivedBySender ? false : true;
+    //           }
+    //         });
+    //         slidableController.activeState.close();
+    //       },
+    //     ));
+
+    return SlideActionButton(
+        backgroundColor: naturalGreen,
+        icon: actionIcon,
+        onTap: () async {
+          var action = isRecipient
+              ? partialMessage.isArchivedByRecipient ? "unarchive" : "archive"
+              : partialMessage.isArchivedBySender ? "unarchive" : "archive";
+          await _auth.updateMessage(partialMessage.id, action);
+          setState(() {
+            if (isRecipient) {
+              partialMessage.isArchivedByRecipient =
+              partialMessage.isArchivedByRecipient ? false : true;
+            } else {
+              partialMessage.isArchivedBySender =
+              partialMessage.isArchivedBySender ? false : true;
+            }
+          });
+        },
+        title: actionText,
+        slideController: slidableController);
   }
 
   void markArchivedUnArchivedMessage(PartialMessage partialMessage, int index) {
@@ -355,19 +506,29 @@ class _MessageListState extends State<MessageList> {
   }
 
   Widget displayDeleteButton(PartialMessage partialMessage, int index) {
-    return Container(
-        height: double.infinity,
-        color: Colors.red,
-        child: IconButton(
-          icon: Icon(
-            Icons.delete,
-            color: Colors.white,
-          ),
-          onPressed: () {
-            deleteMessage(partialMessage, index);
-            slidableController.activeState.close();
-          },
-        ));
+    return SlideActionButton(
+        backgroundColor: mateRad,
+        icon: Icons.delete,
+        onTap: () {
+          deleteMessage(partialMessage, index);
+        },
+        title: AppLocalization
+            .of(context)
+            .delete,
+        slideController: slidableController);
+    // return Container(
+    //     height: double.infinity,
+    //     color: Colors.red,
+    //     child: IconButton(
+    //       icon: Icon(
+    //         Icons.delete,
+    //         color: Colors.white,
+    //       ),
+    //       onPressed: () {
+    //         deleteMessage(partialMessage, index);
+    //         slidableController.activeState.close();
+    //       },
+    //     ));
   }
 
   void deleteMessage(PartialMessage partialMessage, int index) async {
@@ -447,7 +608,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
         });
       },
       child: Container(
-        color: lightBlue(),
+        color: Colors.white,
         child: MessageTile(
             partialMessage: widget.partialMessage,
             expandedWidget: expandedWidget()),
@@ -458,25 +619,25 @@ class _VerticalListItemState extends State<VerticalListItem> {
   Widget expandedWidget() {
     return AnimatedContainer(
       duration: Duration(milliseconds: 300),
-      height: isExpanded ? 42 : 0,
+      height: isExpanded ? 48 : 0,
       curve: Curves.fastOutSlowIn,
       child: isExpanded
           ? Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Container(
-                  height: 0.5,
-                  color: darkBlue(),
-                ),
-                Expanded(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Container(
+            height: 1,
+            color: dividerColor,
+          ),
+          Expanded(
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       Expanded(child: sendMessageButton()),
                       Container(
-                        width: 0.5,
-                        color: darkBlue(),
-                        height: 40,
+                        width: 1,
+                        color: dividerColor,
+                        height: 48,
                       ),
                       Expanded(child: blockUserButton()),
                     ],
@@ -489,80 +650,184 @@ class _VerticalListItemState extends State<VerticalListItem> {
   }
 
   Widget sendMessageButton() {
-    return MaterialButton(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Icon(
-            Icons.message,
-            color: darkBlue(),
-          ),
-          SizedBox(
-            width: 10,
-          ),
-          Text(
-            AppLocalization.of(context).message,
-            style: TextStyle(color: darkBlue()),
-          ),
-        ],
+    return Theme(
+      data: Theme.of(context).copyWith(
+        splashColor: Colors.white,
+        highlightColor: Colors.white,
       ),
-      onPressed: () {
-        _auth.fetchCustomerProfile(widget.partialMessage.sender).then((user) {
-          setState(() {
-            isExpanded = false;
-          });
-          Navigator.of(context).pushNamed('/compose_message', arguments: {
-            'recipient': user.userName,
-            'subject': "",
-          });
-        });
-      },
-    );
-  }
-
-  Widget blockUserButton() {
-    return MaterialButton(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Stack(
-            children: <Widget>[
-              Icon(
-                Icons.group,
-                color: Colors.black,
+      child: InkWell(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            RoundedBackgroundIcon(
+              backgroundColor: navyBlue.withOpacity(0.1),
+              icon: Icon(
+                SlydoAppIcon.text_message,
+                color: navyBlue,
+                size: 14,
               ),
-              Icon(
-                Icons.block,
-                color: Colors.red,
-              )
-            ],
-          ),
-          SizedBox(
-            width: 10,
-          ),
-          Text(
-            AppLocalization.of(context).blockUser,
-            style: TextStyle(color: Colors.redAccent),
-          ),
-        ],
-      ),
-      onPressed: () {
-        _auth.fetchCustomerProfile(widget.partialMessage.sender).then((user) {
-          _auth.blockUser(user).then((result) {
+              width: 32,
+              height: 32,
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            Text(
+              AppLocalization
+                  .of(context)
+                  .message,
+              style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black),
+            )
+          ],
+        ),
+        onTap: () {
+          _auth.fetchCustomerProfile(widget.partialMessage.sender).then((user) {
             setState(() {
               isExpanded = false;
             });
-            if (result) {
-              Toast.show(
-                  "${widget.partialMessage.sender} " +
-                      AppLocalization.of(context).isBlocked,
-                  context);
-            } else {
-              Toast.show(AppLocalization.of(context).error, context);
-            }
+            Navigator.of(context).pushNamed('/compose_message', arguments: {
+              'recipient': user.userName,
+              'subject': "",
+            });
           });
-        });
-      },
+        },
+      ),
     );
+
+    // return MaterialButton(
+    //   child: Row(
+    //     mainAxisAlignment: MainAxisAlignment.center,
+    //     children: <Widget>[
+    //       Icon(
+    //         Icons.message,
+    //         color: darkBlue(),
+    //       ),
+    //       SizedBox(
+    //         width: 10,
+    //       ),
+    //       Text(
+    //         AppLocalization.of(context).message,
+    //         style: TextStyle(color: darkBlue()),
+    //       ),
+    //     ],
+    //   ),
+    //   onPressed: () {
+    //     _auth.fetchCustomerProfile(widget.partialMessage.sender).then((user) {
+    //       setState(() {
+    //         isExpanded = false;
+    //       });
+    //       Navigator.of(context).pushNamed('/compose_message', arguments: {
+    //         'recipient': user.userName,
+    //         'subject': "",
+    //       });
+    //     });
+    //   },
+    // );
+  }
+
+  Widget blockUserButton() {
+    return Theme(
+      data: Theme.of(context).copyWith(
+        splashColor: Colors.white,
+        highlightColor: Colors.white,
+      ),
+      child: InkWell(
+        onTap: () {
+          _auth.fetchCustomerProfile(widget.partialMessage.sender).then((user) {
+            _auth.blockUser(user).then((result) {
+              setState(() {
+                isExpanded = false;
+              });
+              if (result) {
+                Toast.show(
+                    "${widget.partialMessage.sender} " +
+                        AppLocalization
+                            .of(context)
+                            .isBlocked,
+                    context);
+              } else {
+                Toast.show(AppLocalization
+                    .of(context)
+                    .error, context);
+              }
+            });
+          });
+        },
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            RoundedBackgroundIcon(
+              backgroundColor: mateRad.withOpacity(0.1),
+              icon: Icon(
+                SlydoAppIcon.remove,
+                color: mateRad,
+                size: 14,
+              ),
+              width: 32,
+              height: 32,
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            Text(
+              AppLocalization
+                  .of(context)
+                  .blockUser,
+              style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black),
+            )
+          ],
+        ),
+      ),
+    );
+
+    // return MaterialButton(
+    //   child: Row(
+    //     mainAxisAlignment: MainAxisAlignment.center,
+    //     children: <Widget>[
+    //       Stack(
+    //         children: <Widget>[
+    //           Icon(
+    //             Icons.group,
+    //             color: Colors.black,
+    //           ),
+    //           Icon(
+    //             Icons.block,
+    //             color: Colors.red,
+    //           )
+    //         ],
+    //       ),
+    //       SizedBox(
+    //         width: 10,
+    //       ),
+    //       Text(
+    //         AppLocalization.of(context).blockUser,
+    //         style: TextStyle(color: Colors.redAccent),
+    //       ),
+    //     ],
+    //   ),
+    //   onPressed: () {
+    //     _auth.fetchCustomerProfile(widget.partialMessage.sender).then((user) {
+    //       _auth.blockUser(user).then((result) {
+    //         setState(() {
+    //           isExpanded = false;
+    //         });
+    //         if (result) {
+    //           Toast.show(
+    //               "${widget.partialMessage.sender} " +
+    //                   AppLocalization.of(context).isBlocked,
+    //               context);
+    //         } else {
+    //           Toast.show(AppLocalization.of(context).error, context);
+    //         }
+    //       });
+    //     });
+    //   },
+    // );
   }
 }
