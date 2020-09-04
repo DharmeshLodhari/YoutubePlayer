@@ -367,9 +367,7 @@ class _ShoppingCartTileForServiceState
   }
 
   String getServicePrice() {
-    if (service.price
-        .toString()
-        .length > 5) {
+    if (service.price.toString().length > 5) {
       return service.price.toString().substring(0, 5) + "..";
     }
     return service.price.toString();

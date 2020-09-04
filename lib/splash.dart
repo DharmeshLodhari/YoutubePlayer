@@ -128,7 +128,7 @@ class _SplashScreenState extends State<SplashScreen> {
             )),
           )
         : Scaffold(
-            backgroundColor: lightBlue(),
+            backgroundColor: navyBlue,
             appBar: AppBar(
               title: Text('Slydo'),
               backgroundColor: darkBlue(),
