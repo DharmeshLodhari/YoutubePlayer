@@ -7,7 +7,10 @@ import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/screens/tiles/bank_account.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/passcodePopup.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -44,6 +47,9 @@ class _UserDashboardState extends State<UserDashboard> {
   Language language;
   String accountBalance = "";
 
+  DashboardBloc dashboardBloc;
+  bool isBalanceHidden = true;
+
   PackageInfo _packageInfo = PackageInfo(
     appName: 'Unknown',
     packageName: 'Unknown',
@@ -58,28 +64,6 @@ class _UserDashboardState extends State<UserDashboard> {
     });
   }
 
-  Widget _infoTile() {
-    return Container(
-      color: Colors.transparent,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Text(
-            AppLocalization.of(context).appVersion +
-                ': ' +
-                _packageInfo.version,
-            style: TextStyle(color: Colors.white),
-          ),
-          Text(
-              AppLocalization.of(context).buildNumber +
-                  ': ' +
-                  _packageInfo.buildNumber,
-              style: TextStyle(color: Colors.white)),
-        ],
-      ),
-    );
-  }
-
   @override
   void initState() {
     setState(() {
@@ -88,7 +72,7 @@ class _UserDashboardState extends State<UserDashboard> {
     if (!isLocked) {
       getAccountBalance();
     }
-
+    getAccountBalance();
     _initPackageInfo();
     getLanguage();
     super.initState();
@@ -99,122 +83,463 @@ class _UserDashboardState extends State<UserDashboard> {
     userBloc = Provider.of<UserBloc>(context);
     bankAccountBloc = Provider.of<BankAccountBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
+    dashboardBloc = Provider.of<DashboardBloc>(context);
 
     if (userBloc.user.type != "User") {
       storeLocked = false;
     }
 
+//     return Scaffold(
+//       key: _scaffoldSettingKey,
+//       backgroundColor: lightBlue(),
+//       appBar: AppBar(
+//         automaticallyImplyLeading: false,
+//         backgroundColor: darkBlue(),
+//         title: Row(
+//           children: <Widget>[
+//             displayUserAvatar(),
+//             Expanded(child: SizedBox(width: 10)),
+//             Text(
+//               AppLocalization.of(context).explore,
+//               maxLines: 1,
+//             ),
+//             Expanded(child: SizedBox(width: 10)),
+//           ],
+//         ),
+//         titleSpacing: 0,
+//         actions: <Widget>[
+//           IconButton(
+//             icon: Icon(Icons.power_settings_new, color: Colors.white),
+//             onPressed: () {
+//               logoutUser(bankAccountBloc);
+//             },
+//             tooltip: AppLocalization.of(context).logout,
+//           ),
+//         ],
+//       ),
+//       body: SingleChildScrollView(
+//         scrollDirection: Axis.vertical,
+//         child: Container(
+//           color: lightBlue(),
+//           margin: EdgeInsets.symmetric(horizontal: 10),
+//           child: Center(
+//             child: Column(
+//               children: <Widget>[
+//                 SizedBox(height: 20),
+//                 displayAccountBalance(isLocked),
+//                 SizedBox(height: 15),
+//
+//                 //ROW 1
+//                 rowIconButtons(
+//                   iconButton(
+//                     Icons.person,
+//                     AppLocalization.of(context).profile,
+//                     () {
+//                       Platform.isAndroid
+//                           ? profileAndroidSheet()
+//                           : profileIOSSheet();
+//                     },
+//                   ),
+//                   iconButton(
+//                     Icons.language,
+//                     AppLocalization.of(context).language,
+//                     () {
+//                       changeLanguage();
+//                     },
+//                   ),
+//                   iconButton(
+//                     Icons.shopping_cart,
+//                     AppLocalization.of(context).orders,
+//                     () {
+//                       Navigator.pushNamed(context, '/orders-list');
+//                     },
+//                   ),
+//                 ),
+//
+//                 //ROW 2
+//                 rowIconButtons(
+//                     iconButton(Icons.account_balance_wallet,
+//                         AppLocalization.of(context).transactions, () {
+//                       PassCodePopup(
+//                           context: context,
+//                           isValidCallback: () {
+//                             Navigator.pushNamed(context, "/transactions");
+//                           },
+//                           cancelCallBack: () {
+//                             Navigator.pop(context);
+//                           });
+//                     }),
+//                     iconButton(
+//                       Icons.account_balance,
+//                       AppLocalization.of(context).bank,
+//                       () {
+//                         Platform.isIOS ? bankIOSSheet() : bankAndroidSheet();
+//                       },
+//                     ),
+//                     myStore()),
+//
+//                 //ROW 3
+//                 rowIconButtons(
+//                     Container(),
+// //TODO: FIND BATTER WAY TO ACCEPT CREDIT CARD  PAYMENT WITH OUT US WITH IN FOR THIS
+// //                    iconButton(
+// //                      Icons.credit_card,
+// //                      "Top Up",
+// //                      () {
+// //                        Navigator.pushNamed(context, "/card-payment-page");
+// //                      },
+// //                    ),
+//                     Container(),
+//                     Container()),
+//                 SizedBox(
+//                   height: 16,
+//                 ),
+//                 _infoTile(),
+//               ],
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
     return Scaffold(
-      key: _scaffoldSettingKey,
-      backgroundColor: lightBlue(),
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: darkBlue(),
-        title: Row(
-          children: <Widget>[
-            displayUserAvatar(),
-            Expanded(child: SizedBox(width: 10)),
-            Text(
-              AppLocalization.of(context).explore,
-              maxLines: 1,
-            ),
-            Expanded(child: SizedBox(width: 10)),
-          ],
-        ),
-        titleSpacing: 0,
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.power_settings_new, color: Colors.white),
-            onPressed: () {
-              logoutUser(bankAccountBloc);
-            },
-            tooltip: AppLocalization.of(context).logout,
+        key: _scaffoldSettingKey,
+        body: Container(
+          height: MediaQuery.of(context).size.height -
+              (AppBar().preferredSize.height),
+          width: MediaQuery.of(context).size.width,
+          color: Colors.white,
+          child: Stack(
+            children: <Widget>[
+              backgroundScreen(),
+              foregroundScreen(),
+            ],
           ),
-        ],
+        ));
+  }
+
+  Widget backgroundScreen() {
+    return Container(
+      child: Image.asset(
+        "assets/images/home_screen_background.png",
+        frameBuilder: imageFrameBuilder,
+        fit: BoxFit.cover,
       ),
-      body: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: Container(
-          color: lightBlue(),
-          margin: EdgeInsets.symmetric(horizontal: 10),
-          child: Center(
+    );
+  }
+
+  Widget foregroundScreen() {
+    return Container(
+      padding: EdgeInsets.only(left: 16, right: 16, top: 8),
+      child: Column(
+        children: [
+          Expanded(
+            flex: 9,
             child: Column(
               children: <Widget>[
-                SizedBox(height: 20),
-                displayAccountBalance(isLocked),
-                SizedBox(height: 15),
-
-                //ROW 1
-                rowIconButtons(
-                  iconButton(
-                    Icons.person,
-                    AppLocalization.of(context).profile,
-                    () {
-                      Platform.isAndroid
-                          ? profileAndroidSheet()
-                          : profileIOSSheet();
-                    },
-                  ),
-                  iconButton(
-                    Icons.language,
-                    AppLocalization.of(context).language,
-                    () {
-                      changeLanguage();
-                    },
-                  ),
-                  iconButton(
-                    Icons.shopping_cart,
-                    AppLocalization.of(context).orders,
-                    () {
-                      Navigator.pushNamed(context, '/orders-list');
-                    },
-                  ),
-                ),
-
-                //ROW 2
-                rowIconButtons(
-                    iconButton(Icons.account_balance_wallet,
-                        AppLocalization.of(context).transactions, () {
-                      PassCodePopup(
-                          context: context,
-                          isValidCallback: () {
-                            Navigator.pushNamed(context, "/transactions");
-                          },
-                          cancelCallBack: () {
-                            Navigator.pop(context);
-                          });
-                    }),
-                    iconButton(
-                      Icons.account_balance,
-                      AppLocalization.of(context).bank,
-                      () {
-                        Platform.isIOS ? bankIOSSheet() : bankAndroidSheet();
-                      },
-                    ),
-                    myStore()),
-
-                //ROW 3
-                rowIconButtons(
-                    Container(),
-//TODO: FIND BATTER WAY TO ACCEPT CREDIT CARD  PAYMENT WITH OUT US WITH IN FOR THIS
-//                    iconButton(
-//                      Icons.credit_card,
-//                      "Top Up",
-//                      () {
-//                        Navigator.pushNamed(context, "/card-payment-page");
-//                      },
-//                    ),
-                    Container(),
-                    Container()),
-                SizedBox(
-                  height: 16,
-                ),
-                _infoTile(),
+                flexibleSpace(),
+                appBar(),
+                flexibleSpace(flex: 4),
+                accountBalanceCard(),
+                flexibleSpace(flex: 2),
+                firstRowOfUserDashboardItem(),
+                flexibleSpace(flex: 1),
+                secondRowOfUserDashboardItem(),
+                flexibleSpace(flex: 2),
+                appVersionDataUI()
               ],
             ),
           ),
+          flexibleSpace()
+        ],
+      ),
+    );
+  }
+
+  Widget appBar() {
+    return AppBar(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      titleSpacing: 0,
+      title: Text(
+        "Account",
+        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+      ),
+      actions: <Widget>[
+        logoutBtn(),
+      ],
+    );
+  }
+
+  Widget logoutBtn() {
+    return SizedBox(
+      height: 34,
+      width: 34,
+      child: InkWell(
+        child: Card(
+          elevation: 0,
+          color: lightGrey.withOpacity(0.1),
+          margin: EdgeInsets.symmetric(vertical: 10),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(
+            SlydoAppIcon.leave,
+            size: 16,
+          ),
+        ),
+        onTap: () {
+          logoutUser(bankAccountBloc);
+        },
+      ),
+    );
+  }
+
+  Widget accountBalanceCard() {
+    return Card(
+      shadowColor: greyBorderColor,
+      elevation: 1,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: EdgeInsets.zero,
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: greyBorderColor,
+              width: 1,
+            )),
+        child: Container(
+          padding: EdgeInsets.only(left: 24, right: 24, top: 18, bottom: 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Account Balance",
+                style: TextStyle(fontSize: 14, color: darkGrey),
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              accountBalanceUI()
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  Widget accountBalanceUI() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: [
+            isBalanceHidden
+                ? Container()
+                : Icon(
+                    SlydoAppIcon.naira,
+                    color: blackFont,
+                    size: 16,
+                  ),
+            Text(
+              isBalanceHidden ? "*********" : accountBalance,
+              style: TextStyle(
+                  color: blackFont, fontWeight: FontWeight.bold, fontSize: 26),
+            ),
+          ],
+        ),
+        getAccountBalanceBtn()
+      ],
+    );
+  }
+
+  Widget getAccountBalanceBtn() {
+    return isBalanceHidden
+        ? IconButton(
+            icon: Icon(
+              SlydoAppIcon.eye,
+              color: eyeGrey,
+              size: 18,
+            ),
+            onPressed: () {
+              getAccountBalance();
+              isBalanceHidden = false;
+              setState(() {});
+            },
+          )
+        : IconButton(
+            icon: Icon(
+              SlydoAppIcon.eye_close,
+              color: eyeGrey,
+              size: 24,
+            ),
+            onPressed: () {
+              isBalanceHidden = true;
+              setState(() {});
+            },
+          );
+  }
+
+  Widget firstRowOfUserDashboardItem() {
+    return Row(
+      children: [
+        Expanded(
+            child: userDashboardItemCard(
+          icon: SlydoAppIcon.user,
+          title: "Profile",
+          onTap: () {
+            Platform.isAndroid ? profileAndroidSheet() : profileIOSSheet();
+          },
+          iconColor: HexColor("#9B51E0"),
+        )),
+        SizedBox(
+          width: 12,
+        ),
+        Expanded(
+            child: userDashboardItemCard(
+          icon: SlydoAppIcon.cart,
+          title: "Orders",
+          onTap: () {
+            Navigator.pushNamed(context, '/orders-list');
+          },
+          iconColor: HexColor("#FFAB00"),
+        )),
+        SizedBox(
+          width: 12,
+        ),
+        Expanded(
+            child: userDashboardItemCard(
+          icon: SlydoAppIcon.store,
+          title: "My store",
+          onTap: () {
+            if (!storeLocked) {
+              Platform.isIOS ? storeItemIOSSheet() : storeItemAndroidSheet();
+            }
+          },
+          iconColor: HexColor("#46CE7C"),
+        )),
+      ],
+    );
+  }
+
+  Widget secondRowOfUserDashboardItem() {
+    return Row(
+      children: [
+        Expanded(
+            child: userDashboardItemCard(
+          icon: SlydoAppIcon.transactions,
+          title: "Transaction",
+          onTap: () {
+            PassCodePopup(
+                context: context,
+                isValidCallback: () {
+                  Navigator.pushNamed(context, "/transactions");
+                },
+                cancelCallBack: () {
+                  Navigator.pop(context);
+                });
+          },
+          iconColor: HexColor("#3F61DB"),
+        )),
+        SizedBox(
+          width: 12,
+        ),
+        Expanded(
+            child: userDashboardItemCard(
+          icon: SlydoAppIcon.bank,
+          title: "Bank",
+          onTap: () {
+            Platform.isIOS ? bankIOSSheet() : bankAndroidSheet();
+          },
+          iconColor: HexColor("#F35B46"),
+        )),
+        SizedBox(
+          width: 12,
+        ),
+        Expanded(
+            child: userDashboardItemCard(
+          icon: SlydoAppIcon.translation,
+          title: "Language",
+          onTap: () {
+            changeLanguage();
+          },
+          iconColor: HexColor("#5218E9"),
+        )),
+      ],
+    );
+  }
+
+  Widget appVersionDataUI() {
+    return _infoTile();
+  }
+
+  Widget _infoTile() {
+    return Container(
+      color: Colors.transparent,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Text(
+            AppLocalization.of(context).appVersion +
+                ': ' +
+                _packageInfo.version,
+            style: TextStyle(color: darkGrey, fontSize: 12),
+          ),
+          Text(
+              AppLocalization.of(context).buildNumber +
+                  ': ' +
+                  _packageInfo.buildNumber,
+              style: TextStyle(color: darkGrey, fontSize: 12)),
+        ],
+      ),
+    );
+  }
+
+  Widget userDashboardItemCard({
+    @required String title,
+    @required IconData icon,
+    @required Color iconColor,
+    @required Function onTap,
+  }) {
+    return GestureDetector(
+      child: Card(
+        margin: EdgeInsets.zero,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        child: Container(
+          height: 100,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              flexibleSpace(flex: 3),
+              Card(
+                elevation: 0,
+                color: iconColor.withOpacity(0.08),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Icon(
+                    icon,
+                    color: iconColor,
+                    size: 20,
+                  ),
+                ),
+              ),
+              flexibleSpace(),
+              Text(
+                title,
+                style: TextStyle(
+                    color: blackFont,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14),
+              ),
+              flexibleSpace(flex: 3),
+            ],
+          ),
+        ),
+      ),
+      onTap: onTap,
     );
   }
 
@@ -289,6 +614,7 @@ class _UserDashboardState extends State<UserDashboard> {
     SharedPreferences _sharedPreferences;
     await _auth.logOut();
     bankAccountBloc.bankAccount = BankAccount();
+    dashboardBloc.index = 0;
     _sharedPreferences = await SharedPreferences.getInstance();
     _sharedPreferences.setBool('isLoggedOut', true);
 
@@ -312,9 +638,8 @@ class _UserDashboardState extends State<UserDashboard> {
     await _auth.getAccountBalance().then((value) {
       var data = value;
       var spendableBalance = data["spendable_balance"];
-      setState(() {
-        accountBalance = spendableBalance.toString();
-      });
+      accountBalance = spendableBalance.toString();
+      setState(() {});
     });
   }
 
@@ -495,14 +820,21 @@ class _UserDashboardState extends State<UserDashboard> {
         context: context,
         builder: (BuildContext context) {
           return Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20)),
+              ),
               color: Colors.white,
-              margin: EdgeInsets.symmetric(horizontal: 20),
+              margin: EdgeInsets.zero,
               child: Container(
-                child: Wrap(
+                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
-                    ListTile(
-                      title: Center(
-                          child: Text(AppLocalization.of(context).myProfile)),
+                    bottomSheetItem(
+                      title: "My profile",
+                      icon: SlydoAppIcon.user,
                       onTap: () {
                         _auth
                             .fetchCustomerProfile(userBloc.user.userName)
@@ -513,19 +845,17 @@ class _UserDashboardState extends State<UserDashboard> {
                         });
                       },
                     ),
-                    ListTile(
-                      title: Center(
-                        child: Text(AppLocalization.of(context).updateMyAvatar),
-                      ),
+                    bottomSheetItem(
+                      title: "Update my avatar",
+                      icon: SlydoAppIcon.image,
                       onTap: () {
                         Navigator.pop(context);
                         pickImage(userBloc);
                       },
                     ),
-                    ListTile(
-                      title: Center(
-                        child: Text(AppLocalization.of(context).myAddress),
-                      ),
+                    bottomSheetItem(
+                      title: "My address",
+                      icon: SlydoAppIcon.location,
                       onTap: () {
                         Navigator.pop(context);
                         Navigator.pushNamed(
@@ -534,8 +864,10 @@ class _UserDashboardState extends State<UserDashboard> {
                         );
                       },
                     ),
-                    ListTile(
-                      title: Center(child: Text("My Connections/Request")),
+                    bottomSheetItem(
+                      title: "My connection/ Request",
+                      icon: SlydoAppIcon.connections,
+                      isLast: true,
                       onTap: () {
                         Navigator.pop(context);
                         Navigator.pushNamed(
@@ -556,22 +888,28 @@ class _UserDashboardState extends State<UserDashboard> {
         context: context,
         builder: (BuildContext context) {
           return Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+            ),
             color: Colors.white,
-            margin: EdgeInsets.symmetric(horizontal: 20),
+            margin: EdgeInsets.zero,
             child: Container(
-              child: Wrap(
+              padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  ListTile(
-                    title: Center(
-                        child: Text(AppLocalization.of(context).bankAccounts)),
+                  bottomSheetItem(
+                    title: "Bank accounts",
+                    icon: SlydoAppIcon.bank,
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.pushNamed(context, "/bank-account-list");
                     },
                   ),
-                  ListTile(
-                    title: Center(
-                        child: Text(AppLocalization.of(context).payoutList)),
+                  bottomSheetItem(
+                    title: "Payout list",
+                    icon: SlydoAppIcon.payout_list,
                     onTap: () {
                       PassCodePopup(
                           context: context,
@@ -582,9 +920,10 @@ class _UserDashboardState extends State<UserDashboard> {
                           cancelCallBack: () {});
                     },
                   ),
-                  ListTile(
-                    title:
-                        Center(child: Text(AppLocalization.of(context).payout)),
+                  bottomSheetItem(
+                    title: "Payout",
+                    icon: SlydoAppIcon.payout,
+                    isLast: true,
                     onTap: () {
                       PassCodePopup(
                           context: context,
@@ -732,22 +1071,30 @@ class _UserDashboardState extends State<UserDashboard> {
         context: context,
         builder: (BuildContext context) {
           return Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20)),
+              ),
               color: Colors.white,
-              margin: EdgeInsets.symmetric(horizontal: 20),
+              margin: EdgeInsets.zero,
               child: Container(
-                child: Wrap(
+                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
-                    ListTile(
-                      title: Center(
-                          child: Text(AppLocalization.of(context).addProduct)),
+                    bottomSheetItem(
+                      title: "Add product",
+                      icon: SlydoAppIcon.product,
                       onTap: () {
                         Navigator.pop(context);
                         Navigator.pushNamed(context, '/add-product');
                       },
                     ),
-                    ListTile(
-                      title: Center(
-                          child: Text(AppLocalization.of(context).addService)),
+                    bottomSheetItem(
+                      title: "Add service",
+                      icon: SlydoAppIcon.note_2,
+                      isLast: true,
                       onTap: () {
                         Navigator.pop(context);
                         Navigator.pushNamed(context, '/add-service');
@@ -778,13 +1125,166 @@ class _UserDashboardState extends State<UserDashboard> {
           ),
         ],
         cancelButton: CupertinoActionSheetAction(
-          child: Text(AppLocalization.of(context).cancel),
+          child: Text(AppLocalization
+              .of(context)
+              .cancel),
           isDefaultAction: true,
           onPressed: () {
             Navigator.pop(context, 'Cancel');
           },
         ),
       ),
+    );
+  }
+
+  void changeLanguageBottomSheet() async {
+    await showDialog<Language>(
+        context: context,
+        builder: (context) =>
+            AlertDialog(
+              title: Text(AppLocalization
+                  .of(context)
+                  .selectYourLanguage),
+              contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              content: SingleChildScrollView(
+                child: Column(
+                  children: languages.map((data) {
+                    return RadioListTile(
+                      selected: language.languageCode == data.languageCode,
+                      title: Text(data.name),
+                      activeColor: darkBlue(),
+                      groupValue: language,
+                      value: data,
+                      onChanged: (lang) {
+                        setState(() {
+                          language = lang;
+                          setLanguage(lang);
+                          Navigator.pop(context);
+                          saveIntoSharedPreference(lang);
+                        });
+                      },
+                    );
+                  }).toList(),
+                ),
+              ),
+            ));
+
+    showModalBottomSheet<void>(
+        backgroundColor: Colors.transparent,
+        context: context,
+        builder: (BuildContext context) {
+          return Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20)),
+              ),
+              color: Colors.white,
+              margin: EdgeInsets.zero,
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: languages.map((data) {
+                    // return RadioListTile(
+                    //   selected: language.languageCode == data.languageCode,
+                    //   title: Text(data.name),
+                    //   activeColor: darkBlue(),
+                    //   groupValue: language,
+                    //   value: data,
+                    //   onChanged: (lang) {
+                    //     setState(() {
+                    //       language = lang;
+                    //       setLanguage(lang);
+                    //       Navigator.pop(context);
+                    //       saveIntoSharedPreference(lang);
+                    //     });
+                    //   },
+                    // );
+                    return bottomSheetItemWithCheck(
+                        icon: SlydoAppIcon.translation,
+                        title: data.name,
+                        isChecked: language.languageCode == data.languageCode,
+                        onTap: () {
+                          language = data;
+                          setLanguage(data);
+                        });
+                  }).toList(),
+                ),
+              ));
+        });
+  }
+
+  Widget bottomSheetItem(
+      {Function onTap, IconData icon, String title, bool isLast = false}) {
+    return GestureDetector(
+      child: Padding(
+        padding: EdgeInsets.only(bottom: isLast ? 0 : 10),
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            RoundedBackgroundIcon(
+              icon: Icon(
+                icon,
+                size: 14,
+              ),
+              backgroundColor: lightGrey,
+              width: 32,
+              height: 32,
+            ),
+            SizedBox(
+              width: 16,
+            ),
+            Text(
+              title,
+              style: TextStyle(fontSize: 16, color: blackFont),
+            )
+          ],
+        ),
+      ),
+      onTap: onTap,
+    );
+  }
+
+  Widget bottomSheetItemWithCheck({Function onTap,
+    IconData icon,
+    String title,
+    bool isLast = false,
+    bool isChecked}) {
+    return GestureDetector(
+      child: Padding(
+        padding: EdgeInsets.only(bottom: isLast ? 0 : 10),
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            RoundedBackgroundIcon(
+              icon: Icon(
+                icon,
+                size: 14,
+              ),
+              backgroundColor: lightGrey,
+              width: 32,
+              height: 32,
+            ),
+            SizedBox(
+              width: 16,
+            ),
+            Text(
+              title,
+              style: TextStyle(fontSize: 16, color: blackFont),
+            ),
+            flexibleSpace(),
+            isChecked
+                ? Icon(
+              SlydoAppIcon.checked,
+              color: navyBlue,
+              size: 14,
+            )
+                : Container()
+          ],
+        ),
+      ),
+      onTap: onTap,
     );
   }
 }

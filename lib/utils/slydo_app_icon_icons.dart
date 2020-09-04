@@ -47,14 +47,28 @@ class SlydoAppIcon {
   static const IconData product = IconData(0xe817, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData add_cart = IconData(0xe818, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData store = IconData(0xe819, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData cart = IconData(0xe81a, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData send = IconData(0xe81b, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData search = IconData(0xe81c, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData share = IconData(0xe81d, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData receive = IconData(0xe81e, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData add = IconData(0xe81f, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData remove = IconData(0xe820, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData text_message = IconData(0xe821, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData block = IconData(0xe822, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData checked = IconData(0xe823, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData cart =
+      IconData(0xe81a, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData send =
+      IconData(0xe81b, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData search =
+      IconData(0xe81c, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData share =
+      IconData(0xe81d, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData receive =
+      IconData(0xe81e, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData add =
+      IconData(0xe81f, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData remove =
+      IconData(0xe820, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData text_message =
+      IconData(0xe821, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData block =
+      IconData(0xe822, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData checked =
+      IconData(0xe823, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData plus =
+      IconData(0xe824, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData minus =
+      IconData(0xe825, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }

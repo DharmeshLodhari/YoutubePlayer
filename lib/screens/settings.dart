@@ -2,10 +2,10 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/device.dart';
 import 'package:Slydo/models/transactions.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/screens/tiles/bank_account.dart';
 import 'package:Slydo/screens/tiles/explore.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/utils/colors.dart';
 import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
@@ -487,7 +487,7 @@ class _SettingsListState extends State<SettingsList> {
         dense: true,
         leading: ClipOval(
             child: Image.asset(
-          "assets/images/slydo.png",
+              "assets/images/appIcon.png",
           height: 45,
           width: 45,
         )),

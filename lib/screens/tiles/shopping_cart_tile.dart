@@ -1,6 +1,7 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/models/store.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -123,8 +124,9 @@ class _ShoppingCartTileForProductState
             RoundedBackgroundIcon(
                 backgroundColor: iconBtnGrey,
                 icon: Icon(
-                  Icons.remove,
+                  SlydoAppIcon.minus,
                   color: blackFont,
+                  size: 2,
                 ),
                 onTap: widget.onDecreaseQty),
             Expanded(
@@ -145,8 +147,9 @@ class _ShoppingCartTileForProductState
             RoundedBackgroundIcon(
                 backgroundColor: iconBtnGrey,
                 icon: Icon(
-                  Icons.add,
+                  SlydoAppIcon.plus,
                   color: blackFont,
+                  size: 16,
                 ),
                 onTap: widget.onIncreaseQty),
           ],
@@ -247,7 +250,7 @@ class _ShoppingCartTileForServiceState
         color: Colors.white,
         child: Card(
           shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
           shadowColor: iconBtnGrey,
           child: Container(
@@ -329,8 +332,9 @@ class _ShoppingCartTileForServiceState
             RoundedBackgroundIcon(
                 backgroundColor: iconBtnGrey,
                 icon: Icon(
-                  Icons.remove,
+                  SlydoAppIcon.minus,
                   color: blackFont,
+                  size: 2,
                 ),
                 onTap: widget.onDecreaseQty),
             Expanded(
@@ -351,8 +355,9 @@ class _ShoppingCartTileForServiceState
             RoundedBackgroundIcon(
               backgroundColor: iconBtnGrey,
               icon: Icon(
-                Icons.add,
+                SlydoAppIcon.plus,
                 color: blackFont,
+                size: 16,
               ),
               onTap: widget.onIncreaseQty,
             )

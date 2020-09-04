@@ -60,10 +60,8 @@ dependency_overrides:
 
 flutter_icons:
   android: "launcher_icon"
-  image_path_ios: "assets/images/icon_without_alpha.png"
-  image_path_android: "assets/images/icon_with_blue_bg.png"
-  adaptive_icon_background: "assets/images/blue_background.png"
-  adaptive_icon_foreground: "assets/images/icon_foreground.png"
+  image_path_ios: "assets/images/appIcon/appIcon_IOS.png"
+  image_path_android: "assets/images/appIcon/appIcon_IOS.png"
   ios: true
 
 dev_dependencies:
@@ -90,6 +88,7 @@ flutter:
     - assets/images/category/
     - assets/images/intro_images/
     - assets/fonts/
+    - assets/images/appIcon/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

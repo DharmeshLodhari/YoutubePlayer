@@ -30,3 +30,4 @@ Color iconBtnGrey = HexColor("#F8F9FF");
 Color greyBorderColor = HexColor("#DDE1E7");
 Color dividerColor = HexColor("#EBEDFC");
 Color mateRad = HexColor("#F35B46");
+Color eyeGrey = HexColor("#A5ADB6");

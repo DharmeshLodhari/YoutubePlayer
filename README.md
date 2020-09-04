@@ -58,6 +58,11 @@ flutter pub run intl_translation:generate_from_arb \
 
 ### FOR CREATING THE ANDROID AND IOS LAUNCHER ICONS
 
+
+execute tools/generateAppIcon.sh 
+
+OR
+
 1> FIRST RUN 
    `flutter pub get`
 
