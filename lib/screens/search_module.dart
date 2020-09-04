@@ -785,16 +785,15 @@ class _SearchModuleState extends State<SearchModule> {
             height: 48,
             width: 48,
             colorBlendMode: BlendMode.darken,
-            fit: BoxFit.cover,
+            fit: BoxFit.fill,
             filterQuality: FilterQuality.high,
-            placeholder: (context, url) =>
-            imageUrl == ""
+            placeholder: (context, url) => imageUrl == ""
                 ? Icon(Icons.person)
                 : CircularProgressIndicator(
-              strokeWidth: 2.5,
-              valueColor: AlwaysStoppedAnimation(Colors.white),
-              backgroundColor: lightBlue(),
-            ),
+                    strokeWidth: 2.5,
+                    valueColor: AlwaysStoppedAnimation(Colors.white),
+                    backgroundColor: lightBlue(),
+                  ),
           ),
         ));
   }
@@ -956,7 +955,7 @@ class _SearchModuleState extends State<SearchModule> {
         child: CachedNetworkImage(
           imageUrl: imageUrl,
           colorBlendMode: BlendMode.darken,
-          fit: BoxFit.fitWidth,
+          fit: BoxFit.fill,
           filterQuality: FilterQuality.high,
           placeholder: (context, url) =>
           imageUrl == ""

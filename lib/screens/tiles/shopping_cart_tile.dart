@@ -1,7 +1,6 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/models/store.dart';
-import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -15,8 +14,11 @@ class ShoppingCartTileForProduct extends StatefulWidget {
   String type;
   int qty;
   int index;
+  Function onIncreaseQty;
+  Function onDecreaseQty;
 
-  ShoppingCartTileForProduct(Map<String, dynamic> item, {this.index}) {
+  ShoppingCartTileForProduct(Map<String, dynamic> item,
+      {this.onIncreaseQty, this.onDecreaseQty, this.index}) {
     type = item["type"];
     this.item = item["item"];
     qty = item["qty"];
@@ -31,41 +33,48 @@ class _ShoppingCartTileForProductState
     extends State<ShoppingCartTileForProduct> {
   Product product;
   int qty;
-  var basketBloc;
-  var _auth = AuthService();
+  BasketBloc basketBloc;
 
   _ShoppingCartTileForProductState({this.product, this.qty});
 
   @override
   Widget build(BuildContext context) {
     basketBloc = Provider.of<BasketBloc>(context);
-
-    return Container(
-      color: Colors.white,
-      child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-        shadowColor: iconBtnGrey,
-        child: Container(
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: iconBtnGrey, width: 1)),
-          child: Column(
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 8),
-                child: ListTile(
-                  leading: getLeading(),
-                  title: getTitle(),
-                  trailing: getTrailing(),
-                  subtitle: getSubtitle(context),
+    try {
+      return Container(
+        color: Colors.white,
+        child: Card(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+          shadowColor: iconBtnGrey,
+          child: Container(
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: iconBtnGrey, width: 1)),
+            child: Column(
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: ListTile(
+                    leading: getLeading(),
+                    title: getTitle(),
+                    trailing: getTrailing(),
+                    subtitle: getSubtitle(context),
+                    onTap: () {
+                      Navigator.pushNamed(context, "/product",
+                          arguments: {"product": product});
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+    } catch (e) {
+      return Container();
+    }
   }
 
   Widget getLeading() {
@@ -103,31 +112,6 @@ class _ShoppingCartTileForProductState
   }
 
   Widget getTrailing() {
-    // return Column(
-    //   mainAxisAlignment: MainAxisAlignment.center,
-    //   children: <Widget>[
-    //     Row(
-    //       mainAxisSize: MainAxisSize.min,
-    //       children: <Widget>[
-    //         Text(
-    //           worldCurrencies[product.currency],
-    //           style: TextStyle(
-    //               color: Colors.grey[600],
-    //               fontFamily: "Roboto",
-    //               fontWeight: FontWeight.bold,
-    //               fontSize: 14),
-    //         ),
-    //         Text(
-    //           ' ' + getProductPrice(),
-    //           style: TextStyle(
-    //               color: Colors.grey[600],
-    //               fontWeight: FontWeight.bold,
-    //               fontSize: 14),
-    //         ),
-    //       ],
-    //     ),
-    //   ],
-    // );
     return Container(
       width: 100,
       color: Colors.transparent,
@@ -142,16 +126,14 @@ class _ShoppingCartTileForProductState
                   Icons.remove,
                   color: blackFont,
                 ),
-                onTap: () {
-                  removeItem(widget.index);
-                }),
+                onTap: widget.onDecreaseQty),
             Expanded(
               child: SizedBox(
                 width: 10,
               ),
             ),
             Text(
-              qty.toString(),
+              basketBloc.items[widget.index]["qty"].toString(),
               style: TextStyle(
                   fontSize: 14, fontWeight: FontWeight.w600, color: blackFont),
             ),
@@ -166,9 +148,7 @@ class _ShoppingCartTileForProductState
                   Icons.add,
                   color: blackFont,
                 ),
-                onTap: () {
-                  addItem(widget.index);
-                }),
+                onTap: widget.onIncreaseQty),
           ],
         ),
       ),
@@ -183,7 +163,8 @@ class _ShoppingCartTileForProductState
   }
 
   String getTotalPrice() {
-    var price = qty * int.parse(product.price);
+    var price =
+        basketBloc.items[widget.index]["qty"] * int.parse(product.price);
     return price.toString();
   }
 
@@ -227,49 +208,6 @@ class _ShoppingCartTileForProductState
       style: TextStyle(fontSize: 10, color: darkGrey),
     );
   }
-
-  void addItem(int index) async {
-    String type =
-        basketBloc.items[index]["item"] is Product ? "product" : "service";
-    basketBloc.addItemToCart(item: basketBloc.items[index]["item"], type: type);
-    var mapData;
-    basketBloc.items.forEach((element) {
-      if (element["item"].id == basketBloc.items[index]["item"].id) {
-        mapData = element;
-        return;
-      }
-    });
-    Map data = {
-      "type": type,
-      "id": mapData["item"].id,
-      "qty": mapData["qty"],
-    };
-    debugPrint("Data From increasing the  item : $data");
-
-    await _auth.addItemToShoppingCart(data);
-  }
-
-  void removeItem(int index) async {
-    String type =
-        basketBloc.items[index]["item"] is Product ? "product" : "service";
-
-    var mapData;
-    basketBloc.items.forEach((element) {
-      if (element["item"].id == basketBloc.items[index]["item"].id) {
-        mapData = element;
-        return;
-      }
-    });
-    Map data = {
-      "type": type,
-      "id": mapData["item"].id,
-      "qty": mapData["qty"] - 1,
-    };
-
-    debugPrint("Data send From Remove Button : $data");
-    basketBloc.removeItemFromCart(basketBloc.items[index]["item"]);
-    await _auth.removeItemToShoppingCart(data);
-  }
 }
 
 // ignore: must_be_immutable
@@ -277,11 +215,12 @@ class ShoppingCartTileForService extends StatefulWidget {
   Service item;
   String type;
   int qty;
+  int index;
   Function onIncreaseQty;
   Function onDecreaseQty;
 
   ShoppingCartTileForService(Map<String, dynamic> item,
-      {this.onDecreaseQty, this.onIncreaseQty}) {
+      {this.onDecreaseQty, this.onIncreaseQty, this.index}) {
     type = item["type"];
     this.item = item["item"];
     qty = item["qty"] ?? 0;
@@ -296,35 +235,48 @@ class _ShoppingCartTileForServiceState
     extends State<ShoppingCartTileForService> {
   Service service;
   int qty;
+  BasketBloc basketBloc;
+
   _ShoppingCartTileForServiceState({this.service, this.qty});
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-        shadowColor: iconBtnGrey,
-        child: Container(
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: iconBtnGrey, width: 1)),
-          child: Column(
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 8),
-                child: ListTile(
-                  leading: getLeading(),
-                  title: getTitle(),
-                  trailing: getTrailing(),
-                  subtitle: getSubtitle(context),
+    basketBloc = Provider.of<BasketBloc>(context);
+    try {
+      return Container(
+        color: Colors.white,
+        child: Card(
+          shape:
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+          shadowColor: iconBtnGrey,
+          child: Container(
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: iconBtnGrey, width: 1)),
+            child: Column(
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: ListTile(
+                    leading: getLeading(),
+                    title: getTitle(),
+                    trailing: getTrailing(),
+                    subtitle: getSubtitle(context),
+                    onTap: () {
+                      Navigator.pushNamed(context, "/service-detail",
+                          arguments: {"service": service});
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+    } catch (e) {
+      return Container();
+    }
   }
 
   Widget getLeading() {
@@ -338,15 +290,16 @@ class _ShoppingCartTileForServiceState
               ? service.serverImages.first
               : "https://homepages.cae.wisc.edu/~ece533/images/peppers.png",
           colorBlendMode: BlendMode.darken,
-          fit: BoxFit.fitWidth,
+          fit: BoxFit.fill,
           filterQuality: FilterQuality.high,
-          placeholder: (context, url) => service.serverImages.isNotEmpty
+          placeholder: (context, url) =>
+          service.serverImages.isNotEmpty
               ? Icon(Icons.widgets)
               : CircularProgressIndicator(
-                  strokeWidth: 2.5,
-                  valueColor: AlwaysStoppedAnimation(Colors.white),
-                  backgroundColor: lightBlue(),
-                ),
+            strokeWidth: 2.5,
+            valueColor: AlwaysStoppedAnimation(Colors.white),
+            backgroundColor: lightBlue(),
+          ),
         ),
       ),
     );
@@ -362,6 +315,9 @@ class _ShoppingCartTileForServiceState
   }
 
   Widget getTrailing() {
+    int qty = basketBloc.items[widget.index]["qty"] != 0
+        ? basketBloc.items[widget.index]["qty"]
+        : 0;
     return Container(
       width: 100,
       color: Colors.transparent,
@@ -376,10 +332,7 @@ class _ShoppingCartTileForServiceState
                   Icons.remove,
                   color: blackFont,
                 ),
-                onTap: () {
-                  widget.onDecreaseQty();
-                  setState(() {});
-                }),
+                onTap: widget.onDecreaseQty),
             Expanded(
               child: SizedBox(
                 width: 10,
@@ -401,10 +354,7 @@ class _ShoppingCartTileForServiceState
                 Icons.add,
                 color: blackFont,
               ),
-              onTap: () {
-                widget.onIncreaseQty();
-                setState(() {});
-              },
+              onTap: widget.onIncreaseQty,
             )
           ],
         ),
@@ -412,15 +362,18 @@ class _ShoppingCartTileForServiceState
     );
   }
 
-  String getProductPrice() {
-    if (service.price.toString().length > 5) {
+  String getServicePrice() {
+    if (service.price
+        .toString()
+        .length > 5) {
       return service.price.toString().substring(0, 5) + "..";
     }
     return service.price.toString();
   }
 
   String getTotalPrice() {
-    var price = qty * int.parse(service.price);
+    var price =
+        basketBloc.items[widget.index]["qty"] * int.parse(service.price);
     return price.toString();
   }
 

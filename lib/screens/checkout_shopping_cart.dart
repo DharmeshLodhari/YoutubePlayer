@@ -26,7 +26,6 @@ class ShoppingCart extends StatefulWidget {
 class _ShoppingCartState extends State<ShoppingCart> {
   BasketBloc basketBloc;
   CustomerProfileBloc customerProfileBloc;
-  SlidableController slidableController;
   UserBloc userBloc;
   List<int> orders = List<int>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -37,11 +36,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
 
   @override
   void initState() {
-    slidableController = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged,
-    );
-
     super.initState();
   }
 
@@ -294,12 +288,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
   }
 
   Widget getItemTile(int index) {
-    return _getSlidableWithLists(
-      context,
-      getItemTileUI(index),
-      basketBloc.items[index],
-      index,
-    );
+    return getItemTileUI(index);
   }
 
   Widget getItemTileUI(int index) {
@@ -307,17 +296,22 @@ class _ShoppingCartState extends State<ShoppingCart> {
       return ShoppingCartTileForProduct(
         basketBloc.items[index],
         index: index,
+        onDecreaseQty: () {
+          removeItem(index);
+        },
+        onIncreaseQty: () {
+          addItem(index);
+        },
       );
     }
     return ShoppingCartTileForService(
       basketBloc.items[index],
+      index: index,
       onDecreaseQty: () {
         removeItem(index);
-        debugPrint("im called s!!");
       },
       onIncreaseQty: () {
         addItem(index);
-        debugPrint("im called sa!!");
       },
     );
   }
@@ -338,32 +332,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
         ),
       ),
     );
-  }
-
-  Widget _getSlidableWithLists(
-      BuildContext context, Widget itemTile, var item, int index) {
-    return Slidable(
-      controller: slidableController,
-      direction: Axis.horizontal,
-      actionPane: SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
-      child: VerticalListItem(itemTile, item),
-      actions: listActionSlideActions(index),
-      secondaryActions: listSecondaryActions(index),
-    );
-  }
-
-  List<Widget> listSecondaryActions(int index) {
-    String caption2 = AppLocalization.of(context).add;
-    return [
-      IconSlideAction(
-          caption: caption2,
-          color: Colors.green,
-          icon: Icons.add,
-          onTap: () {
-            addItem(index);
-          }),
-    ];
   }
 
   void addItem(int index) async {
@@ -434,12 +402,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
         'itemIndex': index
       },
     );
-  }
-
-  void handleSlideAnimationChanged(Animation<double> slideAnimation) {}
-
-  void handleSlideIsOpenChanged(bool isOpen) {
-    setState(() {});
   }
 
   Product getProduct(String productId) {
