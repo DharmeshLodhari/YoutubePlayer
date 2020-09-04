@@ -94,9 +94,7 @@ class _MessageListState extends State<MessageList> {
         _refreshController.refreshCompleted();
       } else {
         Toast.show(
-            AppLocalization
-                .of(context)
-                .internetConnectionNotAvailable, context,
+            AppLocalization.of(context).internetConnectionNotAvailable, context,
             gravity: Toast.BOTTOM, backgroundColor: darkBlue());
         _refreshController.refreshCompleted();
       }
@@ -125,21 +123,13 @@ class _MessageListState extends State<MessageList> {
       context: context,
       children: [
         CustomizedPopUpMenuItem(
-            title: AppLocalization
-                .of(context)
-                .all, value: "all"),
+            title: AppLocalization.of(context).all, value: "all"),
         CustomizedPopUpMenuItem(
-            title: AppLocalization
-                .of(context)
-                .archived, value: "archived"),
+            title: AppLocalization.of(context).archived, value: "archived"),
         CustomizedPopUpMenuItem(
-            title: AppLocalization
-                .of(context)
-                .sent, value: "sent"),
+            title: AppLocalization.of(context).sent, value: "sent"),
         CustomizedPopUpMenuItem(
-            title: AppLocalization
-                .of(context)
-                .starred, value: "starred"),
+            title: AppLocalization.of(context).starred, value: "starred"),
       ],
       selectedIndex: selectedMenuItemIndex,
       right: 16,
@@ -222,9 +212,7 @@ class _MessageListState extends State<MessageList> {
         },
       ),
       title: Text(
-        AppLocalization
-            .of(context)
-            .messages,
+        AppLocalization.of(context).messages,
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -267,8 +255,7 @@ class _MessageListState extends State<MessageList> {
     );
   }
 
-  Widget _threeItemPopup() =>
-      PopupMenuButton(
+  Widget _threeItemPopup() => PopupMenuButton(
         padding: EdgeInsets.all(0),
         captureInheritedThemes: true,
         itemBuilder: (context) {
@@ -483,10 +470,10 @@ class _MessageListState extends State<MessageList> {
           setState(() {
             if (isRecipient) {
               partialMessage.isArchivedByRecipient =
-              partialMessage.isArchivedByRecipient ? false : true;
+                  partialMessage.isArchivedByRecipient ? false : true;
             } else {
               partialMessage.isArchivedBySender =
-              partialMessage.isArchivedBySender ? false : true;
+                  partialMessage.isArchivedBySender ? false : true;
             }
           });
         },
@@ -512,9 +499,7 @@ class _MessageListState extends State<MessageList> {
         onTap: () {
           deleteMessage(partialMessage, index);
         },
-        title: AppLocalization
-            .of(context)
-            .delete,
+        title: AppLocalization.of(context).delete,
         slideController: slidableController);
     // return Container(
     //     height: double.infinity,
@@ -623,13 +608,13 @@ class _VerticalListItemState extends State<VerticalListItem> {
       curve: Curves.fastOutSlowIn,
       child: isExpanded
           ? Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Container(
-            height: 1,
-            color: dividerColor,
-          ),
-          Expanded(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Container(
+                  height: 1,
+                  color: dividerColor,
+                ),
+                Expanded(
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
@@ -673,9 +658,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
               width: 10,
             ),
             Text(
-              AppLocalization
-                  .of(context)
-                  .message,
+              AppLocalization.of(context).message,
               style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -744,14 +727,10 @@ class _VerticalListItemState extends State<VerticalListItem> {
               if (result) {
                 Toast.show(
                     "${widget.partialMessage.sender} " +
-                        AppLocalization
-                            .of(context)
-                            .isBlocked,
+                        AppLocalization.of(context).isBlocked,
                     context);
               } else {
-                Toast.show(AppLocalization
-                    .of(context)
-                    .error, context);
+                Toast.show(AppLocalization.of(context).error, context);
               }
             });
           });
@@ -773,9 +752,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
               width: 10,
             ),
             Text(
-              AppLocalization
-                  .of(context)
-                  .blockUser,
+              AppLocalization.of(context).blockUser,
               style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,

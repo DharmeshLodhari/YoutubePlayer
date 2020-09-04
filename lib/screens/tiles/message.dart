@@ -99,43 +99,35 @@ class _MessageTileState extends State<MessageTile> {
     return IconButton(
       icon: isRecipient
           ? partialMessage.isStarredByRecipient
-          ? Icon(
-        SlydoAppIcon.star,
-        color: starYellow,
-        size: 20,
-      )
-          : Icon(
-        SlydoAppIcon.star,
-        color: greyBorderColor,
-        size: 20,
-      )
+              ? Icon(
+                  SlydoAppIcon.star,
+                  color: starYellow,
+                  size: 20,
+                )
+              : Icon(
+                  SlydoAppIcon.star,
+                  color: greyBorderColor,
+                  size: 20,
+                )
           : partialMessage.isStarredBySender
-          ? Icon(
-        SlydoAppIcon.star,
-        color: starYellow,
-        size: 20,
-      )
-          : Icon(
-        SlydoAppIcon.star,
-        color: greyBorderColor,
-        size: 20,
-      ),
+              ? Icon(
+                  SlydoAppIcon.star,
+                  color: starYellow,
+                  size: 20,
+                )
+              : Icon(
+                  SlydoAppIcon.star,
+                  color: greyBorderColor,
+                  size: 20,
+                ),
       onPressed: () async {
         var action = isRecipient
             ? partialMessage.isStarredByRecipient
-            ? AppLocalization
-            .of(context)
-            .unstar
-            : AppLocalization
-            .of(context)
-            .star
+                ? AppLocalization.of(context).unstar
+                : AppLocalization.of(context).star
             : partialMessage.isStarredBySender
-            ? AppLocalization
-            .of(context)
-            .unstar
-            : AppLocalization
-            .of(context)
-            .star;
+                ? AppLocalization.of(context).unstar
+                : AppLocalization.of(context).star;
         await _auth.updateMessage(partialMessage.id, action);
         setState(() {
           if (isRecipient) {
