@@ -1,0 +1,143 @@
+import 'package:Slydo/utils/colors.dart';
+import 'package:flutter/material.dart';
+
+typedef KeyboardTapCallback = void Function(String text);
+
+@immutable
+class KeyboardUIConfig {
+  //Digits have a round thin borders, [digitBorderWidth] define their thickness
+  final double digitBorderWidth;
+  final TextStyle digitTextStyle;
+  final TextStyle deleteButtonTextStyle;
+  final Color primaryColor;
+  final Color digitFillColor;
+  final EdgeInsetsGeometry keyboardRowMargin;
+  final EdgeInsetsGeometry digitInnerMargin;
+  //Size for the keyboard can be define and provided from the app. If it will not be provided the size will be adjusted to a screen size.
+  final Size keyboardSize;
+
+  const KeyboardUIConfig({
+    this.digitBorderWidth = 1,
+    this.keyboardRowMargin = const EdgeInsets.only(top: 15, left: 4, right: 4),
+    this.digitInnerMargin = const EdgeInsets.all(24),
+    this.primaryColor = Colors.white,
+    this.digitFillColor = Colors.transparent,
+    this.digitTextStyle = const TextStyle(fontSize: 30, color: Colors.white),
+    this.deleteButtonTextStyle =
+        const TextStyle(fontSize: 16, color: Colors.white),
+    this.keyboardSize,
+  });
+}
+
+class Keyboard extends StatelessWidget {
+  final KeyboardUIConfig keyboardUIConfig;
+  final KeyboardTapCallback onKeyboardTap;
+
+  //should have a proper order [1...9, 0]
+  final List<String> digits;
+
+  Keyboard({
+    Key key,
+    @required this.keyboardUIConfig,
+    @required this.onKeyboardTap,
+    this.digits,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) => _buildKeyboard(context);
+
+  Widget _buildKeyboard(BuildContext context) {
+    List<String> keyboardItems = List.filled(10, '0');
+    if (digits == null || digits.isEmpty) {
+      keyboardItems = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
+    } else {
+      keyboardItems = digits;
+    }
+    final screenSize = MediaQuery.of(context).size;
+    final keyboardHeight = screenSize.height / 3;
+    final keyboardWidth = screenSize.width;
+    final keyboardSize = this.keyboardUIConfig.keyboardSize != null
+        ? this.keyboardUIConfig.keyboardSize
+        : Size(keyboardWidth, keyboardHeight);
+    return Container(
+      width: keyboardSize.width,
+      height: keyboardSize.height,
+      margin: EdgeInsets.only(top: 1,bottom: 1),
+      child: AlignedGrid(
+        keyboardSize: keyboardSize,
+        children: List.generate(10, (index) {
+          return _buildKeyboardDigit(keyboardItems[index]);
+        }),
+      ),
+    );
+  }
+
+  Widget _buildKeyboardDigit(String text) {
+    return Container(
+      margin: EdgeInsets.all(1),
+      child: Material(
+        color: keyboardUIConfig.digitFillColor,
+        child: InkWell(
+          splashColor: keyboardUIConfig.primaryColor.withOpacity(0.4),
+          onTap: () {
+            onKeyboardTap(text);
+          },
+          child: Container(
+            child: Center(
+              child: Text(
+                text,
+                style: TextStyle(
+                    color: blackFont,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800),
+                semanticsLabel: text,
+              ),
+            ),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.rectangle,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                  color: keyboardUIConfig.primaryColor,
+                  width: keyboardUIConfig.digitBorderWidth),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class AlignedGrid extends StatelessWidget {
+  final double runSpacing = 0;
+  final double spacing = 0;
+  final int listSize;
+  final columns = 3;
+  final List<Widget> children;
+  final Size keyboardSize;
+
+  const AlignedGrid(
+      {Key key, @required this.children, @required this.keyboardSize})
+      : listSize = children.length,
+        super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final primarySize = keyboardSize.width > keyboardSize.height
+        ? keyboardSize.height
+        : keyboardSize.width;
+    final itemSize = (primarySize - runSpacing * (columns - 1)) / columns;
+    return Wrap(
+      runSpacing: runSpacing,
+      spacing: spacing,
+      alignment: WrapAlignment.center,
+      children: children
+          .map((item) => Container(
+                width: MediaQuery.of(context).size.width / 3,
+                height: 50,
+                child: item,
+              ))
+          .toList(growable: false),
+    );
+  }
+}

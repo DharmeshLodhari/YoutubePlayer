@@ -1,12 +1,17 @@
-import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/models/user.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/location_service.dart';
+import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/passcodePopup.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -118,6 +123,70 @@ class _RequestPaymentState extends State<RequestPayment> {
     userBloc = Provider.of<UserBloc>(context);
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
 
+    // return WillPopScope(
+    //   onWillPop: () async {
+    //     _payee = null;
+    //     customerProfileBloc.customer = null;
+    //     return true;
+    //   },
+    //   child: Scaffold(
+    //     key: requestPaymentScaffold,
+    //     backgroundColor: lightBlue(),
+    //     resizeToAvoidBottomInset: true,
+    //     appBar: AppBar(
+    //         actions: <Widget>[
+    //           displayQRCodeButton(),
+    //         ],
+    //         leading: showBackArrow(),
+    //         title:
+    //             Center(child: Text(AppLocalization.of(context).requestPayment)),
+    //         backgroundColor: darkBlue()),
+    //     body: isLoading
+    //         ? Center(
+    //             child: CircularProgressIndicator(
+    //               strokeWidth: 2.5,
+    //               valueColor: AlwaysStoppedAnimation(Colors.white),
+    //               backgroundColor: lightBlue(),
+    //             ),
+    //           )
+    //         : SingleChildScrollView(
+    //             child: Container(
+    //               padding: EdgeInsets.all(40),
+    //               child: Center(
+    //                 child: Form(
+    //                   key: _formKey,
+    //                   child: Column(
+    //                     children: <Widget>[
+    //                       getDisplayCard(),
+    //                       SizedBox(height: 10),
+    //                       getRecipientField(),
+    //                       SizedBox(height: 10),
+    //                       displayAmountField(),
+    //                       SizedBox(height: 10),
+    //                       getCategoryField(),
+    //                       SizedBox(
+    //                         height: 10,
+    //                       ),
+    //                       getReferenceField(),
+    //                       SizedBox(height: 10),
+    //                       Text(
+    //                         errorMessage,
+    //                         style: TextStyle(
+    //                             color: Colors.red,
+    //                             fontWeight: FontWeight.bold,
+    //                             fontSize: 16),
+    //                       ),
+    //                       SizedBox(height: 10),
+    //                       getSubmitButton(),
+    //                     ],
+    //                   ),
+    //                 ),
+    //               ),
+    //             ),
+    //           ),
+    //   ),
+    // );
+    //
     return WillPopScope(
       onWillPop: () async {
         _payee = null;
@@ -126,62 +195,145 @@ class _RequestPaymentState extends State<RequestPayment> {
       },
       child: Scaffold(
         key: requestPaymentScaffold,
-        backgroundColor: lightBlue(),
+        backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
-        appBar: AppBar(
-            actions: <Widget>[
-              displayQRCodeButton(),
-            ],
-            leading: showBackArrow(),
-            title:
-                Center(child: Text(AppLocalization.of(context).requestPayment)),
-            backgroundColor: darkBlue()),
-        body: isLoading
-            ? Center(
-                child: CircularProgressIndicator(
-                  strokeWidth: 2.5,
-                  valueColor: AlwaysStoppedAnimation(Colors.white),
-                  backgroundColor: lightBlue(),
-                ),
-              )
-            : SingleChildScrollView(
-                child: Container(
-                  padding: EdgeInsets.all(40),
-                  child: Center(
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        children: <Widget>[
-                          getDisplayCard(),
-                          SizedBox(height: 10),
-                          getRecipientField(),
-                          SizedBox(height: 10),
-                          displayAmountField(),
-                          SizedBox(height: 10),
-                          getCategoryField(),
-                          SizedBox(
-                            height: 10,
+        appBar: appBar(),
+        body: scaffoldBody(),
+      ),
+    );
+  }
+
+  Widget appBar() {
+    return AppBar(
+      elevation: 0,
+      backgroundColor: Colors.white,
+      titleSpacing: 0,
+      automaticallyImplyLeading: false,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          _payee = null;
+          Navigator.pop(context);
+        },
+      ),
+      title: Text(
+        AppLocalization.of(context).requestPayment,
+        style: TextStyle(
+            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+      ),
+      actions: <Widget>[
+        scanQRCodeBtn(),
+        SizedBox(
+          width: 16,
+        ),
+      ],
+    );
+  }
+
+  Widget scanQRCodeBtn() {
+    return RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
+      icon: Icon(
+        SlydoAppIcon.qr_code,
+        size: 16,
+        color: blackFont,
+      ),
+      onTap: () {
+        Navigator.of(context)
+            .pushNamed('/scan-qr', arguments: {"isRequest": true});
+      },
+      backgroundColor: iconBtnGrey,
+      enableMargin: true,
+    );
+  }
+
+  Widget scaffoldBody() {
+    return isLoading
+        ? Center(
+            child: CircularLoadingIndicator(),
+          )
+        : SingleChildScrollView(
+            child: Container(
+              height: MediaQuery.of(context).size.height -
+                  (AppBar().preferredSize.height +
+                      MediaQuery.of(context).padding.top),
+              width: MediaQuery.of(context).size.width,
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              child: Column(
+                children: [
+                  Expanded(
+                    flex: 8,
+                    child: Card(
+                      elevation: 2,
+                      margin: EdgeInsets.zero,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      shadowColor: iconBtnGrey,
+                      child: Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: iconBtnGrey, width: 1)),
+                        child: Form(
+                          key: _formKey,
+                          child: Container(
+                            child: Column(
+                              children: <Widget>[
+                                getDisplayCard(),
+                                Expanded(
+                                  child: Container(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 20),
+                                    child: Column(
+                                      children: [
+                                        flexibleSpace(),
+                                        getRecipientField(),
+                                        flexibleSpace(),
+                                        displayAmountField(),
+                                        flexibleSpace(),
+                                        getCategoryDropDown(),
+                                        flexibleSpace(),
+                                        getReferenceField(),
+                                        flexibleSpace(),
+                                        Text(
+                                          errorMessage,
+                                          style: TextStyle(
+                                              color: mateRad,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16),
+                                        ),
+                                        flexibleSpace(),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                          getReferenceField(),
-                          SizedBox(height: 10),
-                          Text(
-                            errorMessage,
-                            style: TextStyle(
-                                color: Colors.red,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16),
-                          ),
-                          SizedBox(height: 10),
-                          getSubmitButton(),
-                        ],
+                        ),
                       ),
                     ),
                   ),
-                ),
+                  Expanded(
+                      flex: 3,
+                      child: Container(
+                        child: Column(
+                          children: [
+                            flexibleSpace(),
+                            getSubmitButton(),
+                            flexibleSpace(flex: 2),
+                          ],
+                        ),
+                      )),
+                ],
               ),
-      ),
-    );
-    //
+            ),
+          );
   }
 
   Widget showBackArrow() {
@@ -218,8 +370,8 @@ class _RequestPaymentState extends State<RequestPayment> {
     var qrCodeImage;
     if (_payee != null) {
       avatarImage = Container(
-        height: 50,
-        width: 50,
+        height: 48,
+        width: 48,
         child: ClipOval(
           child: CachedNetworkImage(
             imageUrl: _payee.avatar,
@@ -231,66 +383,127 @@ class _RequestPaymentState extends State<RequestPayment> {
       );
 
       qrCodeImage = CachedNetworkImage(
+        height: 48,
+        width: 48,
         imageUrl: _payee.qrCode,
         colorBlendMode: BlendMode.darken,
-        fit: BoxFit.fitWidth,
+        fit: BoxFit.fill,
         filterQuality: FilterQuality.high,
       );
     }
 
+    // return _payee == null
+    //     ? Container()
+    //     : Card(
+    //         semanticContainer: true,
+    //         child: ListTile(
+    //           dense: true,
+    //           title: Text(
+    //             _payee.fullName,
+    //             style: TextStyle(
+    //                 color: Colors.black,
+    //                 fontWeight: FontWeight.bold,
+    //                 fontSize: 15),
+    //           ),
+    //           subtitle: Text(_payee.userName),
+    //           leading: avatarImage,
+    //           trailing: qrCodeImage,
+    //           onTap: () {
+    //             Navigator.pushNamed(context, '/profile',
+    //                 arguments: {"searchedUser": _payee});
+    //           },
+    //         ),
+    //       );
+
     return _payee == null
         ? Container()
-        : Card(
-            semanticContainer: true,
-            child: ListTile(
-              dense: true,
-              title: Text(
-                _payee.fullName,
-                style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15),
+        : Column(
+            children: [
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(
+                    _payee.fullName,
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16),
+                  ),
+                  subtitle: Text(
+                    _payee.userName,
+                    style: TextStyle(fontSize: 14, color: darkGrey),
+                  ),
+                  leading: avatarImage,
+                  trailing: qrCodeImage,
+                  onTap: () {
+                    Navigator.pushNamed(context, '/profile',
+                        arguments: {"searchedUser": _payee});
+                  },
+                ),
               ),
-              subtitle: Text(_payee.userName),
-              leading: avatarImage,
-              trailing: qrCodeImage,
-              onTap: () {
-                Navigator.pushNamed(context, '/profile',
-                    arguments: {"searchedUser": _payee});
-              },
-            ),
+              Divider(
+                color: dividerColor,
+                height: 1,
+                thickness: 1,
+              ),
+            ],
           );
   }
 
   Widget getRecipientField() {
-    return TextFormField(
+    // return TextFormField(
+    //   controller: _recipientController,
+    //   enabled: isFromProfile,
+    //   focusNode: _recipientFocus,
+    //   textCapitalization: TextCapitalization.none,
+    //   cursorColor: darkBlue(),
+    //   validator: (value) {
+    //     if (!isFromProfile && value != _payee.userName) {
+    //       return AppLocalization.of(context).invalidRecipient;
+    //     }
+    //     return null;
+    //   },
+    //   autofocus: false,
+    //   obscureText: false,
+    //   decoration: InputDecoration(
+    //       prefixIcon: Icon(Icons.person),
+    //       fillColor: Colors.white,
+    //       filled: true,
+    //       hintText: AppLocalization.of(context).recipient,
+    //       labelStyle: TextStyle(
+    //         color: Colors.black,
+    //         fontSize: 16,
+    //       ),
+    //       border: OutlineInputBorder(
+    //           borderRadius: BorderRadius.all(Radius.circular(4)),
+    //           borderSide: BorderSide(
+    //               width: 1, color: Colors.white, style: BorderStyle.solid))),
+    //   onChanged: (val) {
+    //     if (mounted) {
+    //       setState(() {
+    //         if (!isFromProfile && _payee != null) {
+    //           recipient = _payee.userName;
+    //         } else {
+    //           recipient = val.toLowerCase();
+    //         }
+    //       });
+    //     }
+    //   },
+    // );
+
+    return CustomizedTextFormField(
+      labelText: AppLocalization.of(context).recipient,
       controller: _recipientController,
-      enabled: isFromProfile,
       focusNode: _recipientFocus,
-      textCapitalization: TextCapitalization.none,
-      cursorColor: darkBlue(),
+      enabled: isFromProfile,
       validator: (value) {
         if (!isFromProfile && value != _payee.userName) {
           return AppLocalization.of(context).invalidRecipient;
         }
         return null;
       },
-      autofocus: false,
-      obscureText: false,
-      decoration: InputDecoration(
-          prefixIcon: Icon(Icons.person),
-          fillColor: Colors.white,
-          filled: true,
-          hintText: AppLocalization.of(context).recipient,
-          labelStyle: TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-          ),
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
-      onChanged: (val) {
+      onChange: (val) {
         if (mounted) {
           setState(() {
             if (!isFromProfile && _payee != null) {
@@ -305,38 +518,85 @@ class _RequestPaymentState extends State<RequestPayment> {
   }
 
   Widget displayAmountField() {
-    return TextFormField(
-      cursorColor: darkBlue(),
-      autofocus: false,
-      obscureText: false,
-      keyboardType: TextInputType.number,
+    // return TextFormField(
+    //   cursorColor: darkBlue(),
+    //   autofocus: false,
+    //   obscureText: false,
+    //   keyboardType: TextInputType.number,
+    //   inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
+    //   decoration: InputDecoration(
+    //       fillColor: Colors.white,
+    //       filled: true,
+    //       prefixIcon: Container(
+    //         width: 20,
+    //         child: Center(
+    //           child: Text(
+    //             worldCurrencies[userBloc.user.currency],
+    //             textAlign: TextAlign.center,
+    //             style: TextStyle(
+    //                 fontSize: 22,
+    //                 fontFamily: "Roboto",
+    //                 fontWeight: FontWeight.bold,
+    //                 color: Colors.grey[600]),
+    //           ),
+    //         ),
+    //       ),
+    //       hintText: AppLocalization.of(context).enterAmount,
+    //       labelStyle: TextStyle(
+    //         color: Colors.black,
+    //         fontSize: 16,
+    //       ),
+    //       border: OutlineInputBorder(
+    //           borderRadius: BorderRadius.all(Radius.circular(4)),
+    //           borderSide: BorderSide(
+    //               width: 1, color: Colors.white, style: BorderStyle.solid))),
+    //   validator: (val) {
+    //     if (val.isNotEmpty) {
+    //       try {
+    //         int.parse(val);
+    //         return null;
+    //       } catch (e) {}
+    //     }
+    //     return AppLocalization.of(context).invalidAmount;
+    //   },
+    //   onTap: () async {
+    //     if (recipient != null) {
+    //       recipient = recipient.trim();
+    //       if (mounted) {
+    //         setState(() {
+    //           _recipientController.text = recipient;
+    //         });
+    //       }
+    //       var customerProfile = await _auth.fetchCustomerProfile(recipient);
+    //       if (mounted) {
+    //         setState(() {
+    //           _payee = customerProfile;
+    //           isValidPayee = _payee.userName != userBloc.user.userName;
+    //         });
+    //       }
+    //     }
+    //   },
+    //   onChanged: (val) {
+    //     if (mounted) {
+    //       setState(() {
+    //         amount = int.parse(val);
+    //       });
+    //     }
+    //   },
+    // );
+
+    return CustomizedTextFormField(
+      labelText: "Amount",
+      isAmount: true,
+      type: TextInputType.number,
       inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
-      decoration: InputDecoration(
-          fillColor: Colors.white,
-          filled: true,
-          prefixIcon: Container(
-            width: 20,
-            child: Center(
-              child: Text(
-                worldCurrencies[userBloc.user.currency],
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: 22,
-                    fontFamily: "Roboto",
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey[600]),
-              ),
-            ),
-          ),
-          hintText: AppLocalization.of(context).enterAmount,
-          labelStyle: TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-          ),
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
+      onChange: (val) {
+        if (mounted) {
+          setState(() {
+            amount = int.parse(val);
+          });
+        }
+      },
       validator: (val) {
         if (val.isNotEmpty) {
           try {
@@ -347,6 +607,8 @@ class _RequestPaymentState extends State<RequestPayment> {
         return AppLocalization.of(context).invalidAmount;
       },
       onTap: () async {
+        isValidPayee = false;
+        setState(() {});
         if (recipient != null) {
           recipient = recipient.trim();
           if (mounted) {
@@ -361,13 +623,6 @@ class _RequestPaymentState extends State<RequestPayment> {
               isValidPayee = _payee.userName != userBloc.user.userName;
             });
           }
-        }
-      },
-      onChanged: (val) {
-        if (mounted) {
-          setState(() {
-            amount = int.parse(val);
-          });
         }
       },
     );
@@ -424,26 +679,103 @@ class _RequestPaymentState extends State<RequestPayment> {
     );
   }
 
-  Widget getReferenceField() {
-    return TextFormField(
-      cursorColor: darkBlue(),
-      autofocus: false,
-      obscureText: false,
-      textCapitalization: TextCapitalization.sentences,
-      decoration: InputDecoration(
-          prefixIcon: Icon(Icons.note),
-          fillColor: Colors.white,
-          filled: true,
-          hintText: AppLocalization.of(context).reference,
-          labelStyle: TextStyle(
-            color: Colors.black,
-            fontSize: 16,
+  Widget getCategoryDropDown() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          AppLocalization.of(context).category,
+          style: TextStyle(color: darkGrey, fontSize: 14),
+        ),
+        SizedBox(
+          height: 6,
+        ),
+        Card(
+          elevation: 0,
+          color: Colors.white,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: BorderSide(color: greyBorderColor)),
+          margin: EdgeInsets.all(0),
+          borderOnForeground: true,
+          child: DropdownButton<String>(
+            icon: Padding(
+              padding: EdgeInsets.only(right: 8.0),
+              child: Icon(
+                Icons.keyboard_arrow_down,
+                color: darkGrey,
+                size: 20,
+              ),
+            ),
+            isExpanded: true,
+            underline: Divider(
+              color: Colors.transparent,
+            ),
+            hint: Padding(
+              padding: const EdgeInsets.only(left: 16.0),
+              child: Text(AppLocalization.of(context).category),
+            ),
+            value: selectedCategory,
+            onChanged: (String value) {
+              if (mounted) {
+                setState(() {
+                  selectedCategory = value;
+                });
+              }
+            },
+            items: paymentCategoriesTest.map((String category) {
+              return DropdownMenuItem<String>(
+                value: category,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16.0, 0, 0, 0),
+                  child: Text(
+                    category,
+                    style: TextStyle(
+                        color: blackFont,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600),
+                  ),
+                ),
+              );
+            }).toList(),
           ),
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
-      onChanged: (val) {
+        ),
+      ],
+    );
+  }
+
+  Widget getReferenceField() {
+    // return TextFormField(
+    //   cursorColor: darkBlue(),
+    //   autofocus: false,
+    //   obscureText: false,
+    //   textCapitalization: TextCapitalization.sentences,
+    //   decoration: InputDecoration(
+    //       prefixIcon: Icon(Icons.note),
+    //       fillColor: Colors.white,
+    //       filled: true,
+    //       hintText: AppLocalization.of(context).reference,
+    //       labelStyle: TextStyle(
+    //         color: Colors.black,
+    //         fontSize: 16,
+    //       ),
+    //       border: OutlineInputBorder(
+    //           borderRadius: BorderRadius.all(Radius.circular(4)),
+    //           borderSide: BorderSide(
+    //               width: 1, color: Colors.white, style: BorderStyle.solid))),
+    //   onChanged: (val) {
+    //     if (mounted) {
+    //       setState(() {
+    //         reference = val;
+    //       });
+    //     }
+    //   },
+    // );
+
+    return CustomizedTextFormField(
+      labelText: AppLocalization.of(context).reference,
+      textCapitalization: TextCapitalization.sentences,
+      onChange: (val) {
         if (mounted) {
           setState(() {
             reference = val;
@@ -454,144 +786,277 @@ class _RequestPaymentState extends State<RequestPayment> {
   }
 
   Widget getSubmitButton() {
-    return ButtonTheme(
-      minWidth: double.infinity,
-      child: MaterialButton(
-        elevation: 4.0,
-        onPressed: () async {
-          FocusScope.of(context).unfocus();
-
-          if (!isValidPayee) {
-            if (mounted) {
-              setState(() {
-                errorMessage = AppLocalization.of(context).invalidRecipient;
-                return;
-              });
-            }
-          }
-
-          if (recipient == _payee.userName) {
-            if (!isValidPayee) {
-              if (mounted) {
-                setState(() {
-                  errorMessage = AppLocalization.of(context).invalidRecipient;
-                  return;
-                });
-              }
-            }
-
-            if (isValidPayee &&
-                _formKey.currentState.validate() &&
-                validateDropdown()) {
-              if (userBloc.user.userName != recipient) {
-                var userLocation;
-                try {
-                  userLocation = await locationService.getLocation();
-
-                  var data = {
-                    "from_customer": userBloc.user.userName.trim(),
-                    "to_customer": recipient.trim(),
-                    "currency": userBloc.user.currency,
-                    "amount": amount.toString().trim(),
-                    "category": selectedCategory.trim(),
-                    "notes": reference.trim(),
-                    "description": reference.trim(),
-                    "latitude": userLocation.latitude,
-                    "longitude": userLocation.longitude,
-                  };
-
-                  PassCodePopup(
-                      context: context,
-                      isValidCallback: () {
-                        showDialog(
-                            context: context,
-                            builder: (context) => Center(
-                                    child: CircularProgressIndicator(
-                                  strokeWidth: 2.5,
-                                  valueColor:
-                                      AlwaysStoppedAnimation(Colors.white),
-                                  backgroundColor: lightBlue(),
-                                )));
-                        _auth.createPaymentRequests(data).then((value) {
-                          response = value;
-                          if (response.statusCode == 201) {
-                            //Pop Circular Progress Indicator
-                            Navigator.pop(context);
-                            //Pop request payment page
-                            Navigator.pop(context);
-                            Navigator.of(context).pushNamedAndRemoveUntil(
-                              "/dashboard",
-                              (Route<dynamic> route) => false,
-                              arguments: {"dashboardIndex": 1},
-                            );
-                          } else if (response.statusCode == 500) {
-                            Navigator.pop(context);
-                            if (mounted) {
-                              setState(() {
-                                errorMessage =
-                                    AppLocalization.of(context).serverError;
-                                Toast.show(errorMessage, context,
-                                    gravity: Toast.TOP,
-                                    backgroundColor: darkBlue(),
-                                    textColor: Colors.white);
-                              });
-                            }
-                          } else if (response.statusCode == 700) {
-                            Navigator.pop(context);
-                            Navigator.pushNamed(context, "/bvn-verification");
-                          } else if (response.statusCode == 800) {
-                            Navigator.pop(context);
-                            Navigator.pushNamed(context, "/add-document");
-                          } else {
-                            Navigator.pop(context);
-                            if (mounted) {
-                              setState(() {
-                                errorMessage = AppLocalization.of(context)
-                                    .somethingWentWrong;
-                                Toast.show(errorMessage, context,
-                                    gravity: Toast.TOP,
-                                    backgroundColor: darkBlue(),
-                                    textColor: Colors.white);
-                              });
-                            }
-                          }
-                        });
-                      },
-                      cancelCallBack: () {
-                        Navigator.pop(context);
-                        requestPaymentScaffold.currentState
-                            .showSnackBar(SnackBar(
-                          content:
-                              Text(AppLocalization.of(context).invalidPassword),
-                        ));
-                      });
-                } catch (e) {
-                  print(e);
-                  Toast.show(e, context,
-                      gravity: Toast.BOTTOM, backgroundColor: darkBlue());
-                }
-              } else {
-                var msg = AppLocalization.of(context).invalidRecipient;
-                Toast.show(msg, context,
-                    gravity: Toast.CENTER,
-                    backgroundColor: darkBlue(),
-                    textColor: Colors.white);
-              }
-            }
-          } else {
-            var msg = AppLocalization.of(context).invalidRecipient;
-            Toast.show(msg, context,
-                gravity: Toast.CENTER,
-                backgroundColor: darkBlue(),
-                textColor: Colors.white);
-          }
-        },
-        textColor: Colors.white,
-        color: darkBlue(),
-        height: 50,
-        child: Text(AppLocalization.of(context).requestPayment),
-      ),
+    // return ButtonTheme(
+    //   minWidth: double.infinity,
+    //   child: MaterialButton(
+    //     elevation: 4.0,
+    //     onPressed: () async {
+    //       FocusScope.of(context).unfocus();
+    //
+    //       if (!isValidPayee) {
+    //         if (mounted) {
+    //           setState(() {
+    //             errorMessage = AppLocalization.of(context).invalidRecipient;
+    //             return;
+    //           });
+    //         }
+    //       }
+    //
+    //       if (recipient == _payee.userName) {
+    //         if (!isValidPayee) {
+    //           if (mounted) {
+    //             setState(() {
+    //               errorMessage = AppLocalization.of(context).invalidRecipient;
+    //               return;
+    //             });
+    //           }
+    //         }
+    //
+    //         if (isValidPayee &&
+    //             _formKey.currentState.validate() &&
+    //             validateDropdown()) {
+    //           if (userBloc.user.userName != recipient) {
+    //             var userLocation;
+    //             try {
+    //               userLocation = await locationService.getLocation();
+    //
+    //               var data = {
+    //                 "from_customer": userBloc.user.userName.trim(),
+    //                 "to_customer": recipient.trim(),
+    //                 "currency": userBloc.user.currency,
+    //                 "amount": amount.toString().trim(),
+    //                 "category": selectedCategory.trim(),
+    //                 "notes": reference.trim(),
+    //                 "description": reference.trim(),
+    //                 "latitude": userLocation.latitude,
+    //                 "longitude": userLocation.longitude,
+    //               };
+    //
+    //               PassCodePopup(
+    //                   context: context,
+    //                   isValidCallback: () {
+    //                     showDialog(
+    //                         context: context,
+    //                         builder: (context) => Center(
+    //                                 child: CircularProgressIndicator(
+    //                               strokeWidth: 2.5,
+    //                               valueColor:
+    //                                   AlwaysStoppedAnimation(Colors.white),
+    //                               backgroundColor: lightBlue(),
+    //                             )));
+    //                     _auth.createPaymentRequests(data).then((value) {
+    //                       response = value;
+    //                       if (response.statusCode == 201) {
+    //                         //Pop Circular Progress Indicator
+    //                         Navigator.pop(context);
+    //                         //Pop request payment page
+    //                         Navigator.pop(context);
+    //                         Navigator.of(context).pushNamedAndRemoveUntil(
+    //                           "/dashboard",
+    //                           (Route<dynamic> route) => false,
+    //                           arguments: {"dashboardIndex": 1},
+    //                         );
+    //                       } else if (response.statusCode == 500) {
+    //                         Navigator.pop(context);
+    //                         if (mounted) {
+    //                           setState(() {
+    //                             errorMessage =
+    //                                 AppLocalization.of(context).serverError;
+    //                             Toast.show(errorMessage, context,
+    //                                 gravity: Toast.TOP,
+    //                                 backgroundColor: darkBlue(),
+    //                                 textColor: Colors.white);
+    //                           });
+    //                         }
+    //                       } else if (response.statusCode == 700) {
+    //                         Navigator.pop(context);
+    //                         Navigator.pushNamed(context, "/bvn-verification");
+    //                       } else if (response.statusCode == 800) {
+    //                         Navigator.pop(context);
+    //                         Navigator.pushNamed(context, "/add-document");
+    //                       } else {
+    //                         Navigator.pop(context);
+    //                         if (mounted) {
+    //                           setState(() {
+    //                             errorMessage = AppLocalization.of(context)
+    //                                 .somethingWentWrong;
+    //                             Toast.show(errorMessage, context,
+    //                                 gravity: Toast.TOP,
+    //                                 backgroundColor: darkBlue(),
+    //                                 textColor: Colors.white);
+    //                           });
+    //                         }
+    //                       }
+    //                     });
+    //                   },
+    //                   cancelCallBack: () {
+    //                     Navigator.pop(context);
+    //                     requestPaymentScaffold.currentState
+    //                         .showSnackBar(SnackBar(
+    //                       content:
+    //                           Text(AppLocalization.of(context).invalidPassword),
+    //                     ));
+    //                   });
+    //             } catch (e) {
+    //               print(e);
+    //               Toast.show(e, context,
+    //                   gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+    //             }
+    //           } else {
+    //             var msg = AppLocalization.of(context).invalidRecipient;
+    //             Toast.show(msg, context,
+    //                 gravity: Toast.CENTER,
+    //                 backgroundColor: darkBlue(),
+    //                 textColor: Colors.white);
+    //           }
+    //         }
+    //       } else {
+    //         var msg = AppLocalization.of(context).invalidRecipient;
+    //         Toast.show(msg, context,
+    //             gravity: Toast.CENTER,
+    //             backgroundColor: darkBlue(),
+    //             textColor: Colors.white);
+    //       }
+    //     },
+    //     textColor: Colors.white,
+    //     color: darkBlue(),
+    //     height: 50,
+    //     child: Text(AppLocalization.of(context).requestPayment),
+    //   ),
+    // );
+    //
+    return CurvedButton(
+      onPressed: onSubmit,
+      backgroundColor: navyBlue,
+      textColor: Colors.white,
+      text: AppLocalization.of(context).requestPayment,
     );
+  }
+
+  void onSubmit() async {
+    FocusScope.of(context).unfocus();
+
+    if (!isValidPayee) {
+      if (mounted) {
+        setState(() {
+          errorMessage = AppLocalization.of(context).invalidRecipient;
+          return;
+        });
+      }
+    }
+
+    if (recipient == _payee.userName) {
+      if (!isValidPayee) {
+        if (mounted) {
+          setState(() {
+            errorMessage = AppLocalization.of(context).invalidRecipient;
+            return;
+          });
+        }
+      }
+
+      if (isValidPayee &&
+          _formKey.currentState.validate() &&
+          validateDropdown()) {
+        if (userBloc.user.userName != recipient) {
+          var userLocation;
+          try {
+            userLocation = await locationService.getLocation();
+
+            var data = {
+              "from_customer": userBloc.user.userName.trim(),
+              "to_customer": recipient.trim(),
+              "currency": userBloc.user.currency,
+              "amount": amount.toString().trim(),
+              "category": selectedCategory.trim(),
+              "notes": reference.trim(),
+              "description": reference.trim(),
+              "latitude": userLocation.latitude,
+              "longitude": userLocation.longitude,
+            };
+
+            PassCodePopup(
+                context: context,
+                isValidCallback: () {
+                  showDialog(
+                      context: context,
+                      builder: (context) => Center(
+                              child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            valueColor: AlwaysStoppedAnimation(Colors.white),
+                            backgroundColor: lightBlue(),
+                          )));
+                  _auth.createPaymentRequests(data).then((value) {
+                    response = value;
+                    if (response.statusCode == 201) {
+                      //Pop Circular Progress Indicator
+                      Navigator.pop(context);
+                      //Pop request payment page
+                      Navigator.pop(context);
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                        "/dashboard",
+                        (Route<dynamic> route) => false,
+                        arguments: {"dashboardIndex": 1},
+                      );
+                    } else if (response.statusCode == 500) {
+                      Navigator.pop(context);
+                      if (mounted) {
+                        setState(() {
+                          errorMessage =
+                              AppLocalization.of(context).serverError;
+                          Toast.show(errorMessage, context,
+                              gravity: Toast.TOP,
+                              backgroundColor: darkBlue(),
+                              textColor: Colors.white);
+                        });
+                      }
+                    } else if (response.statusCode == 700) {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, "/bvn-verification");
+                    } else if (response.statusCode == 800) {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, "/add-document");
+                    } else {
+                      Navigator.pop(context);
+                      if (mounted) {
+                        setState(() {
+                          errorMessage =
+                              AppLocalization.of(context).somethingWentWrong;
+                          Toast.show(errorMessage, context,
+                              gravity: Toast.TOP,
+                              backgroundColor: darkBlue(),
+                              textColor: Colors.white);
+                        });
+                      }
+                    }
+                  });
+                },
+                cancelCallBack: () {
+                  Navigator.pop(context);
+                  requestPaymentScaffold.currentState.showSnackBar(SnackBar(
+                    content: Text(AppLocalization.of(context).invalidPassword),
+                  ));
+                });
+          } catch (e) {
+            print(e);
+            Toast.show(e, context,
+                gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+          }
+        } else {
+          var msg = AppLocalization.of(context).invalidRecipient;
+          Toast.show(msg, context,
+              gravity: Toast.CENTER,
+              backgroundColor: darkBlue(),
+              textColor: Colors.white);
+        }
+      }
+    } else {
+      var msg = AppLocalization.of(context).invalidRecipient;
+      Toast.show(msg, context,
+          gravity: Toast.CENTER,
+          backgroundColor: darkBlue(),
+          textColor: Colors.white);
+    }
   }
 
   bool validateDropdown() {

@@ -56,8 +56,9 @@ class PassCodePopup {
                     passwordDigits: 6,
                     isValidCallback: isValidCallback,
                     cancelCallback: cancelCallBack,
-                    keyboardUIConfig:
-                        KeyboardUIConfig(keyboardRowMargin: EdgeInsets.all(8)),
+                    keyboardUIConfig: KeyboardUIConfig(
+                      keyboardRowMargin: EdgeInsets.all(8),
+                    ),
                   ),
                 ),
               ],

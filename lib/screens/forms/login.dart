@@ -242,56 +242,70 @@ class _UserLoginState extends State<UserLogin> {
   }
 
   Widget rememberMeField() {
-    return Row(
-      children: <Widget>[
-        ClipRRect(
-          clipBehavior: Clip.antiAliasWithSaveLayer,
-          borderRadius: BorderRadius.all(Radius.circular(5)),
-          child: SizedBox(
-            width: Checkbox.width - 1.5,
-            height: Checkbox.width - 1.5,
-            child: Container(
-              decoration: new BoxDecoration(
-                border: Border.all(
-                  color: greyBorderColor,
-                  width: 1,
+    return GestureDetector(
+      child: Row(
+        children: <Widget>[
+          ClipRRect(
+            clipBehavior: Clip.antiAliasWithSaveLayer,
+            borderRadius: BorderRadius.all(Radius.circular(5)),
+            child: SizedBox(
+              width: Checkbox.width - 1.5,
+              height: Checkbox.width - 1.5,
+              child: Container(
+                decoration: new BoxDecoration(
+                  border: Border.all(
+                    color: greyBorderColor,
+                    width: 1,
+                  ),
+                  borderRadius: new BorderRadius.circular(5),
                 ),
-                borderRadius: new BorderRadius.circular(5),
-              ),
-              child: Theme(
-                data: ThemeData(
-                  unselectedWidgetColor: Colors.transparent,
-                ),
-                child: Checkbox(
-                  value: isChecked,
-                  onChanged: (value) {
-                    if (mounted) {
-                      if (value == true) {
-                        isChecked = true;
-                        isRemember = true;
-                      } else {
-                        isChecked = false;
-                        isRemember = false;
-                      }
-                      setState(() {});
-                    }
-                  },
-                  activeColor: navyBlue,
-                  checkColor: Colors.white,
-                  materialTapTargetSize: MaterialTapTargetSize.padded,
+                child: Theme(
+                  data: ThemeData(
+                    unselectedWidgetColor: Colors.transparent,
+                  ),
+                  child: Checkbox(
+                    value: isChecked,
+                    onChanged: (value) {
+                      // if (mounted) {
+                      //   if (value == true) {
+                      //     isChecked = true;
+                      //     isRemember = true;
+                      //   } else {
+                      //     isChecked = false;
+                      //     isRemember = false;
+                      //   }
+                      //   setState(() {});
+                      // }
+                    },
+                    activeColor: navyBlue,
+                    checkColor: Colors.white,
+                    materialTapTargetSize: MaterialTapTargetSize.padded,
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-        SizedBox(
-          width: 12,
-        ),
-        Text(
-          AppLocalization.of(context).rememberMe,
-          style: TextStyle(color: blackFont, fontSize: 14),
-        ),
-      ],
+          SizedBox(
+            width: 12,
+          ),
+          Text(
+            AppLocalization.of(context).rememberMe,
+            style: TextStyle(color: blackFont, fontSize: 14),
+          ),
+        ],
+      ),
+      onTap: () {
+        if (mounted) {
+          if (isChecked) {
+            isChecked = false;
+            isRemember = false;
+          } else {
+            isChecked = true;
+            isRemember = true;
+          }
+          setState(() {});
+        }
+      },
     );
   }
 

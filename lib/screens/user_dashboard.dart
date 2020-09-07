@@ -261,6 +261,7 @@ class _UserDashboardState extends State<UserDashboard> {
       backgroundColor: Colors.transparent,
       elevation: 0,
       titleSpacing: 0,
+      centerTitle: false,
       title: Text(
         "Account",
         style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
@@ -289,6 +290,10 @@ class _UserDashboardState extends State<UserDashboard> {
           ),
         ),
         onTap: () {
+          showDialog(
+              context: (context),
+              builder: (context) => Center(child: CircularLoadingIndicator()),
+              barrierDismissible: false);
           logoutUser(bankAccountBloc);
         },
       ),
@@ -1119,9 +1124,7 @@ class _UserDashboardState extends State<UserDashboard> {
           ),
         ],
         cancelButton: CupertinoActionSheetAction(
-          child: Text(AppLocalization
-              .of(context)
-              .cancel),
+          child: Text(AppLocalization.of(context).cancel),
           isDefaultAction: true,
           onPressed: () {
             Navigator.pop(context, 'Cancel');
@@ -1211,11 +1214,12 @@ class _UserDashboardState extends State<UserDashboard> {
     );
   }
 
-  Widget bottomSheetItemWithCheck({Function onTap,
-    IconData icon,
-    String title,
-    bool isLast = false,
-    bool isChecked}) {
+  Widget bottomSheetItemWithCheck(
+      {Function onTap,
+      IconData icon,
+      String title,
+      bool isLast = false,
+      bool isChecked}) {
     return GestureDetector(
       child: Padding(
         padding: EdgeInsets.only(bottom: isLast ? 0 : 10),
@@ -1241,10 +1245,10 @@ class _UserDashboardState extends State<UserDashboard> {
             flexibleSpace(),
             isChecked
                 ? Icon(
-              SlydoAppIcon.checked,
-              color: navyBlue,
-              size: 14,
-            )
+                    SlydoAppIcon.checked,
+                    color: navyBlue,
+                    size: 14,
+                  )
                 : Container()
           ],
         ),

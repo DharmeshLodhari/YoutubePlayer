@@ -4,6 +4,7 @@ import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
@@ -222,19 +223,28 @@ class _HomeState extends State<Home> {
             color: dividerColor,
             height: 1,
           ),
-          Container(
-              padding: EdgeInsets.symmetric(vertical: 32, horizontal: 32),
-              child: CachedNetworkImage(
+          GestureDetector(
+            child: Container(
+                padding: EdgeInsets.symmetric(vertical: 32, horizontal: 32),
+                child: CachedNetworkImage(
 //                height: MediaQuery.of(context).size.width / 1.5,
-                width: MediaQuery.of(context).size.width / 1.7,
-                imageUrl: userBloc.user.qrCode,
-                colorBlendMode: BlendMode.darken,
-                fit: BoxFit.fill,
-                filterQuality: FilterQuality.high,
-                placeholder: (context, url) => Center(
-                  child: CircularLoadingIndicator(),
-                ),
-              )),
+                  width: MediaQuery.of(context).size.width / 1.7,
+                  imageUrl: userBloc.user.qrCode,
+                  colorBlendMode: BlendMode.darken,
+                  fit: BoxFit.fill,
+                  filterQuality: FilterQuality.high,
+                  placeholder: (context, url) => Center(
+                    child: CircularLoadingIndicator(),
+                  ),
+                )),
+            onTap: () {
+              BottomSheetPassCode(
+                  context: context,
+                  isValidCallback: () {
+                    debugPrint("i m valid");
+                  });
+            },
+          ),
         ],
       ),
     );
