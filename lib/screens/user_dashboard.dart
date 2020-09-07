@@ -259,6 +259,7 @@ class _UserDashboardState extends State<UserDashboard> {
   Widget appBar() {
     return AppBar(
       backgroundColor: Colors.transparent,
+      automaticallyImplyLeading: false,
       elevation: 0,
       titleSpacing: 0,
       centerTitle: false,

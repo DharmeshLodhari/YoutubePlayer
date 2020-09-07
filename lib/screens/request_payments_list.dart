@@ -196,6 +196,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       elevation: 0,
       titleSpacing: 16,
       backgroundColor: Colors.white,
+      automaticallyImplyLeading: false,
       title: Text(
         "Payment request",
         style: TextStyle(

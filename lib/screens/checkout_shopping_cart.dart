@@ -124,6 +124,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
       elevation: 0,
       titleSpacing: 16,
       backgroundColor: Colors.white,
+      automaticallyImplyLeading: false,
       title: Text(
         AppLocalization.of(context).basket,
         style: TextStyle(

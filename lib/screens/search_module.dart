@@ -451,6 +451,7 @@ class _SearchModuleState extends State<SearchModule> {
       elevation: 0,
       titleSpacing: 16,
       backgroundColor: Colors.white,
+      automaticallyImplyLeading: false,
       title: Text(
         "Search",
         style: TextStyle(
@@ -836,9 +837,7 @@ class _SearchModuleState extends State<SearchModule> {
         SizedBox(
           height: 2,
         ),
-        product.price
-            .toString()
-            .length > 6
+        product.price.toString().length > 6
             ? getTrailingProduct(product)
             : Container(),
         getSellerNameProduct(product)
@@ -889,7 +888,7 @@ class _SearchModuleState extends State<SearchModule> {
           elevation: 1,
           shadowColor: dividerColor,
           shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           margin: EdgeInsets.zero,
           child: Column(
             children: <Widget>[
@@ -907,9 +906,7 @@ class _SearchModuleState extends State<SearchModule> {
                         fontWeight: FontWeight.w600),
                   ),
                   subtitle: getSubtitleService(service),
-                  trailing: service.price
-                      .toString()
-                      .length > 6
+                  trailing: service.price.toString().length > 6
                       ? null
                       : getTrailingService(service),
                   onTap: () {
@@ -950,8 +947,7 @@ class _SearchModuleState extends State<SearchModule> {
             colorBlendMode: BlendMode.darken,
             fit: BoxFit.fill,
             filterQuality: FilterQuality.high,
-            placeholder: (context, url) =>
-            imageUrl == ""
+            placeholder: (context, url) => imageUrl == ""
                 ? Icon(Icons.person)
                 : CircularLoadingIndicator()),
       ),
@@ -973,9 +969,7 @@ class _SearchModuleState extends State<SearchModule> {
         SizedBox(
           height: 2,
         ),
-        service.price
-            .toString()
-            .length > 6
+        service.price.toString().length > 6
             ? getTrailingService(service)
             : Container(),
         getProviderNameService(service)
@@ -1121,16 +1115,14 @@ class _SearchModuleState extends State<SearchModule> {
         icon: SlydoAppIcon.send,
         onTap: () async {
           customerProfileBloc.customer =
-          await _auth.fetchCustomerProfile(user.userName);
+              await _auth.fetchCustomerProfile(user.userName);
           Navigator.of(context).pushNamed('/send-payment',
               arguments: <String, bool>{
                 'isFromProfile': false,
                 'isRequest': false
               });
         },
-        title: AppLocalization
-            .of(context)
-            .send,
+        title: AppLocalization.of(context).send,
         backgroundColor: naturalGreen,
         slideController: slidableController,
       ),
@@ -1143,16 +1135,14 @@ class _SearchModuleState extends State<SearchModule> {
         icon: SlydoAppIcon.receive,
         onTap: () async {
           customerProfileBloc.customer =
-          await _auth.fetchCustomerProfile(user.userName);
+              await _auth.fetchCustomerProfile(user.userName);
           Navigator.of(context).pushNamed('/request-payment',
               arguments: <String, bool>{
                 'isFromProfile': false,
                 'isRequest': true
               });
         },
-        title: AppLocalization
-            .of(context)
-            .request,
+        title: AppLocalization.of(context).request,
         backgroundColor: naturalGreen,
         slideController: slidableController,
       ),
@@ -1192,16 +1182,14 @@ class _SearchModuleState extends State<SearchModule> {
         icon: SlydoAppIcon.cart,
         onTap: () async {
           customerProfileBloc.customer =
-          await _auth.fetchCustomerProfile(product.seller);
+              await _auth.fetchCustomerProfile(product.seller);
           Navigator.of(context).pushNamed('/send-payment', arguments: {
             'isFromProfile': false,
             'isRequest': false,
             'product': product
           });
         },
-        title: AppLocalization
-            .of(context)
-            .buy,
+        title: AppLocalization.of(context).buy,
         backgroundColor: naturalGreen,
         slideController: slidableController1,
       ),
@@ -1249,8 +1237,8 @@ class _SearchModuleState extends State<SearchModule> {
     ];
   }
 
-  Widget _getSlidableWithLists2(BuildContext context, Widget searchCard,
-      Service service) {
+  Widget _getSlidableWithLists2(
+      BuildContext context, Widget searchCard, Service service) {
     return Slidable(
       controller: slidableController2,
       direction: Axis.horizontal,
@@ -1265,15 +1253,13 @@ class _SearchModuleState extends State<SearchModule> {
   List<Widget> listSecondaryActions2(Service service) {
     return [
       SlideActionButton(
-          title: AppLocalization
-              .of(context)
-              .buy,
+          title: AppLocalization.of(context).buy,
           backgroundColor: naturalGreen,
           slideController: slidableController2,
           icon: SlydoAppIcon.cart,
           onTap: () async {
             customerProfileBloc.customer =
-            await _auth.fetchCustomerProfile(service.provider);
+                await _auth.fetchCustomerProfile(service.provider);
             Navigator.of(context).pushNamed('/send-payment', arguments: {
               'isFromProfile': false,
               'isRequest': false,
@@ -1286,9 +1272,7 @@ class _SearchModuleState extends State<SearchModule> {
   List<Widget> listActionSlideActions2(Service service) {
     return [
       SlideActionButton(
-        title: AppLocalization
-            .of(context)
-            .message,
+        title: AppLocalization.of(context).message,
         backgroundColor: navyBlue,
         slideController: slidableController2,
         icon: SlydoAppIcon.text_message,
