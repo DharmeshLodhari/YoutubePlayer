@@ -21,8 +21,8 @@ class BottomSheetPassCode {
       this.cancelCallBack}) {
     userBloc = Provider.of<UserBloc>(context, listen: false);
 
-    showBottomSheet(
-        elevation: 5,
+    showModalBottomSheet(
+        elevation: 2,
         backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
@@ -33,7 +33,7 @@ class BottomSheetPassCode {
         clipBehavior: Clip.hardEdge,
         context: context,
         builder: (context) => Container(
-              height: MediaQuery.of(context).size.height / 2,
+              height: 375,
               child: CustomizedPassCodeScreen(
                 title: Text(
                   AppLocalization.of(context).enterPassCode,
@@ -45,21 +45,27 @@ class BottomSheetPassCode {
                 ),
                 passwordEnteredCallback: _onPassCodeEntered,
                 cancelButton: Container(
-                  padding: EdgeInsets.all(0),
+                  padding: EdgeInsets.only(
+                      right: MediaQuery.of(context).size.width / 6 - 34,
+                      bottom: 25),
                   child: Text(
-                    AppLocalization.of(context).delete,
+                    AppLocalization.of(context).cancel,
                     style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 10,
+                      color: HexColor("#8D92A3"),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
                 deleteButton: Container(
+                    padding: EdgeInsets.only(
+                        right: (MediaQuery.of(context).size.width / 6) - 24,
+                        bottom: 25),
                     child: Icon(
-                  Icons.backspace,
-                  color: HexColor("#8D92A3"),
-                  size: 18,
-                )),
+                      Icons.backspace,
+                      color: HexColor("#8D92A3"),
+                      size: 18,
+                    )),
                 shouldTriggerVerification: _verificationNotifier.stream,
                 passwordDigits: 6,
                 isValidCallback: isValidCallback,

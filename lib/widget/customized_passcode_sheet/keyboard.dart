@@ -54,15 +54,13 @@ class Keyboard extends StatelessWidget {
       keyboardItems = digits;
     }
     final screenSize = MediaQuery.of(context).size;
-    final keyboardHeight = screenSize.height / 3;
+    final keyboardHeight = 225.0;
     final keyboardWidth = screenSize.width;
-    final keyboardSize = this.keyboardUIConfig.keyboardSize != null
-        ? this.keyboardUIConfig.keyboardSize
-        : Size(keyboardWidth, keyboardHeight);
+    final keyboardSize = Size(keyboardWidth, keyboardHeight);
     return Container(
       width: keyboardSize.width,
       height: keyboardSize.height,
-      margin: EdgeInsets.only(top: 1,bottom: 1),
+      margin: EdgeInsets.only(top: 1, bottom: 1),
       child: AlignedGrid(
         keyboardSize: keyboardSize,
         children: List.generate(10, (index) {

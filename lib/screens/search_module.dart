@@ -452,6 +452,7 @@ class _SearchModuleState extends State<SearchModule> {
       titleSpacing: 16,
       backgroundColor: Colors.white,
       automaticallyImplyLeading: false,
+      centerTitle: false,
       title: Text(
         "Search",
         style: TextStyle(

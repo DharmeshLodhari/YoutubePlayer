@@ -10,6 +10,7 @@ import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:Slydo/widget/passcodePopup.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -369,9 +370,17 @@ class _UserDashboardState extends State<UserDashboard> {
               size: 18,
             ),
             onPressed: () {
-              getAccountBalance();
-              isBalanceHidden = false;
-              setState(() {});
+              BottomSheetPassCode(
+                context: context,
+                isValidCallback: () {
+                  getAccountBalance();
+                  isBalanceHidden = false;
+                  setState(() {});
+                },
+                cancelCallBack: () {
+                  Navigator.pop(context);
+                },
+              );
             },
           )
         : IconButton(
@@ -437,7 +446,7 @@ class _UserDashboardState extends State<UserDashboard> {
           icon: SlydoAppIcon.transactions,
           title: "Transaction",
           onTap: () {
-            PassCodePopup(
+            BottomSheetPassCode(
                 context: context,
                 isValidCallback: () {
                   Navigator.pushNamed(context, "/transactions");
@@ -911,13 +920,15 @@ class _UserDashboardState extends State<UserDashboard> {
                     title: "Payout list",
                     icon: SlydoAppIcon.payout_list,
                     onTap: () {
-                      PassCodePopup(
+                      BottomSheetPassCode(
                           context: context,
                           isValidCallback: () {
                             Navigator.pop(context);
                             Navigator.pushNamed(context, "/payout-list");
                           },
-                          cancelCallBack: () {});
+                          cancelCallBack: () {
+                            Navigator.pop(context);
+                          });
                     },
                   ),
                   bottomSheetItem(
@@ -925,13 +936,15 @@ class _UserDashboardState extends State<UserDashboard> {
                     icon: SlydoAppIcon.payout,
                     isLast: true,
                     onTap: () {
-                      PassCodePopup(
+                      BottomSheetPassCode(
                           context: context,
                           isValidCallback: () {
                             Navigator.pop(context);
                             Navigator.pushNamed(context, "/payout");
                           },
-                          cancelCallBack: () {});
+                          cancelCallBack: () {
+                            Navigator.pop(context);
+                          });
                     },
                   ),
                 ],
@@ -1186,29 +1199,32 @@ class _UserDashboardState extends State<UserDashboard> {
 
   Widget bottomSheetItem(
       {Function onTap, IconData icon, String title, bool isLast = false}) {
-    return GestureDetector(
-      child: Padding(
-        padding: EdgeInsets.only(bottom: isLast ? 0 : 10),
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            RoundedBackgroundIcon(
-              icon: Icon(
-                icon,
-                size: 14,
+    return InkWell(
+      child: Container(
+        width: double.infinity,
+        child: Padding(
+          padding: EdgeInsets.only(bottom: isLast ? 0 : 10),
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              RoundedBackgroundIcon(
+                icon: Icon(
+                  icon,
+                  size: 14,
+                ),
+                backgroundColor: lightGrey,
+                width: 32,
+                height: 32,
               ),
-              backgroundColor: lightGrey,
-              width: 32,
-              height: 32,
-            ),
-            SizedBox(
-              width: 16,
-            ),
-            Text(
-              title,
-              style: TextStyle(fontSize: 16, color: blackFont),
-            )
-          ],
+              SizedBox(
+                width: 16,
+              ),
+              Text(
+                title,
+                style: TextStyle(fontSize: 16, color: blackFont),
+              )
+            ],
+          ),
         ),
       ),
       onTap: onTap,

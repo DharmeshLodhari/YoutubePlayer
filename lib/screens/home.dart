@@ -113,6 +113,7 @@ class _HomeState extends State<Home> {
       automaticallyImplyLeading: false,
       elevation: 0,
       titleSpacing: 0,
+      centerTitle: false,
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -243,6 +244,9 @@ class _HomeState extends State<Home> {
                   context: context,
                   isValidCallback: () {
                     debugPrint("i m valid");
+                  },
+                  cancelCallBack: () {
+                    debugPrint("i m cancelled");
                   });
             },
           ),

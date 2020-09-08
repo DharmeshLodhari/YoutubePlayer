@@ -128,10 +128,11 @@ class _CustomizedPassCodeScreenState extends State<CustomizedPassCodeScreen>
                   ),
                   Expanded(
                     child: Container(
+                      height: 225,
                       color: HexColor("#F7F8FA"),
                       child: _buildKeyboard(),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -241,6 +242,7 @@ class _CustomizedPassCodeScreenState extends State<CustomizedPassCodeScreen>
             enteredPasscode.substring(0, enteredPasscode.length - 1);
       });
     } else {
+      // Navigator.pop(context);
       if (widget.cancelCallback != null) {
         widget.cancelCallback();
       }

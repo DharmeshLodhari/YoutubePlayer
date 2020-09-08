@@ -9,8 +9,8 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
-import 'package:Slydo/widget/passcodePopup.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -975,17 +975,13 @@ class _RequestPaymentState extends State<RequestPayment> {
               "longitude": userLocation.longitude,
             };
 
-            PassCodePopup(
+            BottomSheetPassCode(
                 context: context,
                 isValidCallback: () {
                   showDialog(
                       context: context,
-                      builder: (context) => Center(
-                              child: CircularProgressIndicator(
-                            strokeWidth: 2.5,
-                            valueColor: AlwaysStoppedAnimation(Colors.white),
-                            backgroundColor: lightBlue(),
-                          )));
+                      builder: (context) =>
+                          Center(child: CircularLoadingIndicator()));
                   _auth.createPaymentRequests(data).then((value) {
                     response = value;
                     if (response.statusCode == 201) {
