@@ -1144,7 +1144,7 @@ class _SearchModuleState extends State<SearchModule> {
               });
         },
         title: AppLocalization.of(context).request,
-        backgroundColor: naturalGreen,
+        backgroundColor: navyBlue,
         slideController: slidableController,
       ),
       // IconSlideAction(

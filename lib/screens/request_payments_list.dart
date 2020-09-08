@@ -6,10 +6,10 @@ import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/noItemInList.dart';
-import 'package:Slydo/widget/passcodePopup.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:connectivity/connectivity.dart';
@@ -564,7 +564,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       type: AlertType.warning,
     );
     if (result) {
-      PassCodePopup(
+      BottomSheetPassCode(
           context: context,
           isValidCallback: () async {
             var response = await _auth.acceptPaymentRequests(paymentRequest);
@@ -592,7 +592,9 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
               _showSnackBar(context, AppLocalization.of(context).error);
             }
           },
-          cancelCallBack: () {});
+          cancelCallBack: () {
+            Navigator.pop(context);
+          });
     }
   }
 

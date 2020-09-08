@@ -45,8 +45,8 @@ class SlideActionButton extends StatelessWidget {
           ),
         ),
         onTap: () {
-          onTap();
           slideController.activeState.close();
+          onTap();
         },
       ),
     );

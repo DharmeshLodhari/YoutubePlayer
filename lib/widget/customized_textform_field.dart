@@ -140,6 +140,13 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
                 width: 1.0,
               ),
             ),
+            disabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: greyBorderColor,
+                width: 1.0,
+              ),
+            ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
               borderSide: BorderSide(

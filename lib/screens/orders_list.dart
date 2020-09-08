@@ -1,9 +1,13 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/store.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -20,10 +24,10 @@ class OrdersList extends StatefulWidget {
 }
 
 class _OrdersListState extends State<OrdersList> {
-  final GlobalKey<ScaffoldState> _scaffoldPaymentListKey =
+  final GlobalKey<ScaffoldState> _scaffoldOrderListKey =
       new GlobalKey<ScaffoldState>();
   final _auth = AuthService();
-  SlidableController slidableController;
+  SlidableController _slideController;
   int count = 0;
   String next = "";
   String previous = "";
@@ -40,18 +44,23 @@ class _OrdersListState extends State<OrdersList> {
   // variables for to getting filter orderList
   String filterValue = "";
 
+  GlobalKey _key = LabeledGlobalKey("orderListPopUpMenu");
+  CustomizedPopUpMenu menu;
+  int selectedMenuItemIndex = 0;
+  bool isPopMenuOpen = false;
+
   @protected
   void initState() {
     this.getList();
     super.initState();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent &&
+              _scrollController.position.maxScrollExtent &&
           _scrollController.position.pixels != 0) {
         getList();
       }
     });
-    slidableController = SlidableController(
+    _slideController = SlidableController(
       onSlideAnimationChanged: handleSlideAnimationChanged,
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
     );
@@ -80,34 +89,146 @@ class _OrdersListState extends State<OrdersList> {
     });
   }
 
+  void menuItemSelectionChange(String value, int index) {
+    selectedMenuItemIndex = index;
+    debugPrint("selectedMenuItemIndex $selectedMenuItemIndex");
+    filterValue = value;
+    setState(() {});
+    _onRefresh();
+  }
+
+  void menuStateChange(bool isOpen) {
+    isPopMenuOpen = isOpen;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+
+    menu = CustomizedPopUpMenu(
+      buttonKey: _key,
+      context: context,
+      children: [
+        CustomizedPopUpMenuItem(title: "New order", value: "new order"),
+        CustomizedPopUpMenuItem(
+            title: "Awaiting payment", value: "awaiting payment"),
+        CustomizedPopUpMenuItem(title: "Canceled", value: "canceled"),
+        CustomizedPopUpMenuItem(title: "Completed", value: "completed"),
+        CustomizedPopUpMenuItem(title: "On hold", value: "on hold"),
+        CustomizedPopUpMenuItem(title: "Pending", value: "pending"),
+        CustomizedPopUpMenuItem(title: "Processing", value: "processing"),
+      ],
+      selectedIndex: selectedMenuItemIndex,
+      right: 16,
+    );
+    menu.onChange = menuItemSelectionChange;
+    menu.menuState = menuStateChange;
+
+    // return WillPopScope(
+    //     onWillPop: () async {
+    //       return true;
+    //     },
+    //     child: Scaffold(
+    //       key: _scaffoldPaymentListKey,
+    //       backgroundColor: lightBlue(),
+    //       appBar: AppBar(
+    //         automaticallyImplyLeading: true,
+    //         backgroundColor: darkBlue(),
+    //         title: Text(AppLocalization.of(context).orders),
+    //         actions: <Widget>[
+    //           _threeItemPopup(),
+    //         ],
+    //       ),
+    //       body: SmartRefresher(
+    //           enablePullDown: true,
+    //           header: WaterDropHeader(
+    //             complete: Container(),
+    //             waterDropColor: darkBlue(),
+    //           ),
+    //           controller: _refreshController,
+    //           onRefresh: _onRefresh,
+    //           child: _buildOrderList()),
+    //     ));
     return WillPopScope(
         onWillPop: () async {
           return true;
         },
         child: Scaffold(
-          key: _scaffoldPaymentListKey,
-          backgroundColor: lightBlue(),
-          appBar: AppBar(
-            automaticallyImplyLeading: true,
-            backgroundColor: darkBlue(),
-            title: Text(AppLocalization.of(context).orders),
-            actions: <Widget>[
-              _threeItemPopup(),
-            ],
-          ),
+          key: _scaffoldOrderListKey,
+          backgroundColor: Colors.white,
+          appBar: appBar(),
           body: SmartRefresher(
               enablePullDown: true,
               header: WaterDropHeader(
                 complete: Container(),
-                waterDropColor: darkBlue(),
+                waterDropColor: navyBlue,
               ),
               controller: _refreshController,
               onRefresh: _onRefresh,
               child: _buildOrderList()),
         ));
+  }
+
+  Widget appBar() {
+    return AppBar(
+      elevation: 0,
+      backgroundColor: Colors.white,
+      automaticallyImplyLeading: false,
+      titleSpacing: 0,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      centerTitle: false,
+      title: Text(
+        AppLocalization.of(context).orders,
+        style: TextStyle(
+            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+      ),
+      actions: <Widget>[
+        popUpMenuButton(),
+        SizedBox(
+          width: 16,
+        ),
+      ],
+    );
+  }
+
+  Widget popUpMenuButton() {
+    return SizedBox(
+      key: _key,
+      height: 34,
+      width: 34,
+      child: Card(
+        color: isPopMenuOpen ? navyBlue : iconBtnGrey,
+        elevation: 0,
+        margin: EdgeInsets.symmetric(vertical: 10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: IconButton(
+          icon: Icon(
+            Icons.more_vert,
+            color: isPopMenuOpen ? Colors.white : Colors.black,
+            size: 20,
+          ),
+          onPressed: () {
+            if (menu.isMenuOpen) {
+              menu.closeMenu();
+            } else {
+              menu.openMenu();
+            }
+          },
+        ),
+      ),
+    );
   }
 
   Widget _threeItemPopup() => PopupMenuButton(
@@ -254,13 +375,7 @@ class _OrdersListState extends State<OrdersList> {
       child: new Center(
         child: new Opacity(
             opacity: isLoading ? 1.0 : 00,
-            child: isLoading
-                ? CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    valueColor: AlwaysStoppedAnimation(Colors.white),
-                    backgroundColor: lightBlue(),
-                  )
-                : Container()),
+            child: isLoading ? CircularLoadingIndicator() : Container()),
       ),
     );
   }
@@ -292,7 +407,7 @@ class _OrdersListState extends State<OrdersList> {
           });
         }
       } else if (next == null && orderList.length > 6) {
-        _scaffoldPaymentListKey.currentState.showSnackBar(SnackBar(
+        _scaffoldOrderListKey.currentState.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
@@ -334,36 +449,55 @@ class _OrdersListState extends State<OrdersList> {
   void handleSlideIsOpenChanged(bool isOpen) {}
 
   List<Widget> listSecondaryActions(Order order, int index) {
-    return [];
+    return [
+      SlideActionButton(
+          backgroundColor: naturalGreen,
+          icon: SlydoAppIcon.text_message,
+          onTap: () {
+            var recipient = userBloc.user.userName == order.merchant
+                ? order.customer
+                : order.merchant;
+
+            Navigator.of(context).pushNamed('/compose_message', arguments: {
+              'recipient': recipient,
+              'subject': AppLocalization.of(context).orderDetail +
+                  " : " +
+                  AppLocalization.of(context).ref +
+                  " #${order.id}",
+            });
+          },
+          title: AppLocalization.of(context).message,
+          slideController: _slideController),
+    ];
   }
 
   List<Widget> listActionSlideActions(Order order, int index) {
     return [
-      IconSlideAction(
-        caption: AppLocalization.of(context).message,
-        color: Colors.green,
-        icon: Icons.message,
-        onTap: () {
-          var recipient = userBloc.user.userName == order.merchant
-              ? order.customer
-              : order.merchant;
-
-          Navigator.of(context).pushNamed('/compose_message', arguments: {
-            'recipient': recipient,
-            'subject': AppLocalization.of(context).orderDetail +
-                " : " +
-                AppLocalization.of(context).ref +
-                " #${order.id}",
-          });
-        },
-      ),
+      // IconSlideAction(
+      //   caption: AppLocalization.of(context).message,
+      //   color: Colors.green,
+      //   icon: Icons.message,
+      //   onTap: () {
+      //     var recipient = userBloc.user.userName == order.merchant
+      //         ? order.customer
+      //         : order.merchant;
+      //
+      //     Navigator.of(context).pushNamed('/compose_message', arguments: {
+      //       'recipient': recipient,
+      //       'subject': AppLocalization.of(context).orderDetail +
+      //           " : " +
+      //           AppLocalization.of(context).ref +
+      //           " #${order.id}",
+      //     });
+      //   },
+      // ),
     ];
   }
 
   Widget _getSlidableWithLists(BuildContext context, Order order, int index) {
     return Slidable(
       key: Key(order.customer),
-      controller: slidableController,
+      controller: _slideController,
       direction: Axis.horizontal,
       actionPane: SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
@@ -393,7 +527,7 @@ class VerticalListItem extends StatelessWidget {
             arguments: {"order": order});
       },
       child: Container(
-        color: lightBlue(),
+        color: Colors.white,
         child: OrderTile(order: order),
       ),
     );

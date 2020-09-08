@@ -2,8 +2,14 @@ import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/store.dart';
-import 'package:Slydo/screens/tiles/shopping_cart_tile.dart';
+import 'package:Slydo/screens/tiles/order_detail_item_tile.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_popup_menu.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -30,7 +36,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   BasketBloc basketBloc;
   UserBloc userBloc;
 
-  SlidableController slidableController;
+  SlidableController _slideController;
 
   String note = "";
 
@@ -41,11 +47,16 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   var statusOfOrder = "";
 
+  GlobalKey _key = LabeledGlobalKey("orderDetailPagePopUpMenu");
+  CustomizedPopUpMenu menu;
+  int selectedMenuItemIndex = 0;
+  bool isPopMenuOpen = false;
+
   @override
   void initState() {
     order = arguments['order'];
     statusOfOrder = order.status.toLowerCase();
-    slidableController = SlidableController(
+    _slideController = SlidableController(
       onSlideAnimationChanged: handleSlideAnimationChanged,
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
     );
@@ -64,47 +75,191 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     });
   }
 
+  void menuItemSelectionChange(String value, int index) {
+    if (userBloc.user.userName == order.merchant) {
+      selectedMenuItemIndex = index;
+      updateStatus(value);
+      statusOfOrder = value;
+      debugPrint("selectedMenuItemIndex $selectedMenuItemIndex");
+      setState(() {});
+    }
+  }
+
+  void menuStateChange(bool isOpen) {
+    isPopMenuOpen = isOpen;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     basketBloc = Provider.of<BasketBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
+
+    menu = CustomizedPopUpMenu(
+      buttonKey: _key,
+      context: context,
+      children: [
+        CustomizedPopUpMenuItem(title: "New order", value: "new order"),
+        CustomizedPopUpMenuItem(
+            title: "Awaiting payment", value: "awaiting payment"),
+        CustomizedPopUpMenuItem(title: "Canceled", value: "canceled"),
+        CustomizedPopUpMenuItem(title: "Completed", value: "completed"),
+        CustomizedPopUpMenuItem(title: "On hold", value: "on hold"),
+        CustomizedPopUpMenuItem(title: "Pending", value: "pending"),
+        CustomizedPopUpMenuItem(title: "Processing", value: "processing"),
+      ],
+      selectedIndex: selectedMenuItemIndex,
+      right: 16,
+    );
+    menu.onChange = menuItemSelectionChange;
+    menu.menuState = menuStateChange;
+
+    // return WillPopScope(
+    //   onWillPop: () async {
+    //     return true;
+    //   },
+    //   child: Scaffold(
+    //       key: scaffoldKey,
+    //       backgroundColor: lightBlue(),
+    //       appBar: AppBar(
+    //         automaticallyImplyLeading: true,
+    //         backgroundColor: darkBlue(),
+    //         title: Text(AppLocalization.of(context).orderDetail),
+    //         actions: <Widget>[noteIconButton(), statusIconButton()],
+    //       ),
+    //       body: scaffoldBody()),
+    // );
     return WillPopScope(
       onWillPop: () async {
         return true;
       },
       child: Scaffold(
-        key: scaffoldKey,
-        backgroundColor: lightBlue(),
-        appBar: AppBar(
-          automaticallyImplyLeading: true,
-          backgroundColor: darkBlue(),
-          title: Text(AppLocalization.of(context).orderDetail),
-          actions: <Widget>[noteIconButton(), statusIconButton()],
+          key: scaffoldKey,
+          backgroundColor: Colors.white,
+          appBar: appBar(),
+          body: scaffoldBody()),
+    );
+  }
+
+  Widget appBar() {
+    return AppBar(
+      elevation: 0,
+      backgroundColor: Colors.white,
+      automaticallyImplyLeading: false,
+      titleSpacing: 0,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
         ),
-        body: Column(
-          children: <Widget>[
-            Expanded(
-              child: isLoading
-                  ? Center(
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2.5,
-                        valueColor: AlwaysStoppedAnimation(Colors.white),
-                        backgroundColor: lightBlue(),
-                      ),
-                    )
-                  : ListView.builder(
-                      padding: EdgeInsets.symmetric(vertical: 10),
-                      itemCount: consumable.length,
-                      itemBuilder: (BuildContext context, int index) =>
-                          getItemTile(index)),
-            ),
-            checkoutWidget(),
-            SizedBox(
-              height: 20,
-            )
-          ],
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      centerTitle: false,
+      title: Text(
+        "Order details",
+        style: TextStyle(
+            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+      ),
+      actions: <Widget>[
+        noteSheetBtn(),
+        SizedBox(
+          width: 10.0,
+        ),
+        changeOrderStatusSheetBtn(),
+        // popUpMenuButton(),
+        SizedBox(
+          width: 16,
+        ),
+      ],
+    );
+  }
+
+  Widget noteSheetBtn() {
+    return RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
+      icon: Icon(
+        SlydoAppIcon.note,
+        size: 16,
+        color: blackFont,
+      ),
+      onTap: () {
+        showNoteAndroidSheet();
+      },
+      backgroundColor: iconBtnGrey,
+      enableMargin: true,
+    );
+  }
+
+  Widget popUpMenuButton() {
+    return SizedBox(
+      key: _key,
+      height: 34,
+      width: 34,
+      child: Card(
+        color: isPopMenuOpen ? navyBlue : iconBtnGrey,
+        elevation: 0,
+        margin: EdgeInsets.symmetric(vertical: 10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: IconButton(
+          icon: Icon(
+            Icons.settings,
+            color: isPopMenuOpen ? Colors.white : Colors.black,
+            size: 20,
+          ),
+          onPressed: () {
+            if (menu.isMenuOpen) {
+              menu.closeMenu();
+            } else {
+              menu.openMenu();
+            }
+          },
         ),
       ),
+    );
+  }
+
+  Widget changeOrderStatusSheetBtn() {
+    return RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
+      icon: Icon(
+        SlydoAppIcon.settings,
+        size: 16,
+        color: blackFont,
+      ),
+      onTap: () {
+        showChangeStatusAndroidSheet();
+      },
+      backgroundColor: iconBtnGrey,
+      enableMargin: true,
+    );
+  }
+
+  Widget scaffoldBody() {
+    return Column(
+      children: <Widget>[
+        Expanded(
+          child: isLoading
+              ? Center(
+                  child: CircularLoadingIndicator(),
+                )
+              : ListView.builder(
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  itemCount: consumable.length,
+                  itemBuilder: (BuildContext context, int index) =>
+                      getItemTile(index)),
+        ),
+        checkoutWidget(),
+        SizedBox(
+          height: 20,
+        )
+      ],
     );
   }
 
@@ -127,37 +282,74 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   void showNoteAndroidSheet() {
+    // showModalBottomSheet<void>(
+    //     enableDrag: true,
+    //     isScrollControlled: true,
+    //     context: context,
+    //     backgroundColor: Colors.transparent,
+    //     builder: (BuildContext context) {
+    //       return Card(
+    //         elevation: 15,
+    //         margin: EdgeInsets.symmetric(horizontal: 20),
+    //         color: Colors.white,
+    //         child: Container(
+    //           height: MediaQuery.of(context).size.height / 2 +
+    //               MediaQuery.of(context).viewInsets.bottom,
+    //           child: Column(
+    //             children: <Widget>[
+    //               Padding(
+    //                 padding: const EdgeInsets.only(top: 8.0),
+    //                 child: Text(
+    //                   AppLocalization.of(context).note,
+    //                   textAlign: TextAlign.center,
+    //                   style: TextStyle(
+    //                       color: darkBlue(),
+    //                       fontSize: 20.0,
+    //                       fontWeight: FontWeight.bold),
+    //                 ),
+    //               ),
+    //               getBodyOfNoteBottomSheet()
+    //             ],
+    //           ),
+    //         ),
+    //       );
+    //     });
+
     showModalBottomSheet<void>(
-        enableDrag: true,
-        isScrollControlled: true,
-        context: context,
         backgroundColor: Colors.transparent,
+        context: context,
+        isScrollControlled: true,
         builder: (BuildContext context) {
           return Card(
-            elevation: 15,
-            margin: EdgeInsets.symmetric(horizontal: 20),
-            color: Colors.white,
-            child: Container(
-              height: MediaQuery.of(context).size.height / 2 +
-                  MediaQuery.of(context).viewInsets.bottom,
-              child: Column(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: Text(
-                      AppLocalization.of(context).note,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          color: darkBlue(),
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  getBodyOfNoteBottomSheet()
-                ],
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20)),
               ),
-            ),
-          );
+              color: Colors.white,
+              margin: EdgeInsets.zero,
+              child: Container(
+                height: MediaQuery.of(context).size.height / 2 +
+                    MediaQuery.of(context).viewInsets.bottom,
+                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Text(
+                        AppLocalization.of(context).note,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: darkBlue(),
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    getBodyOfNoteBottomSheet()
+                  ],
+                ),
+              ));
         });
   }
 
@@ -171,10 +363,13 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             children: <Widget>[
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 10, 24, 10),
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                   child: Text(
                     getOrderNote(),
-                    style: TextStyle(fontSize: 14),
+                    style: TextStyle(
+                        fontSize: 14,
+                        color: blackFont,
+                        fontWeight: FontWeight.w600),
                     textAlign: TextAlign.justify,
                   ),
                 ),
@@ -202,9 +397,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   Widget getNoteAddTextField() {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20),
       child: TextFormField(
-        maxLines: 6,
+        maxLines: 8,
         onFieldSubmitted: (val) {
           addNote();
         },
@@ -212,13 +406,15 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         decoration: InputDecoration(
           isDense: true,
           labelText: AppLocalization.of(context).enterYourNoteHere,
-          labelStyle: TextStyle(color: Colors.grey[600]),
+          labelStyle: TextStyle(color: darkGrey),
           alignLabelWithHint: true,
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: darkBlue(), width: 1.5),
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(color: greyBorderColor, width: 1),
           ),
           enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: darkBlue(), width: 1),
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(color: greyBorderColor, width: 1),
           ),
         ),
         onChanged: (val) {
@@ -229,12 +425,17 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   Widget addNoteBtn() {
-    return FlatButton(
-        color: darkBlue(),
-        child: Text(
-          AppLocalization.of(context).add,
-          style: TextStyle(color: Colors.white),
-        ),
+    // return FlatButton(
+    //     color: darkBlue(),
+    //     child: Text(
+    //       AppLocalization.of(context).add,
+    //       style: TextStyle(color: Colors.white),
+    //     ),
+    //     onPressed: addNote);
+    return CurvedButton(
+        backgroundColor: navyBlue,
+        text: "Add note",
+        textColor: Colors.white,
         onPressed: addNote);
   }
 
@@ -257,114 +458,236 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   void showChangeStatusAndroidSheet() {
+    // showModalBottomSheet<void>(
+    //     context: context,
+    //     backgroundColor: Colors.transparent,
+    //     builder: (BuildContext context) {
+    //       return StatefulBuilder(
+    //         builder: (BuildContext context, StateSetter setState) {
+    //           return Card(
+    //             color: Colors.white,
+    //             margin: EdgeInsets.symmetric(horizontal: 20),
+    //             elevation: 15,
+    //             child: Container(
+    //               height: MediaQuery.of(context).size.height / 2,
+    //               child: Padding(
+    //                 padding: const EdgeInsets.only(top: 10.0),
+    //                 child: Column(
+    //                   children: <Widget>[
+    //                     Text(
+    //                       AppLocalization.of(context).status,
+    //                       textAlign: TextAlign.center,
+    //                       style: TextStyle(
+    //                           color: darkBlue(),
+    //                           fontSize: 20.0,
+    //                           fontWeight: FontWeight.bold),
+    //                     ),
+    //                     Expanded(
+    //                       child: ListView(
+    //                         children: <Widget>[
+    //                           Divider(
+    //                             height: 0,
+    //                           ),
+    //                           statusListTile(
+    //                             title: AppLocalization.of(context).newOrder,
+    //                             value: "new order",
+    //                             setState: setState,
+    //                           ),
+    //                           Divider(
+    //                             height: 0,
+    //                           ),
+    //                           statusListTile(
+    //                             title:
+    //                                 AppLocalization.of(context).awaitingPayment,
+    //                             value: "awaiting payment",
+    //                             setState: setState,
+    //                           ),
+    //                           Divider(
+    //                             height: 0,
+    //                           ),
+    //                           statusListTile(
+    //                             title: AppLocalization.of(context).canceled,
+    //                             value: "canceled",
+    //                             setState: setState,
+    //                           ),
+    //                           Divider(
+    //                             height: 0,
+    //                           ),
+    //                           statusListTile(
+    //                             title: AppLocalization.of(context).completed,
+    //                             value: "complete",
+    //                             setState: setState,
+    //                           ),
+    //                           Divider(
+    //                             height: 0,
+    //                           ),
+    //                           statusListTile(
+    //                             title: AppLocalization.of(context).onHold,
+    //                             value: "on hold",
+    //                             setState: setState,
+    //                           ),
+    //                           Divider(
+    //                             height: 0,
+    //                           ),
+    //                           statusListTile(
+    //                             title: AppLocalization.of(context).pending,
+    //                             value: "pending",
+    //                             setState: setState,
+    //                           ),
+    //                           Divider(
+    //                             height: 0,
+    //                           ),
+    //                           statusListTile(
+    //                             title: AppLocalization.of(context).processing,
+    //                             value: "processing",
+    //                             setState: setState,
+    //                           ),
+    //                           Divider(
+    //                             height: 0,
+    //                           ),
+    //                         ],
+    //                       ),
+    //                     ),
+    //                   ],
+    //                 ),
+    //               ),
+    //             ),
+    //           );
+    //         },
+    //       );
+    //     });
+
     showModalBottomSheet<void>(
-        context: context,
         backgroundColor: Colors.transparent,
+        context: context,
         builder: (BuildContext context) {
           return StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
-              return Card(
-                color: Colors.white,
-                margin: EdgeInsets.symmetric(horizontal: 20),
-                elevation: 15,
-                child: Container(
-                  height: MediaQuery.of(context).size.height / 2,
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 10.0),
-                    child: Column(
-                      children: <Widget>[
-                        Text(
-                          AppLocalization.of(context).status,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              color: darkBlue(),
-                              fontSize: 20.0,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        Expanded(
-                          child: ListView(
-                            children: <Widget>[
-                              Divider(
-                                height: 0,
-                              ),
-                              statusListTile(
-                                title: AppLocalization.of(context).newOrder,
-                                value: "new order",
-                                setState: setState,
-                              ),
-                              Divider(
-                                height: 0,
-                              ),
-                              statusListTile(
-                                title:
-                                    AppLocalization.of(context).awaitingPayment,
-                                value: "awaiting payment",
-                                setState: setState,
-                              ),
-                              Divider(
-                                height: 0,
-                              ),
-                              statusListTile(
-                                title: AppLocalization.of(context).canceled,
-                                value: "canceled",
-                                setState: setState,
-                              ),
-                              Divider(
-                                height: 0,
-                              ),
-                              statusListTile(
-                                title: AppLocalization.of(context).completed,
-                                value: "complete",
-                                setState: setState,
-                              ),
-                              Divider(
-                                height: 0,
-                              ),
-                              statusListTile(
-                                title: AppLocalization.of(context).onHold,
-                                value: "on hold",
-                                setState: setState,
-                              ),
-                              Divider(
-                                height: 0,
-                              ),
-                              statusListTile(
-                                title: AppLocalization.of(context).pending,
-                                value: "pending",
-                                setState: setState,
-                              ),
-                              Divider(
-                                height: 0,
-                              ),
-                              statusListTile(
-                                title: AppLocalization.of(context).processing,
-                                value: "processing",
-                                setState: setState,
-                              ),
-                              Divider(
-                                height: 0,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+              builder: (BuildContext context, StateSetter setState) {
+            return Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20)),
                 ),
-              );
-            },
-          );
+                color: Colors.white,
+                margin: EdgeInsets.zero,
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    vertical: 18,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Text(
+                        AppLocalization.of(context).status,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: darkBlue(),
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      Expanded(
+                        child: ListView(
+                          children: <Widget>[
+                            Divider(
+                              height: 0,
+                            ),
+                            statusListTile(
+                              title: AppLocalization.of(context).newOrder,
+                              value: "new order",
+                              setState: setState,
+                            ),
+                            Divider(
+                              height: 0,
+                            ),
+                            statusListTile(
+                              title:
+                                  AppLocalization.of(context).awaitingPayment,
+                              value: "awaiting payment",
+                              setState: setState,
+                            ),
+                            Divider(
+                              height: 0,
+                            ),
+                            statusListTile(
+                              title: AppLocalization.of(context).canceled,
+                              value: "canceled",
+                              setState: setState,
+                            ),
+                            Divider(
+                              height: 0,
+                            ),
+                            statusListTile(
+                              title: AppLocalization.of(context).completed,
+                              value: "complete",
+                              setState: setState,
+                            ),
+                            Divider(
+                              height: 0,
+                            ),
+                            statusListTile(
+                              title: AppLocalization.of(context).onHold,
+                              value: "on hold",
+                              setState: setState,
+                            ),
+                            Divider(
+                              height: 0,
+                            ),
+                            statusListTile(
+                              title: AppLocalization.of(context).pending,
+                              value: "pending",
+                              setState: setState,
+                            ),
+                            Divider(
+                              height: 0,
+                            ),
+                            statusListTile(
+                              title: AppLocalization.of(context).processing,
+                              value: "processing",
+                              setState: setState,
+                            ),
+                            Divider(
+                              height: 0,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ));
+          });
         });
   }
 
   Widget statusListTile({String title, String value, StateSetter setState}) {
+    // return RadioListTile(
+    //   activeColor: darkBlue(),
+    //   title: Text(
+    //     title,
+    //     textAlign: TextAlign.start,
+    //     style: TextStyle(
+    //       color: darkBlue(),
+    //       fontSize: 16.0,
+    //     ),
+    //   ),
+    //   value: value,
+    //   onChanged: (value) {
+    //     if (userBloc.user.userName == order.merchant) {
+    //       setState(() {
+    //         updateStatus(value);
+    //         statusOfOrder = value;
+    //       });
+    //     }
+    //   },
+    //   groupValue: statusOfOrder,
+    // );
     return RadioListTile(
-      activeColor: darkBlue(),
+      activeColor: navyBlue,
       title: Text(
         title,
         textAlign: TextAlign.start,
         style: TextStyle(
-          color: darkBlue(),
+          color: blackFont,
           fontSize: 16.0,
         ),
       ),
@@ -382,35 +705,80 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   Widget checkoutWidget() {
+    // return Card(
+    //   elevation: 5,
+    //   margin: EdgeInsets.symmetric(horizontal: 16),
+    //   child: Container(
+    //     padding: EdgeInsets.symmetric(horizontal: 8),
+    //     color: Colors.white,
+    //     child: Column(
+    //       crossAxisAlignment: CrossAxisAlignment.start,
+    //       children: <Widget>[
+    //         SizedBox(
+    //           height: 10,
+    //         ),
+    //         Row(
+    //           children: <Widget>[
+    //             Text(AppLocalization.of(context).total),
+    //             Text(
+    //               " : " + worldCurrencies[order.currency] + " ",
+    //               style: TextStyle(
+    //                 fontFamily: "Roboto",
+    //               ),
+    //             ),
+    //             Text(
+    //               order.totalPrice.toString(),
+    //               style: TextStyle(fontSize: 20),
+    //             ),
+    //           ],
+    //         ),
+    //         SizedBox(
+    //           height: 10,
+    //         ),
+    //       ],
+    //     ),
+    //   ),
+    // );
     return Card(
-      elevation: 5,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      color: navyBlue,
+      elevation: 1,
       margin: EdgeInsets.symmetric(horizontal: 16),
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 8),
-        color: Colors.white,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10), color: navyBlue),
+        padding: EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             SizedBox(
-              height: 10,
+              height: 18,
             ),
             Row(
               children: <Widget>[
-                Text(AppLocalization.of(context).total),
                 Text(
-                  " : " + worldCurrencies[order.currency] + " ",
+                  AppLocalization.of(context).total + " : ",
+                  style: TextStyle(fontSize: 14, color: Colors.white),
+                ),
+                Text(
+                  worldCurrencies[order.currency],
                   style: TextStyle(
-                    fontFamily: "Roboto",
-                  ),
+                      fontFamily: "Roboto",
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
                 ),
                 Text(
                   order.totalPrice.toString(),
-                  style: TextStyle(fontSize: 20),
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
                 ),
               ],
             ),
             SizedBox(
-              height: 10,
+              height: 18,
             ),
           ],
         ),
@@ -429,17 +797,19 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   getItemTileUi(int index) {
     if (consumable[index]["type"] == "product") {
-      return ShoppingCartTileForProduct(
+      return OrderTileForProduct(
         consumable[index],
       );
     }
-    return ShoppingCartTileForService(consumable[index]);
+    return OrderTileForService(
+      consumable[index],
+    );
   }
 
   Widget _getSlidableWithLists(
       BuildContext context, Widget itemTile, var item, int index) {
     return Slidable(
-      controller: slidableController,
+      controller: _slideController,
       direction: Axis.horizontal,
       actionPane: SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
@@ -450,7 +820,27 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   List<Widget> listSecondaryActions(int index) {
-    return [];
+    var item = consumable[index];
+    var conditionForUser =
+        item["type"] == "product" ? item["item"].seller : item["item"].provider;
+
+    bool isValid = true;
+    if (conditionForUser == userBloc.user.userName) {
+      isValid = false;
+    }
+
+    return [
+      SlideActionButton(
+          backgroundColor: isValid ? naturalGreen : Colors.grey[600],
+          icon: SlydoAppIcon.text_message,
+          onTap: isValid
+              ? () {
+                  navigateToComposeMessage(conditionForUser, index);
+                }
+              : () {},
+          title: AppLocalization.of(context).message,
+          slideController: _slideController),
+    ];
   }
 
   void removeItem(int index) {
@@ -479,16 +869,16 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       isValid = false;
     }
     return [
-      IconSlideAction(
-        caption: AppLocalization.of(context).message,
-        color: isValid ? Colors.green : Colors.grey[600],
-        icon: Icons.message,
-        onTap: isValid
-            ? () {
-                navigateToComposeMessage(conditionForUser, index);
-              }
-            : () {},
-      ),
+      // IconSlideAction(
+      //   caption: AppLocalization.of(context).message,
+      //   color: isValid ? Colors.green : Colors.grey[600],
+      //   icon: Icons.message,
+      //   onTap: isValid
+      //       ? () {
+      //           navigateToComposeMessage(conditionForUser, index);
+      //         }
+      //       : () {},
+      // ),
     ];
   }
 

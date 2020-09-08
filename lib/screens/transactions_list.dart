@@ -1,10 +1,14 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/transactions.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/screens/tiles/transaction.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -22,7 +26,7 @@ class _TransactionListState extends State<TransactionList> {
       new GlobalKey<ScaffoldState>();
   // Get list of users transactions
   final _auth = AuthService();
-  SlidableController slidableController;
+  SlidableController _slideController;
   int count = 0;
   String next = "";
   String previous = "";
@@ -41,6 +45,11 @@ class _TransactionListState extends State<TransactionList> {
 
   CustomerProfileBloc customerProfileBloc;
 
+  GlobalKey _key = LabeledGlobalKey("transactionListPopUpMenu");
+  CustomizedPopUpMenu menu;
+  int selectedMenuItemIndex = 0;
+  bool isPopMenuOpen = false;
+
   @override
   void initState() {
     getList();
@@ -53,7 +62,7 @@ class _TransactionListState extends State<TransactionList> {
         getList();
       }
     });
-    slidableController = SlidableController(
+    _slideController = SlidableController(
       onSlideAnimationChanged: handleSlideAnimationChanged,
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
     );
@@ -95,13 +104,81 @@ class _TransactionListState extends State<TransactionList> {
     });
   }
 
+  void menuItemSelectionChange(String value, int index) {
+    selectedMenuItemIndex = index;
+    debugPrint("selectedMenuItemIndex $selectedMenuItemIndex");
+    setState(() {});
+    switch (value) {
+      case "received":
+        moneyIn = true;
+        moneyOut = false;
+        break;
+      case "sent":
+        moneyIn = false;
+        moneyOut = true;
+        break;
+      default:
+        moneyIn = false;
+        moneyOut = false;
+        break;
+    }
+    _onRefresh();
+  }
+
+  void menuStateChange(bool isOpen) {
+    isPopMenuOpen = isOpen;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
+    menu = CustomizedPopUpMenu(
+      buttonKey: _key,
+      context: context,
+      children: [
+        CustomizedPopUpMenuItem(title: "All", value: "all"),
+        CustomizedPopUpMenuItem(title: "Received", value: "received"),
+        CustomizedPopUpMenuItem(title: "Sent", value: "sent"),
+      ],
+      selectedIndex: selectedMenuItemIndex,
+      right: 16,
+    );
+    menu.onChange = menuItemSelectionChange;
+    menu.menuState = menuStateChange;
+
     // refresh the list when lifecycle called onResume method
     _onRefreshOnResume();
 
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
 
+    // return WillPopScope(
+    //   onWillPop: () async {
+    //     customerProfileBloc.customer = null;
+    //     return true;
+    //   },
+    //   child: Scaffold(
+    //     key: _scaffoldTransactionKey,
+    //     backgroundColor: lightBlue(),
+    //     appBar: AppBar(
+    //       automaticallyImplyLeading: true,
+    //       backgroundColor: darkBlue(),
+    //       title: Text(AppLocalization.of(context).transactions),
+    //       actions: <Widget>[
+    //         openGraph(),
+    //         _threeItemPopup(),
+    //       ],
+    //     ),
+    //     body: SmartRefresher(
+    //         enablePullDown: true,
+    //         header: WaterDropHeader(
+    //           complete: Container(),
+    //           waterDropColor: darkBlue(),
+    //         ),
+    //         controller: _refreshController,
+    //         onRefresh: _onRefresh,
+    //         child: _buildTransactionList()),
+    //   ),
+    // );
     return WillPopScope(
       onWillPop: () async {
         customerProfileBloc.customer = null;
@@ -109,25 +186,103 @@ class _TransactionListState extends State<TransactionList> {
       },
       child: Scaffold(
         key: _scaffoldTransactionKey,
-        backgroundColor: lightBlue(),
-        appBar: AppBar(
-          automaticallyImplyLeading: true,
-          backgroundColor: darkBlue(),
-          title: Text(AppLocalization.of(context).transactions),
-          actions: <Widget>[
-            openGraph(),
-            _threeItemPopup(),
-          ],
-        ),
+        backgroundColor: Colors.white,
+        appBar: appBar(),
         body: SmartRefresher(
             enablePullDown: true,
             header: WaterDropHeader(
               complete: Container(),
-              waterDropColor: darkBlue(),
+              waterDropColor: navyBlue,
             ),
             controller: _refreshController,
             onRefresh: _onRefresh,
             child: _buildTransactionList()),
+      ),
+    );
+  }
+
+  Widget appBar() {
+    return AppBar(
+      elevation: 0,
+      titleSpacing: 16,
+      backgroundColor: Colors.white,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          customerProfileBloc.customer = null;
+          Navigator.pop(context);
+        },
+      ),
+      centerTitle: false,
+      title: Text(
+        AppLocalization.of(context).transactions,
+        style: TextStyle(
+            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+      ),
+      actions: <Widget>[
+        openGraphBtn(),
+        SizedBox(
+          width: 10.0,
+        ),
+        // menuBtn(),
+        // SizedBox(
+        //   width: 10.0,
+        // ),
+        popUpMenuButton(),
+        SizedBox(
+          width: 16,
+        ),
+      ],
+    );
+  }
+
+  Widget openGraphBtn() {
+    return RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
+      icon: Icon(
+        SlydoAppIcon.graph,
+        size: 16,
+        color: blackFont,
+      ),
+      onTap: () {
+        Navigator.of(context).pushNamed("/transaction-graph");
+      },
+      backgroundColor: iconBtnGrey,
+      enableMargin: true,
+    );
+  }
+
+  Widget popUpMenuButton() {
+    return SizedBox(
+      key: _key,
+      height: 34,
+      width: 34,
+      child: Card(
+        color: isPopMenuOpen ? navyBlue : iconBtnGrey,
+        elevation: 0,
+        margin: EdgeInsets.symmetric(vertical: 10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: IconButton(
+          icon: Icon(
+            Icons.more_vert,
+            color: isPopMenuOpen ? Colors.white : Colors.black,
+            size: 20,
+          ),
+          onPressed: () {
+            if (menu.isMenuOpen) {
+              menu.closeMenu();
+            } else {
+              menu.openMenu();
+            }
+          },
+        ),
       ),
     );
   }
@@ -309,10 +464,9 @@ class _TransactionListState extends State<TransactionList> {
   List<Widget> listSecondaryActions(Transaction transaction) {
     String caption = AppLocalization.of(context).send;
     return [
-      IconSlideAction(
-          caption: caption,
-          color: Colors.green,
-          icon: Icons.send,
+      SlideActionButton(
+          backgroundColor: naturalGreen,
+          icon: SlydoAppIcon.send,
           onTap: () async {
             customerProfileBloc.customer =
                 await _auth.fetchCustomerProfile(transaction.payee);
@@ -321,26 +475,56 @@ class _TransactionListState extends State<TransactionList> {
                   'isFromProfile': false,
                   'isRequest': false
                 });
-          }),
+          },
+          title: AppLocalization.of(context).send,
+          slideController: _slideController),
+      // IconSlideAction(
+      //   caption: caption,
+      //   color: Colors.green,
+      //   icon: Icons.send,
+      //   onTap: () async {
+      //     customerProfileBloc.customer =
+      //         await _auth.fetchCustomerProfile(transaction.payee);
+      //     Navigator.of(context).pushNamed('/send-payment',
+      //         arguments: <String, bool>{
+      //           'isFromProfile': false,
+      //           'isRequest': false
+      //         });
+      //   },
+      // ),
     ];
   }
 
   List<Widget> listActionSlideActions(Transaction transaction) {
     return [
-      IconSlideAction(
-        caption: AppLocalization.of(context).request,
-        color: Colors.green,
-        icon: Icons.event_note,
-        onTap: () async {
-          customerProfileBloc.customer =
-              await _auth.fetchCustomerProfile(transaction.payee);
-          Navigator.of(context).pushNamed('/request-payment',
-              arguments: <String, bool>{
-                'isFromProfile': false,
-                'isRequest': true
-              });
-        },
-      ),
+      SlideActionButton(
+          backgroundColor: navyBlue,
+          icon: SlydoAppIcon.receive,
+          onTap: () async {
+            customerProfileBloc.customer =
+                await _auth.fetchCustomerProfile(transaction.payee);
+            Navigator.of(context).pushNamed('/request-payment',
+                arguments: <String, bool>{
+                  'isFromProfile': false,
+                  'isRequest': true
+                });
+          },
+          title: AppLocalization.of(context).request,
+          slideController: _slideController),
+      // IconSlideAction(
+      //   caption: AppLocalization.of(context).request,
+      //   color: Colors.green,
+      //   icon: Icons.event_note,
+      //   onTap: () async {
+      //     customerProfileBloc.customer =
+      //         await _auth.fetchCustomerProfile(transaction.payee);
+      //     Navigator.of(context).pushNamed('/request-payment',
+      //         arguments: <String, bool>{
+      //           'isFromProfile': false,
+      //           'isRequest': true
+      //         });
+      //   },
+      // ),
     ];
   }
 
@@ -348,7 +532,7 @@ class _TransactionListState extends State<TransactionList> {
       BuildContext context, Transaction transaction, int index) {
     return Slidable(
       key: Key(transaction.payee),
-      controller: slidableController,
+      controller: _slideController,
       direction: Axis.horizontal,
       actionPane: SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
@@ -397,7 +581,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
         }
       },
       child: Container(
-        color: lightBlue(),
+        color: Colors.white,
         child: TransactionTile(
           transaction: widget.transaction,
           expandedWidget: expandedWidget(),
@@ -409,15 +593,15 @@ class _VerticalListItemState extends State<VerticalListItem> {
   Widget expandedWidget() {
     return AnimatedContainer(
       duration: Duration(milliseconds: 300),
-      height: isExpanded ? 42 : 0,
+      height: isExpanded ? 48 : 0,
       curve: Curves.fastOutSlowIn,
       child: isExpanded
           ? Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Container(
-                  height: 0.5,
-                  color: darkBlue(),
+                  height: 1,
+                  color: dividerColor,
                 ),
                 Expanded(
                   child: Row(
@@ -425,9 +609,9 @@ class _VerticalListItemState extends State<VerticalListItem> {
                     children: <Widget>[
                       Expanded(child: sendMessageButton()),
                       Container(
-                        width: 0.5,
-                        color: darkBlue(),
-                        height: 40,
+                        width: 1,
+                        color: dividerColor,
+                        height: 48,
                       ),
                       Expanded(child: blockUserButton()),
                     ],
@@ -440,84 +624,184 @@ class _VerticalListItemState extends State<VerticalListItem> {
   }
 
   Widget sendMessageButton() {
-    return MaterialButton(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Icon(
-            Icons.message,
-            color: darkBlue(),
-          ),
-          SizedBox(
-            width: 10,
-          ),
-          Text(
-            AppLocalization.of(context).message,
-            style: TextStyle(color: darkBlue()),
-          ),
-        ],
-      ),
-      onPressed: () {
-        _auth.fetchCustomerProfile(widget.transaction.payee).then((user) {
-          if (mounted) {
-            setState(() {
-              isExpanded = false;
-            });
-          }
-          Navigator.of(context).pushNamed('/compose_message', arguments: {
-            'recipient': user.userName,
-            'subject': "",
-          });
-        });
-      },
-    );
-  }
+    // return MaterialButton(
+    //   child: Row(
+    //     mainAxisAlignment: MainAxisAlignment.center,
+    //     children: <Widget>[
+    //       Icon(
+    //         Icons.message,
+    //         color: darkBlue(),
+    //       ),
+    //       SizedBox(
+    //         width: 10,
+    //       ),
+    //       Text(
+    //         AppLocalization.of(context).message,
+    //         style: TextStyle(color: darkBlue()),
+    //       ),
+    //     ],
+    //   ),
+    //   onPressed: () {
+    //     _auth.fetchCustomerProfile(widget.transaction.payee).then((user) {
+    //       if (mounted) {
+    //         setState(() {
+    //           isExpanded = false;
+    //         });
+    //       }
+    //       Navigator.of(context).pushNamed('/compose_message', arguments: {
+    //         'recipient': user.userName,
+    //         'subject': "",
+    //       });
+    //     });
+    //   },
+    // );
 
-  Widget blockUserButton() {
-    return MaterialButton(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Stack(
-            children: <Widget>[
-              Icon(
-                Icons.group,
-                color: Colors.black,
-              ),
-              Icon(
-                Icons.block,
-                color: Colors.red,
-              )
-            ],
-          ),
-          SizedBox(
-            width: 10,
-          ),
-          Text(
-            AppLocalization.of(context).blockUser,
-            style: TextStyle(color: Colors.redAccent),
-          ),
-        ],
+    return Theme(
+      data: Theme.of(context).copyWith(
+        splashColor: Colors.white,
+        highlightColor: Colors.white,
       ),
-      onPressed: () {
-        _auth.fetchCustomerProfile(widget.transaction.payee).then((user) {
-          _auth.blockUser(user).then((result) {
+      child: InkWell(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            RoundedBackgroundIcon(
+              backgroundColor: navyBlue.withOpacity(0.1),
+              icon: Icon(
+                SlydoAppIcon.text_message,
+                color: navyBlue,
+                size: 14,
+              ),
+              width: 32,
+              height: 32,
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            Text(
+              AppLocalization.of(context).message,
+              style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black),
+            )
+          ],
+        ),
+        onTap: () {
+          _auth.fetchCustomerProfile(widget.transaction.payee).then((user) {
             if (mounted) {
               setState(() {
                 isExpanded = false;
               });
             }
-            if (result) {
-              Toast.show(
-                  "${widget.transaction.payee} " +
-                      AppLocalization.of(context).isBlocked,
-                  context);
-            } else {
-              Toast.show(AppLocalization.of(context).error, context);
-            }
+            Navigator.of(context).pushNamed('/compose_message', arguments: {
+              'recipient': user.userName,
+              'subject': "",
+            });
           });
-        });
-      },
+        },
+      ),
+    );
+  }
+
+  Widget blockUserButton() {
+    // return MaterialButton(
+    //   child: Row(
+    //     mainAxisAlignment: MainAxisAlignment.center,
+    //     children: <Widget>[
+    //       Stack(
+    //         children: <Widget>[
+    //           Icon(
+    //             Icons.group,
+    //             color: Colors.black,
+    //           ),
+    //           Icon(
+    //             Icons.block,
+    //             color: Colors.red,
+    //           )
+    //         ],
+    //       ),
+    //       SizedBox(
+    //         width: 10,
+    //       ),
+    //       Text(
+    //         AppLocalization.of(context).blockUser,
+    //         style: TextStyle(color: Colors.redAccent),
+    //       ),
+    //     ],
+    //   ),
+    //   onPressed: () {
+    //     _auth.fetchCustomerProfile(widget.transaction.payee).then((user) {
+    //       _auth.blockUser(user).then((result) {
+    //         if (mounted) {
+    //           setState(() {
+    //             isExpanded = false;
+    //           });
+    //         }
+    //         if (result) {
+    //           Toast.show(
+    //               "${widget.transaction.payee} " +
+    //                   AppLocalization.of(context).isBlocked,
+    //               context);
+    //         } else {
+    //           Toast.show(AppLocalization.of(context).error, context);
+    //         }
+    //       });
+    //     });
+    //   },
+    // );
+
+    return Theme(
+      data: Theme.of(context).copyWith(
+        splashColor: Colors.white,
+        highlightColor: Colors.white,
+      ),
+      child: InkWell(
+        onTap: () {
+          _auth.fetchCustomerProfile(widget.transaction.payee).then((user) {
+            _auth.blockUser(user).then((result) {
+              if (mounted) {
+                setState(() {
+                  isExpanded = false;
+                });
+              }
+              if (result) {
+                Toast.show(
+                    "${widget.transaction.payee} " +
+                        AppLocalization.of(context).isBlocked,
+                    context);
+              } else {
+                Toast.show(AppLocalization.of(context).error, context);
+              }
+            });
+          });
+        },
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            RoundedBackgroundIcon(
+              backgroundColor: mateRad.withOpacity(0.1),
+              icon: Icon(
+                SlydoAppIcon.remove,
+                color: mateRad,
+                size: 14,
+              ),
+              width: 32,
+              height: 32,
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            Text(
+              AppLocalization.of(context).blockUser,
+              style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black),
+            )
+          ],
+        ),
+      ),
     );
   }
 }
