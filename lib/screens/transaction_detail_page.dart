@@ -2,6 +2,10 @@ import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -45,59 +49,130 @@ class _TransactionDetailState extends State<TransactionDetail> {
 
   @override
   Widget build(BuildContext context) {
+    // return WillPopScope(
+    //   onWillPop: () async {
+    //     return true;
+    //   },
+    //   child: Scaffold(
+    //     backgroundColor: lightBlue(),
+    //     resizeToAvoidBottomInset: true,
+    //     appBar: AppBar(
+    //       leading: showBackArrow(),
+    //       title: Center(child: Text(AppLocalization.of(context).transaction)),
+    //       backgroundColor: darkBlue(),
+    //       actions: <Widget>[
+    //         IconButton(
+    //           icon: Icon(
+    //             Icons.location_on,
+    //             color: Colors.white,
+    //           ),
+    //           onPressed: transaction.latitude != "" ? goToMap : () {},
+    //         )
+    //       ],
+    //     ),
+    //     body: SingleChildScrollView(
+    //       child: Container(
+    //         padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
+    //         child: Column(
+    //           mainAxisAlignment: MainAxisAlignment.start,
+    //           children: <Widget>[
+    //             SizedBox(height: 10),
+    //             displayTransactionInfo(),
+    //             SizedBox(height: 10),
+    //           ],
+    //         ),
+    //       ),
+    //     ),
+    //   ),
+    // );
     return WillPopScope(
       onWillPop: () async {
         return true;
       },
       child: Scaffold(
-        backgroundColor: lightBlue(),
+        backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
-        appBar: AppBar(
-          leading: showBackArrow(),
-          title: Center(child: Text(AppLocalization.of(context).transaction)),
-          backgroundColor: darkBlue(),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(
-                Icons.location_on,
-                color: Colors.white,
-              ),
-              onPressed: transaction.latitude != "" ? goToMap : () {},
-            )
-          ],
+        appBar: appBar(),
+        body: scaffoldBody(),
+      ),
+    );
+  }
+
+  Widget appBar() {
+    return AppBar(
+      elevation: 0,
+      titleSpacing: 0,
+      backgroundColor: Colors.white,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
         ),
-        body: SingleChildScrollView(
-          child: Container(
-            padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                SizedBox(height: 10),
-                displayTransactionInfo(),
-                SizedBox(height: 10),
-              ],
-            ),
-          ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      centerTitle: false,
+      title: Text(
+        AppLocalization.of(context).transaction,
+        style: TextStyle(
+            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+      ),
+      actions: <Widget>[
+        openGraphBtn(),
+        SizedBox(
+          width: 16,
+        ),
+      ],
+    );
+  }
+
+  Widget openGraphBtn() {
+    return RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
+      icon: Icon(
+        SlydoAppIcon.location,
+        size: 16,
+        color: blackFont,
+      ),
+      onTap: transaction.latitude != "" ? goToMap : () {},
+      backgroundColor: iconBtnGrey,
+      enableMargin: true,
+    );
+  }
+
+  Widget scaffoldBody() {
+    return SingleChildScrollView(
+      child: Container(
+        height: MediaQuery.of(context).size.height -
+            (AppBar().preferredSize.height +
+                MediaQuery.of(context).padding.top),
+        width: MediaQuery.of(context).size.width,
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        child: Column(
+          children: [
+            displayTransactionInfo(),
+            flexibleSpace(),
+          ],
         ),
       ),
     );
   }
 
   Widget displaySenderInfo() {
-    return Container(
-      height: 50,
-      width: double.infinity,
-      child: ListTile(
-        leading: getLeading(),
-        title: getSender(),
-        subtitle: getSubtitle(),
-        onTap: () async {
-          _auth.fetchCustomerProfile(transaction.payee).then((user) {
-            Navigator.pushNamed(context, '/profile',
-                arguments: {"searchedUser": user});
-          });
-        },
-      ),
+    return ListTile(
+      leading: getLeading(),
+      title: getSender(),
+      subtitle: getSubtitle(),
+      trailing: getAmount(),
+      onTap: () async {
+        _auth.fetchCustomerProfile(transaction.payee).then((user) {
+          Navigator.pushNamed(context, '/profile',
+              arguments: {"searchedUser": user});
+        });
+      },
     );
   }
 
@@ -113,55 +188,37 @@ class _TransactionDetailState extends State<TransactionDetail> {
     String date = DateFormat("dd/MM/yyyy").format(transactionTime);
     String time = DateFormat("hh:mm a").format(transactionTime);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        getAmount(),
-        Text(
-          AppLocalization.of(context).date +
-              ": $date" +
-              "  " +
-              AppLocalization.of(context).time +
-              ": " +
-              time,
-          softWrap: false,
-          overflow: TextOverflow.visible,
-          style: TextStyle(fontSize: 10, color: Colors.grey[600]),
-        ),
-      ],
+    return Text(
+      "$date • $time",
+      softWrap: false,
+      overflow: TextOverflow.visible,
+      style: TextStyle(color: darkGrey, fontSize: 12),
     );
   }
 
-  getLeading() {
+  Widget getLeading() {
     return ClipOval(
       child: CachedNetworkImage(
         imageUrl: transaction.avatar,
-        height: 40,
-        width: 40,
+        height: 48,
+        width: 48,
         colorBlendMode: BlendMode.darken,
         fit: BoxFit.cover,
         filterQuality: FilterQuality.high,
         placeholder: (context, url) => transaction.avatar == ""
             ? Icon(Icons.person)
-            : CircularProgressIndicator(
-                strokeWidth: 2.5,
-                valueColor: AlwaysStoppedAnimation(Colors.white),
-                backgroundColor: lightBlue(),
-              ),
+            : CircularLoadingIndicator(),
       ),
     );
   }
 
-  getSender() {
-    return Padding(
-      padding: const EdgeInsets.only(top: 8.0),
-      child: Text(
-        transaction.payee,
-        style: TextStyle(
-          color: Colors.black,
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-        ),
+  Widget getSender() {
+    return Text(
+      transaction.payee,
+      style: TextStyle(
+        color: blackFont,
+        fontWeight: FontWeight.bold,
+        fontSize: 15,
       ),
     );
   }
@@ -171,94 +228,125 @@ class _TransactionDetailState extends State<TransactionDetail> {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          worldCurrencies[transaction.currency] + " ",
+          worldCurrencies[transaction.currency],
           style: TextStyle(
-              color:
-                  transaction.isCredit ? Colors.green[400] : Colors.grey[600],
-              fontWeight: FontWeight.bold,
-              fontFamily: "Roboto",
-              fontSize: 15),
+            color: transaction.isCredit ? navyBlue : blackFont,
+            fontWeight: FontWeight.bold,
+            fontSize: 14,
+            fontFamily: "Roboto",
+          ),
         ),
         Text(
           transaction.amount.toString(),
           style: TextStyle(
-              color:
-                  transaction.isCredit ? Colors.green[400] : Colors.grey[600],
+              color: transaction.isCredit ? navyBlue : blackFont,
               fontWeight: FontWeight.bold,
-              fontSize: 15),
+              fontSize: 14),
         ),
       ],
     );
   }
 
-  displayTransactionInfo() {
+  Widget displayTransactionInfo() {
     return Card(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          displaySenderInfo(),
-          displayBodyOfTransaction(),
-        ],
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: EdgeInsets.zero,
+      shadowColor: dividerColor,
+      child: Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: dividerColor, width: 0.5)),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            displaySenderInfo(),
+            displayBodyOfTransaction(),
+          ],
+        ),
       ),
     );
   }
 
   Widget displayBodyOfTransaction() {
     return Container(
-      padding: EdgeInsets.only(top: 10),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          SizedBox(
-            height: 10,
-          ),
           Divider(
-            color: Colors.grey[600],
-            height: 1,
+            color: dividerColor,
+            thickness: 1,
+            height: 0,
           ),
-          detailTile(Icon(Icons.timer), AppLocalization.of(context).status,
-              transaction.status),
-          Divider(
-            color: Colors.grey[600],
-            height: 1,
+          detailTile(
+            SlydoAppIcon.user,
+            AppLocalization.of(context).status,
+            transaction.status,
           ),
-          detailTile(Icon(Icons.category), AppLocalization.of(context).category,
-              transaction.category),
-          Divider(
-            color: Colors.grey[600],
-            height: 1,
+          detailTile(
+            SlydoAppIcon.category,
+            AppLocalization.of(context).category,
+            transaction.category,
           ),
-          detailTile(Icon(Icons.note), AppLocalization.of(context).note,
-              transaction.note),
-          Divider(
-            color: Colors.grey[600],
-            height: 1,
+          detailTile(
+            SlydoAppIcon.note_filled,
+            AppLocalization.of(context).note,
+            transaction.note,
           ),
-          detailTile(Icon(Icons.description),
-              AppLocalization.of(context).description, transaction.description),
-          Divider(
-            color: Colors.grey[600],
-            height: 1,
+          detailTile(
+            SlydoAppIcon.note,
+            AppLocalization.of(context).description,
+            transaction.description,
           ),
         ],
       ),
     );
   }
 
-  Widget detailTile(Icon icon, String title, String subtitle) {
+  Widget detailTile(IconData icon, String title, String subtitle) {
+    // return Container(
+    //   child: ListTile(
+    //     dense: true,
+    //     leading: icon,
+    //     title: Text(
+    //       title,
+    //       style: TextStyle(
+    //         fontWeight: FontWeight.bold,
+    //       ),
+    //     ),
+    //     subtitle: Text(
+    //       subtitle,
+    //       style: TextStyle(fontSize: 12),
+    //     ),
+    //   ),
+    // );
+
     return Container(
       child: ListTile(
         dense: true,
-        leading: icon,
+        leading: RoundedBackgroundIcon(
+          icon: Icon(
+            icon,
+            color: blackFont,
+            size: 18,
+          ),
+          backgroundColor: iconBtnGrey,
+        ),
         title: Text(
           title,
           style: TextStyle(
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
+            color: blackFont,
+            fontSize: 14,
           ),
         ),
         subtitle: Text(
           subtitle,
-          style: TextStyle(fontSize: 12),
+          style: TextStyle(
+            color: blackFont,
+            fontSize: 14,
+          ),
         ),
       ),
     );

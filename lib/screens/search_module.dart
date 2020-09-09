@@ -493,6 +493,7 @@ class _SearchModuleState extends State<SearchModule> {
     return isSearchIsEmpty
         ? NoItemInList(
             msg: AppLocalization.of(context).pleaseTypeSomethingToGetResult,
+            isResult: false,
           )
         : noItemInList
             ? NoItemInList(

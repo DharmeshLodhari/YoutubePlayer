@@ -2,7 +2,11 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +39,7 @@ class _BankAccountListState extends State<BankAccountList> {
   bool noItemInList = false;
 
   //slidable tile
-  SlidableController slidableController;
+  SlidableController _slideController;
 
   @override
   void initState() {
@@ -50,7 +54,7 @@ class _BankAccountListState extends State<BankAccountList> {
       }
     });
 
-    slidableController = SlidableController(
+    _slideController = SlidableController(
       onSlideAnimationChanged: handleSlideAnimationChanged,
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
     );
@@ -82,44 +86,79 @@ class _BankAccountListState extends State<BankAccountList> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+
     return WillPopScope(
       onWillPop: () async {
         return true;
       },
       child: Scaffold(
         key: _scaffoldKey,
-        backgroundColor: lightBlue(),
-        appBar: AppBar(
-          backgroundColor: darkBlue(),
-          title: Text(AppLocalization.of(context).bankAccount),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.add),
-              onPressed: () {
-                //for adding new account
-                if (bankAccountList.length < 2) {
-                  Navigator.of(context).pushNamed('/add-account');
-                } else {
-                  Toast.show(
-                      AppLocalization.of(context).youCanAddMaximumTwoAccount,
-                      context,
-                      textColor: Colors.white,
-                      backgroundColor: darkBlue());
-                }
-              },
-            )
-          ],
-        ),
+        backgroundColor: Colors.white,
+        appBar: appBar(),
         body: SmartRefresher(
             enablePullDown: true,
             header: WaterDropHeader(
               complete: Container(),
-              waterDropColor: darkBlue(),
+              waterDropColor: navyBlue,
             ),
             controller: _refreshController,
             onRefresh: _onRefresh,
             child: _buildBankAccountList()),
       ),
+    );
+  }
+
+  Widget appBar() {
+    return AppBar(
+      elevation: 0,
+      titleSpacing: 0,
+      backgroundColor: Colors.white,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      centerTitle: false,
+      title: Text(
+        AppLocalization.of(context).bankAccount,
+        style: TextStyle(
+            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+      ),
+      actions: <Widget>[
+        openGraphBtn(),
+        SizedBox(
+          width: 16,
+        ),
+      ],
+    );
+  }
+
+  Widget openGraphBtn() {
+    return RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
+      icon: Icon(
+        SlydoAppIcon.add,
+        size: 16,
+        color: blackFont,
+      ),
+      onTap: () {
+        //for adding new account
+        if (bankAccountList.length < 2) {
+          Navigator.of(context).pushNamed('/add-account');
+        } else {
+          Toast.show(
+              AppLocalization.of(context).youCanAddMaximumTwoAccount, context,
+              textColor: Colors.white, backgroundColor: darkBlue());
+        }
+      },
+      backgroundColor: iconBtnGrey,
+      enableMargin: true,
     );
   }
 
@@ -154,11 +193,7 @@ class _BankAccountListState extends State<BankAccountList> {
       child: new Center(
         child: new Opacity(
           opacity: isLoading ? 1.0 : 00,
-          child: CircularProgressIndicator(
-            strokeWidth: 2.5,
-            valueColor: AlwaysStoppedAnimation(Colors.white),
-            backgroundColor: lightBlue(),
-          ),
+          child: CircularLoadingIndicator(),
         ),
       ),
     );
@@ -203,16 +238,21 @@ class _BankAccountListState extends State<BankAccountList> {
 
   Widget bankAccountTile({BankAccount account}) {
     return Card(
-      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-      child: ListTile(
-        dense: true,
-        title: getTitle(account: account),
-        subtitle: getSubtitle(account: account),
-        leading: ClipOval(
-          child: CachedNetworkImage(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      shadowColor: dividerColor,
+      child: Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: dividerColor, width: 0.5)),
+        child: ListTile(
+          dense: account.isDefault ? true : false,
+          title: getTitle(account: account),
+          subtitle: getSubtitle(account: account),
+          leading: CachedNetworkImage(
             imageUrl: account.bankAvatar,
-            height: 45,
-            width: 45,
+            height: 48,
+            width: 48,
             colorBlendMode: BlendMode.darken,
             fit: BoxFit.cover,
             filterQuality: FilterQuality.high,
@@ -220,13 +260,9 @@ class _BankAccountListState extends State<BankAccountList> {
                 ? Icon(
                     Icons.account_balance,
                     size: 45,
-                    color: darkBlue(),
+                    color: navyBlue,
                   )
-                : CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    valueColor: AlwaysStoppedAnimation(Colors.white),
-                    backgroundColor: lightBlue(),
-                  ),
+                : CircularLoadingIndicator(),
           ),
         ),
       ),
@@ -245,7 +281,7 @@ class _BankAccountListState extends State<BankAccountList> {
             account.bankName,
             maxLines: 1,
             style: TextStyle(
-                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+                color: blackFont, fontWeight: FontWeight.bold, fontSize: 15),
           ),
         ],
       );
@@ -253,7 +289,7 @@ class _BankAccountListState extends State<BankAccountList> {
     return Text(
       account.bankName,
       style: TextStyle(
-          color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
+          color: blackFont, fontWeight: FontWeight.bold, fontSize: 15),
     );
   }
 
@@ -267,14 +303,14 @@ class _BankAccountListState extends State<BankAccountList> {
           ),
           Text(
             '******' + account.accountNumber.toString().substring(5, 9),
-            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+            style: TextStyle(color: darkGrey, fontSize: 12),
           ),
           SizedBox(
             height: 2,
           ),
           Text(
             AppLocalization.of(context).defaultMsg,
-            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+            style: TextStyle(color: darkGrey, fontSize: 12),
           ),
           SizedBox(
             height: 4,
@@ -282,13 +318,16 @@ class _BankAccountListState extends State<BankAccountList> {
         ],
       );
     }
-    return Text('******' + account.accountNumber.toString().substring(5, 9));
+    return Text(
+      '******' + account.accountNumber.toString().substring(5, 9),
+      style: TextStyle(color: darkGrey, fontSize: 12),
+    );
   }
 
   Widget _getSlidableWithLists(
       BuildContext context, Widget bankAccountTile, BankAccount account) {
     return Slidable(
-      controller: slidableController,
+      controller: _slideController,
       direction: Axis.horizontal,
       actionPane: SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
@@ -301,13 +340,22 @@ class _BankAccountListState extends State<BankAccountList> {
   List<Widget> listSecondaryActions({BankAccount account}) {
     String caption = AppLocalization.of(context).delete;
     return [
-      IconSlideAction(
-          caption: caption,
-          color: Colors.red,
-          icon: Icons.delete,
+      SlideActionButton(
+          backgroundColor: mateRad,
+          icon: SlydoAppIcon.remove,
           onTap: () {
             deleteBankAccount(account);
-          }),
+          },
+          title: AppLocalization.of(context).delete,
+          slideController: _slideController),
+
+      // IconSlideAction(
+      //     caption: caption,
+      //     color: Colors.red,
+      //     icon: Icons.delete,
+      //     onTap: () {
+      //       deleteBankAccount(account);
+      //     }),
     ];
   }
 
@@ -352,25 +400,45 @@ class _BankAccountListState extends State<BankAccountList> {
 
   List<Widget> listActionSlideActions({BankAccount account}) {
     return [
-      IconSlideAction(
-        caption: account.isDefault
-            ? AppLocalization.of(context).defaultMsg
-            : AppLocalization.of(context).makeDefault,
-        color: Colors.green,
-        icon: Icons.device_hub,
-        onTap: account.isDefault
-            ? () {
-                Toast.show(
-                    AppLocalization.of(context)
-                        .thisAccountIsAlreadyDefaultAccount,
-                    context,
-                    textColor: Colors.white,
-                    backgroundColor: darkBlue());
-              }
-            : () {
-                updateBankAccount(account);
-              },
-      ),
+      // IconSlideAction(
+      //   caption: account.isDefault
+      //       ? AppLocalization.of(context).defaultMsg
+      //       : AppLocalization.of(context).makeDefault,
+      //   color: Colors.green,
+      //   icon: Icons.device_hub,
+      //   onTap: account.isDefault
+      //       ? () {
+      //           Toast.show(
+      //               AppLocalization.of(context)
+      //                   .thisAccountIsAlreadyDefaultAccount,
+      //               context,
+      //               textColor: Colors.white,
+      //               backgroundColor: darkBlue());
+      //         }
+      //       : () {
+      //           updateBankAccount(account);
+      //         },
+      // ),
+
+      SlideActionButton(
+          backgroundColor: naturalGreen,
+          icon: Icons.device_hub,
+          onTap: account.isDefault
+              ? () {
+                  Toast.show(
+                      AppLocalization.of(context)
+                          .thisAccountIsAlreadyDefaultAccount,
+                      context,
+                      textColor: Colors.white,
+                      backgroundColor: darkBlue());
+                }
+              : () {
+                  updateBankAccount(account);
+                },
+          title: account.isDefault
+              ? AppLocalization.of(context).defaultMsg
+              : AppLocalization.of(context).makeDefault,
+          slideController: _slideController),
     ];
   }
 
@@ -440,7 +508,7 @@ class VerticalListItem extends StatelessWidget {
               ? Slidable.of(context)?.open()
               : Slidable.of(context)?.close(),
       child: Container(
-        color: lightBlue(),
+        color: Colors.white,
         child: child,
       ),
     );

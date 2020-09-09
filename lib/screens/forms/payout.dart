@@ -1,9 +1,12 @@
-import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
-import 'package:Slydo/widget/passcodePopup.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
+import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -40,43 +43,114 @@ class _PayoutState extends State<Payout> {
     userBloc = Provider.of<UserBloc>(context);
     bankAccountBloc = Provider.of<BankAccountBloc>(context);
 
+    // return WillPopScope(
+    //   onWillPop: () async {
+    //     return true;
+    //   },
+    //   child: Scaffold(
+    //     backgroundColor: lightBlue(),
+    //     resizeToAvoidBottomInset: true,
+    //     appBar: AppBar(
+    //         leading: showBackArrow(),
+    //         title: Center(child: Text(AppLocalization.of(context).payout)),
+    //         backgroundColor: darkBlue()),
+    //     body: SingleChildScrollView(
+    //       child: Container(
+    //         child: Center(
+    //           child: Form(
+    //             key: _formKey,
+    //             child: Column(
+    //               children: <Widget>[
+    //                 SizedBox(height: 20),
+    //                 displayBalance(),
+    //                 SizedBox(height: 10),
+    //                 getUserBankAccount(),
+    //                 SizedBox(height: 15),
+    //                 displayAmountField(),
+    //                 SizedBox(height: 15),
+    //                 noteForUser(),
+    //                 SizedBox(height: 15),
+    //                 accountBalance <= 0 ? Container() : getSubmitButton(),
+    //               ],
+    //             ),
+    //           ),
+    //         ),
+    //       ),
+    //     ),
+    //   ),
+    // );
     return WillPopScope(
       onWillPop: () async {
         return true;
       },
       child: Scaffold(
-        backgroundColor: lightBlue(),
+        backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
-        appBar: AppBar(
-            leading: showBackArrow(),
-            title: Center(child: Text(AppLocalization.of(context).payout)),
-            backgroundColor: darkBlue()),
-        body: SingleChildScrollView(
-          child: Container(
-            child: Center(
+        appBar: appBar(),
+        body: scaffoldBody(),
+      ),
+    );
+  }
+
+  Widget appBar() {
+    return AppBar(
+      elevation: 0,
+      backgroundColor: Colors.white,
+      titleSpacing: 0,
+      automaticallyImplyLeading: false,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      title: Text(
+        AppLocalization.of(context).payout,
+        style: TextStyle(
+            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
+  Widget scaffoldBody() {
+    return SingleChildScrollView(
+      child: Container(
+        height: MediaQuery.of(context).size.height -
+            (AppBar().preferredSize.height +
+                MediaQuery.of(context).padding.top),
+        width: MediaQuery.of(context).size.width,
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        child: Column(
+          children: [
+            Expanded(
               child: Form(
                 key: _formKey,
                 child: Column(
                   children: <Widget>[
-                    SizedBox(height: 20),
-                    displayBalance(),
-                    SizedBox(height: 10),
+                    // flexibleSpace(),
+                    // displayBalance(),
+
                     getUserBankAccount(),
-                    SizedBox(height: 15),
+                    flexibleSpace(),
                     displayAmountField(),
-                    SizedBox(height: 15),
+                    flexibleSpace(),
                     noteForUser(),
-                    SizedBox(height: 15),
+                    flexibleSpace(),
                     accountBalance <= 0 ? Container() : getSubmitButton(),
+                    flexibleSpace(flex: 2),
                   ],
                 ),
               ),
             ),
-          ),
+            flexibleSpace()
+          ],
         ),
       ),
     );
-    //
   }
 
   Widget showBackArrow() {
@@ -90,33 +164,38 @@ class _PayoutState extends State<Payout> {
 
   Widget getUserBankAccount() {
     return Card(
-      margin: EdgeInsets.symmetric(horizontal: 40),
-      child: ListTile(
-        title: Text(
-          bankAccountBloc.bankAccount.bankName,
-          style: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
-        ),
-        subtitle: Text('******' +
-            bankAccountBloc.bankAccount.accountNumber
-                .toString()
-                .substring(5, 9)),
-        leading: ClipOval(
-          child: CachedNetworkImage(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: EdgeInsets.zero,
+      shadowColor: dividerColor,
+      child: Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: dividerColor, width: 0.5)),
+        child: ListTile(
+          dense: true,
+          title: Text(
+            bankAccountBloc.bankAccount.bankName,
+            style: TextStyle(
+                color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),
+          ),
+          subtitle: Text(
+            '******' +
+                bankAccountBloc.bankAccount.accountNumber
+                    .toString()
+                    .substring(5, 9),
+            style: TextStyle(color: darkGrey, fontSize: 12),
+          ),
+          leading: CachedNetworkImage(
             imageUrl: bankAccountBloc.bankAccount.bankAvatar,
-            height: 45,
-            width: 45,
+            height: 48,
+            width: 48,
             colorBlendMode: BlendMode.darken,
             fit: BoxFit.cover,
             filterQuality: FilterQuality.high,
             placeholder: (context, url) =>
                 bankAccountBloc.bankAccount.bankAvatar == ""
                     ? Icon(Icons.account_balance)
-                    : CircularProgressIndicator(
-                        strokeWidth: 2.5,
-                        valueColor: AlwaysStoppedAnimation(Colors.white),
-                        backgroundColor: lightBlue(),
-                      ),
+                    : CircularLoadingIndicator(),
           ),
         ),
       ),
@@ -124,154 +203,180 @@ class _PayoutState extends State<Payout> {
   }
 
   Widget displayAmountField() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 40),
-      child: TextFormField(
-        cursorColor: darkBlue(),
-        autofocus: false,
-        obscureText: false,
-        keyboardType: TextInputType.number,
-        inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
-        decoration: InputDecoration(
-            fillColor: Colors.white,
-            filled: true,
-            prefixIcon: Container(
-              width: 20,
-              child: Center(
-                child: Text(
-                  worldCurrencies[userBloc.user.currency],
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontFamily: "Roboto",
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey[600]),
-                ),
-              ),
-            ),
-            hintText: AppLocalization.of(context).enterAmount,
-            labelStyle: TextStyle(
-              color: Colors.black,
-              fontSize: 16,
-            ),
-            border: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(4)),
-                borderSide: BorderSide(
-                    width: 1, color: Colors.white, style: BorderStyle.solid))),
-        validator: (val) {
-          if (val.isNotEmpty) {
-            try {
-              int.parse(val);
-              return null;
-            } catch (e) {}
-          }
-          return AppLocalization.of(context).invalidAmount;
-        },
-        onChanged: (val) {
-          if (mounted) {
-            setState(() {
-              amount = int.parse(val);
-            });
-          }
-        },
-      ),
+    // return Padding(
+    //   padding: EdgeInsets.symmetric(horizontal: 40),
+    //   child: TextFormField(
+    //     cursorColor: darkBlue(),
+    //     autofocus: false,
+    //     obscureText: false,
+    //     keyboardType: TextInputType.number,
+    //     inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
+    //     decoration: InputDecoration(
+    //         fillColor: Colors.white,
+    //         filled: true,
+    //         prefixIcon: Container(
+    //           width: 20,
+    //           child: Center(
+    //             child: Text(
+    //               worldCurrencies[userBloc.user.currency],
+    //               textAlign: TextAlign.center,
+    //               style: TextStyle(
+    //                   fontFamily: "Roboto",
+    //                   fontSize: 22,
+    //                   fontWeight: FontWeight.bold,
+    //                   color: Colors.grey[600]),
+    //             ),
+    //           ),
+    //         ),
+    //         hintText: AppLocalization.of(context).enterAmount,
+    //         labelStyle: TextStyle(
+    //           color: Colors.black,
+    //           fontSize: 16,
+    //         ),
+    //         border: OutlineInputBorder(
+    //             borderRadius: BorderRadius.all(Radius.circular(4)),
+    //             borderSide: BorderSide(
+    //                 width: 1, color: Colors.white, style: BorderStyle.solid))),
+    //     validator: (val) {
+    //       if (val.isNotEmpty) {
+    //         try {
+    //           int.parse(val);
+    //           return null;
+    //         } catch (e) {}
+    //       }
+    //       return AppLocalization.of(context).invalidAmount;
+    //     },
+    //     onChanged: (val) {
+    //       if (mounted) {
+    //         setState(() {
+    //           amount = int.parse(val);
+    //         });
+    //       }
+    //     },
+    //   ),
+    // );
+
+    return CustomizedTextFormField(
+      labelText: "Amount",
+      isAmount: true,
+      type: TextInputType.number,
+      inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
+      onChange: (val) {
+        if (mounted) {
+          setState(() {
+            amount = int.parse(val);
+          });
+        }
+      },
+      validator: (val) {
+        if (val.isNotEmpty) {
+          try {
+            int.parse(val);
+            return null;
+          } catch (e) {}
+        }
+        return AppLocalization.of(context).invalidAmount;
+      },
     );
   }
 
   Widget getSubmitButton() {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 40),
-      child: ButtonTheme(
-        minWidth: double.infinity,
-        child: MaterialButton(
-            elevation: 4.0,
-            textColor: Colors.white,
-            color: darkBlue(),
-            height: 50,
-            child: Text(AppLocalization.of(context).submitButton),
-            onPressed: () async {
-              //for closing the keypad if it is open
-              FocusScope.of(context).unfocus();
-
-              if (_formKey.currentState.validate()) {
-                try {
-                  var data = {
-                    "amount": amount,
-                    "currency": userBloc.user.currency,
-                  };
-                  PassCodePopup(
-                      context: context,
-                      isValidCallback: () {
-                        showDialog(
-                            context: context,
-                            builder: (context) => Center(
-                                    child: CircularProgressIndicator(
-                                  strokeWidth: 2.5,
-                                  valueColor:
-                                      AlwaysStoppedAnimation(Colors.white),
-                                  backgroundColor: lightBlue(),
-                                )));
-
-                        _auth.accountPayout(data).then((value) {
-                          response = value;
-                          if (response.statusCode == 201) {
-                            Navigator.pop(context);
-                            Navigator.of(context)
-                                .popAndPushNamed('/payout-list');
-                          } else if (response.statusCode == 500) {
-                            Navigator.pop(context);
-                            if (mounted) {
-                              setState(() {
-                                errorMessage =
-                                    AppLocalization.of(context).serverError;
-                                Toast.show(errorMessage, context,
-                                    gravity: Toast.TOP,
-                                    backgroundColor: darkBlue(),
-                                    textColor: Colors.white);
-                              });
-                            }
-                          } else if (response.statusCode == 700) {
-                            Navigator.pop(context);
-                            Navigator.pushNamed(context, "/bvn-verification");
-                          } else if (response.statusCode == 800) {
-                            Navigator.pop(context);
-                            Navigator.pushNamed(context, "/add-document");
-                          } else {
-                            Navigator.pop(context);
-                            if (mounted) {
-                              setState(() {
-                                errorMessage = AppLocalization.of(context)
-                                    .somethingWentWrong;
-                                Toast.show(errorMessage, context,
-                                    gravity: Toast.TOP,
-                                    backgroundColor: darkBlue(),
-                                    textColor: Colors.white);
-                              });
-                            }
-                          }
-                        });
-                      },
-                      cancelCallBack: () {
-                        Navigator.pop(context);
-                        Scaffold.of(context).showSnackBar(SnackBar(
-                          content:
-                              Text(AppLocalization.of(context).invalidPassword),
-                        ));
-                      });
-                } catch (e) {
-                  print(e);
-                  Toast.show(e, context,
-                      gravity: Toast.BOTTOM, backgroundColor: darkBlue());
-                }
-              }
-            }),
-      ),
+    // return Container(
+    //   margin: EdgeInsets.symmetric(horizontal: 40),
+    //   child: ButtonTheme(
+    //     minWidth: double.infinity,
+    //     child: MaterialButton(
+    //       elevation: 4.0,
+    //       textColor: Colors.white,
+    //       color: darkBlue(),
+    //       height: 50,
+    //       child: Text(AppLocalization.of(context).submitButton),
+    //       onPressed: onSubmit,
+    //     ),
+    //   ),
+    // );
+    return CurvedButton(
+      onPressed: onSubmit,
+      backgroundColor: navyBlue,
+      textColor: Colors.white,
+      text: AppLocalization.of(context).submitButton,
     );
+  }
+
+  void onSubmit() async {
+    //for closing the keypad if it is open
+    FocusScope.of(context).unfocus();
+
+    // duration for close keyboard and open passcode bottomsheet
+    await Future.delayed(Duration(milliseconds: 500));
+
+    if (_formKey.currentState.validate()) {
+      try {
+        var data = {
+          "amount": amount,
+          "currency": userBloc.user.currency,
+        };
+        BottomSheetPassCode(
+            context: context,
+            isValidCallback: () {
+              showDialog(
+                  context: context,
+                  builder: (context) =>
+                      Center(child: CircularLoadingIndicator()));
+
+              _auth.accountPayout(data).then((value) {
+                response = value;
+                if (response.statusCode == 201) {
+                  Navigator.pop(context);
+                  Navigator.of(context).popAndPushNamed('/payout-list');
+                } else if (response.statusCode == 500) {
+                  Navigator.pop(context);
+                  if (mounted) {
+                    setState(() {
+                      errorMessage = AppLocalization.of(context).serverError;
+                      Toast.show(errorMessage, context,
+                          gravity: Toast.TOP,
+                          backgroundColor: darkBlue(),
+                          textColor: Colors.white);
+                    });
+                  }
+                } else if (response.statusCode == 700) {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, "/bvn-verification");
+                } else if (response.statusCode == 800) {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, "/add-document");
+                } else {
+                  Navigator.pop(context);
+                  if (mounted) {
+                    setState(() {
+                      errorMessage =
+                          AppLocalization.of(context).somethingWentWrong;
+                      Toast.show(errorMessage, context,
+                          gravity: Toast.TOP,
+                          backgroundColor: darkBlue(),
+                          textColor: Colors.white);
+                    });
+                  }
+                }
+              });
+            },
+            cancelCallBack: () {
+              Navigator.pop(context);
+              Scaffold.of(context).showSnackBar(SnackBar(
+                content: Text(AppLocalization.of(context).invalidPassword),
+              ));
+            });
+      } catch (e) {
+        print(e);
+        Toast.show(e, context,
+            gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+      }
+    }
   }
 
   Widget displayBalance() {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 40),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[],
@@ -280,13 +385,10 @@ class _PayoutState extends State<Payout> {
   }
 
   Widget noteForUser() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 40),
-      child: Text(
-        AppLocalization.of(context).noteForUser,
-        style: TextStyle(
-            fontSize: 13, color: Colors.white, fontWeight: FontWeight.w600),
-      ),
+    return Text(
+      AppLocalization.of(context).noteForUser,
+      style: TextStyle(
+          fontSize: 12, color: blackFont, fontWeight: FontWeight.w600),
     );
   }
 

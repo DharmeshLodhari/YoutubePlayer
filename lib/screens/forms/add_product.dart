@@ -5,6 +5,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -47,54 +48,124 @@ class _AddProductState extends State<AddProduct> {
         return true;
       },
       child: Scaffold(
-        backgroundColor: lightBlue(),
+        backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
-        appBar: AppBar(
-            leading: showBackArrow(),
-            title: Center(child: Text(AppLocalization.of(context).addProduct)),
-            backgroundColor: darkBlue()),
-        body: SingleChildScrollView(
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 30),
-            child: Center(
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: <Widget>[
-                    SizedBox(height: 10),
-                    addImages(),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    addTitleField(),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    getManufacturerField(),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    getAmountField(),
-                    SizedBox(height: 10),
-                    getCategoryField(),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    getProductConditionField(),
-                    SizedBox(height: 10),
-                    getIsAvailableField(),
-                    SizedBox(height: 10),
-                    getAvailableFromField(),
-                    SizedBox(height: 10),
-                    getProductShortDescription(),
-                    SizedBox(height: 10),
-                    getProductDescription(),
-                    SizedBox(height: 10),
-                    getSubmitButton(),
-                    SizedBox(height: 20),
-                  ],
+        appBar: appBar(),
+        body: scaffoldBody(),
+      ),
+    );
+  }
+
+  Widget appBar() {
+    return AppBar(
+      elevation: 0,
+      backgroundColor: Colors.white,
+      titleSpacing: 0,
+      automaticallyImplyLeading: false,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      title: Text(
+        AppLocalization.of(context).addProduct,
+        style: TextStyle(
+            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
+  Widget scaffoldBody() {
+    // return SingleChildScrollView(
+    //   child: Container(
+    //     padding: EdgeInsets.symmetric(horizontal: 30),
+    //     child: Center(
+    //       child: Form(
+    //         key: _formKey,
+    //         child: Column(
+    //           children: <Widget>[
+    //             SizedBox(height: 10),
+    //             addImages(),
+    //             SizedBox(
+    //               height: 10,
+    //             ),
+    //             addTitleField(),
+    //             SizedBox(
+    //               height: 10,
+    //             ),
+    //             getManufacturerField(),
+    //             SizedBox(
+    //               height: 10,
+    //             ),
+    //             getAmountField(),
+    //             SizedBox(height: 10),
+    //             getCategoryField(),
+    //             SizedBox(
+    //               height: 10,
+    //             ),
+    //             getProductConditionField(),
+    //             SizedBox(height: 10),
+    //             getIsAvailableField(),
+    //             SizedBox(height: 10),
+    //             getAvailableFromField(),
+    //             SizedBox(height: 10),
+    //             getProductShortDescription(),
+    //             SizedBox(height: 10),
+    //             getProductDescription(),
+    //             SizedBox(height: 10),
+    //             getSubmitButton(),
+    //             SizedBox(height: 20),
+    //           ],
+    //         ),
+    //       ),
+    //     ),
+    //   ),
+    // );
+    return SingleChildScrollView(
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 20),
+        child: Center(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: <Widget>[
+                SizedBox(height: 10),
+                addImages(),
+                SizedBox(
+                  height: 10,
                 ),
-              ),
+                addTitleField(),
+                SizedBox(
+                  height: 10,
+                ),
+                getManufacturerField(),
+                SizedBox(
+                  height: 10,
+                ),
+                getAmountField(),
+                SizedBox(height: 10),
+                getCategoryField(),
+                SizedBox(
+                  height: 10,
+                ),
+                getProductConditionField(),
+                SizedBox(height: 10),
+                getIsAvailableField(),
+                SizedBox(height: 10),
+                getAvailableFromField(),
+                SizedBox(height: 10),
+                getProductShortDescription(),
+                SizedBox(height: 10),
+                getProductDescription(),
+                SizedBox(height: 10),
+                getSubmitButton(),
+                SizedBox(height: 20),
+              ],
             ),
           ),
         ),
@@ -112,9 +183,22 @@ class _AddProductState extends State<AddProduct> {
   }
 
   Widget addImages() {
+    // return Container(
+    //   height: 100,
+    //   color: lightBlue(),
+    //   child: ListView.builder(
+    //     controller: _scrollController,
+    //     scrollDirection: Axis.horizontal,
+    //     itemCount: productImages.length + 1,
+    //     itemBuilder: (context, index) => Container(
+    //       child: index != productImages.length
+    //           ? showImage(index)
+    //           : productImages.length != imageCount ? addImageButton() : null,
+    //     ),
+    //   ),
+    // );
     return Container(
       height: 100,
-      color: lightBlue(),
       child: ListView.builder(
         controller: _scrollController,
         scrollDirection: Axis.horizontal,
@@ -129,24 +213,56 @@ class _AddProductState extends State<AddProduct> {
   }
 
   Widget addImageButton() {
-    return Container(
-      margin: EdgeInsets.all(8.0),
-      padding: EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(color: darkBlue()),
-          borderRadius: BorderRadius.circular(5)),
-      child: InkWell(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Icon(Icons.add),
-            Text(AppLocalization.of(context).addImage),
-          ],
+    // return Container(
+    //   margin: EdgeInsets.all(8.0),
+    //   padding: EdgeInsets.all(8.0),
+    //   decoration: BoxDecoration(
+    //       color: Colors.white,
+    //       border: Border.all(color: darkBlue()),
+    //       borderRadius: BorderRadius.circular(5)),
+    //   child: InkWell(
+    //     child: Column(
+    //       mainAxisAlignment: MainAxisAlignment.center,
+    //       children: <Widget>[
+    //         Icon(Icons.add),
+    //         Text(AppLocalization.of(context).addImage),
+    //       ],
+    //     ),
+    //     onTap: () {
+    //       pickImage();
+    //     },
+    //   ),
+    // );
+    return Card(
+      margin: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      shadowColor: dividerColor,
+      child: Container(
+        width: 100,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: dividerColor, width: 0.5)),
+        child: InkWell(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Icon(
+                SlydoAppIcon.add_image,
+                color: darkGrey,
+              ),
+              SizedBox(
+                height: 4,
+              ),
+              Text(
+                AppLocalization.of(context).addImage,
+                style: TextStyle(color: darkGrey, fontSize: 14),
+              ),
+            ],
+          ),
+          onTap: () {
+            pickImage();
+          },
         ),
-        onTap: () {
-          pickImage();
-        },
       ),
     );
   }

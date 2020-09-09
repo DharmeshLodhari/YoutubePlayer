@@ -1,6 +1,7 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/tiles/payout_tile.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
@@ -74,25 +75,46 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
       },
       child: Scaffold(
         key: _scaffoldKey,
-        backgroundColor: lightBlue(),
-        appBar: AppBar(
-          backgroundColor: darkBlue(),
-          title: Text(AppLocalization.of(context).bankPayout),
-        ),
+        backgroundColor: Colors.white,
+        appBar: appBar(),
         body: SmartRefresher(
             enablePullDown: true,
             header: WaterDropHeader(
               complete: Container(),
-              waterDropColor: darkBlue(),
+              waterDropColor: navyBlue,
             ),
             controller: _refreshController,
             onRefresh: _onRefresh,
-            child: _buildTransactionList()),
+            child: _buildPayoutTransactionList()),
       ),
     );
   }
 
-  Widget _buildTransactionList() {
+  Widget appBar() {
+    return AppBar(
+      elevation: 0,
+      titleSpacing: 0,
+      backgroundColor: Colors.white,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      centerTitle: false,
+      title: Text(
+        AppLocalization.of(context).bankPayout,
+        style: TextStyle(
+            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
+  Widget _buildPayoutTransactionList() {
     return noItemInList
         ? NoItemInList(
             msg: AppLocalization.of(context).payoutHistoryEmpty,
@@ -119,11 +141,7 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
       child: new Center(
         child: new Opacity(
           opacity: isLoading ? 1.0 : 00,
-          child: CircularProgressIndicator(
-            strokeWidth: 2.5,
-            valueColor: AlwaysStoppedAnimation(Colors.white),
-            backgroundColor: lightBlue(),
-          ),
+          child: CircularLoadingIndicator(),
         ),
       ),
     );

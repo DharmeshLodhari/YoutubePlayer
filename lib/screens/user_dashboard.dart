@@ -648,7 +648,9 @@ class _UserDashboardState extends State<UserDashboard> {
       var data = value;
       var spendableBalance = data["spendable_balance"];
       accountBalance = spendableBalance.toString();
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     });
   }
 

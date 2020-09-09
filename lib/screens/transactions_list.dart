@@ -5,6 +5,7 @@ import 'package:Slydo/screens/tiles/transaction.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
@@ -204,7 +205,7 @@ class _TransactionListState extends State<TransactionList> {
   Widget appBar() {
     return AppBar(
       elevation: 0,
-      titleSpacing: 16,
+      titleSpacing: 0,
       backgroundColor: Colors.white,
       leading: IconButton(
         icon: Icon(
@@ -398,11 +399,7 @@ class _TransactionListState extends State<TransactionList> {
       child: new Center(
         child: new Opacity(
           opacity: isLoading ? 1.0 : 00,
-          child: CircularProgressIndicator(
-            strokeWidth: 2.5,
-            valueColor: AlwaysStoppedAnimation(Colors.white),
-            backgroundColor: lightBlue(),
-          ),
+          child: CircularLoadingIndicator(),
         ),
       ),
     );

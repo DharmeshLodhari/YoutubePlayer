@@ -61,4 +61,6 @@ class SlydoAppIcon {
   static const IconData minus = IconData(0xe825, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData star = IconData(0xe826, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData graph = IconData(0xe827, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData category = IconData(0xe828, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData note_filled = IconData(0xe829, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }

@@ -301,7 +301,7 @@ class _RegistrationState extends State<Registration> {
         ),
         Card(
           elevation: 0,
-          color: whiteBackground,
+          color: Colors.white,
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
               side: BorderSide(color: greyBorderColor)),

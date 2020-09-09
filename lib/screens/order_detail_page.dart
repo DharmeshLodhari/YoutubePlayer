@@ -591,6 +591,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                           children: <Widget>[
                             Divider(
                               height: 0,
+                              color: dividerColor,
                             ),
                             statusListTile(
                               title: AppLocalization.of(context).newOrder,
@@ -599,6 +600,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                             ),
                             Divider(
                               height: 0,
+                              color: dividerColor,
                             ),
                             statusListTile(
                               title:
@@ -608,6 +610,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                             ),
                             Divider(
                               height: 0,
+                              color: dividerColor,
                             ),
                             statusListTile(
                               title: AppLocalization.of(context).canceled,
@@ -616,6 +619,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                             ),
                             Divider(
                               height: 0,
+                              color: dividerColor,
                             ),
                             statusListTile(
                               title: AppLocalization.of(context).completed,
@@ -624,6 +628,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                             ),
                             Divider(
                               height: 0,
+                              color: dividerColor,
                             ),
                             statusListTile(
                               title: AppLocalization.of(context).onHold,
@@ -632,6 +637,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                             ),
                             Divider(
                               height: 0,
+                              color: dividerColor,
                             ),
                             statusListTile(
                               title: AppLocalization.of(context).pending,
@@ -640,6 +646,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                             ),
                             Divider(
                               height: 0,
+                              color: dividerColor,
                             ),
                             statusListTile(
                               title: AppLocalization.of(context).processing,
@@ -648,6 +655,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                             ),
                             Divider(
                               height: 0,
+                              color: dividerColor,
                             ),
                           ],
                         ),
