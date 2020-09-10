@@ -1,23 +1,16 @@
-import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/models/store.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:Slydo/screens/user_profile_module/user_info.dart';
 import 'package:Slydo/screens/user_profile_module/user_product_list.dart';
 import 'package:Slydo/screens/user_profile_module/user_service_list.dart';
-import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
-import 'package:Slydo/widget/noItemInList.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:connectivity/connectivity.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:popup_menu/popup_menu.dart';
 import 'package:provider/provider.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:share/share.dart';
-import 'package:toast/toast.dart';
 
 // ignore: must_be_immutable
 class UserProfile extends StatefulWidget {
@@ -44,78 +37,6 @@ class _UserProfileState extends State<UserProfile> {
   GlobalKey popupMenuBtnKeyForMenu = GlobalKey();
   var filterValue = "Info";
 
-  //for refresh controller
-  final GlobalKey<ScaffoldState> _productScaffoldKey =
-      new GlobalKey<ScaffoldState>();
-  final GlobalKey<ScaffoldState> _serviceScaffoldKey =
-      new GlobalKey<ScaffoldState>();
-
-  final _auth = AuthService();
-
-  // this variable responsible for product pagination
-  int productCount = 0;
-  String productNext = "";
-  String productPrevious = "";
-  List<Product> productList = [];
-  ScrollController _productScrollController = new ScrollController();
-  RefreshController _productsRefreshController =
-      RefreshController(initialRefresh: false);
-  bool isProductLoading = false;
-  bool noProductInList = false;
-
-  // this variable responsible for service pagination
-  int serviceCount = 0;
-  String serviceNext = "";
-  String servicePrevious = "";
-  List<Service> serviceList = [];
-  ScrollController _serviceScrollController = new ScrollController();
-  RefreshController _servicesRefreshController =
-      RefreshController(initialRefresh: false);
-  bool isServiceLoading = false;
-  bool noServiceInList = false;
-
-  void _onProductRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        productCount = 0;
-        productNext = "";
-        productPrevious = "";
-        productList = [];
-        debugPrint("Refresh called on products!!  ");
-        getProductList();
-        _productsRefreshController.refreshCompleted();
-      } else {
-        Toast.show(
-            AppLocalization.of(context).internetConnectionNotAvailable, context,
-            gravity: Toast.BOTTOM, backgroundColor: darkBlue());
-        _productsRefreshController.refreshCompleted();
-      }
-    });
-  }
-
-  void _onServiceRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        serviceCount = 0;
-        serviceNext = "";
-        servicePrevious = "";
-        serviceList = [];
-        debugPrint("Refresh called on Service!!  ");
-        getServiceList();
-        _servicesRefreshController.refreshCompleted();
-      } else {
-        Toast.show(
-            AppLocalization.of(context).internetConnectionNotAvailable, context,
-            gravity: Toast.BOTTOM, backgroundColor: darkBlue());
-        _servicesRefreshController.refreshCompleted();
-      }
-    });
-  }
-
   @override
   void initState() {
     searchedUser = arguments['searchedUser'];
@@ -131,24 +52,6 @@ class _UserProfileState extends State<UserProfile> {
         }
       });
     }
-
-    this.getProductList();
-    _productScrollController.addListener(() {
-      if (_productScrollController.position.pixels ==
-              _productScrollController.position.maxScrollExtent &&
-          _productScrollController.position.pixels != 0) {
-        getProductList();
-      }
-    });
-
-    this.getServiceList();
-    _serviceScrollController.addListener(() {
-      if (_serviceScrollController.position.pixels ==
-              _serviceScrollController.position.maxScrollExtent &&
-          _serviceScrollController.position.pixels != 0) {
-        getServiceList();
-      }
-    });
 
     super.initState();
   }
@@ -239,40 +142,161 @@ class _UserProfileState extends State<UserProfile> {
       onWillPop: () async {
         return true;
       },
-      child: Scaffold(
-        backgroundColor: lightBlue(),
-        appBar: AppBar(
-          automaticallyImplyLeading: true,
-          backgroundColor: darkBlue(),
-          titleSpacing: 0,
-          title: Text(
-            searchedUser.fullName,
-            maxLines: 1,
-          ),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.share),
-              onPressed: () {
-                var shareBody = "${searchedUser.fullName}\n" +
-                    "http://slydo.co/user/" +
-                    searchedUser.userName;
-                Share.share(shareBody, subject: "${searchedUser.fullName}");
-              },
-            ),
-            IconButton(
-              key: popupMenuBtnKeyForMenu,
-              icon: Icon(
-                Icons.more_vert,
-                color: Colors.white,
-              ),
-              onPressed: () {
-                popUpMenu();
-              },
-            )
-          ],
+      child: DefaultTabController(
+        length: 3,
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          appBar: appBar(),
+          body: tabViews(),
         ),
-        body: tabViews(),
       ),
+    );
+  }
+
+  Widget appBar() {
+    return AppBar(
+      elevation: 0,
+      backgroundColor: Colors.white,
+      titleSpacing: 0,
+      automaticallyImplyLeading: false,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          searchedUser = null;
+          Navigator.pop(context);
+        },
+      ),
+      title: Text(
+        searchedUser.fullName,
+        style: TextStyle(
+            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+        overflow: TextOverflow.fade,
+        softWrap: false,
+        maxLines: 1,
+      ),
+      bottom: tabBar(),
+      actions: <Widget>[
+        IconButton(
+          key: popupMenuBtnKeyForMenu,
+          icon: Icon(
+            Icons.more_vert,
+            color: navyBlue,
+          ),
+          onPressed: () {
+            popUpMenu();
+          },
+        ),
+        SizedBox(
+          width: 8,
+        ),
+        shareProfileIcon(),
+        SizedBox(
+          width: 16,
+        ),
+      ],
+    );
+  }
+
+  Widget tabBar() {
+    return PreferredSize(
+      preferredSize: Size.fromHeight(50.0),
+      child: TabBar(
+        labelPadding: EdgeInsets.zero,
+        indicator: BoxDecoration(),
+        onTap: (int index) {
+          currentIndex = index;
+          setState(() {});
+        },
+        tabs: [
+          Tab(
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                shape: BoxShape.rectangle,
+                color: currentIndex == 0
+                    ? navyBlue.withOpacity(0.1)
+                    : Colors.white,
+              ),
+              child: Text(
+                "Information",
+                style: TextStyle(
+                  color: currentIndex == 0 ? navyBlue : blackFont,
+                  fontSize: 14,
+                  fontWeight:
+                      currentIndex == 0 ? FontWeight.w600 : FontWeight.w400,
+                ),
+              ),
+            ),
+          ),
+          Tab(
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                shape: BoxShape.rectangle,
+                color: currentIndex == 1
+                    ? navyBlue.withOpacity(0.1)
+                    : Colors.white,
+              ),
+              child: Text(
+                "Products",
+                style: TextStyle(
+                  color: currentIndex == 1 ? navyBlue : blackFont,
+                  fontSize: 14,
+                  fontWeight:
+                      currentIndex == 1 ? FontWeight.w600 : FontWeight.w400,
+                ),
+              ),
+            ),
+          ),
+          Tab(
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                shape: BoxShape.rectangle,
+                color: currentIndex == 2
+                    ? navyBlue.withOpacity(0.1)
+                    : Colors.white,
+              ),
+              child: Text(
+                "Services",
+                style: TextStyle(
+                  color: currentIndex == 2 ? navyBlue : blackFont,
+                  fontSize: 14,
+                  fontWeight:
+                      currentIndex == 2 ? FontWeight.w600 : FontWeight.w400,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget shareProfileIcon() {
+    return RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
+      icon: Icon(
+        SlydoAppIcon.share,
+        size: 16,
+        color: blackFont,
+      ),
+      onTap: () {
+        var shareBody = "${searchedUser.fullName}\n" +
+            "http://slydo.co/user/" +
+            searchedUser.userName;
+        Share.share(shareBody, subject: "${searchedUser.fullName}");
+      },
+      backgroundColor: iconBtnGrey,
+      enableMargin: true,
     );
   }
 
@@ -322,368 +346,5 @@ class _UserProfileState extends State<UserProfile> {
         // servicesList(),
       ],
     );
-  }
-
-  Widget productsList() {
-    return Scaffold(
-      key: _productScaffoldKey,
-      body: Container(
-        color: lightBlue(),
-        padding: EdgeInsets.fromLTRB(4, 4, 4, 4),
-        child: SmartRefresher(
-            enablePullDown: true,
-            header: WaterDropHeader(
-              complete: Container(),
-              waterDropColor: darkBlue(),
-            ),
-            controller: _productsRefreshController,
-            onRefresh: _onProductRefresh,
-            child: _buildProductList()),
-      ),
-    );
-  }
-
-  Widget _buildProductList() {
-    return noProductInList
-        ? NoItemInList(
-            msg: AppLocalization.of(context).noProducts,
-          )
-        : StaggeredGridView.countBuilder(
-            controller: _productScrollController,
-            crossAxisCount: 2,
-            shrinkWrap: true,
-            itemCount: productList.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == productList.length) {
-                return _buildProductIndicator();
-              } else {
-                return Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(0),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(0),
-                      child: Column(
-                        children: <Widget>[
-                          Expanded(
-                            child: Stack(children: <Widget>[
-                              InkWell(
-                                child: CachedNetworkImage(
-                                  width: double.infinity,
-                                  imageUrl: getDisplayImage(index, productList),
-                                  fit: BoxFit.fill,
-                                  filterQuality: FilterQuality.high,
-                                ),
-                                onTap: () {
-                                  Navigator.pushNamed(context, '/product',
-                                      arguments: {
-                                        "product": productList[index]
-                                      });
-                                },
-                              ),
-                              isOwner
-                                  ? Positioned(
-                                      right: 0,
-                                      child: IconButton(
-                                        icon: Icon(
-                                          Icons.edit,
-                                          size: 20,
-                                          color: Colors.white,
-                                        ),
-                                        onPressed: () {
-                                          Navigator.of(context).pushNamed(
-                                            '/edit-product',
-                                            arguments: {
-                                              "productId": productList[index]
-                                                  .id
-                                                  .toString(),
-                                            },
-                                          );
-                                        },
-                                      ),
-                                    )
-                                  : Container()
-                            ]),
-                          ),
-                          ListTile(
-                              dense: true,
-                              title: Text(
-                                productList[index].name,
-                                maxLines: 1,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 15),
-                              ),
-                              subtitle: Text(
-                                productList[index].shortDescription,
-                                maxLines: 1,
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              trailing: RichText(
-                                text: TextSpan(children: [
-                                  TextSpan(
-                                      text: worldCurrencies[
-                                          productList[index].currency],
-                                      style: TextStyle(
-                                          fontFamily: "Roboto",
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18)),
-                                  TextSpan(text: " "),
-                                  TextSpan(
-                                      text: productList[index].price.toString(),
-                                      style: TextStyle(color: Colors.black))
-                                ]),
-                              )),
-                        ],
-                      ),
-                    ));
-              }
-            },
-            staggeredTileBuilder: (int index) =>
-                new StaggeredTile.count(2, 1.5),
-          );
-  }
-
-  Widget _buildProductIndicator() {
-    return new Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
-            opacity: isProductLoading ? 1.0 : 00,
-            child: isProductLoading
-                ? CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    valueColor: AlwaysStoppedAnimation(Colors.white),
-                    backgroundColor: lightBlue(),
-                  )
-                : Container()),
-      ),
-    );
-  }
-
-  void getProductList() async {
-    if (!isProductLoading) {
-      if (productNext != null && !isProductLoading) {
-        if (mounted) {
-          setState(() {
-            isProductLoading = true;
-          });
-        }
-        Map<String, dynamic> result = await _auth.listProductsBySeller(
-            productNext, productPrevious,
-            userId: searchedUser.userName);
-        productCount = result['count'];
-        productNext = result['next'];
-        productPrevious = result['previous'];
-        var tempList = result['results'];
-        if (mounted) {
-          setState(() {
-            noProductInList = false;
-            isProductLoading = false;
-            productList.addAll(tempList);
-          });
-        }
-      }
-      if (productList.isEmpty) {
-        if (mounted) {
-          setState(() {
-            noProductInList = true;
-          });
-        }
-      } else if (productNext == null && productList.length > 6) {
-        _productScaffoldKey.currentState.showSnackBar(SnackBar(
-          content:
-              Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
-        ));
-      }
-    }
-  }
-
-  Widget servicesList() {
-    return Scaffold(
-      key: _serviceScaffoldKey,
-      body: Container(
-        color: lightBlue(),
-        padding: EdgeInsets.fromLTRB(4, 4, 4, 4),
-        child: SmartRefresher(
-            enablePullDown: true,
-            header: WaterDropHeader(
-              complete: Container(),
-              waterDropColor: darkBlue(),
-            ),
-            controller: _servicesRefreshController,
-            onRefresh: _onServiceRefresh,
-            child: _buildServiceList()),
-      ),
-    );
-  }
-
-  Widget _buildServiceList() {
-    return noServiceInList
-        ? NoItemInList(
-            msg: AppLocalization.of(context).noServices,
-          )
-        : ListView.builder(
-            controller: _serviceScrollController,
-            itemCount: serviceList.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == serviceList.length) {
-                return _buildServiceIndicator();
-              } else {
-                return serviceTileExpanded(index);
-              }
-            });
-  }
-
-  Widget _buildServiceIndicator() {
-    return new Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
-            opacity: isServiceLoading ? 1.0 : 00,
-            child: isServiceLoading
-                ? CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    valueColor: AlwaysStoppedAnimation(Colors.white),
-                    backgroundColor: lightBlue(),
-                  )
-                : Container()),
-      ),
-    );
-  }
-
-  void getServiceList() async {
-    if (!isServiceLoading) {
-      if (serviceNext != null && !isServiceLoading) {
-        if (mounted) {
-          setState(() {
-            isServiceLoading = true;
-          });
-        }
-        Map<String, dynamic> result = await _auth.listServicesByProvider(
-            serviceNext, servicePrevious,
-            userId: searchedUser.userName);
-        serviceCount = result['count'];
-        serviceNext = result['next'];
-        servicePrevious = result['previous'];
-        var tempList = result['results'];
-        if (mounted) {
-          setState(() {
-            noServiceInList = false;
-            isServiceLoading = false;
-            serviceList.addAll(tempList);
-          });
-        }
-      }
-      if (serviceList.isEmpty) {
-        if (mounted) {
-          setState(() {
-            noServiceInList = true;
-          });
-        }
-      } else if (serviceNext == null && serviceList.length > 6) {
-        _serviceScaffoldKey.currentState.showSnackBar(SnackBar(
-          content:
-              Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
-        ));
-      }
-    }
-  }
-
-  Widget serviceTileExpanded(int index) {
-    return Card(
-        elevation: 5,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(0),
-        ),
-        child: Container(
-          height: MediaQuery.of(context).size.height / 2.75,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(0),
-            child: Column(
-              children: <Widget>[
-                Expanded(
-                  child: Stack(children: <Widget>[
-                    InkWell(
-                      child: CachedNetworkImage(
-                        width: double.infinity,
-                        imageUrl: serviceList[index].serverImages[0],
-                        fit: BoxFit.fill,
-                        filterQuality: FilterQuality.high,
-                      ),
-                      onTap: () {
-                        Navigator.pushNamed(context, '/service-detail',
-                            arguments: {"service": serviceList[index]});
-                      },
-                    ),
-                    isOwner
-                        ? Positioned(
-                            right: 0,
-                            child: IconButton(
-                              icon: Icon(
-                                Icons.edit,
-                                size: 20,
-                                color: Colors.white,
-                              ),
-                              onPressed: () {
-                                Navigator.of(context).pushNamed(
-                                  '/edit-service',
-                                  arguments: {
-                                    "serviceId":
-                                        serviceList[index].id.toString(),
-                                  },
-                                );
-                              },
-                            ),
-                          )
-                        : Container()
-                  ]),
-                ),
-                ListTile(
-                    dense: true,
-                    title: Text(
-                      serviceList[index].name,
-                      maxLines: 1,
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                    ),
-                    subtitle: Text(
-                      serviceList[index].shortDescription,
-                      maxLines: 1,
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    trailing: RichText(
-                      text: TextSpan(children: [
-                        TextSpan(
-                            text: worldCurrencies[serviceList[index].currency],
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontFamily: "Roboto",
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18)),
-                        TextSpan(text: " "),
-                        TextSpan(
-                            text: serviceList[index].price.toString(),
-                            style: TextStyle(color: Colors.black))
-                      ]),
-                    )),
-              ],
-            ),
-          ),
-        ));
-  }
-
-  String getDisplayImage(int index, List<Product> productList) {
-    return productList[index].serverImages[0];
   }
 }

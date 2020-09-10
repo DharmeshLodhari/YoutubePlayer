@@ -80,7 +80,7 @@ class _UserProductListState extends State<UserProductList> {
     return Scaffold(
       key: _productScaffoldKey,
       body: Container(
-        color: Colors.white,
+        color: lightBlue(),
         padding: EdgeInsets.fromLTRB(4, 4, 4, 4),
         child: SmartRefresher(
             enablePullDown: true,

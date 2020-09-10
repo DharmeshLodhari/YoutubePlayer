@@ -99,10 +99,11 @@ class _UserInfoState extends State<UserInfo> {
       child: Scaffold(
         key: _scaffoldUserInfoKey,
         resizeToAvoidBottomInset: true,
-        backgroundColor: Colors.white,
+        backgroundColor: lightBlue(),
         body: SingleChildScrollView(
           scrollDirection: Axis.vertical,
           child: Container(
+            color: lightBlue(),
             padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
             child: Column(
               children: <Widget>[
