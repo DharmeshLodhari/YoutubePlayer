@@ -498,7 +498,7 @@ class _SendPaymentState extends State<SendPayment> {
         }
         return null;
       },
-      onChange: (val) {
+      onChanged: (val) {
         if (mounted) {
           setState(() {
             if (!isFromProfile && _payee != null) {
@@ -587,7 +587,7 @@ class _SendPaymentState extends State<SendPayment> {
       type: TextInputType.number,
       inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
       controller: _amountController,
-      onChange: (val) {
+      onChanged: (val) {
         if (mounted) {
           setState(() {
             amount = int.parse(val);
@@ -778,7 +778,7 @@ class _SendPaymentState extends State<SendPayment> {
       textCapitalization: TextCapitalization.sentences,
       controller: _referenceController,
       enabled: product == null && service == null,
-      onChange: (val) {
+      onChanged: (val) {
         if (mounted) {
           setState(() {
             reference = val;

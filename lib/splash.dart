@@ -1,13 +1,13 @@
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:devicelocale/devicelocale.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
@@ -32,6 +32,18 @@ class _SplashScreenState extends State<SplashScreen> {
 
   // bool for to check if internet connection is available or not
   var hasConnection = true;
+
+  Widget splashLogo = Container(
+    color: navyBlue,
+    child: Center(
+        child: Image.asset(
+      "assets/images/appIcon/appIcon_foreground.png",
+      color: Colors.white,
+      height: 200,
+      fit: BoxFit.fill,
+      frameBuilder: imageFrameBuilder,
+    )),
+  );
 
   @override
   void initState() {
@@ -118,15 +130,16 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     basketBloc = Provider.of<BasketBloc>(context);
     return hasConnection
-        ? Container(
-            color: navyBlue,
-            child: Center(
-                child: SpinKitChasingDots(
-              color: Colors.white,
-              size: 100.0,
-              duration: Duration(milliseconds: 4000),
-            )),
-          )
+        // ? Container(
+        //     color: navyBlue,
+        //     child: Center(
+        //         child: SpinKitChasingDots(
+        //       color: Colors.white,
+        //       size: 100.0,
+        //       duration: Duration(milliseconds: 4000),
+        //     )),
+        //   )
+        ? splashLogo
         : Scaffold(
             backgroundColor: navyBlue,
             appBar: AppBar(

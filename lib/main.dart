@@ -104,11 +104,11 @@ class MyApp extends StatelessWidget {
         onGenerateRoute: RouteGenerator.generateRoute,
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          fontFamily: "OpenSans",
-          textSelectionHandleColor: navyBlue,
-          splashColor: Colors.transparent,
-          highlightColor: Colors.transparent,
-        ),
+            fontFamily: "OpenSans",
+            textSelectionHandleColor: navyBlue,
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+            backgroundColor: navyBlue),
       ),
     );
   }

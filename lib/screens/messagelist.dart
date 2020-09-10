@@ -426,8 +426,12 @@ class _MessageListState extends State<MessageList> {
     bool isRecipient = userBloc.user.userName == partialMessage.recipient;
 
     IconData actionIcon = isRecipient
-        ? partialMessage.isArchivedByRecipient ? Icons.archive : Icons.unarchive
-        : partialMessage.isArchivedBySender ? Icons.archive : Icons.unarchive;
+        ? partialMessage.isArchivedByRecipient
+            ? SlydoAppIcon.unarchive
+            : SlydoAppIcon.archive
+        : partialMessage.isArchivedBySender
+            ? SlydoAppIcon.unarchive
+            : SlydoAppIcon.archive;
 
     String actionText = isRecipient
         ? partialMessage.isArchivedByRecipient ? "Unarchive" : "Archive"

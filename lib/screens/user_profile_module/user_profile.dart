@@ -3,7 +3,9 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/models/user.dart';
-import 'package:Slydo/screens/user_info.dart';
+import 'package:Slydo/screens/user_profile_module/user_info.dart';
+import 'package:Slydo/screens/user_profile_module/user_product_list.dart';
+import 'package:Slydo/screens/user_profile_module/user_service_list.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/widget/noItemInList.dart';
@@ -307,8 +309,17 @@ class _UserProfileState extends State<UserProfile> {
       index: currentIndex,
       children: [
         UserInfo(user: searchedUser),
-        productsList(),
-        servicesList(),
+        UserProductList(
+          user: searchedUser,
+          isOwner: isOwner,
+        ),
+        UserServiceList(
+          user: searchedUser,
+          isOwner: isOwner,
+        ),
+
+        // productsList(),
+        // servicesList(),
       ],
     );
   }

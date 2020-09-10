@@ -261,7 +261,7 @@ class _PayoutState extends State<Payout> {
       isAmount: true,
       type: TextInputType.number,
       inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
-      onChange: (val) {
+      onChanged: (val) {
         if (mounted) {
           setState(() {
             amount = int.parse(val);

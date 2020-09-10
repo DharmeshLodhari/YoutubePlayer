@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 // ignore: must_be_immutable
 class CustomizedTextFormField extends StatefulWidget {
   Function validator;
-  Function onChange;
+  Function onChanged;
   Function onTap;
   TextEditingController controller;
   List<TextInputFormatter> inputFormatters;
@@ -25,7 +25,7 @@ class CustomizedTextFormField extends StatefulWidget {
 
   CustomizedTextFormField(
       {this.validator,
-      this.onChange,
+      this.onChanged,
       this.onTap,
       this.controller,
       this.type = TextInputType.text,
@@ -179,7 +179,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
           maxLines: widget.maxLines,
           focusNode: widget.focusNode != null ? widget.focusNode : null,
           onChanged: (val) {
-            if (widget.onChange != null) widget.onChange(val);
+            if (widget.onChanged != null) widget.onChanged(val);
             setState(() {});
           },
           onTap: () {

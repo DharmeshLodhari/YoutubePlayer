@@ -503,7 +503,7 @@ class _RequestPaymentState extends State<RequestPayment> {
         }
         return null;
       },
-      onChange: (val) {
+      onChanged: (val) {
         if (mounted) {
           setState(() {
             if (!isFromProfile && _payee != null) {
@@ -590,7 +590,7 @@ class _RequestPaymentState extends State<RequestPayment> {
       isAmount: true,
       type: TextInputType.number,
       inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
-      onChange: (val) {
+      onChanged: (val) {
         if (mounted) {
           setState(() {
             amount = int.parse(val);
@@ -775,7 +775,7 @@ class _RequestPaymentState extends State<RequestPayment> {
     return CustomizedTextFormField(
       labelText: AppLocalization.of(context).reference,
       textCapitalization: TextCapitalization.sentences,
-      onChange: (val) {
+      onChanged: (val) {
         if (mounted) {
           setState(() {
             reference = val;

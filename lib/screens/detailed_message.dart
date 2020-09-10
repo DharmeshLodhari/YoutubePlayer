@@ -1,8 +1,11 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/message.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/curved_btn.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -59,42 +62,61 @@ class _DetailedMessageState extends State<DetailedMessage> {
         return true;
       },
       child: Scaffold(
-        backgroundColor: lightBlue(),
+        backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
-        appBar: AppBar(
-            leading: showBackArrow(),
-            title: Center(child: Text(AppLocalization.of(context).message)),
-            backgroundColor: darkBlue()),
-        body: isLoading
-            ? Center(
-                child: CircularProgressIndicator(
-                  strokeWidth: 2.5,
-                  valueColor: AlwaysStoppedAnimation(Colors.white),
-                  backgroundColor: lightBlue(),
-                ),
-              )
-            : SingleChildScrollView(
-                child: Container(
-                  padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      SizedBox(height: 10),
-                      displayMessageInfo(),
-                      SizedBox(height: 10),
-                      displayReplyButton(),
-                      SizedBox(height: 10),
-                    ],
-                  ),
-                ),
-              ),
+        appBar: appBar(),
+        body: scaffoldBody(),
       ),
     );
   }
 
+  Widget appBar() {
+    return AppBar(
+      elevation: 0,
+      titleSpacing: 0,
+      backgroundColor: Colors.white,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      centerTitle: false,
+      title: Text(
+        AppLocalization.of(context).message,
+        style: TextStyle(
+            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
+  Widget scaffoldBody() {
+    return isLoading
+        ? Center(
+            child: CircularLoadingIndicator(),
+          )
+        : SingleChildScrollView(
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  displayMessageInfo(),
+                  SizedBox(height: 30),
+                  displayReplyButton(),
+                ],
+              ),
+            ),
+          );
+  }
+
   Widget displaySubject() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -103,18 +125,19 @@ class _DetailedMessageState extends State<DetailedMessage> {
             child: Text(
               message.subject,
               style: TextStyle(
-                fontSize: 22,
-                color: Colors.black,
+                color: blackFont,
                 fontWeight: FontWeight.bold,
+                fontSize: 16,
               ),
               maxLines: 1,
+              softWrap: false,
+              overflow: TextOverflow.fade,
             ),
           ),
           Text(getDate(),
               style: TextStyle(
                 fontSize: 14,
-                color: Colors.grey,
-                fontWeight: FontWeight.bold,
+                color: darkGrey,
               )),
         ],
       ),
@@ -122,19 +145,14 @@ class _DetailedMessageState extends State<DetailedMessage> {
   }
 
   Widget displaySenderInfo() {
-    return Container(
-      height: 50,
-      width: double.infinity,
-      child: ListTile(
-        leading: getLeading(),
-        title: getSender(),
-        subtitle: getRecipientWidget(),
-        trailing: Container(
-          width: 100,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[getArchivedButton(), getIsStarredButton()],
-          ),
+    return ListTile(
+      leading: getLeading(),
+      title: getSender(),
+      subtitle: getRecipientWidget(),
+      trailing: Container(
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[getArchivedButton(), getIsStarredButton()],
         ),
       ),
     );
@@ -144,6 +162,12 @@ class _DetailedMessageState extends State<DetailedMessage> {
     return Text(
       AppLocalization.of(context).to + ": ${message.recipient}",
       maxLines: 1,
+      softWrap: false,
+      overflow: TextOverflow.fade,
+      style: TextStyle(
+        color: darkGrey,
+        fontSize: 12,
+      ),
     );
   }
 
@@ -151,18 +175,14 @@ class _DetailedMessageState extends State<DetailedMessage> {
     return ClipOval(
       child: CachedNetworkImage(
         imageUrl: message.senderAvatar,
-        height: 40,
-        width: 40,
+        height: 48,
+        width: 48,
         colorBlendMode: BlendMode.darken,
         fit: BoxFit.cover,
         filterQuality: FilterQuality.high,
         placeholder: (context, url) => message.senderAvatar == ""
             ? Icon(Icons.person)
-            : CircularProgressIndicator(
-                strokeWidth: 2.5,
-                valueColor: AlwaysStoppedAnimation(Colors.white),
-                backgroundColor: lightBlue(),
-              ),
+            : CircularLoadingIndicator(),
       ),
     );
   }
@@ -171,10 +191,13 @@ class _DetailedMessageState extends State<DetailedMessage> {
     return Text(
       message.sender,
       style: TextStyle(
-        color: Colors.black,
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
+        color: blackFont,
+        fontSize: 14,
+        fontWeight: FontWeight.w600,
       ),
+      maxLines: 1,
+      softWrap: false,
+      overflow: TextOverflow.fade,
     );
   }
 
@@ -184,18 +207,21 @@ class _DetailedMessageState extends State<DetailedMessage> {
     // we are showing and modifying archive icon by message's isArchivedByRecipient property and if it sender then
     // we are showing and modifying archive icon by message's isArchivedBySender property
     bool isRecipient = userBloc.user.userName == message.recipient;
+
+    IconData icon = isRecipient
+        ? message.isArchivedByRecipient
+            ? SlydoAppIcon.archive
+            : SlydoAppIcon.unarchive
+        : message.isArchivedBySender
+            ? SlydoAppIcon.archive
+            : SlydoAppIcon.unarchive;
+
     return IconButton(
-      icon: isRecipient
-          ? message.isArchivedByRecipient
-              ? Icon(
-                  Icons.archive,
-                )
-              : Icon(Icons.unarchive)
-          : message.isArchivedBySender
-              ? Icon(
-                  Icons.archive,
-                )
-              : Icon(Icons.unarchive),
+      icon: Icon(
+        icon,
+        color: naturalGreen,
+        size: 24,
+      ),
       onPressed: () async {
         var action = isRecipient
             ? message.isArchivedByRecipient ? "unarchive" : "archive"
@@ -220,20 +246,14 @@ class _DetailedMessageState extends State<DetailedMessage> {
     // we are showing and modifying star icon by message's isStarredByRecipient property and if it sender then
     // we are showing and modifying star icon by message's isStarredBySender property
     bool isRecipient = userBloc.user.userName == message.recipient;
+    Color iconColor = isRecipient
+        ? message.isStarredByRecipient ? starYellow : greyBorderColor
+        : message.isStarredBySender ? starYellow : greyBorderColor;
     return IconButton(
-      icon: isRecipient
-          ? message.isStarredByRecipient
-              ? Icon(
-                  Icons.star,
-                  color: Colors.orangeAccent,
-                )
-              : Icon(Icons.star_border)
-          : message.isStarredBySender
-              ? Icon(
-                  Icons.star,
-                  color: Colors.orangeAccent,
-                )
-              : Icon(Icons.star_border),
+      icon: Icon(
+        SlydoAppIcon.star,
+        color: iconColor,
+      ),
       onPressed: () async {
         var action = isRecipient
             ? message.isStarredByRecipient
@@ -262,20 +282,29 @@ class _DetailedMessageState extends State<DetailedMessage> {
 
   displayMessageInfo() {
     return Card(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          displaySubject(),
-          displaySenderInfo(),
-          displayBodyOfMessage(),
-        ],
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: EdgeInsets.zero,
+      shadowColor: dividerColor,
+      child: Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: dividerColor, width: 0.5)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            displaySubject(),
+            displaySenderInfo(),
+            displayBodyOfMessage(),
+          ],
+        ),
       ),
     );
   }
 
   displayBodyOfMessage() {
     return Padding(
-      padding: const EdgeInsets.all(35.0),
+      padding: const EdgeInsets.all(16.0),
       child: RichText(
         textAlign: TextAlign.left,
         text: TextSpan(
@@ -287,13 +316,10 @@ class _DetailedMessageState extends State<DetailedMessage> {
   }
 
   displayReplyButton() {
-    return MaterialButton(
-      minWidth: double.infinity,
-      elevation: 4.0,
+    return CurvedButton(
+      backgroundColor: navyBlue,
       textColor: Colors.white,
-      color: darkBlue(),
-      height: 50,
-      child: Text(AppLocalization.of(context).reply),
+      text: AppLocalization.of(context).reply,
       onPressed: () {
         Navigator.of(context).pushNamed('/compose_message', arguments: {
           'isReply': 1,
@@ -302,5 +328,20 @@ class _DetailedMessageState extends State<DetailedMessage> {
         });
       },
     );
+    // return MaterialButton(
+    //   minWidth: double.infinity,
+    //   elevation: 4.0,
+    //   textColor: Colors.white,
+    //   color: darkBlue(),
+    //   height: 50,
+    //   child: Text(AppLocalization.of(context).reply),
+    //   onPressed: () {
+    //     Navigator.of(context).pushNamed('/compose_message', arguments: {
+    //       'isReply': 1,
+    //       'recipient': message.sender,
+    //       'subject': message.subject,
+    //     });
+    //   },
+    // );
   }
 }

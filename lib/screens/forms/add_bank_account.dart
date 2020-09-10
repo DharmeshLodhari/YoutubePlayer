@@ -317,7 +317,7 @@ class _AddAccountState extends State<AddAccount> {
       validator: (val) => val.length < 5
           ? AppLocalization.of(context).validationTextMessage
           : null,
-      onChange: (val) {
+      onChanged: (val) {
         if (mounted) {
           setState(() {
             accountName = val;
@@ -363,7 +363,7 @@ class _AddAccountState extends State<AddAccount> {
       validator: (val) => val.length < 10
           ? AppLocalization.of(context).validationTextMessage1
           : null,
-      onChange: (val) {
+      onChanged: (val) {
         if (mounted) {
           setState(() {
             accountNumber = val;

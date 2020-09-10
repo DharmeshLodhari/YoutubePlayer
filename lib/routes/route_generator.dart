@@ -33,7 +33,7 @@ import 'package:Slydo/screens/transaction_detail_page.dart';
 import 'package:Slydo/screens/transaction_graph.dart';
 import 'package:Slydo/screens/transactions_list.dart';
 import 'package:Slydo/screens/user_dashboard.dart';
-import 'package:Slydo/screens/user_profile.dart';
+import 'package:Slydo/screens/user_profile_module/user_profile.dart';
 import 'package:Slydo/screens/verify_OTP.dart';
 import 'package:Slydo/splash.dart';
 import 'package:Slydo/widget/resultReturningPasswordPopup.dart';

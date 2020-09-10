@@ -26,3 +26,25 @@ Widget flexibleSpace({int flex = 1}) {
     ),
   );
 }
+
+List monthName = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December"
+];
+
+String formatDate(DateTime dateTime) {
+  String date =
+      "${dateTime.day} ${monthName[dateTime.month]}, ${dateTime.year}";
+
+  return date;
+}

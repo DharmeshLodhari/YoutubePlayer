@@ -157,7 +157,7 @@ class _RegistrationState extends State<Registration> {
       type: TextInputType.phone,
       controller: phoneNumberController,
       validator: validatePhoneNumber,
-      onChange: (val) {
+      onChanged: (val) {
         validateField();
       },
     );

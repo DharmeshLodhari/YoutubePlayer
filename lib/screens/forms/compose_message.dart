@@ -551,7 +551,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
           }
           return null;
         },
-        onChange: (val) {
+        onChanged: (val) {
           setState(() {
             if (isReplyMessage && messageReceiver != null) {
               recipient = messageReceiver.userName;
@@ -629,7 +629,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
         }
         return null;
       },
-      onChange: (val) {
+      onChanged: (val) {
         setState(() {
           subject = val;
         });
@@ -695,7 +695,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
         }
         return null;
       },
-      onChange: (val) {
+      onChanged: (val) {
         setState(() {
           message = val;
         });

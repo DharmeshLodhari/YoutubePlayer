@@ -1,10 +1,15 @@
 import 'dart:io';
 
-import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_checkbox_field.dart';
+import 'package:Slydo/widget/customized_dropdown_field.dart';
+import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -45,52 +50,77 @@ class _AddServiceState extends State<AddService> {
         return true;
       },
       child: Scaffold(
-        backgroundColor: lightBlue(),
+        backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
-        appBar: AppBar(
-            leading: showBackArrow(),
-            title: Center(child: Text(AppLocalization.of(context).addService)),
-            backgroundColor: darkBlue()),
-        body: SingleChildScrollView(
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 30),
-            child: Center(
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: <Widget>[
-                    SizedBox(height: 10),
-                    addImages(),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    addTitleField(),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    getAmountField(),
-                    SizedBox(height: 10),
-                    getCategoryField(),
-                    SizedBox(height: 10),
-                    getIsAvailableField(),
-                    SizedBox(height: 10),
-                    getAvailableFromField(),
-                    SizedBox(height: 10),
-                    getServiceShortDescription(),
-                    SizedBox(height: 10),
-                    getServiceDescription(),
-                    SizedBox(height: 10),
-                    getSubmitButton(),
-                    SizedBox(height: 20),
-                  ],
+        appBar: appBar(),
+        body: scaffoldBody(),
+      ),
+    );
+    //
+  }
+
+  Widget appBar() {
+    return AppBar(
+      elevation: 0,
+      backgroundColor: Colors.white,
+      titleSpacing: 0,
+      automaticallyImplyLeading: false,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      title: Text(
+        "Add service",
+        style: TextStyle(
+            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
+  Widget scaffoldBody() {
+    return SingleChildScrollView(
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 20),
+        child: Center(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: <Widget>[
+                SizedBox(height: 10),
+                addImages(),
+                SizedBox(
+                  height: 10,
                 ),
-              ),
+                addTitleField(),
+                SizedBox(
+                  height: 10,
+                ),
+                getAmountField(),
+                SizedBox(height: 10),
+                getCategoryField(),
+                SizedBox(height: 16),
+                getIsAvailableField(),
+                SizedBox(height: 16),
+                getAvailableFromField(),
+                SizedBox(height: 10),
+                getServiceShortDescription(),
+                SizedBox(height: 10),
+                getServiceDescription(),
+                SizedBox(height: 40),
+                getSubmitButton(),
+                SizedBox(height: 40),
+              ],
             ),
           ),
         ),
       ),
     );
-    //
   }
 
   Widget showBackArrow() {
@@ -105,12 +135,12 @@ class _AddServiceState extends State<AddService> {
   Widget addImages() {
     return Container(
       height: 100,
-      color: lightBlue(),
       child: ListView.builder(
         controller: _scrollController,
         scrollDirection: Axis.horizontal,
         itemCount: serviceImages.length + 1,
         itemBuilder: (context, index) => Container(
+          padding: EdgeInsets.only(right: 6),
           child: index != serviceImages.length
               ? showImage(index)
               : serviceImages.length != imageCount ? addImageButton() : null,
@@ -120,24 +150,37 @@ class _AddServiceState extends State<AddService> {
   }
 
   Widget addImageButton() {
-    return Container(
-      margin: EdgeInsets.all(8.0),
-      padding: EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(color: darkBlue()),
-          borderRadius: BorderRadius.circular(5)),
-      child: InkWell(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Icon(Icons.add),
-            Text(AppLocalization.of(context).addImage),
-          ],
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      shadowColor: dividerColor,
+      margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+      child: Container(
+        width: 100,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
         ),
-        onTap: () {
-          pickImage();
-        },
+        child: InkWell(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Icon(
+                SlydoAppIcon.add_image,
+                color: darkGrey,
+              ),
+              SizedBox(
+                height: 4,
+              ),
+              Text(
+                AppLocalization.of(context).addImage,
+                style: TextStyle(color: darkGrey, fontSize: 14),
+              ),
+            ],
+          ),
+          onTap: () {
+            pickImage();
+          },
+        ),
       ),
     );
   }
@@ -175,37 +218,47 @@ class _AddServiceState extends State<AddService> {
   Widget showImage(int index) {
     return Stack(
       children: <Widget>[
-        Container(
-          height: 80,
-          width: 80,
-          margin: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.transparent),
-            borderRadius: BorderRadius.circular(5),
-            image: DecorationImage(
-                image: FileImage(
-                  serviceImages[index],
-                ),
-                fit: BoxFit.fill),
+        Card(
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          shadowColor: dividerColor,
+          margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+          child: Container(
+            width: 100,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              image: DecorationImage(
+                  image: FileImage(
+                    serviceImages[index],
+                  ),
+                  fit: BoxFit.fill),
+            ),
           ),
         ),
         Positioned(
           right: 0,
           top: 0,
           child: IconButton(
-            padding: EdgeInsets.only(right: 6, top: 8),
+            padding: EdgeInsets.only(right: 6, top: 6),
             alignment: Alignment.topRight,
-            icon: Icon(
-              Icons.close,
-              color: Colors.white,
-              size: 20,
+            icon: Container(
+              padding: EdgeInsets.all(2.0),
+              decoration: BoxDecoration(
+                color: iconBtnGrey,
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: Icon(
+                SlydoAppIcon.remove,
+                color: blackFont,
+                size: 15,
+              ),
             ),
             onPressed: () {
-              if (mounted) {
-                setState(() {
-                  serviceImages.removeAt(index);
-                });
-              }
+              setState(() {
+                serviceImages.removeAt(index);
+              });
             },
           ),
         )
@@ -214,22 +267,8 @@ class _AddServiceState extends State<AddService> {
   }
 
   Widget addTitleField() {
-    return TextFormField(
-      cursorColor: darkBlue(),
-      autofocus: false,
-      obscureText: false,
-      decoration: InputDecoration(
-          fillColor: Colors.white,
-          filled: true,
-          hintText: AppLocalization.of(context).enterServiceName,
-          labelStyle: TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-          ),
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
+    return CustomizedTextFormField(
+      labelText: "Service name",
       validator: (val) {
         if (val.isNotEmpty) {
           return null;
@@ -244,22 +283,8 @@ class _AddServiceState extends State<AddService> {
   }
 
   Widget getServiceShortDescription() {
-    return TextFormField(
-      cursorColor: darkBlue(),
-      autofocus: false,
-      obscureText: false,
-      decoration: InputDecoration(
-          fillColor: Colors.white,
-          filled: true,
-          hintText: AppLocalization.of(context).shortDescription,
-          labelStyle: TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-          ),
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
+    return CustomizedTextFormField(
+      labelText: "Short description",
       validator: (val) {
         if (val.isNotEmpty) {
           return null;
@@ -274,25 +299,10 @@ class _AddServiceState extends State<AddService> {
   }
 
   Widget getServiceDescription() {
-    return TextFormField(
-      cursorColor: darkBlue(),
-      autofocus: false,
-      obscureText: false,
+    return CustomizedTextFormField(
       maxLines: 5,
       textCapitalization: TextCapitalization.sentences,
-      decoration: InputDecoration(
-          isDense: true,
-          fillColor: Colors.white,
-          filled: true,
-          hintText: AppLocalization.of(context).describeYourServiceHere,
-          labelStyle: TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-          ),
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
+      labelText: AppLocalization.of(context).description,
       onChanged: (val) {
         serviceDescription = val;
       },
@@ -306,72 +316,85 @@ class _AddServiceState extends State<AddService> {
   }
 
   Widget getCategoryField() {
-    return Card(
-      margin: EdgeInsets.all(0),
-      child: Container(
-        padding: EdgeInsets.all(8),
-        width: double.infinity,
-        child: DropdownButton<ServiceCatagory>(
-          isExpanded: true,
-          underline: Divider(
-            color: Colors.transparent,
-          ),
-          hint: Text(AppLocalization.of(context).selectCategory),
-          value: selectedServiceCategory,
-          onChanged: (ServiceCatagory value) {
-            if (mounted) {
-              setState(() {
-                selectedServiceCategory = value;
-                serviceCategory = selectedServiceCategory.name;
-              });
-            }
-          },
-          items: serviceCategories.map((ServiceCatagory category) {
-            return DropdownMenuItem<ServiceCatagory>(
-              value: category,
-              child: Text(
-                category.name,
-                style: TextStyle(color: Colors.black),
+    return CustomizedDropDownField(
+      title: AppLocalization.of(context).category,
+      child: DropdownButton<ServiceCatagory>(
+        isExpanded: true,
+        underline: Divider(
+          color: Colors.transparent,
+        ),
+        value: selectedServiceCategory,
+        onChanged: (ServiceCatagory value) {
+          if (mounted) {
+            setState(() {
+              selectedServiceCategory = value;
+              serviceCategory = selectedServiceCategory.name;
+            });
+          }
+        },
+        style: TextStyle(
+          color: blackFont,
+          fontSize: 16,
+          fontWeight: FontWeight.w400,
+        ),
+        selectedItemBuilder: (BuildContext context) {
+          return serviceCategories.map<Widget>((ServiceCatagory category) {
+            return Container(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    category.name,
+                    style: TextStyle(
+                      color: blackFont,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
               ),
             );
-          }).toList(),
-        ),
+          }).toList();
+        },
+        items: serviceCategories.map((ServiceCatagory category) {
+          return DropdownMenuItem<ServiceCatagory>(
+            value: category,
+            child: Container(
+              child: Row(
+                children: [
+                  Text(
+                    category.name,
+                    style: TextStyle(
+                        color: category == selectedServiceCategory
+                            ? navyBlue
+                            : blackFont,
+                        fontSize: 16,
+                        fontWeight: category == selectedServiceCategory
+                            ? FontWeight.w600
+                            : FontWeight.w400),
+                  ),
+                  flexibleSpace(),
+                  category == selectedServiceCategory
+                      ? Icon(
+                          SlydoAppIcon.checked,
+                          color: navyBlue,
+                          size: 14,
+                        )
+                      : Container()
+                ],
+              ),
+            ),
+          );
+        }).toList(),
       ),
     );
   }
 
   Widget getAmountField() {
-    return TextFormField(
-      cursorColor: darkBlue(),
-      autofocus: false,
-      obscureText: false,
-      keyboardType: TextInputType.number,
-      decoration: InputDecoration(
-          prefixIcon: Container(
-            width: 20,
-            child: Center(
-              child: Text(
-                worldCurrencies[userBloc.user.currency],
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: 22,
-                    fontFamily: "Roboto",
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey[600]),
-              ),
-            ),
-          ),
-          fillColor: Colors.white,
-          filled: true,
-          hintText: AppLocalization.of(context).priceOfService,
-          labelStyle: TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-          ),
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
+    return CustomizedTextFormField(
+      type: TextInputType.number,
+      isAmount: true,
+      labelText: "Price of service",
       onChanged: (val) {
         if (val.isNotEmpty) {
           try {
@@ -396,18 +419,27 @@ class _AddServiceState extends State<AddService> {
   }
 
   Widget getSubmitButton() {
-    return ButtonTheme(
-      minWidth: double.infinity,
-      child: MaterialButton(
-          elevation: 4.0,
-          textColor: Colors.white,
-          color: darkBlue(),
-          height: 50,
-          child: Text(AppLocalization.of(context).add),
-          onPressed: () async {
-            FocusScope.of(context).unfocus();
-            addService();
-          }),
+    // return ButtonTheme(
+    //   minWidth: double.infinity,
+    //   child: MaterialButton(
+    //       elevation: 4.0,
+    //       textColor: Colors.white,
+    //       color: darkBlue(),
+    //       height: 50,
+    //       child: Text(AppLocalization.of(context).add),
+    //       onPressed: () async {
+    //         FocusScope.of(context).unfocus();
+    //         addService();
+    //       }),
+    // );
+    return CurvedButton(
+      onPressed: () async {
+        FocusScope.of(context).unfocus();
+        addService();
+      },
+      backgroundColor: navyBlue,
+      textColor: Colors.white,
+      text: "Add service",
     );
   }
 
@@ -461,27 +493,35 @@ class _AddServiceState extends State<AddService> {
   }
 
   Widget getIsAvailableField() {
-    return Row(
-      children: <Widget>[
-        Checkbox(
-          value: serviceIsAvailable,
-          activeColor: Colors.white,
-          checkColor: darkBlue(),
-          onChanged: (value) {
-            if (mounted) {
-              setState(() {
-                serviceIsAvailable = value;
-              });
-            }
-          },
-        ),
-        Text(
-          AppLocalization.of(context).isAvailable + " ? ",
-          style: TextStyle(
-            color: Colors.white,
-          ),
-        )
-      ],
+    // return Row(
+    //   children: <Widget>[
+    //     Checkbox(
+    //       value: serviceIsAvailable,
+    //       activeColor: Colors.white,
+    //       checkColor: darkBlue(),
+    //       onChanged: (value) {
+    //         if (mounted) {
+    //           setState(() {
+    //             serviceIsAvailable = value;
+    //           });
+    //         }
+    //       },
+    //     ),
+    //     Text(
+    //       AppLocalization.of(context).isAvailable + " ? ",
+    //       style: TextStyle(
+    //         color: Colors.white,
+    //       ),
+    //     )
+    //   ],
+    // );
+    return CustomizedCheckBoxField(
+      onTap: () {
+        serviceIsAvailable = !serviceIsAvailable;
+        setState(() {});
+      },
+      isChecked: serviceIsAvailable,
+      title: "Available",
     );
   }
 
@@ -504,29 +544,24 @@ class _AddServiceState extends State<AddService> {
           }
         }).catchError((error) {});
       },
-      child: Card(
+      child: CustomizedDropDownField(
+        title: "Available from",
         child: Container(
-          padding: EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(AppLocalization.of(context).availableFrom),
-              Row(
-                children: <Widget>[
-                  Icon(Icons.date_range),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Text(
-                    serviceAvailableFrom.toString().substring(0, 10),
-                    style: TextStyle(
-                      color: darkBlue(),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  )
-                ],
+          child: ListTile(
+            dense: true,
+            title: Text(
+              formatDate(serviceAvailableFrom),
+              style: TextStyle(
+                color: blackFont,
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
               ),
-            ],
+            ),
+            trailing: Icon(
+              SlydoAppIcon.date,
+              size: 16,
+              color: darkGrey,
+            ),
           ),
         ),
       ),
