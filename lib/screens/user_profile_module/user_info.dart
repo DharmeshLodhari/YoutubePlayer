@@ -3,6 +3,11 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
@@ -99,7 +104,7 @@ class _UserInfoState extends State<UserInfo> {
       child: Scaffold(
         key: _scaffoldUserInfoKey,
         resizeToAvoidBottomInset: true,
-        backgroundColor: Colors.white,
+        backgroundColor: lightGrey,
         body: SingleChildScrollView(
           scrollDirection: Axis.vertical,
           child: Container(
@@ -162,152 +167,308 @@ class _UserInfoState extends State<UserInfo> {
   }
 
   Widget displayUserInfo() {
+    // return Card(
+    //   margin: EdgeInsets.symmetric(vertical: 0, horizontal: 8),
+    //   elevation: 4.0,
+    //   child: Column(
+    //     children: <Widget>[
+    //       ListTile(
+    //           leading: ClipOval(
+    //             child: Container(
+    //               height: 45,
+    //               width: 45,
+    //               child: CachedNetworkImage(
+    //                 imageUrl: user.avatar,
+    //                 fit: BoxFit.fill,
+    //               ),
+    //             ),
+    //           ),
+    //           title: Text(user.fullName),
+    //           subtitle: Text(user.userName),
+    //           trailing: getTrailing()),
+    //       Container(
+    //           padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+    //           child: CachedNetworkImage(
+    //             imageUrl: user.qrCode,
+    //             colorBlendMode: BlendMode.darken,
+    //             fit: BoxFit.fitWidth,
+    //             filterQuality: FilterQuality.high,
+    //             placeholder: (context, url) => CircularProgressIndicator(
+    //               strokeWidth: 2.5,
+    //               valueColor: AlwaysStoppedAnimation(Colors.white),
+    //               backgroundColor: lightBlue(),
+    //             ),
+    //           )),
+    //       SizedBox(
+    //         height: 8,
+    //       ),
+    //       _userBloc.user.userName != user.userName
+    //           ? Divider(
+    //               color: darkBlue(),
+    //               height: 0,
+    //             )
+    //           : Container(),
+    //       _userBloc.user.userName != user.userName
+    //           ? Container(
+    //               height: 45,
+    //               child: Row(
+    //                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    //                 children: <Widget>[
+    //                   Expanded(
+    //                       child: isLoading
+    //                           ? CircularProgressIndicator(
+    //                               valueColor:
+    //                                   AlwaysStoppedAnimation(Colors.white),
+    //                             )
+    //                           : contactActionButtons()),
+    //                   Container(
+    //                     width: 0.5,
+    //                     height: double.infinity,
+    //                     color: darkBlue(),
+    //                   ),
+    //                   Expanded(
+    //                     child: Container(
+    //                       height: double.infinity,
+    //                       child: InkWell(
+    //                         onTap: () {
+    //                           Toast.show(
+    //                               "${user.fullName} " +
+    //                                   AppLocalization.of(context).isBlocked,
+    //                               context,
+    //                               gravity: Toast.CENTER,
+    //                               duration: Toast.LENGTH_LONG,
+    //                               backgroundColor: darkBlue(),
+    //                               textColor: Colors.white);
+    //                         },
+    //                         child: Row(
+    //                           mainAxisAlignment: MainAxisAlignment.center,
+    //                           children: <Widget>[
+    //                             Stack(
+    //                               children: <Widget>[
+    //                                 Icon(
+    //                                   Icons.group,
+    //                                   color: Colors.black,
+    //                                 ),
+    //                                 Icon(
+    //                                   Icons.block,
+    //                                   color: Colors.red,
+    //                                 )
+    //                               ],
+    //                             ),
+    //                             SizedBox(
+    //                               width: 8,
+    //                             ),
+    //                             Text(
+    //                               AppLocalization.of(context).blockUser,
+    //                               style: TextStyle(color: Colors.redAccent),
+    //                             ),
+    //                           ],
+    //                         ),
+    //                       ),
+    //                     ),
+    //                   ),
+    //                 ],
+    //               ),
+    //             )
+    //           : Container(
+    //               child: Container(
+    //                 child: Row(
+    //                   crossAxisAlignment: CrossAxisAlignment.end,
+    //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //                   children: <Widget>[
+    //                     Row(
+    //                       children: <Widget>[
+    //                         ClipOval(
+    //                           child: Container(
+    //                             color: _userBloc.user.type != "User"
+    //                                 ? _userBloc.user.type == "Business"
+    //                                     ? Colors.green
+    //                                     : Color.fromRGBO(255, 169, 57, 1)
+    //                                 : lightBlue(),
+    //                             height: 15,
+    //                             width: 15,
+    //                           ),
+    //                         ),
+    //                         SizedBox(
+    //                           width: 8,
+    //                         ),
+    //                         displayUserType()
+    //                       ],
+    //                     ),
+    //                   ],
+    //                 ),
+    //                 padding: EdgeInsets.symmetric(
+    //                   horizontal: 8.0,
+    //                   vertical: 8.0,
+    //                 ),
+    //               ),
+    //             ),
+    //     ],
+    //   ),
+    // );
+
     return Card(
-      margin: EdgeInsets.symmetric(vertical: 0, horizontal: 8),
-      elevation: 4.0,
-      child: Column(
-        children: <Widget>[
-          ListTile(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: EdgeInsets.zero,
+      shadowColor: boxShadow,
+      borderOnForeground: true,
+      child: Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: dividerColor, width: 0.5)),
+        child: Column(
+          children: <Widget>[
+            ListTile(
               leading: ClipOval(
                 child: Container(
-                  height: 45,
-                  width: 45,
+                  height: 48,
+                  width: 48,
                   child: CachedNetworkImage(
                     imageUrl: user.avatar,
                     fit: BoxFit.fill,
                   ),
                 ),
               ),
-              title: Text(user.fullName),
-              subtitle: Text(user.userName),
-              trailing: getTrailing()),
-          Container(
-              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-              child: CachedNetworkImage(
-                imageUrl: user.qrCode,
-                colorBlendMode: BlendMode.darken,
-                fit: BoxFit.fitWidth,
-                filterQuality: FilterQuality.high,
-                placeholder: (context, url) => CircularProgressIndicator(
-                  strokeWidth: 2.5,
-                  valueColor: AlwaysStoppedAnimation(Colors.white),
-                  backgroundColor: lightBlue(),
+              title: Text(
+                user.fullName,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: blackFont,
                 ),
-              )),
-          SizedBox(
-            height: 8,
-          ),
-          _userBloc.user.userName != user.userName
-              ? Divider(
-                  color: darkBlue(),
-                  height: 0,
-                )
-              : Container(),
-          _userBloc.user.userName != user.userName
-              ? Container(
-                  height: 45,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      Expanded(
-                          child: isLoading
-                              ? CircularProgressIndicator(
-                                  valueColor:
-                                      AlwaysStoppedAnimation(Colors.white),
-                                )
-                              : contactActionButtons()),
-                      Container(
-                        width: 0.5,
-                        height: double.infinity,
-                        color: darkBlue(),
-                      ),
-                      Expanded(
-                        child: Container(
+                maxLines: 1,
+                softWrap: false,
+                overflow: TextOverflow.fade,
+              ),
+              subtitle: Text(
+                user.userName,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: darkGrey,
+                ),
+                maxLines: 1,
+                softWrap: false,
+                overflow: TextOverflow.fade,
+              ),
+            ),
+            Divider(
+              color: dividerColor,
+              height: 0,
+              thickness: 1,
+            ),
+            Container(
+                padding:
+                    EdgeInsets.only(right: 40, left: 40, top: 20, bottom: 10),
+                child: CachedNetworkImage(
+                  imageUrl: user.qrCode,
+                  colorBlendMode: BlendMode.darken,
+                  fit: BoxFit.fitWidth,
+                  filterQuality: FilterQuality.high,
+                  placeholder: (context, url) => CircularLoadingIndicator(),
+                )),
+            SizedBox(
+              height: 8,
+            ),
+            _userBloc.user.userName != user.userName
+                ? Divider(
+                    color: dividerColor,
+                    height: 0,
+                    thickness: 1,
+                  )
+                : Container(),
+            _userBloc.user.userName != user.userName
+                ? Container(
+                    height: 45,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        Expanded(
+                            child: isLoading
+                                ? CircularLoadingIndicator()
+                                : contactActionButtons()),
+                        Container(
+                          width: 1,
                           height: double.infinity,
-                          child: InkWell(
-                            onTap: () {
-                              Toast.show(
-                                  "${user.fullName} " +
-                                      AppLocalization.of(context).isBlocked,
-                                  context,
-                                  gravity: Toast.CENTER,
-                                  duration: Toast.LENGTH_LONG,
-                                  backgroundColor: darkBlue(),
-                                  textColor: Colors.white);
-                            },
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Stack(
-                                  children: <Widget>[
-                                    Icon(
-                                      Icons.group,
-                                      color: Colors.black,
+                          color: dividerColor,
+                        ),
+                        Expanded(
+                          child: Container(
+                            height: double.infinity,
+                            child: InkWell(
+                              onTap: () {
+                                Toast.show(
+                                    "${user.fullName} " +
+                                        AppLocalization.of(context).isBlocked,
+                                    context,
+                                    gravity: Toast.CENTER,
+                                    duration: Toast.LENGTH_LONG,
+                                    backgroundColor: darkBlue(),
+                                    textColor: Colors.white);
+                              },
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  RoundedBackgroundIcon(
+                                    height: 28,
+                                    width: 28,
+                                    icon: Icon(
+                                      SlydoAppIcon.block,
+                                      color: mateRad,
+                                      size: 14,
                                     ),
-                                    Icon(
-                                      Icons.block,
-                                      color: Colors.red,
-                                    )
-                                  ],
-                                ),
-                                SizedBox(
-                                  width: 8,
-                                ),
-                                Text(
-                                  AppLocalization.of(context).blockUser,
-                                  style: TextStyle(color: Colors.redAccent),
-                                ),
-                              ],
+                                    backgroundColor: mateRad.withOpacity(0.1),
+                                  ),
+                                  SizedBox(
+                                    width: 8,
+                                  ),
+                                  Text(
+                                    AppLocalization.of(context).blockUser,
+                                    style:
+                                        TextStyle(color: mateRad, fontSize: 14),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                )
-              : Container(
-                  child: Container(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            ClipOval(
-                              child: Container(
-                                color: _userBloc.user.type != "User"
-                                    ? _userBloc.user.type == "Business"
-                                        ? Colors.green
-                                        : Color.fromRGBO(255, 169, 57, 1)
-                                    : lightBlue(),
-                                height: 15,
-                                width: 15,
-                              ),
-                            ),
-                            SizedBox(
-                              width: 8,
-                            ),
-                            displayUserType()
-                          ],
-                        ),
                       ],
                     ),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 8.0,
-                      vertical: 8.0,
-                    ),
+                  )
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        child: displayUserType(),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      )
+                    ],
                   ),
-                ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   Widget displayUserType() {
     if (_userBloc.user.userName == user.userName) {
-      return Text(
-        _userBloc.user.type,
-        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      return Container(
+        padding: EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(30),
+            color: _userBloc.user.type != "User"
+                ? _userBloc.user.type != "Business" ? starYellow : naturalGreen
+                : navyBlue),
+        child: Text(
+          _userBloc.user.type,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+        ),
       );
     }
     return Container();
@@ -322,52 +483,131 @@ class _UserInfoState extends State<UserInfo> {
   }
 
   Widget contactPrimaryAction() {
+    // if (isInContactList) {
+    //   return Row(
+    //     mainAxisAlignment: MainAxisAlignment.center,
+    //     children: <Widget>[
+    //       Icon(Icons.remove_circle, color: Colors.red),
+    //       SizedBox(
+    //         width: 8,
+    //       ),
+    //       Expanded(
+    //         child: Text(
+    //           "Remove Connection",
+    //           style: TextStyle(color: Colors.red, fontSize: 14),
+    //         ),
+    //       ),
+    //     ],
+    //   );
+    // } else if (isInRequestList) {
+    //   return Row(
+    //     mainAxisAlignment: MainAxisAlignment.center,
+    //     children: <Widget>[
+    //       Icon(Icons.close, color: Colors.red),
+    //       SizedBox(
+    //         width: 8,
+    //       ),
+    //       Expanded(
+    //         child: Text(
+    //           "Cancel Request",
+    //           style: TextStyle(color: Colors.red, fontSize: 14),
+    //         ),
+    //       ),
+    //     ],
+    //   );
+    // }
+    // return Row(
+    //   mainAxisAlignment: MainAxisAlignment.center,
+    //   children: <Widget>[
+    //     Icon(Icons.group_add, color: Colors.black),
+    //     SizedBox(
+    //       width: 8,
+    //     ),
+    //     Expanded(
+    //       child: Text(
+    //         "Add Connection",
+    //         style: TextStyle(color: Colors.black, fontSize: 14),
+    //       ),
+    //     ),
+    //   ],
+    // );
+
     if (isInContactList) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Icon(Icons.remove_circle, color: Colors.red),
+          flexibleSpace(),
+          RoundedBackgroundIcon(
+            height: 28,
+            width: 28,
+            icon: Icon(
+              SlydoAppIcon.remove_connection,
+              color: blackFont,
+              size: 14,
+            ),
+            backgroundColor: blackFont.withOpacity(0.1),
+          ),
           SizedBox(
             width: 8,
           ),
-          Expanded(
-            child: Text(
-              "Remove Connection",
-              style: TextStyle(color: Colors.red, fontSize: 14),
+          Text(
+            "Remove Connection",
+            style: TextStyle(
+              color: blackFont,
+              fontSize: 14,
             ),
           ),
+          flexibleSpace(),
         ],
       );
     } else if (isInRequestList) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Icon(Icons.close, color: Colors.red),
+          flexibleSpace(),
+          RoundedBackgroundIcon(
+            height: 28,
+            width: 28,
+            icon: Icon(
+              SlydoAppIcon.cancel_connection_request,
+              color: mateRad,
+              size: 14,
+            ),
+            backgroundColor: mateRad.withOpacity(0.1),
+          ),
           SizedBox(
             width: 8,
           ),
-          Expanded(
-            child: Text(
-              "Cancel Request",
-              style: TextStyle(color: Colors.red, fontSize: 14),
-            ),
+          Text(
+            "Cancel Request",
+            style: TextStyle(color: mateRad, fontSize: 14),
           ),
+          flexibleSpace(),
         ],
       );
     }
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        Icon(Icons.group_add, color: Colors.black),
+        flexibleSpace(),
+        RoundedBackgroundIcon(
+          height: 28,
+          width: 28,
+          icon: Icon(
+            SlydoAppIcon.send_connection_request,
+            color: naturalGreen,
+            size: 14,
+          ),
+          backgroundColor: naturalGreen.withOpacity(0.1),
+        ),
         SizedBox(
           width: 8,
         ),
-        Expanded(
-          child: Text(
-            "Add Connection",
-            style: TextStyle(color: Colors.black, fontSize: 14),
-          ),
+        Text(
+          "Add Connection",
+          style: TextStyle(color: naturalGreen, fontSize: 14),
         ),
+        flexibleSpace(),
       ],
     );
   }
@@ -436,58 +676,184 @@ class _UserInfoState extends State<UserInfo> {
       return Container();
     }
 
-    return Row(
-      children: <Widget>[
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(0.0, 8.0, 8.0, 8.0),
-            child: ButtonTheme(
-              //elevation: 4,
-              child: MaterialButton(
-                elevation: 4.0,
-                onPressed: () async {
-                  _auth.fetchCustomerProfile(user.userName).then((fetchedUser) {
-                    customerProfileBloc.customer = fetchedUser;
-                    Navigator.of(context).pushNamed('/request-payment',
-                        arguments: <String, bool>{
-                          'isFromProfile': false,
-                          'isRequest': true
-                        });
-                  });
-                },
-                textColor: Colors.white,
-                color: darkBlue(),
-                height: 50,
-                child: Text(AppLocalization.of(context).request),
-              ),
-            ),
-          ),
-        ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(8.0, 8.0, 0.0, 8.0),
-            child: ButtonTheme(
-              //elevation: 4,
+    // return Row(
+    //   children: <Widget>[
+    //     Expanded(
+    //       child: Padding(
+    //         padding: const EdgeInsets.fromLTRB(0.0, 8.0, 8.0, 8.0),
+    //         child: ButtonTheme(
+    //           //elevation: 4,
+    //           child: MaterialButton(
+    //             elevation: 4.0,
+    //             onPressed: () async {
+    //               _auth.fetchCustomerProfile(user.userName).then((fetchedUser) {
+    //                 customerProfileBloc.customer = fetchedUser;
+    //                 Navigator.of(context).pushNamed('/request-payment',
+    //                     arguments: <String, bool>{
+    //                       'isFromProfile': false,
+    //                       'isRequest': true
+    //                     });
+    //               });
+    //             },
+    //             textColor: Colors.white,
+    //             color: darkBlue(),
+    //             height: 50,
+    //             child: Text(AppLocalization.of(context).request),
+    //           ),
+    //         ),
+    //       ),
+    //     ),
+    //     Expanded(
+    //       child: Padding(
+    //         padding: const EdgeInsets.fromLTRB(8.0, 8.0, 0.0, 8.0),
+    //         child: ButtonTheme(
+    //           //elevation: 4,
+    //
+    //           child: MaterialButton(
+    //             elevation: 4.0,
+    //             onPressed: () {
+    //               _auth.fetchCustomerProfile(user.userName).then((fetchedUser) {
+    //                 customerProfileBloc.customer = fetchedUser;
+    //                 Navigator.of(context).pushNamed('/send-payment',
+    //                     arguments: <String, bool>{'isFromProfile': false});
+    //               });
+    //             },
+    //             textColor: Colors.white,
+    //             color: darkBlue(),
+    //             height: 50,
+    //             child: Text(AppLocalization.of(context)
+    //                 .send), // change this to make payment request button to
+    //           ),
+    //         ),
+    //       ),
+    //     ),
+    //   ],
+    // );
 
-              child: MaterialButton(
-                elevation: 4.0,
-                onPressed: () {
-                  _auth.fetchCustomerProfile(user.userName).then((fetchedUser) {
-                    customerProfileBloc.customer = fetchedUser;
-                    Navigator.of(context).pushNamed('/send-payment',
-                        arguments: <String, bool>{'isFromProfile': false});
-                  });
-                },
-                textColor: Colors.white,
-                color: darkBlue(),
-                height: 50,
-                child: Text(AppLocalization.of(context)
-                    .send), // change this to make payment request button to
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      shadowColor: Color.fromARGB(51, 50, 55, 140),
+      margin: EdgeInsets.zero,
+      child: Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: dividerColor, width: 0.5)),
+        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        child: Row(
+          children: <Widget>[
+            Expanded(
+              child: Container(
+                child: requestPaymentButton(),
               ),
             ),
-          ),
+            Container(
+              width: 1.5,
+              color: dividerColor,
+              height: 50,
+            ),
+            Expanded(
+              child: Container(
+                child: sendPaymentButton(),
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
+    );
+  }
+
+  Widget requestPaymentButton() {
+    return Theme(
+      data: Theme.of(context).copyWith(
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+      ),
+      child: InkWell(
+        child: Row(
+          children: <Widget>[
+            SizedBox(
+              height: 50,
+              width: 50,
+              child: Card(
+                elevation: 0,
+                color: navyBlue.withOpacity(0.1),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  SlydoAppIcon.receive,
+                  size: 20,
+                  color: navyBlue,
+                ),
+              ),
+            ),
+            SizedBox(
+              width: 12,
+            ),
+            Text(
+              "Request",
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+            ),
+          ],
+        ),
+        onTap: () async {
+          _auth.fetchCustomerProfile(user.userName).then((fetchedUser) {
+            customerProfileBloc.customer = fetchedUser;
+            Navigator.of(context).pushNamed('/request-payment',
+                arguments: <String, bool>{
+                  'isFromProfile': false,
+                  'isRequest': true
+                });
+          });
+        },
+      ),
+    );
+  }
+
+  Widget sendPaymentButton() {
+    return Theme(
+      data: Theme.of(context).copyWith(
+        splashColor: Colors.white,
+        highlightColor: Colors.white,
+      ),
+      child: InkWell(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            SizedBox(
+              height: 50,
+              width: 50,
+              child: Card(
+                elevation: 0,
+                color: naturalGreen.withOpacity(0.1),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  SlydoAppIcon.send,
+                  size: 20,
+                  color: naturalGreen,
+                ),
+              ),
+            ),
+            SizedBox(
+              width: 12,
+            ),
+            Text(
+              "Send",
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+            ),
+          ],
+        ),
+        onTap: () {
+          _auth.fetchCustomerProfile(user.userName).then((fetchedUser) {
+            customerProfileBloc.customer = fetchedUser;
+            Navigator.of(context).pushNamed('/send-payment',
+                arguments: <String, bool>{'isFromProfile': false});
+          });
+        },
+      ),
     );
   }
 
@@ -547,23 +913,37 @@ class _UserInfoState extends State<UserInfo> {
   }
 
   Widget displayUserProfileUpgradeOptions() {
+    // if (_userBloc.user.userName == user.userName) {
+    //   return _userBloc.user.type == "User"
+    //       ? MaterialButton(
+    //           minWidth: double.infinity,
+    //           height: 42,
+    //           child: Text(
+    //             "Upgrade Profile",
+    //             style: TextStyle(
+    //               color: Colors.white,
+    //               fontWeight: FontWeight.bold,
+    //               fontSize: 16,
+    //             ),
+    //           ),
+    //           color: darkBlue(),
+    //           onPressed: () {
+    //             Navigator.pushNamed(context, "/upgrade-user-profile");
+    //           },
+    //         )
+    //       : Container();
+    // }
+    // return Container();
+
     if (_userBloc.user.userName == user.userName) {
       return _userBloc.user.type == "User"
-          ? MaterialButton(
-              minWidth: double.infinity,
-              height: 42,
-              child: Text(
-                "Upgrade Profile",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
-              color: darkBlue(),
+          ? CurvedButton(
+              backgroundColor: navyBlue,
               onPressed: () {
                 Navigator.pushNamed(context, "/upgrade-user-profile");
               },
+              text: "Upgrade Profile",
+              textColor: Colors.white,
             )
           : Container();
     }

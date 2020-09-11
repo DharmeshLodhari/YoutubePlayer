@@ -1,10 +1,13 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/user.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/screens/tiles/user.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +25,7 @@ class _BlockListState extends State<BlockList> {
   final GlobalKey<ScaffoldState> _scaffoldBlockListKey =
       new GlobalKey<ScaffoldState>();
   final _auth = AuthService();
-  SlidableController slidableController;
+  SlidableController _slideController;
   int count = 0;
   String next = "";
   String previous = "";
@@ -44,7 +47,7 @@ class _BlockListState extends State<BlockList> {
         getList();
       }
     });
-    slidableController = SlidableController(
+    _slideController = SlidableController(
       onSlideAnimationChanged: handleSlideAnimationChanged,
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
     );
@@ -77,12 +80,12 @@ class _BlockListState extends State<BlockList> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldBlockListKey,
-      backgroundColor: lightBlue(),
+      backgroundColor: lightGrey,
       body: SmartRefresher(
           enablePullDown: true,
           header: WaterDropHeader(
             complete: Container(),
-            waterDropColor: darkBlue(),
+            waterDropColor: navyBlue,
           ),
           controller: _refreshController,
           onRefresh: _onRefresh,
@@ -118,13 +121,7 @@ class _BlockListState extends State<BlockList> {
       child: new Center(
         child: new Opacity(
             opacity: isLoading ? 1.0 : 00,
-            child: isLoading
-                ? CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    valueColor: AlwaysStoppedAnimation(Colors.white),
-                    backgroundColor: lightBlue(),
-                  )
-                : Container()),
+            child: isLoading ? CircularLoadingIndicator() : Container()),
       ),
     );
   }
@@ -185,19 +182,29 @@ class _BlockListState extends State<BlockList> {
   }
 
   List<Widget> listSecondaryActions(CustomerProfile user, int index) {
-    return [];
+    return [
+      SlideActionButton(
+        backgroundColor: naturalGreen,
+        icon: SlydoAppIcon.unblock,
+        onTap: () {
+          unBlockUserAlert(user, index);
+        },
+        title: AppLocalization.of(context).unblock,
+        slideController: _slideController,
+      ),
+    ];
   }
 
   List<Widget> listActionSlideActions(CustomerProfile user, int index) {
     return [
-      IconSlideAction(
-        caption: AppLocalization.of(context).unblock,
-        color: Colors.green,
-        icon: Icons.thumb_up,
-        onTap: () {
-          unBlockUserAlert(user, index);
-        },
-      ),
+      // IconSlideAction(
+      //   caption: AppLocalization.of(context).unblock,
+      //   color: Colors.green,
+      //   icon: Icons.thumb_up,
+      //   onTap: () {
+      //     unBlockUserAlert(user, index);
+      //   },
+      // ),
     ];
   }
 
@@ -235,7 +242,7 @@ class _BlockListState extends State<BlockList> {
       BuildContext context, CustomerProfile user, int index) {
     return Slidable(
       key: Key(user.userName),
-      controller: slidableController,
+      controller: _slideController,
       direction: Axis.horizontal,
       actionPane: SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
@@ -265,7 +272,7 @@ class VerticalListItem extends StatelessWidget {
               ? Slidable.of(context)?.open()
               : Slidable.of(context)?.close(),
       child: Container(
-        color: lightBlue(),
+        color: lightGrey,
         child: UserTile(user: user),
       ),
     );

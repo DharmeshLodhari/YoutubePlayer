@@ -74,7 +74,12 @@ class _PaymentRequestTileState extends State<PaymentRequestTile> {
         "${widget.paymentRequest.payee}",
         maxLines: 1,
         style: TextStyle(
-            color: blackFont, fontWeight: FontWeight.bold, fontSize: 15),
+          color: blackFont,
+          fontWeight: FontWeight.bold,
+          fontSize: 15,
+        ),
+        overflow: TextOverflow.fade,
+        softWrap: false,
       ),
     );
   }

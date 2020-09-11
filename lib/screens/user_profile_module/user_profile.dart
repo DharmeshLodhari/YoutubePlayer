@@ -37,22 +37,30 @@ class _UserProfileState extends State<UserProfile> {
   GlobalKey popupMenuBtnKeyForMenu = GlobalKey();
   var filterValue = "Info";
 
+  // pageview controller
+  PageController pageController;
+
   @override
   void initState() {
     searchedUser = arguments['searchedUser'];
-    if (mounted) {
-      setState(() {
-        currentIndex = arguments['index'] ?? 0;
-        if (currentIndex == 0) {
-          filterValue = "Info";
-        } else if (currentIndex == 1) {
-          filterValue = "Products";
-        } else if (currentIndex == 2) {
-          filterValue = "Services";
-        }
-      });
-    }
+    // if (mounted) {
+    //   setState(() {
+    //     currentIndex = arguments['index'] ?? 0;
+    //     if (currentIndex == 0) {
+    //       filterValue = "Info";
+    //     } else if (currentIndex == 1) {
+    //       filterValue = "Products";
+    //     } else if (currentIndex == 2) {
+    //       filterValue = "Services";
+    //     }
+    //   });
+    // }
 
+    currentIndex = arguments['index'] ?? 0;
+    pageController = PageController(initialPage: currentIndex);
+    if (mounted) {
+      setState(() {});
+    }
     super.initState();
   }
 
@@ -179,25 +187,7 @@ class _UserProfileState extends State<UserProfile> {
         maxLines: 1,
       ),
       bottom: tabBar(),
-      actions: <Widget>[
-        IconButton(
-          key: popupMenuBtnKeyForMenu,
-          icon: Icon(
-            Icons.more_vert,
-            color: navyBlue,
-          ),
-          onPressed: () {
-            popUpMenu();
-          },
-        ),
-        SizedBox(
-          width: 8,
-        ),
-        shareProfileIcon(),
-        SizedBox(
-          width: 16,
-        ),
-      ],
+      actions: actionButtons(),
     );
   }
 
@@ -210,6 +200,8 @@ class _UserProfileState extends State<UserProfile> {
         onTap: (int index) {
           currentIndex = index;
           setState(() {});
+          pageController.animateToPage(currentIndex,
+              duration: Duration(milliseconds: 500), curve: Curves.linear);
         },
         tabs: [
           Tab(
@@ -302,35 +294,49 @@ class _UserProfileState extends State<UserProfile> {
 
   List<Widget> actionButtons() {
     return [
+      // !isOwner
+      //     ? IconButton(
+      //         icon: Icon(
+      //           Icons.call,
+      //           color: Colors.white,
+      //         ),
+      //         onPressed: () {},
+      //       )
+      //     : Container(),
       !isOwner
-          ? IconButton(
+          ? RoundedBackgroundIcon(
+              height: 34,
+              width: 34,
               icon: Icon(
-                Icons.call,
-                color: Colors.white,
+                SlydoAppIcon.text_message,
+                size: 16,
+                color: blackFont,
               ),
-              onPressed: () {},
-            )
-          : Container(),
-      !isOwner
-          ? IconButton(
-              icon: Icon(
-                Icons.message,
-                color: Colors.white,
-              ),
-              onPressed: () {
+              onTap: () {
                 Navigator.of(context).pushNamed('/compose_message', arguments: {
                   'recipient': searchedUser.userName,
                   'subject': "",
                 });
               },
+              backgroundColor: iconBtnGrey,
+              enableMargin: true,
             )
-          : Container()
+          : Container(),
+      !isOwner
+          ? SizedBox(
+              width: 8,
+            )
+          : Container(),
+      shareProfileIcon(),
+      SizedBox(
+        width: 16,
+      ),
     ];
   }
 
   Widget tabViews() {
-    return IndexedStack(
-      index: currentIndex,
+    return PageView(
+      controller: pageController,
       children: [
         UserInfo(user: searchedUser),
         UserProductList(
@@ -345,6 +351,10 @@ class _UserProfileState extends State<UserProfile> {
         // productsList(),
         // servicesList(),
       ],
+      onPageChanged: (int index) {
+        currentIndex = index;
+        setState(() {});
+      },
     );
   }
 }

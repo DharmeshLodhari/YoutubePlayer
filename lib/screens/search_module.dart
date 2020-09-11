@@ -320,13 +320,14 @@ class _SearchModuleState extends State<SearchModule> {
   }
 
   Widget searchBox() {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
-      child: Theme(
-        data: Theme.of(context).copyWith(
-          textSelectionHandleColor: navyBlue,
-        ),
-        child: TextFormField(
+    try {
+      return Container(
+        padding: EdgeInsets.symmetric(horizontal: 16),
+        child: Theme(
+          data: Theme.of(context).copyWith(
+            textSelectionHandleColor: navyBlue,
+          ),
+          child: TextFormField(
             key: textFormField,
             controller: searchItemTextController,
             style: TextStyle(
@@ -385,9 +386,13 @@ class _SearchModuleState extends State<SearchModule> {
                 getList();
                 FocusScope.of(context).unfocus();
               }
-            }),
-      ),
-    );
+            },
+          ),
+        ),
+      );
+    } catch (e) {
+      return Container();
+    }
   }
 
   Widget searchTypeSelection() {

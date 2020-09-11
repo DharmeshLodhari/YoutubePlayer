@@ -1,4 +1,5 @@
 import 'package:Slydo/models/user.dart';
+import 'package:Slydo/utils/colors.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
@@ -10,8 +11,8 @@ class UserTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget avatarImage = Container(
-        height: 50,
-        width: 50,
+        height: 48,
+        width: 48,
         child: ClipOval(
           child: CachedNetworkImage(
             imageUrl: user.avatar == ""
@@ -23,27 +24,42 @@ class UserTile extends StatelessWidget {
           ),
         ));
 
-    Widget tile = Container(
-        padding: EdgeInsets.symmetric(horizontal: 20),
-        child: Card(
-          semanticContainer: true,
-          child: ListTile(
-            dense: true,
-            title: Text(
-              user.fullName,
-              maxLines: 1,
-              style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15),
+    Widget tile = Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      shadowColor: boxShadow,
+      elevation: 2,
+      child: Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: dividerColor, width: 0.5)),
+        child: ListTile(
+          dense: true,
+          title: Text(
+            user.fullName,
+            maxLines: 1,
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.bold,
+              fontSize: 15,
             ),
-            subtitle: Text(
-              user.userName,
-              maxLines: 1,
-            ),
-            leading: avatarImage,
+            overflow: TextOverflow.fade,
+            softWrap: false,
           ),
-        ));
+          subtitle: Text(
+            user.userName,
+            maxLines: 1,
+            style: TextStyle(
+              color: darkGrey,
+              fontSize: 12,
+            ),
+            overflow: TextOverflow.fade,
+            softWrap: false,
+          ),
+          leading: avatarImage,
+        ),
+      ),
+    );
 
     return tile;
   }

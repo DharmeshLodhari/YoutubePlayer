@@ -2,6 +2,9 @@ import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
@@ -75,120 +78,187 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
         return true;
       },
       child: Scaffold(
-        backgroundColor: lightBlue(),
+        backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
-        appBar: AppBar(
-          backgroundColor: darkBlue(),
-          title: Text("Upgrade Profile"),
-          elevation: 0.0,
-        ),
-        body: isLoading
-            ? Center(
-                child: CircularProgressIndicator(
-                  strokeWidth: 2.5,
-                  valueColor: AlwaysStoppedAnimation(Colors.white),
-                  backgroundColor: lightBlue(),
-                ),
-              )
-            : SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Form(
-                  key: _formKey,
-                  child: Container(
-                    color: lightBlue(),
-                    padding: EdgeInsets.symmetric(horizontal: 24),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      children: <Widget>[
-                        SizedBox(
-                          height: 30,
-                        ),
-                        getUpgradeProfileType(),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        getBusinessName(),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        getCategoryField(),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        getAmount(),
-                        SizedBox(
-                          height: 25,
-                        ),
-                        submitButton()
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+        appBar: appBar(),
+        body: scaffoldBody(),
       ),
     );
   }
 
-  Widget getUpgradeProfileType() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text("Account Type"),
-        SizedBox(
-          height: 4,
+  Widget appBar() {
+    return AppBar(
+      elevation: 0,
+      backgroundColor: Colors.white,
+      titleSpacing: 0,
+      automaticallyImplyLeading: false,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
         ),
-        Card(
-          margin: EdgeInsets.all(0),
-          child: Container(
-            padding: EdgeInsets.all(8),
-            width: double.infinity,
-            child: DropdownButton<String>(
-              isExpanded: true,
-              underline: Divider(
-                color: Colors.transparent,
-              ),
-              hint: Row(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: Icon(
-                      Icons.supervised_user_circle,
-                      color: Colors.grey[600],
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      title: Text(
+        "Upgrade profile",
+        style: TextStyle(
+            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
+  Widget scaffoldBody() {
+    return isLoading
+        ? Center(
+            child: CircularLoadingIndicator(),
+          )
+        : SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: Container(
+              height: MediaQuery.of(context).size.height -
+                  (AppBar().preferredSize.height +
+                      MediaQuery.of(context).padding.top),
+              width: MediaQuery.of(context).size.width,
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              child: Column(
+                children: [
+                  Expanded(
+                    flex: 8,
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        children: <Widget>[
+                          getUpgradeProfileType(),
+                          flexibleSpace(),
+                          getBusinessName(),
+                          flexibleSpace(),
+                          getCategoryField(),
+                          flexibleSpace(),
+                          getAmount(),
+                          flexibleSpace(),
+                          submitButton(),
+                          flexibleSpace(),
+                        ],
+                      ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 16.0),
-                    child: Text("Profile Type"),
-                  ),
+                  flexibleSpace(flex: 2)
                 ],
               ),
-              value: selectedType,
-              onChanged: (value) {
-                setState(() {
-                  selectedType = value;
-                  type.forEach((element) {
-                    if (element["name"] == selectedType) {
-                      price = element["price"];
-                    }
-                  });
-                });
-              },
-              items: type.map((type) {
-                return DropdownMenuItem<String>(
-                  value: type["name"],
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 0),
-                    child: Text(
-                      type["name"],
-                      style: TextStyle(color: Colors.black),
-                    ),
-                  ),
-                );
-              }).toList(),
             ),
-          ),
+          );
+  }
+
+  Widget getUpgradeProfileType() {
+    // return Column(
+    //   crossAxisAlignment: CrossAxisAlignment.start,
+    //   children: <Widget>[
+    //     Text("Account Type"),
+    //     SizedBox(
+    //       height: 4,
+    //     ),
+    //     Card(
+    //       margin: EdgeInsets.all(0),
+    //       child: Container(
+    //         padding: EdgeInsets.all(8),
+    //         width: double.infinity,
+    //         child: DropdownButton<String>(
+    //           isExpanded: true,
+    //           underline: Divider(
+    //             color: Colors.transparent,
+    //           ),
+    //           hint: Row(
+    //             children: <Widget>[
+    //               Padding(
+    //                 padding: const EdgeInsets.only(left: 8.0),
+    //                 child: Icon(
+    //                   Icons.supervised_user_circle,
+    //                   color: Colors.grey[600],
+    //                 ),
+    //               ),
+    //               Padding(
+    //                 padding: const EdgeInsets.only(left: 16.0),
+    //                 child: Text("Profile Type"),
+    //               ),
+    //             ],
+    //           ),
+    //           value: selectedType,
+    //           onChanged: (value) {
+    //             setState(() {
+    //               selectedType = value;
+    //               type.forEach((element) {
+    //                 if (element["name"] == selectedType) {
+    //                   price = element["price"];
+    //                 }
+    //               });
+    //             });
+    //           },
+    //           items: type.map((type) {
+    //             return DropdownMenuItem<String>(
+    //               value: type["name"],
+    //               child: Padding(
+    //                 padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 0),
+    //                 child: Text(
+    //                   type["name"],
+    //                   style: TextStyle(color: Colors.black),
+    //                 ),
+    //               ),
+    //             );
+    //           }).toList(),
+    //         ),
+    //       ),
+    //     ),
+    //   ],
+    // );
+    return CustomizedDropDownField(
+      title: "Account type",
+      child: DropdownButton<String>(
+        isExpanded: true,
+        underline: Divider(
+          color: Colors.transparent,
         ),
-      ],
+        hint: Row(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: Icon(
+                Icons.supervised_user_circle,
+                color: Colors.grey[600],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0),
+              child: Text("Profile Type"),
+            ),
+          ],
+        ),
+        value: selectedType,
+        onChanged: (value) {
+          setState(() {
+            selectedType = value;
+            type.forEach((element) {
+              if (element["name"] == selectedType) {
+                price = element["price"];
+              }
+            });
+          });
+        },
+        items: type.map((type) {
+          return DropdownMenuItem<String>(
+            value: type["name"],
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 0),
+              child: Text(
+                type["name"],
+                style: TextStyle(color: Colors.black),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
     );
   }
 

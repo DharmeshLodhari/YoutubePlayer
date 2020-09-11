@@ -4,10 +4,14 @@ import 'package:Slydo/models/store.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:toast/toast.dart';
 
@@ -78,7 +82,7 @@ class _UserServiceListState extends State<UserServiceList> {
     return Scaffold(
       key: _serviceScaffoldKey,
       body: Container(
-        color: Colors.white,
+        color: lightGrey,
         padding: EdgeInsets.fromLTRB(4, 4, 4, 4),
         child: SmartRefresher(
             enablePullDown: true,
@@ -94,20 +98,41 @@ class _UserServiceListState extends State<UserServiceList> {
   }
 
   Widget _buildServiceList() {
+    // return noServiceInList
+    //     ? NoItemInList(
+    //         msg: AppLocalization.of(context).noServices,
+    //       )
+    //     : ListView.builder(
+    //         controller: _serviceScrollController,
+    //         itemCount: serviceList.length + 1,
+    //         itemBuilder: (BuildContext context, int index) {
+    //           if (index == serviceList.length) {
+    //             return _buildServiceIndicator();
+    //           } else {
+    //             return serviceTileExpanded(index);
+    //           }
+    //         });
     return noServiceInList
         ? NoItemInList(
             msg: AppLocalization.of(context).noServices,
           )
-        : ListView.builder(
+        : StaggeredGridView.countBuilder(
             controller: _serviceScrollController,
+            crossAxisCount: 2,
+            shrinkWrap: true,
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            mainAxisSpacing: 20,
             itemCount: serviceList.length + 1,
             itemBuilder: (BuildContext context, int index) {
               if (index == serviceList.length) {
                 return _buildServiceIndicator();
               } else {
-                return serviceTileExpanded(index);
+                return serviceTile(index);
               }
-            });
+            },
+            staggeredTileBuilder: (int index) =>
+                new StaggeredTile.count(2, 1.2),
+          );
   }
 
   Widget _buildServiceIndicator() {
@@ -116,13 +141,7 @@ class _UserServiceListState extends State<UserServiceList> {
       child: new Center(
         child: new Opacity(
             opacity: isServiceLoading ? 1.0 : 00,
-            child: isServiceLoading
-                ? CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    valueColor: AlwaysStoppedAnimation(Colors.white),
-                    backgroundColor: lightBlue(),
-                  )
-                : Container()),
+            child: isServiceLoading ? CircularLoadingIndicator() : Container()),
       ),
     );
   }
@@ -166,89 +185,178 @@ class _UserServiceListState extends State<UserServiceList> {
     }
   }
 
-  Widget serviceTileExpanded(int index) {
+  Widget serviceTile(int index) {
+    // return Card(
+    //     elevation: 5,
+    //     shape: RoundedRectangleBorder(
+    //       borderRadius: BorderRadius.circular(0),
+    //     ),
+    //     child: Container(
+    //       height: MediaQuery.of(context).size.height / 2.75,
+    //       child: ClipRRect(
+    //         borderRadius: BorderRadius.circular(0),
+    //         child: Column(
+    //           children: <Widget>[
+    //             Expanded(
+    //               child: Stack(children: <Widget>[
+    //                 InkWell(
+    //                   child: CachedNetworkImage(
+    //                     width: double.infinity,
+    //                     imageUrl: serviceList[index].serverImages[0],
+    //                     fit: BoxFit.fill,
+    //                     filterQuality: FilterQuality.high,
+    //                   ),
+    //                   onTap: () {
+    //                     Navigator.pushNamed(context, '/service-detail',
+    //                         arguments: {"service": serviceList[index]});
+    //                   },
+    //                 ),
+    //                 widget.isOwner
+    //                     ? Positioned(
+    //                         right: 0,
+    //                         child: IconButton(
+    //                           icon: Icon(
+    //                             Icons.edit,
+    //                             size: 20,
+    //                             color: Colors.white,
+    //                           ),
+    //                           onPressed: () {
+    //                             Navigator.of(context).pushNamed(
+    //                               '/edit-service',
+    //                               arguments: {
+    //                                 "serviceId":
+    //                                     serviceList[index].id.toString(),
+    //                               },
+    //                             );
+    //                           },
+    //                         ),
+    //                       )
+    //                     : Container()
+    //               ]),
+    //             ),
+    //             ListTile(
+    //                 dense: true,
+    //                 title: Text(
+    //                   serviceList[index].name,
+    //                   maxLines: 1,
+    //                   style:
+    //                       TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+    //                 ),
+    //                 subtitle: Text(
+    //                   serviceList[index].shortDescription,
+    //                   maxLines: 1,
+    //                   style: TextStyle(
+    //                     color: Colors.grey,
+    //                     fontSize: 13,
+    //                     fontWeight: FontWeight.w500,
+    //                   ),
+    //                 ),
+    //                 trailing: RichText(
+    //                   text: TextSpan(children: [
+    //                     TextSpan(
+    //                         text: worldCurrencies[serviceList[index].currency],
+    //                         style: TextStyle(
+    //                             color: Colors.black,
+    //                             fontFamily: "Roboto",
+    //                             fontWeight: FontWeight.bold,
+    //                             fontSize: 18)),
+    //                     TextSpan(text: " "),
+    //                     TextSpan(
+    //                         text: serviceList[index].price.toString(),
+    //                         style: TextStyle(color: Colors.black))
+    //                   ]),
+    //                 )),
+    //           ],
+    //         ),
+    //       ),
+    //     ));
     return Card(
-        elevation: 5,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(0),
-        ),
-        child: Container(
-          height: MediaQuery.of(context).size.height / 2.75,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(0),
-            child: Column(
-              children: <Widget>[
-                Expanded(
-                  child: Stack(children: <Widget>[
-                    InkWell(
-                      child: CachedNetworkImage(
-                        width: double.infinity,
-                        imageUrl: serviceList[index].serverImages[0],
-                        fit: BoxFit.fill,
-                        filterQuality: FilterQuality.high,
-                      ),
-                      onTap: () {
-                        Navigator.pushNamed(context, '/service-detail',
-                            arguments: {"service": serviceList[index]});
-                      },
+        elevation: 2,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        margin: EdgeInsets.zero,
+        shadowColor: boxShadow,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: Column(
+            children: <Widget>[
+              Expanded(
+                child: Stack(children: <Widget>[
+                  InkWell(
+                    child: CachedNetworkImage(
+                      width: double.infinity,
+                      imageUrl: serviceList[index].serverImages[0],
+                      fit: BoxFit.fill,
+                      filterQuality: FilterQuality.high,
                     ),
-                    widget.isOwner
-                        ? Positioned(
-                            right: 0,
-                            child: IconButton(
-                              icon: Icon(
-                                Icons.edit,
-                                size: 20,
-                                color: Colors.white,
-                              ),
-                              onPressed: () {
-                                Navigator.of(context).pushNamed(
-                                  '/edit-service',
-                                  arguments: {
-                                    "serviceId":
-                                        serviceList[index].id.toString(),
-                                  },
-                                );
-                              },
+                    onTap: () {
+                      Navigator.pushNamed(context, '/service-detail',
+                          arguments: {"service": serviceList[index]});
+                    },
+                  ),
+                  widget.isOwner
+                      ? Positioned(
+                          right: 8,
+                          top: 8,
+                          child: RoundedBackgroundIcon(
+                            height: 28,
+                            width: 28,
+                            backgroundColor: Colors.white,
+                            icon: Icon(
+                              SlydoAppIcon.edit,
+                              color: blackFont,
+                              size: 12,
                             ),
-                          )
-                        : Container()
-                  ]),
-                ),
-                ListTile(
-                    dense: true,
-                    title: Text(
-                      serviceList[index].name,
-                      maxLines: 1,
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                    ),
-                    subtitle: Text(
-                      serviceList[index].shortDescription,
-                      maxLines: 1,
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    trailing: RichText(
-                      text: TextSpan(children: [
-                        TextSpan(
-                            text: worldCurrencies[serviceList[index].currency],
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontFamily: "Roboto",
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18)),
-                        TextSpan(text: " "),
-                        TextSpan(
-                            text: serviceList[index].price.toString(),
-                            style: TextStyle(color: Colors.black))
-                      ]),
-                    )),
-              ],
-            ),
+                            onTap: () {
+                              Navigator.of(context).pushNamed(
+                                '/edit-service',
+                                arguments: {
+                                  "serviceId": serviceList[index].id.toString(),
+                                },
+                              );
+                            },
+                          ),
+                        )
+                      : Container()
+                ]),
+              ),
+              ListTile(
+                  dense: true,
+                  title: Text(
+                    serviceList[index].name,
+                    maxLines: 1,
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: blackFont),
+                    softWrap: false,
+                    overflow: TextOverflow.fade,
+                  ),
+                  subtitle: Text(
+                    serviceList[index].shortDescription,
+                    maxLines: 1,
+                    style: TextStyle(fontSize: 14, color: darkGrey),
+                    softWrap: false,
+                    overflow: TextOverflow.fade,
+                  ),
+                  trailing: RichText(
+                    text: TextSpan(children: [
+                      TextSpan(
+                          text: worldCurrencies[serviceList[index].currency],
+                          style: TextStyle(
+                              fontFamily: "Roboto",
+                              color: navyBlue,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14)),
+                      TextSpan(
+                          text: serviceList[index].price.toString(),
+                          style: TextStyle(
+                            color: navyBlue,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ))
+                    ]),
+                  )),
+            ],
           ),
         ));
   }

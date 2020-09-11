@@ -4,8 +4,11 @@ import 'package:Slydo/models/user.dart';
 import 'package:Slydo/screens/tiles/user.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +28,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
       new GlobalKey<ScaffoldState>();
   UserBloc userBloc;
   final _auth = AuthService();
-  SlidableController slidableController;
+  SlidableController _slideController;
   int count = 0;
   String next = "";
   String previous = "";
@@ -47,7 +50,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
         getList();
       }
     });
-    slidableController = SlidableController(
+    _slideController = SlidableController(
       onSlideAnimationChanged: handleSlideAnimationChanged,
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
     );
@@ -81,12 +84,12 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
     userBloc = Provider.of<UserBloc>(context);
     return Scaffold(
       key: _scaffoldContactRequestListKey,
-      backgroundColor: lightBlue(),
+      backgroundColor: lightGrey,
       body: SmartRefresher(
           enablePullDown: true,
           header: WaterDropHeader(
             complete: Container(),
-            waterDropColor: darkBlue(),
+            waterDropColor: navyBlue,
           ),
           controller: _refreshController,
           onRefresh: _onRefresh,
@@ -123,13 +126,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
       child: new Center(
         child: new Opacity(
             opacity: isLoading ? 1.0 : 00,
-            child: isLoading
-                ? CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    valueColor: AlwaysStoppedAnimation(Colors.white),
-                    backgroundColor: lightBlue(),
-                  )
-                : Container()),
+            child: isLoading ? CircularLoadingIndicator() : Container()),
       ),
     );
   }
@@ -203,25 +200,44 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
     String caption = AppLocalization.of(context).reject;
 
     return [
-      IconSlideAction(
-          caption: caption,
-          color: Colors.red,
-          icon: Icons.cancel,
-          onTap: () async {
-            rejectRequestAlert(user, index);
-          }),
+      // IconSlideAction(
+      //   caption: caption,
+      //   color: Colors.red,
+      //   icon: Icons.cancel,
+      //   onTap: () async {
+      //     rejectRequestAlert(user, index);
+      //   },
+      // ),
+      SlideActionButton(
+        backgroundColor: mateRad,
+        icon: SlydoAppIcon.cancel_connection_request,
+        onTap: () {
+          rejectRequestAlert(user, index);
+        },
+        title: AppLocalization.of(context).reject,
+        slideController: _slideController,
+      ),
     ];
   }
 
   List<Widget> listActionSlideActions(CustomerProfile user, int index) {
     return [
-      IconSlideAction(
-        caption: AppLocalization.of(context).accept,
-        color: Colors.green,
-        icon: Icons.group_add,
+      // IconSlideAction(
+      //   caption: AppLocalization.of(context).accept,
+      //   color: Colors.green,
+      //   icon: Icons.group_add,
+      //   onTap: () {
+      //     acceptFriendRequestAlert(user, index);
+      //   },
+      // ),
+      SlideActionButton(
+        backgroundColor: navyBlue,
+        icon: SlydoAppIcon.send_connection_request,
         onTap: () {
           acceptFriendRequestAlert(user, index);
         },
+        title: AppLocalization.of(context).accept,
+        slideController: _slideController,
       ),
     ];
   }
@@ -292,7 +308,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
       BuildContext context, CustomerProfile user, int index) {
     return Slidable(
       key: Key(user.userName),
-      controller: slidableController,
+      controller: _slideController,
       direction: Axis.horizontal,
       actionPane: SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
@@ -322,7 +338,7 @@ class VerticalListItem extends StatelessWidget {
               ? Slidable.of(context)?.open()
               : Slidable.of(context)?.close(),
       child: Container(
-        color: lightBlue(),
+        color: lightGrey,
         child: UserTile(user: user),
       ),
     );
