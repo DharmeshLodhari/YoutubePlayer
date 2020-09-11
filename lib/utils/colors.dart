@@ -21,6 +21,7 @@ HexColor darkBlue() {
 }
 
 Color navyBlue = HexColor("#3F61DB");
+Color navyBlueLight = HexColor("#BEC2F4");
 Color naturalGreen = HexColor("#46CE7C");
 Color whiteBackground = HexColor("#F9F8F8");
 Color blackFont = HexColor("#030F36");

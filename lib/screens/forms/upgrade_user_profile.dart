@@ -4,7 +4,9 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
+import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
@@ -220,20 +222,17 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
         underline: Divider(
           color: Colors.transparent,
         ),
-        hint: Row(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(left: 8.0),
-              child: Icon(
-                Icons.supervised_user_circle,
-                color: Colors.grey[600],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 16.0),
-              child: Text("Profile Type"),
-            ),
-          ],
+        icon: Padding(
+          padding: EdgeInsets.only(right: 8.0),
+          child: Icon(
+            Icons.keyboard_arrow_down,
+            color: darkGrey,
+            size: 20,
+          ),
+        ),
+        hint: Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: Text("Profile type"),
         ),
         value: selectedType,
         onChanged: (value) {
@@ -253,7 +252,10 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
               padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 0),
               child: Text(
                 type["name"],
-                style: TextStyle(color: Colors.black),
+                style: TextStyle(
+                    color: blackFont,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600),
               ),
             ),
           );
@@ -263,194 +265,269 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
   }
 
   Widget getBusinessName() {
-    return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text("Business Name"),
-          SizedBox(
-            height: 4,
-          ),
-          TextFormField(
-            autofocus: false,
-            obscureText: false,
-            keyboardType: TextInputType.text,
-            decoration: InputDecoration(
-                prefixIcon: Icon(Icons.person),
-                fillColor: Colors.white,
-                filled: true,
-                hintText: "Enter Your Business name",
-                labelStyle: TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                ),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(4)),
-                    borderSide: BorderSide(
-                        width: 1,
-                        color: Colors.green,
-                        style: BorderStyle.solid))),
-            validator: (val) => val.length < 5
-                ? AppLocalization.of(context).validationTextMessage
-                : null,
-            onChanged: (val) {
-              if (mounted) {
-                setState(() {
-                  businessName = val;
-                });
-              }
-            },
-          ),
-        ]);
-  }
-
-  Widget getCategoryField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text("Default Payment Type "),
-        SizedBox(
-          height: 4,
-        ),
-        Card(
-          margin: EdgeInsets.all(0),
-          child: Container(
-            padding: EdgeInsets.all(8),
-            width: double.infinity,
-            child: DropdownButton<String>(
-              isExpanded: true,
-              underline: Divider(
-                color: Colors.transparent,
-              ),
-              hint: Row(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: Icon(
-                      Icons.category,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 16.0),
-                    child: Text(AppLocalization.of(context).category),
-                  ),
-                ],
-              ),
-              value: selectedCategory,
-              onChanged: (String value) {
-                setState(() {
-                  selectedCategory = value;
-                });
-              },
-              items: paymentCategories.map((String category) {
-                return DropdownMenuItem<String>(
-                  value: category,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 0),
-                    child: Text(
-                      category,
-                      style: TextStyle(color: Colors.black),
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget submitButton() {
-    return MaterialButton(
-      minWidth: double.infinity,
-      height: 42,
-      child: Text(
-        "Submit",
-        style: TextStyle(color: Colors.white, fontSize: 16),
-      ),
-      color: darkBlue(),
-      onPressed: () {
-        var data = {
-          "account_type": selectedType.toString().trim(),
-          "business_name": businessName.toString().trim(),
-          "default_payment_type": selectedCategory.toString().trim(),
-        };
-        _auth.upgradeUserProfile(data).then((result) {
-          if (result) {
-            Toast.show(
-                "Request sent !! Your Profile Will Be Updated Soon !!", context,
-                textColor: Colors.white, backgroundColor: darkBlue());
-
-            _auth
-                .authenticate(userBloc.user.phoneNumber, userBloc.user.password)
-                .then((newUser) {
-              print(newUser.type);
-              if (mounted) {
-                setState(() {
-                  userBloc.user = newUser;
-                });
-              }
-
-              _auth.fetchCustomerProfile(userBloc.user.userName).then((user) {
-                Navigator.pop(context);
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/profile',
-                    arguments: {"searchedUser": user});
-              });
-            });
-          } else {
-            Toast.show("Something Went Wrong !!", context,
-                textColor: Colors.white, backgroundColor: darkBlue());
-          }
-        });
+    // return Column(
+    //     crossAxisAlignment: CrossAxisAlignment.start,
+    //     children: <Widget>[
+    //       Text("Business Name"),
+    //       SizedBox(
+    //         height: 4,
+    //       ),
+    //       TextFormField(
+    //         autofocus: false,
+    //         obscureText: false,
+    //         keyboardType: TextInputType.text,
+    //         decoration: InputDecoration(
+    //             prefixIcon: Icon(Icons.person),
+    //             fillColor: Colors.white,
+    //             filled: true,
+    //             hintText: "Enter Your Business name",
+    //             labelStyle: TextStyle(
+    //               color: Colors.black,
+    //               fontSize: 16,
+    //             ),
+    //             border: OutlineInputBorder(
+    //                 borderRadius: BorderRadius.all(Radius.circular(4)),
+    //                 borderSide: BorderSide(
+    //                     width: 1,
+    //                     color: Colors.green,
+    //                     style: BorderStyle.solid))),
+    //         validator: (val) => val.length < 5
+    //             ? AppLocalization.of(context).validationTextMessage
+    //             : null,
+    //         onChanged: (val) {
+    //           if (mounted) {
+    //             setState(() {
+    //               businessName = val;
+    //             });
+    //           }
+    //         },
+    //       ),
+    //     ]);
+    return CustomizedTextFormField(
+      type: TextInputType.text,
+      labelText: "Business name",
+      validator: (val) => val.length < 5
+          ? AppLocalization.of(context).validationTextMessage
+          : null,
+      onChanged: (val) {
+        if (mounted) {
+          setState(() {
+            businessName = val;
+          });
+        }
       },
     );
   }
 
+  Widget getCategoryField() {
+    return CustomizedDropDownField(
+      title: "Default payment type",
+      child: DropdownButton<String>(
+        isExpanded: true,
+        underline: Divider(
+          color: Colors.transparent,
+        ),
+        icon: Padding(
+          padding: EdgeInsets.only(right: 8.0),
+          child: Icon(
+            Icons.keyboard_arrow_down,
+            color: darkGrey,
+            size: 20,
+          ),
+        ),
+        hint: Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: Text(AppLocalization.of(context).category),
+        ),
+        value: selectedCategory,
+        onChanged: (String value) {
+          setState(() {
+            selectedCategory = value;
+          });
+        },
+        items: paymentCategories.map((String category) {
+          return DropdownMenuItem<String>(
+            value: category,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 0),
+              child: Text(
+                category,
+                style: TextStyle(
+                    color: blackFont,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget submitButton() {
+    // return MaterialButton(
+    //   minWidth: double.infinity,
+    //   height: 42,
+    //   child: Text(
+    //     "Submit",
+    //     style: TextStyle(color: Colors.white, fontSize: 16),
+    //   ),
+    //   color: darkBlue(),
+    //   onPressed: onSubmit,
+    // );
+    return CurvedButton(
+      onPressed: onSubmit,
+      backgroundColor: navyBlue,
+      textColor: Colors.white,
+      text: "Submit",
+    );
+  }
+
+  void onSubmit() {
+    var data = {
+      "account_type": selectedType.toString().trim(),
+      "business_name": businessName.toString().trim(),
+      "default_payment_type": selectedCategory.toString().trim(),
+    };
+    _auth.upgradeUserProfile(data).then((result) {
+      if (result) {
+        Toast.show(
+            "Request sent !! Your Profile Will Be Updated Soon !!", context,
+            textColor: Colors.white, backgroundColor: darkBlue());
+
+        _auth
+            .authenticate(userBloc.user.phoneNumber, userBloc.user.password)
+            .then((newUser) {
+          print(newUser.type);
+          if (mounted) {
+            setState(() {
+              userBloc.user = newUser;
+            });
+          }
+
+          _auth.fetchCustomerProfile(userBloc.user.userName).then((user) {
+            Navigator.pop(context);
+            Navigator.pop(context);
+            Navigator.pushNamed(context, '/profile',
+                arguments: {"searchedUser": user});
+          });
+        });
+      } else {
+        Toast.show("Something Went Wrong !!", context,
+            textColor: Colors.white, backgroundColor: darkBlue());
+      }
+    });
+  }
+
   Widget getAmount() {
+    // return Column(
+    //   crossAxisAlignment: CrossAxisAlignment.start,
+    //   children: <Widget>[
+    //     Text("Amount To Be Paid"),
+    //     SizedBox(
+    //       height: 4,
+    //     ),
+    //     Card(
+    //       margin: EdgeInsets.symmetric(horizontal: 0),
+    //       child: Container(
+    //         padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+    //         child: Row(
+    //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //           children: <Widget>[
+    //             Text(
+    //               "Price:",
+    //               style: TextStyle(
+    //                 fontWeight: FontWeight.bold,
+    //                 fontSize: 18,
+    //                 color: darkBlue(),
+    //               ),
+    //             ),
+    //             Row(
+    //               children: <Widget>[
+    //                 Text(
+    //                   worldCurrencies[userBloc.user.currency] + " ",
+    //                   style: TextStyle(
+    //                     fontFamily: "Roboto",
+    //                     fontWeight: FontWeight.bold,
+    //                     fontSize: 18,
+    //                     color: darkBlue(),
+    //                   ),
+    //                 ),
+    //                 Text(
+    //                   price,
+    //                   style: TextStyle(
+    //                     fontWeight: FontWeight.bold,
+    //                     fontSize: 18,
+    //                     color: darkBlue(),
+    //                   ),
+    //                 ),
+    //               ],
+    //             ),
+    //           ],
+    //         ),
+    //       ),
+    //     ),
+    //   ],
+    // );
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text("Amount To Be Paid"),
+      children: [
+        Text(
+          "Amount to be paid",
+          style: TextStyle(color: darkGrey, fontSize: 14),
+        ),
         SizedBox(
-          height: 4,
+          height: 8,
         ),
         Card(
-          margin: EdgeInsets.symmetric(horizontal: 0),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          color: Colors.white,
+          elevation: 1,
+          margin: EdgeInsets.zero,
+          shadowColor: boxShadow,
           child: Container(
-            padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: boxShadow)),
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(
-                  "Price:",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                    color: darkBlue(),
-                  ),
+                SizedBox(
+                  height: 18,
                 ),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
-                      worldCurrencies[userBloc.user.currency] + " ",
-                      style: TextStyle(
-                        fontFamily: "Roboto",
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                        color: darkBlue(),
-                      ),
+                      "Price:",
+                      style: TextStyle(fontSize: 14, color: blackFont),
                     ),
-                    Text(
-                      price,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                        color: darkBlue(),
-                      ),
+                    Row(
+                      children: [
+                        Text(
+                          worldCurrencies[userBloc.user.currency],
+                          style: TextStyle(
+                              fontFamily: "Roboto",
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: blackFont),
+                        ),
+                        Text(
+                          price.toString(),
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: blackFont),
+                        ),
+                      ],
                     ),
                   ],
+                ),
+                SizedBox(
+                  height: 18,
                 ),
               ],
             ),
@@ -458,5 +535,54 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
         ),
       ],
     );
+    // return Column(
+    //   crossAxisAlignment: CrossAxisAlignment.start,
+    //   children: <Widget>[
+    //     Text("Amount To Be Paid"),
+    //     SizedBox(
+    //       height: 4,
+    //     ),
+    //     Card(
+    //       margin: EdgeInsets.symmetric(horizontal: 0),
+    //       child: Container(
+    //         padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+    //         child: Row(
+    //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //           children: <Widget>[
+    //             Text(
+    //               "Price:",
+    //               style: TextStyle(
+    //                 fontWeight: FontWeight.bold,
+    //                 fontSize: 18,
+    //                 color: darkBlue(),
+    //               ),
+    //             ),
+    //             Row(
+    //               children: <Widget>[
+    //                 Text(
+    //                   worldCurrencies[userBloc.user.currency] + " ",
+    //                   style: TextStyle(
+    //                     fontFamily: "Roboto",
+    //                     fontWeight: FontWeight.bold,
+    //                     fontSize: 18,
+    //                     color: darkBlue(),
+    //                   ),
+    //                 ),
+    //                 Text(
+    //                   price,
+    //                   style: TextStyle(
+    //                     fontWeight: FontWeight.bold,
+    //                     fontSize: 18,
+    //                     color: darkBlue(),
+    //                   ),
+    //                 ),
+    //               ],
+    //             ),
+    //           ],
+    //         ),
+    //       ),
+    //     ),
+    //   ],
+    // );
   }
 }
