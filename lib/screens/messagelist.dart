@@ -17,7 +17,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:toast/toast.dart';
 
 class MessageList extends StatefulWidget {
@@ -523,11 +522,26 @@ class _MessageListState extends State<MessageList> {
   void deleteMessage(PartialMessage partialMessage, int index) async {
     bool result = await showDialogBox(
       context: context,
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        backgroundColor: mateRad.withOpacity(0.08),
+        borderRadius: 20,
+        width: 48,
+        height: 48,
+        icon: Icon(
+          SlydoAppIcon.delete,
+          color: mateRad,
+          size: 16,
+        ),
+        enableMargin: false,
+      ),
+      actionOneBgColor: mateRad,
+      actionOneTextColor: Colors.white,
+      actionTwoBgColor: greyBorderColor,
+      actionTwoTextColor: blackFont,
       title: AppLocalization.of(context).delete,
       description: AppLocalization.of(context).areYouSureWantToDeleteThisMsg,
-      actionOne: AppLocalization.of(context).yes,
+      actionOne: AppLocalization.of(context).delete,
       actionTwo: AppLocalization.of(context).cancel,
-      type: AlertType.warning,
     );
     if (result) {
       // call delete message _auth method

@@ -11,7 +11,7 @@ Widget imageFrameBuilder(BuildContext context, Widget child, int frame,
   return AnimatedOpacity(
     child: child,
     opacity: frame == null ? 0 : 1,
-    duration: Duration(seconds: 1),
+    duration: Duration(milliseconds: 100),
     curve: Curves.easeOut,
   );
 }

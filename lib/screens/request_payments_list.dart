@@ -18,7 +18,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:toast/toast.dart';
 
 class PaymentRequestList extends StatefulWidget {
@@ -556,12 +555,28 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       PaymentRequest paymentRequest, int index) async {
     bool result = await showDialogBox(
       context: context,
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        backgroundColor: naturalGreen.withOpacity(0.08),
+        borderRadius: 20,
+        width: 48,
+        height: 48,
+        icon: Icon(
+          SlydoAppIcon.true_icon,
+          color: naturalGreen,
+          size: 16,
+        ),
+        enableMargin: false,
+      ),
+      actionOneBgColor: greyBorderColor,
+      actionOneTextColor: blackFont,
+      actionTwoBgColor: naturalGreen,
+      actionTwoTextColor: Colors.white,
+      firstActionPrimary: false,
       title: AppLocalization.of(context).accept,
       description:
           AppLocalization.of(context).areYouSureWantToAcceptThisRequest,
-      actionOne: AppLocalization.of(context).yes,
-      actionTwo: AppLocalization.of(context).no,
-      type: AlertType.warning,
+      actionOne: AppLocalization.of(context).cancel,
+      actionTwo: AppLocalization.of(context).accept,
     );
     if (result) {
       BottomSheetPassCode(
@@ -602,12 +617,27 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       PaymentRequest paymentRequest, int index) async {
     bool result = await showDialogBox(
       context: context,
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        backgroundColor: mateRad.withOpacity(0.08),
+        borderRadius: 20,
+        width: 48,
+        height: 48,
+        icon: Icon(
+          SlydoAppIcon.false_icon,
+          color: mateRad,
+          size: 16,
+        ),
+        enableMargin: false,
+      ),
+      actionOneBgColor: mateRad,
+      actionOneTextColor: Colors.white,
+      actionTwoBgColor: greyBorderColor,
+      actionTwoTextColor: blackFont,
       title: AppLocalization.of(context).reject,
       description:
           AppLocalization.of(context).areYouSureWantToRejectThisPayment,
-      actionOne: AppLocalization.of(context).yes,
-      actionTwo: AppLocalization.of(context).no,
-      type: AlertType.warning,
+      actionOne: AppLocalization.of(context).reject,
+      actionTwo: AppLocalization.of(context).cancel,
     );
     if (result) {
       bool done = await _auth.rejectPaymentRequests(paymentRequest);

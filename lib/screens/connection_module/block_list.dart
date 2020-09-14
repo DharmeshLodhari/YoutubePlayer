@@ -7,13 +7,13 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:toast/toast.dart';
 
 class BlockList extends StatefulWidget {
@@ -211,12 +211,28 @@ class _BlockListState extends State<BlockList> {
   void unBlockUserAlert(CustomerProfile user, int index) async {
     bool result = await showDialogBox(
       context: context,
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        backgroundColor: naturalGreen.withOpacity(0.08),
+        borderRadius: 20,
+        width: 48,
+        height: 48,
+        icon: Icon(
+          SlydoAppIcon.unblock,
+          color: naturalGreen,
+          size: 16,
+        ),
+        enableMargin: false,
+      ),
+      actionOneBgColor: greyBorderColor,
+      actionOneTextColor: blackFont,
+      actionTwoBgColor: naturalGreen,
+      actionTwoTextColor: Colors.white,
+      firstActionPrimary: false,
       title: AppLocalization.of(context).unblock,
       description: AppLocalization.of(context).areYouSureWantToUnblock +
           " ${user.fullName}",
-      actionOne: AppLocalization.of(context).yes,
-      actionTwo: AppLocalization.of(context).no,
-      type: AlertType.warning,
+      actionOne: AppLocalization.of(context).cancel,
+      actionTwo: AppLocalization.of(context).accept,
     );
     if (result) {
       bool done = await _auth.unBlockUser(user);

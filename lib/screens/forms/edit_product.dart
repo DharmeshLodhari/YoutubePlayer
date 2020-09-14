@@ -1,11 +1,16 @@
 import 'dart:io';
 
-import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/store.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_checkbox_field.dart';
+import 'package:Slydo/widget/customized_dropdown_field.dart';
+import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/delete_product_and_service_confirm_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -121,65 +126,93 @@ class _EditProductState extends State<EditProduct> {
         return true;
       },
       child: Scaffold(
-        backgroundColor: lightBlue(),
+        backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
-        appBar: AppBar(
-            leading: showBackArrow(),
-            title: Center(child: Text(AppLocalization.of(context).editProduct)),
-            backgroundColor: darkBlue()),
-        body: SingleChildScrollView(
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 30),
-            child: Center(
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: <Widget>[
-                    SizedBox(height: 10),
-                    checkImageLimitForServerImage()
-                        ? viewServerImages()
-                        : Container(),
-                    checkImageLimitForLocalImage()
-                        ? addLocalImages()
-                        : Container(),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    addTitleField(),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    getManufacturerField(),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    getAmountField(),
-                    SizedBox(height: 10),
-                    getCategoryField(),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    getProductConditionField(),
-                    SizedBox(height: 10),
-                    getIsAvailableField(),
-                    SizedBox(height: 10),
-                    getAvailableFromField(),
-                    SizedBox(height: 10),
-                    getProductShortDescription(),
-                    SizedBox(height: 10),
-                    getProductDescription(),
-                    SizedBox(height: 10),
-                    getSubmitButton(),
-                    SizedBox(height: 20),
-                  ],
+        appBar: appBar(),
+        body: scaffoldBody(),
+      ),
+    );
+    //
+  }
+
+  Widget appBar() {
+    return AppBar(
+      elevation: 0,
+      backgroundColor: Colors.white,
+      titleSpacing: 0,
+      automaticallyImplyLeading: false,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      title: Text(
+        "Edit product",
+        style: TextStyle(
+            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
+  Widget scaffoldBody() {
+    return SingleChildScrollView(
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 20),
+        child: Center(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: <Widget>[
+                SizedBox(height: 10),
+                checkImageLimitForServerImage()
+                    ? viewServerImages()
+                    : Container(),
+                checkImageLimitForServerImage()
+                    ? SizedBox(
+                        height: 8,
+                      )
+                    : Container(),
+                checkImageLimitForLocalImage() ? addLocalImages() : Container(),
+                SizedBox(
+                  height: 10,
                 ),
-              ),
+                addTitleField(),
+                SizedBox(
+                  height: 10,
+                ),
+                getManufacturerField(),
+                SizedBox(
+                  height: 10,
+                ),
+                getAmountField(),
+                SizedBox(height: 10),
+                getCategoryField(),
+                SizedBox(
+                  height: 10,
+                ),
+                getProductConditionField(),
+                SizedBox(height: 16),
+                getIsAvailableField(),
+                SizedBox(height: 16),
+                getAvailableFromField(),
+                SizedBox(height: 10),
+                getProductShortDescription(),
+                SizedBox(height: 10),
+                getProductDescription(),
+                SizedBox(height: 10),
+                getSubmitButton(),
+                SizedBox(height: 20),
+              ],
             ),
           ),
         ),
       ),
     );
-    //
   }
 
   Widget showBackArrow() {
@@ -194,12 +227,12 @@ class _EditProductState extends State<EditProduct> {
   Widget addLocalImages() {
     return Container(
       height: 100,
-      color: lightBlue(),
       child: ListView.builder(
         controller: _scrollController,
         scrollDirection: Axis.horizontal,
         itemCount: productLocalImages.length + 1,
         itemBuilder: (context, index) => Container(
+          padding: EdgeInsets.only(right: 6),
           child: index != productLocalImages.length
               ? showLocalImage(index)
               : productLocalImages.length + productImagesFromServer.length !=
@@ -214,36 +247,50 @@ class _EditProductState extends State<EditProduct> {
   Widget viewServerImages() {
     return Container(
       height: 100,
-      color: lightBlue(),
       child: ListView.builder(
         controller: _scrollController,
         scrollDirection: Axis.horizontal,
         itemCount: productImagesFromServer.length,
-        itemBuilder: (context, index) =>
-            Container(child: showServerImage(index)),
+        itemBuilder: (context, index) => Container(
+          padding: EdgeInsets.only(right: 6),
+          child: showServerImage(index),
+        ),
       ),
     );
   }
 
   Widget addImageButton() {
-    return Container(
-      margin: EdgeInsets.all(8.0),
-      padding: EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(color: darkBlue()),
-          borderRadius: BorderRadius.circular(5)),
-      child: InkWell(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Icon(Icons.add),
-            Text(AppLocalization.of(context).addImage),
-          ],
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      shadowColor: dividerColor,
+      margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+      child: Container(
+        width: 100,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
         ),
-        onTap: () {
-          pickImage();
-        },
+        child: InkWell(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Icon(
+                SlydoAppIcon.add_image,
+                color: darkGrey,
+              ),
+              SizedBox(
+                height: 4,
+              ),
+              Text(
+                AppLocalization.of(context).addImage,
+                style: TextStyle(color: darkGrey, fontSize: 14),
+              ),
+            ],
+          ),
+          onTap: () {
+            pickImage();
+          },
+        ),
       ),
     );
   }
@@ -281,30 +328,42 @@ class _EditProductState extends State<EditProduct> {
   Widget showLocalImage(int index) {
     return Stack(
       children: <Widget>[
-        Container(
-          height: 80,
-          width: 80,
-          margin: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.transparent),
-            borderRadius: BorderRadius.circular(5),
-            image: DecorationImage(
-                image: FileImage(
-                  productLocalImages[index],
-                ),
-                fit: BoxFit.fill),
+        Card(
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          shadowColor: dividerColor,
+          margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+          child: Container(
+            width: 100,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              image: DecorationImage(
+                  image: FileImage(
+                    productLocalImages[index],
+                  ),
+                  fit: BoxFit.fill),
+            ),
           ),
         ),
         Positioned(
           right: 0,
           top: 0,
           child: IconButton(
-            padding: EdgeInsets.only(right: 6, top: 8),
+            padding: EdgeInsets.only(right: 6, top: 6),
             alignment: Alignment.topRight,
-            icon: Icon(
-              Icons.close,
-              color: Colors.white,
-              size: 20,
+            icon: Container(
+              padding: EdgeInsets.all(2.0),
+              decoration: BoxDecoration(
+                color: iconBtnGrey,
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: Icon(
+                SlydoAppIcon.remove,
+                color: blackFont,
+                size: 15,
+              ),
             ),
             onPressed: () {
               if (mounted) {
@@ -320,51 +379,66 @@ class _EditProductState extends State<EditProduct> {
   }
 
   Widget showServerImage(int index) {
-    return Stack(
-      children: <Widget>[
-        Container(
-          height: 80,
-          width: 80,
-          margin: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.transparent),
-            borderRadius: BorderRadius.circular(5),
-            image: DecorationImage(
-                image: NetworkImage(
-                  productImagesFromServer[index],
-                ),
-                fit: BoxFit.fill),
-          ),
-        ),
-        Positioned(
-          right: 0,
-          top: 0,
-          child: IconButton(
-            padding: EdgeInsets.only(right: 6, top: 8),
-            alignment: Alignment.topRight,
-            icon: Icon(
-              Icons.close,
-              color: Colors.white,
-              size: 20,
+    return Container(
+      height: 100,
+      child: Stack(
+        children: <Widget>[
+          Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
             ),
-            onPressed: () {
-              var imageId =
-                  currentProduct.getImageId(productImagesFromServer[index]);
-              _auth.deleteProductOrServiceImage(imageId).then((value) {
-                if (value) {
-                  if (mounted) {
-                    setState(() {
-                      productImagesFromServer.removeAt(index);
-                    });
-                  }
-                }
-              }).catchError((error) {
-                debugPrint("ERROR" + error.toString());
-              });
-            },
+            shadowColor: dividerColor,
+            margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+            child: Container(
+              width: 100,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                image: DecorationImage(
+                    image: NetworkImage(
+                      productImagesFromServer[index],
+                    ),
+                    fit: BoxFit.fill),
+              ),
+            ),
           ),
-        )
-      ],
+          Positioned(
+            right: 0,
+            top: 0,
+            child: IconButton(
+              padding: EdgeInsets.only(right: 6, top: 6),
+              alignment: Alignment.topRight,
+              icon: Container(
+                padding: EdgeInsets.all(2.0),
+                decoration: BoxDecoration(
+                  color: iconBtnGrey,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Icon(
+                  SlydoAppIcon.remove,
+                  color: blackFont,
+                  size: 15,
+                ),
+              ),
+              onPressed: () {
+                var imageId =
+                    currentProduct.getImageId(productImagesFromServer[index]);
+                _auth.deleteProductOrServiceImage(imageId).then((value) {
+                  if (value) {
+                    if (mounted) {
+                      setState(() {
+                        productImagesFromServer.removeAt(index);
+                      });
+                    }
+                  }
+                }).catchError((error) {
+                  debugPrint("ERROR" + error.toString());
+                });
+              },
+            ),
+          )
+        ],
+      ),
     );
   }
 
@@ -389,23 +463,9 @@ class _EditProductState extends State<EditProduct> {
   }
 
   Widget addTitleField() {
-    return TextFormField(
-      cursorColor: darkBlue(),
-      autofocus: false,
-      obscureText: false,
+    return CustomizedTextFormField(
       controller: productTitleController,
-      decoration: InputDecoration(
-          fillColor: Colors.white,
-          filled: true,
-          hintText: AppLocalization.of(context).productName,
-          labelStyle: TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-          ),
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
+      labelText: AppLocalization.of(context).productName,
       validator: (val) {
         if (val.isNotEmpty) {
           return null;
@@ -420,26 +480,11 @@ class _EditProductState extends State<EditProduct> {
   }
 
   Widget getProductDescription() {
-    return TextFormField(
-      cursorColor: darkBlue(),
+    return CustomizedTextFormField(
       controller: productDescriptionController,
-      autofocus: false,
-      obscureText: false,
       maxLines: 5,
       textCapitalization: TextCapitalization.sentences,
-      decoration: InputDecoration(
-          isDense: true,
-          fillColor: Colors.white,
-          filled: true,
-          hintText: AppLocalization.of(context).description,
-          labelStyle: TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-          ),
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
+      labelText: AppLocalization.of(context).description,
       onChanged: (val) {
         productDescription = val;
       },
@@ -447,23 +492,9 @@ class _EditProductState extends State<EditProduct> {
   }
 
   Widget getProductShortDescription() {
-    return TextFormField(
-      cursorColor: darkBlue(),
-      autofocus: false,
-      obscureText: false,
+    return CustomizedTextFormField(
+      labelText: "Short description",
       controller: productShortDescriptionController,
-      decoration: InputDecoration(
-          fillColor: Colors.white,
-          filled: true,
-          hintText: AppLocalization.of(context).shortDescription,
-          labelStyle: TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-          ),
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
       validator: (val) {
         if (val.isNotEmpty) {
           return null;
@@ -478,139 +509,184 @@ class _EditProductState extends State<EditProduct> {
   }
 
   Widget getCategoryField() {
-    return Card(
-      margin: EdgeInsets.all(0),
-      child: Container(
-        padding: EdgeInsets.all(8),
-        width: double.infinity,
-        child: DropdownButton<ProductCategory>(
-          isExpanded: true,
-          underline: Divider(
-            color: Colors.transparent,
-          ),
-          hint: Text(AppLocalization.of(context).selectCategory),
-          value: selectedProductCategory,
-          onChanged: (ProductCategory value) {
-            if (mounted) {
-              setState(() {
-                selectedProductCategory = value;
-                productCategory = selectedProductCategory.name;
-              });
-            }
-          },
-          items: productCategories.map((ProductCategory category) {
-            return DropdownMenuItem<ProductCategory>(
-              value: category,
-              child: Text(
-                category.name,
-                style: TextStyle(color: Colors.black),
+    return CustomizedDropDownField(
+      title: AppLocalization.of(context).category,
+      child: DropdownButton<ProductCategory>(
+        isExpanded: true,
+        underline: Divider(
+          color: Colors.transparent,
+        ),
+        value: selectedProductCategory,
+        style: TextStyle(
+            color: blackFont, fontSize: 16, fontWeight: FontWeight.w400),
+        onChanged: (ProductCategory value) {
+          if (mounted) {
+            setState(() {
+              selectedProductCategory = value;
+              productCategory = selectedProductCategory.name;
+            });
+          }
+        },
+        selectedItemBuilder: (BuildContext context) {
+          return productCategories.map<Widget>((ProductCategory category) {
+            return Container(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    category.name,
+                    style: TextStyle(
+                      color: blackFont,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
               ),
             );
-          }).toList(),
+          }).toList();
+        },
+        items: productCategories.map((ProductCategory category) {
+          return DropdownMenuItem<ProductCategory>(
+            value: category,
+            child: Container(
+              child: Row(
+                children: [
+                  Text(
+                    category.name,
+                    style: TextStyle(
+                        color: category == selectedProductCategory
+                            ? navyBlue
+                            : blackFont,
+                        fontSize: 16,
+                        fontWeight: category == selectedProductCategory
+                            ? FontWeight.w600
+                            : FontWeight.w400),
+                  ),
+                  flexibleSpace(),
+                  category == selectedProductCategory
+                      ? Icon(
+                          SlydoAppIcon.checked,
+                          color: navyBlue,
+                          size: 14,
+                        )
+                      : Container()
+                ],
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget getProductConditionField() {
+    return CustomizedDropDownField(
+      title: "Product condition",
+      child: DropdownButton<ProductCondition>(
+        underline: Divider(
+          color: Colors.transparent,
         ),
+        isExpanded: true,
+        value: selectedProductCondition,
+        onChanged: (ProductCondition value) {
+          if (mounted) {
+            setState(() {
+              selectedProductCondition = value;
+              productCondition = selectedProductCondition.name;
+            });
+          }
+        },
+        style: TextStyle(
+            color: blackFont, fontSize: 16, fontWeight: FontWeight.w400),
+        selectedItemBuilder: (BuildContext context) {
+          return conditions.map((ProductCondition productCondition) {
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  productCondition.name,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    " (" + productCondition.description + ")",
+                    maxLines: 1,
+                    style: TextStyle(
+                      fontSize: 16,
+                    ),
+                    softWrap: false,
+                    overflow: TextOverflow.fade,
+                  ),
+                ),
+              ],
+            );
+          }).toList();
+        },
+        items: conditions.map((ProductCondition productCondition) {
+          return DropdownMenuItem<ProductCondition>(
+              value: productCondition,
+              child: Container(
+                child: Row(
+                  children: [
+                    Text(
+                      productCondition.name,
+                      style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: productCondition == selectedProductCondition
+                              ? navyBlue
+                              : blackFont,
+                          fontSize: 16),
+                    ),
+                    Text(
+                      " (" + productCondition.description + ")",
+                      style: TextStyle(
+                        color: productCondition == selectedProductCondition
+                            ? navyBlue
+                            : blackFont,
+                        fontSize: 16,
+                      ),
+                    ),
+                    flexibleSpace(),
+                    productCondition == selectedProductCondition
+                        ? Icon(
+                            SlydoAppIcon.checked,
+                            color: navyBlue,
+                            size: 14,
+                          )
+                        : Container()
+                  ],
+                ),
+              ));
+        }).toList(),
       ),
     );
   }
 
   Widget getManufacturerField() {
-    return TextFormField(
-      cursorColor: darkBlue(),
-      autofocus: false,
-      obscureText: false,
+    return CustomizedTextFormField(
+      labelText: AppLocalization.of(context).manufacturer,
       controller: productManufacturerController,
-      decoration: InputDecoration(
-          fillColor: Colors.white,
-          filled: true,
-          hintText: AppLocalization.of(context).manufacturer,
-          labelStyle: TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-          ),
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
       validator: (val) {
         if (val.isNotEmpty) {
           return null;
         }
         return AppLocalization.of(context).pleaseEnterManufacturerName;
       },
-      onTap: () async {},
       onChanged: (val) {
         productManufacturer = val;
       },
     );
   }
 
-  Widget getProductConditionField() {
-    return Card(
-      margin: EdgeInsets.all(0),
-      child: Container(
-        padding: EdgeInsets.only(bottom: 16, right: 8, left: 8),
-        width: double.infinity,
-        child: DropdownButton<ProductCondition>(
-          underline: Divider(
-            color: Colors.transparent,
-          ),
-          isExpanded: true,
-          hint: Text(AppLocalization.of(context).productCondition),
-          value: selectedProductCondition,
-          onChanged: (ProductCondition value) {
-            if (mounted) {
-              setState(() {
-                selectedProductCondition = value;
-                productCondition = selectedProductCondition.name;
-              });
-            }
-          },
-          items: conditions.map((ProductCondition productCondition) {
-            return DropdownMenuItem<ProductCondition>(
-                value: productCondition,
-                child: ListTile(
-                  dense: true,
-                  title: Text(productCondition.name),
-                  subtitle: Text(productCondition.description),
-                ));
-          }).toList(),
-        ),
-      ),
-    );
-  }
-
   Widget getAmountField() {
-    return TextFormField(
-      cursorColor: darkBlue(),
-      autofocus: false,
-      obscureText: false,
+    return CustomizedTextFormField(
       controller: productPriceController,
-      keyboardType: TextInputType.number,
-      decoration: InputDecoration(
-          prefixIcon: Container(
-            width: 20,
-            child: Center(
-              child: Text(
-                worldCurrencies[userBloc.user.currency],
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontFamily: "Roboto",
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey[600]),
-              ),
-            ),
-          ),
-          fillColor: Colors.white,
-          filled: true,
-          hintText: AppLocalization.of(context).price,
-          labelStyle: TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-          ),
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
+      type: TextInputType.number,
+      isAmount: true,
       onChanged: (val) {
         if (val.isNotEmpty) {
           try {
@@ -639,12 +715,10 @@ class _EditProductState extends State<EditProduct> {
       child: Row(
         children: <Widget>[
           Expanded(
-            child: MaterialButton(
-                elevation: 4.0,
+            child: CurvedButton(
                 textColor: Colors.white,
-                color: Colors.red,
-                height: 50,
-                child: Text(AppLocalization.of(context).delete),
+                backgroundColor: mateRad,
+                text: AppLocalization.of(context).delete,
                 onPressed: () async {
                   FocusScope.of(context).unfocus();
                   deleteProduct();
@@ -655,12 +729,10 @@ class _EditProductState extends State<EditProduct> {
             width: 8,
           ),
           Expanded(
-            child: MaterialButton(
-                elevation: 4.0,
+            child: CurvedButton(
                 textColor: Colors.white,
-                color: darkBlue(),
-                height: 50,
-                child: Text(AppLocalization.of(context).update),
+                text: AppLocalization.of(context).update,
+                backgroundColor: navyBlue,
                 onPressed: () async {
                   FocusScope.of(context).unfocus();
                   editProduct();
@@ -720,27 +792,13 @@ class _EditProductState extends State<EditProduct> {
   }
 
   Widget getIsAvailableField() {
-    return Row(
-      children: <Widget>[
-        Checkbox(
-          value: productIsAvailable,
-          activeColor: Colors.white,
-          checkColor: darkBlue(),
-          onChanged: (value) {
-            if (mounted) {
-              setState(() {
-                productIsAvailable = value;
-              });
-            }
-          },
-        ),
-        Text(
-          AppLocalization.of(context).isAvailable + " ? ",
-          style: TextStyle(
-            color: Colors.white,
-          ),
-        )
-      ],
+    return CustomizedCheckBoxField(
+      onTap: () {
+        productIsAvailable = !productIsAvailable;
+        setState(() {});
+      },
+      isChecked: productIsAvailable,
+      title: "Available",
     );
   }
 
@@ -763,29 +821,24 @@ class _EditProductState extends State<EditProduct> {
           }
         }).catchError((error) {});
       },
-      child: Card(
+      child: CustomizedDropDownField(
+        title: "Available from",
         child: Container(
-          padding: EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(AppLocalization.of(context).availableFrom),
-              Row(
-                children: <Widget>[
-                  Icon(Icons.date_range),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Text(
-                    productAvailableFrom.toString().substring(0, 10),
-                    style: TextStyle(
-                      color: darkBlue(),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  )
-                ],
+          child: ListTile(
+            dense: true,
+            title: Text(
+              formatDate(productAvailableFrom),
+              style: TextStyle(
+                color: blackFont,
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
               ),
-            ],
+            ),
+            trailing: Icon(
+              SlydoAppIcon.date,
+              size: 16,
+              color: darkGrey,
+            ),
           ),
         ),
       ),

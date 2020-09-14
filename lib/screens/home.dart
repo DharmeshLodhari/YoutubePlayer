@@ -4,7 +4,7 @@ import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
-import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
+import 'package:Slydo/widget/dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
@@ -239,15 +239,21 @@ class _HomeState extends State<Home> {
                     child: CircularLoadingIndicator(),
                   ),
                 )),
-            onTap: () {
-              BottomSheetPassCode(
-                  context: context,
-                  isValidCallback: () {
-                    debugPrint("i m valid");
-                  },
-                  cancelCallBack: () {
-                    debugPrint("i m cancelled");
-                  });
+            onTap: () async {
+              bool result = await showDialogBoxWithImage(
+                context: context,
+                image:
+                    "https://slydo-assets.s3.amazonaws.com/media/customer/avatar/77d91cd9345d4f50bb88d29c412eb0f7.jpg",
+                actionOneBgColor: greyBorderColor,
+                actionOneTextColor: blackFont,
+                actionTwoBgColor: naturalGreen,
+                actionTwoTextColor: Colors.white,
+                title: "Payment received",
+                description: "Received NGN5",
+                actionOne: AppLocalization.of(context).cancel,
+                actionTwo: AppLocalization.of(context).navigate,
+              );
+              debugPrint(result.toString());
             },
           ),
         ],

@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:page_view_indicators/page_view_indicators.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 
 import '../utils/colors.dart';
 
@@ -51,11 +50,14 @@ class _IndexState extends State<Index> {
       onWillPop: () async {
         bool result = await showDialogBox(
           context: context,
-          title: AppLocalization.of(context).exit,
-          description: AppLocalization.of(context).areYouSureWantToExit,
-          actionOne: AppLocalization.of(context).yes,
-          actionTwo: AppLocalization.of(context).no,
-          type: AlertType.none,
+          actionOneBgColor: mateRad,
+          actionOneTextColor: Colors.white,
+          actionTwoBgColor: greyBorderColor,
+          actionTwoTextColor: blackFont,
+          title: "Exit app",
+          description: "Are you sure want to exit app?",
+          actionOne: AppLocalization.of(context).exit,
+          actionTwo: AppLocalization.of(context).cancel,
         );
         if (result) {
           SystemChannels.platform.invokeMethod<void>('SystemNavigator.pop');

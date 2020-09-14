@@ -1,10 +1,15 @@
 import 'dart:io';
 
-import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_checkbox_field.dart';
+import 'package:Slydo/widget/customized_dropdown_field.dart';
+import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/delete_product_and_service_confirm_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -68,39 +73,35 @@ class _EditServiceState extends State<EditService> {
 
     //fetchProductFrom id to edit
     _auth.getService(serviceId).then((value) {
-      if (mounted) {
-        setState(() {
-          currentService = value;
-          // asssigning to our edit controllers
+      currentService = value;
+      // asssigning to our edit controllers
 
-          serviceTitleController.text = currentService.name;
-          serviceDescriptionController.text = currentService.description;
-          servicePriceController.text = currentService.price;
-          serviceShortDescriptionController.text =
-              currentService.shortDescription;
+      serviceTitleController.text = currentService.name;
+      serviceDescriptionController.text = currentService.description;
+      servicePriceController.text = currentService.price;
+      serviceShortDescriptionController.text = currentService.shortDescription;
 
-          serviceImagesFromServer.addAll(currentService.serverImages);
-          serviceName = currentService.name;
-          serviceCategory = currentService.category;
-          servicePrice = currentService.price;
-          serviceDescription = currentService.description;
-          serviceIsAvailable = currentService.isAvailable;
-          serviceAvailableFrom = currentService.availableFrom;
-          serviceShortDescription = currentService.shortDescription;
+      serviceImagesFromServer.addAll(currentService.serverImages);
+      serviceName = currentService.name;
+      serviceCategory = currentService.category;
+      servicePrice = currentService.price;
+      serviceDescription = currentService.description;
+      serviceIsAvailable = currentService.isAvailable;
+      serviceAvailableFrom = currentService.availableFrom;
+      serviceShortDescription = currentService.shortDescription;
 
-          // assigning the dropdown from currentProduct
-          serviceCategories.forEach((catagory) {
-            if (catagory.name == currentService.category) {
-              selectedServiceCategory = catagory;
-            }
-          });
-        });
-      }
+      // assigning the dropdown from currentProduct
+      serviceCategories.forEach((catagory) {
+        if (catagory.name == currentService.category) {
+          selectedServiceCategory = catagory;
+        }
+      });
+      if (mounted) setState(() {});
     }).catchError((error) {
       Toast.show(
         error.toString(),
         context,
-        backgroundColor: darkBlue(),
+        backgroundColor: navyBlue,
         textColor: Colors.white,
         gravity: Toast.CENTER,
       );
@@ -115,57 +116,82 @@ class _EditServiceState extends State<EditService> {
         return true;
       },
       child: Scaffold(
-        backgroundColor: lightBlue(),
+        backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
-        appBar: AppBar(
-            leading: showBackArrow(),
-            title: Center(child: Text(AppLocalization.of(context).editService)),
-            backgroundColor: darkBlue()),
-        body: SingleChildScrollView(
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 30),
-            child: Center(
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: <Widget>[
-                    SizedBox(height: 10),
-                    checkImageLimitForServerImage()
-                        ? viewServerImages()
-                        : Container(),
-                    checkImageLimitForLocalImage()
-                        ? addLocalImages()
-                        : Container(),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    addTitleField(),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    getAmountField(),
-                    SizedBox(height: 10),
-                    getCategoryField(),
-                    SizedBox(height: 10),
-                    getIsAvailableField(),
-                    SizedBox(height: 10),
-                    getAvailableFromField(),
-                    SizedBox(height: 10),
-                    getServiceShortDescription(),
-                    SizedBox(height: 10),
-                    getServiceDescription(),
-                    SizedBox(height: 10),
-                    getSubmitButton(),
-                    SizedBox(height: 20),
-                  ],
+        appBar: appBar(),
+        body: scaffoldBody(),
+      ),
+    );
+  }
+
+  Widget appBar() {
+    return AppBar(
+      elevation: 0,
+      backgroundColor: Colors.white,
+      titleSpacing: 0,
+      automaticallyImplyLeading: false,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      title: Text(
+        "Edit service",
+        style: TextStyle(
+            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
+  Widget scaffoldBody() {
+    return SingleChildScrollView(
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 20),
+        child: Center(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: <Widget>[
+                SizedBox(height: 10),
+                checkImageLimitForServerImage()
+                    ? viewServerImages()
+                    : Container(),
+                checkImageLimitForServerImage()
+                    ? SizedBox(height: 8)
+                    : Container(),
+                checkImageLimitForLocalImage() ? addLocalImages() : Container(),
+                SizedBox(
+                  height: 10,
                 ),
-              ),
+                addTitleField(),
+                SizedBox(
+                  height: 10,
+                ),
+                getAmountField(),
+                SizedBox(height: 10),
+                getCategoryField(),
+                SizedBox(height: 16),
+                getIsAvailableField(),
+                SizedBox(height: 16),
+                getAvailableFromField(),
+                SizedBox(height: 10),
+                getServiceShortDescription(),
+                SizedBox(height: 10),
+                getServiceDescription(),
+                SizedBox(height: 40),
+                getSubmitButton(),
+                SizedBox(height: 40),
+              ],
             ),
           ),
         ),
       ),
     );
-    //
   }
 
   Widget showBackArrow() {
@@ -180,12 +206,12 @@ class _EditServiceState extends State<EditService> {
   Widget addLocalImages() {
     return Container(
       height: 100,
-      color: lightBlue(),
       child: ListView.builder(
         controller: _scrollController,
         scrollDirection: Axis.horizontal,
         itemCount: serviceLocalImages.length + 1,
         itemBuilder: (context, index) => Container(
+          padding: EdgeInsets.only(right: 6),
           child: index != serviceLocalImages.length
               ? showLocalImage(index)
               : serviceLocalImages.length + serviceImagesFromServer.length !=
@@ -200,36 +226,50 @@ class _EditServiceState extends State<EditService> {
   Widget viewServerImages() {
     return Container(
       height: 100,
-      color: lightBlue(),
       child: ListView.builder(
         controller: _scrollController,
         scrollDirection: Axis.horizontal,
         itemCount: serviceImagesFromServer.length,
-        itemBuilder: (context, index) =>
-            Container(child: showServerImage(index)),
+        itemBuilder: (context, index) => Container(
+          padding: EdgeInsets.only(right: 6),
+          child: showServerImage(index),
+        ),
       ),
     );
   }
 
   Widget addImageButton() {
-    return Container(
-      margin: EdgeInsets.all(8.0),
-      padding: EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(color: darkBlue()),
-          borderRadius: BorderRadius.circular(5)),
-      child: InkWell(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Icon(Icons.add),
-            Text(AppLocalization.of(context).addImage),
-          ],
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      shadowColor: dividerColor,
+      margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+      child: Container(
+        width: 100,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
         ),
-        onTap: () {
-          pickImage();
-        },
+        child: InkWell(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Icon(
+                SlydoAppIcon.add_image,
+                color: darkGrey,
+              ),
+              SizedBox(
+                height: 4,
+              ),
+              Text(
+                AppLocalization.of(context).addImage,
+                style: TextStyle(color: darkGrey, fontSize: 14),
+              ),
+            ],
+          ),
+          onTap: () {
+            pickImage();
+          },
+        ),
       ),
     );
   }
@@ -265,32 +305,82 @@ class _EditServiceState extends State<EditService> {
   }
 
   Widget showLocalImage(int index) {
+    // return Stack(
+    //   children: <Widget>[
+    //     Container(
+    //       height: 80,
+    //       width: 80,
+    //       margin: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+    //       decoration: BoxDecoration(
+    //         border: Border.all(color: Colors.transparent),
+    //         borderRadius: BorderRadius.circular(5),
+    //         image: DecorationImage(
+    //             image: FileImage(
+    //               serviceLocalImages[index],
+    //             ),
+    //             fit: BoxFit.fill),
+    //       ),
+    //     ),
+    //     Positioned(
+    //       right: 0,
+    //       top: 0,
+    //       child: IconButton(
+    //         padding: EdgeInsets.only(right: 6, top: 8),
+    //         alignment: Alignment.topRight,
+    //         icon: Icon(
+    //           Icons.close,
+    //           color: Colors.white,
+    //           size: 20,
+    //         ),
+    //         onPressed: () {
+    //           if (mounted) {
+    //             setState(() {
+    //               serviceLocalImages.removeAt(index);
+    //             });
+    //           }
+    //         },
+    //       ),
+    //     )
+    //   ],
+    // );
     return Stack(
       children: <Widget>[
-        Container(
-          height: 80,
-          width: 80,
-          margin: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.transparent),
-            borderRadius: BorderRadius.circular(5),
-            image: DecorationImage(
-                image: FileImage(
-                  serviceLocalImages[index],
-                ),
-                fit: BoxFit.fill),
+        Card(
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          shadowColor: dividerColor,
+          margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+          child: Container(
+            width: 100,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              image: DecorationImage(
+                  image: FileImage(
+                    serviceLocalImages[index],
+                  ),
+                  fit: BoxFit.fill),
+            ),
           ),
         ),
         Positioned(
           right: 0,
           top: 0,
           child: IconButton(
-            padding: EdgeInsets.only(right: 6, top: 8),
+            padding: EdgeInsets.only(right: 6, top: 6),
             alignment: Alignment.topRight,
-            icon: Icon(
-              Icons.close,
-              color: Colors.white,
-              size: 20,
+            icon: Container(
+              padding: EdgeInsets.all(2.0),
+              decoration: BoxDecoration(
+                color: iconBtnGrey,
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: Icon(
+                SlydoAppIcon.remove,
+                color: blackFont,
+                size: 15,
+              ),
             ),
             onPressed: () {
               if (mounted) {
@@ -306,32 +396,90 @@ class _EditServiceState extends State<EditService> {
   }
 
   Widget showServerImage(int index) {
+    // return Stack(
+    //   children: <Widget>[
+    //     Container(
+    //       height: 80,
+    //       width: 80,
+    //       margin: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+    //       decoration: BoxDecoration(
+    //         border: Border.all(color: Colors.transparent),
+    //         borderRadius: BorderRadius.circular(5),
+    //         image: DecorationImage(
+    //             image: NetworkImage(
+    //               serviceImagesFromServer[index],
+    //             ),
+    //             fit: BoxFit.fill),
+    //       ),
+    //     ),
+    //     Positioned(
+    //       right: 0,
+    //       top: 0,
+    //       child: IconButton(
+    //         padding: EdgeInsets.only(right: 6, top: 8),
+    //         alignment: Alignment.topRight,
+    //         icon: Icon(
+    //           Icons.close,
+    //           color: Colors.white,
+    //           size: 20,
+    //         ),
+    //         onPressed: () {
+    //           var imageId =
+    //           currentService.getImageId(serviceImagesFromServer[index]);
+    //           _auth.deleteProductOrServiceImage(imageId).then((value) {
+    //             if (value) {
+    //               if (mounted) {
+    //                 setState(() {
+    //                   serviceImagesFromServer.removeAt(index);
+    //                 });
+    //               }
+    //             }
+    //           }).catchError((error) {
+    //             debugPrint("ERROR" + error.toString());
+    //           });
+    //         },
+    //       ),
+    //     )
+    //   ],
+    // );
     return Stack(
       children: <Widget>[
-        Container(
-          height: 80,
-          width: 80,
-          margin: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.transparent),
-            borderRadius: BorderRadius.circular(5),
-            image: DecorationImage(
-                image: NetworkImage(
-                  serviceImagesFromServer[index],
-                ),
-                fit: BoxFit.fill),
+        Card(
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          shadowColor: dividerColor,
+          margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+          child: Container(
+            width: 100,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              image: DecorationImage(
+                  image: NetworkImage(
+                    serviceImagesFromServer[index],
+                  ),
+                  fit: BoxFit.fill),
+            ),
           ),
         ),
         Positioned(
           right: 0,
           top: 0,
           child: IconButton(
-            padding: EdgeInsets.only(right: 6, top: 8),
+            padding: EdgeInsets.only(right: 6, top: 6),
             alignment: Alignment.topRight,
-            icon: Icon(
-              Icons.close,
-              color: Colors.white,
-              size: 20,
+            icon: Container(
+              padding: EdgeInsets.all(2.0),
+              decoration: BoxDecoration(
+                color: iconBtnGrey,
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: Icon(
+                SlydoAppIcon.remove,
+                color: blackFont,
+                size: 15,
+              ),
             ),
             onPressed: () {
               var imageId =
@@ -375,30 +523,43 @@ class _EditServiceState extends State<EditService> {
   }
 
   Widget addTitleField() {
-    return TextFormField(
-      cursorColor: darkBlue(),
-      autofocus: false,
-      obscureText: false,
+    // return TextFormField(
+    //   cursorColor: darkBlue(),
+    //   autofocus: false,
+    //   obscureText: false,
+    //   controller: serviceTitleController,
+    //   decoration: InputDecoration(
+    //       fillColor: Colors.white,
+    //       filled: true,
+    //       hintText: AppLocalization.of(context).enterServiceName,
+    //       labelStyle: TextStyle(
+    //         color: Colors.black,
+    //         fontSize: 16,
+    //       ),
+    //       border: OutlineInputBorder(
+    //           borderRadius: BorderRadius.all(Radius.circular(4)),
+    //           borderSide: BorderSide(
+    //               width: 1, color: Colors.white, style: BorderStyle.solid))),
+    //   validator: (val) {
+    //     if (val.isNotEmpty) {
+    //       return null;
+    //     }
+    //     return AppLocalization.of(context).pleaseEnterServiceName;
+    //   },
+    //   onTap: () async {},
+    //   onChanged: (val) {
+    //     serviceName = val;
+    //   },
+    // );
+    return CustomizedTextFormField(
       controller: serviceTitleController,
-      decoration: InputDecoration(
-          fillColor: Colors.white,
-          filled: true,
-          hintText: AppLocalization.of(context).enterServiceName,
-          labelStyle: TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-          ),
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
+      labelText: "Service name",
       validator: (val) {
         if (val.isNotEmpty) {
           return null;
         }
         return AppLocalization.of(context).pleaseEnterServiceName;
       },
-      onTap: () async {},
       onChanged: (val) {
         serviceName = val;
       },
@@ -406,30 +567,42 @@ class _EditServiceState extends State<EditService> {
   }
 
   Widget getServiceShortDescription() {
-    return TextFormField(
-      cursorColor: darkBlue(),
-      autofocus: false,
-      obscureText: false,
+    // return TextFormField(
+    //   cursorColor: darkBlue(),
+    //   autofocus: false,
+    //   obscureText: false,
+    //   controller: serviceShortDescriptionController,
+    //   decoration: InputDecoration(
+    //       fillColor: Colors.white,
+    //       filled: true,
+    //       hintText: AppLocalization.of(context).shortDescription,
+    //       labelStyle: TextStyle(
+    //         color: Colors.black,
+    //         fontSize: 16,
+    //       ),
+    //       border: OutlineInputBorder(
+    //           borderRadius: BorderRadius.all(Radius.circular(4)),
+    //           borderSide: BorderSide(
+    //               width: 1, color: Colors.white, style: BorderStyle.solid))),
+    //   validator: (val) {
+    //     if (val.isNotEmpty) {
+    //       return null;
+    //     }
+    //     return AppLocalization.of(context).shortDescription;
+    //   },
+    //   onChanged: (val) {
+    //     serviceShortDescription = val;
+    //   },
+    // );
+    return CustomizedTextFormField(
       controller: serviceShortDescriptionController,
-      decoration: InputDecoration(
-          fillColor: Colors.white,
-          filled: true,
-          hintText: AppLocalization.of(context).shortDescription,
-          labelStyle: TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-          ),
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
+      labelText: "Short description",
       validator: (val) {
         if (val.isNotEmpty) {
           return null;
         }
         return AppLocalization.of(context).shortDescription;
       },
-      onTap: () async {},
       onChanged: (val) {
         serviceShortDescription = val;
       },
@@ -437,26 +610,11 @@ class _EditServiceState extends State<EditService> {
   }
 
   Widget getServiceDescription() {
-    return TextFormField(
-      cursorColor: darkBlue(),
-      autofocus: false,
-      obscureText: false,
+    return CustomizedTextFormField(
       maxLines: 5,
+      labelText: AppLocalization.of(context).description,
       controller: serviceDescriptionController,
       textCapitalization: TextCapitalization.sentences,
-      decoration: InputDecoration(
-          isDense: true,
-          fillColor: Colors.white,
-          filled: true,
-          hintText: AppLocalization.of(context).describeYourServiceHere,
-          labelStyle: TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-          ),
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
       onChanged: (val) {
         serviceDescription = val;
       },
@@ -464,73 +622,118 @@ class _EditServiceState extends State<EditService> {
   }
 
   Widget getCategoryField() {
-    return Card(
-      margin: EdgeInsets.all(0),
-      child: Container(
-        padding: EdgeInsets.all(8),
-        width: double.infinity,
-        child: DropdownButton<ServiceCatagory>(
-          isExpanded: true,
-          underline: Divider(
-            color: Colors.transparent,
-          ),
-          hint: Text(AppLocalization.of(context).selectCategory),
-          value: selectedServiceCategory,
-          onChanged: (ServiceCatagory value) {
-            if (mounted) {
-              setState(() {
-                selectedServiceCategory = value;
-                serviceCategory = selectedServiceCategory.name;
-              });
-            }
-          },
-          items: serviceCategories.map((ServiceCatagory category) {
-            return DropdownMenuItem<ServiceCatagory>(
-              value: category,
-              child: Text(
-                category.name,
-                style: TextStyle(color: Colors.black),
+    // return Card(
+    //   margin: EdgeInsets.all(0),
+    //   child: Container(
+    //     padding: EdgeInsets.all(8),
+    //     width: double.infinity,
+    //     child: DropdownButton<ServiceCatagory>(
+    //       isExpanded: true,
+    //       underline: Divider(
+    //         color: Colors.transparent,
+    //       ),
+    //       hint: Text(AppLocalization.of(context).selectCategory),
+    //       value: selectedServiceCategory,
+    //       onChanged: (ServiceCatagory value) {
+    //         if (mounted) {
+    //           setState(() {
+    //             selectedServiceCategory = value;
+    //             serviceCategory = selectedServiceCategory.name;
+    //           });
+    //         }
+    //       },
+    //       items: serviceCategories.map((ServiceCatagory category) {
+    //         return DropdownMenuItem<ServiceCatagory>(
+    //           value: category,
+    //           child: Text(
+    //             category.name,
+    //             style: TextStyle(color: Colors.black),
+    //           ),
+    //         );
+    //       }).toList(),
+    //     ),
+    //   ),
+    // );
+    return CustomizedDropDownField(
+      title: AppLocalization.of(context).category,
+      child: DropdownButton<ServiceCatagory>(
+        isExpanded: true,
+        underline: Divider(
+          color: Colors.transparent,
+        ),
+        value: selectedServiceCategory,
+        onChanged: (ServiceCatagory value) {
+          if (mounted) {
+            setState(() {
+              selectedServiceCategory = value;
+              serviceCategory = selectedServiceCategory.name;
+            });
+          }
+        },
+        style: TextStyle(
+          color: blackFont,
+          fontSize: 16,
+          fontWeight: FontWeight.w400,
+        ),
+        selectedItemBuilder: (BuildContext context) {
+          return serviceCategories.map<Widget>((ServiceCatagory category) {
+            return Container(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    category.name,
+                    style: TextStyle(
+                      color: blackFont,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
               ),
             );
-          }).toList(),
-        ),
+          }).toList();
+        },
+        items: serviceCategories.map((ServiceCatagory category) {
+          return DropdownMenuItem<ServiceCatagory>(
+            value: category,
+            child: Container(
+              child: Row(
+                children: [
+                  Text(
+                    category.name,
+                    style: TextStyle(
+                        color: category == selectedServiceCategory
+                            ? navyBlue
+                            : blackFont,
+                        fontSize: 16,
+                        fontWeight: category == selectedServiceCategory
+                            ? FontWeight.w600
+                            : FontWeight.w400),
+                  ),
+                  flexibleSpace(),
+                  category == selectedServiceCategory
+                      ? Icon(
+                          SlydoAppIcon.checked,
+                          color: navyBlue,
+                          size: 14,
+                        )
+                      : Container()
+                ],
+              ),
+            ),
+          );
+        }).toList(),
       ),
     );
   }
 
   Widget getAmountField() {
-    return TextFormField(
-      cursorColor: darkBlue(),
-      autofocus: false,
-      obscureText: false,
+    return CustomizedTextFormField(
       controller: servicePriceController,
-      keyboardType: TextInputType.number,
-      decoration: InputDecoration(
-          prefixIcon: Container(
-            width: 20,
-            child: Center(
-              child: Text(
-                worldCurrencies[userBloc.user.currency],
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontFamily: "Roboto",
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey[600]),
-              ),
-            ),
-          ),
-          fillColor: Colors.white,
-          filled: true,
-          hintText: AppLocalization.of(context).priceOfService,
-          labelStyle: TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-          ),
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
+      type: TextInputType.number,
+      isAmount: true,
+      labelText: "Price of service",
       onChanged: (val) {
         if (val.isNotEmpty) {
           try {
@@ -555,39 +758,32 @@ class _EditServiceState extends State<EditService> {
   }
 
   Widget getSubmitButton() {
-    return ButtonTheme(
-      minWidth: double.infinity,
-      child: Row(
-        children: <Widget>[
-          Expanded(
-            child: MaterialButton(
-                elevation: 4.0,
-                textColor: Colors.white,
-                color: Colors.red,
-                height: 50,
-                child: Text(AppLocalization.of(context).delete),
-                onPressed: () async {
-                  FocusScope.of(context).unfocus();
-                  deleteProduct();
-                }),
-          ),
-          SizedBox(
-            width: 8,
-          ),
-          Expanded(
-            child: MaterialButton(
-                elevation: 4.0,
-                textColor: Colors.white,
-                color: darkBlue(),
-                height: 50,
-                child: Text(AppLocalization.of(context).update),
-                onPressed: () async {
-                  FocusScope.of(context).unfocus();
-                  editProduct();
-                }),
-          ),
-        ],
-      ),
+    return Row(
+      children: <Widget>[
+        Expanded(
+          child: CurvedButton(
+              textColor: Colors.white,
+              text: AppLocalization.of(context).delete,
+              backgroundColor: mateRad,
+              onPressed: () async {
+                FocusScope.of(context).unfocus();
+                deleteProduct();
+              }),
+        ),
+        SizedBox(
+          width: 8,
+        ),
+        Expanded(
+          child: CurvedButton(
+              textColor: Colors.white,
+              text: AppLocalization.of(context).update,
+              backgroundColor: navyBlue,
+              onPressed: () async {
+                FocusScope.of(context).unfocus();
+                editProduct();
+              }),
+        ),
+      ],
     );
   }
 
@@ -636,27 +832,35 @@ class _EditServiceState extends State<EditService> {
   }
 
   Widget getIsAvailableField() {
-    return Row(
-      children: <Widget>[
-        Checkbox(
-          value: serviceIsAvailable,
-          activeColor: Colors.white,
-          checkColor: darkBlue(),
-          onChanged: (value) {
-            if (mounted) {
-              setState(() {
-                serviceIsAvailable = value;
-              });
-            }
-          },
-        ),
-        Text(
-          AppLocalization.of(context).isAvailable + " ? ",
-          style: TextStyle(
-            color: Colors.white,
-          ),
-        )
-      ],
+    // return Row(
+    //   children: <Widget>[
+    //     Checkbox(
+    //       value: serviceIsAvailable,
+    //       activeColor: Colors.white,
+    //       checkColor: darkBlue(),
+    //       onChanged: (value) {
+    //         if (mounted) {
+    //           setState(() {
+    //             serviceIsAvailable = value;
+    //           });
+    //         }
+    //       },
+    //     ),
+    //     Text(
+    //       AppLocalization.of(context).isAvailable + " ? ",
+    //       style: TextStyle(
+    //         color: Colors.white,
+    //       ),
+    //     )
+    //   ],
+    // );
+    return CustomizedCheckBoxField(
+      onTap: () {
+        serviceIsAvailable = !serviceIsAvailable;
+        setState(() {});
+      },
+      isChecked: serviceIsAvailable,
+      title: "Available",
     );
   }
 
@@ -679,29 +883,24 @@ class _EditServiceState extends State<EditService> {
           }
         }).catchError((error) {});
       },
-      child: Card(
+      child: CustomizedDropDownField(
+        title: "Available from",
         child: Container(
-          padding: EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(AppLocalization.of(context).availableFrom),
-              Row(
-                children: <Widget>[
-                  Icon(Icons.date_range),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Text(
-                    serviceAvailableFrom.toString().substring(0, 10),
-                    style: TextStyle(
-                      color: darkBlue(),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  )
-                ],
+          child: ListTile(
+            dense: true,
+            title: Text(
+              formatDate(serviceAvailableFrom),
+              style: TextStyle(
+                color: blackFont,
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
               ),
-            ],
+            ),
+            trailing: Icon(
+              SlydoAppIcon.date,
+              size: 16,
+              color: darkGrey,
+            ),
           ),
         ),
       ),

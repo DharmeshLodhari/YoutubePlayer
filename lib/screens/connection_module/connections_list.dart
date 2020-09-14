@@ -7,13 +7,13 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:toast/toast.dart';
 
 class ConnectionList extends StatefulWidget {
@@ -228,12 +228,27 @@ class _ConnectionListState extends State<ConnectionList> {
   void blockUserAlert(CustomerProfile user, int index) async {
     bool result = await showDialogBox(
       context: context,
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        backgroundColor: mateRad.withOpacity(0.08),
+        borderRadius: 20,
+        width: 48,
+        height: 48,
+        icon: Icon(
+          SlydoAppIcon.block,
+          color: mateRad,
+          size: 16,
+        ),
+        enableMargin: false,
+      ),
+      actionOneBgColor: mateRad,
+      actionOneTextColor: Colors.white,
+      actionTwoBgColor: greyBorderColor,
+      actionTwoTextColor: blackFont,
       title: AppLocalization.of(context).block,
       description: AppLocalization.of(context).areYouSureWantToBlock +
           " ${user.fullName}",
-      actionOne: AppLocalization.of(context).yes,
-      actionTwo: AppLocalization.of(context).no,
-      type: AlertType.warning,
+      actionOne: AppLocalization.of(context).block,
+      actionTwo: AppLocalization.of(context).cancel,
     );
     if (result) {
       bool done = await _auth.blockUser(user);
@@ -259,13 +274,28 @@ class _ConnectionListState extends State<ConnectionList> {
       CustomerProfile user, int index) async {
     bool result = await showDialogBox(
       context: context,
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        backgroundColor: mateRad.withOpacity(0.08),
+        borderRadius: 20,
+        width: 48,
+        height: 48,
+        icon: Icon(
+          SlydoAppIcon.delete,
+          color: mateRad,
+          size: 16,
+        ),
+        enableMargin: false,
+      ),
+      actionOneBgColor: mateRad,
+      actionOneTextColor: Colors.white,
+      actionTwoBgColor: greyBorderColor,
+      actionTwoTextColor: blackFont,
       title: AppLocalization.of(context).delete,
       description: AppLocalization.of(context).areYouSureWantToDelete +
           " ${user.fullName} " +
           "From Your Connection List",
-      actionOne: AppLocalization.of(context).yes,
-      actionTwo: AppLocalization.of(context).no,
-      type: AlertType.warning,
+      actionOne: AppLocalization.of(context).delete,
+      actionTwo: AppLocalization.of(context).cancel,
     );
     if (result) {
       bool done = await _auth.removeFromContactList(user);

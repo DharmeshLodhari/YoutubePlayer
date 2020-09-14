@@ -5,9 +5,11 @@ import 'package:Slydo/screens/messagelist.dart';
 import 'package:Slydo/screens/search_module.dart';
 import 'package:Slydo/screens/user_dashboard.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/widget/dialog.dart';
 import 'package:badges/badges.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../utils/colors.dart';
@@ -26,7 +28,6 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   //newUI Variables
-  PageController _pageController;
   DashboardBloc _dashboardBloc;
 
   int _currentIndex = 0;
@@ -63,8 +64,6 @@ class _DashboardState extends State<Dashboard> {
           ),
         ];
       });
-
-      _pageController = PageController(initialPage: _currentIndex);
     }
 
     super.initState();
@@ -202,33 +201,54 @@ class _DashboardState extends State<Dashboard> {
 //      child: Container(),
 //    ),
 
-    return Scaffold(
-      backgroundColor: whiteBackground,
-      body: PageView(
-        controller: _pageController,
-        onPageChanged: (index) {
-          _dashboardBloc.index = index;
-        },
-        children: <Widget>[
-          Home(),
-          PaymentRequestList(),
-          SearchModule(),
-          ShoppingCart(),
-          UserDashboard(
-            arguments: {'isLocked': isLocked},
-          ),
-        ],
-      ),
-      bottomNavigationBar: bottomNavigationBar(),
-    );
-  }
+    return WillPopScope(
+      onWillPop: () async {
+        if (_dashboardBloc.index == 0) {
+          bool result = await showDialogBox(
+            context: context,
+            actionOneBgColor: mateRad,
+            actionOneTextColor: Colors.white,
+            actionTwoBgColor: greyBorderColor,
+            actionTwoTextColor: blackFont,
+            title: "Exit app",
+            description: "Are you sure want to exit app?",
+            actionOne: AppLocalization.of(context).exit,
+            actionTwo: AppLocalization.of(context).cancel,
+          );
+          if (result) {
+            SystemChannels.platform.invokeMethod<void>('SystemNavigator.pop');
+          }
+        }
 
-  changeIndex(index) {
-    if (mounted) {
-      setState(() {
-        _currentIndex = index;
-      });
-    }
+        if (_dashboardBloc.index != 0) {
+          if (mounted) {
+            setState(() {
+              _dashboardBloc.index = 0;
+            });
+          }
+        }
+        return false;
+      },
+      child: Scaffold(
+        backgroundColor: whiteBackground,
+        body: PageView(
+          controller: _dashboardBloc.pageController,
+          onPageChanged: (index) {
+            _dashboardBloc.index = index;
+          },
+          children: <Widget>[
+            Home(),
+            PaymentRequestList(),
+            SearchModule(),
+            ShoppingCart(),
+            UserDashboard(
+              arguments: {'isLocked': isLocked},
+            ),
+          ],
+        ),
+        bottomNavigationBar: bottomNavigationBar(),
+      ),
+    );
   }
 
   Widget bottomNavigationBar() {
@@ -248,8 +268,6 @@ class _DashboardState extends State<Dashboard> {
         currentIndex: _dashboardBloc.index,
         onTap: (index) {
           _dashboardBloc.index = index;
-          _pageController.animateToPage(_dashboardBloc.index,
-              duration: Duration(milliseconds: 300), curve: Curves.linear);
         },
         items: [
           bottomNavigationBarItem(

@@ -549,11 +549,16 @@ class _UserLoginState extends State<UserLogin> {
         // show the notification in the dialog
         bool result = await showDialogBoxWithImage(
           context: context,
+          actionOneBgColor: greyBorderColor,
+          actionOneTextColor: blackFont,
+          actionTwoBgColor: naturalGreen,
+          actionTwoTextColor: Colors.white,
+          firstActionPrimary: false,
           title: notification['title'],
           description: notification['body'],
           image: notification['image'],
-          actionOne: AppLocalization.of(context).navigate,
-          actionTwo: AppLocalization.of(context).cancel,
+          actionOne: AppLocalization.of(context).cancel,
+          actionTwo: AppLocalization.of(context).navigate,
         );
         if (result) {
           _navigateToItemDetail(notification);

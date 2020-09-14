@@ -63,11 +63,14 @@ class SlydoAppIcon {
   static const IconData graph = IconData(0xe827, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData category = IconData(0xe828, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData note_filled = IconData(0xe829, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData true_icon = IconData(0xe82a, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData unarchive = IconData(0xe82b, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData edit = IconData(0xe82c, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData archive = IconData(0xe82d, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData remove_connection = IconData(0xe82e, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData false_icon = IconData(0xe82f, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData send_connection_request = IconData(0xe830, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData cancel_connection_request = IconData(0xe831, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData unblock = IconData(0xe832, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData delete = IconData(0xe833, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }

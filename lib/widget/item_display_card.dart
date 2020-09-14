@@ -201,22 +201,43 @@ Widget displayService({BuildContext context, Service service}) {
               dense: true,
               title: Text(
                 service.name,
-                style: TextStyle(color: lightBlue()),
+                style: TextStyle(
+                    color: blackFont,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold),
                 maxLines: 1,
+                softWrap: false,
+                overflow: TextOverflow.fade,
               ),
               subtitle: Text(
                 service.shortDescription,
                 maxLines: 1,
+                softWrap: false,
+                overflow: TextOverflow.fade,
+                style: TextStyle(
+                  color: darkGrey,
+                  fontSize: 14,
+                ),
               ),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Text(
                     worldCurrencies[service.currency],
-                    style: TextStyle(fontFamily: "Roboto"),
+                    style: TextStyle(
+                      fontFamily: "Roboto",
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      color: navyBlue,
+                    ),
                   ),
                   Text(
                     service.price.toString(),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      color: navyBlue,
+                    ),
                   ),
                 ],
               ),
