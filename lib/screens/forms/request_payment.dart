@@ -35,6 +35,8 @@ class _RequestPaymentState extends State<RequestPayment> {
   FocusNode _recipientFocus = FocusNode();
 
   var arguments;
+
+  DashboardBloc _dashboardBloc;
   _RequestPaymentState({this.arguments});
 
   final _auth = AuthService();
@@ -122,6 +124,7 @@ class _RequestPaymentState extends State<RequestPayment> {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
+    _dashboardBloc = Provider.of<DashboardBloc>(context);
 
     // return WillPopScope(
     //   onWillPop: () async {
@@ -985,15 +988,18 @@ class _RequestPaymentState extends State<RequestPayment> {
                   _auth.createPaymentRequests(data).then((value) {
                     response = value;
                     if (response.statusCode == 201) {
-                      //Pop Circular Progress Indicator
-                      Navigator.pop(context);
-                      //Pop request payment page
-                      Navigator.pop(context);
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                        "/dashboard",
-                        (Route<dynamic> route) => false,
-                        arguments: {"dashboardIndex": 1},
-                      );
+                      // //Pop Circular Progress Indicator
+                      // Navigator.pop(context);
+                      // //Pop request payment page
+                      // Navigator.pop(context);
+                      _dashboardBloc.index = 1;
+                      Navigator.popUntil(
+                          context, ModalRoute.withName("/dashboard"));
+                      // Navigator.of(context).pushNamedAndRemoveUntil(
+                      //   "/dashboard",
+                      //   (Route<dynamic> route) => false,
+                      //   arguments: {"dashboardIndex": 1},
+                      // );
                     } else if (response.statusCode == 500) {
                       Navigator.pop(context);
                       if (mounted) {

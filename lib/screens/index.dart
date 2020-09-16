@@ -272,7 +272,7 @@ class _IndexState extends State<Index> {
           Container(
             padding: EdgeInsets.symmetric(horizontal: 30),
             child: Image.asset(
-              "assets/images/intro_images/screen_one.png",
+              "assets/images/intro_images/screen_two.png",
               frameBuilder: imageFrameBuilder,
             ),
           ),
@@ -289,7 +289,7 @@ class _IndexState extends State<Index> {
                       ),
                     ),
                     Text(
-                      "Scan QR Code",
+                      "SEND PAYMENT",
                       textAlign: TextAlign.center,
                       style:
                           TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
@@ -300,7 +300,7 @@ class _IndexState extends State<Index> {
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 40),
                       child: Text(
-                        "Slydo allows you to send and receive payments instantly in Africa.",
+                        "Send money fast to anyone, anywhere in Africa.",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             fontSize: 14, color: darkGrey, height: 1.5),
@@ -333,7 +333,7 @@ class _IndexState extends State<Index> {
           Container(
             padding: EdgeInsets.symmetric(horizontal: 30),
             child: Image.asset(
-              "assets/images/intro_images/screen_two.png",
+              "assets/images/intro_images/screen_one.png",
               frameBuilder: imageFrameBuilder,
             ),
           ),
@@ -350,7 +350,7 @@ class _IndexState extends State<Index> {
                       ),
                     ),
                     Text(
-                      "Send Payment",
+                      "SCAN QR CODE",
                       textAlign: TextAlign.center,
                       style:
                           TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
@@ -361,7 +361,7 @@ class _IndexState extends State<Index> {
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 40),
                       child: Text(
-                        "Slydo allows you to send and receive payments instantly in Africa.",
+                        "Scan QR Code to make payment. Easy and secure.",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             fontSize: 14, color: darkGrey, height: 1.5),
@@ -392,8 +392,9 @@ class _IndexState extends State<Index> {
             child: Container(),
           ),
           Container(
+            padding: EdgeInsets.symmetric(horizontal: 30),
             child: Image.asset(
-              "assets/images/intro_images/screen_three.png",
+              "assets/images/intro_images/screen_four.png",
               frameBuilder: imageFrameBuilder,
             ),
           ),
@@ -410,7 +411,7 @@ class _IndexState extends State<Index> {
                       ),
                     ),
                     Text(
-                      "View Transactions",
+                      "RECEIVE PAYMENT",
                       textAlign: TextAlign.center,
                       style:
                           TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
@@ -421,7 +422,7 @@ class _IndexState extends State<Index> {
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 40),
                       child: Text(
-                        "Slydo allows you to send and receive payments instantly in Africa.",
+                        "Receive instant payment from your customers.",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             fontSize: 14, color: darkGrey, height: 1.5),
@@ -452,9 +453,8 @@ class _IndexState extends State<Index> {
             child: Container(),
           ),
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 30),
             child: Image.asset(
-              "assets/images/intro_images/screen_four.png",
+              "assets/images/intro_images/screen_three.png",
               frameBuilder: imageFrameBuilder,
             ),
           ),
@@ -471,7 +471,7 @@ class _IndexState extends State<Index> {
                       ),
                     ),
                     Text(
-                      "Send Payment",
+                      "VIEW TRANSACTIONS",
                       textAlign: TextAlign.center,
                       style:
                           TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
@@ -482,7 +482,7 @@ class _IndexState extends State<Index> {
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 40),
                       child: Text(
-                        "Slydo allows you to send and receive payments instantly in Africa.",
+                        "See how much you receive and spend daily, weekly and monthly.",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             fontSize: 14, color: darkGrey, height: 1.5),
