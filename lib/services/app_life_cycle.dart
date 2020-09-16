@@ -74,7 +74,7 @@ class _AppLifeCycleState extends State<AppLifeCycle>
 
   void onResume() {
     // refreshing the list on onResume
-    onRefresh();
+    // onRefresh();
 
     //this will store the device data and the app state
     Map<String, String> tempData = Map<String, String>();

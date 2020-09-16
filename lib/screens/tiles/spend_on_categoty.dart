@@ -30,21 +30,24 @@ class _SpendOnCategoryTileState extends State<SpendOnCategoryTile> {
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: 8),
           child: ListTile(
-            leading: ClipOval(
-              child: Container(
-                child: Image.asset(
-                  widget.url,
-                  fit: BoxFit.fill,
-                  height: 48,
-                  width: 48,
-                ),
+            leading: Container(
+              decoration:
+                  BoxDecoration(borderRadius: BorderRadius.circular(20)),
+              child: Image.asset(
+                widget.url,
+                fit: BoxFit.fill,
+                height: 48,
+                width: 48,
               ),
             ),
             title: Text(
               widget.name,
               maxLines: 1,
               style: TextStyle(
-                  color: blackFont, fontWeight: FontWeight.bold, fontSize: 15),
+                color: blackFont,
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+              ),
             ),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,

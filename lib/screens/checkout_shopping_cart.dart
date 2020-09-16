@@ -436,17 +436,20 @@ class _ShoppingCartState extends State<ShoppingCart> {
         child: AlertDialog(
           titlePadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           title: Text(
             AppLocalization.of(context).confirmation,
             style: TextStyle(
-                fontSize: 20, fontWeight: FontWeight.bold, color: darkBlue()),
+                fontSize: 16, fontWeight: FontWeight.bold, color: blackFont),
           ),
           content: Container(
             child: Text(
               AppLocalization.of(context).areYouSureWantToPlaceThisOrderFor +
-                  ' (${worldCurrencies[userBloc.user.currency]} ${basketBloc.total})?',
+                  '(${worldCurrencies[userBloc.user.currency]} ${basketBloc.total})?',
               style: TextStyle(
-                fontWeight: FontWeight.w500,
+                fontSize: 16,
+                color: blackFont,
                 fontFamily: "Roboto",
               ),
             ),
@@ -455,7 +458,10 @@ class _ShoppingCartState extends State<ShoppingCart> {
             FlatButton(
               child: Text(
                 AppLocalization.of(context).cancel,
-                style: TextStyle(color: darkBlue()),
+                style: TextStyle(
+                    color: blackFont,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16),
               ),
               onPressed: () {
                 Navigator.pop(context, 'cancel');
@@ -464,7 +470,10 @@ class _ShoppingCartState extends State<ShoppingCart> {
             FlatButton(
               child: Text(
                 AppLocalization.of(context).place,
-                style: TextStyle(color: darkBlue()),
+                style: TextStyle(
+                    color: blackFont,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16),
               ),
               onPressed: () {
                 Navigator.pop(context, 'place');

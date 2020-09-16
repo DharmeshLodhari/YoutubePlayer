@@ -30,6 +30,8 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     with TickerProviderStateMixin {
   var arguments;
 
+  DashboardBloc _dashboardBloc;
+
   _ServiceDetailPageState({this.arguments});
 
   Service service;
@@ -105,6 +107,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   @override
   Widget build(BuildContext context) {
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
+    _dashboardBloc = Provider.of<DashboardBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
     isValidCustomer = userBloc.user.userName != service.provider;
@@ -196,11 +199,13 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         ),
       ),
       onTap: () {
-        Navigator.of(context).pushNamedAndRemoveUntil(
-          "/dashboard",
-          (Route<dynamic> route) => false,
-          arguments: {"dashboardIndex": 2},
-        );
+        _dashboardBloc.index = 3;
+        Navigator.popUntil(context, ModalRoute.withName("/dashboard"));
+        // Navigator.of(context).pushNamedAndRemoveUntil(
+        //   "/dashboard",
+        //   (Route<dynamic> route) => false,
+        //   arguments: {"dashboardIndex": 2},
+        // );
       },
       backgroundColor: iconBtnGrey,
       enableMargin: true,

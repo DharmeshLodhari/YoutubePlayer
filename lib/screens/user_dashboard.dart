@@ -707,14 +707,25 @@ class _UserDashboardState extends State<UserDashboard> {
     final imageSource = await showDialog<ImageSource>(
         context: context,
         builder: (context) => AlertDialog(
-              title: Text(AppLocalization.of(context).selectTheImageSource),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              title: Text(
+                AppLocalization.of(context).selectTheImageSource,
+                style: TextStyle(fontSize: 18, color: blackFont),
+              ),
               actions: <Widget>[
                 MaterialButton(
-                  child: Text(AppLocalization.of(context).camera),
+                  child: Text(
+                    AppLocalization.of(context).camera,
+                    style: TextStyle(fontSize: 16, color: blackFont),
+                  ),
                   onPressed: () => Navigator.pop(context, ImageSource.camera),
                 ),
                 MaterialButton(
-                  child: Text(AppLocalization.of(context).gallary),
+                  child: Text(
+                    AppLocalization.of(context).gallary,
+                    style: TextStyle(fontSize: 16, color: blackFont),
+                  ),
                   onPressed: () => Navigator.pop(context, ImageSource.gallery),
                 )
               ],

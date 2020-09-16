@@ -13,8 +13,6 @@ import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../utils/colors.dart';
-
 class TransactionGraph extends StatefulWidget {
   @override
   _TransactionGraphState createState() => _TransactionGraphState();
@@ -26,7 +24,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
   UserBloc userBloc;
 
   //variables for category tile
-  dynamic categoryAndSpend = List();
+  dynamic categoryAndSpend;
   bool isLoading = true;
   final _auth = AuthService();
 
@@ -198,15 +196,6 @@ class _TransactionGraphState extends State<TransactionGraph> {
                             color: dividerColor,
                             thickness: 1,
                           ),
-                          // isLoading
-                          //     ? Expanded(
-                          //         child: Center(
-                          //           child: CircularLoadingIndicator(),
-                          //         ),
-                          //       )
-                          //     : Expanded(
-                          //         child: Container(child: flipGraph()),
-                          //       ),
                           isLoading
                               ? Expanded(
                                   child: Center(
@@ -214,32 +203,23 @@ class _TransactionGraphState extends State<TransactionGraph> {
                                   ),
                                 )
                               : Expanded(
-                                  child: Container(
-                                    child: !isLineGraph
-                                        ? firstSide()
-                                        : secondSide(),
-                                  ),
+                                  child: Container(child: flipGraph()),
                                 ),
                         ],
                       ),
                     ),
                   ),
                 ),
-                !isLineGraph
-                    ? SizedBox(
-                        height: 10,
-                      )
-                    : Container(),
-                !isLineGraph
-                    ? Expanded(
-                        child: ListView.builder(
-                            itemCount: categoryAndSpend.length,
-                            itemBuilder: (context, index) {
-                              return getSpendOnCategoryTile(
-                                  categoryAndSpend[index]);
-                            }),
-                      )
-                    : Container(),
+                // SizedBox(
+                //   height: 10,
+                // ),
+                // Expanded(
+                //   child: ListView.builder(
+                //       itemCount: categoryAndSpend.length,
+                //       itemBuilder: (context, index) {
+                //         return getSpendOnCategoryTile(categoryAndSpend[index]);
+                //       }),
+                // )
                 // isLoading
                 //     ? Expanded(
                 //         child: Center(
@@ -290,20 +270,18 @@ class _TransactionGraphState extends State<TransactionGraph> {
       height: 34,
       width: 34,
       icon: Icon(
-        isLineGraph ? SlydoAppIcon.graph : SlydoAppIcon.line_graph,
+        SlydoAppIcon.line_graph,
         size: 16,
         color: blackFont,
       ),
       onTap: () {
-        // cardKey.currentState.toggleCard();
-        isLineGraph = !isLineGraph;
-        setState(() {});
+        cardKey.currentState.toggleCard();
 
-        // if (!cardKey.currentState.isFront && !isFlipped) {
-        //   isFlipped = true;
-        // } else {
-        //   isFlipped = false;
-        // }
+        if (!cardKey.currentState.isFront && !isFlipped) {
+          isFlipped = true;
+        } else {
+          isFlipped = false;
+        }
       },
       backgroundColor: iconBtnGrey,
       enableMargin: true,
@@ -315,8 +293,8 @@ class _TransactionGraphState extends State<TransactionGraph> {
       key: cardKey,
       flipOnTouch: false,
       direction: FlipDirection.VERTICAL,
-      front: firstSide(),
-      back: secondSide(),
+      front: isFlipped ? secondSide() : firstSide(),
+      back: isFlipped ? firstSide() : secondSide(),
     );
   }
 
@@ -344,10 +322,24 @@ class _TransactionGraphState extends State<TransactionGraph> {
     //       return getSpendOnCategoryTile(categoryAndSpend[index - 1]);
     //     });
 
-    return Container(
-      child: BarChart(
-        arguments: {"week": barChartData},
-      ),
+    return Column(
+      children: [
+        Container(
+          child: BarChart(
+            arguments: {"week": barChartData},
+          ),
+        ),
+        SizedBox(
+          height: 10,
+        ),
+        Expanded(
+          child: ListView.builder(
+              itemCount: categoryAndSpend.length,
+              itemBuilder: (context, index) {
+                return getSpendOnCategoryTile(categoryAndSpend[index]);
+              }),
+        )
+      ],
     );
   }
 
@@ -663,7 +655,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
       name: categoryAndSpend["category"],
       amount: categoryAndSpend["amount"].toString(),
 //      url: categoryAndSpend["url"],
-      url: "assets/images/category/slydo.png",
+      url: "assets/images/category/bills.png",
     );
   }
 
@@ -770,8 +762,6 @@ class _TransactionGraphState extends State<TransactionGraph> {
     start = start.subtract(Duration(days: 7));
     end = end.subtract(Duration(days: 7));
     fetchData(week.toString());
-    // isLineGraph = false;
-    // setState(() {});
   }
 
   void fetchNext() {
@@ -779,8 +769,6 @@ class _TransactionGraphState extends State<TransactionGraph> {
     start = start.add(Duration(days: 7));
     end = end.add(Duration(days: 7));
     fetchData(week.toString());
-    // isLineGraph = false;
-    // setState(() {});
   }
 
   Widget flipCardButton() {
@@ -788,13 +776,11 @@ class _TransactionGraphState extends State<TransactionGraph> {
       icon: Icon(Icons.flip),
       onPressed: () {
         cardKey.currentState.toggleCard();
-        isLineGraph = !isLineGraph;
-        setState(() {});
-        // if (!cardKey.currentState.isFront && !isFlipped) {
-        //   isFlipped = true;
-        // } else {
-        //   isFlipped = false;
-        // }
+        if (!cardKey.currentState.isFront && !isFlipped) {
+          isFlipped = true;
+        } else {
+          isFlipped = false;
+        }
       },
     );
   }

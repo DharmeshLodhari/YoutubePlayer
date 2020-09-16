@@ -44,6 +44,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   bool isOtherItemIsEmpty = true;
   ScrollController _scrollController = new ScrollController();
 
+  DashboardBloc _dashboardBloc;
+
   List<dynamic> sellersOtherItems = List<dynamic>();
 
   int _current = 0;
@@ -104,6 +106,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   @override
   Widget build(BuildContext context) {
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
+    _dashboardBloc = Provider.of<DashboardBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
     isValidCustomer = userBloc.user.userName != product.seller;
@@ -233,11 +236,13 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         ),
       ),
       onTap: () {
-        Navigator.of(context).pushNamedAndRemoveUntil(
-          "/dashboard",
-          (Route<dynamic> route) => false,
-          arguments: {"dashboardIndex": 2},
-        );
+        _dashboardBloc.index = 3;
+        Navigator.popUntil(context, ModalRoute.withName("/dashboard"));
+        // Navigator.of(context).pushNamedAndRemoveUntil(
+        //   "/dashboard",
+        //   (Route<dynamic> route) => false,
+        //   arguments: {"dashboardIndex": 2},
+        // );
       },
       backgroundColor: iconBtnGrey,
       enableMargin: true,

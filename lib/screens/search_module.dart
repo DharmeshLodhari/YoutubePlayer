@@ -338,6 +338,7 @@ class _SearchModuleState extends State<SearchModule> {
             cursorWidth: 1.5,
             cursorColor: navyBlue,
             decoration: InputDecoration(
+              hintText: "Search here",
               fillColor: Colors.white,
               filled: true,
               contentPadding: EdgeInsets.symmetric(vertical: 10),

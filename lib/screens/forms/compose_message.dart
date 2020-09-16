@@ -22,6 +22,8 @@ class ComposeMessage extends StatefulWidget {
 
 class _ComposeMessageState extends State<ComposeMessage> {
   var arguments;
+
+  DashboardBloc _dashboardBloc;
   _ComposeMessageState({this.arguments});
 
   TextEditingController _recipientController = TextEditingController();
@@ -92,6 +94,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+    _dashboardBloc = Provider.of<DashboardBloc>(context);
 
     // return WillPopScope(
     //   onWillPop: () async {
@@ -296,11 +299,14 @@ class _ComposeMessageState extends State<ComposeMessage> {
             };
             _auth.sendMessage(data).then((value) {
               if (value) {
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                  "/dashboard",
-                  (Route<dynamic> route) => false,
-                  arguments: {"dashboardIndex": 4},
-                );
+                Navigator.popUntil(context, ModalRoute.withName("/dashboard"));
+                _dashboardBloc.index = 0;
+                Navigator.of(context).pushNamed('/message-list');
+                // Navigator.of(context).pushNamedAndRemoveUntil(
+                //   "/dashboard",
+                //   (Route<dynamic> route) => false,
+                //   arguments: {"dashboardIndex": 4},
+                // );
               } else {
                 Navigator.pop(context);
                 var msg = AppLocalization.of(context).error;

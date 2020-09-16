@@ -1,8 +1,10 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/services/date_time_and_money_converter.dart';
+import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -80,11 +82,7 @@ class _BarChartState extends State<BarChart> {
                 child: Column(
                   children: <Widget>[
                     SizedBox(height: 125.0),
-                    CircularProgressIndicator(
-                      strokeWidth: 2.5,
-                      valueColor: AlwaysStoppedAnimation(Colors.white),
-                      backgroundColor: lightBlue(),
-                    ),
+                    CircularLoadingIndicator(),
                     SizedBox(height: 125.0),
                   ],
                 ),
@@ -95,85 +93,160 @@ class _BarChartState extends State<BarChart> {
   }
 
   Widget barChart() {
-    return Padding(
-      padding: EdgeInsets.all(12.0),
+    // return Padding(
+    //   padding: EdgeInsets.all(12.0),
+    //   child: Column(
+    //     children: <Widget>[
+    //       Row(
+    //         mainAxisAlignment: MainAxisAlignment.center,
+    //         children: <Widget>[
+    //           Text(
+    //             AppLocalization.of(context).expenditure,
+    //             style: TextStyle(
+    //               fontSize: 20.0,
+    //               fontWeight: FontWeight.bold,
+    //               letterSpacing: 1.2,
+    //             ),
+    //           ),
+    //           Text(
+    //             ' (${worldCurrencies[userBloc.user.currency]})',
+    //             style: TextStyle(
+    //               fontFamily: "Roboto",
+    //               fontSize: 20.0,
+    //               fontWeight: FontWeight.bold,
+    //               letterSpacing: 1.2,
+    //             ),
+    //           ),
+    //         ],
+    //       ),
+    //       SizedBox(height: 15.0),
+    //       Row(
+    //         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    //         crossAxisAlignment: CrossAxisAlignment.end,
+    //         children: <Widget>[
+    //           Expanded(
+    //             child: Bar(
+    //               label: AppLocalization.of(context).sundayAbb,
+    //               amountSpent: barData[0],
+    //               mostExpensive: mostExpensive,
+    //             ),
+    //           ),
+    //           Expanded(
+    //             child: Bar(
+    //               label: AppLocalization.of(context).mondayAbb,
+    //               amountSpent: barData[1],
+    //               mostExpensive: mostExpensive,
+    //             ),
+    //           ),
+    //           Expanded(
+    //             child: Bar(
+    //               label: AppLocalization.of(context).tuesdayAbb,
+    //               amountSpent: barData[2],
+    //               mostExpensive: mostExpensive,
+    //             ),
+    //           ),
+    //           Expanded(
+    //             child: Bar(
+    //               label: AppLocalization.of(context).wednesdayAbb,
+    //               amountSpent: barData[3],
+    //               mostExpensive: mostExpensive,
+    //             ),
+    //           ),
+    //           Expanded(
+    //             child: Bar(
+    //               label: AppLocalization.of(context).thursdayAbb,
+    //               amountSpent: barData[4],
+    //               mostExpensive: mostExpensive,
+    //             ),
+    //           ),
+    //           Expanded(
+    //             child: Bar(
+    //               label: AppLocalization.of(context).fridayAbb,
+    //               amountSpent: barData[5],
+    //               mostExpensive: mostExpensive,
+    //             ),
+    //           ),
+    //           Expanded(
+    //             child: Bar(
+    //               label: AppLocalization.of(context).saturdayAbb,
+    //               amountSpent: barData[6],
+    //               mostExpensive: mostExpensive,
+    //             ),
+    //           ),
+    //         ],
+    //       ),
+    //     ],
+    //   ),
+    // );
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               Text(
                 AppLocalization.of(context).expenditure,
                 style: TextStyle(
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.2,
-                ),
+                    fontSize: 14.0,
+                    fontWeight: FontWeight.w600,
+                    color: blackFont),
               ),
               Text(
                 ' (${worldCurrencies[userBloc.user.currency]})',
                 style: TextStyle(
-                  fontFamily: "Roboto",
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.2,
-                ),
+                    fontFamily: "Roboto",
+                    fontSize: 14.0,
+                    fontWeight: FontWeight.w600,
+                    color: blackFont),
               ),
             ],
           ),
           SizedBox(height: 15.0),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: <Widget>[
-              Expanded(
-                child: Bar(
-                  label: AppLocalization.of(context).sundayAbb,
-                  amountSpent: barData[0],
-                  mostExpensive: mostExpensive,
-                ),
+              Bar(
+                label: "S",
+                amountSpent: barData[0],
+                mostExpensive: mostExpensive,
               ),
-              Expanded(
-                child: Bar(
-                  label: AppLocalization.of(context).mondayAbb,
-                  amountSpent: barData[1],
-                  mostExpensive: mostExpensive,
-                ),
+              flexibleSpace(),
+              Bar(
+                label: "M",
+                amountSpent: barData[1],
+                mostExpensive: mostExpensive,
               ),
-              Expanded(
-                child: Bar(
-                  label: AppLocalization.of(context).tuesdayAbb,
-                  amountSpent: barData[2],
-                  mostExpensive: mostExpensive,
-                ),
+              flexibleSpace(),
+              Bar(
+                label: "T",
+                amountSpent: barData[2],
+                mostExpensive: mostExpensive,
               ),
-              Expanded(
-                child: Bar(
-                  label: AppLocalization.of(context).wednesdayAbb,
-                  amountSpent: barData[3],
-                  mostExpensive: mostExpensive,
-                ),
+              flexibleSpace(),
+              Bar(
+                label: "W",
+                amountSpent: barData[3],
+                mostExpensive: mostExpensive,
               ),
-              Expanded(
-                child: Bar(
-                  label: AppLocalization.of(context).thursdayAbb,
-                  amountSpent: barData[4],
-                  mostExpensive: mostExpensive,
-                ),
+              flexibleSpace(),
+              Bar(
+                label: "T",
+                amountSpent: barData[4],
+                mostExpensive: mostExpensive,
               ),
-              Expanded(
-                child: Bar(
-                  label: AppLocalization.of(context).fridayAbb,
-                  amountSpent: barData[5],
-                  mostExpensive: mostExpensive,
-                ),
+              flexibleSpace(),
+              Bar(
+                label: "F",
+                amountSpent: barData[5],
+                mostExpensive: mostExpensive,
               ),
-              Expanded(
-                child: Bar(
-                  label: AppLocalization.of(context).saturdayAbb,
-                  amountSpent: barData[6],
-                  mostExpensive: mostExpensive,
-                ),
+              flexibleSpace(),
+              Bar(
+                label: "S",
+                amountSpent: barData[6],
+                mostExpensive: mostExpensive,
               ),
             ],
           ),
@@ -207,7 +280,6 @@ class _BarChartState extends State<BarChart> {
               style: TextStyle(
                 fontSize: 20.0,
                 fontWeight: FontWeight.bold,
-                letterSpacing: 1.2,
               ),
             ),
           ),
@@ -215,51 +287,75 @@ class _BarChartState extends State<BarChart> {
   }
 }
 
-class Bar extends StatelessWidget {
+class Bar extends StatefulWidget {
   final String label;
   final double amountSpent;
   final double mostExpensive;
 
-  final double _maxBarHeight = 150.0;
-
   Bar({this.label, this.amountSpent, this.mostExpensive});
+
+  @override
+  _BarState createState() => _BarState();
+}
+
+class _BarState extends State<Bar> {
+  final double _maxBarHeight = 200.0;
+  bool showAmount = false;
 
   @override
   Widget build(BuildContext context) {
     final barHeight = getBarHeight();
-    return Column(
-      children: <Widget>[
-        Text(
-          moneyConverter(amountSpent),
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
+    return GestureDetector(
+      onTapDown: (tap) {
+        showAmount = !showAmount;
+        setState(() {});
+      },
+      onTapUp: (tap) {
+        showAmount = !showAmount;
+        setState(() {});
+      },
+      // onTap: () {
+      //   showAmount = !showAmount;
+      //   setState(() {});
+      // },
+      child: Column(
+        children: <Widget>[
+          showAmount
+              ? Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8), color: blackFont),
+                  child: Text(
+                    moneyConverter(widget.amountSpent),
+                    style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
+                )
+              : Container(height: 20),
+          SizedBox(height: 6.0),
+          Container(
+            height: barHeight,
+            width: 22.0,
+            decoration: BoxDecoration(
+              color: naturalGreen,
+              borderRadius: BorderRadius.circular(30.0),
+            ),
           ),
-        ),
-        SizedBox(height: 6.0),
-        Container(
-          height: barHeight,
-          width: 18.0,
-          decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor,
-            borderRadius: BorderRadius.circular(6.0),
+          SizedBox(height: 8.0),
+          Text(
+            widget.label,
+            style: TextStyle(fontSize: 12.0, color: darkGrey),
           ),
-        ),
-        SizedBox(height: 8.0),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 16.0,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
   double getBarHeight() {
-    if (amountSpent != 0 && mostExpensive != 0) {
-      return amountSpent / mostExpensive * _maxBarHeight;
+    if (widget.amountSpent != 0 && widget.mostExpensive != 0) {
+      return widget.amountSpent / widget.mostExpensive * _maxBarHeight;
     }
     return 1.0;
   }
