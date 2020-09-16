@@ -10,7 +10,7 @@ class CustomizedTextFormField extends StatefulWidget {
   Function onTap;
   TextEditingController controller;
   List<TextInputFormatter> inputFormatters;
-  TextInputType type;
+  TextInputType keyboardType;
   bool obscureText;
   bool isPassword;
   bool isReadOnly;
@@ -28,7 +28,7 @@ class CustomizedTextFormField extends StatefulWidget {
       this.onChanged,
       this.onTap,
       this.controller,
-      this.type = TextInputType.text,
+      this.keyboardType = TextInputType.text,
       this.obscureText = false,
       this.isPassword = false,
       this.isReadOnly = false,
@@ -173,7 +173,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
               widget.inputFormatters != null ? widget.inputFormatters : [],
           validator: widget.validator,
           controller: widget.controller,
-          keyboardType: widget.type,
+          keyboardType: widget.keyboardType,
           obscureText: widget.obscureText,
           maxLength: widget.maxLength,
           maxLines: widget.maxLines,

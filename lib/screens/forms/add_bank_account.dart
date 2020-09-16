@@ -359,7 +359,7 @@ class _AddAccountState extends State<AddAccount> {
 
     return CustomizedTextFormField(
       labelText: AppLocalization.of(context).accountNumber,
-      type: TextInputType.number,
+      keyboardType: TextInputType.number,
       validator: (val) => val.length < 10
           ? AppLocalization.of(context).validationTextMessage1
           : null,

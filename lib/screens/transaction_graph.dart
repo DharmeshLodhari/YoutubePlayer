@@ -4,7 +4,10 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/tiles/spend_on_categoty.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/date_time_and_money_converter.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/bar_chart.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
@@ -122,6 +125,44 @@ class _TransactionGraphState extends State<TransactionGraph> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+    // return WillPopScope(
+    //   onWillPop: () async {
+    //     return true;
+    //   },
+    //   child: Scaffold(
+    //       key: transactionGraphKey,
+    //       resizeToAvoidBottomInset: true,
+    //       backgroundColor: lightGrey,
+    //       appBar: appBar(),
+    //       body: Column(
+    //         children: <Widget>[
+    //           Container(
+    //             margin: EdgeInsets.fromLTRB(10.0, 8.0, 10.0, 0.0),
+    //             decoration: BoxDecoration(
+    //               color: Colors.white,
+    //               boxShadow: [
+    //                 BoxShadow(
+    //                   color: Colors.black12,
+    //                   offset: Offset(0, 2),
+    //                   blurRadius: 6.0,
+    //                 ),
+    //               ],
+    //               borderRadius: BorderRadius.circular(10.0),
+    //             ),
+    //             child: dateChanger(),
+    //           ),
+    //           isLoading
+    //               ? Expanded(
+    //                   child: Center(
+    //                     child: CircularLoadingIndicator(),
+    //                   ),
+    //                 )
+    //               : Expanded(
+    //                   child: Container(child: flipGraph()),
+    //                 ),
+    //         ],
+    //       )),
+    // );
     return WillPopScope(
       onWillPop: () async {
         return true;
@@ -129,43 +170,85 @@ class _TransactionGraphState extends State<TransactionGraph> {
       child: Scaffold(
           key: transactionGraphKey,
           resizeToAvoidBottomInset: true,
-          backgroundColor: lightBlue(),
-          appBar: AppBar(
-              actions: <Widget>[flipCardButton()],
-              backgroundColor: darkBlue(),
-              title: Text(AppLocalization.of(context).transactionGraph)),
-          body: Column(
-            children: <Widget>[
-              Container(
-                margin: EdgeInsets.fromLTRB(10.0, 8.0, 10.0, 0.0),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black12,
-                      offset: Offset(0, 2),
-                      blurRadius: 6.0,
-                    ),
-                  ],
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                child: dateChanger(),
-              ),
-              isLoading
-                  ? Expanded(
-                      child: Center(
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2.5,
-                          valueColor: AlwaysStoppedAnimation(Colors.white),
-                          backgroundColor: lightBlue(),
-                        ),
+          backgroundColor: lightGrey,
+          appBar: appBar(),
+          body: Container(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              children: <Widget>[
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        offset: Offset(0, 2),
+                        blurRadius: 6.0,
                       ),
-                    )
-                  : Expanded(
-                      child: Container(child: flipGraph()),
-                    ),
-            ],
+                    ],
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: dateChanger(),
+                ),
+                isLoading
+                    ? Expanded(
+                        child: Center(
+                          child: CircularLoadingIndicator(),
+                        ),
+                      )
+                    : Expanded(
+                        child: Container(child: flipGraph()),
+                      ),
+              ],
+            ),
           )),
+    );
+  }
+
+  Widget appBar() {
+    return AppBar(
+      elevation: 0,
+      titleSpacing: 0,
+      backgroundColor: Colors.white,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      centerTitle: false,
+      title: Text(
+        "Transaction graph",
+        style: TextStyle(
+            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+      ),
+      actions: <Widget>[
+        flipGraphButton(),
+        SizedBox(
+          width: 16,
+        ),
+      ],
+    );
+  }
+
+  Widget flipGraphButton() {
+    return RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
+      icon: Icon(
+        SlydoAppIcon.line_graph,
+        size: 16,
+        color: blackFont,
+      ),
+      onTap: () {
+        Navigator.of(context).pushNamed("/transaction-graph");
+      },
+      backgroundColor: iconBtnGrey,
+      enableMargin: true,
     );
   }
 

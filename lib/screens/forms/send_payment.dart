@@ -584,7 +584,7 @@ class _SendPaymentState extends State<SendPayment> {
     return CustomizedTextFormField(
       labelText: "Amount",
       isAmount: true,
-      type: TextInputType.number,
+      keyboardType: TextInputType.number,
       inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
       controller: _amountController,
       onChanged: (val) {

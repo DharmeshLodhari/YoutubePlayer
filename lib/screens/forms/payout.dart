@@ -259,7 +259,7 @@ class _PayoutState extends State<Payout> {
     return CustomizedTextFormField(
       labelText: "Amount",
       isAmount: true,
-      type: TextInputType.number,
+      keyboardType: TextInputType.number,
       inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
       onChanged: (val) {
         if (mounted) {

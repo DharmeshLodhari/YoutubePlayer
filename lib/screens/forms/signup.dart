@@ -179,7 +179,7 @@ class _SignUpState extends State<SignUp> {
       controller: _phoneNumberController,
       labelColor: darkGrey,
       labelText: "Phone number",
-      type: TextInputType.phone,
+      keyboardType: TextInputType.phone,
       isReadOnly: true,
       validator: (val) {
         if (val.isNotEmpty && val.length == 13) {
@@ -205,7 +205,7 @@ class _SignUpState extends State<SignUp> {
       controller: _fullNameController,
       labelColor: darkGrey,
       labelText: "Full name",
-      type: TextInputType.text,
+      keyboardType: TextInputType.text,
       validator: (val) => val.length < 5
           ? AppLocalization.of(context).enterValidNameMatchingAccountNumber
           : null,
@@ -227,7 +227,7 @@ class _SignUpState extends State<SignUp> {
       controller: _passwordController,
       labelColor: darkGrey,
       labelText: "New Password",
-      type: TextInputType.number,
+      keyboardType: TextInputType.number,
       obscureText: true,
       maxLength: 6,
       isPassword: true,
@@ -240,7 +240,7 @@ class _SignUpState extends State<SignUp> {
       controller: _confirmPasswordController,
       labelColor: darkGrey,
       labelText: "Confirm password",
-      type: TextInputType.number,
+      keyboardType: TextInputType.number,
       obscureText: true,
       maxLength: 6,
       isPassword: true,

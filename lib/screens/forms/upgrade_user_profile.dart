@@ -304,7 +304,7 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
     //       ),
     //     ]);
     return CustomizedTextFormField(
-      type: TextInputType.text,
+      keyboardType: TextInputType.text,
       labelText: "Business name",
       validator: (val) => val.length < 5
           ? AppLocalization.of(context).validationTextMessage

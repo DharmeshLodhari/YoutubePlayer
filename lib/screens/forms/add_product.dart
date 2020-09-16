@@ -818,7 +818,7 @@ class _AddProductState extends State<AddProduct> {
     // );
     return CustomizedTextFormField(
       labelText: AppLocalization.of(context).price,
-      type: TextInputType.number,
+      keyboardType: TextInputType.number,
       isAmount: true,
       onChanged: (val) {
         if (val.isNotEmpty) {

@@ -392,7 +392,7 @@ class _AddServiceState extends State<AddService> {
 
   Widget getAmountField() {
     return CustomizedTextFormField(
-      type: TextInputType.number,
+      keyboardType: TextInputType.number,
       isAmount: true,
       labelText: "Price of service",
       onChanged: (val) {

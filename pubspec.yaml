@@ -52,6 +52,7 @@ dependencies:
   page_transition: ^1.1.5
   pinput: ^0.2.4
   overlay_container: ^0.0.4+1
+  sms_otp_auto_verify: ^1.2.2
 
 
 dependency_overrides:

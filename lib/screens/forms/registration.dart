@@ -154,7 +154,7 @@ class _RegistrationState extends State<Registration> {
     return CustomizedTextFormField(
       labelColor: darkGrey,
       labelText: "Phone number",
-      type: TextInputType.phone,
+      keyboardType: TextInputType.phone,
       controller: phoneNumberController,
       validator: validatePhoneNumber,
       onChanged: (val) {

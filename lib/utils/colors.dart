@@ -33,5 +33,6 @@ Color dividerColor = HexColor("#EBEDFC");
 Color mateRad = HexColor("#F35B46");
 Color eyeGrey = HexColor("#A5ADB6");
 Color starYellow = HexColor("#FFAB00");
+Color graphWitheBackground = HexColor("#F3F3F3");
 
 Color boxShadow = Color.fromARGB(51, 50, 55, 140);

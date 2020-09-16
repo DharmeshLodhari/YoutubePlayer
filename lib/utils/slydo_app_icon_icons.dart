@@ -73,4 +73,5 @@ class SlydoAppIcon {
   static const IconData cancel_connection_request = IconData(0xe831, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData unblock = IconData(0xe832, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData delete = IconData(0xe833, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData line_graph = IconData(0xe834, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }

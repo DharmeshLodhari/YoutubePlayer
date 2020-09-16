@@ -5,14 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:pinput/pin_put/pin_put.dart';
 
 // ignore: must_be_immutable
-class VerifyOTPScreen extends StatefulWidget {
+class VerifyRegistrationOTPScreen extends StatefulWidget {
   var arguments;
-  VerifyOTPScreen({this.arguments});
+  VerifyRegistrationOTPScreen({this.arguments});
   @override
-  _VerifyOTPScreenState createState() => _VerifyOTPScreenState();
+  _VerifyRegistrationOTPScreenState createState() =>
+      _VerifyRegistrationOTPScreenState();
 }
 
-class _VerifyOTPScreenState extends State<VerifyOTPScreen> {
+class _VerifyRegistrationOTPScreenState
+    extends State<VerifyRegistrationOTPScreen> {
   TextEditingController otpController;
   String phoneNumber = '';
   FocusNode _pinPutFocusNode;

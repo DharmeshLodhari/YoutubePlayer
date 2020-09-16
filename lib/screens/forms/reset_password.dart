@@ -1,5 +1,7 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
 
 import '../../utils/colors.dart';
@@ -25,68 +27,155 @@ class _ResetPasswordState extends State<ResetPassword> {
   String phoneNumber = "";
   String resetToken = "";
 
+  TextEditingController _newPasswordController;
+  TextEditingController _confirmPasswordController;
+
   @override
   void initState() {
     phoneNumber = arguments['phoneNumber'];
     resetToken = arguments['resetToken'];
+
+    _newPasswordController = TextEditingController();
+    _confirmPasswordController = TextEditingController();
+
     super.initState();
   }
 
   Widget build(BuildContext context) {
+    // return WillPopScope(
+    //     onWillPop: () async {
+    //       return true;
+    //     },
+    //     child: Scaffold(
+    //         backgroundColor: lightBlue(),
+    //         resizeToAvoidBottomInset: true,
+    //         appBar: AppBar(
+    //             title: Center(
+    //                 child: Text(AppLocalization.of(context).resetPassword)),
+    //             backgroundColor: darkBlue()),
+    //         body: SingleChildScrollView(
+    //           padding: EdgeInsets.symmetric(vertical: 40.0, horizontal: 40.0),
+    //           scrollDirection: Axis.vertical,
+    //           child: Form(
+    //             key: _formKey,
+    //             child: Column(
+    //               children: <Widget>[
+    //                 newPasswordWidget(),
+    //                 SizedBox(
+    //                   height: 20,
+    //                 ),
+    //                 confirmPasswordWidget(),
+    //                 SizedBox(
+    //                   height: 20,
+    //                 ),
+    //                 resetPasswordButton(),
+    //               ],
+    //             ),
+    //           ),
+    //         )));
     return WillPopScope(
         onWillPop: () async {
           return true;
         },
         child: Scaffold(
-            backgroundColor: lightBlue(),
+            backgroundColor: Colors.white,
             resizeToAvoidBottomInset: true,
             appBar: AppBar(
-                title: Center(
-                    child: Text(AppLocalization.of(context).resetPassword)),
-                backgroundColor: darkBlue()),
+              backgroundColor: Colors.white,
+              elevation: 0,
+              leading: IconButton(
+                icon: Icon(
+                  Icons.keyboard_arrow_left,
+                  color: navyBlue,
+                ),
+                onPressed: () {
+                  Navigator.popUntil(context, ModalRoute.withName('/login'));
+                },
+              ),
+            ),
             body: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(vertical: 40.0, horizontal: 40.0),
               scrollDirection: Axis.vertical,
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: <Widget>[
-                    newPasswordWidget(),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    confirmPasswordWidget(),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    resetPasswordButton(),
-                  ],
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                height: MediaQuery.of(context).size.height -
+                    (AppBar().preferredSize.height +
+                        MediaQuery.of(context).padding.top),
+                width: MediaQuery.of(context).size.width,
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      resetPasswordTitle(),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      newPasswordWidget(),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      confirmPasswordWidget(),
+                      SizedBox(
+                        height: 40,
+                      ),
+                      resetPasswordButton(),
+                    ],
+                  ),
                 ),
               ),
             )));
   }
 
-  newPasswordWidget() {
-    return TextFormField(
-      cursorColor: darkBlue(),
-      autofocus: false,
+  Widget resetPasswordTitle() {
+    return Container(
+      child: Text(
+        "Reset password",
+        style: TextStyle(
+            fontSize: 22, fontWeight: FontWeight.w700, color: blackFont),
+      ),
+    );
+  }
+
+  Widget newPasswordWidget() {
+    // return TextFormField(
+    //   cursorColor: darkBlue(),
+    //   autofocus: false,
+    //   maxLength: 6,
+    //   maxLengthEnforced: true,
+    //   obscureText: true,
+    //   keyboardType: TextInputType.number,
+    //   decoration: InputDecoration(
+    //       prefixIcon: Icon(Icons.dialpad),
+    //       fillColor: Colors.white,
+    //       filled: true,
+    //       hintText: AppLocalization.of(context).newPassword,
+    //       labelStyle: TextStyle(
+    //         color: darkBlue(),
+    //         fontSize: 16,
+    //       ),
+    //       border: OutlineInputBorder(
+    //           borderRadius: BorderRadius.all(Radius.circular(4)),
+    //           borderSide: BorderSide(
+    //               width: 1, color: Colors.white, style: BorderStyle.solid))),
+    //   validator: (val) {
+    //     if (val.isEmpty) {
+    //       return AppLocalization.of(context).passwordShouldNotEmpty;
+    //     } else if (val.length != 6) {
+    //       return "Password must be of 6 digit";
+    //     }
+    //     return null;
+    //   },
+    //   onChanged: (val) {
+    //     newPassword = val;
+    //   },
+    // );
+    return CustomizedTextFormField(
       maxLength: 6,
-      maxLengthEnforced: true,
       obscureText: true,
       keyboardType: TextInputType.number,
-      decoration: InputDecoration(
-          prefixIcon: Icon(Icons.dialpad),
-          fillColor: Colors.white,
-          filled: true,
-          hintText: AppLocalization.of(context).newPassword,
-          labelStyle: TextStyle(
-            color: darkBlue(),
-            fontSize: 16,
-          ),
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
+      labelText: "New password",
+      controller: _newPasswordController,
+      isPassword: true,
       validator: (val) {
         if (val.isEmpty) {
           return AppLocalization.of(context).passwordShouldNotEmpty;
@@ -101,27 +190,48 @@ class _ResetPasswordState extends State<ResetPassword> {
     );
   }
 
-  confirmPasswordWidget() {
-    return TextFormField(
-      cursorColor: darkBlue(),
-      autofocus: false,
+  Widget confirmPasswordWidget() {
+    // return TextFormField(
+    //   cursorColor: darkBlue(),
+    //   autofocus: false,
+    //   obscureText: true,
+    //   maxLength: 6,
+    //   maxLengthEnforced: true,
+    //   keyboardType: TextInputType.number,
+    //   decoration: InputDecoration(
+    //       prefixIcon: Icon(Icons.dialpad),
+    //       fillColor: Colors.white,
+    //       filled: true,
+    //       hintText: AppLocalization.of(context).confirmPassword,
+    //       labelStyle: TextStyle(
+    //         color: darkBlue(),
+    //         fontSize: 16,
+    //       ),
+    //       border: OutlineInputBorder(
+    //           borderRadius: BorderRadius.all(Radius.circular(4)),
+    //           borderSide: BorderSide(
+    //               width: 1, color: Colors.white, style: BorderStyle.solid))),
+    //   validator: (val) {
+    //     if (val.isEmpty) {
+    //       return AppLocalization.of(context).passwordShouldNotEmpty;
+    //     } else if (val.length != 6) {
+    //       return "Password must be of 6 digit";
+    //     } else if (newPassword != confirmPassword) {
+    //       return AppLocalization.of(context).passwordMismatch;
+    //     }
+    //     return null;
+    //   },
+    //   onChanged: (val) {
+    //     confirmPassword = val;
+    //   },
+    // );
+    return CustomizedTextFormField(
       obscureText: true,
       maxLength: 6,
-      maxLengthEnforced: true,
+      labelText: "Confirm password",
+      isPassword: true,
+      controller: _confirmPasswordController,
       keyboardType: TextInputType.number,
-      decoration: InputDecoration(
-          prefixIcon: Icon(Icons.dialpad),
-          fillColor: Colors.white,
-          filled: true,
-          hintText: AppLocalization.of(context).confirmPassword,
-          labelStyle: TextStyle(
-            color: darkBlue(),
-            fontSize: 16,
-          ),
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                  width: 1, color: Colors.white, style: BorderStyle.solid))),
       validator: (val) {
         if (val.isEmpty) {
           return AppLocalization.of(context).passwordShouldNotEmpty;
@@ -139,15 +249,11 @@ class _ResetPasswordState extends State<ResetPassword> {
   }
 
   Widget resetPasswordButton() {
-    return ButtonTheme(
-      minWidth: double.infinity,
-      child: MaterialButton(
-        onPressed: verifyPassword,
-        textColor: Colors.white,
-        color: darkBlue(),
-        height: 50,
-        child: Text(AppLocalization.of(context).resetPassword),
-      ),
+    return CurvedButton(
+      onPressed: verifyPassword,
+      textColor: Colors.white,
+      backgroundColor: navyBlue,
+      text: AppLocalization.of(context).resetPassword,
     );
   }
 
@@ -162,7 +268,7 @@ class _ResetPasswordState extends State<ResetPassword> {
           .passwordReset(newPassword, confirmPassword, phoneNumber, resetToken)
           .then((value) {
         if (value) {
-          Navigator.of(context).pop();
+          Navigator.popUntil(context, ModalRoute.withName('/login'));
         }
       });
     }

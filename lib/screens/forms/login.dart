@@ -182,7 +182,7 @@ class _UserLoginState extends State<UserLogin> {
     return CustomizedTextFormField(
       labelColor: darkGrey,
       labelText: "Phone number",
-      type: TextInputType.phone,
+      keyboardType: TextInputType.phone,
       controller: phoneNumberController,
       validator: (val) {
         if (val.isNotEmpty && val.length == 13) {

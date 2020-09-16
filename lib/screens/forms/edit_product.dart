@@ -685,7 +685,7 @@ class _EditProductState extends State<EditProduct> {
   Widget getAmountField() {
     return CustomizedTextFormField(
       controller: productPriceController,
-      type: TextInputType.number,
+      keyboardType: TextInputType.number,
       isAmount: true,
       onChanged: (val) {
         if (val.isNotEmpty) {

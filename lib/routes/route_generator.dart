@@ -34,7 +34,8 @@ import 'package:Slydo/screens/transaction_graph.dart';
 import 'package:Slydo/screens/transactions_list.dart';
 import 'package:Slydo/screens/user_dashboard.dart';
 import 'package:Slydo/screens/user_profile_module/user_profile.dart';
-import 'package:Slydo/screens/verify_OTP.dart';
+import 'package:Slydo/screens/verify_registration_OTP.dart';
+import 'package:Slydo/screens/verify_reset_password_OTP.dart';
 import 'package:Slydo/splash.dart';
 import 'package:Slydo/widget/resultReturningPasswordPopup.dart';
 import 'package:flutter/material.dart';
@@ -92,7 +93,14 @@ class RouteGenerator {
         );
       case '/verify-registration-otp':
         return PageTransition(
-          child: VerifyOTPScreen(arguments: settings.arguments),
+          child: VerifyRegistrationOTPScreen(arguments: settings.arguments),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case '/verify-reset-password-otp':
+        return PageTransition(
+          child: VerifyResetPasswordOTPScreen(arguments: settings.arguments),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
           settings: settings,
