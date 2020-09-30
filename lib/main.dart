@@ -63,6 +63,9 @@ void main() async {
           ChangeNotifierProvider<DashboardBloc>.value(
             value: DashboardBloc(),
           ),
+          ChangeNotifierProvider<NotificationBloc>.value(
+            value: NotificationBloc(),
+          ),
         ], child: MyApp()),
       );
     }, onError: (exception, stack) {

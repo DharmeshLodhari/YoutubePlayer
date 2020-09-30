@@ -52,6 +52,8 @@ class _UserDashboardState extends State<UserDashboard> {
   DashboardBloc dashboardBloc;
   bool isBalanceHidden = true;
 
+  NotificationBloc notificationBloc;
+
   PackageInfo _packageInfo = PackageInfo(
     appName: 'Unknown',
     packageName: 'Unknown',
@@ -86,6 +88,7 @@ class _UserDashboardState extends State<UserDashboard> {
     bankAccountBloc = Provider.of<BankAccountBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
     dashboardBloc = Provider.of<DashboardBloc>(context);
+    notificationBloc = Provider.of<NotificationBloc>(context);
 
     if (userBloc.user.type != "User") {
       storeLocked = false;
@@ -621,7 +624,12 @@ class _UserDashboardState extends State<UserDashboard> {
   void logoutUser(BankAccountBloc bankAccountBloc) async {
     emptyBasketCart();
     SharedPreferences _sharedPreferences;
+
+    await notificationBloc.pushNotificationService.logout();
+    // await PushNotificationService(context: context).logout();
+
     await _auth.logOut();
+
     bankAccountBloc.bankAccount = BankAccount();
     dashboardBloc.index = 0;
     _sharedPreferences = await SharedPreferences.getInstance();

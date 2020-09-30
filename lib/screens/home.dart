@@ -4,7 +4,6 @@ import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
-import 'package:Slydo/widget/dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
@@ -85,7 +84,10 @@ class _HomeState extends State<Home> {
 
   Widget foregroundScreen() {
     return Container(
-      padding: EdgeInsets.only(left: 16, right: 16, top: 8),
+      padding: EdgeInsets.only(
+        left: 16,
+        right: 16,
+      ),
       child: Column(
         children: <Widget>[
           Expanded(
@@ -225,37 +227,19 @@ class _HomeState extends State<Home> {
             color: dividerColor,
             height: 1,
           ),
-          GestureDetector(
-            child: Container(
-                padding: EdgeInsets.symmetric(vertical: 32, horizontal: 32),
-                child: CachedNetworkImage(
-//                height: MediaQuery.of(context).size.width / 1.5,
-                  width: MediaQuery.of(context).size.width / 1.7,
-                  imageUrl: userBloc.user.qrCode,
-                  colorBlendMode: BlendMode.darken,
-                  fit: BoxFit.fill,
-                  filterQuality: FilterQuality.high,
-                  placeholder: (context, url) => Center(
-                    child: CircularLoadingIndicator(),
-                  ),
-                )),
-            onTap: () async {
-              bool result = await showDialogBoxWithImage(
-                context: context,
-                image:
-                    "https://slydo-assets.s3.amazonaws.com/media/customer/avatar/77d91cd9345d4f50bb88d29c412eb0f7.jpg",
-                actionOneBgColor: greyBorderColor,
-                actionOneTextColor: blackFont,
-                actionTwoBgColor: naturalGreen,
-                actionTwoTextColor: Colors.white,
-                title: "Payment received",
-                description: "Received NGN5",
-                actionOne: AppLocalization.of(context).cancel,
-                actionTwo: AppLocalization.of(context).navigate,
-              );
-              debugPrint(result.toString());
-            },
-          ),
+          Container(
+              padding: EdgeInsets.symmetric(vertical: 32, horizontal: 32),
+              child: CachedNetworkImage(
+                // height: MediaQuery.of(context).size.width / 1.5,
+                width: MediaQuery.of(context).size.width / 1.7,
+                imageUrl: userBloc.user.qrCode,
+                colorBlendMode: BlendMode.darken,
+                fit: BoxFit.fill,
+                filterQuality: FilterQuality.high,
+                placeholder: (context, url) => Center(
+                  child: CircularLoadingIndicator(),
+                ),
+              )),
         ],
       ),
     );

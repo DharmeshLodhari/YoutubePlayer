@@ -7,6 +7,7 @@ import 'package:Slydo/models/store.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/device_info.dart';
+import 'package:Slydo/services/fcm_push_notification.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -32,6 +33,8 @@ class _UserLoginState extends State<UserLogin> {
   final _auth = AuthService();
   String phoneNumber = '';
   String password = '';
+
+  NotificationBloc notificationBloc;
 
   //for remember user
   bool isChecked = false;
@@ -83,6 +86,7 @@ class _UserLoginState extends State<UserLogin> {
 
   @override
   Widget build(BuildContext context) {
+    notificationBloc = Provider.of<NotificationBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
     return WillPopScope(
       onWillPop: () {
@@ -344,7 +348,7 @@ class _UserLoginState extends State<UserLogin> {
       phoneNumber = phoneNumberController.text.trim();
       password = passwordController.text.trim();
 
-      _auth.authenticate(phoneNumber, password).then((value) {
+      _auth.authenticate(phoneNumber, password).then((value) async {
         _user = value;
 
         if (_user.fullName != null) {
@@ -353,7 +357,12 @@ class _UserLoginState extends State<UserLogin> {
           userBloc.user = _user;
 
           //setting up notification
-          setupNotification();
+          // setupNotification();
+
+          notificationBloc.pushNotificationService =
+              PushNotificationService(context: context);
+          await notificationBloc.pushNotificationService.login();
+          // await PushNotificationService(context: context).login();
 
           // Get user's bank account if user is logged in
           if (_user != null) {

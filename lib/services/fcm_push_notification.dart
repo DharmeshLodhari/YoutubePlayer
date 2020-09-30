@@ -10,7 +10,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
 class PushNotificationService {
-  final FirebaseMessaging _fcm = FirebaseMessaging();
+  static final FirebaseMessaging _fcm = FirebaseMessaging();
   final _auth = AuthService();
   final _db = DatabaseHelper();
   BuildContext context;
@@ -19,7 +19,7 @@ class PushNotificationService {
 
   FirebaseMessaging get fcm => _fcm;
 
-  Future initialise() async {
+  Future login() async {
     //to stop automatically recreates the token when we deregister user in logout
     _fcm.setAutoInitEnabled(false);
 
@@ -27,6 +27,7 @@ class PushNotificationService {
     _fcm.getToken().then((String token) async {
       data["token"] = token;
 
+      debugPrint(token);
       // this piece of code convert Map<dynamic,dynamic> data to Map<String,String> tempData
       // so we can store that data into database
       Map<String, dynamic> tempData = new Map<String, dynamic>();
@@ -163,11 +164,11 @@ class PushNotificationService {
 
     debugPrint("payload : $payload");
     if (payload == "/request-payment") {
-      Navigator.of(context).pushNamedAndRemoveUntil(
-        "/dashboard",
-        (Route<dynamic> route) => false,
-        arguments: {"dashboardIndex": 1},
-      );
+      // Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
+      // DashboardBloc _dashboardBloc = Provider.of<DashboardBloc>(context);
+      // _dashboardBloc.index = 1;
+      Navigator.of(context)
+          .pushNamed('/dashboard', arguments: {"dashboardIndex": 1});
     } else if (payload == "/transaction") {
       Navigator.of(context).pushNamed('/transactions');
     } else if (payload.length > 15 &&
@@ -185,7 +186,8 @@ class PushNotificationService {
     onSelectNotification(notification['actions']);
   }
 
-  Future<bool> unRegisterDevice() async {
+  Future<bool> logout() async {
+    debugPrint("logout calles!");
     return await _fcm.deleteInstanceID();
   }
 }
