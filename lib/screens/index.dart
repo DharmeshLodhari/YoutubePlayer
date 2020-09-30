@@ -272,6 +272,67 @@ class _IndexState extends State<Index> {
           Container(
             padding: EdgeInsets.symmetric(horizontal: 30),
             child: Image.asset(
+              "assets/images/intro_images/screen_one.png",
+              frameBuilder: imageFrameBuilder,
+            ),
+          ),
+          Expanded(
+              flex: 2,
+              child: Container(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Expanded(
+                      flex: 1,
+                      child: SizedBox(
+                        height: 10,
+                      ),
+                    ),
+                    Text(
+                      "SCAN QR CODE",
+                      textAlign: TextAlign.center,
+                      style:
+                      TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 40),
+                      child: Text(
+                        "Scan QR Code to make payment. Easy and secure.",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 14, color: darkGrey, height: 1.5),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 2,
+                      child: SizedBox(
+                        height: 10,
+                      ),
+                    ),
+                  ],
+                ),
+              )),
+        ],
+      ),
+    );
+  }
+
+  Widget secondScreen() {
+    return Scaffold(
+      backgroundColor: whiteBackground,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: <Widget>[
+          Expanded(
+            flex: 1,
+            child: Container(),
+          ),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 30),
+            child: Image.asset(
               "assets/images/intro_images/screen_two.png",
               frameBuilder: imageFrameBuilder,
             ),
@@ -320,66 +381,7 @@ class _IndexState extends State<Index> {
     );
   }
 
-  Widget secondScreen() {
-    return Scaffold(
-      backgroundColor: whiteBackground,
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: <Widget>[
-          Expanded(
-            flex: 1,
-            child: Container(),
-          ),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 30),
-            child: Image.asset(
-              "assets/images/intro_images/screen_one.png",
-              frameBuilder: imageFrameBuilder,
-            ),
-          ),
-          Expanded(
-              flex: 2,
-              child: Container(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Expanded(
-                      flex: 1,
-                      child: SizedBox(
-                        height: 10,
-                      ),
-                    ),
-                    Text(
-                      "SCAN QR CODE",
-                      textAlign: TextAlign.center,
-                      style:
-                          TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 40),
-                      child: Text(
-                        "Scan QR Code to make payment. Easy and secure.",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontSize: 14, color: darkGrey, height: 1.5),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: SizedBox(
-                        height: 10,
-                      ),
-                    ),
-                  ],
-                ),
-              )),
-        ],
-      ),
-    );
-  }
+
 
   Widget thirdScreen() {
     return Scaffold(

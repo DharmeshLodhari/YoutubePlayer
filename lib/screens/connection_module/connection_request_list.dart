@@ -197,39 +197,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
   }
 
   List<Widget> listSecondaryActions(CustomerProfile user, int index) {
-    String caption = AppLocalization.of(context).reject;
-
     return [
-      // IconSlideAction(
-      //   caption: caption,
-      //   color: Colors.red,
-      //   icon: Icons.cancel,
-      //   onTap: () async {
-      //     rejectRequestAlert(user, index);
-      //   },
-      // ),
-      SlideActionButton(
-        backgroundColor: mateRad,
-        icon: SlydoAppIcon.cancel_connection_request,
-        onTap: () {
-          rejectRequestAlert(user, index);
-        },
-        title: AppLocalization.of(context).reject,
-        slideController: _slideController,
-      ),
-    ];
-  }
-
-  List<Widget> listActionSlideActions(CustomerProfile user, int index) {
-    return [
-      // IconSlideAction(
-      //   caption: AppLocalization.of(context).accept,
-      //   color: Colors.green,
-      //   icon: Icons.group_add,
-      //   onTap: () {
-      //     acceptFriendRequestAlert(user, index);
-      //   },
-      // ),
       SlideActionButton(
         backgroundColor: navyBlue,
         icon: SlydoAppIcon.send_connection_request,
@@ -237,6 +205,20 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
           acceptFriendRequestAlert(user, index);
         },
         title: AppLocalization.of(context).accept,
+        slideController: _slideController,
+      ),
+    ];
+  }
+
+  List<Widget> listActionSlideActions(CustomerProfile user, int index) {
+    return [
+      SlideActionButton(
+        backgroundColor: mateRad,
+        icon: SlydoAppIcon.cancel_connection_request,
+        onTap: () {
+          rejectRequestAlert(user, index);
+        },
+        title: AppLocalization.of(context).reject,
         slideController: _slideController,
       ),
     ];

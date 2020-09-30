@@ -338,7 +338,30 @@ class _BankAccountListState extends State<BankAccountList> {
   }
 
   List<Widget> listSecondaryActions({BankAccount account}) {
-    String caption = AppLocalization.of(context).delete;
+    return [
+      SlideActionButton(
+          backgroundColor: naturalGreen,
+          icon: Icons.device_hub,
+          onTap: account.isDefault
+              ? () {
+                  Toast.show(
+                      AppLocalization.of(context)
+                          .thisAccountIsAlreadyDefaultAccount,
+                      context,
+                      textColor: Colors.white,
+                      backgroundColor: darkBlue());
+                }
+              : () {
+                  updateBankAccount(account);
+                },
+          title: account.isDefault
+              ? AppLocalization.of(context).defaultMsg
+              : AppLocalization.of(context).makeDefault,
+          slideController: _slideController),
+    ];
+  }
+
+  List<Widget> listActionSlideActions({BankAccount account}) {
     return [
       SlideActionButton(
           backgroundColor: mateRad,
@@ -348,14 +371,6 @@ class _BankAccountListState extends State<BankAccountList> {
           },
           title: AppLocalization.of(context).delete,
           slideController: _slideController),
-
-      // IconSlideAction(
-      //     caption: caption,
-      //     color: Colors.red,
-      //     icon: Icons.delete,
-      //     onTap: () {
-      //       deleteBankAccount(account);
-      //     }),
     ];
   }
 
@@ -396,50 +411,6 @@ class _BankAccountListState extends State<BankAccountList> {
         });
       }
     }
-  }
-
-  List<Widget> listActionSlideActions({BankAccount account}) {
-    return [
-      // IconSlideAction(
-      //   caption: account.isDefault
-      //       ? AppLocalization.of(context).defaultMsg
-      //       : AppLocalization.of(context).makeDefault,
-      //   color: Colors.green,
-      //   icon: Icons.device_hub,
-      //   onTap: account.isDefault
-      //       ? () {
-      //           Toast.show(
-      //               AppLocalization.of(context)
-      //                   .thisAccountIsAlreadyDefaultAccount,
-      //               context,
-      //               textColor: Colors.white,
-      //               backgroundColor: darkBlue());
-      //         }
-      //       : () {
-      //           updateBankAccount(account);
-      //         },
-      // ),
-
-      SlideActionButton(
-          backgroundColor: naturalGreen,
-          icon: Icons.device_hub,
-          onTap: account.isDefault
-              ? () {
-                  Toast.show(
-                      AppLocalization.of(context)
-                          .thisAccountIsAlreadyDefaultAccount,
-                      context,
-                      textColor: Colors.white,
-                      backgroundColor: darkBlue());
-                }
-              : () {
-                  updateBankAccount(account);
-                },
-          title: account.isDefault
-              ? AppLocalization.of(context).defaultMsg
-              : AppLocalization.of(context).makeDefault,
-          slideController: _slideController),
-    ];
   }
 
   void updateBankAccount(BankAccount account) {

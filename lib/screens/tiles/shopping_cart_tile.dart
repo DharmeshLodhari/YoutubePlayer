@@ -48,11 +48,11 @@ class _ShoppingCartTileForProductState
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-          shadowColor: iconBtnGrey,
+          shadowColor: boxShadow,
           child: Container(
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: iconBtnGrey, width: 1)),
+                border: Border.all(color: iconBtnGrey, width: 0.5)),
             child: Column(
               children: <Widget>[
                 Padding(

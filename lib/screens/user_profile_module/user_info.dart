@@ -536,7 +536,9 @@ class _UserInfoState extends State<UserInfo> {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          flexibleSpace(),
+          SizedBox(
+            width: 8,
+          ),
           RoundedBackgroundIcon(
             height: 28,
             width: 28,
@@ -550,21 +552,24 @@ class _UserInfoState extends State<UserInfo> {
           SizedBox(
             width: 8,
           ),
-          Text(
-            "Remove Connection",
-            style: TextStyle(
-              color: blackFont,
-              fontSize: 14,
+          Expanded(
+            child: Text(
+              "Remove Connection",
+              style: TextStyle(
+                color: blackFont,
+                fontSize: 14,
+              ),
             ),
           ),
-          flexibleSpace(),
         ],
       );
     } else if (isInRequestList) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          flexibleSpace(),
+          SizedBox(
+            width: 8,
+          ),
           RoundedBackgroundIcon(
             height: 28,
             width: 28,
@@ -578,18 +583,21 @@ class _UserInfoState extends State<UserInfo> {
           SizedBox(
             width: 8,
           ),
-          Text(
-            "Cancel Request",
-            style: TextStyle(color: mateRad, fontSize: 14),
+          Expanded(
+            child: Text(
+              "Cancel Request",
+              style: TextStyle(color: mateRad, fontSize: 14),
+            ),
           ),
-          flexibleSpace(),
         ],
       );
     }
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        flexibleSpace(),
+        SizedBox(
+          width: 8,
+        ),
         RoundedBackgroundIcon(
           height: 28,
           width: 28,
@@ -603,11 +611,12 @@ class _UserInfoState extends State<UserInfo> {
         SizedBox(
           width: 8,
         ),
-        Text(
-          "Add Connection",
-          style: TextStyle(color: naturalGreen, fontSize: 14),
+        Expanded(
+          child: Text(
+            "Add Connection",
+            style: TextStyle(color: naturalGreen, fontSize: 14),
+          ),
         ),
-        flexibleSpace(),
       ],
     );
   }

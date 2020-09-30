@@ -503,6 +503,32 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   }
 
   List<Widget> listSecondaryActions(PaymentRequest paymentRequest, int index) {
+    if (!paymentRequest.isCredit) {
+      return [];
+    } else {
+      return [
+        SlideActionButton(
+            backgroundColor: naturalGreen,
+            icon: SlydoAppIcon.send,
+            onTap: () {
+              acceptPaymentRequestAlert(paymentRequest, index);
+            },
+            title: AppLocalization.of(context).sendMoney,
+            slideController: _slideController)
+      ];
+    }
+  }
+
+//      IconSlideAction(
+//          caption: caption,
+//          color: Colors.red,
+//          icon: Icons.cancel,
+//          onTap: () async {
+//            rejectPaymentRequestAlert(paymentRequest, index);
+//          }),
+
+  List<Widget> listActionSlideActions(
+      PaymentRequest paymentRequest, int index) {
     String caption = !paymentRequest.isCredit
         ? AppLocalization.of(context).cancel
         : AppLocalization.of(context).reject;
@@ -515,30 +541,6 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
           },
           title: caption,
           slideController: _slideController),
-//      IconSlideAction(
-//          caption: caption,
-//          color: Colors.red,
-//          icon: Icons.cancel,
-//          onTap: () async {
-//            rejectPaymentRequestAlert(paymentRequest, index);
-//          }),
-    ];
-  }
-
-  List<Widget> listActionSlideActions(
-      PaymentRequest paymentRequest, int index) {
-    if (!paymentRequest.isCredit) {
-      return [];
-    } else {
-      return [
-        SlideActionButton(
-            backgroundColor: naturalGreen,
-            icon: SlydoAppIcon.send,
-            onTap: () {
-              acceptPaymentRequestAlert(paymentRequest, index);
-            },
-            title: AppLocalization.of(context).sendMoney,
-            slideController: _slideController),
 //        IconSlideAction(
 //          caption: AppLocalization.of(context).sendMoney,
 //          color: Colors.green,
@@ -547,8 +549,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
 //            acceptPaymentRequestAlert(paymentRequest, index);
 //          },
 //        ),
-      ];
-    }
+    ];
   }
 
   void acceptPaymentRequestAlert(

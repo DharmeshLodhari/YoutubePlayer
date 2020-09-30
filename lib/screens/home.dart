@@ -190,10 +190,10 @@ class _HomeState extends State<Home> {
 
   Widget displayUserInfo() {
     return Card(
-      shadowColor: Color.fromARGB(51, 50, 55, 140),
+      shadowColor: boxShadow,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       margin: EdgeInsets.zero,
-      elevation: 4.0,
+      elevation: 2.0,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
@@ -263,9 +263,9 @@ class _HomeState extends State<Home> {
 
   Widget displayPaymentButtons() {
     return Card(
-      elevation: 5,
+      elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      shadowColor: Color.fromARGB(51, 50, 55, 140),
+      shadowColor: boxShadow,
       margin: EdgeInsets.zero,
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
