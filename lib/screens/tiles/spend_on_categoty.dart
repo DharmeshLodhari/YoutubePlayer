@@ -19,14 +19,14 @@ class _SpendOnCategoryTileState extends State<SpendOnCategoryTile> {
   Widget build(BuildContext context) {
     var userBloc = Provider.of<UserBloc>(context);
     return Card(
-      elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       margin: EdgeInsets.symmetric(vertical: 5),
-      shadowColor: boxShadow,
+      shadowColor: boxShadowTwo,
+      elevation: 3,
       child: Container(
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: dividerColor, width: 0.5)),
+            border: Border.all(color: iconBtnGrey, width: 1)),
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: 8),
           child: ListTile(

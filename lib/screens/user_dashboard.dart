@@ -9,6 +9,7 @@ import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:Slydo/widget/passcodePopup.dart';
@@ -306,33 +307,29 @@ class _UserDashboardState extends State<UserDashboard> {
   }
 
   Widget accountBalanceCard() {
-    return Card(
-      shadowColor: greyBorderColor,
-      elevation: 1,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.zero,
-      child: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: greyBorderColor,
-              width: 1,
-            )),
+    return CustomBoxShadow(
+      child: Card(
+        shadowColor: boxShadowTwo,
+        elevation: 3,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        margin: EdgeInsets.zero,
         child: Container(
-          padding: EdgeInsets.only(left: 24, right: 24, top: 18, bottom: 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Account Balance",
-                style: TextStyle(fontSize: 14, color: darkGrey),
-              ),
-              SizedBox(
-                height: 16,
-              ),
-              accountBalanceUI()
-            ],
+          width: double.infinity,
+          child: Container(
+            padding: EdgeInsets.only(left: 24, right: 24, top: 18, bottom: 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Account Balance",
+                  style: TextStyle(fontSize: 14, color: darkGrey),
+                ),
+                SizedBox(
+                  height: 16,
+                ),
+                accountBalanceUI()
+              ],
+            ),
           ),
         ),
       ),
@@ -522,40 +519,45 @@ class _UserDashboardState extends State<UserDashboard> {
     @required Function onTap,
   }) {
     return GestureDetector(
-      child: Card(
-        margin: EdgeInsets.zero,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        child: Container(
-          height: 100,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              flexibleSpace(flex: 3),
-              Card(
-                elevation: 0,
-                color: iconColor.withOpacity(0.08),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Icon(
-                    icon,
-                    color: iconColor,
-                    size: 20,
+      child: CustomBoxShadow(
+        child: Card(
+          margin: EdgeInsets.zero,
+          elevation: 3,
+          shadowColor: boxShadowTwo,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          child: Container(
+            height: 100,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                flexibleSpace(flex: 3),
+                Card(
+                  elevation: 0,
+                  color: iconColor.withOpacity(0.08),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Icon(
+                      icon,
+                      color: iconColor,
+                      size: 20,
+                    ),
                   ),
                 ),
-              ),
-              flexibleSpace(),
-              Text(
-                title,
-                style: TextStyle(
-                    color: blackFont,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14),
-              ),
-              flexibleSpace(flex: 3),
-            ],
+                flexibleSpace(),
+                Text(
+                  title,
+                  style: TextStyle(
+                      color: blackFont,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14),
+                ),
+                flexibleSpace(flex: 3),
+              ],
+            ),
           ),
         ),
       ),
@@ -625,8 +627,7 @@ class _UserDashboardState extends State<UserDashboard> {
     emptyBasketCart();
     SharedPreferences _sharedPreferences;
 
-    await notificationBloc.pushNotificationService.logout();
-    // await PushNotificationService(context: context).logout();
+    // await notificationBloc.pushNotificationService.logout();
 
     await _auth.logOut();
 

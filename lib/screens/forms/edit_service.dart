@@ -6,6 +6,7 @@ import 'package:Slydo/models/store.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
@@ -239,36 +240,38 @@ class _EditServiceState extends State<EditService> {
   }
 
   Widget addImageButton() {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      shadowColor: dividerColor,
-      margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
-      child: Container(
-        width: 100,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: InkWell(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Icon(
-                SlydoAppIcon.add_image,
-                color: darkGrey,
-              ),
-              SizedBox(
-                height: 4,
-              ),
-              Text(
-                AppLocalization.of(context).addImage,
-                style: TextStyle(color: darkGrey, fontSize: 14),
-              ),
-            ],
+    return CustomBoxShadow(
+      child: Card(
+        elevation: 3,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shadowColor: boxShadowTwo,
+        margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+        child: Container(
+          width: 100,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
           ),
-          onTap: () {
-            pickImage();
-          },
+          child: InkWell(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Icon(
+                  SlydoAppIcon.add_image,
+                  color: darkGrey,
+                ),
+                SizedBox(
+                  height: 4,
+                ),
+                Text(
+                  AppLocalization.of(context).addImage,
+                  style: TextStyle(color: darkGrey, fontSize: 14),
+                ),
+              ],
+            ),
+            onTap: () {
+              pickImage();
+            },
+          ),
         ),
       ),
     );
@@ -444,22 +447,24 @@ class _EditServiceState extends State<EditService> {
     // );
     return Stack(
       children: <Widget>[
-        Card(
-          elevation: 2,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          shadowColor: dividerColor,
-          margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
-          child: Container(
-            width: 100,
-            decoration: BoxDecoration(
+        CustomBoxShadow(
+          child: Card(
+            elevation: 3,
+            shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
-              image: DecorationImage(
-                  image: NetworkImage(
-                    serviceImagesFromServer[index],
-                  ),
-                  fit: BoxFit.fill),
+            ),
+            shadowColor: boxShadowTwo,
+            margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+            child: Container(
+              width: 100,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                image: DecorationImage(
+                    image: NetworkImage(
+                      serviceImagesFromServer[index],
+                    ),
+                    fit: BoxFit.fill),
+              ),
             ),
           ),
         ),

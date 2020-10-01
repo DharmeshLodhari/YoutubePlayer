@@ -220,15 +220,14 @@ class _ShoppingCartState extends State<ShoppingCart> {
     //   ),
     // );
     return Card(
-      elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       margin: EdgeInsets.symmetric(horizontal: 16),
-      shadowColor: boxShadow,
+      shadowColor: boxShadowTwo,
+      elevation: 4,
       child: Container(
         decoration: BoxDecoration(
-            color: Colors.white,
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: iconBtnGrey, width: 0.5)),
+            border: Border.all(color: iconBtnGrey, width: 1)),
         padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

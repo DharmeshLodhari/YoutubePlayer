@@ -6,6 +6,7 @@ import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
@@ -241,95 +242,98 @@ class _UserProductListState extends State<UserProductList> {
     //       ),
     //     ));
 
-    return Card(
-        elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        margin: EdgeInsets.zero,
-        shadowColor: boxShadow,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: Column(
-            children: <Widget>[
-              Expanded(
-                child: Stack(children: <Widget>[
-                  InkWell(
-                    child: CachedNetworkImage(
-                      width: double.infinity,
-                      imageUrl: getDisplayImage(index, productList),
-                      fit: BoxFit.fill,
-                      filterQuality: FilterQuality.high,
+    return CustomBoxShadow(
+      child: Card(
+          elevation: 3,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          margin: EdgeInsets.zero,
+          shadowColor: boxShadowTwo,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: Column(
+              children: <Widget>[
+                Expanded(
+                  child: Stack(children: <Widget>[
+                    InkWell(
+                      child: CachedNetworkImage(
+                        width: double.infinity,
+                        imageUrl: getDisplayImage(index, productList),
+                        fit: BoxFit.fill,
+                        filterQuality: FilterQuality.high,
+                      ),
+                      onTap: () {
+                        Navigator.pushNamed(context, '/product',
+                            arguments: {"product": productList[index]});
+                      },
                     ),
-                    onTap: () {
-                      Navigator.pushNamed(context, '/product',
-                          arguments: {"product": productList[index]});
-                    },
-                  ),
-                  widget.isOwner
-                      ? Positioned(
-                          right: 8,
-                          top: 8,
-                          child: RoundedBackgroundIcon(
-                              height: 28,
-                              width: 28,
-                              backgroundColor: Colors.white,
-                              icon: Icon(
-                                SlydoAppIcon.edit,
-                                color: blackFont,
-                                size: 12,
-                              ),
-                              onTap: () {
-                                Navigator.of(context).pushNamed(
-                                  '/edit-product',
-                                  arguments: {
-                                    "productId":
-                                        productList[index].id.toString(),
-                                  },
-                                );
-                              }),
-                        )
-                      : Container()
-                ]),
-              ),
-              ListTile(
-                  dense: true,
-                  title: Text(
-                    productList[index].name,
-                    maxLines: 1,
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                        color: blackFont),
-                    softWrap: false,
-                    overflow: TextOverflow.fade,
-                  ),
-                  subtitle: Text(
-                    productList[index].shortDescription,
-                    maxLines: 1,
-                    style: TextStyle(fontSize: 14, color: darkGrey),
-                    softWrap: false,
-                    overflow: TextOverflow.fade,
-                  ),
-                  trailing: RichText(
-                    text: TextSpan(children: [
-                      TextSpan(
-                          text: worldCurrencies[productList[index].currency],
-                          style: TextStyle(
-                              fontFamily: "Roboto",
+                    widget.isOwner
+                        ? Positioned(
+                            right: 8,
+                            top: 8,
+                            child: RoundedBackgroundIcon(
+                                height: 28,
+                                width: 28,
+                                backgroundColor: Colors.white,
+                                icon: Icon(
+                                  SlydoAppIcon.edit,
+                                  color: blackFont,
+                                  size: 12,
+                                ),
+                                onTap: () {
+                                  Navigator.of(context).pushNamed(
+                                    '/edit-product',
+                                    arguments: {
+                                      "productId":
+                                          productList[index].id.toString(),
+                                    },
+                                  );
+                                }),
+                          )
+                        : Container()
+                  ]),
+                ),
+                ListTile(
+                    dense: true,
+                    title: Text(
+                      productList[index].name,
+                      maxLines: 1,
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                          color: blackFont),
+                      softWrap: false,
+                      overflow: TextOverflow.fade,
+                    ),
+                    subtitle: Text(
+                      productList[index].shortDescription,
+                      maxLines: 1,
+                      style: TextStyle(fontSize: 14, color: darkGrey),
+                      softWrap: false,
+                      overflow: TextOverflow.fade,
+                    ),
+                    trailing: RichText(
+                      text: TextSpan(children: [
+                        TextSpan(
+                            text: worldCurrencies[productList[index].currency],
+                            style: TextStyle(
+                                fontFamily: "Roboto",
+                                color: navyBlue,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14)),
+                        TextSpan(
+                            text: productList[index].price.toString(),
+                            style: TextStyle(
                               color: navyBlue,
+                              fontSize: 14,
                               fontWeight: FontWeight.bold,
-                              fontSize: 14)),
-                      TextSpan(
-                          text: productList[index].price.toString(),
-                          style: TextStyle(
-                            color: navyBlue,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ))
-                    ]),
-                  )),
-            ],
-          ),
-        ));
+                            ))
+                      ]),
+                    )),
+              ],
+            ),
+          )),
+    );
   }
 
   Widget _buildProductIndicator() {

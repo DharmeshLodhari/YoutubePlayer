@@ -166,11 +166,12 @@ class _PayoutState extends State<Payout> {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       margin: EdgeInsets.zero,
-      shadowColor: dividerColor,
+      shadowColor: boxShadowTwo,
+      elevation: 3,
       child: Container(
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: dividerColor, width: 0.5)),
+            border: Border.all(color: iconBtnGrey, width: 1)),
         child: ListTile(
           dense: true,
           title: Text(

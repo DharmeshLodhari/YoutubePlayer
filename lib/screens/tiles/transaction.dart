@@ -25,12 +25,12 @@ class _PaymentRequestTileState extends State<PaymentRequestTile> {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-      shadowColor: boxShadow,
-      elevation: 1,
+      shadowColor: boxShadowTwo,
+      elevation: 3,
       child: Container(
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: dividerColor, width: 0.5)),
+            border: Border.all(color: iconBtnGrey, width: 1)),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
@@ -157,11 +157,12 @@ class _TransactionTileState extends State<TransactionTile> {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-      shadowColor: dividerColor,
+      shadowColor: boxShadowTwo,
+      elevation: 3,
       child: Container(
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: dividerColor, width: 0.5)),
+            border: Border.all(color: iconBtnGrey, width: 1)),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[

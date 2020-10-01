@@ -108,6 +108,10 @@ class _DashboardState extends State<Dashboard> {
   Widget build(BuildContext context) {
     basketBloc = Provider.of<BasketBloc>(context);
     _dashboardBloc = Provider.of<DashboardBloc>(context);
+    if (_currentIndex != 0) {
+      _dashboardBloc.index = _currentIndex;
+      _currentIndex = 0;
+    }
 //    return WillPopScope(
 //      onWillPop: () async {
 //        if (_currentIndex == 0) {

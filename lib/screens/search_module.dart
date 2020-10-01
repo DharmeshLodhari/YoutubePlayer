@@ -619,16 +619,15 @@ class _SearchModuleState extends State<SearchModule> {
     return Container(
       color: Colors.white,
       padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
-      child: Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: dividerColor, width: 1)),
-        child: Card(
-          elevation: 1,
-          shadowColor: dividerColor,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          margin: EdgeInsets.zero,
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        margin: EdgeInsets.zero,
+        shadowColor: boxShadowTwo,
+        elevation: 3,
+        child: Container(
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: iconBtnGrey, width: 1)),
           child: Column(
             children: <Widget>[
               Padding(
@@ -731,16 +730,15 @@ class _SearchModuleState extends State<SearchModule> {
     return Container(
       color: Colors.white,
       padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
-      child: Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: dividerColor, width: 1)),
-        child: Card(
-          elevation: 1,
-          shadowColor: dividerColor,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          margin: EdgeInsets.zero,
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        margin: EdgeInsets.zero,
+        shadowColor: boxShadowTwo,
+        elevation: 3,
+        child: Container(
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: iconBtnGrey, width: 1)),
           child: Column(
             children: <Widget>[
               Padding(
@@ -888,16 +886,15 @@ class _SearchModuleState extends State<SearchModule> {
     return Container(
       color: Colors.white,
       padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
-      child: Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: dividerColor, width: 1)),
-        child: Card(
-          elevation: 1,
-          shadowColor: dividerColor,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          margin: EdgeInsets.zero,
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        margin: EdgeInsets.zero,
+        shadowColor: boxShadowTwo,
+        elevation: 3,
+        child: Container(
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: iconBtnGrey, width: 1)),
           child: Column(
             children: <Widget>[
               Padding(

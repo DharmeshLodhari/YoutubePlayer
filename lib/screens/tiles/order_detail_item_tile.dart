@@ -39,7 +39,8 @@ class _OrderTileForProductState extends State<OrderTileForProduct> {
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-          shadowColor: iconBtnGrey,
+          shadowColor: boxShadowTwo,
+          elevation: 3,
           child: Container(
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
@@ -227,7 +228,8 @@ class _OrderTileForServiceState extends State<OrderTileForService> {
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-          shadowColor: iconBtnGrey,
+          shadowColor: boxShadowTwo,
+          elevation: 3,
           child: Container(
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),

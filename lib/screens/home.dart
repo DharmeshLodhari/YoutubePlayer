@@ -3,6 +3,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
@@ -191,86 +192,89 @@ class _HomeState extends State<Home> {
   }
 
   Widget displayUserInfo() {
-    return Card(
-      shadowColor: boxShadow,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      margin: EdgeInsets.zero,
-      elevation: 2.0,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4.0),
-            leading: ClipOval(
-              child: Container(
-                height: 48,
-                width: 48,
-                child: CachedNetworkImage(
-                  imageUrl: userBloc.user.avatar,
-                  fit: BoxFit.fill,
+    return CustomBoxShadow(
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        margin: EdgeInsets.zero,
+        elevation: 0.0,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            ListTile(
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: 16, vertical: 4.0),
+              leading: ClipOval(
+                child: Container(
+                  height: 48,
+                  width: 48,
+                  child: CachedNetworkImage(
+                    imageUrl: userBloc.user.avatar,
+                    fit: BoxFit.fill,
+                  ),
                 ),
               ),
+              title: Text(
+                userBloc.user.fullName,
+                maxLines: 1,
+                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+              ),
+              subtitle: Text(
+                userBloc.user.userName,
+                maxLines: 1,
+                style: TextStyle(fontSize: 14),
+              ),
             ),
-            title: Text(
-              userBloc.user.fullName,
-              maxLines: 1,
-              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+            Divider(
+              thickness: 1,
+              color: dividerColor,
+              height: 1,
             ),
-            subtitle: Text(
-              userBloc.user.userName,
-              maxLines: 1,
-              style: TextStyle(fontSize: 14),
-            ),
-          ),
-          Divider(
-            thickness: 1,
-            color: dividerColor,
-            height: 1,
-          ),
-          Container(
-              padding: EdgeInsets.symmetric(vertical: 32, horizontal: 32),
-              child: CachedNetworkImage(
-                // height: MediaQuery.of(context).size.width / 1.5,
-                width: MediaQuery.of(context).size.width / 1.7,
-                imageUrl: userBloc.user.qrCode,
-                colorBlendMode: BlendMode.darken,
-                fit: BoxFit.fill,
-                filterQuality: FilterQuality.high,
-                placeholder: (context, url) => Center(
-                  child: CircularLoadingIndicator(),
-                ),
-              )),
-        ],
+            Container(
+                padding: EdgeInsets.symmetric(vertical: 32, horizontal: 32),
+                child: CachedNetworkImage(
+                  // height: MediaQuery.of(context).size.width / 1.5,
+                  width: MediaQuery.of(context).size.width / 1.7,
+                  imageUrl: userBloc.user.qrCode,
+                  colorBlendMode: BlendMode.darken,
+                  fit: BoxFit.fill,
+                  filterQuality: FilterQuality.high,
+                  placeholder: (context, url) => Center(
+                    child: CircularLoadingIndicator(),
+                  ),
+                )),
+          ],
+        ),
       ),
     );
   }
 
   Widget displayPaymentButtons() {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      shadowColor: boxShadow,
-      margin: EdgeInsets.zero,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        child: Row(
-          children: <Widget>[
-            Expanded(
-              child: Container(
-                child: requestPaymentButton(),
+    return CustomBoxShadow(
+      child: Card(
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        margin: EdgeInsets.zero,
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                child: Container(
+                  child: requestPaymentButton(),
+                ),
               ),
-            ),
-            Container(
-              width: 1.5,
-              color: dividerColor,
-              height: 50,
-            ),
-            Expanded(
-              child: Container(
-                child: sendPaymentButton(),
+              Container(
+                width: 1.5,
+                color: dividerColor,
+                height: 50,
               ),
-            ),
-          ],
+              Expanded(
+                child: Container(
+                  child: sendPaymentButton(),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

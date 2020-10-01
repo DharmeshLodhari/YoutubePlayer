@@ -36,3 +36,4 @@ Color starYellow = HexColor("#FFAB00");
 Color graphWitheBackground = HexColor("#F3F3F3");
 
 Color boxShadow = Color.fromARGB(51, 50, 55, 140);
+Color boxShadowTwo = HexColor("#32378C").withOpacity(0.07);
