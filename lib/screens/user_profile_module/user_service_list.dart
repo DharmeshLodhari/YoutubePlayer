@@ -296,6 +296,28 @@ class _UserServiceListState extends State<UserServiceList> {
                             arguments: {"service": serviceList[index]});
                       },
                     ),
+                    Positioned(
+                      left: 8,
+                      top: 8,
+                      child: RoundedBackgroundIcon(
+                          height: 28,
+                          width: 28,
+                          backgroundColor: Colors.white,
+                          icon: Icon(
+                            Icons.print,
+                            color: blackFont,
+                            size: 16,
+                          ),
+                          onTap: () {
+                            Navigator.of(context).pushNamed(
+                              '/print-qr',
+                              arguments: {
+                                "imageUrl": serviceList[index].qrCode,
+                                "itemName": serviceList[index].name
+                              },
+                            );
+                          }),
+                    ),
                     widget.isOwner
                         ? Positioned(
                             right: 8,

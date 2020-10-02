@@ -659,12 +659,102 @@ class _TransactionGraphState extends State<TransactionGraph> {
   }
 
   Widget getSpendOnCategoryTile(Map<String, dynamic> categoryAndSpend) {
+    categoryAndSpend.forEach((key, value) {
+      debugPrint("key:- " + key + " value:- " + value.toString());
+    });
+
     return SpendOnCategoryTile(
-      name: categoryAndSpend["category"],
-      amount: categoryAndSpend["amount"].toString(),
+        name: categoryAndSpend["category"],
+        amount: categoryAndSpend["amount"].toString(),
 //      url: categoryAndSpend["url"],
-      url: "assets/images/category/slydo.png",
-    );
+        icon: getCategoryIcon(categoryAndSpend["category"]),
+        color: getCategoryIconColor(categoryAndSpend["category"]));
+  }
+
+  IconData getCategoryIcon(String category) {
+    switch (category) {
+      case "Bills":
+        return SlydoAppIcon.bills_category;
+        break;
+      case "Charity":
+        return SlydoAppIcon.charity_category;
+        break;
+      case "Eat out":
+        return SlydoAppIcon.eatingout_category;
+        break;
+      case "Entertainment":
+        return SlydoAppIcon.entertainment_category;
+        break;
+      case "Family":
+        return SlydoAppIcon.family_category;
+        break;
+      case "Finance":
+        return SlydoAppIcon.finances_category;
+        break;
+      case "General":
+        return SlydoAppIcon.general_category;
+        break;
+      case "Groceries":
+        return SlydoAppIcon.gorceries_category;
+        break;
+      case "Holidays":
+        return SlydoAppIcon.holidays_category;
+        break;
+      case "Personal Care":
+        return SlydoAppIcon.personalcare_category;
+        break;
+      case "Shopping":
+        return SlydoAppIcon.shopping_category;
+        break;
+      case "Transportation":
+        return SlydoAppIcon.transport_category;
+        break;
+      default:
+        return SlydoAppIcon.shopping_category;
+    }
+  }
+
+  Color getCategoryIconColor(String category) {
+    switch (category) {
+      case "Bills":
+        return HexColor("#3F61DB");
+        break;
+      case "Charity":
+        return HexColor("#F07097");
+        break;
+      case "Eat out":
+        return HexColor("#9B51E0");
+        break;
+      case "Entertainment":
+        return HexColor("#FFAB00");
+        break;
+      case "Family":
+        return HexColor("#F35B46");
+        break;
+      case "Finance":
+        return HexColor("#5218E9");
+        break;
+      case "General":
+        return HexColor("#EE78BF");
+        break;
+      case "Groceries":
+        return HexColor("#46CE7C");
+        break;
+      case "Holidays":
+        return HexColor("#3F61DB");
+        break;
+      case "Personal Care":
+        return HexColor("#FFAB00");
+        break;
+      case "Shopping":
+        return HexColor("#F07097");
+        break;
+      case "Transportation":
+        return HexColor("#374677");
+        break;
+      default:
+        return HexColor("#3F61DB");
+    }
   }
 
   Widget dateChanger() {

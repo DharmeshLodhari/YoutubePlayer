@@ -1,6 +1,7 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -8,8 +9,9 @@ import 'package:provider/provider.dart';
 class SpendOnCategoryTile extends StatefulWidget {
   String name;
   String amount;
-  String url;
-  SpendOnCategoryTile({this.name, this.amount, this.url});
+  IconData icon;
+  Color color;
+  SpendOnCategoryTile({this.name, this.amount, this.icon, this.color});
   @override
   _SpendOnCategoryTileState createState() => _SpendOnCategoryTileState();
 }
@@ -30,15 +32,17 @@ class _SpendOnCategoryTileState extends State<SpendOnCategoryTile> {
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: 8),
           child: ListTile(
-            leading: Container(
-              decoration:
-                  BoxDecoration(borderRadius: BorderRadius.circular(20)),
-              child: Image.asset(
-                widget.url,
-                fit: BoxFit.fill,
-                height: 48,
-                width: 48,
+            leading: RoundedBackgroundIcon(
+              icon: Icon(
+                widget.icon,
+                color: widget.color,
+                size: 20,
               ),
+              backgroundColor: widget.color.withOpacity(0.08),
+              borderRadius: 20,
+              height: 50,
+              width: 50,
+              onTap: () {},
             ),
             title: Text(
               widget.name,

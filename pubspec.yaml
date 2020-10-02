@@ -53,6 +53,8 @@ dependencies:
   pinput: ^0.2.4
   overlay_container: ^0.0.4+1
   sms_otp_auto_verify: ^1.2.2
+  printing: ^3.6.1
+  pdf: ^1.11.2
 
 
 dependency_overrides:

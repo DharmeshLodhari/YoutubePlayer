@@ -655,7 +655,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
       name: categoryAndSpend["category"],
       amount: categoryAndSpend["amount"].toString(),
 //      url: categoryAndSpend["url"],
-      url: "assets/images/category/bills.png",
+      icon: SlydoAppIcon.shopping_category,
     );
   }
 
