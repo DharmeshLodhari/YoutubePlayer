@@ -1,6 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/print_qrcode.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -193,71 +192,59 @@ class _HomeState extends State<Home> {
   }
 
   Widget displayUserInfo() {
-    return GestureDetector(
-      child: CustomBoxShadow(
-        child: Card(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          margin: EdgeInsets.zero,
-          elevation: 0.0,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ListTile(
-                contentPadding:
-                    EdgeInsets.symmetric(horizontal: 16, vertical: 4.0),
-                leading: ClipOval(
-                  child: Container(
-                    height: 48,
-                    width: 48,
-                    child: CachedNetworkImage(
-                      imageUrl: userBloc.user.avatar,
-                      fit: BoxFit.fill,
-                    ),
+    return CustomBoxShadow(
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        margin: EdgeInsets.zero,
+        elevation: 0.0,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            ListTile(
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: 16, vertical: 4.0),
+              leading: ClipOval(
+                child: Container(
+                  height: 48,
+                  width: 48,
+                  child: CachedNetworkImage(
+                    imageUrl: userBloc.user.avatar,
+                    fit: BoxFit.fill,
                   ),
                 ),
-                title: Text(
-                  userBloc.user.fullName,
-                  maxLines: 1,
-                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
-                ),
-                subtitle: Text(
-                  userBloc.user.userName,
-                  maxLines: 1,
-                  style: TextStyle(fontSize: 14),
-                ),
               ),
-              Divider(
-                thickness: 1,
-                color: dividerColor,
-                height: 1,
+              title: Text(
+                userBloc.user.fullName,
+                maxLines: 1,
+                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
               ),
-              Container(
-                  padding: EdgeInsets.symmetric(vertical: 32, horizontal: 32),
-                  child: CachedNetworkImage(
-                    // height: MediaQuery.of(context).size.width / 1.5,
-                    width: MediaQuery.of(context).size.width / 1.7,
-                    imageUrl: userBloc.user.qrCode,
-                    colorBlendMode: BlendMode.darken,
-                    fit: BoxFit.fill,
-                    filterQuality: FilterQuality.high,
-                    placeholder: (context, url) => Center(
-                      child: CircularLoadingIndicator(),
-                    ),
-                  )),
-            ],
-          ),
+              subtitle: Text(
+                userBloc.user.userName,
+                maxLines: 1,
+                style: TextStyle(fontSize: 14),
+              ),
+            ),
+            Divider(
+              thickness: 1,
+              color: dividerColor,
+              height: 1,
+            ),
+            Container(
+                padding: EdgeInsets.symmetric(vertical: 32, horizontal: 32),
+                child: CachedNetworkImage(
+                  // height: MediaQuery.of(context).size.width / 1.5,
+                  width: MediaQuery.of(context).size.width / 1.7,
+                  imageUrl: userBloc.user.qrCode,
+                  colorBlendMode: BlendMode.darken,
+                  fit: BoxFit.fill,
+                  filterQuality: FilterQuality.high,
+                  placeholder: (context, url) => Center(
+                    child: CircularLoadingIndicator(),
+                  ),
+                )),
+          ],
         ),
       ),
-      onTap: () {
-        debugPrint("i m pressed");
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => PrintQRCode(),
-          ),
-        );
-      },
     );
   }
 
