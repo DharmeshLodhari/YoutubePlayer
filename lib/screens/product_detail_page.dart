@@ -433,6 +433,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     return Card(
       elevation: 10,
       margin: EdgeInsets.zero,
+      shadowColor: boxShadowTwo,
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
         child: Row(

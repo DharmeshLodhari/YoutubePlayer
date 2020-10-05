@@ -13,7 +13,7 @@ import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
-final String baseUrl = "http://api.slydo.co";
+final String baseUrl = "https://api.slydo.co";
 final String secureBaseUrl = "https://api.slydo.co";
 final String localHostUrl = "https://127.0.0.1:8080";
 

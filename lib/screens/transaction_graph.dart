@@ -174,13 +174,13 @@ class _TransactionGraphState extends State<TransactionGraph> {
           resizeToAvoidBottomInset: true,
           backgroundColor: lightGrey,
           appBar: appBar(),
-          body: Container(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            child: Column(
-              children: <Widget>[
-                Expanded(
-                  flex: 2,
-                  child: Card(
+          body: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              child: Column(
+                children: <Widget>[
+                  Card(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10)),
                     margin: EdgeInsets.zero,
@@ -208,48 +208,44 @@ class _TransactionGraphState extends State<TransactionGraph> {
                           //         child: Container(child: flipGraph()),
                           //       ),
                           isLoading
-                              ? Expanded(
+                              ? Container(
+                                  height: 240,
                                   child: Center(
                                     child: CircularLoadingIndicator(),
                                   ),
                                 )
-                              : Expanded(
-                                  child: Container(
-                                    child: !isLineGraph
-                                        ? firstSide()
-                                        : secondSide(),
-                                  ),
+                              : Container(
+                                  child:
+                                      !isLineGraph ? firstSide() : secondSide(),
                                 ),
                         ],
                       ),
                     ),
                   ),
-                ),
-                !isLineGraph
-                    ? SizedBox(
-                        height: 10,
-                      )
-                    : Container(),
-                !isLineGraph
-                    ? Expanded(
-                        child: ListView.builder(
-                            itemCount: categoryAndSpend.length,
-                            itemBuilder: (context, index) {
-                              return getSpendOnCategoryTile(
-                                  categoryAndSpend[index]);
-                            }),
-                      )
-                    : Container(),
-                // isLoading
-                //     ? Expanded(
-                //         child: Center(
-                //           child: CircularLoadingIndicator(),
-                //         ),
-                //       )
-                //     : Expanded(
-                //         child: Container(child: flipGraph()),
-                //       ),
-              ],
+                  !isLineGraph
+                      ? SizedBox(
+                          height: 10,
+                        )
+                      : Container(),
+
+                  !isLineGraph
+                      ? Column(
+                          children: categoryAndSpend
+                              .map<Widget>((category) =>
+                                  getSpendOnCategoryTile(category))
+                              .toList(),
+                        )
+                      : Container(),
+                  // !isLineGraph
+                  //     ? ListView.builder(
+                  //         itemCount: categoryAndSpend.length,
+                  //         itemBuilder: (context, index) {
+                  //           return getSpendOnCategoryTile(
+                  //               categoryAndSpend[index]);
+                  //         })
+                  //     : Container(),
+                ],
+              ),
             ),
           )),
     );
@@ -367,6 +363,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
     //     ),
     //     child: lineGraph());
     return Container(
+        height: MediaQuery.of(context).size.height / 1.35,
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: lineGraph());
   }

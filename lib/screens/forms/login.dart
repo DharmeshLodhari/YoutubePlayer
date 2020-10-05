@@ -201,6 +201,9 @@ class _UserLoginState extends State<UserLogin> {
     BoxDecoration pinPutDecoration = BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: greyBorderColor));
+    BoxDecoration selectedDecoration = BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: navyBlue));
     return Container(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -223,7 +226,7 @@ class _UserLoginState extends State<UserLogin> {
             focusNode: _pinPutFocusNode,
             controller: passwordController,
             submittedFieldDecoration: pinPutDecoration,
-            selectedFieldDecoration: pinPutDecoration,
+            selectedFieldDecoration: selectedDecoration,
             followingFieldDecoration: pinPutDecoration,
             pinAnimationType: PinAnimationType.scale,
             textStyle: TextStyle(color: blackFont, fontSize: 35),

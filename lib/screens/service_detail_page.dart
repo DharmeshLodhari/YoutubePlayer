@@ -402,6 +402,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     // );
     return Card(
       elevation: 10,
+      shadowColor: boxShadowTwo,
       margin: EdgeInsets.zero,
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),

@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -29,8 +30,43 @@ class _PrintQRCodeState extends State<PrintQRCode> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PdfPreview(
-        build: (format) => _generatePdf(format, itemName),
+      body: Container(
+        color: whiteBackground,
+        padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            IconButton(
+              icon: Icon(
+                Icons.keyboard_arrow_left,
+                color: navyBlue,
+                size: 24,
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            Expanded(
+              child: Theme(
+                data: ThemeData(
+                  primaryColor: navyBlue,
+                ),
+                child: PdfPreview(
+                  pdfPreviewPageDecoration:
+                      BoxDecoration(color: Colors.white, boxShadow: [
+                    BoxShadow(
+                        color: boxShadowTwo,
+                        offset: Offset(2, 2),
+                        blurRadius: 5,
+                        spreadRadius: 5)
+                  ]),
+                  scrollViewDecoration: BoxDecoration(color: whiteBackground),
+                  build: (format) => _generatePdf(format, itemName),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

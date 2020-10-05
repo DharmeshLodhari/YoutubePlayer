@@ -1,5 +1,6 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -19,6 +20,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final GlobalKey<ScaffoldState> _scaffoldHomeKey =
       new GlobalKey<ScaffoldState>();
+  AuthService _auth = AuthService();
   UserBloc userBloc;
 
   @override
@@ -223,6 +225,12 @@ class _HomeState extends State<Home> {
                 maxLines: 1,
                 style: TextStyle(fontSize: 14),
               ),
+              onTap: () {
+                _auth.fetchCustomerProfile(userBloc.user.userName).then((user) {
+                  Navigator.pushNamed(context, '/profile',
+                      arguments: {"searchedUser": user});
+                });
+              },
             ),
             Divider(
               thickness: 1,

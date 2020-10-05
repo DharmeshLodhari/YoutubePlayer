@@ -107,6 +107,7 @@ class MyApp extends StatelessWidget {
         onGenerateRoute: RouteGenerator.generateRoute,
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
+            primaryColor: navyBlue,
             fontFamily: "OpenSans",
             textSelectionHandleColor: navyBlue,
             splashColor: Colors.transparent,
