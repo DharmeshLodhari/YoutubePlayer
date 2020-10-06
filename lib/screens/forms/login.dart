@@ -3,6 +3,9 @@ import 'dart:io';
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/models/country_picker/country.dart';
+import 'package:Slydo/models/country_picker/country_picker_dialog.dart';
+import 'package:Slydo/models/country_picker/utils.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/services/auth.dart';
@@ -51,6 +54,8 @@ class _UserLoginState extends State<UserLogin> {
   DatabaseHelper _db = DatabaseHelper();
 
   final FocusNode _pinPutFocusNode = FocusNode();
+
+  Country _selectedDialogCountry = CountryPickerUtils.getCountryByIsoCode('NG');
 
   @override
   void initState() {
@@ -182,20 +187,158 @@ class _UserLoginState extends State<UserLogin> {
     );
   }
 
+  // Widget phoneNumberField() {
+  //   return CustomizedTextFormField(
+  //     labelColor: darkGrey,
+  //     labelText: "Phone number",
+  //     keyboardType: TextInputType.phone,
+  //     controller: phoneNumberController,
+  //     validator: (val) {
+  //       if (val.isNotEmpty && val.length == 13) {
+  //         return null;
+  //       }
+  //       return AppLocalization.of(context).invalidPhoneNumber;
+  //     },
+  //   );
+  // }
+
   Widget phoneNumberField() {
-    return CustomizedTextFormField(
-      labelColor: darkGrey,
-      labelText: "Phone number",
-      keyboardType: TextInputType.phone,
-      controller: phoneNumberController,
-      validator: (val) {
-        if (val.isNotEmpty && val.length == 13) {
-          return null;
-        }
-        return AppLocalization.of(context).invalidPhoneNumber;
-      },
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Expanded(flex: 1, child: getCountryDropdown()),
+        SizedBox(
+          width: 8,
+        ),
+        Expanded(
+          flex: 2,
+          child: CustomizedTextFormField(
+            labelColor: darkGrey,
+            labelText: "Phone number",
+            keyboardType: TextInputType.phone,
+            controller: phoneNumberController,
+            validator: (val) {
+              if (val.isNotEmpty && val.length == 9) {
+                return null;
+              }
+              return AppLocalization.of(context).invalidPhoneNumber;
+            },
+          ),
+        ),
+      ],
     );
   }
+
+  Widget getCountryDropdown() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          "Phone number",
+          style: TextStyle(color: darkGrey, fontSize: 14),
+        ),
+        SizedBox(
+          height: 6,
+        ),
+        Card(
+          color: whiteBackground,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: BorderSide(color: greyBorderColor)),
+          margin: EdgeInsets.all(0),
+          borderOnForeground: true,
+          child: ListTile(
+            dense: true,
+            contentPadding: EdgeInsets.fromLTRB(8, 0, 0, 0),
+            onTap: _openCountryPickerDialog,
+            title: _buildDialogItem(_selectedDialogCountry),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDialogItem(Country country) {
+    return Row(
+      children: <Widget>[
+        SizedBox(width: 8.0),
+        CountryPickerUtils.getDefaultFlagImage(country),
+        SizedBox(width: 8.0),
+        Expanded(
+          child: Text(
+            "+${country.phoneCode}",
+            overflow: TextOverflow.fade,
+            softWrap: false,
+            style: TextStyle(
+              fontSize: 16,
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDialogItemWithName(Country country) {
+    return Row(
+      children: <Widget>[
+        CountryPickerUtils.getDefaultFlagImage(country),
+        SizedBox(width: 8.0),
+        Text(
+          "+${country.phoneCode}",
+          style: TextStyle(
+            fontSize: 16,
+            color: blackFont,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        SizedBox(width: 8.0),
+        Text(
+          "(" + country.name + ")",
+          overflow: TextOverflow.fade,
+          softWrap: false,
+          style: TextStyle(
+            fontSize: 16,
+            color: blackFont,
+            fontWeight: FontWeight.w600,
+          ),
+        )
+      ],
+    );
+  }
+
+  void _openCountryPickerDialog() => showDialog(
+        context: context,
+        builder: (context) => Theme(
+          data: Theme.of(context).copyWith(primaryColor: navyBlue),
+          child: CountryPickerDialog(
+            titlePadding: EdgeInsets.all(8.0),
+            searchCursorColor: navyBlue,
+            searchInputDecoration: InputDecoration(
+              hintText: AppLocalization.of(context).search,
+              hintStyle: TextStyle(
+                fontSize: 16,
+                color: darkGrey,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            isSearchable: true,
+            title: Text(
+              AppLocalization.of(context).selectYourPhoneCode,
+              style: TextStyle(
+                fontSize: 14,
+                color: blackFont,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            onValuePicked: (Country country) =>
+                setState(() => _selectedDialogCountry = country),
+            itemBuilder: _buildDialogItemWithName,
+          ),
+        ),
+      );
 
   Widget passwordPinFiled() {
     BoxDecoration pinPutDecoration = BoxDecoration(
@@ -348,7 +491,9 @@ class _UserLoginState extends State<UserLogin> {
 
       var _user;
       BankAccount _bankAccount;
-      phoneNumber = phoneNumberController.text.trim();
+      phoneNumber = "+" +
+          _selectedDialogCountry.phoneCode +
+          phoneNumberController.text.trim();
       password = passwordController.text.trim();
 
       _auth.authenticate(phoneNumber, password).then((value) async {

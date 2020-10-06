@@ -250,20 +250,22 @@ class _BankAccountListState extends State<BankAccountList> {
           dense: account.isDefault ? true : false,
           title: getTitle(account: account),
           subtitle: getSubtitle(account: account),
-          leading: CachedNetworkImage(
-            imageUrl: account.bankAvatar,
-            height: 48,
-            width: 48,
-            colorBlendMode: BlendMode.darken,
-            fit: BoxFit.cover,
-            filterQuality: FilterQuality.high,
-            placeholder: (context, url) => account.bankAvatar == ""
-                ? Icon(
-                    Icons.account_balance,
-                    size: 45,
-                    color: navyBlue,
-                  )
-                : CircularLoadingIndicator(),
+          leading: ClipOval(
+            child: CachedNetworkImage(
+              imageUrl: account.bankAvatar,
+              height: 48,
+              width: 48,
+              colorBlendMode: BlendMode.darken,
+              fit: BoxFit.cover,
+              filterQuality: FilterQuality.high,
+              placeholder: (context, url) => account.bankAvatar == ""
+                  ? Icon(
+                      Icons.account_balance,
+                      size: 45,
+                      color: navyBlue,
+                    )
+                  : CircularLoadingIndicator(),
+            ),
           ),
         ),
       ),

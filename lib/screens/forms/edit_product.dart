@@ -1036,63 +1036,42 @@ class _EditProductState extends State<EditProduct> {
   }
 
   Widget getAvailableFromField() {
-    return Theme(
-      data: Theme.of(context).copyWith(
-          primaryColor: navyBlue,
-          textTheme: TextTheme(
-            button: TextStyle(color: navyBlue),
-          ),
-          colorScheme: ColorScheme(
-            primary: navyBlue,
-            primaryVariant: navyBlue,
-            secondary: Colors.white,
-            secondaryVariant: Colors.white,
-            surface: Colors.white,
-            background: whiteBackground,
-            error: mateRad,
-            brightness: Brightness.light,
-            onPrimary: navyBlue,
-            onBackground: Colors.white,
-            onError: mateRad,
-            onSecondary: Colors.white,
-            onSurface: Colors.white,
-          )),
-      child: GestureDetector(
-        onTap: () {
-          showDatePicker(
-            context: context,
-            initialDate: DateTime(
-                DateTime.now().year, DateTime.now().month, DateTime.now().day),
-            firstDate: DateTime(
-                DateTime.now().year, DateTime.now().month, DateTime.now().day),
-            lastDate: DateTime(2101),
-          ).then((value) {
-            if (mounted) {
-              setState(() {
-                productAvailableFrom =
-                    DateTime(value.year, value.month, value.day);
-              });
-            }
-          }).catchError((error) {});
-        },
-        child: CustomizedDropDownField(
-          title: "Available from",
-          child: Container(
-            child: ListTile(
-              dense: true,
-              title: Text(
-                formatDate(productAvailableFrom),
-                style: TextStyle(
-                  color: blackFont,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                ),
+    return GestureDetector(
+      onTap: () {
+        showDatePicker(
+          context: context,
+          builder: customThemeBuilder,
+          initialDate: DateTime(
+              DateTime.now().year, DateTime.now().month, DateTime.now().day),
+          firstDate: DateTime(
+              DateTime.now().year, DateTime.now().month, DateTime.now().day),
+          lastDate: DateTime(2101),
+        ).then((value) {
+          if (mounted) {
+            setState(() {
+              productAvailableFrom =
+                  DateTime(value.year, value.month, value.day);
+            });
+          }
+        }).catchError((error) {});
+      },
+      child: CustomizedDropDownField(
+        title: "Available from",
+        child: Container(
+          child: ListTile(
+            dense: true,
+            title: Text(
+              formatDate(productAvailableFrom),
+              style: TextStyle(
+                color: blackFont,
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
               ),
-              trailing: Icon(
-                SlydoAppIcon.date,
-                size: 16,
-                color: darkGrey,
-              ),
+            ),
+            trailing: Icon(
+              SlydoAppIcon.date,
+              size: 16,
+              color: darkGrey,
             ),
           ),
         ),

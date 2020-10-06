@@ -775,27 +775,18 @@ class _SearchModuleState extends State<SearchModule> {
     if (imageUrl == "") {
       imageUrl = "https://homepages.cae.wisc.edu/~ece533/images/peppers.png";
     }
-    return Container(
-        height: 57,
-        width: 57,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: CachedNetworkImage(
-            imageUrl: imageUrl,
-            height: 48,
-            width: 48,
-            colorBlendMode: BlendMode.darken,
-            fit: BoxFit.fill,
-            filterQuality: FilterQuality.high,
-            placeholder: (context, url) => imageUrl == ""
-                ? Icon(Icons.person)
-                : CircularLoadingIndicator(),
-          ),
-        ));
+    return ClipOval(
+      child: CachedNetworkImage(
+        imageUrl: imageUrl,
+        height: 48,
+        width: 48,
+        colorBlendMode: BlendMode.darken,
+        fit: BoxFit.fill,
+        filterQuality: FilterQuality.high,
+        placeholder: (context, url) =>
+            imageUrl == "" ? Icon(Icons.person) : CircularLoadingIndicator(),
+      ),
+    );
   }
 
   Widget getTitle(Product product) {
@@ -938,24 +929,16 @@ class _SearchModuleState extends State<SearchModule> {
     if (imageUrl == "") {
       imageUrl = "https://homepages.cae.wisc.edu/~ece533/images/peppers.png";
     }
-    return Container(
-      height: 57,
-      width: 57,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(10),
-        child: CachedNetworkImage(
-            imageUrl: imageUrl,
-            colorBlendMode: BlendMode.darken,
-            fit: BoxFit.fill,
-            filterQuality: FilterQuality.high,
-            placeholder: (context, url) => imageUrl == ""
-                ? Icon(Icons.person)
-                : CircularLoadingIndicator()),
-      ),
+    return ClipOval(
+      child: CachedNetworkImage(
+          imageUrl: imageUrl,
+          height: 48,
+          width: 48,
+          colorBlendMode: BlendMode.darken,
+          fit: BoxFit.fill,
+          filterQuality: FilterQuality.high,
+          placeholder: (context, url) =>
+              imageUrl == "" ? Icon(Icons.person) : CircularLoadingIndicator()),
     );
   }
 

@@ -1230,6 +1230,7 @@ class _AddProductState extends State<AddProduct> {
     return GestureDetector(
       onTap: () {
         showDatePicker(
+          builder: customThemeBuilder,
           context: context,
           initialDate: DateTime(
               DateTime.now().year, DateTime.now().month, DateTime.now().day),

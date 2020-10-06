@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'colors.dart';
+
 export 'colors.dart';
 
 // this function will build image frame by frame and load image from opacity 0 to 1 use this function in every image
@@ -13,6 +15,18 @@ Widget imageFrameBuilder(BuildContext context, Widget child, int frame,
     opacity: frame == null ? 0 : 1,
     duration: Duration(milliseconds: 100),
     curve: Curves.easeOut,
+  );
+}
+
+Widget customThemeBuilder(BuildContext context, Widget child) {
+  return Theme(
+    data: ThemeData.light().copyWith(
+      primaryColor: navyBlue,
+      accentColor: navyBlue,
+      colorScheme: ColorScheme.light(primary: navyBlue),
+      buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
+    ),
+    child: child,
   );
 }
 

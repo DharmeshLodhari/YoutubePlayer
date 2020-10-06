@@ -964,6 +964,7 @@ class _EditServiceState extends State<EditService> {
       onTap: () {
         showDatePicker(
           context: context,
+          builder: customThemeBuilder,
           initialDate: DateTime(
               DateTime.now().year, DateTime.now().month, DateTime.now().day),
           firstDate: DateTime(

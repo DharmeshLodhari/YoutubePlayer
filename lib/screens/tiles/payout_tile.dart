@@ -56,16 +56,18 @@ class PayoutTile extends StatelessWidget {
   }
 
   Widget getLeading() {
-    return CachedNetworkImage(
-      imageUrl: payout.bankLogo,
-      height: 48,
-      width: 48,
-      colorBlendMode: BlendMode.darken,
-      fit: BoxFit.fill,
-      filterQuality: FilterQuality.high,
-      placeholder: (context, url) => payout.bankLogo == ""
-          ? Icon(Icons.account_balance)
-          : CircularLoadingIndicator(),
+    return ClipOval(
+      child: CachedNetworkImage(
+        imageUrl: payout.bankLogo,
+        height: 48,
+        width: 48,
+        colorBlendMode: BlendMode.darken,
+        fit: BoxFit.fill,
+        filterQuality: FilterQuality.high,
+        placeholder: (context, url) => payout.bankLogo == ""
+            ? Icon(Icons.account_balance)
+            : CircularLoadingIndicator(),
+      ),
     );
   }
 
