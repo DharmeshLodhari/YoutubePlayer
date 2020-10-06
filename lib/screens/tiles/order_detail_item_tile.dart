@@ -86,22 +86,19 @@ class _OrderTileForProductState extends State<OrderTileForProduct> {
           qty.toString().length == 0 ? EdgeInsets.all(0) : EdgeInsets.all(4),
       position: BadgePosition(right: -6, top: -6),
       // ignore: required onPressed
-      child: Container(
-        height: 57,
-        width: 57,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: CachedNetworkImage(
-            imageUrl: product.serverImages.isNotEmpty
-                ? product.serverImages.first
-                : "https://homepages.cae.wisc.edu/~ece533/images/peppers.png",
-            colorBlendMode: BlendMode.darken,
-            fit: BoxFit.fitWidth,
-            filterQuality: FilterQuality.high,
-            placeholder: (context, url) => product.serverImages.isNotEmpty
-                ? Icon(Icons.widgets)
-                : CircularLoadingIndicator(),
-          ),
+      child: ClipOval(
+        child: CachedNetworkImage(
+          height: 48,
+          width: 48,
+          imageUrl: product.serverImages.isNotEmpty
+              ? product.serverImages.first
+              : "https://homepages.cae.wisc.edu/~ece533/images/peppers.png",
+          colorBlendMode: BlendMode.darken,
+          fit: BoxFit.fitWidth,
+          filterQuality: FilterQuality.high,
+          placeholder: (context, url) => product.serverImages.isNotEmpty
+              ? Icon(Icons.widgets)
+              : CircularLoadingIndicator(),
         ),
       ),
     );
@@ -275,22 +272,19 @@ class _OrderTileForServiceState extends State<OrderTileForService> {
           qty.toString().length == 0 ? EdgeInsets.all(0) : EdgeInsets.all(4),
       position: BadgePosition(right: -6, top: -6),
       // ignore: required onPressed
-      child: Container(
-        height: 57,
-        width: 57,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: CachedNetworkImage(
-            imageUrl: service.serverImages.isNotEmpty
-                ? service.serverImages.first
-                : "https://homepages.cae.wisc.edu/~ece533/images/peppers.png",
-            colorBlendMode: BlendMode.darken,
-            fit: BoxFit.fill,
-            filterQuality: FilterQuality.high,
-            placeholder: (context, url) => service.serverImages.isNotEmpty
-                ? Icon(Icons.widgets)
-                : CircularLoadingIndicator(),
-          ),
+      child: ClipOval(
+        child: CachedNetworkImage(
+          height: 48,
+          width: 48,
+          imageUrl: service.serverImages.isNotEmpty
+              ? service.serverImages.first
+              : "https://homepages.cae.wisc.edu/~ece533/images/peppers.png",
+          colorBlendMode: BlendMode.darken,
+          fit: BoxFit.fill,
+          filterQuality: FilterQuality.high,
+          placeholder: (context, url) => service.serverImages.isNotEmpty
+              ? Icon(Icons.widgets)
+              : CircularLoadingIndicator(),
         ),
       ),
     );
