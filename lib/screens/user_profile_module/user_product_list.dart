@@ -267,28 +267,30 @@ class _UserProductListState extends State<UserProductList> {
                             arguments: {"product": productList[index]});
                       },
                     ),
-                    Positioned(
-                      left: 8,
-                      top: 8,
-                      child: RoundedBackgroundIcon(
-                          height: 28,
-                          width: 28,
-                          backgroundColor: Colors.white,
-                          icon: Icon(
-                            Icons.print,
-                            color: blackFont,
-                            size: 16,
-                          ),
-                          onTap: () {
-                            Navigator.of(context).pushNamed(
-                              '/print-qr',
-                              arguments: {
-                                "imageUrl": productList[index].qrCode,
-                                "itemName": productList[index].name
-                              },
-                            );
-                          }),
-                    ),
+                    widget.isOwner
+                        ? Positioned(
+                            left: 8,
+                            top: 8,
+                            child: RoundedBackgroundIcon(
+                                height: 28,
+                                width: 28,
+                                backgroundColor: Colors.white,
+                                icon: Icon(
+                                  Icons.print,
+                                  color: blackFont,
+                                  size: 16,
+                                ),
+                                onTap: () {
+                                  Navigator.of(context).pushNamed(
+                                    '/print-qr',
+                                    arguments: {
+                                      "imageUrl": productList[index].qrCode,
+                                      "itemName": productList[index].name
+                                    },
+                                  );
+                                }),
+                          )
+                        : Container(),
                     widget.isOwner
                         ? Positioned(
                             right: 8,

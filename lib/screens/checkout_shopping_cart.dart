@@ -6,8 +6,8 @@ import 'package:Slydo/screens/tiles/shopping_cart_tile.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:Slydo/widget/noItemInList.dart';
-import 'package:Slydo/widget/passcodePopup.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
@@ -493,7 +493,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
       if (value != null) {
         var data = {"note": value};
         if (value != "cancel") {
-          PassCodePopup(
+          BottomSheetPassCode(
               context: context,
               isValidCallback: () async {
                 showDialog(

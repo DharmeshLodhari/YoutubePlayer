@@ -516,159 +516,387 @@ class _EditProductState extends State<EditProduct> {
   Widget getCategoryField() {
     return CustomizedDropDownField(
       title: AppLocalization.of(context).category,
-      child: DropdownButton<ProductCategory>(
-        isExpanded: true,
-        underline: Divider(
-          color: Colors.transparent,
+      child: ListTile(
+        dense: true,
+        title: Text(
+          selectedProductCategory != null ? selectedProductCategory.name : "",
+          style: TextStyle(
+              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
         ),
-        value: selectedProductCategory,
-        style: TextStyle(
-            color: blackFont, fontSize: 16, fontWeight: FontWeight.w400),
-        onChanged: (ProductCategory value) {
-          if (mounted) {
-            setState(() {
-              selectedProductCategory = value;
-              productCategory = selectedProductCategory.name;
-            });
-          }
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          selectItemCategory();
         },
-        selectedItemBuilder: (BuildContext context) {
-          return productCategories.map<Widget>((ProductCategory category) {
-            return Container(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    category.name,
-                    style: TextStyle(
-                      color: blackFont,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }).toList();
-        },
-        items: productCategories.map((ProductCategory category) {
-          return DropdownMenuItem<ProductCategory>(
-            value: category,
-            child: Container(
-              child: Row(
-                children: [
-                  Text(
-                    category.name,
-                    style: TextStyle(
-                        color: category == selectedProductCategory
-                            ? navyBlue
-                            : blackFont,
-                        fontSize: 16,
-                        fontWeight: category == selectedProductCategory
-                            ? FontWeight.w600
-                            : FontWeight.w400),
-                  ),
-                  flexibleSpace(),
-                  category == selectedProductCategory
-                      ? Icon(
-                          SlydoAppIcon.checked,
-                          color: navyBlue,
-                          size: 14,
-                        )
-                      : Container()
-                ],
-              ),
-            ),
-          );
-        }).toList(),
       ),
+      // child: DropdownButton<ProductCategory>(
+      //   isExpanded: true,
+      //   underline: Divider(
+      //     color: Colors.transparent,
+      //   ),
+      //   value: selectedProductCategory,
+      //   style: TextStyle(
+      //       color: blackFont, fontSize: 16, fontWeight: FontWeight.w400),
+      //   onChanged: (ProductCategory value) {
+      //     if (mounted) {
+      //       setState(() {
+      //         selectedProductCategory = value;
+      //         productCategory = selectedProductCategory.name;
+      //       });
+      //     }
+      //   },
+      //   selectedItemBuilder: (BuildContext context) {
+      //     return productCategories.map<Widget>((ProductCategory category) {
+      //       return Container(
+      //         child: Column(
+      //           mainAxisAlignment: MainAxisAlignment.center,
+      //           children: [
+      //             Text(
+      //               category.name,
+      //               style: TextStyle(
+      //                 color: blackFont,
+      //                 fontWeight: FontWeight.w600,
+      //                 fontSize: 16,
+      //               ),
+      //             ),
+      //           ],
+      //         ),
+      //       );
+      //     }).toList();
+      //   },
+      //   items: productCategories.map((ProductCategory category) {
+      //     return DropdownMenuItem<ProductCategory>(
+      //       value: category,
+      //       child: Container(
+      //         child: Row(
+      //           children: [
+      //             Text(
+      //               category.name,
+      //               style: TextStyle(
+      //                   color: category == selectedProductCategory
+      //                       ? navyBlue
+      //                       : blackFont,
+      //                   fontSize: 16,
+      //                   fontWeight: category == selectedProductCategory
+      //                       ? FontWeight.w600
+      //                       : FontWeight.w400),
+      //             ),
+      //             flexibleSpace(),
+      //             category == selectedProductCategory
+      //                 ? Icon(
+      //                     SlydoAppIcon.checked,
+      //                     color: navyBlue,
+      //                     size: 14,
+      //                   )
+      //                 : Container()
+      //           ],
+      //         ),
+      //       ),
+      //     );
+      //   }).toList(),
+      // ),
     );
   }
 
   Widget getProductConditionField() {
     return CustomizedDropDownField(
       title: "Product condition",
-      child: DropdownButton<ProductCondition>(
-        underline: Divider(
-          color: Colors.transparent,
+      child: ListTile(
+        dense: true,
+        title: Row(
+          children: [
+            Text(
+              selectedProductCondition != null
+                  ? selectedProductCondition.name
+                  : "",
+              style: TextStyle(
+                  color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+            Expanded(
+              child: Text(
+                selectedProductCondition != null
+                    ? " (" + selectedProductCondition.description + ")"
+                    : "",
+                maxLines: 1,
+                style: TextStyle(
+                  fontSize: 16,
+                ),
+                softWrap: false,
+                overflow: TextOverflow.fade,
+              ),
+            ),
+          ],
         ),
-        isExpanded: true,
-        value: selectedProductCondition,
-        onChanged: (ProductCondition value) {
-          if (mounted) {
-            setState(() {
-              selectedProductCondition = value;
-              productCondition = selectedProductCondition.name;
-            });
-          }
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          selectItemCondition();
         },
-        style: TextStyle(
-            color: blackFont, fontSize: 16, fontWeight: FontWeight.w400),
-        selectedItemBuilder: (BuildContext context) {
-          return conditions.map((ProductCondition productCondition) {
-            return Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  productCondition.name,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
+      ),
+      // child: DropdownButton<ProductCondition>(
+      //   underline: Divider(
+      //     color: Colors.transparent,
+      //   ),
+      //   isExpanded: true,
+      //   value: selectedProductCondition,
+      //   onChanged: (ProductCondition value) {
+      //     if (mounted) {
+      //       setState(() {
+      //         selectedProductCondition = value;
+      //         productCondition = selectedProductCondition.name;
+      //       });
+      //     }
+      //   },
+      //   style: TextStyle(
+      //       color: blackFont, fontSize: 16, fontWeight: FontWeight.w400),
+      //   selectedItemBuilder: (BuildContext context) {
+      //     return conditions.map((ProductCondition productCondition) {
+      //       return Row(
+      //         crossAxisAlignment: CrossAxisAlignment.center,
+      //         children: [
+      //           Text(
+      //             productCondition.name,
+      //             style: TextStyle(
+      //               fontWeight: FontWeight.w600,
+      //               fontSize: 16,
+      //             ),
+      //           ),
+      //           Expanded(
+      //             child: Text(
+      //               " (" + productCondition.description + ")",
+      //               maxLines: 1,
+      //               style: TextStyle(
+      //                 fontSize: 16,
+      //               ),
+      //               softWrap: false,
+      //               overflow: TextOverflow.fade,
+      //             ),
+      //           ),
+      //         ],
+      //       );
+      //     }).toList();
+      //   },
+      //   items: conditions.map((ProductCondition productCondition) {
+      //     return DropdownMenuItem<ProductCondition>(
+      //         value: productCondition,
+      //         child: Container(
+      //           child: Row(
+      //             children: [
+      //               Text(
+      //                 productCondition.name,
+      //                 style: TextStyle(
+      //                     fontWeight: FontWeight.w600,
+      //                     color: productCondition == selectedProductCondition
+      //                         ? navyBlue
+      //                         : blackFont,
+      //                     fontSize: 16),
+      //               ),
+      //               Text(
+      //                 " (" + productCondition.description + ")",
+      //                 style: TextStyle(
+      //                   color: productCondition == selectedProductCondition
+      //                       ? navyBlue
+      //                       : blackFont,
+      //                   fontSize: 16,
+      //                 ),
+      //               ),
+      //               flexibleSpace(),
+      //               productCondition == selectedProductCondition
+      //                   ? Icon(
+      //                       SlydoAppIcon.checked,
+      //                       color: navyBlue,
+      //                       size: 14,
+      //                     )
+      //                   : Container()
+      //             ],
+      //           ),
+      //         ));
+      //   }).toList(),
+      // ),
+    );
+  }
+
+  void selectItemCategory() async {
+    final pressedCategory = await showDialog<ProductCategory>(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) => AlertDialog(
+              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              contentPadding: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              content: Container(
+                width: MediaQuery.of(context).size.width - 40,
+                child: Card(
+                  elevation: 2,
+                  shadowColor: Colors.transparent,
+                  margin: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                ),
-                Expanded(
-                  child: Text(
-                    " (" + productCondition.description + ")",
-                    maxLines: 1,
-                    style: TextStyle(
-                      fontSize: 16,
-                    ),
-                    softWrap: false,
-                    overflow: TextOverflow.fade,
-                  ),
-                ),
-              ],
-            );
-          }).toList();
-        },
-        items: conditions.map((ProductCondition productCondition) {
-          return DropdownMenuItem<ProductCondition>(
-              value: productCondition,
-              child: Container(
-                child: Row(
-                  children: [
-                    Text(
-                      productCondition.name,
-                      style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: productCondition == selectedProductCondition
-                              ? navyBlue
-                              : blackFont,
-                          fontSize: 16),
-                    ),
-                    Text(
-                      " (" + productCondition.description + ")",
-                      style: TextStyle(
-                        color: productCondition == selectedProductCondition
-                            ? navyBlue
-                            : blackFont,
-                        fontSize: 16,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: productCategories.map<Widget>((category) {
+                          if (selectedProductCategory == category) {
+                            return Container(
+                              color: selectedListItemBackgroundBlue,
+                              child: ListTile(
+                                dense: true,
+                                title: Text(
+                                  category.name,
+                                  overflow: TextOverflow.fade,
+                                  softWrap: false,
+                                  style: TextStyle(
+                                      color: navyBlue,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                trailing: Icon(
+                                  SlydoAppIcon.checked,
+                                  color: navyBlue,
+                                  size: 12,
+                                ),
+                                onTap: () {
+                                  Navigator.pop(context, category);
+                                },
+                              ),
+                            );
+                          }
+                          return ListTile(
+                            title: Text(
+                              category.name,
+                              style: TextStyle(
+                                  color: blackFont,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                            dense: true,
+                            onTap: () {
+                              Navigator.pop(context, category);
+                            },
+                          );
+                        }).toList(),
                       ),
                     ),
-                    flexibleSpace(),
-                    productCondition == selectedProductCondition
-                        ? Icon(
-                            SlydoAppIcon.checked,
-                            color: navyBlue,
-                            size: 14,
-                          )
-                        : Container()
-                  ],
+                  ),
                 ),
-              ));
-        }).toList(),
-      ),
-    );
+              ),
+            ));
+    if (pressedCategory != null) {
+      selectedProductCategory = pressedCategory;
+      productCategory = selectedProductCategory.name;
+      setState(() {});
+    }
+  }
+
+  void selectItemCondition() async {
+    final pressedCondition = await showDialog<ProductCondition>(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) => AlertDialog(
+              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              contentPadding: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              content: Container(
+                width: MediaQuery.of(context).size.width - 40,
+                child: Card(
+                  margin: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: conditions.map<Widget>((condition) {
+                          if (selectedProductCondition == condition) {
+                            return Container(
+                              color: selectedListItemBackgroundBlue,
+                              child: ListTile(
+                                dense: true,
+                                title: Row(
+                                  children: [
+                                    Text(
+                                      condition.name,
+                                      style: TextStyle(
+                                          color: navyBlue,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    Expanded(
+                                      child: Text(
+                                        selectedProductCondition != null
+                                            ? " (" +
+                                                selectedProductCondition
+                                                    .description +
+                                                ")"
+                                            : "",
+                                        maxLines: 1,
+                                        style: TextStyle(
+                                            fontSize: 16, color: navyBlue),
+                                        softWrap: false,
+                                        overflow: TextOverflow.fade,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                trailing: Icon(
+                                  SlydoAppIcon.checked,
+                                  color: navyBlue,
+                                  size: 12,
+                                ),
+                                onTap: () {
+                                  Navigator.pop(context, condition);
+                                },
+                              ),
+                            );
+                          }
+                          return ListTile(
+                            title: Row(
+                              children: [
+                                Text(
+                                  condition.name,
+                                  style: TextStyle(
+                                      color: blackFont,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400),
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    " (" + condition.description + ")",
+                                    maxLines: 1,
+                                    style: TextStyle(
+                                        fontSize: 16, color: blackFont),
+                                    softWrap: false,
+                                    overflow: TextOverflow.fade,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            dense: true,
+                            onTap: () {
+                              Navigator.pop(context, condition);
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ));
+    if (pressedCondition != null) {
+      selectedProductCondition = pressedCondition;
+      productCondition = selectedProductCondition.name;
+      setState(() {});
+    }
   }
 
   Widget getManufacturerField() {

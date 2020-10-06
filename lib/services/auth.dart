@@ -258,6 +258,10 @@ class AuthService {
       headers.forEach((k, v) => request.headers[k] = v);
       var response = await request.send();
 
+      if (response.statusCode == 413) {
+        return Future.error(
+            "Please upload smaller image, This image is too large.");
+      }
       var responseBody = await response.stream.bytesToString();
       if (response.statusCode == 200) {
         var jsonData = json.decode(responseBody);
@@ -1096,6 +1100,10 @@ class AuthService {
     request.files.addAll(newList);
     headers.forEach((k, v) => request.headers[k] = v);
     var response = await request.send();
+    if (response.statusCode == 413) {
+      return Future.error(
+          "Please upload smaller images, One or all of your images are too large.");
+    }
     var responseBody = await response.stream.bytesToString();
     if (response.statusCode == 201) {
       return true;
@@ -1139,6 +1147,10 @@ class AuthService {
 
     var response = await request.send();
 
+    if (response.statusCode == 413) {
+      return Future.error(
+          "Please upload smaller images, One or all of your images are too large.");
+    }
     var responseBody = await response.stream.bytesToString();
     if (response.statusCode == 200) {
       return true;
@@ -1278,6 +1290,10 @@ class AuthService {
     request.files.addAll(newList);
     headers.forEach((k, v) => request.headers[k] = v);
     var response = await request.send();
+    if (response.statusCode == 413) {
+      return Future.error(
+          "Please upload smaller images, One or all of your images are too large.");
+    }
     var responseBody = await response.stream.bytesToString();
     if (response.statusCode == 201) {
       return true;
@@ -1320,6 +1336,10 @@ class AuthService {
     }
     headers.forEach((k, v) => request.headers[k] = v);
     var response = await request.send();
+    if (response.statusCode == 413) {
+      return Future.error(
+          "Please upload smaller images, One or all of your images are too large.");
+    }
 
     var responseBody = await response.stream.bytesToString();
     if (response.statusCode == 200) {

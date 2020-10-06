@@ -764,6 +764,8 @@ class _UserDashboardState extends State<UserDashboard> {
             });
           });
         } catch (err) {
+          Toast.show(err.toString(), context,
+              backgroundColor: blackFont, textColor: Colors.white);
           debugPrint("update avatar : " + err.toString());
         }
       }

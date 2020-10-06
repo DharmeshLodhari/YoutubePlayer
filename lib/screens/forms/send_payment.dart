@@ -698,51 +698,146 @@ class _SendPaymentState extends State<SendPayment> {
           borderOnForeground: true,
           child: IgnorePointer(
             ignoring: product != null || service != null,
-            child: DropdownButton<String>(
-              icon: Padding(
-                padding: EdgeInsets.only(right: 8.0),
-                child: Icon(
-                  Icons.keyboard_arrow_down,
-                  color: darkGrey,
-                  size: 20,
-                ),
+            child: ListTile(
+              dense: true,
+              title: Text(
+                selectedCategory != null ? selectedCategory : "",
+                softWrap: false,
+                overflow: TextOverflow.fade,
+                style: TextStyle(
+                    color: blackFont,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600),
               ),
-              isExpanded: true,
-              underline: Divider(
-                color: Colors.transparent,
+              trailing: Icon(
+                Icons.keyboard_arrow_down,
+                color: darkGrey,
               ),
-              hint: Padding(
-                padding: const EdgeInsets.only(left: 16.0),
-                child: Text(AppLocalization.of(context).category),
-              ),
-              value: selectedCategory,
-              onChanged: (String value) {
-                if (mounted) {
-                  setState(() {
-                    selectedCategory = value;
-                  });
-                }
+              onTap: () {
+                selectCategory();
               },
-              items: paymentCategories.map((String category) {
-                return DropdownMenuItem<String>(
-                  value: category,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16.0, 0, 0, 0),
-                    child: Text(
-                      category,
-                      style: TextStyle(
-                          color: blackFont,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                );
-              }).toList(),
             ),
+            // child: DropdownButton<String>(
+            //   icon: Padding(
+            //     padding: EdgeInsets.only(right: 8.0),
+            //     child: Icon(
+            //       Icons.keyboard_arrow_down,
+            //       color: darkGrey,
+            //       size: 20,
+            //     ),
+            //   ),
+            //   isExpanded: true,
+            //   underline: Divider(
+            //     color: Colors.transparent,
+            //   ),
+            //   hint: Padding(
+            //     padding: const EdgeInsets.only(left: 16.0),
+            //     child: Text(AppLocalization.of(context).category),
+            //   ),
+            //   value: selectedCategory,
+            //   onChanged: (String value) {
+            //     if (mounted) {
+            //       setState(() {
+            //         selectedCategory = value;
+            //       });
+            //     }
+            //   },
+            //   items: paymentCategories.map((String category) {
+            //     return DropdownMenuItem<String>(
+            //       value: category,
+            //       child: Padding(
+            //         padding: const EdgeInsets.fromLTRB(16.0, 0, 0, 0),
+            //         child: Text(
+            //           category,
+            //           style: TextStyle(
+            //               color: blackFont,
+            //               fontSize: 16,
+            //               fontWeight: FontWeight.w600),
+            //         ),
+            //       ),
+            //     );
+            //   }).toList(),
+            // ),
           ),
         ),
       ],
     );
+  }
+
+  void selectCategory() async {
+    final pressedCategory = await showDialog<String>(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) => AlertDialog(
+              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              contentPadding: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              content: Container(
+                width: MediaQuery.of(context).size.width - 40,
+                child: Card(
+                  elevation: 2,
+                  shadowColor: Colors.transparent,
+                  margin: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: paymentCategories.map<Widget>((category) {
+                          if (selectedCategory == category) {
+                            return Container(
+                              color: selectedListItemBackgroundBlue,
+                              child: ListTile(
+                                dense: true,
+                                title: Text(
+                                  category,
+                                  overflow: TextOverflow.fade,
+                                  softWrap: false,
+                                  style: TextStyle(
+                                      color: navyBlue,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                trailing: Icon(
+                                  SlydoAppIcon.checked,
+                                  color: navyBlue,
+                                  size: 12,
+                                ),
+                                onTap: () {
+                                  Navigator.pop(context, category);
+                                },
+                              ),
+                            );
+                          }
+                          return ListTile(
+                            title: Text(
+                              category,
+                              softWrap: false,
+                              overflow: TextOverflow.fade,
+                              style: TextStyle(
+                                  color: blackFont,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                            dense: true,
+                            onTap: () {
+                              Navigator.pop(context, category);
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ));
+    if (pressedCategory != null) {
+      selectedCategory = pressedCategory;
+      setState(() {});
+    }
   }
 
   Widget getReferenceField() {

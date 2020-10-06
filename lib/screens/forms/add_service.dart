@@ -321,76 +321,166 @@ class _AddServiceState extends State<AddService> {
   Widget getCategoryField() {
     return CustomizedDropDownField(
       title: AppLocalization.of(context).category,
-      child: DropdownButton<ServiceCatagory>(
-        isExpanded: true,
-        underline: Divider(
-          color: Colors.transparent,
+      child: ListTile(
+        dense: true,
+        title: Text(
+          selectedServiceCategory != null ? selectedServiceCategory.name : "",
+          style: TextStyle(
+              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
         ),
-        value: selectedServiceCategory,
-        onChanged: (ServiceCatagory value) {
-          if (mounted) {
-            setState(() {
-              selectedServiceCategory = value;
-              serviceCategory = selectedServiceCategory.name;
-            });
-          }
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          selectItemCategory();
         },
-        style: TextStyle(
-          color: blackFont,
-          fontSize: 16,
-          fontWeight: FontWeight.w400,
-        ),
-        selectedItemBuilder: (BuildContext context) {
-          return serviceCategories.map<Widget>((ServiceCatagory category) {
-            return Container(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    category.name,
-                    style: TextStyle(
-                      color: blackFont,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
+      ),
+      // child: DropdownButton<ServiceCatagory>(
+      //   isExpanded: true,
+      //   underline: Divider(
+      //     color: Colors.transparent,
+      //   ),
+      //   value: selectedServiceCategory,
+      //   onChanged: (ServiceCatagory value) {
+      //     if (mounted) {
+      //       setState(() {
+      //         selectedServiceCategory = value;
+      //         serviceCategory = selectedServiceCategory.name;
+      //       });
+      //     }
+      //   },
+      //   style: TextStyle(
+      //     color: blackFont,
+      //     fontSize: 16,
+      //     fontWeight: FontWeight.w400,
+      //   ),
+      //   selectedItemBuilder: (BuildContext context) {
+      //     return serviceCategories.map<Widget>((ServiceCatagory category) {
+      //       return Container(
+      //         child: Column(
+      //           mainAxisAlignment: MainAxisAlignment.center,
+      //           children: [
+      //             Text(
+      //               category.name,
+      //               style: TextStyle(
+      //                 color: blackFont,
+      //                 fontWeight: FontWeight.w600,
+      //                 fontSize: 16,
+      //               ),
+      //             ),
+      //           ],
+      //         ),
+      //       );
+      //     }).toList();
+      //   },
+      //   items: serviceCategories.map((ServiceCatagory category) {
+      //     return DropdownMenuItem<ServiceCatagory>(
+      //       value: category,
+      //       child: Container(
+      //         child: Row(
+      //           children: [
+      //             Text(
+      //               category.name,
+      //               style: TextStyle(
+      //                   color: category == selectedServiceCategory
+      //                       ? navyBlue
+      //                       : blackFont,
+      //                   fontSize: 16,
+      //                   fontWeight: category == selectedServiceCategory
+      //                       ? FontWeight.w600
+      //                       : FontWeight.w400),
+      //             ),
+      //             flexibleSpace(),
+      //             category == selectedServiceCategory
+      //                 ? Icon(
+      //                     SlydoAppIcon.checked,
+      //                     color: navyBlue,
+      //                     size: 14,
+      //                   )
+      //                 : Container()
+      //           ],
+      //         ),
+      //       ),
+      //     );
+      //   }).toList(),
+      // ),
+    );
+  }
+
+  void selectItemCategory() async {
+    final pressedCategory = await showDialog<ServiceCatagory>(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) => AlertDialog(
+              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              contentPadding: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              content: Container(
+                width: MediaQuery.of(context).size.width - 40,
+                child: Card(
+                  elevation: 2,
+                  shadowColor: Colors.transparent,
+                  margin: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: serviceCategories.map<Widget>((category) {
+                          if (selectedServiceCategory == category) {
+                            return Container(
+                              color: selectedListItemBackgroundBlue,
+                              child: ListTile(
+                                dense: true,
+                                title: Text(
+                                  category.name,
+                                  overflow: TextOverflow.fade,
+                                  softWrap: false,
+                                  style: TextStyle(
+                                      color: navyBlue,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                trailing: Icon(
+                                  SlydoAppIcon.checked,
+                                  color: navyBlue,
+                                  size: 12,
+                                ),
+                                onTap: () {
+                                  Navigator.pop(context, category);
+                                },
+                              ),
+                            );
+                          }
+                          return ListTile(
+                            title: Text(
+                              category.name,
+                              style: TextStyle(
+                                  color: blackFont,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                            dense: true,
+                            onTap: () {
+                              Navigator.pop(context, category);
+                            },
+                          );
+                        }).toList(),
+                      ),
                     ),
                   ),
-                ],
+                ),
               ),
-            );
-          }).toList();
-        },
-        items: serviceCategories.map((ServiceCatagory category) {
-          return DropdownMenuItem<ServiceCatagory>(
-            value: category,
-            child: Container(
-              child: Row(
-                children: [
-                  Text(
-                    category.name,
-                    style: TextStyle(
-                        color: category == selectedServiceCategory
-                            ? navyBlue
-                            : blackFont,
-                        fontSize: 16,
-                        fontWeight: category == selectedServiceCategory
-                            ? FontWeight.w600
-                            : FontWeight.w400),
-                  ),
-                  flexibleSpace(),
-                  category == selectedServiceCategory
-                      ? Icon(
-                          SlydoAppIcon.checked,
-                          color: navyBlue,
-                          size: 14,
-                        )
-                      : Container()
-                ],
-              ),
-            ),
-          );
-        }).toList(),
-      ),
-    );
+            ));
+    if (pressedCategory != null) {
+      selectedServiceCategory = pressedCategory;
+      serviceCategory = selectedServiceCategory.name;
+      setState(() {});
+    }
   }
 
   Widget getAmountField() {
