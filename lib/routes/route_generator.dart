@@ -19,6 +19,7 @@ import 'package:Slydo/screens/forms/send_payment.dart';
 import 'package:Slydo/screens/forms/signup.dart';
 import 'package:Slydo/screens/forms/upgrade_user_profile.dart';
 import 'package:Slydo/screens/forms/user_address.dart';
+import 'package:Slydo/screens/internal_apps.dart';
 import 'package:Slydo/screens/messagelist.dart';
 import 'package:Slydo/screens/order_detail_page.dart';
 import 'package:Slydo/screens/orders_list.dart';
@@ -411,6 +412,13 @@ class RouteGenerator {
       case '/print-qr':
         return PageTransition(
           child: PrintQRCode(arguments: settings.arguments),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case '/internal-apps':
+        return PageTransition(
+          child: InternalApps(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
           settings: settings,

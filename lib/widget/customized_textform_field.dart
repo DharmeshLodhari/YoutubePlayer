@@ -33,7 +33,7 @@ class CustomizedTextFormField extends StatefulWidget {
       this.isPassword = false,
       this.isReadOnly = false,
       this.isAmount = false,
-      this.labelText = "Label",
+      this.labelText = "",
       this.labelColor,
       this.maxLength,
       this.maxLines = 1,

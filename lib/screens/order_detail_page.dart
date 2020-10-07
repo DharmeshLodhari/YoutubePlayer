@@ -845,7 +845,14 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
               ? () {
                   navigateToComposeMessage(conditionForUser, index);
                 }
-              : () {},
+              : () {
+                  Toast.show(
+                    "You can not send message to yourself!!",
+                    context,
+                    backgroundColor: blackFont,
+                    textColor: Colors.white,
+                  );
+                },
           title: AppLocalization.of(context).message,
           slideController: _slideController),
     ];

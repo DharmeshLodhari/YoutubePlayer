@@ -41,6 +41,7 @@ class _UserLoginState extends State<UserLogin> {
 
   //for remember user
   bool isChecked = false;
+  String countryFromPref;
   String phoneNumberFromPref;
   String passwordFromPref;
   TextEditingController phoneNumberController;
@@ -77,13 +78,18 @@ class _UserLoginState extends State<UserLogin> {
       isRemember = isChecked;
 
       if (isChecked) {
+        countryFromPref = _sharedPreferences.getString('country') ?? "NG";
+        _selectedDialogCountry =
+            CountryPickerUtils.getCountryByIsoCode(countryFromPref);
+
         phoneNumberFromPref = _sharedPreferences.getString('username') ?? "";
         passwordFromPref = _sharedPreferences.getString('password') ?? "";
 
         //setting fetched userdata into screen
         phoneNumberController.text = phoneNumberFromPref;
         passwordController.text = passwordFromPref;
-        phoneNumber = phoneNumberFromPref;
+        phoneNumber =
+            "+" + _selectedDialogCountry.phoneCode + phoneNumberFromPref;
         password = passwordFromPref;
       }
     }
@@ -206,15 +212,14 @@ class _UserLoginState extends State<UserLogin> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Expanded(flex: 1, child: getCountryDropdown()),
+        Expanded(flex: 3, child: getCountryDropdown()),
         SizedBox(
           width: 8,
         ),
         Expanded(
-          flex: 2,
+          flex: 5,
           child: CustomizedTextFormField(
             labelColor: darkGrey,
-            labelText: "Phone number",
             keyboardType: TextInputType.phone,
             controller: phoneNumberController,
             validator: (val) {
@@ -262,7 +267,7 @@ class _UserLoginState extends State<UserLogin> {
   Widget _buildDialogItem(Country country) {
     return Row(
       children: <Widget>[
-        SizedBox(width: 8.0),
+        SizedBox(width: 4.0),
         CountryPickerUtils.getDefaultFlagImage(country),
         SizedBox(width: 8.0),
         Expanded(
@@ -277,6 +282,11 @@ class _UserLoginState extends State<UserLogin> {
             ),
           ),
         ),
+        Icon(
+          Icons.keyboard_arrow_down,
+          color: blackFont,
+        ),
+        SizedBox(width: 4.0),
       ],
     );
   }
@@ -372,6 +382,8 @@ class _UserLoginState extends State<UserLogin> {
             selectedFieldDecoration: selectedDecoration,
             followingFieldDecoration: pinPutDecoration,
             pinAnimationType: PinAnimationType.scale,
+            textInputAction: TextInputAction.done,
+            keyboardType: TextInputType.number,
             textStyle: TextStyle(color: blackFont, fontSize: 35),
           ),
         ],
@@ -553,12 +565,18 @@ class _UserLoginState extends State<UserLogin> {
       await _sharedPreferences.clear();
       bool isCheckedSet =
           await _sharedPreferences.setBool('isChecked', isChecked);
-      bool usernameSet =
-          await _sharedPreferences.setString('username', phoneNumber);
+      bool usernameSet = await _sharedPreferences.setString(
+          'username', phoneNumberController.text.trim());
       bool passwordSet =
           await _sharedPreferences.setString('password', password);
+      bool countryCodeSet = await _sharedPreferences.setString(
+          'country', _selectedDialogCountry.isoCode);
 
-      if (!isCheckedSet || !isLoggedOut || !usernameSet || !passwordSet) {
+      if (!isCheckedSet ||
+          !isLoggedOut ||
+          !usernameSet ||
+          !passwordSet ||
+          !countryCodeSet) {
         Toast.show(AppLocalization.of(context).userIsNotSaved, context);
       }
     } else {

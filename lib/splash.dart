@@ -14,6 +14,8 @@ import 'package:toast/toast.dart';
 
 import 'data/state_notifier.dart';
 import 'locale/app_localization.dart';
+import 'models/country_picker/country.dart';
+import 'models/country_picker/utils.dart';
 import 'models/device.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -24,6 +26,7 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   bool isChecked = false;
   bool isLoggedOut = false;
+  String countryFromPref;
   String phoneNumberFromPref;
   String passwordFromPref;
   SharedPreferences _sharedPreferences;
@@ -181,15 +184,20 @@ class _SplashScreenState extends State<SplashScreen> {
         Navigator.pop(context);
         Navigator.of(context).pushNamed("/index");
       } else {
+        countryFromPref = _sharedPreferences.getString('country') ?? "NG";
+        Country country =
+            CountryPickerUtils.getCountryByIsoCode(countryFromPref);
+
         phoneNumberFromPref = _sharedPreferences.getString('username') ?? "";
         passwordFromPref = _sharedPreferences.getString('password') ?? "";
 
         await _sharedPreferences.setBool('isLoggedOut', isLoggedOut);
         await _sharedPreferences.setBool('isChecked', isChecked);
+        await _sharedPreferences.setString('country', countryFromPref);
         await _sharedPreferences.setString('username', phoneNumberFromPref);
         await _sharedPreferences.setString('password', passwordFromPref);
 
-        var phoneNumber = phoneNumberFromPref;
+        var phoneNumber = "+" + country.phoneCode + phoneNumberFromPref;
         var password = passwordFromPref;
 
         if (phoneNumberFromPref != "" && passwordFromPref != "") {

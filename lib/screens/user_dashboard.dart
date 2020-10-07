@@ -14,6 +14,7 @@ import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:Slydo/widget/passcodePopup.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:Slydo/widget/user_dashboard_item_tile.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -251,6 +252,7 @@ class _UserDashboardState extends State<UserDashboard> {
                 flexibleSpace(flex: 1),
                 secondRowOfUserDashboardItem(),
                 flexibleSpace(flex: 2),
+                thirdRowOfUserDashboardItem(),
                 appVersionDataUI()
               ],
             ),
@@ -400,7 +402,7 @@ class _UserDashboardState extends State<UserDashboard> {
     return Row(
       children: [
         Expanded(
-            child: userDashboardItemCard(
+            child: UserDashboardItemTile(
           icon: SlydoAppIcon.user,
           title: "Profile",
           onTap: () {
@@ -412,7 +414,7 @@ class _UserDashboardState extends State<UserDashboard> {
           width: 12,
         ),
         Expanded(
-            child: userDashboardItemCard(
+            child: UserDashboardItemTile(
           icon: SlydoAppIcon.cart,
           title: "Orders",
           onTap: () {
@@ -424,7 +426,7 @@ class _UserDashboardState extends State<UserDashboard> {
           width: 12,
         ),
         Expanded(
-            child: userDashboardItemCard(
+            child: UserDashboardItemTile(
           icon: SlydoAppIcon.store,
           title: "My store",
           onTap: () {
@@ -442,7 +444,7 @@ class _UserDashboardState extends State<UserDashboard> {
     return Row(
       children: [
         Expanded(
-            child: userDashboardItemCard(
+            child: UserDashboardItemTile(
           icon: SlydoAppIcon.transactions,
           title: "Transaction",
           onTap: () {
@@ -461,7 +463,7 @@ class _UserDashboardState extends State<UserDashboard> {
           width: 12,
         ),
         Expanded(
-            child: userDashboardItemCard(
+            child: UserDashboardItemTile(
           icon: SlydoAppIcon.bank,
           title: "Bank",
           onTap: () {
@@ -473,7 +475,7 @@ class _UserDashboardState extends State<UserDashboard> {
           width: 12,
         ),
         Expanded(
-            child: userDashboardItemCard(
+            child: UserDashboardItemTile(
           icon: SlydoAppIcon.translation,
           title: "Language",
           onTap: () {
@@ -482,6 +484,30 @@ class _UserDashboardState extends State<UserDashboard> {
           },
           iconColor: HexColor("#5218E9"),
         )),
+      ],
+    );
+  }
+
+  Widget thirdRowOfUserDashboardItem() {
+    return Row(
+      children: [
+        Expanded(
+            child: UserDashboardItemTile(
+          icon: SlydoAppIcon.general_category,
+          title: "More",
+          onTap: () {
+            Navigator.pushNamed(context, "/internal-apps");
+          },
+          iconColor: HexColor("#EE78BF"),
+        )),
+        SizedBox(
+          width: 12,
+        ),
+        Expanded(child: Container()),
+        SizedBox(
+          width: 12,
+        ),
+        Expanded(child: Container()),
       ],
     );
   }
@@ -509,59 +535,6 @@ class _UserDashboardState extends State<UserDashboard> {
               style: TextStyle(color: darkGrey, fontSize: 12)),
         ],
       ),
-    );
-  }
-
-  Widget userDashboardItemCard({
-    @required String title,
-    @required IconData icon,
-    @required Color iconColor,
-    @required Function onTap,
-  }) {
-    return GestureDetector(
-      child: CustomBoxShadow(
-        child: Card(
-          margin: EdgeInsets.zero,
-          elevation: 3,
-          shadowColor: boxShadowTwo,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          child: Container(
-            height: 100,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                flexibleSpace(flex: 3),
-                Card(
-                  elevation: 0,
-                  color: iconColor.withOpacity(0.08),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Icon(
-                      icon,
-                      color: iconColor,
-                      size: 20,
-                    ),
-                  ),
-                ),
-                flexibleSpace(),
-                Text(
-                  title,
-                  style: TextStyle(
-                      color: blackFont,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14),
-                ),
-                flexibleSpace(flex: 3),
-              ],
-            ),
-          ),
-        ),
-      ),
-      onTap: onTap,
     );
   }
 
