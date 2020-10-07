@@ -26,6 +26,9 @@ class _InternalAppsState extends State<InternalApps> {
             child: Column(
               children: <Widget>[
                 appBar(),
+                SizedBox(
+                  height: 24,
+                ),
                 firstRowOfUserDashboardItem(),
                 SizedBox(
                   height: 12,
