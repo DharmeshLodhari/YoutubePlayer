@@ -187,11 +187,23 @@ class _InternalAppsState extends State<InternalApps> {
         SizedBox(
           width: 12,
         ),
-        Expanded(child: Container()),
+        Expanded(
+            child: UserDashboardItemTile(
+          icon: SlydoAppIcon.eatingout_category,
+          title: "Eat out",
+          onTap: () {},
+          iconColor: HexColor("#9B51E0"),
+        )),
         SizedBox(
           width: 12,
         ),
-        Expanded(child: Container()),
+        Expanded(
+            child: UserDashboardItemTile(
+          icon: SlydoAppIcon.finances_category,
+          title: "Wealth",
+          onTap: () {},
+          iconColor: HexColor("#5218E9"),
+        )),
       ],
     );
   }
