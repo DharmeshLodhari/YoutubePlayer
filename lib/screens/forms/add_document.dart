@@ -16,6 +16,7 @@ class AddDocument extends StatefulWidget {
 
 class _AddDocumentState extends State<AddDocument> {
   final _formsPageViewController = PageController();
+
   //List of the all three form
   List _forms;
 

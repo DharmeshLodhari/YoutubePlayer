@@ -472,6 +472,7 @@ class _BankAccountListState extends State<BankAccountList> {
 
 class VerticalListItem extends StatelessWidget {
   VerticalListItem(this.child);
+
   final Widget child;
 
   @override

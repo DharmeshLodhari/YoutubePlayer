@@ -8,7 +8,10 @@ class CircleUIConfig {
   final double circleSize;
 
   const CircleUIConfig(
-      {this.borderColor = Colors.white, this.borderWidth = 1, this.fillColor = Colors.white, this.circleSize = 20});
+      {this.borderColor = Colors.white,
+      this.borderWidth = 1,
+      this.fillColor = Colors.white,
+      this.circleSize = 20});
 }
 
 class Circle extends StatelessWidget {
@@ -16,7 +19,12 @@ class Circle extends StatelessWidget {
   final CircleUIConfig circleUIConfig;
   double extraSize = 0;
 
-  Circle({Key key, this.filled = false, @required this.circleUIConfig, this.extraSize = 0}) : super(key: key);
+  Circle(
+      {Key key,
+      this.filled = false,
+      @required this.circleUIConfig,
+      this.extraSize = 0})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +35,9 @@ class Circle extends StatelessWidget {
       decoration: BoxDecoration(
           color: filled ? circleUIConfig.fillColor : Colors.transparent,
           shape: BoxShape.circle,
-          border: Border.all(color: circleUIConfig.borderColor, width: circleUIConfig.borderWidth)),
+          border: Border.all(
+              color: circleUIConfig.borderColor,
+              width: circleUIConfig.borderWidth)),
     );
   }
 }

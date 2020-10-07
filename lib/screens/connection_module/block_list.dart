@@ -196,16 +196,7 @@ class _BlockListState extends State<BlockList> {
   }
 
   List<Widget> listActionSlideActions(CustomerProfile user, int index) {
-    return [
-      // IconSlideAction(
-      //   caption: AppLocalization.of(context).unblock,
-      //   color: Colors.green,
-      //   icon: Icons.thumb_up,
-      //   onTap: () {
-      //     unBlockUserAlert(user, index);
-      //   },
-      // ),
-    ];
+    return [];
   }
 
   void unBlockUserAlert(CustomerProfile user, int index) async {
@@ -278,6 +269,7 @@ class _BlockListState extends State<BlockList> {
 
 class VerticalListItem extends StatelessWidget {
   VerticalListItem(this.user);
+
   final CustomerProfile user;
 
   @override

@@ -150,28 +150,6 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
     // refresh the list when lifecycle called onResume method\
     _onRefreshOnResume();
 
-//    return Scaffold(
-//      key: _scaffoldPaymentListKey,
-//      backgroundColor: lightBlue(),
-//      appBar: AppBar(
-//        automaticallyImplyLeading: false,
-//        backgroundColor: darkBlue(),
-//        title: Text(AppLocalization.of(context).paymentRequests),
-//        actions: <Widget>[
-//          sendRequestButton(),
-//          _threeItemPopup(),
-//        ],
-//      ),
-//      body: SmartRefresher(
-//          enablePullDown: true,
-//          header: WaterDropHeader(
-//            complete: Container(),
-//            waterDropColor: darkBlue(),
-//          ),
-//          controller: _refreshController,
-//          onRefresh: _onRefresh,
-//          child: _buildRequestPaymentList()),
-//    );
     return Scaffold(
       key: _scaffoldPaymentListKey,
       resizeToAvoidBottomInset: true,
@@ -207,10 +185,6 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         SizedBox(
           width: 10.0,
         ),
-        // menuBtn(),
-        // SizedBox(
-        //   width: 10.0,
-        // ),
         popUpMenuButton(),
         SizedBox(
           width: 16,
@@ -238,24 +212,6 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       backgroundColor: iconBtnGrey,
       enableMargin: true,
     );
-
-//    return SizedBox(
-//      height: 34,
-//      width: 34,
-//      child: Card(
-//        color: lightGrey,
-//        elevation: 0,
-//        margin: EdgeInsets.symmetric(vertical: 10),
-//        shape: RoundedRectangleBorder(
-//          borderRadius: BorderRadius.circular(10),
-//        ),
-//        child: Icon(
-//          SlydoAppIcon.add,
-//          size: 16,
-//          color: blackFont,
-//        ),
-//      ),
-//    );
   }
 
   Widget menuBtn() {
@@ -270,11 +226,6 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
           borderRadius: BorderRadius.circular(10),
         ),
         child: _threeItemPopup(),
-//             child: Icon(
-//            SlydoAppIcon.menu,
-//            size: 16,
-//            color: blackFont,
-//          ),
       ),
     );
   }
@@ -519,14 +470,6 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
     }
   }
 
-//      IconSlideAction(
-//          caption: caption,
-//          color: Colors.red,
-//          icon: Icons.cancel,
-//          onTap: () async {
-//            rejectPaymentRequestAlert(paymentRequest, index);
-//          }),
-
   List<Widget> listActionSlideActions(
       PaymentRequest paymentRequest, int index) {
     String caption = !paymentRequest.isCredit
@@ -541,14 +484,6 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
           },
           title: caption,
           slideController: _slideController),
-//        IconSlideAction(
-//          caption: AppLocalization.of(context).sendMoney,
-//          color: Colors.green,
-//          icon: Icons.reply,
-//          onTap: () {
-//            acceptPaymentRequestAlert(paymentRequest, index);
-//          },
-//        ),
     ];
   }
 
@@ -683,6 +618,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
 
 class VerticalListItem extends StatefulWidget {
   VerticalListItem(this.paymentRequest);
+
   final PaymentRequest paymentRequest;
 
   @override
@@ -800,38 +736,6 @@ class _VerticalListItemState extends State<VerticalListItem> {
         },
       ),
     );
-
-//    return MaterialButton(
-//      child: Row(
-//        mainAxisAlignment: MainAxisAlignment.center,
-//        children: <Widget>[
-//          Icon(
-//            Icons.message,
-//            color: darkBlue(),
-//          ),
-//          SizedBox(
-//            width: 10,
-//          ),
-//          Text(
-//            AppLocalization.of(context).message,
-//            style: TextStyle(color: darkBlue()),
-//          ),
-//        ],
-//      ),
-//      onPressed: () {
-//        _auth.fetchCustomerProfile(widget.paymentRequest.payee).then((user) {
-//          if (mounted) {
-//            setState(() {
-//              isExpanded = false;
-//            });
-//          }
-//          Navigator.of(context).pushNamed('/compose_message', arguments: {
-//            'recipient': user.userName,
-//            'subject': "",
-//          });
-//        });
-//      },
-//    );
   }
 
   Widget blockUserButton() {
@@ -887,51 +791,5 @@ class _VerticalListItemState extends State<VerticalListItem> {
         ),
       ),
     );
-
-//    return MaterialButton(
-//      child: Row(
-//        mainAxisAlignment: MainAxisAlignment.center,
-//        children: <Widget>[
-//          Stack(
-//            children: <Widget>[
-//              Icon(
-//                Icons.group,
-//                color: Colors.black,
-//              ),
-//              Icon(
-//                Icons.block,
-//                color: Colors.red,
-//              )
-//            ],
-//          ),
-//          SizedBox(
-//            width: 10,
-//          ),
-//          Text(
-//            AppLocalization.of(context).blockUser,
-//            style: TextStyle(color: Colors.redAccent),
-//          ),
-//        ],
-//      ),
-//      onPressed: () {
-//        _auth.fetchCustomerProfile(widget.paymentRequest.payee).then((user) {
-//          _auth.blockUser(user).then((result) {
-//            if (mounted) {
-//              setState(() {
-//                isExpanded = false;
-//              });
-//            }
-//            if (result) {
-//              Toast.show(
-//                  "${widget.paymentRequest.payee} " +
-//                      AppLocalization.of(context).isBlocked,
-//                  context);
-//            } else {
-//              Toast.show(AppLocalization.of(context).error, context);
-//            }
-//          });
-//        });
-//      },
-//    );
   }
 }

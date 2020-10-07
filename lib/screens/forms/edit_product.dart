@@ -23,13 +23,16 @@ class EditProduct extends StatefulWidget {
   var arguments;
 
   EditProduct({this.arguments});
+
   @override
   _EditProductState createState() => _EditProductState(arguments: arguments);
 }
 
 class _EditProductState extends State<EditProduct> {
   var arguments;
+
   _EditProductState({this.arguments});
+
   final _auth = AuthService();
   UserBloc userBloc;
   final _formKey = GlobalKey<FormState>();
@@ -531,72 +534,6 @@ class _EditProductState extends State<EditProduct> {
           selectItemCategory();
         },
       ),
-      // child: DropdownButton<ProductCategory>(
-      //   isExpanded: true,
-      //   underline: Divider(
-      //     color: Colors.transparent,
-      //   ),
-      //   value: selectedProductCategory,
-      //   style: TextStyle(
-      //       color: blackFont, fontSize: 16, fontWeight: FontWeight.w400),
-      //   onChanged: (ProductCategory value) {
-      //     if (mounted) {
-      //       setState(() {
-      //         selectedProductCategory = value;
-      //         productCategory = selectedProductCategory.name;
-      //       });
-      //     }
-      //   },
-      //   selectedItemBuilder: (BuildContext context) {
-      //     return productCategories.map<Widget>((ProductCategory category) {
-      //       return Container(
-      //         child: Column(
-      //           mainAxisAlignment: MainAxisAlignment.center,
-      //           children: [
-      //             Text(
-      //               category.name,
-      //               style: TextStyle(
-      //                 color: blackFont,
-      //                 fontWeight: FontWeight.w600,
-      //                 fontSize: 16,
-      //               ),
-      //             ),
-      //           ],
-      //         ),
-      //       );
-      //     }).toList();
-      //   },
-      //   items: productCategories.map((ProductCategory category) {
-      //     return DropdownMenuItem<ProductCategory>(
-      //       value: category,
-      //       child: Container(
-      //         child: Row(
-      //           children: [
-      //             Text(
-      //               category.name,
-      //               style: TextStyle(
-      //                   color: category == selectedProductCategory
-      //                       ? navyBlue
-      //                       : blackFont,
-      //                   fontSize: 16,
-      //                   fontWeight: category == selectedProductCategory
-      //                       ? FontWeight.w600
-      //                       : FontWeight.w400),
-      //             ),
-      //             flexibleSpace(),
-      //             category == selectedProductCategory
-      //                 ? Icon(
-      //                     SlydoAppIcon.checked,
-      //                     color: navyBlue,
-      //                     size: 14,
-      //                   )
-      //                 : Container()
-      //           ],
-      //         ),
-      //       ),
-      //     );
-      //   }).toList(),
-      // ),
     );
   }
 
@@ -637,86 +574,6 @@ class _EditProductState extends State<EditProduct> {
           selectItemCondition();
         },
       ),
-      // child: DropdownButton<ProductCondition>(
-      //   underline: Divider(
-      //     color: Colors.transparent,
-      //   ),
-      //   isExpanded: true,
-      //   value: selectedProductCondition,
-      //   onChanged: (ProductCondition value) {
-      //     if (mounted) {
-      //       setState(() {
-      //         selectedProductCondition = value;
-      //         productCondition = selectedProductCondition.name;
-      //       });
-      //     }
-      //   },
-      //   style: TextStyle(
-      //       color: blackFont, fontSize: 16, fontWeight: FontWeight.w400),
-      //   selectedItemBuilder: (BuildContext context) {
-      //     return conditions.map((ProductCondition productCondition) {
-      //       return Row(
-      //         crossAxisAlignment: CrossAxisAlignment.center,
-      //         children: [
-      //           Text(
-      //             productCondition.name,
-      //             style: TextStyle(
-      //               fontWeight: FontWeight.w600,
-      //               fontSize: 16,
-      //             ),
-      //           ),
-      //           Expanded(
-      //             child: Text(
-      //               " (" + productCondition.description + ")",
-      //               maxLines: 1,
-      //               style: TextStyle(
-      //                 fontSize: 16,
-      //               ),
-      //               softWrap: false,
-      //               overflow: TextOverflow.fade,
-      //             ),
-      //           ),
-      //         ],
-      //       );
-      //     }).toList();
-      //   },
-      //   items: conditions.map((ProductCondition productCondition) {
-      //     return DropdownMenuItem<ProductCondition>(
-      //         value: productCondition,
-      //         child: Container(
-      //           child: Row(
-      //             children: [
-      //               Text(
-      //                 productCondition.name,
-      //                 style: TextStyle(
-      //                     fontWeight: FontWeight.w600,
-      //                     color: productCondition == selectedProductCondition
-      //                         ? navyBlue
-      //                         : blackFont,
-      //                     fontSize: 16),
-      //               ),
-      //               Text(
-      //                 " (" + productCondition.description + ")",
-      //                 style: TextStyle(
-      //                   color: productCondition == selectedProductCondition
-      //                       ? navyBlue
-      //                       : blackFont,
-      //                   fontSize: 16,
-      //                 ),
-      //               ),
-      //               flexibleSpace(),
-      //               productCondition == selectedProductCondition
-      //                   ? Icon(
-      //                       SlydoAppIcon.checked,
-      //                       color: navyBlue,
-      //                       size: 14,
-      //                     )
-      //                   : Container()
-      //             ],
-      //           ),
-      //         ));
-      //   }).toList(),
-      // ),
     );
   }
 
@@ -955,7 +812,6 @@ class _EditProductState extends State<EditProduct> {
                 onPressed: () async {
                   FocusScope.of(context).unfocus();
                   deleteProduct();
-//                  editProduct();
                 }),
           ),
           SizedBox(

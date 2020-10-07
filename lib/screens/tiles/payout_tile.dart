@@ -9,6 +9,7 @@ import '../../utils/colors.dart';
 
 class PayoutTile extends StatelessWidget {
   final Payout payout;
+
   PayoutTile({this.payout});
 
   @override

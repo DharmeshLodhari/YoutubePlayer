@@ -214,10 +214,15 @@ class _RegistrationState extends State<Registration> {
   }
 
   void continuePressed() {
+    var phoneNumberFromTextField = phoneNumberController.text.trim();
+
+    if (phoneNumberFromTextField.substring(0, 1) == "0") {
+      phoneNumberFromTextField = phoneNumberFromTextField.replaceFirst("0", "");
+    }
+
     //adding country code and '+' sign to phoneNumber
-    phoneNumberWithCountryCode = "+" +
-        _selectedDialogCountry.phoneCode +
-        phoneNumberController.text.trim();
+    phoneNumberWithCountryCode =
+        "+" + _selectedDialogCountry.phoneCode + phoneNumberFromTextField;
 
     //for closing the keypad if it is open
     if (FocusScope.of(context).hasFocus) {

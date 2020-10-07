@@ -18,7 +18,9 @@ import 'package:toast/toast.dart';
 // ignore: must_be_immutable
 class UserInfo extends StatefulWidget {
   CustomerProfile user;
+
   UserInfo({@required this.user});
+
   @override
   _UserInfoState createState() => _UserInfoState(user: user);
 }
@@ -26,6 +28,7 @@ class UserInfo extends StatefulWidget {
 class _UserInfoState extends State<UserInfo> {
   CustomerProfile user;
   UserBloc _userBloc;
+
   _UserInfoState({this.user});
 
   bool isLoading = true;
@@ -89,6 +92,7 @@ class _UserInfoState extends State<UserInfo> {
 
   final _auth = AuthService();
   CustomerProfileBloc customerProfileBloc;
+
   @override
   Widget build(BuildContext context) {
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
@@ -168,146 +172,6 @@ class _UserInfoState extends State<UserInfo> {
   }
 
   Widget displayUserInfo() {
-    // return Card(
-    //   margin: EdgeInsets.symmetric(vertical: 0, horizontal: 8),
-    //   elevation: 4.0,
-    //   child: Column(
-    //     children: <Widget>[
-    //       ListTile(
-    //           leading: ClipOval(
-    //             child: Container(
-    //               height: 45,
-    //               width: 45,
-    //               child: CachedNetworkImage(
-    //                 imageUrl: user.avatar,
-    //                 fit: BoxFit.fill,
-    //               ),
-    //             ),
-    //           ),
-    //           title: Text(user.fullName),
-    //           subtitle: Text(user.userName),
-    //           trailing: getTrailing()),
-    //       Container(
-    //           padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-    //           child: CachedNetworkImage(
-    //             imageUrl: user.qrCode,
-    //             colorBlendMode: BlendMode.darken,
-    //             fit: BoxFit.fitWidth,
-    //             filterQuality: FilterQuality.high,
-    //             placeholder: (context, url) => CircularProgressIndicator(
-    //               strokeWidth: 2.5,
-    //               valueColor: AlwaysStoppedAnimation(Colors.white),
-    //               backgroundColor: lightBlue(),
-    //             ),
-    //           )),
-    //       SizedBox(
-    //         height: 8,
-    //       ),
-    //       _userBloc.user.userName != user.userName
-    //           ? Divider(
-    //               color: darkBlue(),
-    //               height: 0,
-    //             )
-    //           : Container(),
-    //       _userBloc.user.userName != user.userName
-    //           ? Container(
-    //               height: 45,
-    //               child: Row(
-    //                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-    //                 children: <Widget>[
-    //                   Expanded(
-    //                       child: isLoading
-    //                           ? CircularProgressIndicator(
-    //                               valueColor:
-    //                                   AlwaysStoppedAnimation(Colors.white),
-    //                             )
-    //                           : contactActionButtons()),
-    //                   Container(
-    //                     width: 0.5,
-    //                     height: double.infinity,
-    //                     color: darkBlue(),
-    //                   ),
-    //                   Expanded(
-    //                     child: Container(
-    //                       height: double.infinity,
-    //                       child: InkWell(
-    //                         onTap: () {
-    //                           Toast.show(
-    //                               "${user.fullName} " +
-    //                                   AppLocalization.of(context).isBlocked,
-    //                               context,
-    //                               gravity: Toast.CENTER,
-    //                               duration: Toast.LENGTH_LONG,
-    //                               backgroundColor: darkBlue(),
-    //                               textColor: Colors.white);
-    //                         },
-    //                         child: Row(
-    //                           mainAxisAlignment: MainAxisAlignment.center,
-    //                           children: <Widget>[
-    //                             Stack(
-    //                               children: <Widget>[
-    //                                 Icon(
-    //                                   Icons.group,
-    //                                   color: Colors.black,
-    //                                 ),
-    //                                 Icon(
-    //                                   Icons.block,
-    //                                   color: Colors.red,
-    //                                 )
-    //                               ],
-    //                             ),
-    //                             SizedBox(
-    //                               width: 8,
-    //                             ),
-    //                             Text(
-    //                               AppLocalization.of(context).blockUser,
-    //                               style: TextStyle(color: Colors.redAccent),
-    //                             ),
-    //                           ],
-    //                         ),
-    //                       ),
-    //                     ),
-    //                   ),
-    //                 ],
-    //               ),
-    //             )
-    //           : Container(
-    //               child: Container(
-    //                 child: Row(
-    //                   crossAxisAlignment: CrossAxisAlignment.end,
-    //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //                   children: <Widget>[
-    //                     Row(
-    //                       children: <Widget>[
-    //                         ClipOval(
-    //                           child: Container(
-    //                             color: _userBloc.user.type != "User"
-    //                                 ? _userBloc.user.type == "Business"
-    //                                     ? Colors.green
-    //                                     : Color.fromRGBO(255, 169, 57, 1)
-    //                                 : lightBlue(),
-    //                             height: 15,
-    //                             width: 15,
-    //                           ),
-    //                         ),
-    //                         SizedBox(
-    //                           width: 8,
-    //                         ),
-    //                         displayUserType()
-    //                       ],
-    //                     ),
-    //                   ],
-    //                 ),
-    //                 padding: EdgeInsets.symmetric(
-    //                   horizontal: 8.0,
-    //                   vertical: 8.0,
-    //                 ),
-    //               ),
-    //             ),
-    //     ],
-    //   ),
-    // );
-
     return CustomBoxShadow(
       child: Card(
         elevation: 4,
@@ -481,55 +345,6 @@ class _UserInfoState extends State<UserInfo> {
   }
 
   Widget contactPrimaryAction() {
-    // if (isInContactList) {
-    //   return Row(
-    //     mainAxisAlignment: MainAxisAlignment.center,
-    //     children: <Widget>[
-    //       Icon(Icons.remove_circle, color: Colors.red),
-    //       SizedBox(
-    //         width: 8,
-    //       ),
-    //       Expanded(
-    //         child: Text(
-    //           "Remove Connection",
-    //           style: TextStyle(color: Colors.red, fontSize: 14),
-    //         ),
-    //       ),
-    //     ],
-    //   );
-    // } else if (isInRequestList) {
-    //   return Row(
-    //     mainAxisAlignment: MainAxisAlignment.center,
-    //     children: <Widget>[
-    //       Icon(Icons.close, color: Colors.red),
-    //       SizedBox(
-    //         width: 8,
-    //       ),
-    //       Expanded(
-    //         child: Text(
-    //           "Cancel Request",
-    //           style: TextStyle(color: Colors.red, fontSize: 14),
-    //         ),
-    //       ),
-    //     ],
-    //   );
-    // }
-    // return Row(
-    //   mainAxisAlignment: MainAxisAlignment.center,
-    //   children: <Widget>[
-    //     Icon(Icons.group_add, color: Colors.black),
-    //     SizedBox(
-    //       width: 8,
-    //     ),
-    //     Expanded(
-    //       child: Text(
-    //         "Add Connection",
-    //         style: TextStyle(color: Colors.black, fontSize: 14),
-    //       ),
-    //     ),
-    //   ],
-    // );
-
     if (isInContactList) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -682,60 +497,6 @@ class _UserInfoState extends State<UserInfo> {
     if (_userBloc.user.userName == user.userName) {
       return Container();
     }
-
-    // return Row(
-    //   children: <Widget>[
-    //     Expanded(
-    //       child: Padding(
-    //         padding: const EdgeInsets.fromLTRB(0.0, 8.0, 8.0, 8.0),
-    //         child: ButtonTheme(
-    //           //elevation: 4,
-    //           child: MaterialButton(
-    //             elevation: 4.0,
-    //             onPressed: () async {
-    //               _auth.fetchCustomerProfile(user.userName).then((fetchedUser) {
-    //                 customerProfileBloc.customer = fetchedUser;
-    //                 Navigator.of(context).pushNamed('/request-payment',
-    //                     arguments: <String, bool>{
-    //                       'isFromProfile': false,
-    //                       'isRequest': true
-    //                     });
-    //               });
-    //             },
-    //             textColor: Colors.white,
-    //             color: darkBlue(),
-    //             height: 50,
-    //             child: Text(AppLocalization.of(context).request),
-    //           ),
-    //         ),
-    //       ),
-    //     ),
-    //     Expanded(
-    //       child: Padding(
-    //         padding: const EdgeInsets.fromLTRB(8.0, 8.0, 0.0, 8.0),
-    //         child: ButtonTheme(
-    //           //elevation: 4,
-    //
-    //           child: MaterialButton(
-    //             elevation: 4.0,
-    //             onPressed: () {
-    //               _auth.fetchCustomerProfile(user.userName).then((fetchedUser) {
-    //                 customerProfileBloc.customer = fetchedUser;
-    //                 Navigator.of(context).pushNamed('/send-payment',
-    //                     arguments: <String, bool>{'isFromProfile': false});
-    //               });
-    //             },
-    //             textColor: Colors.white,
-    //             color: darkBlue(),
-    //             height: 50,
-    //             child: Text(AppLocalization.of(context)
-    //                 .send), // change this to make payment request button to
-    //           ),
-    //         ),
-    //       ),
-    //     ),
-    //   ],
-    // );
 
     return Card(
       elevation: 4,
@@ -920,28 +681,6 @@ class _UserInfoState extends State<UserInfo> {
   }
 
   Widget displayUserProfileUpgradeOptions() {
-    // if (_userBloc.user.userName == user.userName) {
-    //   return _userBloc.user.type == "User"
-    //       ? MaterialButton(
-    //           minWidth: double.infinity,
-    //           height: 42,
-    //           child: Text(
-    //             "Upgrade Profile",
-    //             style: TextStyle(
-    //               color: Colors.white,
-    //               fontWeight: FontWeight.bold,
-    //               fontSize: 16,
-    //             ),
-    //           ),
-    //           color: darkBlue(),
-    //           onPressed: () {
-    //             Navigator.pushNamed(context, "/upgrade-user-profile");
-    //           },
-    //         )
-    //       : Container();
-    // }
-    // return Container();
-
     if (_userBloc.user.userName == user.userName) {
       return _userBloc.user.type == "User"
           ? CurvedButton(

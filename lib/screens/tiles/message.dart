@@ -13,6 +13,7 @@ import '../../utils/colors.dart';
 class MessageTile extends StatefulWidget {
   final PartialMessage partialMessage;
   Widget expandedWidget = Container();
+
   MessageTile({this.partialMessage, this.expandedWidget});
 
   @override
@@ -24,6 +25,7 @@ class _MessageTileState extends State<MessageTile> {
   UserBloc userBloc;
   final _auth = AuthService();
   PartialMessage partialMessage;
+
   _MessageTileState({this.partialMessage});
 
   @override

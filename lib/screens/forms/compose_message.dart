@@ -14,7 +14,9 @@ import 'package:toast/toast.dart';
 // ignore: must_be_immutable
 class ComposeMessage extends StatefulWidget {
   var arguments;
+
   ComposeMessage({this.arguments});
+
   @override
   _ComposeMessageState createState() =>
       _ComposeMessageState(arguments: arguments);
@@ -24,6 +26,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
   var arguments;
 
   DashboardBloc _dashboardBloc;
+
   _ComposeMessageState({this.arguments});
 
   TextEditingController _recipientController = TextEditingController();
@@ -96,51 +99,6 @@ class _ComposeMessageState extends State<ComposeMessage> {
     userBloc = Provider.of<UserBloc>(context);
     _dashboardBloc = Provider.of<DashboardBloc>(context);
 
-    // return WillPopScope(
-    //   onWillPop: () async {
-    //     messageReceiver = null;
-    //     return true;
-    //   },
-    //   child: Scaffold(
-    //     backgroundColor: lightBlue(),
-    //     resizeToAvoidBottomInset: true,
-    //     appBar: AppBar(
-    //         leading: showBackArrow(),
-    //         actions: <Widget>[sendMessage()],
-    //         title:
-    //             Center(child: Text(AppLocalization.of(context).composeMessage)),
-    //         backgroundColor: darkBlue()),
-    //     body: SingleChildScrollView(
-    //       child: Container(
-    //         padding: EdgeInsets.all(20),
-    //         child: Center(
-    //           child: Form(
-    //             key: _formKey,
-    //             child: Column(
-    //               children: <Widget>[
-    //                 getDisplayCard(),
-    //                 SizedBox(height: 10),
-    //                 getRecipientField(),
-    //                 SizedBox(height: 10),
-    //                 getSubjectField(),
-    //                 SizedBox(height: 10),
-    //                 getContentField(),
-    //                 SizedBox(height: 10),
-    //                 Text(
-    //                   errorMessage,
-    //                   style: TextStyle(
-    //                       color: Colors.red,
-    //                       fontWeight: FontWeight.bold,
-    //                       fontSize: 16),
-    //                 ),
-    //               ],
-    //             ),
-    //           ),
-    //         ),
-    //       ),
-    //     ),
-    //   ),
-    // );
     return WillPopScope(
       onWillPop: () async {
         messageReceiver = null;
@@ -450,29 +408,6 @@ class _ComposeMessageState extends State<ComposeMessage> {
       );
     }
 
-    // return messageReceiver == null
-    //     ? Container()
-    //     : Card(
-    //         semanticContainer: true,
-    //         child: ListTile(
-    //           dense: true,
-    //           title: Text(
-    //             messageReceiver.fullName,
-    //             style: TextStyle(
-    //                 color: Colors.black,
-    //                 fontWeight: FontWeight.bold,
-    //                 fontSize: 15),
-    //           ),
-    //           subtitle: Text(messageReceiver.userName),
-    //           leading: avatarImage,
-    //           trailing: qrCodeImage,
-    //           onTap: () {
-    //             Navigator.pushNamed(context, '/profile',
-    //                 arguments: {"searchedUser": messageReceiver});
-    //           },
-    //         ),
-    //       );
-
     return messageReceiver == null
         ? Container()
         : Column(
@@ -510,42 +445,6 @@ class _ComposeMessageState extends State<ComposeMessage> {
   }
 
   Widget getRecipientField() {
-    // return TextFormField(
-    //   controller: _recipientController,
-    //   enabled: !isReplyMessage && !isSubjectIsPresent,
-    //   focusNode: _recipientFocus,
-    //   cursorColor: darkBlue(),
-    //   validator: (value) {
-    //     if (value != messageReceiver.userName) {
-    //       return AppLocalization.of(context).invalidRecipient;
-    //     }
-    //     return null;
-    //   },
-    //   autofocus: false,
-    //   obscureText: false,
-    //   decoration: InputDecoration(
-    //       prefixIcon: Icon(Icons.person),
-    //       fillColor: Colors.white,
-    //       filled: true,
-    //       hintText: AppLocalization.of(context).recipient,
-    //       labelStyle: TextStyle(
-    //         color: Colors.black,
-    //         fontSize: 16,
-    //       ),
-    //       border: OutlineInputBorder(
-    //           borderRadius: BorderRadius.all(Radius.circular(4)),
-    //           borderSide: BorderSide(
-    //               width: 1, color: Colors.white, style: BorderStyle.solid))),
-    //   onChanged: (val) {
-    //     setState(() {
-    //       if (isReplyMessage && messageReceiver != null) {
-    //         recipient = messageReceiver.userName;
-    //       } else {
-    //         recipient = val.toLowerCase();
-    //       }
-    //     });
-    //   },
-    // );
     return CustomizedTextFormField(
         labelText: AppLocalization.of(context).recipient,
         controller: _recipientController,
@@ -569,62 +468,6 @@ class _ComposeMessageState extends State<ComposeMessage> {
   }
 
   Widget getSubjectField() {
-    // return TextFormField(
-    //   enabled: !isReplyMessage && !isSubjectIsPresent,
-    //   cursorColor: darkBlue(),
-    //   controller: _subjectController,
-    //   autofocus: false,
-    //   obscureText: false,
-    //   decoration: InputDecoration(
-    //     prefixText: isReplyMessage ? AppLocalization.of(context).re + ":" : "",
-    //     prefixIcon: Icon(Icons.subject),
-    //     fillColor: Colors.white,
-    //     filled: true,
-    //     hintText: AppLocalization.of(context).subject,
-    //     labelStyle: TextStyle(
-    //       color: Colors.black,
-    //       fontSize: 16,
-    //     ),
-    //     border: OutlineInputBorder(
-    //       borderRadius: BorderRadius.all(
-    //         Radius.circular(4),
-    //       ),
-    //       borderSide: BorderSide(
-    //         width: 1,
-    //         color: Colors.white,
-    //         style: BorderStyle.solid,
-    //       ),
-    //     ),
-    //   ),
-    //   validator: (val) {
-    //     if (val.length == 0) {
-    //       return "Subject Should Not Be Empty ";
-    //     }
-    //     return null;
-    //   },
-    //   onTap: () async {
-    //     if (recipient != null) {
-    //       recipient = recipient.trim();
-    //       if (mounted) {
-    //         setState(() {
-    //           _recipientController.text = recipient;
-    //         });
-    //       }
-    //       var customerProfile = await _auth.fetchCustomerProfile(recipient);
-    //       setState(() {
-    //         messageReceiver = customerProfile;
-    //         isValidRecipient =
-    //             messageReceiver.userName != userBloc.user.userName;
-    //       });
-    //     }
-    //   },
-    //   onChanged: (val) {
-    //     setState(() {
-    //       subject = val;
-    //     });
-    //   },
-    // );
-
     return CustomizedTextFormField(
       labelText: AppLocalization.of(context).subject,
       controller: _subjectController,
@@ -660,38 +503,6 @@ class _ComposeMessageState extends State<ComposeMessage> {
   }
 
   Widget getContentField() {
-    // return TextFormField(
-    //   cursorColor: darkBlue(),
-    //   autofocus: false,
-    //   obscureText: false,
-    //   maxLines: 15,
-    //   textCapitalization: TextCapitalization.sentences,
-    //   decoration: InputDecoration(
-    //       isDense: true,
-    //       fillColor: Colors.white,
-    //       filled: true,
-    //       hintText: AppLocalization.of(context).typeYourMsgHere,
-    //       labelStyle: TextStyle(
-    //         color: Colors.black,
-    //         fontSize: 16,
-    //       ),
-    //       border: OutlineInputBorder(
-    //           borderRadius: BorderRadius.all(Radius.circular(4)),
-    //           borderSide: BorderSide(
-    //               width: 1, color: Colors.white, style: BorderStyle.solid))),
-    //   onChanged: (val) {
-    //     setState(() {
-    //       message = val;
-    //     });
-    //   },
-    //   validator: (val) {
-    //     if (val.length == 0) {
-    //       return "Message Should Not Be Empty ";
-    //     }
-    //     return null;
-    //   },
-    // );
-
     return CustomizedTextFormField(
       labelText: AppLocalization.of(context).message,
       maxLines: 5,

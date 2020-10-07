@@ -183,14 +183,6 @@ class _ConnectionListState extends State<ConnectionList> {
 
   List<Widget> listSecondaryActions(CustomerProfile user, int index) {
     return [
-      // IconSlideAction(
-      //   caption: AppLocalization.of(context).block,
-      //   color: Colors.grey[600],
-      //   icon: Icons.block,
-      //   onTap: () {
-      //     blockUserAlert(user, index);
-      //   },
-      // ),
       SlideActionButton(
         backgroundColor: mateRad,
         icon: SlydoAppIcon.block,
@@ -205,14 +197,6 @@ class _ConnectionListState extends State<ConnectionList> {
 
   List<Widget> listActionSlideActions(CustomerProfile user, int index) {
     return [
-      // IconSlideAction(
-      //   caption: AppLocalization.of(context).delete,
-      //   color: Colors.red,
-      //   icon: Icons.remove_circle,
-      //   onTap: () {
-      //     unFriendUserAlert(user, index);
-      //   },
-      // ),
       SlideActionButton(
         backgroundColor: mateRad,
         icon: SlydoAppIcon.remove_connection,
@@ -340,6 +324,7 @@ class _ConnectionListState extends State<ConnectionList> {
 
 class VerticalListItem extends StatelessWidget {
   VerticalListItem(this.user);
+
   final CustomerProfile user;
 
   @override

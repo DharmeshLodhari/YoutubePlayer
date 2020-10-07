@@ -17,6 +17,7 @@ class PayoutTransactions extends StatefulWidget {
 
 class _PayoutTransactionsState extends State<PayoutTransactions> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
   // Get list of users transactions
   final _auth = AuthService();
   int count = 0;

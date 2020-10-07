@@ -35,6 +35,7 @@ class _DashboardState extends State<Dashboard> {
   static var isLocked = true;
   List<Widget> screens;
   BasketBloc basketBloc;
+
   _DashboardState({this.arguments});
 
   @override
@@ -112,98 +113,6 @@ class _DashboardState extends State<Dashboard> {
       _dashboardBloc.index = _currentIndex;
       _currentIndex = 0;
     }
-//    return WillPopScope(
-//      onWillPop: () async {
-//        if (_currentIndex == 0) {
-//          bool result = await showDialogBox(
-//            context: context,
-//            title: AppLocalization.of(context).exit,
-//            description: AppLocalization.of(context).areYouSureWantToExit,
-//            actionOne: AppLocalization.of(context).yes,
-//            actionTwo: AppLocalization.of(context).no,
-//            type: AlertType.none,
-//          );
-//          if (result) {
-//            SystemChannels.platform.invokeMethod<void>('SystemNavigator.pop');
-//          }
-//        }
-//
-//        if (_currentIndex != 0) {
-//          if (mounted) {
-//            setState(() {
-//              _currentIndex = 0;
-//            });
-//          }
-//        }
-//        return false;
-//      },
-//      child: Scaffold(
-//        body: IndexedStack(index: _currentIndex, children: screens),
-//        bottomNavigationBar: BottomNavigationBar(
-//          backgroundColor: lightBlue(),
-//          fixedColor: lightBlue(),
-//          elevation: 0.0,
-//          currentIndex: _currentIndex,
-//          onTap: (index) {
-//            if (mounted) {
-//              setState(() {
-//                _currentIndex = index;
-//              });
-//            }
-//          },
-//          items: [
-//            BottomNavigationBarItem(
-//              backgroundColor: lightBlue(),
-//              icon: Icon(
-//                Icons.home,
-//                color: Colors.white,
-//              ),
-//              title: Text(AppLocalization.of(context).home,
-//                  style: TextStyle(color: Colors.white, fontSize: 12)),
-//            ),
-//            BottomNavigationBarItem(
-//              backgroundColor: lightBlue(),
-//              icon: Icon(Icons.notifications, color: Colors.white),
-//              title: Text(AppLocalization.of(context).requests,
-//                  style: TextStyle(color: Colors.white, fontSize: 12)),
-//            ),
-//            BottomNavigationBarItem(
-//              backgroundColor: lightBlue(),
-//              icon: goToBasket(),
-//              title: Text(AppLocalization.of(context).basket,
-//                  style: TextStyle(color: Colors.white, fontSize: 12)),
-//            ),
-//            BottomNavigationBarItem(
-//              backgroundColor: lightBlue(),
-//              icon: Icon(Icons.search, color: Colors.white),
-//              title: Text(AppLocalization.of(context).search,
-//                  style: TextStyle(color: Colors.white, fontSize: 12)),
-//            ),
-//            BottomNavigationBarItem(
-//              backgroundColor: lightBlue(),
-//              icon: Icon(Icons.email, color: Colors.white),
-//              title: Text(AppLocalization.of(context).messages,
-//                  style: TextStyle(color: Colors.white, fontSize: 12)),
-//            ),
-//            BottomNavigationBarItem(
-//              backgroundColor: lightBlue(),
-//              icon: Icon(Icons.settings, color: Colors.white),
-//              title: Text(AppLocalization.of(context).explore,
-//                  style: TextStyle(color: Colors.white, fontSize: 12)),
-//            ),
-//          ],
-//        ),
-//      ),
-//    );
-
-//    Container(
-//      color: Colors.deepOrange,
-//      padding: EdgeInsets.symmetric(horizontal: 20),
-//      height: MediaQuery.of(context).size.height -
-//          (AppBar().preferredSize.height),
-//      width: MediaQuery.of(context).size.width,
-//      child: Container(),
-//    ),
 
     return WillPopScope(
       onWillPop: () async {

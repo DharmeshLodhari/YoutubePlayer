@@ -125,31 +125,6 @@ class _OrdersListState extends State<OrdersList> {
     menu.onChange = menuItemSelectionChange;
     menu.menuState = menuStateChange;
 
-    // return WillPopScope(
-    //     onWillPop: () async {
-    //       return true;
-    //     },
-    //     child: Scaffold(
-    //       key: _scaffoldPaymentListKey,
-    //       backgroundColor: lightBlue(),
-    //       appBar: AppBar(
-    //         automaticallyImplyLeading: true,
-    //         backgroundColor: darkBlue(),
-    //         title: Text(AppLocalization.of(context).orders),
-    //         actions: <Widget>[
-    //           _threeItemPopup(),
-    //         ],
-    //       ),
-    //       body: SmartRefresher(
-    //           enablePullDown: true,
-    //           header: WaterDropHeader(
-    //             complete: Container(),
-    //             waterDropColor: darkBlue(),
-    //           ),
-    //           controller: _refreshController,
-    //           onRefresh: _onRefresh,
-    //           child: _buildOrderList()),
-    //     ));
     return WillPopScope(
         onWillPop: () async {
           return true;
@@ -517,6 +492,7 @@ class _OrdersListState extends State<OrdersList> {
 
 class VerticalListItem extends StatelessWidget {
   VerticalListItem(this.order);
+
   final Order order;
 
   @override

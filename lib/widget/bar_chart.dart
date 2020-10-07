@@ -11,14 +11,18 @@ import 'package:provider/provider.dart';
 // ignore: must_be_immutable
 class BarChart extends StatefulWidget {
   var arguments;
+
   BarChart({this.arguments});
+
   @override
   _BarChartState createState() => _BarChartState(arguments: arguments);
 }
 
 class _BarChartState extends State<BarChart> {
   var arguments;
+
   _BarChartState({this.arguments});
+
   UserBloc userBloc;
   List<dynamic> expenses;
   DateTime start;

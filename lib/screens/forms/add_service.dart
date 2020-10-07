@@ -336,75 +336,6 @@ class _AddServiceState extends State<AddService> {
           selectItemCategory();
         },
       ),
-      // child: DropdownButton<ServiceCatagory>(
-      //   isExpanded: true,
-      //   underline: Divider(
-      //     color: Colors.transparent,
-      //   ),
-      //   value: selectedServiceCategory,
-      //   onChanged: (ServiceCatagory value) {
-      //     if (mounted) {
-      //       setState(() {
-      //         selectedServiceCategory = value;
-      //         serviceCategory = selectedServiceCategory.name;
-      //       });
-      //     }
-      //   },
-      //   style: TextStyle(
-      //     color: blackFont,
-      //     fontSize: 16,
-      //     fontWeight: FontWeight.w400,
-      //   ),
-      //   selectedItemBuilder: (BuildContext context) {
-      //     return serviceCategories.map<Widget>((ServiceCatagory category) {
-      //       return Container(
-      //         child: Column(
-      //           mainAxisAlignment: MainAxisAlignment.center,
-      //           children: [
-      //             Text(
-      //               category.name,
-      //               style: TextStyle(
-      //                 color: blackFont,
-      //                 fontWeight: FontWeight.w600,
-      //                 fontSize: 16,
-      //               ),
-      //             ),
-      //           ],
-      //         ),
-      //       );
-      //     }).toList();
-      //   },
-      //   items: serviceCategories.map((ServiceCatagory category) {
-      //     return DropdownMenuItem<ServiceCatagory>(
-      //       value: category,
-      //       child: Container(
-      //         child: Row(
-      //           children: [
-      //             Text(
-      //               category.name,
-      //               style: TextStyle(
-      //                   color: category == selectedServiceCategory
-      //                       ? navyBlue
-      //                       : blackFont,
-      //                   fontSize: 16,
-      //                   fontWeight: category == selectedServiceCategory
-      //                       ? FontWeight.w600
-      //                       : FontWeight.w400),
-      //             ),
-      //             flexibleSpace(),
-      //             category == selectedServiceCategory
-      //                 ? Icon(
-      //                     SlydoAppIcon.checked,
-      //                     color: navyBlue,
-      //                     size: 14,
-      //                   )
-      //                 : Container()
-      //           ],
-      //         ),
-      //       ),
-      //     );
-      //   }).toList(),
-      // ),
     );
   }
 
@@ -512,19 +443,6 @@ class _AddServiceState extends State<AddService> {
   }
 
   Widget getSubmitButton() {
-    // return ButtonTheme(
-    //   minWidth: double.infinity,
-    //   child: MaterialButton(
-    //       elevation: 4.0,
-    //       textColor: Colors.white,
-    //       color: darkBlue(),
-    //       height: 50,
-    //       child: Text(AppLocalization.of(context).add),
-    //       onPressed: () async {
-    //         FocusScope.of(context).unfocus();
-    //         addService();
-    //       }),
-    // );
     return CurvedButton(
       onPressed: () async {
         FocusScope.of(context).unfocus();
@@ -586,28 +504,6 @@ class _AddServiceState extends State<AddService> {
   }
 
   Widget getIsAvailableField() {
-    // return Row(
-    //   children: <Widget>[
-    //     Checkbox(
-    //       value: serviceIsAvailable,
-    //       activeColor: Colors.white,
-    //       checkColor: darkBlue(),
-    //       onChanged: (value) {
-    //         if (mounted) {
-    //           setState(() {
-    //             serviceIsAvailable = value;
-    //           });
-    //         }
-    //       },
-    //     ),
-    //     Text(
-    //       AppLocalization.of(context).isAvailable + " ? ",
-    //       style: TextStyle(
-    //         color: Colors.white,
-    //       ),
-    //     )
-    //   ],
-    // );
     return CustomizedCheckBoxField(
       onTap: () {
         serviceIsAvailable = !serviceIsAvailable;

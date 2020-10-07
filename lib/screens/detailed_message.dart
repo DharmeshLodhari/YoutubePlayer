@@ -14,7 +14,9 @@ import 'package:provider/provider.dart';
 // ignore: must_be_immutable
 class DetailedMessage extends StatefulWidget {
   var arguments;
+
   DetailedMessage({this.arguments});
+
   @override
   _DetailedMessageState createState() =>
       _DetailedMessageState(id: arguments['id']);
@@ -25,7 +27,9 @@ class _DetailedMessageState extends State<DetailedMessage> {
   var id;
   Message message;
   UserBloc userBloc;
+
   _DetailedMessageState({this.id});
+
   final _auth = AuthService();
 
   @override
@@ -328,20 +332,5 @@ class _DetailedMessageState extends State<DetailedMessage> {
         });
       },
     );
-    // return MaterialButton(
-    //   minWidth: double.infinity,
-    //   elevation: 4.0,
-    //   textColor: Colors.white,
-    //   color: darkBlue(),
-    //   height: 50,
-    //   child: Text(AppLocalization.of(context).reply),
-    //   onPressed: () {
-    //     Navigator.of(context).pushNamed('/compose_message', arguments: {
-    //       'isReply': 1,
-    //       'recipient': message.sender,
-    //       'subject': message.subject,
-    //     });
-    //   },
-    // );
   }
 }

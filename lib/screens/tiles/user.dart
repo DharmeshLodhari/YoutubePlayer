@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 // ignore: must_be_immutable
 class UserTile extends StatelessWidget {
   CustomerProfile user;
+
   UserTile({this.user});
 
   @override

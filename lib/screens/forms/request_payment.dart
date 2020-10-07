@@ -22,6 +22,7 @@ import 'package:toast/toast.dart';
 // ignore: must_be_immutable
 class RequestPayment extends StatefulWidget {
   var arguments;
+
   RequestPayment({this.arguments});
 
   // Declare a field that holds the userData.
@@ -37,6 +38,7 @@ class _RequestPaymentState extends State<RequestPayment> {
   var arguments;
 
   DashboardBloc _dashboardBloc;
+
   _RequestPaymentState({this.arguments});
 
   final _auth = AuthService();
@@ -126,70 +128,6 @@ class _RequestPaymentState extends State<RequestPayment> {
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
     _dashboardBloc = Provider.of<DashboardBloc>(context);
 
-    // return WillPopScope(
-    //   onWillPop: () async {
-    //     _payee = null;
-    //     customerProfileBloc.customer = null;
-    //     return true;
-    //   },
-    //   child: Scaffold(
-    //     key: requestPaymentScaffold,
-    //     backgroundColor: lightBlue(),
-    //     resizeToAvoidBottomInset: true,
-    //     appBar: AppBar(
-    //         actions: <Widget>[
-    //           displayQRCodeButton(),
-    //         ],
-    //         leading: showBackArrow(),
-    //         title:
-    //             Center(child: Text(AppLocalization.of(context).requestPayment)),
-    //         backgroundColor: darkBlue()),
-    //     body: isLoading
-    //         ? Center(
-    //             child: CircularProgressIndicator(
-    //               strokeWidth: 2.5,
-    //               valueColor: AlwaysStoppedAnimation(Colors.white),
-    //               backgroundColor: lightBlue(),
-    //             ),
-    //           )
-    //         : SingleChildScrollView(
-    //             child: Container(
-    //               padding: EdgeInsets.all(40),
-    //               child: Center(
-    //                 child: Form(
-    //                   key: _formKey,
-    //                   child: Column(
-    //                     children: <Widget>[
-    //                       getDisplayCard(),
-    //                       SizedBox(height: 10),
-    //                       getRecipientField(),
-    //                       SizedBox(height: 10),
-    //                       displayAmountField(),
-    //                       SizedBox(height: 10),
-    //                       getCategoryField(),
-    //                       SizedBox(
-    //                         height: 10,
-    //                       ),
-    //                       getReferenceField(),
-    //                       SizedBox(height: 10),
-    //                       Text(
-    //                         errorMessage,
-    //                         style: TextStyle(
-    //                             color: Colors.red,
-    //                             fontWeight: FontWeight.bold,
-    //                             fontSize: 16),
-    //                       ),
-    //                       SizedBox(height: 10),
-    //                       getSubmitButton(),
-    //                     ],
-    //                   ),
-    //                 ),
-    //               ),
-    //             ),
-    //           ),
-    //   ),
-    // );
-    //
     return WillPopScope(
       onWillPop: () async {
         _payee = null;
@@ -395,29 +333,6 @@ class _RequestPaymentState extends State<RequestPayment> {
       );
     }
 
-    // return _payee == null
-    //     ? Container()
-    //     : Card(
-    //         semanticContainer: true,
-    //         child: ListTile(
-    //           dense: true,
-    //           title: Text(
-    //             _payee.fullName,
-    //             style: TextStyle(
-    //                 color: Colors.black,
-    //                 fontWeight: FontWeight.bold,
-    //                 fontSize: 15),
-    //           ),
-    //           subtitle: Text(_payee.userName),
-    //           leading: avatarImage,
-    //           trailing: qrCodeImage,
-    //           onTap: () {
-    //             Navigator.pushNamed(context, '/profile',
-    //                 arguments: {"searchedUser": _payee});
-    //           },
-    //         ),
-    //       );
-
     return _payee == null
         ? Container()
         : Column(
@@ -455,46 +370,6 @@ class _RequestPaymentState extends State<RequestPayment> {
   }
 
   Widget getRecipientField() {
-    // return TextFormField(
-    //   controller: _recipientController,
-    //   enabled: isFromProfile,
-    //   focusNode: _recipientFocus,
-    //   textCapitalization: TextCapitalization.none,
-    //   cursorColor: darkBlue(),
-    //   validator: (value) {
-    //     if (!isFromProfile && value != _payee.userName) {
-    //       return AppLocalization.of(context).invalidRecipient;
-    //     }
-    //     return null;
-    //   },
-    //   autofocus: false,
-    //   obscureText: false,
-    //   decoration: InputDecoration(
-    //       prefixIcon: Icon(Icons.person),
-    //       fillColor: Colors.white,
-    //       filled: true,
-    //       hintText: AppLocalization.of(context).recipient,
-    //       labelStyle: TextStyle(
-    //         color: Colors.black,
-    //         fontSize: 16,
-    //       ),
-    //       border: OutlineInputBorder(
-    //           borderRadius: BorderRadius.all(Radius.circular(4)),
-    //           borderSide: BorderSide(
-    //               width: 1, color: Colors.white, style: BorderStyle.solid))),
-    //   onChanged: (val) {
-    //     if (mounted) {
-    //       setState(() {
-    //         if (!isFromProfile && _payee != null) {
-    //           recipient = _payee.userName;
-    //         } else {
-    //           recipient = val.toLowerCase();
-    //         }
-    //       });
-    //     }
-    //   },
-    // );
-
     return CustomizedTextFormField(
       labelText: AppLocalization.of(context).recipient,
       controller: _recipientController,
@@ -521,73 +396,6 @@ class _RequestPaymentState extends State<RequestPayment> {
   }
 
   Widget displayAmountField() {
-    // return TextFormField(
-    //   cursorColor: darkBlue(),
-    //   autofocus: false,
-    //   obscureText: false,
-    //   keyboardType: TextInputType.number,
-    //   inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
-    //   decoration: InputDecoration(
-    //       fillColor: Colors.white,
-    //       filled: true,
-    //       prefixIcon: Container(
-    //         width: 20,
-    //         child: Center(
-    //           child: Text(
-    //             worldCurrencies[userBloc.user.currency],
-    //             textAlign: TextAlign.center,
-    //             style: TextStyle(
-    //                 fontSize: 22,
-    //                 fontFamily: "Roboto",
-    //                 fontWeight: FontWeight.bold,
-    //                 color: Colors.grey[600]),
-    //           ),
-    //         ),
-    //       ),
-    //       hintText: AppLocalization.of(context).enterAmount,
-    //       labelStyle: TextStyle(
-    //         color: Colors.black,
-    //         fontSize: 16,
-    //       ),
-    //       border: OutlineInputBorder(
-    //           borderRadius: BorderRadius.all(Radius.circular(4)),
-    //           borderSide: BorderSide(
-    //               width: 1, color: Colors.white, style: BorderStyle.solid))),
-    //   validator: (val) {
-    //     if (val.isNotEmpty) {
-    //       try {
-    //         int.parse(val);
-    //         return null;
-    //       } catch (e) {}
-    //     }
-    //     return AppLocalization.of(context).invalidAmount;
-    //   },
-    //   onTap: () async {
-    //     if (recipient != null) {
-    //       recipient = recipient.trim();
-    //       if (mounted) {
-    //         setState(() {
-    //           _recipientController.text = recipient;
-    //         });
-    //       }
-    //       var customerProfile = await _auth.fetchCustomerProfile(recipient);
-    //       if (mounted) {
-    //         setState(() {
-    //           _payee = customerProfile;
-    //           isValidPayee = _payee.userName != userBloc.user.userName;
-    //         });
-    //       }
-    //     }
-    //   },
-    //   onChanged: (val) {
-    //     if (mounted) {
-    //       setState(() {
-    //         amount = int.parse(val);
-    //       });
-    //     }
-    //   },
-    // );
-
     return CustomizedTextFormField(
       labelText: "Amount",
       isAmount: true,
@@ -721,47 +529,6 @@ class _RequestPaymentState extends State<RequestPayment> {
               selectCategory();
             },
           ),
-          // child: DropdownButton<String>(
-          //   icon: Padding(
-          //     padding: EdgeInsets.only(right: 8.0),
-          //     child: Icon(
-          //       Icons.keyboard_arrow_down,
-          //       color: darkGrey,
-          //       size: 20,
-          //     ),
-          //   ),
-          //   isExpanded: true,
-          //   underline: Divider(
-          //     color: Colors.transparent,
-          //   ),
-          //   hint: Padding(
-          //     padding: const EdgeInsets.only(left: 16.0),
-          //     child: Text(AppLocalization.of(context).category),
-          //   ),
-          //   value: selectedCategory,
-          //   onChanged: (String value) {
-          //     if (mounted) {
-          //       setState(() {
-          //         selectedCategory = value;
-          //       });
-          //     }
-          //   },
-          //   items: paymentCategoriesTest.map((String category) {
-          //     return DropdownMenuItem<String>(
-          //       value: category,
-          //       child: Padding(
-          //         padding: const EdgeInsets.fromLTRB(16.0, 0, 0, 0),
-          //         child: Text(
-          //           category,
-          //           style: TextStyle(
-          //               color: blackFont,
-          //               fontSize: 16,
-          //               fontWeight: FontWeight.w600),
-          //         ),
-          //       ),
-          //     );
-          //   }).toList(),
-          // ),
         ),
       ],
     );
@@ -844,33 +611,6 @@ class _RequestPaymentState extends State<RequestPayment> {
   }
 
   Widget getReferenceField() {
-    // return TextFormField(
-    //   cursorColor: darkBlue(),
-    //   autofocus: false,
-    //   obscureText: false,
-    //   textCapitalization: TextCapitalization.sentences,
-    //   decoration: InputDecoration(
-    //       prefixIcon: Icon(Icons.note),
-    //       fillColor: Colors.white,
-    //       filled: true,
-    //       hintText: AppLocalization.of(context).reference,
-    //       labelStyle: TextStyle(
-    //         color: Colors.black,
-    //         fontSize: 16,
-    //       ),
-    //       border: OutlineInputBorder(
-    //           borderRadius: BorderRadius.all(Radius.circular(4)),
-    //           borderSide: BorderSide(
-    //               width: 1, color: Colors.white, style: BorderStyle.solid))),
-    //   onChanged: (val) {
-    //     if (mounted) {
-    //       setState(() {
-    //         reference = val;
-    //       });
-    //     }
-    //   },
-    // );
-
     return CustomizedTextFormField(
       labelText: AppLocalization.of(context).reference,
       textCapitalization: TextCapitalization.sentences,
@@ -885,145 +625,6 @@ class _RequestPaymentState extends State<RequestPayment> {
   }
 
   Widget getSubmitButton() {
-    // return ButtonTheme(
-    //   minWidth: double.infinity,
-    //   child: MaterialButton(
-    //     elevation: 4.0,
-    //     onPressed: () async {
-    //       FocusScope.of(context).unfocus();
-    //
-    //       if (!isValidPayee) {
-    //         if (mounted) {
-    //           setState(() {
-    //             errorMessage = AppLocalization.of(context).invalidRecipient;
-    //             return;
-    //           });
-    //         }
-    //       }
-    //
-    //       if (recipient == _payee.userName) {
-    //         if (!isValidPayee) {
-    //           if (mounted) {
-    //             setState(() {
-    //               errorMessage = AppLocalization.of(context).invalidRecipient;
-    //               return;
-    //             });
-    //           }
-    //         }
-    //
-    //         if (isValidPayee &&
-    //             _formKey.currentState.validate() &&
-    //             validateDropdown()) {
-    //           if (userBloc.user.userName != recipient) {
-    //             var userLocation;
-    //             try {
-    //               userLocation = await locationService.getLocation();
-    //
-    //               var data = {
-    //                 "from_customer": userBloc.user.userName.trim(),
-    //                 "to_customer": recipient.trim(),
-    //                 "currency": userBloc.user.currency,
-    //                 "amount": amount.toString().trim(),
-    //                 "category": selectedCategory.trim(),
-    //                 "notes": reference.trim(),
-    //                 "description": reference.trim(),
-    //                 "latitude": userLocation.latitude,
-    //                 "longitude": userLocation.longitude,
-    //               };
-    //
-    //               PassCodePopup(
-    //                   context: context,
-    //                   isValidCallback: () {
-    //                     showDialog(
-    //                         context: context,
-    //                         builder: (context) => Center(
-    //                                 child: CircularProgressIndicator(
-    //                               strokeWidth: 2.5,
-    //                               valueColor:
-    //                                   AlwaysStoppedAnimation(Colors.white),
-    //                               backgroundColor: lightBlue(),
-    //                             )));
-    //                     _auth.createPaymentRequests(data).then((value) {
-    //                       response = value;
-    //                       if (response.statusCode == 201) {
-    //                         //Pop Circular Progress Indicator
-    //                         Navigator.pop(context);
-    //                         //Pop request payment page
-    //                         Navigator.pop(context);
-    //                         Navigator.of(context).pushNamedAndRemoveUntil(
-    //                           "/dashboard",
-    //                           (Route<dynamic> route) => false,
-    //                           arguments: {"dashboardIndex": 1},
-    //                         );
-    //                       } else if (response.statusCode == 500) {
-    //                         Navigator.pop(context);
-    //                         if (mounted) {
-    //                           setState(() {
-    //                             errorMessage =
-    //                                 AppLocalization.of(context).serverError;
-    //                             Toast.show(errorMessage, context,
-    //                                 gravity: Toast.TOP,
-    //                                 backgroundColor: darkBlue(),
-    //                                 textColor: Colors.white);
-    //                           });
-    //                         }
-    //                       } else if (response.statusCode == 700) {
-    //                         Navigator.pop(context);
-    //                         Navigator.pushNamed(context, "/bvn-verification");
-    //                       } else if (response.statusCode == 800) {
-    //                         Navigator.pop(context);
-    //                         Navigator.pushNamed(context, "/add-document");
-    //                       } else {
-    //                         Navigator.pop(context);
-    //                         if (mounted) {
-    //                           setState(() {
-    //                             errorMessage = AppLocalization.of(context)
-    //                                 .somethingWentWrong;
-    //                             Toast.show(errorMessage, context,
-    //                                 gravity: Toast.TOP,
-    //                                 backgroundColor: darkBlue(),
-    //                                 textColor: Colors.white);
-    //                           });
-    //                         }
-    //                       }
-    //                     });
-    //                   },
-    //                   cancelCallBack: () {
-    //                     Navigator.pop(context);
-    //                     requestPaymentScaffold.currentState
-    //                         .showSnackBar(SnackBar(
-    //                       content:
-    //                           Text(AppLocalization.of(context).invalidPassword),
-    //                     ));
-    //                   });
-    //             } catch (e) {
-    //               print(e);
-    //               Toast.show(e, context,
-    //                   gravity: Toast.BOTTOM, backgroundColor: darkBlue());
-    //             }
-    //           } else {
-    //             var msg = AppLocalization.of(context).invalidRecipient;
-    //             Toast.show(msg, context,
-    //                 gravity: Toast.CENTER,
-    //                 backgroundColor: darkBlue(),
-    //                 textColor: Colors.white);
-    //           }
-    //         }
-    //       } else {
-    //         var msg = AppLocalization.of(context).invalidRecipient;
-    //         Toast.show(msg, context,
-    //             gravity: Toast.CENTER,
-    //             backgroundColor: darkBlue(),
-    //             textColor: Colors.white);
-    //       }
-    //     },
-    //     textColor: Colors.white,
-    //     color: darkBlue(),
-    //     height: 50,
-    //     child: Text(AppLocalization.of(context).requestPayment),
-    //   ),
-    // );
-    //
     return CurvedButton(
       onPressed: onSubmit,
       backgroundColor: navyBlue,
@@ -1084,18 +685,9 @@ class _RequestPaymentState extends State<RequestPayment> {
                   _auth.createPaymentRequests(data).then((value) {
                     response = value;
                     if (response.statusCode == 201) {
-                      // //Pop Circular Progress Indicator
-                      // Navigator.pop(context);
-                      // //Pop request payment page
-                      // Navigator.pop(context);
                       _dashboardBloc.index = 1;
                       Navigator.popUntil(
                           context, ModalRoute.withName("/dashboard"));
-                      // Navigator.of(context).pushNamedAndRemoveUntil(
-                      //   "/dashboard",
-                      //   (Route<dynamic> route) => false,
-                      //   arguments: {"dashboardIndex": 1},
-                      // );
                     } else if (response.statusCode == 500) {
                       Navigator.pop(context);
                       if (mounted) {

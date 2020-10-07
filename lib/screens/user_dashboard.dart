@@ -27,7 +27,9 @@ import 'package:toast/toast.dart';
 // ignore: must_be_immutable
 class UserDashboard extends StatefulWidget {
   var arguments;
+
   UserDashboard({this.arguments});
+
   @override
   _UserDashboardState createState() =>
       _UserDashboardState(arguments: arguments);
@@ -96,118 +98,6 @@ class _UserDashboardState extends State<UserDashboard> {
       storeLocked = false;
     }
 
-//     return Scaffold(
-//       key: _scaffoldSettingKey,
-//       backgroundColor: lightBlue(),
-//       appBar: AppBar(
-//         automaticallyImplyLeading: false,
-//         backgroundColor: darkBlue(),
-//         title: Row(
-//           children: <Widget>[
-//             displayUserAvatar(),
-//             Expanded(child: SizedBox(width: 10)),
-//             Text(
-//               AppLocalization.of(context).explore,
-//               maxLines: 1,
-//             ),
-//             Expanded(child: SizedBox(width: 10)),
-//           ],
-//         ),
-//         titleSpacing: 0,
-//         actions: <Widget>[
-//           IconButton(
-//             icon: Icon(Icons.power_settings_new, color: Colors.white),
-//             onPressed: () {
-//               logoutUser(bankAccountBloc);
-//             },
-//             tooltip: AppLocalization.of(context).logout,
-//           ),
-//         ],
-//       ),
-//       body: SingleChildScrollView(
-//         scrollDirection: Axis.vertical,
-//         child: Container(
-//           color: lightBlue(),
-//           margin: EdgeInsets.symmetric(horizontal: 10),
-//           child: Center(
-//             child: Column(
-//               children: <Widget>[
-//                 SizedBox(height: 20),
-//                 displayAccountBalance(isLocked),
-//                 SizedBox(height: 15),
-//
-//                 //ROW 1
-//                 rowIconButtons(
-//                   iconButton(
-//                     Icons.person,
-//                     AppLocalization.of(context).profile,
-//                     () {
-//                       Platform.isAndroid
-//                           ? profileAndroidSheet()
-//                           : profileIOSSheet();
-//                     },
-//                   ),
-//                   iconButton(
-//                     Icons.language,
-//                     AppLocalization.of(context).language,
-//                     () {
-//                       changeLanguage();
-//                     },
-//                   ),
-//                   iconButton(
-//                     Icons.shopping_cart,
-//                     AppLocalization.of(context).orders,
-//                     () {
-//                       Navigator.pushNamed(context, '/orders-list');
-//                     },
-//                   ),
-//                 ),
-//
-//                 //ROW 2
-//                 rowIconButtons(
-//                     iconButton(Icons.account_balance_wallet,
-//                         AppLocalization.of(context).transactions, () {
-//                       PassCodePopup(
-//                           context: context,
-//                           isValidCallback: () {
-//                             Navigator.pushNamed(context, "/transactions");
-//                           },
-//                           cancelCallBack: () {
-//                             Navigator.pop(context);
-//                           });
-//                     }),
-//                     iconButton(
-//                       Icons.account_balance,
-//                       AppLocalization.of(context).bank,
-//                       () {
-//                         Platform.isIOS ? bankIOSSheet() : bankAndroidSheet();
-//                       },
-//                     ),
-//                     myStore()),
-//
-//                 //ROW 3
-//                 rowIconButtons(
-//                     Container(),
-// //TODO: FIND BATTER WAY TO ACCEPT CREDIT CARD  PAYMENT WITH OUT US WITH IN FOR THIS
-// //                    iconButton(
-// //                      Icons.credit_card,
-// //                      "Top Up",
-// //                      () {
-// //                        Navigator.pushNamed(context, "/card-payment-page");
-// //                      },
-// //                    ),
-//                     Container(),
-//                     Container()),
-//                 SizedBox(
-//                   height: 16,
-//                 ),
-//                 _infoTile(),
-//               ],
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
     return Scaffold(
         key: _scaffoldSettingKey,
         body: Container(
@@ -1163,21 +1053,6 @@ class _UserDashboardState extends State<UserDashboard> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: languages.map((data) {
-                    // return RadioListTile(
-                    //   selected: language.languageCode == data.languageCode,
-                    //   title: Text(data.name),
-                    //   activeColor: darkBlue(),
-                    //   groupValue: language,
-                    //   value: data,
-                    //   onChanged: (lang) {
-                    //     setState(() {
-                    //       language = lang;
-                    //       setLanguage(lang);
-                    //       Navigator.pop(context);
-                    //       saveIntoSharedPreference(lang);
-                    //     });
-                    //   },
-                    // );
                     return bottomSheetItemWithCheck(
                         icon: SlydoAppIcon.translation,
                         title: data.name,

@@ -21,6 +21,7 @@ import '../utils/colors.dart';
 // ignore: must_be_immutable
 class OrderDetailPage extends StatefulWidget {
   var arguments;
+
   OrderDetailPage({@required this.arguments});
 
   @override
@@ -114,21 +115,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     menu.onChange = menuItemSelectionChange;
     menu.menuState = menuStateChange;
 
-    // return WillPopScope(
-    //   onWillPop: () async {
-    //     return true;
-    //   },
-    //   child: Scaffold(
-    //       key: scaffoldKey,
-    //       backgroundColor: lightBlue(),
-    //       appBar: AppBar(
-    //         automaticallyImplyLeading: true,
-    //         backgroundColor: darkBlue(),
-    //         title: Text(AppLocalization.of(context).orderDetail),
-    //         actions: <Widget>[noteIconButton(), statusIconButton()],
-    //       ),
-    //       body: scaffoldBody()),
-    // );
     return WillPopScope(
       onWillPop: () async {
         return true;
@@ -282,39 +268,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   void showNoteAndroidSheet() {
-    // showModalBottomSheet<void>(
-    //     enableDrag: true,
-    //     isScrollControlled: true,
-    //     context: context,
-    //     backgroundColor: Colors.transparent,
-    //     builder: (BuildContext context) {
-    //       return Card(
-    //         elevation: 15,
-    //         margin: EdgeInsets.symmetric(horizontal: 20),
-    //         color: Colors.white,
-    //         child: Container(
-    //           height: MediaQuery.of(context).size.height / 2 +
-    //               MediaQuery.of(context).viewInsets.bottom,
-    //           child: Column(
-    //             children: <Widget>[
-    //               Padding(
-    //                 padding: const EdgeInsets.only(top: 8.0),
-    //                 child: Text(
-    //                   AppLocalization.of(context).note,
-    //                   textAlign: TextAlign.center,
-    //                   style: TextStyle(
-    //                       color: darkBlue(),
-    //                       fontSize: 20.0,
-    //                       fontWeight: FontWeight.bold),
-    //                 ),
-    //               ),
-    //               getBodyOfNoteBottomSheet()
-    //             ],
-    //           ),
-    //         ),
-    //       );
-    //     });
-
     showModalBottomSheet<void>(
         backgroundColor: Colors.transparent,
         context: context,
@@ -425,13 +378,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   Widget addNoteBtn() {
-    // return FlatButton(
-    //     color: darkBlue(),
-    //     child: Text(
-    //       AppLocalization.of(context).add,
-    //       style: TextStyle(color: Colors.white),
-    //     ),
-    //     onPressed: addNote);
     return CurvedButton(
         backgroundColor: navyBlue,
         text: "Add note",
@@ -458,105 +404,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   void showChangeStatusAndroidSheet() {
-    // showModalBottomSheet<void>(
-    //     context: context,
-    //     backgroundColor: Colors.transparent,
-    //     builder: (BuildContext context) {
-    //       return StatefulBuilder(
-    //         builder: (BuildContext context, StateSetter setState) {
-    //           return Card(
-    //             color: Colors.white,
-    //             margin: EdgeInsets.symmetric(horizontal: 20),
-    //             elevation: 15,
-    //             child: Container(
-    //               height: MediaQuery.of(context).size.height / 2,
-    //               child: Padding(
-    //                 padding: const EdgeInsets.only(top: 10.0),
-    //                 child: Column(
-    //                   children: <Widget>[
-    //                     Text(
-    //                       AppLocalization.of(context).status,
-    //                       textAlign: TextAlign.center,
-    //                       style: TextStyle(
-    //                           color: darkBlue(),
-    //                           fontSize: 20.0,
-    //                           fontWeight: FontWeight.bold),
-    //                     ),
-    //                     Expanded(
-    //                       child: ListView(
-    //                         children: <Widget>[
-    //                           Divider(
-    //                             height: 0,
-    //                           ),
-    //                           statusListTile(
-    //                             title: AppLocalization.of(context).newOrder,
-    //                             value: "new order",
-    //                             setState: setState,
-    //                           ),
-    //                           Divider(
-    //                             height: 0,
-    //                           ),
-    //                           statusListTile(
-    //                             title:
-    //                                 AppLocalization.of(context).awaitingPayment,
-    //                             value: "awaiting payment",
-    //                             setState: setState,
-    //                           ),
-    //                           Divider(
-    //                             height: 0,
-    //                           ),
-    //                           statusListTile(
-    //                             title: AppLocalization.of(context).canceled,
-    //                             value: "canceled",
-    //                             setState: setState,
-    //                           ),
-    //                           Divider(
-    //                             height: 0,
-    //                           ),
-    //                           statusListTile(
-    //                             title: AppLocalization.of(context).completed,
-    //                             value: "complete",
-    //                             setState: setState,
-    //                           ),
-    //                           Divider(
-    //                             height: 0,
-    //                           ),
-    //                           statusListTile(
-    //                             title: AppLocalization.of(context).onHold,
-    //                             value: "on hold",
-    //                             setState: setState,
-    //                           ),
-    //                           Divider(
-    //                             height: 0,
-    //                           ),
-    //                           statusListTile(
-    //                             title: AppLocalization.of(context).pending,
-    //                             value: "pending",
-    //                             setState: setState,
-    //                           ),
-    //                           Divider(
-    //                             height: 0,
-    //                           ),
-    //                           statusListTile(
-    //                             title: AppLocalization.of(context).processing,
-    //                             value: "processing",
-    //                             setState: setState,
-    //                           ),
-    //                           Divider(
-    //                             height: 0,
-    //                           ),
-    //                         ],
-    //                       ),
-    //                     ),
-    //                   ],
-    //                 ),
-    //               ),
-    //             ),
-    //           );
-    //         },
-    //       );
-    //     });
-
     showModalBottomSheet<void>(
         backgroundColor: Colors.transparent,
         context: context,
@@ -668,27 +515,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   Widget statusListTile({String title, String value, StateSetter setState}) {
-    // return RadioListTile(
-    //   activeColor: darkBlue(),
-    //   title: Text(
-    //     title,
-    //     textAlign: TextAlign.start,
-    //     style: TextStyle(
-    //       color: darkBlue(),
-    //       fontSize: 16.0,
-    //     ),
-    //   ),
-    //   value: value,
-    //   onChanged: (value) {
-    //     if (userBloc.user.userName == order.merchant) {
-    //       setState(() {
-    //         updateStatus(value);
-    //         statusOfOrder = value;
-    //       });
-    //     }
-    //   },
-    //   groupValue: statusOfOrder,
-    // );
     return RadioListTile(
       activeColor: navyBlue,
       title: Text(
@@ -713,40 +539,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   Widget checkoutWidget() {
-    // return Card(
-    //   elevation: 5,
-    //   margin: EdgeInsets.symmetric(horizontal: 16),
-    //   child: Container(
-    //     padding: EdgeInsets.symmetric(horizontal: 8),
-    //     color: Colors.white,
-    //     child: Column(
-    //       crossAxisAlignment: CrossAxisAlignment.start,
-    //       children: <Widget>[
-    //         SizedBox(
-    //           height: 10,
-    //         ),
-    //         Row(
-    //           children: <Widget>[
-    //             Text(AppLocalization.of(context).total),
-    //             Text(
-    //               " : " + worldCurrencies[order.currency] + " ",
-    //               style: TextStyle(
-    //                 fontFamily: "Roboto",
-    //               ),
-    //             ),
-    //             Text(
-    //               order.totalPrice.toString(),
-    //               style: TextStyle(fontSize: 20),
-    //             ),
-    //           ],
-    //         ),
-    //         SizedBox(
-    //           height: 10,
-    //         ),
-    //       ],
-    //     ),
-    //   ),
-    // );
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       color: navyBlue,
@@ -883,18 +675,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     if (conditionForUser == userBloc.user.userName) {
       isValid = false;
     }
-    return [
-      // IconSlideAction(
-      //   caption: AppLocalization.of(context).message,
-      //   color: isValid ? Colors.green : Colors.grey[600],
-      //   icon: Icons.message,
-      //   onTap: isValid
-      //       ? () {
-      //           navigateToComposeMessage(conditionForUser, index);
-      //         }
-      //       : () {},
-      // ),
-    ];
+    return [];
   }
 
   void navigateToComposeMessage(var conditionForUser, int index) async {
@@ -942,6 +723,7 @@ class VerticalListItem extends StatelessWidget {
     this.type = item["type"];
     this.item = item["item"];
   }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(

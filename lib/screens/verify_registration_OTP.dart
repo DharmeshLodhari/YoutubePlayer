@@ -7,7 +7,9 @@ import 'package:pinput/pin_put/pin_put.dart';
 // ignore: must_be_immutable
 class VerifyRegistrationOTPScreen extends StatefulWidget {
   var arguments;
+
   VerifyRegistrationOTPScreen({this.arguments});
+
   @override
   _VerifyRegistrationOTPScreenState createState() =>
       _VerifyRegistrationOTPScreenState();

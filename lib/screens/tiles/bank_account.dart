@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 class BankAccountTile extends StatefulWidget {
   // Pass account object into this constructor
   final BankAccount account;
+
   BankAccountTile({this.account});
 
   @override

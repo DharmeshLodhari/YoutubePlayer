@@ -238,6 +238,7 @@ class Service {
 
 class PaymentCategory {
   const PaymentCategory(this.name);
+
   final String name;
 }
 
@@ -264,6 +265,7 @@ List<PaymentCategory> paymentCategories = <PaymentCategory>[
 
 class ProductCategory {
   const ProductCategory(this.name, this.icon);
+
   final String name;
   final Icon icon;
 }
@@ -381,6 +383,7 @@ List<ProductCategory> productCategories = <ProductCategory>[
 
 class ProductCondition {
   const ProductCondition(this.name, this.description);
+
   final String name;
   final String description;
 }
@@ -466,6 +469,7 @@ List temp = [
 
 class ServiceCatagory {
   const ServiceCatagory(this.name, this.icon);
+
   final String name;
   final Icon icon;
 }

@@ -139,33 +139,6 @@ class _MessageListState extends State<MessageList> {
     // refresh the list when lifecycle called onResume method
     _onRefreshOnResume();
 
-    // return Scaffold(
-    //   key: _scaffoldMessageKey,
-    //   backgroundColor: lightBlue(),
-    //   appBar: AppBar(
-    //     automaticallyImplyLeading: false,
-    //     backgroundColor: darkBlue(),
-    //     title: Text(AppLocalization.of(context).messages),
-    //     actions: <Widget>[_threeItemPopup()],
-    //   ),
-    //   body: SmartRefresher(
-    //       enablePullDown: true,
-    //       header: WaterDropHeader(
-    //         complete: Container(),
-    //         waterDropColor: darkBlue(),
-    //       ),
-    //       controller: _refreshController,
-    //       onRefresh: _onRefresh,
-    //       child: _buildMessageList()),
-    //   floatingActionButton: FloatingActionButton(
-    //     heroTag: "compose_message",
-    //     backgroundColor: darkBlue(),
-    //     child: Icon(Icons.message),
-    //     onPressed: () {
-    //       Navigator.of(context).pushNamed("/compose_message");
-    //     },
-    //   ),
-    // );
     return Scaffold(
       key: _scaffoldMessageKey,
       backgroundColor: Colors.white,
@@ -436,32 +409,6 @@ class _MessageListState extends State<MessageList> {
         ? partialMessage.isArchivedByRecipient ? "Unarchive" : "Archive"
         : partialMessage.isArchivedBySender ? "Unarchive" : "Archive";
 
-    // return Container(
-    //     height: double.infinity,
-    //     color: Colors.green,
-    //     child: IconButton(
-    //       icon: Icon(
-    //         actionIcon,
-    //         color: Colors.white,
-    //       ),
-    //       onPressed: () async {
-    //         var action = isRecipient
-    //             ? partialMessage.isArchivedByRecipient ? "unarchive" : "archive"
-    //             : partialMessage.isArchivedBySender ? "unarchive" : "archive";
-    //         await _auth.updateMessage(partialMessage.id, action);
-    //         setState(() {
-    //           if (isRecipient) {
-    //             partialMessage.isArchivedByRecipient =
-    //                 partialMessage.isArchivedByRecipient ? false : true;
-    //           } else {
-    //             partialMessage.isArchivedBySender =
-    //                 partialMessage.isArchivedBySender ? false : true;
-    //           }
-    //         });
-    //         slidableController.activeState.close();
-    //       },
-    //     ));
-
     return SlideActionButton(
         backgroundColor: naturalGreen,
         icon: actionIcon,
@@ -504,19 +451,6 @@ class _MessageListState extends State<MessageList> {
         },
         title: AppLocalization.of(context).delete,
         slideController: slidableController);
-    // return Container(
-    //     height: double.infinity,
-    //     color: Colors.red,
-    //     child: IconButton(
-    //       icon: Icon(
-    //         Icons.delete,
-    //         color: Colors.white,
-    //       ),
-    //       onPressed: () {
-    //         deleteMessage(partialMessage, index);
-    //         slidableController.activeState.close();
-    //       },
-    //     ));
   }
 
   void deleteMessage(PartialMessage partialMessage, int index) async {
@@ -585,6 +519,7 @@ class _MessageListState extends State<MessageList> {
 
 class VerticalListItem extends StatefulWidget {
   VerticalListItem(this.partialMessage);
+
   final PartialMessage partialMessage;
 
   @override
@@ -594,6 +529,7 @@ class VerticalListItem extends StatefulWidget {
 class _VerticalListItemState extends State<VerticalListItem> {
   final _auth = AuthService();
   bool isExpanded = false;
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -697,36 +633,6 @@ class _VerticalListItemState extends State<VerticalListItem> {
         },
       ),
     );
-
-    // return MaterialButton(
-    //   child: Row(
-    //     mainAxisAlignment: MainAxisAlignment.center,
-    //     children: <Widget>[
-    //       Icon(
-    //         Icons.message,
-    //         color: darkBlue(),
-    //       ),
-    //       SizedBox(
-    //         width: 10,
-    //       ),
-    //       Text(
-    //         AppLocalization.of(context).message,
-    //         style: TextStyle(color: darkBlue()),
-    //       ),
-    //     ],
-    //   ),
-    //   onPressed: () {
-    //     _auth.fetchCustomerProfile(widget.partialMessage.sender).then((user) {
-    //       setState(() {
-    //         isExpanded = false;
-    //       });
-    //       Navigator.of(context).pushNamed('/compose_message', arguments: {
-    //         'recipient': user.userName,
-    //         'subject': "",
-    //       });
-    //     });
-    //   },
-    // );
   }
 
   Widget blockUserButton() {
@@ -780,49 +686,5 @@ class _VerticalListItemState extends State<VerticalListItem> {
         ),
       ),
     );
-
-    // return MaterialButton(
-    //   child: Row(
-    //     mainAxisAlignment: MainAxisAlignment.center,
-    //     children: <Widget>[
-    //       Stack(
-    //         children: <Widget>[
-    //           Icon(
-    //             Icons.group,
-    //             color: Colors.black,
-    //           ),
-    //           Icon(
-    //             Icons.block,
-    //             color: Colors.red,
-    //           )
-    //         ],
-    //       ),
-    //       SizedBox(
-    //         width: 10,
-    //       ),
-    //       Text(
-    //         AppLocalization.of(context).blockUser,
-    //         style: TextStyle(color: Colors.redAccent),
-    //       ),
-    //     ],
-    //   ),
-    //   onPressed: () {
-    //     _auth.fetchCustomerProfile(widget.partialMessage.sender).then((user) {
-    //       _auth.blockUser(user).then((result) {
-    //         setState(() {
-    //           isExpanded = false;
-    //         });
-    //         if (result) {
-    //           Toast.show(
-    //               "${widget.partialMessage.sender} " +
-    //                   AppLocalization.of(context).isBlocked,
-    //               context);
-    //         } else {
-    //           Toast.show(AppLocalization.of(context).error, context);
-    //         }
-    //       });
-    //     });
-    //   },
-    // );
   }
 }

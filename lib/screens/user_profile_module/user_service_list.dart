@@ -99,20 +99,6 @@ class _UserServiceListState extends State<UserServiceList> {
   }
 
   Widget _buildServiceList() {
-    // return noServiceInList
-    //     ? NoItemInList(
-    //         msg: AppLocalization.of(context).noServices,
-    //       )
-    //     : ListView.builder(
-    //         controller: _serviceScrollController,
-    //         itemCount: serviceList.length + 1,
-    //         itemBuilder: (BuildContext context, int index) {
-    //           if (index == serviceList.length) {
-    //             return _buildServiceIndicator();
-    //           } else {
-    //             return serviceTileExpanded(index);
-    //           }
-    //         });
     return noServiceInList
         ? NoItemInList(
             msg: AppLocalization.of(context).noServices,
@@ -187,90 +173,6 @@ class _UserServiceListState extends State<UserServiceList> {
   }
 
   Widget serviceTile(int index) {
-    // return Card(
-    //     elevation: 5,
-    //     shape: RoundedRectangleBorder(
-    //       borderRadius: BorderRadius.circular(0),
-    //     ),
-    //     child: Container(
-    //       height: MediaQuery.of(context).size.height / 2.75,
-    //       child: ClipRRect(
-    //         borderRadius: BorderRadius.circular(0),
-    //         child: Column(
-    //           children: <Widget>[
-    //             Expanded(
-    //               child: Stack(children: <Widget>[
-    //                 InkWell(
-    //                   child: CachedNetworkImage(
-    //                     width: double.infinity,
-    //                     imageUrl: serviceList[index].serverImages[0],
-    //                     fit: BoxFit.fill,
-    //                     filterQuality: FilterQuality.high,
-    //                   ),
-    //                   onTap: () {
-    //                     Navigator.pushNamed(context, '/service-detail',
-    //                         arguments: {"service": serviceList[index]});
-    //                   },
-    //                 ),
-    //                 widget.isOwner
-    //                     ? Positioned(
-    //                         right: 0,
-    //                         child: IconButton(
-    //                           icon: Icon(
-    //                             Icons.edit,
-    //                             size: 20,
-    //                             color: Colors.white,
-    //                           ),
-    //                           onPressed: () {
-    //                             Navigator.of(context).pushNamed(
-    //                               '/edit-service',
-    //                               arguments: {
-    //                                 "serviceId":
-    //                                     serviceList[index].id.toString(),
-    //                               },
-    //                             );
-    //                           },
-    //                         ),
-    //                       )
-    //                     : Container()
-    //               ]),
-    //             ),
-    //             ListTile(
-    //                 dense: true,
-    //                 title: Text(
-    //                   serviceList[index].name,
-    //                   maxLines: 1,
-    //                   style:
-    //                       TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-    //                 ),
-    //                 subtitle: Text(
-    //                   serviceList[index].shortDescription,
-    //                   maxLines: 1,
-    //                   style: TextStyle(
-    //                     color: Colors.grey,
-    //                     fontSize: 13,
-    //                     fontWeight: FontWeight.w500,
-    //                   ),
-    //                 ),
-    //                 trailing: RichText(
-    //                   text: TextSpan(children: [
-    //                     TextSpan(
-    //                         text: worldCurrencies[serviceList[index].currency],
-    //                         style: TextStyle(
-    //                             color: Colors.black,
-    //                             fontFamily: "Roboto",
-    //                             fontWeight: FontWeight.bold,
-    //                             fontSize: 18)),
-    //                     TextSpan(text: " "),
-    //                     TextSpan(
-    //                         text: serviceList[index].price.toString(),
-    //                         style: TextStyle(color: Colors.black))
-    //                   ]),
-    //                 )),
-    //           ],
-    //         ),
-    //       ),
-    //     ));
     return CustomBoxShadow(
       child: Card(
           elevation: 3,

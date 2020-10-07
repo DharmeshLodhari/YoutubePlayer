@@ -3,8 +3,8 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/models/user.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
@@ -17,14 +17,18 @@ import 'package:toast/toast.dart';
 // ignore: must_be_immutable
 class Profile extends StatefulWidget {
   var arguments;
+
   Profile({@required this.arguments});
+
   @override
   _ProfileState createState() => _ProfileState(arguments: arguments);
 }
 
 class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
   var arguments;
+
   _ProfileState({this.arguments});
+
   TabController _tabController;
   int currentIndex = 0;
   CustomerProfile user;
@@ -634,6 +638,7 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   double get minExtent => _tabBar.preferredSize.height;
+
   @override
   double get maxExtent => _tabBar.preferredSize.height;
 

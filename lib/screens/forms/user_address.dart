@@ -58,21 +58,6 @@ class _UserAddressState extends State<UserAddress> {
   Widget build(BuildContext context) {
     addressBloc = Provider.of<AddressBloc>(context);
 
-    // return WillPopScope(
-    //   onWillPop: () async {
-    //     return true;
-    //   },
-    //   child: Scaffold(
-    //     backgroundColor: lightBlue(),
-    //     resizeToAvoidBottomInset: true,
-    //     appBar: AppBar(
-    //       backgroundColor: darkBlue(),
-    //       title: Text(AppLocalization.of(context).addAddress),
-    //       elevation: 0.0,
-    //     ),
-    //     body: scaffoldBody(),
-    //   ),
-    // );
     return WillPopScope(
       onWillPop: () async {
         return true;
@@ -158,28 +143,6 @@ class _UserAddressState extends State<UserAddress> {
   }
 
   Widget getAddressLineOne() {
-    // return TextFormField(
-    //   controller: addressLineOneController,
-    //   autofocus: false,
-    //   obscureText: false,
-    //   keyboardType: TextInputType.text,
-    //   decoration: InputDecoration(
-    //       prefixIcon: Icon(Icons.home),
-    //       fillColor: Colors.white,
-    //       filled: true,
-    //       hintText: AppLocalization.of(context).addressLine1,
-    //       labelStyle: TextStyle(
-    //         color: Colors.black,
-    //         fontSize: 16,
-    //       ),
-    //       border: OutlineInputBorder(
-    //           borderRadius: BorderRadius.all(Radius.circular(4)),
-    //           borderSide: BorderSide(
-    //               width: 1, color: Colors.green, style: BorderStyle.solid))),
-    //   validator: (val) =>
-    //       val.length == 0 ? AppLocalization.of(context).invalidAddress : null,
-    // );
-
     return CustomizedTextFormField(
       labelText: "Address line 1",
       controller: addressLineOneController,
@@ -189,27 +152,6 @@ class _UserAddressState extends State<UserAddress> {
   }
 
   Widget getAddressLineTwo() {
-    // return TextFormField(
-    //   controller: addressLineTwoController,
-    //   autofocus: false,
-    //   obscureText: false,
-    //   keyboardType: TextInputType.text,
-    //   decoration: InputDecoration(
-    //       prefixIcon: Icon(Icons.home),
-    //       fillColor: Colors.white,
-    //       filled: true,
-    //       hintText: AppLocalization.of(context).addressLine2,
-    //       labelStyle: TextStyle(
-    //         color: Colors.black,
-    //         fontSize: 16,
-    //       ),
-    //       border: OutlineInputBorder(
-    //           borderRadius: BorderRadius.all(Radius.circular(4)),
-    //           borderSide: BorderSide(
-    //               width: 1, color: Colors.green, style: BorderStyle.solid))),
-    //   validator: (val) =>
-    //       val.length == 0 ? AppLocalization.of(context).invalidAddress : null,
-    // );
     return CustomizedTextFormField(
       labelText: "Address line 2",
       controller: addressLineTwoController,
@@ -219,28 +161,6 @@ class _UserAddressState extends State<UserAddress> {
   }
 
   Widget getCity() {
-    // return TextFormField(
-    //   controller: cityController,
-    //   autofocus: false,
-    //   obscureText: false,
-    //   keyboardType: TextInputType.text,
-    //   decoration: InputDecoration(
-    //       prefixIcon: Icon(Icons.location_city),
-    //       fillColor: Colors.white,
-    //       filled: true,
-    //       hintText: AppLocalization.of(context).city,
-    //       labelStyle: TextStyle(
-    //         color: Colors.black,
-    //         fontSize: 16,
-    //       ),
-    //       border: OutlineInputBorder(
-    //           borderRadius: BorderRadius.all(Radius.circular(4)),
-    //           borderSide: BorderSide(
-    //               width: 1, color: Colors.green, style: BorderStyle.solid))),
-    //   validator: (val) =>
-    //       val.length == 0 ? AppLocalization.of(context).invalidCity : null,
-    // );
-
     return CustomizedTextFormField(
       labelText: AppLocalization.of(context).city,
       controller: cityController,
@@ -250,28 +170,6 @@ class _UserAddressState extends State<UserAddress> {
   }
 
   Widget getState() {
-    // return TextFormField(
-    //   controller: stateController,
-    //   autofocus: false,
-    //   obscureText: false,
-    //   keyboardType: TextInputType.text,
-    //   decoration: InputDecoration(
-    //       prefixIcon: Icon(Icons.flag),
-    //       fillColor: Colors.white,
-    //       filled: true,
-    //       hintText: AppLocalization.of(context).state,
-    //       labelStyle: TextStyle(
-    //         color: Colors.black,
-    //         fontSize: 16,
-    //       ),
-    //       border: OutlineInputBorder(
-    //           borderRadius: BorderRadius.all(Radius.circular(4)),
-    //           borderSide: BorderSide(
-    //               width: 1, color: Colors.green, style: BorderStyle.solid))),
-    //   validator: (val) =>
-    //       val.length == 0 ? AppLocalization.of(context).invalidState : null,
-    // );
-
     return CustomizedTextFormField(
       labelText: AppLocalization.of(context).state,
       controller: stateController,
@@ -281,28 +179,6 @@ class _UserAddressState extends State<UserAddress> {
   }
 
   Widget getCountryDropdown() {
-    // return Card(
-    //   margin: EdgeInsets.all(0),
-    //   borderOnForeground: true,
-    //   child: Column(
-    //     crossAxisAlignment: CrossAxisAlignment.start,
-    //     children: <Widget>[
-    //       Padding(
-    //         padding: const EdgeInsets.fromLTRB(8.0, 8.0, 0, 0),
-    //         child: Text(
-    //           AppLocalization.of(context).selectYourCountry,
-    //           style: TextStyle(color: darkBlue()),
-    //         ),
-    //       ),
-    //       ListTile(
-    //         contentPadding: EdgeInsets.fromLTRB(8, 0, 0, 0),
-    //         onTap: _openCountryPickerDialog,
-    //         title: _buildDialogItem(selectedCountry),
-    //       ),
-    //     ],
-    //   ),
-    // );
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -375,17 +251,6 @@ class _UserAddressState extends State<UserAddress> {
       );
 
   Widget getSubmitButton() {
-    // return ButtonTheme(
-    //   minWidth: double.infinity,
-    //   child: MaterialButton(
-    //     onPressed: onSubmit,
-    //     textColor: Colors.white,
-    //     color: darkBlue(),
-    //     height: 50,
-    //     child: Text(AppLocalization.of(context).submitButton),
-    //   ),
-    // );
-
     return CurvedButton(
       onPressed: onSubmit,
       text: AppLocalization.of(context).submitButton,

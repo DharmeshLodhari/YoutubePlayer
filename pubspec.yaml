@@ -36,7 +36,6 @@ dependencies:
   uuid: ^2.0.4
   intl: ^0.15.8
   autocomplete_textfield: ^1.7.3
-  popup_menu: ^1.0.5
   flappy_search_bar: ^1.7.2
   package_info: ^0.4.0+16
   maps_launcher: ^1.2.0

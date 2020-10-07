@@ -20,7 +20,9 @@ import 'package:toast/toast.dart';
 // ignore: must_be_immutable
 class ServiceDetailPage extends StatefulWidget {
   var arguments;
+
   ServiceDetailPage({@required this.arguments});
+
   @override
   _ServiceDetailPageState createState() =>
       _ServiceDetailPageState(arguments: arguments);
@@ -201,11 +203,6 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       onTap: () {
         _dashboardBloc.index = 3;
         Navigator.popUntil(context, ModalRoute.withName("/dashboard"));
-        // Navigator.of(context).pushNamedAndRemoveUntil(
-        //   "/dashboard",
-        //   (Route<dynamic> route) => false,
-        //   arguments: {"dashboardIndex": 2},
-        // );
       },
       backgroundColor: iconBtnGrey,
       enableMargin: true,
@@ -253,15 +250,6 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         });
       },
     );
-    // return IconButton(
-    //   icon: Icon(Icons.message),
-    //   onPressed: () {
-    //     Navigator.of(context).pushNamed('/compose_message', arguments: {
-    //       'recipient': service.provider,
-    //       'subject': service.name,
-    //     });
-    //   },
-    // );
   }
 
   Widget addToCartWidget() {
@@ -348,58 +336,6 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   Widget floatingActionBar() {
-    // return Card(
-    //   elevation: 10,
-    //   margin: EdgeInsets.symmetric(horizontal: 15),
-    //   child: Container(
-    //     padding: EdgeInsets.all(8),
-    //     height: 55,
-    //     child: Row(
-    //       children: <Widget>[
-    //         _buildBuyButtonWidget(),
-    //         SizedBox(
-    //           width: 12,
-    //         ),
-    //         Expanded(
-    //           child: MaterialButton(
-    //               height: double.infinity,
-    //               color: lightBlue(),
-    //               child: Icon(
-    //                 Icons.add_shopping_cart,
-    //                 color: Colors.white,
-    //               ),
-    //               onPressed: () async {
-    //                 if (isValidCustomer) {
-    //                   String type = service is Product ? "product" : "service";
-    //                   basketBloc.addItemToCart(item: service, type: type);
-    //                   var mapData;
-    //                   basketBloc.items.forEach((element) {
-    //                     if (element["item"].id == service.id) {
-    //                       mapData = element;
-    //                       return;
-    //                     }
-    //                   });
-    //                   Map data = {
-    //                     "type": type,
-    //                     "id": mapData["item"].id,
-    //                     "qty": mapData["qty"],
-    //                   };
-    //                   debugPrint("Data From Service Page : $data");
-    //                   await _auth.addItemToShoppingCart(data);
-    //                 } else {
-    //                   Toast.show(
-    //                       AppLocalization.of(context).youCanNotPurchaseThisItem,
-    //                       context,
-    //                       textColor: Colors.white,
-    //                       backgroundColor: darkBlue(),
-    //                       duration: Toast.LENGTH_LONG);
-    //                 }
-    //               }),
-    //         ),
-    //       ],
-    //     ),
-    //   ),
-    // );
     return Card(
       elevation: 10,
       shadowColor: boxShadowTwo,
@@ -424,41 +360,6 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   Widget _buildServiceDetailsPage(BuildContext context) {
-    Size screenSize = MediaQuery.of(context).size;
-
-    // return ListView(
-    //   controller: _scrollController,
-    //   children: <Widget>[
-    //     Container(
-    //       padding: const EdgeInsets.all(4.0),
-    //       child: Card(
-    //         elevation: 4.0,
-    //         child: Column(
-    //           crossAxisAlignment: CrossAxisAlignment.start,
-    //           children: <Widget>[
-    //             _buildServiceImagesWidgets(),
-    //             _buildServiceTitleAndPriceWidget(),
-    //             SizedBox(height: 12.0),
-    //             _buildShortInfoWidget(),
-    //             SizedBox(height: 12.0),
-    //             SizedBox(height: 12.0),
-    //             _buildDivider(screenSize),
-    //             SizedBox(height: 12.0),
-    //             _buildAvailableFromAndShareWidgets(),
-    //             SizedBox(height: 12.0),
-    //             _buildDivider(screenSize),
-    //             _buildDescriptionWidget(),
-    //             SizedBox(height: 30.0),
-    //             isOtherItemIsEmpty
-    //                 ? Container()
-    //                 : _buildProviderOtherServices(),
-    //             SizedBox(height: 80.0),
-    //           ],
-    //         ),
-    //       ),
-    //     ),
-    //   ],
-    // );
     return ListView(
       controller: _scrollController,
       children: <Widget>[
@@ -524,18 +425,6 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
             isOtherItemIsEmpty ? Container() : _buildProviderOtherServices(),
             SizedBox(height: 60.0),
           ],
-        ),
-      ],
-    );
-  }
-
-  _buildDivider(Size screenSize) {
-    return Column(
-      children: <Widget>[
-        Container(
-          color: Colors.grey[600],
-          width: screenSize.width,
-          height: 0.25,
         ),
       ],
     );
@@ -630,54 +519,6 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   Widget _buildServiceTitleAndPriceWidget() {
-    // return Row(
-    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //   crossAxisAlignment: CrossAxisAlignment.center,
-    //   children: <Widget>[
-    //     Expanded(
-    //       child: Padding(
-    //         padding: const EdgeInsets.fromLTRB(20, 28, 0, 0),
-    //         child: Column(
-    //           crossAxisAlignment: CrossAxisAlignment.start,
-    //           children: <Widget>[
-    //             Text(
-    //               //name,
-    //               service.name,
-    //               style: TextStyle(
-    //                   fontSize: 13.0,
-    //                   color: Colors.grey[600],
-    //                   fontWeight: FontWeight.w500),
-    //             ),
-    //             Padding(
-    //               padding: const EdgeInsets.only(top: 8.0),
-    //               child: Row(
-    //                 mainAxisSize: MainAxisSize.min,
-    //                 children: <Widget>[
-    //                   Text(
-    //                     worldCurrencies[service.currency],
-    //                     style: TextStyle(
-    //                         fontFamily: "Roboto",
-    //                         fontSize: 28.0,
-    //                         color: Colors.black,
-    //                         fontWeight: FontWeight.w600),
-    //                   ),
-    //                   Text(
-    //                     service.price,
-    //                     style: TextStyle(
-    //                         fontSize: 28.0,
-    //                         color: Colors.black,
-    //                         fontWeight: FontWeight.w600),
-    //                   ),
-    //                 ],
-    //               ),
-    //             ),
-    //           ],
-    //         ),
-    //       ),
-    //     ),
-    //     copyQrCode(),
-    //   ],
-    // );
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -726,26 +567,6 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   Widget copyQrCode() {
-    // return MaterialButton(
-    //   child: Row(
-    //     children: <Widget>[
-    //       CachedNetworkImage(
-    //         imageUrl: service.qrCode,
-    //         height: 50,
-    //         width: 50,
-    //         filterQuality: FilterQuality.high,
-    //         fit: BoxFit.fill,
-    //       ),
-    //     ],
-    //   ),
-    //   onPressed: () {
-    //     Clipboard.setData(new ClipboardData(text: service.qrCode));
-    //     Toast.show(AppLocalization.of(context).copied, context,
-    //         gravity: Toast.CENTER,
-    //         duration: Toast.LENGTH_LONG,
-    //         backgroundColor: darkBlue());
-    //   },
-    // );
     return Card(
       shadowColor: boxShadow,
       elevation: 2,
@@ -905,37 +726,6 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   Widget _buildBuyButtonWidget() {
-    // return Expanded(
-    //   child: Container(
-    //     decoration: BoxDecoration(
-    //       border: Border.all(
-    //         color: lightBlue(),
-    //         width: 2,
-    //         style: BorderStyle.solid,
-    //       ),
-    //       borderRadius: BorderRadius.circular(5),
-    //     ),
-    //     child: FlatButton(
-    //       color: Colors.white,
-    //       child: Text(
-    //         AppLocalization.of(context).buyNow,
-    //         style: TextStyle(color: lightBlue()),
-    //       ),
-    //       onPressed: () {
-    //         if (isValidCustomer) {
-    //           getRecipient();
-    //           navigateToSendPayment();
-    //         } else {
-    //           Toast.show(AppLocalization.of(context).youCanNotPurchaseThisItem,
-    //               context,
-    //               textColor: Colors.white,
-    //               backgroundColor: darkBlue(),
-    //               duration: Toast.LENGTH_LONG);
-    //         }
-    //       },
-    //     ),
-    //   ),
-    // );
     return Expanded(
       child: CurvedButton(
         backgroundColor: navyBlue,

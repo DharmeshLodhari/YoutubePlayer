@@ -16,7 +16,9 @@ import '../utils/colors.dart';
 // ignore: must_be_immutable
 class TransactionDetail extends StatefulWidget {
   var arguments;
+
   TransactionDetail({@required this.arguments});
+
   @override
   _TransactionDetailState createState() =>
       _TransactionDetailState(arguments: arguments);
@@ -25,7 +27,9 @@ class TransactionDetail extends StatefulWidget {
 class _TransactionDetailState extends State<TransactionDetail> {
   var arguments;
   Transaction transaction;
+
   _TransactionDetailState({this.arguments});
+
   final _auth = AuthService();
 
   @override

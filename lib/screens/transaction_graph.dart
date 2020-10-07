@@ -35,6 +35,10 @@ class _TransactionGraphState extends State<TransactionGraph> {
 
   bool isLineGraph = false;
 
+  // for to hide and show graph lines
+  bool showIncome = true;
+  bool showExpenditure = true;
+
   //variable for week
   int week;
   DateTime start;
@@ -389,46 +393,58 @@ class _TransactionGraphState extends State<TransactionGraph> {
             children: <Widget>[
               getSelectedData(),
               flexibleSpace(),
-              Row(
-                children: <Widget>[
-                  Container(
-                    height: 10,
-                    width: 10,
-                    child: ClipOval(
-                      child: Container(
-                        color: mateRad,
+              GestureDetector(
+                child: Row(
+                  children: <Widget>[
+                    Container(
+                      height: 10,
+                      width: 10,
+                      child: ClipOval(
+                        child: Container(
+                          color: mateRad,
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    width: 8,
-                  ),
-                  Text(
-                    AppLocalization.of(context).expenditure,
-                    style: TextStyle(fontSize: 12, color: darkGrey),
-                  )
-                ],
+                    SizedBox(
+                      width: 8,
+                    ),
+                    Text(
+                      AppLocalization.of(context).expenditure,
+                      style: TextStyle(fontSize: 12, color: darkGrey),
+                    )
+                  ],
+                ),
+                onTap: () {
+                  showExpenditure = !showExpenditure;
+                  setState(() {});
+                },
               ),
               flexibleSpace(),
-              Row(
-                children: <Widget>[
-                  Container(
-                    height: 10,
-                    width: 10,
-                    child: ClipOval(
-                      child: Container(
-                        color: navyBlue,
+              GestureDetector(
+                child: Row(
+                  children: <Widget>[
+                    Container(
+                      height: 10,
+                      width: 10,
+                      child: ClipOval(
+                        child: Container(
+                          color: navyBlue,
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    width: 8,
-                  ),
-                  Text(
-                    AppLocalization.of(context).income,
-                    style: TextStyle(fontSize: 12, color: darkGrey),
-                  )
-                ],
+                    SizedBox(
+                      width: 8,
+                    ),
+                    Text(
+                      AppLocalization.of(context).income,
+                      style: TextStyle(fontSize: 12, color: darkGrey),
+                    )
+                  ],
+                ),
+                onTap: () {
+                  showIncome = !showIncome;
+                  setState(() {});
+                },
               ),
               flexibleSpace(),
             ],
@@ -512,6 +528,47 @@ class _TransactionGraphState extends State<TransactionGraph> {
           displayName: AppLocalization.of(context).expenditure,
           data: secondData)
     ];
+
+    if (showIncome && showExpenditure) {
+      series = [
+        charts.Series<GraphData, int>(
+            id: "income",
+            colorFn: (_, __) => charts.Color.fromHex(code: "#3F61DB"),
+            domainFn: (GraphData data, _) => data.day,
+            measureFn: (GraphData data, _) => data.amount,
+            displayName: AppLocalization.of(context).income,
+            data: firstData),
+        charts.Series<GraphData, int>(
+            id: "expenditure",
+            colorFn: (_, __) => charts.Color.fromHex(code: "#F35B46"),
+            domainFn: (GraphData data, _) => data.day,
+            measureFn: (GraphData data, _) => data.amount,
+            displayName: AppLocalization.of(context).expenditure,
+            data: secondData)
+      ];
+    } else if (!showIncome && showExpenditure) {
+      series = [
+        charts.Series<GraphData, int>(
+            id: "expenditure",
+            colorFn: (_, __) => charts.Color.fromHex(code: "#F35B46"),
+            domainFn: (GraphData data, _) => data.day,
+            measureFn: (GraphData data, _) => data.amount,
+            displayName: AppLocalization.of(context).expenditure,
+            data: secondData)
+      ];
+    } else if (!showExpenditure && showIncome) {
+      series = [
+        charts.Series<GraphData, int>(
+            id: "income",
+            colorFn: (_, __) => charts.Color.fromHex(code: "#3F61DB"),
+            domainFn: (GraphData data, _) => data.day,
+            measureFn: (GraphData data, _) => data.amount,
+            displayName: AppLocalization.of(context).income,
+            data: firstData),
+      ];
+    } else {
+      series = [];
+    }
 
     return charts.LineChart(series,
         domainAxis: new charts.NumericAxisSpec(
@@ -890,5 +947,6 @@ class _TransactionGraphState extends State<TransactionGraph> {
 class GraphData {
   int day;
   int amount;
+
   GraphData({this.day, this.amount});
 }

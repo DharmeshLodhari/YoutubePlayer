@@ -75,30 +75,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
     basketBloc = Provider.of<BasketBloc>(context);
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
-    // return Scaffold(
-    //   key: _scaffoldKey,
-    //   backgroundColor: lightBlue(),
-    //   appBar: AppBar(
-    //     automaticallyImplyLeading: false,
-    //     backgroundColor: darkBlue(),
-    //     title: Text(AppLocalization.of(context).basket),
-    //     actions: <Widget>[
-    //       addItemToBasket(),
-    //     ],
-    //   ),
-    //   body: SmartRefresher(
-    //       enablePullDown: true,
-    //       header: WaterDropHeader(
-    //         complete: Container(),
-    //         waterDropColor: darkBlue(),
-    //       ),
-    //       controller: _refreshController,
-    //       onRefresh: _onRefresh,
-    //       child: _buildBodyOfCart()),
-    //   floatingActionButton:
-    //       basketBloc.total == 0 ? Container() : checkoutWidget(),
-    //   floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-    // );
 
     return Scaffold(
       key: _scaffoldKey,
@@ -171,54 +147,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
   }
 
   Widget checkoutWidget() {
-    // return Card(
-    //   elevation: 5,
-    //   margin: EdgeInsets.symmetric(horizontal: 16),
-    //   child: Container(
-    //     padding: EdgeInsets.symmetric(horizontal: 8),
-    //     color: Colors.white,
-    //     child: Row(
-    //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //       children: <Widget>[
-    //         Row(
-    //           children: <Widget>[
-    //             Text(AppLocalization.of(context).total),
-    //             Text(
-    //               " : " + worldCurrencies[userBloc.user.currency] + " ",
-    //               style: TextStyle(
-    //                 fontFamily: "Roboto",
-    //               ),
-    //             ),
-    //             Text(
-    //               basketBloc.total.toString(),
-    //               style: TextStyle(fontSize: 18),
-    //             ),
-    //           ],
-    //         ),
-    //         MaterialButton(
-    //           color: darkBlue(),
-    //           child: Text(
-    //             AppLocalization.of(context).buy,
-    //             style: TextStyle(color: Colors.white),
-    //           ),
-    //           onPressed: () {
-    //             if (basketBloc.items.length != 0) {
-    //               addNoteDialog();
-    //             } else {
-    //               Toast.show(
-    //                   AppLocalization.of(context).pleaseAddSomeItemsFirst,
-    //                   context,
-    //                   textColor: Colors.white,
-    //                   backgroundColor: darkBlue(),
-    //                   duration: Toast.LENGTH_LONG,
-    //                   gravity: Toast.CENTER);
-    //             }
-    //           },
-    //         )
-    //       ],
-    //     ),
-    //   ),
-    // );
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       margin: EdgeInsets.symmetric(horizontal: 16),
@@ -579,6 +507,7 @@ class VerticalListItem extends StatelessWidget {
     this.type = item["type"];
     this.item = item["item"];
   }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(

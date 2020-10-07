@@ -8,7 +8,9 @@ import 'package:sms_otp_auto_verify/sms_otp_auto_verify.dart';
 // ignore: must_be_immutable
 class VerifyResetPasswordOTPScreen extends StatefulWidget {
   var arguments;
+
   VerifyResetPasswordOTPScreen({this.arguments});
+
   @override
   _VerifyResetPasswordOTPScreenState createState() =>
       _VerifyResetPasswordOTPScreenState();

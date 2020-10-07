@@ -11,7 +11,9 @@ class SpendOnCategoryTile extends StatefulWidget {
   String amount;
   IconData icon;
   Color color;
+
   SpendOnCategoryTile({this.name, this.amount, this.icon, this.color});
+
   @override
   _SpendOnCategoryTileState createState() => _SpendOnCategoryTileState();
 }

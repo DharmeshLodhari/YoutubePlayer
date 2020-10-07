@@ -26,36 +26,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-//    return Scaffold(
-//      key: _scaffoldHomeKey,
-//      resizeToAvoidBottomInset: true,
-//      backgroundColor: lightBlue(),
-//      appBar: AppBar(
-//        automaticallyImplyLeading: false,
-//        backgroundColor: darkBlue(),
-//        title: Center(child: Text(AppLocalization.of(context).home)),
-//        actions: <Widget>[
-//          displayQRCodeButton(),
-//        ],
-//      ),
-//      body: SingleChildScrollView(
-//        scrollDirection: Axis.vertical,
-//        child: Container(
-//          color: lightBlue(),
-//          padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-//          child: Center(
-//            child: Column(
-//              children: <Widget>[
-//                SizedBox(height: 30),
-//                displayUserInfo(userBloc),
-//                SizedBox(height: 30),
-//                displayPaymentButtons(),
-//              ],
-//            ),
-//          ),
-//        ),
-//      ),
-//    );
+
     return Scaffold(
       key: _scaffoldHomeKey,
       resizeToAvoidBottomInset: true,
@@ -375,82 +346,6 @@ class _HomeState extends State<Home> {
       ),
     );
   }
-
-//  Widget displayPaymentButtons() {
-//    return Row(
-//      children: <Widget>[
-//        Expanded(
-//          child: Padding(
-//            padding: const EdgeInsets.fromLTRB(0.0, 8.0, 8.0, 8.0),
-//            child: ButtonTheme(
-//              //elevation: 4,
-//              child: MaterialButton(
-//                elevation: 4.0,
-//                onPressed: () {
-//                  Connectivity().checkConnectivity().then((value) {
-//                    var connectionResult = value;
-//                    if (connectionResult == ConnectivityResult.wifi ||
-//                        connectionResult == ConnectivityResult.mobile) {
-//                      Navigator.of(context).pushNamed('/request-payment',
-//                          arguments: <String, bool>{
-//                            'isFromProfile': true,
-//                            'isRequest': true
-//                          });
-//                    } else {
-//                      Toast.show(
-//                          AppLocalization.of(context)
-//                              .internetConnectionNotAvailable,
-//                          context,
-//                          gravity: Toast.BOTTOM,
-//                          backgroundColor: darkBlue());
-//                    }
-//                  });
-//                },
-//                textColor: Colors.white,
-//                color: darkBlue(),
-//                height: 50,
-//                child: Text(AppLocalization.of(context).request),
-//              ),
-//            ),
-//          ),
-//        ),
-//        Expanded(
-//          child: Padding(
-//            padding: const EdgeInsets.fromLTRB(8.0, 8.0, 0.0, 8.0),
-//            child: ButtonTheme(
-//              //elevation: 4,
-//
-//              child: MaterialButton(
-//                elevation: 4.0,
-//                onPressed: () {
-//                  Connectivity().checkConnectivity().then((value) {
-//                    var connectionResult = value;
-//                    if (connectionResult == ConnectivityResult.wifi ||
-//                        connectionResult == ConnectivityResult.mobile) {
-//                      Navigator.of(context).pushNamed('/send-payment',
-//                          arguments: <String, bool>{'isFromProfile': true});
-//                    } else {
-//                      Toast.show(
-//                          AppLocalization.of(context)
-//                              .internetConnectionNotAvailable,
-//                          context,
-//                          gravity: Toast.BOTTOM,
-//                          backgroundColor: darkBlue());
-//                    }
-//                  });
-//                },
-//                textColor: Colors.white,
-//                color: darkBlue(),
-//                height: 50,
-//                child: Text(AppLocalization.of(context)
-//                    .send), // change this to make payment request button to
-//              ),
-//            ),
-//          ),
-//        ),
-//      ],
-//    );
-//  }
 
   Widget displayQRCodeButton() {
     return Padding(

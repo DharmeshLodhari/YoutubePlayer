@@ -13,6 +13,7 @@ import '../../utils/colors.dart';
 class PaymentRequestTile extends StatefulWidget {
   final PaymentRequest paymentRequest;
   Widget expandedWidget = Container();
+
   PaymentRequestTile({this.paymentRequest, this.expandedWidget});
 
   @override
@@ -142,6 +143,7 @@ class _PaymentRequestTileState extends State<PaymentRequestTile> {
 class TransactionTile extends StatefulWidget {
   final Transaction transaction;
   Widget expandedWidget = Container();
+
   TransactionTile({this.transaction, this.expandedWidget});
 
   @override

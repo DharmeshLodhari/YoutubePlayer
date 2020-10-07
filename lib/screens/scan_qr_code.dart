@@ -1,8 +1,8 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/store.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
@@ -19,6 +19,7 @@ class QRCodeView extends StatefulWidget {
 
 class _QRCodeViewState extends State<QRCodeView> {
   var arguments;
+
   _QRCodeViewState({this.arguments});
 
   bool isRequest = false;
@@ -29,6 +30,7 @@ class _QRCodeViewState extends State<QRCodeView> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   var qrText = "";
   QRViewController controller;
+
   @override
   void initState() {
     print(arguments);

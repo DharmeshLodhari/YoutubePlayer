@@ -13,6 +13,7 @@ class KeyboardUIConfig {
   final Color digitFillColor;
   final EdgeInsetsGeometry keyboardRowMargin;
   final EdgeInsetsGeometry digitInnerMargin;
+
   //Size for the keyboard can be define and provided from the app. If it will not be provided the size will be adjusted to a screen size.
   final Size keyboardSize;
 

@@ -13,6 +13,7 @@ import '../utils/colors.dart';
 // ignore: must_be_immutable
 class Index extends StatefulWidget {
   var arguments;
+
   Index({this.arguments});
 
   @override
@@ -140,13 +141,6 @@ class _IndexState extends State<Index> {
                       SizedBox(
                         height: 10,
                       ),
-//                Row(
-//                  children: <Widget>[
-//                    Expanded(flex: 3, child: loginButton()),
-//                    Expanded(flex: 1, child: SizedBox(height: 10)),
-//                    Expanded(flex: 3, child: registerButton()),
-//                  ],
-//                )
                     ],
                   ),
                 ),
@@ -292,7 +286,7 @@ class _IndexState extends State<Index> {
                       "SCAN QR CODE",
                       textAlign: TextAlign.center,
                       style:
-                      TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+                          TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
                     ),
                     SizedBox(
                       height: 20,
@@ -380,8 +374,6 @@ class _IndexState extends State<Index> {
       ),
     );
   }
-
-
 
   Widget thirdScreen() {
     return Scaffold(

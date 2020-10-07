@@ -15,6 +15,7 @@ class Device {
 
 class Language {
   const Language(this.name, this.languageCode);
+
   final String name;
   final String languageCode;
 }

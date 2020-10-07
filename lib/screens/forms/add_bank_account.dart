@@ -72,54 +72,6 @@ class _AddAccountState extends State<AddAccount> {
   }
 
   Widget scaffoldBody() {
-    // return SingleChildScrollView(
-    //   scrollDirection: Axis.vertical,
-    //   child: Form(
-    //     key: _formKey,
-    //     child: Container(
-    //       color: lightBlue(),
-    //       padding: EdgeInsets.symmetric(horizontal: 24),
-    //       child: Column(
-    //         mainAxisSize: MainAxisSize.max,
-    //         children: <Widget>[
-    //           SizedBox(height: 20),
-    //           Text(
-    //             AppLocalization.of(context).bankAccountTerms,
-    //             style: TextStyle(
-    //               color: Colors.white,
-    //             ),
-    //           ),
-    //           SizedBox(height: 20),
-    //           getBankNameDropDownMenu(),
-    //           SizedBox(height: 10),
-    //           getAccountName(),
-    //           SizedBox(height: 10),
-    //           getAccountNumber(),
-    //           SizedBox(height: 20),
-    //           Text(
-    //             AppLocalization.of(context).setDefaultAccountMsg,
-    //             style: TextStyle(color: Colors.white),
-    //           ),
-    //           checkButton(),
-    //           SizedBox(height: 10),
-    //           errorMessage != ""
-    //               ? Text(
-    //                   errorMessage,
-    //                   style: TextStyle(color: Colors.red),
-    //                 )
-    //               : Container(),
-    //           getUserAgreeCheckBoxWidget(),
-    //           SizedBox(
-    //             height: 10,
-    //           ),
-    //           isUserAgree
-    //               ? getSubmitButton(userBloc.user.userName)
-    //               : Container(),
-    //         ],
-    //       ),
-    //     ),
-    //   ),
-    // );
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: Container(
@@ -177,45 +129,6 @@ class _AddAccountState extends State<AddAccount> {
   }
 
   Widget getBankNameDropDownMenu() {
-    // return DropdownButtonFormField(
-    //   isExpanded: true,
-    //   decoration: InputDecoration(
-    //     isDense: true,
-    //     fillColor: Colors.white,
-    //     filled: true,
-    //     border: OutlineInputBorder(
-    //       borderRadius: BorderRadius.all(Radius.circular(4)),
-    //       borderSide: BorderSide(
-    //           width: 1, color: Colors.white, style: BorderStyle.solid),
-    //     ),
-    //   ),
-    //   value: bankName,
-    //   icon: Flexible(
-    //     child: Icon(
-    //       Icons.keyboard_arrow_down,
-    //     ),
-    //     fit: FlexFit.loose,
-    //   ),
-    //   iconSize: 24,
-    //   elevation: 16,
-    //   style: TextStyle(color: Colors.black),
-    //   onChanged: (String val) {
-    //     if (mounted) {
-    //       setState(() {
-    //         bankName = val.trim();
-    //       });
-    //     }
-    //   },
-    //   items: banks.map((bank) {
-    //     return DropdownMenuItem(
-    //       value: bank.slug.trim(),
-    //       child: Text(
-    //         bank.name,
-    //         style: TextStyle(color: darkBlue(), fontSize: 18),
-    //       ),
-    //     );
-    //   }).toList(),
-    // );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -284,34 +197,6 @@ class _AddAccountState extends State<AddAccount> {
   }
 
   Widget getAccountName() {
-    // return TextFormField(
-    //   autofocus: false,
-    //   obscureText: false,
-    //   keyboardType: TextInputType.text,
-    //   decoration: InputDecoration(
-    //       prefixIcon: Icon(Icons.person),
-    //       fillColor: Colors.white,
-    //       filled: true,
-    //       hintText: AppLocalization.of(context).accountNameHint,
-    //       labelStyle: TextStyle(
-    //         color: Colors.black,
-    //         fontSize: 16,
-    //       ),
-    //       border: OutlineInputBorder(
-    //           borderRadius: BorderRadius.all(Radius.circular(4)),
-    //           borderSide: BorderSide(
-    //               width: 1, color: Colors.green, style: BorderStyle.solid))),
-    //   validator: (val) => val.length < 5
-    //       ? AppLocalization.of(context).validationTextMessage
-    //       : null,
-    //   onChanged: (val) {
-    //     if (mounted) {
-    //       setState(() {
-    //         accountName = val;
-    //       });
-    //     }
-    //   },
-    // );
     return CustomizedTextFormField(
       labelText: AppLocalization.of(context).accountNameHint,
       validator: (val) => val.length < 5
@@ -328,35 +213,6 @@ class _AddAccountState extends State<AddAccount> {
   }
 
   Widget getAccountNumber() {
-    // return TextFormField(
-    //   autofocus: false,
-    //   obscureText: false,
-    //   keyboardType: TextInputType.number,
-    //   decoration: InputDecoration(
-    //       prefixIcon: Icon(Icons.format_list_numbered),
-    //       fillColor: Colors.white,
-    //       filled: true,
-    //       hintText: AppLocalization.of(context).accountNumber,
-    //       labelStyle: TextStyle(
-    //         color: Colors.black,
-    //         fontSize: 16,
-    //       ),
-    //       border: OutlineInputBorder(
-    //           borderRadius: BorderRadius.all(Radius.circular(4)),
-    //           borderSide: BorderSide(
-    //               width: 1, color: Colors.green, style: BorderStyle.solid))),
-    //   validator: (val) => val.length < 10
-    //       ? AppLocalization.of(context).validationTextMessage1
-    //       : null,
-    //   onChanged: (val) {
-    //     if (mounted) {
-    //       setState(() {
-    //         accountNumber = val;
-    //       });
-    //     }
-    //   },
-    // );
-
     return CustomizedTextFormField(
       labelText: AppLocalization.of(context).accountNumber,
       keyboardType: TextInputType.number,
@@ -374,18 +230,6 @@ class _AddAccountState extends State<AddAccount> {
   }
 
   Widget checkButton() {
-    // return Switch(
-    //   value: isDefault,
-    //   onChanged: (value) {
-    //     if (mounted) {
-    //       setState(() {
-    //         isDefault = value;
-    //       });
-    //     }
-    //   },
-    //   activeTrackColor: darkBlue(),
-    //   activeColor: darkBlue(),
-    // );
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -412,34 +256,6 @@ class _AddAccountState extends State<AddAccount> {
   }
 
   Widget getSubmitButton(String userName) {
-    // return ButtonTheme(
-    //   //color: Colors.green,
-    //   minWidth: double.infinity,
-    //   child: MaterialButton(
-    //     onPressed: () {
-    //       onSubmit(userName);
-    //     },
-    //     textColor: Colors.white,
-    //     color: darkBlue(),
-    //     height: 50,
-    //     child: Text(AppLocalization.of(context).submitButton),
-    //   ),
-    // );
-
-    // return ButtonTheme(
-    //   //color: Colors.green,
-    //   minWidth: double.infinity,
-    //   child: MaterialButton(
-    //     onPressed: () {
-    //       onSubmit(userName);
-    //     },
-    //     textColor: Colors.white,
-    //     color: darkBlue(),
-    //     height: 50,
-    //     child: Text(AppLocalization.of(context).submitButton),
-    //   ),
-    // );
-
     return CurvedButton(
       onPressed: () {
         onSubmit(userName);
@@ -492,29 +308,6 @@ class _AddAccountState extends State<AddAccount> {
   }
 
   Widget getUserAgreeCheckBoxWidget() {
-    // return Row(
-    //   mainAxisSize: MainAxisSize.min,
-    //   children: <Widget>[
-    //     Checkbox(
-    //       value: isUserAgree,
-    //       activeColor: darkBlue(),
-    //       onChanged: (value) {
-    //         if (mounted) {
-    //           setState(() {
-    //             isUserAgree = value;
-    //           });
-    //         }
-    //       },
-    //     ),
-    //     Expanded(
-    //         child: Text(
-    //       AppLocalization.of(context).bankAccountUserAgreeTerm,
-    //       style: TextStyle(
-    //         color: Colors.white,
-    //       ),
-    //     ))
-    //   ],
-    // );
     return InkWell(
       child: Row(
         mainAxisSize: MainAxisSize.min,

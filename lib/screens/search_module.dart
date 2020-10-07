@@ -13,7 +13,6 @@ import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:popup_menu/popup_menu.dart';
 import 'package:provider/provider.dart';
 
 class SearchModule extends StatefulWidget {
@@ -47,9 +46,6 @@ class _SearchModuleState extends State<SearchModule> {
   GlobalKey textFormField = GlobalKey();
   TextEditingController searchItemTextController = TextEditingController();
 
-  //popupmenu variables
-  PopupMenu menu;
-  GlobalKey popupMenuBtnKey = GlobalKey();
   GlobalKey<ScaffoldState> _scaffoldSearchKey = GlobalKey<ScaffoldState>();
 
   //pagination variables
@@ -120,99 +116,6 @@ class _SearchModuleState extends State<SearchModule> {
     super.initState();
   }
 
-  void popUpMenu() {
-    menu = PopupMenu(
-      items: getMenuItems(),
-      onClickMenu: onClickMenu,
-      onDismiss: onDismiss,
-      context: context,
-      maxColumn: 4,
-    );
-    menu.show(widgetKey: popupMenuBtnKey);
-  }
-
-  List<MenuItem> getMenuItems() {
-    var menuItems = [
-      MenuItem(
-          textStyle: filterValue == 'Users'
-              ? TextStyle(color: lightBlue(), fontSize: 10)
-              : TextStyle(color: Colors.white, fontSize: 10),
-          title: AppLocalization.of(context).users,
-          image: Icon(
-            Icons.supervised_user_circle,
-            color: filterValue == 'Users' ? lightBlue() : Colors.white,
-          )),
-    ];
-
-    if (userBloc.user.setting.enableProduct) {
-      menuItems.add(
-        MenuItem(
-            textStyle: filterValue == 'Products'
-                ? TextStyle(color: lightBlue(), fontSize: 10)
-                : TextStyle(color: Colors.white, fontSize: 10),
-            title: AppLocalization.of(context).products,
-            image: Icon(
-              Icons.computer,
-              color: filterValue == 'Products' ? lightBlue() : Colors.white,
-            )),
-      );
-    }
-    if (userBloc.user.setting.enableService) {
-      menuItems.add(
-        MenuItem(
-            textStyle: filterValue == 'Services'
-                ? TextStyle(color: lightBlue(), fontSize: 10)
-                : TextStyle(color: Colors.white, fontSize: 10),
-            title: AppLocalization.of(context).services,
-            image: Icon(
-              Icons.burst_mode,
-              color: filterValue == 'Services' ? lightBlue() : Colors.white,
-            )),
-      );
-    }
-    return menuItems;
-  }
-
-  void stateChanged(bool isShow) {
-    debugPrint('menu is ${isShow ? 'showing' : 'closed'}');
-  }
-
-  void onClickMenu(MenuItemProvider item) {
-    if (mounted) {
-      setState(() {
-        searchItemTextController.text = "";
-        count = 0;
-        next = "";
-        previous = "";
-        results.clear();
-        noItemInList = false;
-        filterValue = item.menuTitle;
-        hint = AppLocalization.of(context).find + " $filterValue";
-        if (filterValue == "Users") {
-          icon = Icon(
-            Icons.supervised_user_circle,
-            color: Colors.white,
-            size: 28,
-          );
-        } else if (filterValue == "Products") {
-          icon = Icon(
-            Icons.computer,
-            color: Colors.white,
-            size: 28,
-          );
-        } else if (filterValue == "Services") {
-          icon = Icon(
-            Icons.burst_mode,
-            color: Colors.white,
-            size: 28,
-          );
-        }
-      });
-    }
-  }
-
-  void onDismiss() {}
-
   void menuItemSelectionChange(String value, int index) {
     selectedMenuItemIndex = index;
     debugPrint("selectedMenuItemIndex $selectedMenuItemIndex");
@@ -258,45 +161,6 @@ class _SearchModuleState extends State<SearchModule> {
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
 
-    // return Scaffold(
-    //   key: _scaffoldSearchKey,
-    //   backgroundColor: lightBlue(),
-    //   resizeToAvoidBottomInset: true,
-    //   appBar: AppBar(
-    //     titleSpacing: 0,
-    //     backgroundColor: darkBlue(),
-    //     title: Row(
-    //       mainAxisAlignment: MainAxisAlignment.start,
-    //       children: <Widget>[
-    //         Expanded(child: autoComplete()),
-    //       ],
-    //     ),
-    //     automaticallyImplyLeading: true,
-    //     leading: icon,
-    //     actions: <Widget>[
-    //       IconButton(
-    //         key: popupMenuBtnKey,
-    //         icon: Icon(
-    //           Icons.more_vert,
-    //           color: Colors.white,
-    //         ),
-    //         onPressed: () {
-    //           popUpMenu();
-    //         },
-    //       )
-    //     ],
-    //   ),
-    //   body: Container(
-    //     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-    //     child: Column(
-    //       children: <Widget>[
-    //         Expanded(
-    //           child: _buildResultList(),
-    //         ),
-    //       ],
-    //     ),
-    //   ),
-    // );
     return Scaffold(
       key: _scaffoldSearchKey,
       resizeToAvoidBottomInset: true,
@@ -466,34 +330,6 @@ class _SearchModuleState extends State<SearchModule> {
       ),
     );
   }
-
-  // Widget _buildResultList() {
-  //   return isSearchIsEmpty
-  //       ? NoItemInList(
-  //           msg: AppLocalization.of(context).pleaseTypeSomethingToGetResult,
-  //         )
-  //       : noItemInList
-  //           ? NoItemInList(
-  //               msg: AppLocalization.of(context).noResultFound,
-  //             )
-  //           : ListView.builder(
-  //               //+1 for progressbar
-  //               itemCount: results.length + 1,
-  //               // ignore: missing_return
-  //               itemBuilder: (BuildContext context, int index) {
-  //                 if (index == results.length) {
-  //                   return _buildIndicator();
-  //                 } else {
-  //                   try {
-  //                     return results[index];
-  //                   } catch (error) {
-  //                     debugPrint(error);
-  //                   }
-  //                 }
-  //               },
-  //               controller: _scrollController,
-  //             );
-  // }
 
   Widget _buildResultList() {
     return isSearchIsEmpty
@@ -701,31 +537,6 @@ class _SearchModuleState extends State<SearchModule> {
         context, productCard(product, object), product);
   }
 
-  // Widget productCard(Product product, var object) {
-  //   return Card(
-  //     child: Container(
-  //       child: Column(
-  //         children: <Widget>[
-  //           Padding(
-  //             padding: EdgeInsets.symmetric(vertical: 8),
-  //             child: ListTile(
-  //               leading: getLeading(product, object),
-  //               title: getTitle(product),
-  //               trailing: product.price.toString().length > 6
-  //                   ? null
-  //                   : getTrailing(product),
-  //               subtitle: getSubtitle(product),
-  //               onTap: () {
-  //                 Navigator.pushNamed(context, '/product',
-  //                     arguments: {"product": product});
-  //               },
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
   Widget productCard(Product product, var object) {
     return Container(
       color: Colors.white,
@@ -1134,20 +945,6 @@ class _SearchModuleState extends State<SearchModule> {
         backgroundColor: navyBlue,
         slideController: slidableController,
       ),
-      // IconSlideAction(
-      //   caption: AppLocalization.of(context).request,
-      //   color: Colors.green,
-      //   icon: Icons.event_note,
-      //   onTap: () async {
-      //     customerProfileBloc.customer =
-      //         await _auth.fetchCustomerProfile(user.userName);
-      //     Navigator.of(context).pushNamed('/request-payment',
-      //         arguments: <String, bool>{
-      //           'isFromProfile': false,
-      //           'isRequest': true
-      //         });
-      //   },
-      // ),
     ];
   }
 
@@ -1181,17 +978,6 @@ class _SearchModuleState extends State<SearchModule> {
         backgroundColor: naturalGreen,
         slideController: slidableController1,
       ),
-      // IconSlideAction(
-      //   caption: "Message",
-      //   color: Colors.green,
-      //   icon: Icons.message,
-      //   onTap: () async {
-      //     Navigator.of(context).pushNamed('/compose_message', arguments: {
-      //       'recipient': product.seller,
-      //       'subject': product.name,
-      //     });
-      //   },
-      // ),
     ];
   }
 
@@ -1209,19 +995,6 @@ class _SearchModuleState extends State<SearchModule> {
         backgroundColor: navyBlue,
         slideController: slidableController1,
       ),
-      // IconSlideAction(
-      //     caption: AppLocalization.of(context).buy,
-      //     color: Colors.green,
-      //     icon: Icons.shopping_basket,
-      //     onTap: () async {
-      //       customerProfileBloc.customer =
-      //           await _auth.fetchCustomerProfile(product.seller);
-      //       Navigator.of(context).pushNamed('/send-payment', arguments: {
-      //         'isFromProfile': false,
-      //         'isRequest': false,
-      //         'product': product
-      //       });
-      //     }),
     ];
   }
 
@@ -1316,6 +1089,7 @@ class VerticalListItem extends StatelessWidget {
 // ignore: must_be_immutable
 class VerticalListItem1 extends StatelessWidget {
   VerticalListItem1(this.child, this.product);
+
   final Widget child;
   Product product;
 

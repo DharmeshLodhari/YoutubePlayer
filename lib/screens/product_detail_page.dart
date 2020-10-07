@@ -21,7 +21,9 @@ import 'package:toast/toast.dart';
 // ignore: must_be_immutable
 class ProductDetailPage extends StatefulWidget {
   var arguments;
+
   ProductDetailPage({@required this.arguments});
+
   @override
   _ProductDetailPageState createState() =>
       _ProductDetailPageState(arguments: arguments);
@@ -30,6 +32,7 @@ class ProductDetailPage extends StatefulWidget {
 class _ProductDetailPageState extends State<ProductDetailPage>
     with TickerProviderStateMixin {
   var arguments;
+
   _ProductDetailPageState({this.arguments});
 
   final _auth = AuthService();
@@ -110,44 +113,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     basketBloc = Provider.of<BasketBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
     isValidCustomer = userBloc.user.userName != product.seller;
-    // return WillPopScope(
-    //   onWillPop: () async {
-    //     customerProfileBloc.customer = null;
-    //     return true;
-    //   },
-    //   child: Scaffold(
-    //     backgroundColor: lightBlue(),
-    //     appBar: AppBar(
-    //       actions: <Widget>[messageSellerWidget(), goToBasket()],
-    //       backgroundColor: darkBlue(),
-    //       titleSpacing: 0,
-    //       title: Row(
-    //         children: <Widget>[
-    //           getUserProfile(),
-    //           Expanded(
-    //             child: SizedBox(
-    //               width: 14,
-    //             ),
-    //           ),
-    //           Text(
-    //             AppLocalization.of(context).productDetail,
-    //             style: TextStyle(
-    //               color: Colors.white,
-    //             ),
-    //           ),
-    //           Expanded(
-    //             child: SizedBox(
-    //               width: 14,
-    //             ),
-    //           ),
-    //         ],
-    //       ),
-    //     ),
-    //     floatingActionButton: addToCart(),
-    //     body: _buildProductDetailsPage(context),
-    //     floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-    //   ),
-    // );
+
     return WillPopScope(
       onWillPop: () async {
         customerProfileBloc.customer = null;
@@ -376,60 +342,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget floatingActionBar() {
-    // return Card(
-    //   elevation: 10,
-    //   margin: EdgeInsets.symmetric(horizontal: 15),
-    //   child: Container(
-    //     padding: EdgeInsets.all(8),
-    //     height: 55,
-    //     child: Row(
-    //       children: <Widget>[
-    //         _buildBuyButtonWidget(),
-    //         SizedBox(
-    //           width: 12,
-    //         ),
-    //         Expanded(
-    //           child: MaterialButton(
-    //             height: double.infinity,
-    //             color: lightBlue(),
-    //             child: Icon(
-    //               Icons.add_shopping_cart,
-    //               color: Colors.white,
-    //             ),
-    //             onPressed: () async {
-    //               if (isValidCustomer) {
-    //                 String type = product is Product ? "product" : "service";
-    //                 basketBloc.addItemToCart(item: product, type: type);
-    //                 var mapData;
-    //                 basketBloc.items.forEach((element) {
-    //                   if (element["item"].id == product.id) {
-    //                     mapData = element;
-    //                     return;
-    //                   }
-    //                 });
-    //                 Map data = {
-    //                   "type": type,
-    //                   "id": mapData["item"].id,
-    //                   "qty": mapData["qty"],
-    //                 };
-    //                 debugPrint("Data From Product Page : $data");
-    //                 await _auth.addItemToShoppingCart(data);
-    //               } else {
-    //                 Toast.show(
-    //                     AppLocalization.of(context).youCanNotPurchaseThisItem,
-    //                     context,
-    //                     textColor: Colors.white,
-    //                     backgroundColor: darkBlue(),
-    //                     duration: Toast.LENGTH_LONG);
-    //               }
-    //             },
-    //           ),
-    //         ),
-    //       ],
-    //     ),
-    //   ),
-    // );
-
     return Card(
       elevation: 10,
       margin: EdgeInsets.zero,
@@ -454,39 +366,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   _buildProductDetailsPage(BuildContext context) {
-    Size screenSize = MediaQuery.of(context).size;
-
-    // return ListView(
-    //   controller: _scrollController,
-    //   children: <Widget>[
-    //     Container(
-    //       padding: const EdgeInsets.all(4.0),
-    //       child: Card(
-    //         elevation: 4.0,
-    //         child: Column(
-    //           crossAxisAlignment: CrossAxisAlignment.start,
-    //           children: <Widget>[
-    //             _buildProductImagesWidgets(),
-    //             _buildProductTitleAndPriceWidget(),
-    //             SizedBox(height: 12.0),
-    //             _buildShortInfoWidget(),
-    //             SizedBox(height: 12.0),
-    //             SizedBox(height: 12.0),
-    //             _buildDivider(screenSize),
-    //             SizedBox(height: 12.0),
-    //             _buildAvailableFromAndShareWidgets(),
-    //             SizedBox(height: 12.0),
-    //             _buildDivider(screenSize),
-    //             _buildDescriptionWidget(),
-    //             SizedBox(height: 30.0),
-    //             isOtherItemIsEmpty ? Container() : _buildSellersOtherProducts(),
-    //             SizedBox(height: 80.0),
-    //           ],
-    //         ),
-    //       ),
-    //     ),
-    //   ],
-    // );
     return ListView(
       controller: _scrollController,
       children: <Widget>[
@@ -558,18 +437,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     );
   }
 
-  _buildDivider(Size screenSize) {
-    return Column(
-      children: <Widget>[
-        Container(
-          color: Colors.grey[600],
-          width: screenSize.width,
-          height: 0.25,
-        ),
-      ],
-    );
-  }
-
   final List<Widget> imageSliders = imgList
       .map((item) => Container(
             child: CachedNetworkImage(
@@ -580,66 +447,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       .toList();
 
   _buildProductImagesWidgets() {
-    // return Column(
-    //   children: <Widget>[
-    //     Stack(
-    //       children: <Widget>[
-    //         CarouselSlider(
-    //           options: CarouselOptions(
-    //               viewportFraction: 1.0,
-    //               enlargeCenterPage: false,
-    //               autoPlay: false,
-    //               aspectRatio: 1.2,
-    //               onPageChanged: (index, _) {
-    //                 if (mounted) {
-    //                   setState(() {
-    //                     _current = index;
-    //                   });
-    //                 }
-    //               }),
-    //           items: imgList
-    //               .map((item) => Container(
-    //                     child: Center(
-    //                         child: ClipRRect(
-    //                       borderRadius: BorderRadius.only(
-    //                           topLeft: Radius.circular(4),
-    //                           topRight: Radius.circular(4)),
-    //                       child: CachedNetworkImage(
-    //                         imageUrl: item,
-    //                         fit: BoxFit.fill,
-    //                         height: double.infinity,
-    //                         width: double.infinity,
-    //                       ),
-    //                     )),
-    //                   ))
-    //               .toList(),
-    //         ),
-    //         Positioned(
-    //           bottom: 0,
-    //           left:
-    //               MediaQuery.of(context).size.width / 2 - (5 * imgList.length),
-    //           child: Row(
-    //             crossAxisAlignment: CrossAxisAlignment.end,
-    //             mainAxisAlignment: MainAxisAlignment.center,
-    //             children: imgList.map((url) {
-    //               int index = imgList.indexOf(url);
-    //               return Container(
-    //                 width: 5.0,
-    //                 height: 5.0,
-    //                 margin:
-    //                     EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
-    //                 decoration: BoxDecoration(
-    //                   shape: BoxShape.circle,
-    //                   color: _current == index ? lightBlue() : Colors.white,
-    //                 ),
-    //               );
-    //             }).toList(),
-    //           ),
-    //         )
-    //       ],
-    //     ),
-    //   ],
-    // );
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 4.0),
       child: Column(
@@ -704,54 +511,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget _buildProductTitleAndPriceWidget() {
-    // return Row(
-    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //   crossAxisAlignment: CrossAxisAlignment.center,
-    //   children: <Widget>[
-    //     Expanded(
-    //       child: Padding(
-    //         padding: const EdgeInsets.fromLTRB(20, 28, 0, 0),
-    //         child: Column(
-    //           crossAxisAlignment: CrossAxisAlignment.start,
-    //           children: <Widget>[
-    //             Text(
-    //               //name,
-    //               product.name,
-    //               style: TextStyle(
-    //                   fontSize: 13.0,
-    //                   color: Colors.grey[600],
-    //                   fontWeight: FontWeight.w500),
-    //             ),
-    //             Padding(
-    //               padding: const EdgeInsets.only(top: 8.0),
-    //               child: Row(
-    //                 mainAxisSize: MainAxisSize.min,
-    //                 children: <Widget>[
-    //                   Text(
-    //                     worldCurrencies[product.currency],
-    //                     style: TextStyle(
-    //                         fontFamily: "Roboto",
-    //                         fontSize: 28.0,
-    //                         color: Colors.black,
-    //                         fontWeight: FontWeight.w600),
-    //                   ),
-    //                   Text(
-    //                     product.price,
-    //                     style: TextStyle(
-    //                         fontSize: 28.0,
-    //                         color: Colors.black,
-    //                         fontWeight: FontWeight.w600),
-    //                   ),
-    //                 ],
-    //               ),
-    //             ),
-    //           ],
-    //         ),
-    //       ),
-    //     ),
-    //     copyQrCode(),
-    //   ],
-    // );
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -800,26 +559,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget copyQrCode() {
-    // return MaterialButton(
-    //   child: Row(
-    //     children: <Widget>[
-    //       CachedNetworkImage(
-    //         imageUrl: product.qrCode,
-    //         height: 50,
-    //         width: 50,
-    //         filterQuality: FilterQuality.high,
-    //         fit: BoxFit.fill,
-    //       ),
-    //     ],
-    //   ),
-    //   onPressed: () {
-    //     Clipboard.setData(new ClipboardData(text: product.qrCode));
-    //     Toast.show(AppLocalization.of(context).copied, context,
-    //         gravity: Toast.CENTER,
-    //         duration: Toast.LENGTH_LONG,
-    //         backgroundColor: darkBlue());
-    //   },
-    // );
     return Card(
       shadowColor: boxShadow,
       elevation: 2,
@@ -881,53 +620,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget _buildAvailableFromAndShareWidgets() {
-    // return Padding(
-    //   padding: const EdgeInsets.symmetric(
-    //     horizontal: 12.0,
-    //   ),
-    //   child: Row(
-    //     mainAxisSize: MainAxisSize.max,
-    //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //     children: <Widget>[
-    //       Row(
-    //         children: <Widget>[
-    //           Icon(
-    //             Icons.date_range,
-    //             color: Colors.black,
-    //           ),
-    //           SizedBox(
-    //             width: 12.0,
-    //           ),
-    //           Text(
-    //             "${product.availableFrom.day}/${product.availableFrom.month}/${product.availableFrom.year}",
-    //             style: TextStyle(
-    //               color: Colors.black,
-    //             ),
-    //           ),
-    //         ],
-    //       ),
-    //       Expanded(
-    //         child: Container(),
-    //       ),
-    //       MaterialButton(
-    //         minWidth: 100,
-    //         child: Row(
-    //           children: <Widget>[
-    //             Icon(Icons.share),
-    //             SizedBox(width: 12),
-    //             Text(AppLocalization.of(context).share)
-    //           ],
-    //         ),
-    //         onPressed: () {
-    //           var shareBody = "${product.name}\n" +
-    //               "http://slydo.co/products/" +
-    //               product.id.toString();
-    //           Share.share(shareBody, subject: "${product.name}");
-    //         },
-    //       )
-    //     ],
-    //   ),
-    // );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -993,59 +685,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget _buildSellersOtherProducts() {
-    // return Container(
-    //   height: 250,
-    //   child: Column(
-    //     crossAxisAlignment: CrossAxisAlignment.start,
-    //     children: <Widget>[
-    //       Row(
-    //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //         children: <Widget>[
-    //           Padding(
-    //             padding: const EdgeInsets.only(left: 12.0),
-    //             child: Text(
-    //               AppLocalization.of(context).sellersOtherProduct,
-    //               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
-    //             ),
-    //           ),
-    //           GestureDetector(
-    //             child: Padding(
-    //               padding: const EdgeInsets.only(right: 12.0),
-    //               child: Text(
-    //                 AppLocalization.of(context).seeAll,
-    //                 style: TextStyle(
-    //                     fontWeight: FontWeight.bold,
-    //                     fontSize: 12,
-    //                     color: lightBlue()),
-    //               ),
-    //             ),
-    //             onTap: () {
-    //               _auth.fetchCustomerProfile(product.seller).then((user) {
-    //                 Navigator.pushNamed(context, '/profile',
-    //                     arguments: {"searchedUser": user, "index": 1});
-    //               });
-    //             },
-    //           ),
-    //         ],
-    //       ),
-    //       SizedBox(
-    //         height: 10,
-    //       ),
-    //       Expanded(
-    //         child: ListView.builder(
-    //           padding: EdgeInsets.symmetric(horizontal: 8),
-    //           itemCount: sellersOtherItems.length,
-    //           scrollDirection: Axis.horizontal,
-    //           itemBuilder: (context, index) => displayProduct(
-    //             context: context,
-    //             product: sellersOtherItems[index],
-    //           ),
-    //         ),
-    //       ),
-    //     ],
-    //   ),
-    // );
-
     return Container(
       height: 250,
       child: Column(
@@ -1102,37 +741,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget _buildBuyButtonWidget() {
-    // return Expanded(
-    //   child: Container(
-    //     decoration: BoxDecoration(
-    //       border: Border.all(
-    //         color: lightBlue(),
-    //         width: 2,
-    //         style: BorderStyle.solid,
-    //       ),
-    //       borderRadius: BorderRadius.circular(5),
-    //     ),
-    //     child: FlatButton(
-    //       color: Colors.white,
-    //       child: Text(
-    //         AppLocalization.of(context).buyNow,
-    //         style: TextStyle(color: lightBlue()),
-    //       ),
-    //       onPressed: () {
-    //         if (isValidCustomer) {
-    //           getRecipient();
-    //           navigateToSendPayment();
-    //         } else {
-    //           Toast.show(AppLocalization.of(context).youCanNotPurchaseThisItem,
-    //               context,
-    //               textColor: Colors.white,
-    //               backgroundColor: darkBlue(),
-    //               duration: Toast.LENGTH_LONG);
-    //         }
-    //       },
-    //     ),
-    //   ),
-    // );
     return Expanded(
       child: CurvedButton(
         backgroundColor: navyBlue,

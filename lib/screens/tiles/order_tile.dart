@@ -14,6 +14,7 @@ import '../../utils/colors.dart';
 class OrderTile extends StatelessWidget {
   UserBloc userBloc;
   final Order order;
+
   OrderTile({this.order});
 
   @override

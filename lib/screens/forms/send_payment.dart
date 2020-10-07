@@ -47,6 +47,7 @@ class _SendPaymentState extends State<SendPayment> {
 
   //for Product payment
   Product product;
+
   //for Service payment
   Service service;
 
@@ -158,24 +159,7 @@ class _SendPaymentState extends State<SendPayment> {
     userBloc = Provider.of<UserBloc>(context);
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
-    // return WillPopScope(
-    //   onWillPop: () async {
-    //     _payee = null;
-    //     customerProfileBloc.customer = null;
-    //     return true;
-    //   },
-    //   child: Scaffold(
-    //     backgroundColor: lightBlue(),
-    //     key: _sendPaymentScaffold,
-    //     resizeToAvoidBottomInset: true,
-    //     appBar: AppBar(
-    //         actions: <Widget>[getUserProfileIcon()],
-    //         leading: showBackArrow(),
-    //         title: Center(child: Text(AppLocalization.of(context).sendPayment)),
-    //         backgroundColor: darkBlue()),
-    //     body: scaffoldBody(),
-    //   ),
-    // );
+
     return WillPopScope(
       onWillPop: () async {
         _payee = null;
@@ -389,29 +373,6 @@ class _SendPaymentState extends State<SendPayment> {
       );
     }
 
-    // return _payee == null
-    //     ? Container()
-    //     : Card(
-    //         semanticContainer: true,
-    //         child: ListTile(
-    //           dense: true,
-    //           title: Text(
-    //             _payee.fullName,
-    //             style: TextStyle(
-    //                 color: Colors.black,
-    //                 fontWeight: FontWeight.bold,
-    //                 fontSize: 15),
-    //           ),
-    //           subtitle: Text(_payee.userName),
-    //           leading: avatarImage,
-    //           trailing: qrCodeImage,
-    //           onTap: () {
-    //             Navigator.pushNamed(context, '/profile',
-    //                 arguments: {"searchedUser": _payee});
-    //           },
-    //         ),
-    //       );
-
     return _payee == null
         ? Container()
         : Column(
@@ -449,44 +410,6 @@ class _SendPaymentState extends State<SendPayment> {
   }
 
   Widget getRecipientField() {
-    // return TextFormField(
-    //   controller: _recipientController,
-    //   enabled: isFromProfile,
-    //   focusNode: _recipientFocus,
-    //   textCapitalization: TextCapitalization.none,
-    //   cursorColor: darkBlue(),
-    //   validator: (value) {
-    //     if (!isFromProfile && value != _payee.userName) {
-    //       return AppLocalization.of(context).invalidRecipient;
-    //     }
-    //     return null;
-    //   },
-    //   autofocus: false,
-    //   obscureText: false,
-    //   decoration: InputDecoration(
-    //     prefixIcon: Icon(Icons.person),
-    //     fillColor: Colors.white,
-    //     filled: true,
-    //     hintText: AppLocalization.of(context).recipient,
-    //     labelStyle: TextStyle(
-    //       color: Colors.black,
-    //       fontSize: 16,
-    //     ),
-    //     border: OutlineInputBorder(
-    //         borderRadius: BorderRadius.all(Radius.circular(4)),
-    //         borderSide: BorderSide(
-    //             width: 1, color: Colors.white, style: BorderStyle.solid)),
-    //   ),
-    //   onChanged: (val) {
-    //     setState(() {
-    //       if (!isFromProfile && _payee != null) {
-    //         recipient = _payee.userName;
-    //       } else {
-    //         recipient = val.toLowerCase();
-    //       }
-    //     });
-    //   },
-    // );
     return CustomizedTextFormField(
       labelText: AppLocalization.of(context).recipient,
       controller: _recipientController,
@@ -513,74 +436,6 @@ class _SendPaymentState extends State<SendPayment> {
   }
 
   Widget displayAmountField() {
-    // return TextFormField(
-    //   cursorColor: darkBlue(),
-    //   controller: _amountController,
-    //   enabled: product == null && service == null,
-    //   autofocus: false,
-    //   obscureText: false,
-    //   keyboardType: TextInputType.number,
-    //   inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
-    //   decoration: InputDecoration(
-    //       fillColor: Colors.white,
-    //       filled: true,
-    //       prefixIcon: Container(
-    //         width: 20,
-    //         child: Center(
-    //           child: Text(
-    //             worldCurrencies[userBloc.user.currency],
-    //             textAlign: TextAlign.center,
-    //             style: TextStyle(
-    //               fontSize: 22,
-    //               fontWeight: FontWeight.bold,
-    //               color: Colors.grey[600],
-    //               fontFamily: "Roboto",
-    //             ),
-    //           ),
-    //         ),
-    //       ),
-    //       hintText: AppLocalization.of(context).enterAmount,
-    //       labelStyle: TextStyle(
-    //         color: Colors.black,
-    //         fontSize: 16,
-    //       ),
-    //       border: OutlineInputBorder(
-    //           borderRadius: BorderRadius.all(Radius.circular(4)),
-    //           borderSide: BorderSide(
-    //               width: 1, color: Colors.white, style: BorderStyle.solid))),
-    //   validator: (val) {
-    //     if (val.isNotEmpty) {
-    //       try {
-    //         int.parse(val);
-    //         return null;
-    //       } catch (e) {}
-    //     }
-    //     return AppLocalization.of(context).invalidAmount;
-    //   },
-    //   onTap: () async {
-    //     if (recipient != null) {
-    //       recipient = recipient.trim();
-    //       if (mounted) {
-    //         setState(() {
-    //           _recipientController.text = recipient;
-    //         });
-    //       }
-    //       await _auth.fetchCustomerProfile(recipient).then((customerProfile) {
-    //         if (customerProfile != null) {
-    //           setState(() {
-    //             _payee = customerProfile;
-    //             isValidPayee = _payee.userName != userBloc.user.userName;
-    //           });
-    //         }
-    //       });
-    //     }
-    //   },
-    //   onChanged: (val) {
-    //     setState(() {
-    //       amount = int.parse(val);
-    //     });
-    //   },
-    // );
     return CustomizedTextFormField(
       labelText: "Amount",
       isAmount: true,
@@ -717,47 +572,6 @@ class _SendPaymentState extends State<SendPayment> {
                 selectCategory();
               },
             ),
-            // child: DropdownButton<String>(
-            //   icon: Padding(
-            //     padding: EdgeInsets.only(right: 8.0),
-            //     child: Icon(
-            //       Icons.keyboard_arrow_down,
-            //       color: darkGrey,
-            //       size: 20,
-            //     ),
-            //   ),
-            //   isExpanded: true,
-            //   underline: Divider(
-            //     color: Colors.transparent,
-            //   ),
-            //   hint: Padding(
-            //     padding: const EdgeInsets.only(left: 16.0),
-            //     child: Text(AppLocalization.of(context).category),
-            //   ),
-            //   value: selectedCategory,
-            //   onChanged: (String value) {
-            //     if (mounted) {
-            //       setState(() {
-            //         selectedCategory = value;
-            //       });
-            //     }
-            //   },
-            //   items: paymentCategories.map((String category) {
-            //     return DropdownMenuItem<String>(
-            //       value: category,
-            //       child: Padding(
-            //         padding: const EdgeInsets.fromLTRB(16.0, 0, 0, 0),
-            //         child: Text(
-            //           category,
-            //           style: TextStyle(
-            //               color: blackFont,
-            //               fontSize: 16,
-            //               fontWeight: FontWeight.w600),
-            //         ),
-            //       ),
-            //     );
-            //   }).toList(),
-            // ),
           ),
         ),
       ],
@@ -841,33 +655,6 @@ class _SendPaymentState extends State<SendPayment> {
   }
 
   Widget getReferenceField() {
-    // return TextFormField(
-    //   cursorColor: darkBlue(),
-    //   autofocus: false,
-    //   enabled: product == null && service == null,
-    //   obscureText: false,
-    //   controller: _referenceController,
-    //   textCapitalization: TextCapitalization.sentences,
-    //   decoration: InputDecoration(
-    //       prefixIcon: Icon(Icons.note),
-    //       fillColor: Colors.white,
-    //       filled: true,
-    //       hintText: AppLocalization.of(context).reference,
-    //       labelStyle: TextStyle(
-    //         color: Colors.black,
-    //         fontSize: 16,
-    //       ),
-    //       border: OutlineInputBorder(
-    //           borderRadius: BorderRadius.all(Radius.circular(4)),
-    //           borderSide: BorderSide(
-    //               width: 1, color: Colors.white, style: BorderStyle.solid))),
-    //   onChanged: (val) {
-    //     setState(() {
-    //       reference = val;
-    //     });
-    //   },
-    // );
-
     return CustomizedTextFormField(
       labelText: AppLocalization.of(context).reference,
       textCapitalization: TextCapitalization.sentences,
@@ -884,140 +671,6 @@ class _SendPaymentState extends State<SendPayment> {
   }
 
   Widget getSubmitButton() {
-    // return ButtonTheme(
-    //   minWidth: double.infinity,
-    //   child: MaterialButton(
-    //     elevation: 4.0,
-    //     textColor: Colors.white,
-    //     color: darkBlue(),
-    //     height: 50,
-    //     child: Text(AppLocalization.of(context).sendPayment),
-    //     onPressed: () async {
-    //       if (FocusScope.of(context).hasFocus) {
-    //         FocusScope.of(context).unfocus();
-    //       }
-    //
-    //       if (!isValidPayee) {
-    //         setState(() {
-    //           errorMessage = AppLocalization.of(context).invalidRecipient;
-    //           return;
-    //         });
-    //       }
-    //
-    //       if (recipient == _payee.userName) {
-    //         if (!isValidPayee) {
-    //           setState(() {
-    //             errorMessage = AppLocalization.of(context).invalidRecipient;
-    //             return;
-    //           });
-    //         }
-    //
-    //         if (isValidPayee &&
-    //             _formKey.currentState.validate() &&
-    //             validateDropdown()) {
-    //           if (userBloc.user.userName != recipient) {
-    //             var userLocation;
-    //             Map deviceData;
-    //             try {
-    //               userLocation = await locationService.getLocation();
-    //               deviceData = await getDeviceInfo();
-    //               var data = {
-    //                 "from_customer": userBloc.user.userName,
-    //                 "to_customer": recipient.trim(),
-    //                 "currency": userBloc.user.currency,
-    //                 "amount": amount.toString().trim(),
-    //                 "category": selectedCategory.trim(),
-    //                 "notes": reference.trim(),
-    //                 "description": reference.trim(),
-    //                 "latitude": userLocation.latitude,
-    //                 "longitude": userLocation.longitude,
-    //                 "deviceData": deviceData
-    //               };
-    //
-    //               PassCodePopup(
-    //                   context: context,
-    //                   isValidCallback: () {
-    //                     showDialog(
-    //                         context: context,
-    //                         builder: (context) => Center(
-    //                                 child: CircularProgressIndicator(
-    //                               strokeWidth: 2.5,
-    //                               valueColor:
-    //                                   AlwaysStoppedAnimation(Colors.white),
-    //                               backgroundColor: lightBlue(),
-    //                             )));
-    //                     _auth.makePayment(data).then((value) {
-    //                       response = value;
-    //                       if (response.statusCode == 200) {
-    //                         popFromShoppingCart(product);
-    //                         //Pop Circular Progress Indicator
-    //                         Navigator.pop(context);
-    //                         //Pop send payment page
-    //                         Navigator.pop(context);
-    //                         Navigator.of(context).pushNamed(
-    //                           '/transactions',
-    //                         );
-    //                       } else if (response.statusCode == 500) {
-    //                         Navigator.pop(context);
-    //                         setState(() {
-    //                           errorMessage =
-    //                               AppLocalization.of(context).serverError;
-    //                           Toast.show(errorMessage, context,
-    //                               gravity: Toast.TOP,
-    //                               backgroundColor: darkBlue(),
-    //                               textColor: Colors.white);
-    //                         });
-    //                       } else if (response.statusCode == 700) {
-    //                         Navigator.pop(context);
-    //                         Navigator.pushNamed(context, "/bvn-verification");
-    //                       } else if (response.statusCode == 800) {
-    //                         Navigator.pop(context);
-    //                         Navigator.pushNamed(context, "/add-document");
-    //                       } else {
-    //                         Navigator.pop(context);
-    //                         setState(() {
-    //                           errorMessage = AppLocalization.of(context)
-    //                               .somethingWentWrong;
-    //                           Toast.show(errorMessage, context,
-    //                               gravity: Toast.TOP,
-    //                               backgroundColor: darkBlue(),
-    //                               textColor: Colors.white);
-    //                         });
-    //                       }
-    //                     });
-    //                   },
-    //                   cancelCallBack: () {
-    //                     Navigator.pop(context);
-    //                     _sendPaymentScaffold.currentState.showSnackBar(SnackBar(
-    //                       content:
-    //                           Text(AppLocalization.of(context).invalidPassword),
-    //                     ));
-    //                   });
-    //             } catch (e) {
-    //               print(e);
-    //               Toast.show(e, context,
-    //                   gravity: Toast.BOTTOM, backgroundColor: darkBlue());
-    //             }
-    //           } else {
-    //             Toast.show(
-    //               AppLocalization.of(context).invalidRecipient,
-    //               context,
-    //               textColor: Colors.white,
-    //               backgroundColor: darkBlue(),
-    //             );
-    //           }
-    //         }
-    //       } else {
-    //         var msg = AppLocalization.of(context).invalidRecipient;
-    //         Toast.show(msg, context,
-    //             gravity: Toast.CENTER,
-    //             backgroundColor: darkBlue(),
-    //             textColor: Colors.white);
-    //       }
-    //     },
-    //   ),
-    // );
-
     return CurvedButton(
       onPressed: onSubmit,
       backgroundColor: navyBlue,

@@ -341,6 +341,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
 
 class VerticalListItem extends StatelessWidget {
   VerticalListItem(this.user);
+
   final CustomerProfile user;
 
   @override

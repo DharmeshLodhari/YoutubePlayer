@@ -1,5 +1,4 @@
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:Slydo/screens/user_profile_module/user_info.dart';
 import 'package:Slydo/screens/user_profile_module/user_product_list.dart';
@@ -8,21 +7,24 @@ import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
-import 'package:popup_menu/popup_menu.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 
 // ignore: must_be_immutable
 class UserProfile extends StatefulWidget {
   var arguments;
+
   UserProfile({@required this.arguments});
+
   @override
   _UserProfileState createState() => _UserProfileState(arguments: arguments);
 }
 
 class _UserProfileState extends State<UserProfile> {
   var arguments;
+
   _UserProfileState({this.arguments});
+
   int currentIndex = 0;
   CustomerProfile searchedUser;
 
@@ -32,29 +34,12 @@ class _UserProfileState extends State<UserProfile> {
   UserBloc userBloc;
   double top;
 
-  //popupmenu variables
-  PopupMenu popUpMenuWidget;
-  GlobalKey popupMenuBtnKeyForMenu = GlobalKey();
-  var filterValue = "Info";
-
   // pageview controller
   PageController pageController;
 
   @override
   void initState() {
     searchedUser = arguments['searchedUser'];
-    // if (mounted) {
-    //   setState(() {
-    //     currentIndex = arguments['index'] ?? 0;
-    //     if (currentIndex == 0) {
-    //       filterValue = "Info";
-    //     } else if (currentIndex == 1) {
-    //       filterValue = "Products";
-    //     } else if (currentIndex == 2) {
-    //       filterValue = "Services";
-    //     }
-    //   });
-    // }
 
     currentIndex = arguments['index'] ?? 0;
     pageController = PageController(initialPage: currentIndex);
@@ -63,80 +48,6 @@ class _UserProfileState extends State<UserProfile> {
     }
     super.initState();
   }
-
-  void popUpMenu() {
-    popUpMenuWidget = PopupMenu(
-      context: context,
-      items: getMenuItems(),
-      onClickMenu: onClickMenu,
-      onDismiss: onDismiss,
-      maxColumn: 4,
-    );
-    popUpMenuWidget.show(widgetKey: popupMenuBtnKeyForMenu);
-  }
-
-  List<MenuItem> getMenuItems() {
-    var menuItems = [
-      MenuItem(
-          textStyle: filterValue == 'Info'
-              ? TextStyle(color: lightBlue(), fontSize: 10)
-              : TextStyle(color: Colors.white, fontSize: 10),
-          title: AppLocalization.of(context).info,
-          image: Icon(
-            Icons.computer,
-            color: filterValue == 'Info' ? lightBlue() : Colors.white,
-          )),
-    ];
-
-    menuItems.add(
-      MenuItem(
-          textStyle: filterValue == 'Products'
-              ? TextStyle(color: lightBlue(), fontSize: 10)
-              : TextStyle(color: Colors.white, fontSize: 10),
-          title: AppLocalization.of(context).products,
-          image: Icon(
-            Icons.computer,
-            color: filterValue == 'Products' ? lightBlue() : Colors.white,
-          )),
-    );
-
-    if (userBloc.user.setting.enableService) {
-      menuItems.add(
-        MenuItem(
-            textStyle: filterValue == 'Services'
-                ? TextStyle(color: lightBlue(), fontSize: 10)
-                : TextStyle(color: Colors.white, fontSize: 10),
-            title: AppLocalization.of(context).services,
-            image: Icon(
-              Icons.burst_mode,
-              color: filterValue == 'Services' ? lightBlue() : Colors.white,
-            )),
-      );
-    }
-
-    return menuItems;
-  }
-
-  void stateChanged(bool isShow) {
-    debugPrint('menu is ${isShow ? 'showing' : 'closed'}');
-  }
-
-  void onClickMenu(MenuItemProvider item) {
-    if (mounted) {
-      setState(() {
-        filterValue = item.menuTitle;
-        if (filterValue == "Info") {
-          currentIndex = 0;
-        } else if (filterValue == "Products") {
-          currentIndex = 1;
-        } else if (filterValue == "Services") {
-          currentIndex = 2;
-        }
-      });
-    }
-  }
-
-  void onDismiss() {}
 
   @override
   Widget build(BuildContext context) {
@@ -294,15 +205,6 @@ class _UserProfileState extends State<UserProfile> {
 
   List<Widget> actionButtons() {
     return [
-      // !isOwner
-      //     ? IconButton(
-      //         icon: Icon(
-      //           Icons.call,
-      //           color: Colors.white,
-      //         ),
-      //         onPressed: () {},
-      //       )
-      //     : Container(),
       !isOwner
           ? RoundedBackgroundIcon(
               height: 34,
@@ -347,9 +249,6 @@ class _UserProfileState extends State<UserProfile> {
           user: searchedUser,
           isOwner: isOwner,
         ),
-
-        // productsList(),
-        // servicesList(),
       ],
       onPageChanged: (int index) {
         currentIndex = index;

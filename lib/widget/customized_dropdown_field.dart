@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 class CustomizedDropDownField extends StatelessWidget {
   Widget child;
   String title;
+
   CustomizedDropDownField({@required this.child, @required this.title});
 
   @override

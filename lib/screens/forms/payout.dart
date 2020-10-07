@@ -43,42 +43,6 @@ class _PayoutState extends State<Payout> {
     userBloc = Provider.of<UserBloc>(context);
     bankAccountBloc = Provider.of<BankAccountBloc>(context);
 
-    // return WillPopScope(
-    //   onWillPop: () async {
-    //     return true;
-    //   },
-    //   child: Scaffold(
-    //     backgroundColor: lightBlue(),
-    //     resizeToAvoidBottomInset: true,
-    //     appBar: AppBar(
-    //         leading: showBackArrow(),
-    //         title: Center(child: Text(AppLocalization.of(context).payout)),
-    //         backgroundColor: darkBlue()),
-    //     body: SingleChildScrollView(
-    //       child: Container(
-    //         child: Center(
-    //           child: Form(
-    //             key: _formKey,
-    //             child: Column(
-    //               children: <Widget>[
-    //                 SizedBox(height: 20),
-    //                 displayBalance(),
-    //                 SizedBox(height: 10),
-    //                 getUserBankAccount(),
-    //                 SizedBox(height: 15),
-    //                 displayAmountField(),
-    //                 SizedBox(height: 15),
-    //                 noteForUser(),
-    //                 SizedBox(height: 15),
-    //                 accountBalance <= 0 ? Container() : getSubmitButton(),
-    //               ],
-    //             ),
-    //           ),
-    //         ),
-    //       ),
-    //     ),
-    //   ),
-    // );
     return WillPopScope(
       onWillPop: () async {
         return true;
@@ -131,9 +95,6 @@ class _PayoutState extends State<Payout> {
                 key: _formKey,
                 child: Column(
                   children: <Widget>[
-                    // flexibleSpace(),
-                    // displayBalance(),
-
                     getUserBankAccount(),
                     flexibleSpace(),
                     displayAmountField(),
@@ -204,59 +165,6 @@ class _PayoutState extends State<Payout> {
   }
 
   Widget displayAmountField() {
-    // return Padding(
-    //   padding: EdgeInsets.symmetric(horizontal: 40),
-    //   child: TextFormField(
-    //     cursorColor: darkBlue(),
-    //     autofocus: false,
-    //     obscureText: false,
-    //     keyboardType: TextInputType.number,
-    //     inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
-    //     decoration: InputDecoration(
-    //         fillColor: Colors.white,
-    //         filled: true,
-    //         prefixIcon: Container(
-    //           width: 20,
-    //           child: Center(
-    //             child: Text(
-    //               worldCurrencies[userBloc.user.currency],
-    //               textAlign: TextAlign.center,
-    //               style: TextStyle(
-    //                   fontFamily: "Roboto",
-    //                   fontSize: 22,
-    //                   fontWeight: FontWeight.bold,
-    //                   color: Colors.grey[600]),
-    //             ),
-    //           ),
-    //         ),
-    //         hintText: AppLocalization.of(context).enterAmount,
-    //         labelStyle: TextStyle(
-    //           color: Colors.black,
-    //           fontSize: 16,
-    //         ),
-    //         border: OutlineInputBorder(
-    //             borderRadius: BorderRadius.all(Radius.circular(4)),
-    //             borderSide: BorderSide(
-    //                 width: 1, color: Colors.white, style: BorderStyle.solid))),
-    //     validator: (val) {
-    //       if (val.isNotEmpty) {
-    //         try {
-    //           int.parse(val);
-    //           return null;
-    //         } catch (e) {}
-    //       }
-    //       return AppLocalization.of(context).invalidAmount;
-    //     },
-    //     onChanged: (val) {
-    //       if (mounted) {
-    //         setState(() {
-    //           amount = int.parse(val);
-    //         });
-    //       }
-    //     },
-    //   ),
-    // );
-
     return CustomizedTextFormField(
       labelText: "Amount",
       isAmount: true,
@@ -282,20 +190,6 @@ class _PayoutState extends State<Payout> {
   }
 
   Widget getSubmitButton() {
-    // return Container(
-    //   margin: EdgeInsets.symmetric(horizontal: 40),
-    //   child: ButtonTheme(
-    //     minWidth: double.infinity,
-    //     child: MaterialButton(
-    //       elevation: 4.0,
-    //       textColor: Colors.white,
-    //       color: darkBlue(),
-    //       height: 50,
-    //       child: Text(AppLocalization.of(context).submitButton),
-    //       onPressed: onSubmit,
-    //     ),
-    //   ),
-    // );
     return CurvedButton(
       onPressed: onSubmit,
       backgroundColor: navyBlue,

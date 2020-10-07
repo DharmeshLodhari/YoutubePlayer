@@ -193,21 +193,6 @@ class _UserLoginState extends State<UserLogin> {
     );
   }
 
-  // Widget phoneNumberField() {
-  //   return CustomizedTextFormField(
-  //     labelColor: darkGrey,
-  //     labelText: "Phone number",
-  //     keyboardType: TextInputType.phone,
-  //     controller: phoneNumberController,
-  //     validator: (val) {
-  //       if (val.isNotEmpty && val.length == 13) {
-  //         return null;
-  //       }
-  //       return AppLocalization.of(context).invalidPhoneNumber;
-  //     },
-  //   );
-  // }
-
   Widget phoneNumberField() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -223,7 +208,7 @@ class _UserLoginState extends State<UserLogin> {
             keyboardType: TextInputType.phone,
             controller: phoneNumberController,
             validator: (val) {
-              if (val.isNotEmpty && val.length == 9) {
+              if (val.isNotEmpty && val.length >= 9) {
                 return null;
               }
               return AppLocalization.of(context).invalidPhoneNumber;
@@ -427,18 +412,7 @@ class _UserLoginState extends State<UserLogin> {
                   ),
                   child: Checkbox(
                     value: isChecked,
-                    onChanged: (value) {
-                      // if (mounted) {
-                      //   if (value == true) {
-                      //     isChecked = true;
-                      //     isRemember = true;
-                      //   } else {
-                      //     isChecked = false;
-                      //     isRemember = false;
-                      //   }
-                      //   setState(() {});
-                      // }
-                    },
+                    onChanged: (value) {},
                     activeColor: navyBlue,
                     checkColor: Colors.white,
                     materialTapTargetSize: MaterialTapTargetSize.padded,
@@ -503,9 +477,16 @@ class _UserLoginState extends State<UserLogin> {
 
       var _user;
       BankAccount _bankAccount;
-      phoneNumber = "+" +
-          _selectedDialogCountry.phoneCode +
-          phoneNumberController.text.trim();
+
+      var phoneNumberFromTextField = phoneNumberController.text.trim();
+
+      if (phoneNumberFromTextField.substring(0, 1) == "0") {
+        phoneNumberFromTextField =
+            phoneNumberFromTextField.replaceFirst("0", "");
+      }
+
+      phoneNumber =
+          "+" + _selectedDialogCountry.phoneCode + phoneNumberFromTextField;
       password = passwordController.text.trim();
 
       _auth.authenticate(phoneNumber, password).then((value) async {
@@ -565,8 +546,16 @@ class _UserLoginState extends State<UserLogin> {
       await _sharedPreferences.clear();
       bool isCheckedSet =
           await _sharedPreferences.setBool('isChecked', isChecked);
+
+      var phoneNumberFromTextField = phoneNumberController.text.trim();
+
+      if (phoneNumberFromTextField.substring(0, 1) == "0") {
+        phoneNumberFromTextField =
+            phoneNumberFromTextField.replaceFirst("0", "");
+      }
+
       bool usernameSet = await _sharedPreferences.setString(
-          'username', phoneNumberController.text.trim());
+          'username', phoneNumberFromTextField);
       bool passwordSet =
           await _sharedPreferences.setString('password', password);
       bool countryCodeSet = await _sharedPreferences.setString(

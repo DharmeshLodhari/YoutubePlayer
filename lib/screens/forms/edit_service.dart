@@ -22,14 +22,18 @@ import '../../utils/colors.dart';
 // ignore: must_be_immutable
 class EditService extends StatefulWidget {
   var arguments;
+
   EditService({this.arguments});
+
   @override
   _EditServiceState createState() => _EditServiceState(arguments: arguments);
 }
 
 class _EditServiceState extends State<EditService> {
   var arguments;
+
   _EditServiceState({this.arguments});
+
   final _auth = AuthService();
   UserBloc userBloc;
   final _formKey = GlobalKey<FormState>();
@@ -308,44 +312,6 @@ class _EditServiceState extends State<EditService> {
   }
 
   Widget showLocalImage(int index) {
-    // return Stack(
-    //   children: <Widget>[
-    //     Container(
-    //       height: 80,
-    //       width: 80,
-    //       margin: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-    //       decoration: BoxDecoration(
-    //         border: Border.all(color: Colors.transparent),
-    //         borderRadius: BorderRadius.circular(5),
-    //         image: DecorationImage(
-    //             image: FileImage(
-    //               serviceLocalImages[index],
-    //             ),
-    //             fit: BoxFit.fill),
-    //       ),
-    //     ),
-    //     Positioned(
-    //       right: 0,
-    //       top: 0,
-    //       child: IconButton(
-    //         padding: EdgeInsets.only(right: 6, top: 8),
-    //         alignment: Alignment.topRight,
-    //         icon: Icon(
-    //           Icons.close,
-    //           color: Colors.white,
-    //           size: 20,
-    //         ),
-    //         onPressed: () {
-    //           if (mounted) {
-    //             setState(() {
-    //               serviceLocalImages.removeAt(index);
-    //             });
-    //           }
-    //         },
-    //       ),
-    //     )
-    //   ],
-    // );
     return Stack(
       children: <Widget>[
         Card(
@@ -399,52 +365,6 @@ class _EditServiceState extends State<EditService> {
   }
 
   Widget showServerImage(int index) {
-    // return Stack(
-    //   children: <Widget>[
-    //     Container(
-    //       height: 80,
-    //       width: 80,
-    //       margin: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-    //       decoration: BoxDecoration(
-    //         border: Border.all(color: Colors.transparent),
-    //         borderRadius: BorderRadius.circular(5),
-    //         image: DecorationImage(
-    //             image: NetworkImage(
-    //               serviceImagesFromServer[index],
-    //             ),
-    //             fit: BoxFit.fill),
-    //       ),
-    //     ),
-    //     Positioned(
-    //       right: 0,
-    //       top: 0,
-    //       child: IconButton(
-    //         padding: EdgeInsets.only(right: 6, top: 8),
-    //         alignment: Alignment.topRight,
-    //         icon: Icon(
-    //           Icons.close,
-    //           color: Colors.white,
-    //           size: 20,
-    //         ),
-    //         onPressed: () {
-    //           var imageId =
-    //           currentService.getImageId(serviceImagesFromServer[index]);
-    //           _auth.deleteProductOrServiceImage(imageId).then((value) {
-    //             if (value) {
-    //               if (mounted) {
-    //                 setState(() {
-    //                   serviceImagesFromServer.removeAt(index);
-    //                 });
-    //               }
-    //             }
-    //           }).catchError((error) {
-    //             debugPrint("ERROR" + error.toString());
-    //           });
-    //         },
-    //       ),
-    //     )
-    //   ],
-    // );
     return Stack(
       children: <Widget>[
         CustomBoxShadow(
@@ -528,34 +448,6 @@ class _EditServiceState extends State<EditService> {
   }
 
   Widget addTitleField() {
-    // return TextFormField(
-    //   cursorColor: darkBlue(),
-    //   autofocus: false,
-    //   obscureText: false,
-    //   controller: serviceTitleController,
-    //   decoration: InputDecoration(
-    //       fillColor: Colors.white,
-    //       filled: true,
-    //       hintText: AppLocalization.of(context).enterServiceName,
-    //       labelStyle: TextStyle(
-    //         color: Colors.black,
-    //         fontSize: 16,
-    //       ),
-    //       border: OutlineInputBorder(
-    //           borderRadius: BorderRadius.all(Radius.circular(4)),
-    //           borderSide: BorderSide(
-    //               width: 1, color: Colors.white, style: BorderStyle.solid))),
-    //   validator: (val) {
-    //     if (val.isNotEmpty) {
-    //       return null;
-    //     }
-    //     return AppLocalization.of(context).pleaseEnterServiceName;
-    //   },
-    //   onTap: () async {},
-    //   onChanged: (val) {
-    //     serviceName = val;
-    //   },
-    // );
     return CustomizedTextFormField(
       controller: serviceTitleController,
       labelText: "Service name",
@@ -572,33 +464,6 @@ class _EditServiceState extends State<EditService> {
   }
 
   Widget getServiceShortDescription() {
-    // return TextFormField(
-    //   cursorColor: darkBlue(),
-    //   autofocus: false,
-    //   obscureText: false,
-    //   controller: serviceShortDescriptionController,
-    //   decoration: InputDecoration(
-    //       fillColor: Colors.white,
-    //       filled: true,
-    //       hintText: AppLocalization.of(context).shortDescription,
-    //       labelStyle: TextStyle(
-    //         color: Colors.black,
-    //         fontSize: 16,
-    //       ),
-    //       border: OutlineInputBorder(
-    //           borderRadius: BorderRadius.all(Radius.circular(4)),
-    //           borderSide: BorderSide(
-    //               width: 1, color: Colors.white, style: BorderStyle.solid))),
-    //   validator: (val) {
-    //     if (val.isNotEmpty) {
-    //       return null;
-    //     }
-    //     return AppLocalization.of(context).shortDescription;
-    //   },
-    //   onChanged: (val) {
-    //     serviceShortDescription = val;
-    //   },
-    // );
     return CustomizedTextFormField(
       controller: serviceShortDescriptionController,
       labelText: "Short description",
@@ -627,38 +492,6 @@ class _EditServiceState extends State<EditService> {
   }
 
   Widget getCategoryField() {
-    // return Card(
-    //   margin: EdgeInsets.all(0),
-    //   child: Container(
-    //     padding: EdgeInsets.all(8),
-    //     width: double.infinity,
-    //     child: DropdownButton<ServiceCatagory>(
-    //       isExpanded: true,
-    //       underline: Divider(
-    //         color: Colors.transparent,
-    //       ),
-    //       hint: Text(AppLocalization.of(context).selectCategory),
-    //       value: selectedServiceCategory,
-    //       onChanged: (ServiceCatagory value) {
-    //         if (mounted) {
-    //           setState(() {
-    //             selectedServiceCategory = value;
-    //             serviceCategory = selectedServiceCategory.name;
-    //           });
-    //         }
-    //       },
-    //       items: serviceCategories.map((ServiceCatagory category) {
-    //         return DropdownMenuItem<ServiceCatagory>(
-    //           value: category,
-    //           child: Text(
-    //             category.name,
-    //             style: TextStyle(color: Colors.black),
-    //           ),
-    //         );
-    //       }).toList(),
-    //     ),
-    //   ),
-    // );
     return CustomizedDropDownField(
       title: AppLocalization.of(context).category,
       child: ListTile(
@@ -676,75 +509,6 @@ class _EditServiceState extends State<EditService> {
           selectItemCategory();
         },
       ),
-      // child: DropdownButton<ServiceCatagory>(
-      //   isExpanded: true,
-      //   underline: Divider(
-      //     color: Colors.transparent,
-      //   ),
-      //   value: selectedServiceCategory,
-      //   onChanged: (ServiceCatagory value) {
-      //     if (mounted) {
-      //       setState(() {
-      //         selectedServiceCategory = value;
-      //         serviceCategory = selectedServiceCategory.name;
-      //       });
-      //     }
-      //   },
-      //   style: TextStyle(
-      //     color: blackFont,
-      //     fontSize: 16,
-      //     fontWeight: FontWeight.w400,
-      //   ),
-      //   selectedItemBuilder: (BuildContext context) {
-      //     return serviceCategories.map<Widget>((ServiceCatagory category) {
-      //       return Container(
-      //         child: Column(
-      //           mainAxisAlignment: MainAxisAlignment.center,
-      //           children: [
-      //             Text(
-      //               category.name,
-      //               style: TextStyle(
-      //                 color: blackFont,
-      //                 fontWeight: FontWeight.w600,
-      //                 fontSize: 16,
-      //               ),
-      //             ),
-      //           ],
-      //         ),
-      //       );
-      //     }).toList();
-      //   },
-      //   items: serviceCategories.map((ServiceCatagory category) {
-      //     return DropdownMenuItem<ServiceCatagory>(
-      //       value: category,
-      //       child: Container(
-      //         child: Row(
-      //           children: [
-      //             Text(
-      //               category.name,
-      //               style: TextStyle(
-      //                   color: category == selectedServiceCategory
-      //                       ? navyBlue
-      //                       : blackFont,
-      //                   fontSize: 16,
-      //                   fontWeight: category == selectedServiceCategory
-      //                       ? FontWeight.w600
-      //                       : FontWeight.w400),
-      //             ),
-      //             flexibleSpace(),
-      //             category == selectedServiceCategory
-      //                 ? Icon(
-      //                     SlydoAppIcon.checked,
-      //                     color: navyBlue,
-      //                     size: 14,
-      //                   )
-      //                 : Container()
-      //           ],
-      //         ),
-      //       ),
-      //     );
-      //   }).toList(),
-      // ),
     );
   }
 
@@ -927,28 +691,6 @@ class _EditServiceState extends State<EditService> {
   }
 
   Widget getIsAvailableField() {
-    // return Row(
-    //   children: <Widget>[
-    //     Checkbox(
-    //       value: serviceIsAvailable,
-    //       activeColor: Colors.white,
-    //       checkColor: darkBlue(),
-    //       onChanged: (value) {
-    //         if (mounted) {
-    //           setState(() {
-    //             serviceIsAvailable = value;
-    //           });
-    //         }
-    //       },
-    //     ),
-    //     Text(
-    //       AppLocalization.of(context).isAvailable + " ? ",
-    //       style: TextStyle(
-    //         color: Colors.white,
-    //       ),
-    //     )
-    //   ],
-    // );
     return CustomizedCheckBoxField(
       onTap: () {
         serviceIsAvailable = !serviceIsAvailable;

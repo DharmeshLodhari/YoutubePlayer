@@ -155,66 +155,6 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
   }
 
   Widget getUpgradeProfileType() {
-    // return Column(
-    //   crossAxisAlignment: CrossAxisAlignment.start,
-    //   children: <Widget>[
-    //     Text("Account Type"),
-    //     SizedBox(
-    //       height: 4,
-    //     ),
-    //     Card(
-    //       margin: EdgeInsets.all(0),
-    //       child: Container(
-    //         padding: EdgeInsets.all(8),
-    //         width: double.infinity,
-    //         child: DropdownButton<String>(
-    //           isExpanded: true,
-    //           underline: Divider(
-    //             color: Colors.transparent,
-    //           ),
-    //           hint: Row(
-    //             children: <Widget>[
-    //               Padding(
-    //                 padding: const EdgeInsets.only(left: 8.0),
-    //                 child: Icon(
-    //                   Icons.supervised_user_circle,
-    //                   color: Colors.grey[600],
-    //                 ),
-    //               ),
-    //               Padding(
-    //                 padding: const EdgeInsets.only(left: 16.0),
-    //                 child: Text("Profile Type"),
-    //               ),
-    //             ],
-    //           ),
-    //           value: selectedType,
-    //           onChanged: (value) {
-    //             setState(() {
-    //               selectedType = value;
-    //               type.forEach((element) {
-    //                 if (element["name"] == selectedType) {
-    //                   price = element["price"];
-    //                 }
-    //               });
-    //             });
-    //           },
-    //           items: type.map((type) {
-    //             return DropdownMenuItem<String>(
-    //               value: type["name"],
-    //               child: Padding(
-    //                 padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 0),
-    //                 child: Text(
-    //                   type["name"],
-    //                   style: TextStyle(color: Colors.black),
-    //                 ),
-    //               ),
-    //             );
-    //           }).toList(),
-    //         ),
-    //       ),
-    //     ),
-    //   ],
-    // );
     return CustomizedDropDownField(
       title: "Account type",
       child: DropdownButton<String>(
@@ -265,44 +205,6 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
   }
 
   Widget getBusinessName() {
-    // return Column(
-    //     crossAxisAlignment: CrossAxisAlignment.start,
-    //     children: <Widget>[
-    //       Text("Business Name"),
-    //       SizedBox(
-    //         height: 4,
-    //       ),
-    //       TextFormField(
-    //         autofocus: false,
-    //         obscureText: false,
-    //         keyboardType: TextInputType.text,
-    //         decoration: InputDecoration(
-    //             prefixIcon: Icon(Icons.person),
-    //             fillColor: Colors.white,
-    //             filled: true,
-    //             hintText: "Enter Your Business name",
-    //             labelStyle: TextStyle(
-    //               color: Colors.black,
-    //               fontSize: 16,
-    //             ),
-    //             border: OutlineInputBorder(
-    //                 borderRadius: BorderRadius.all(Radius.circular(4)),
-    //                 borderSide: BorderSide(
-    //                     width: 1,
-    //                     color: Colors.green,
-    //                     style: BorderStyle.solid))),
-    //         validator: (val) => val.length < 5
-    //             ? AppLocalization.of(context).validationTextMessage
-    //             : null,
-    //         onChanged: (val) {
-    //           if (mounted) {
-    //             setState(() {
-    //               businessName = val;
-    //             });
-    //           }
-    //         },
-    //       ),
-    //     ]);
     return CustomizedTextFormField(
       keyboardType: TextInputType.text,
       labelText: "Business name",
@@ -365,16 +267,6 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
   }
 
   Widget submitButton() {
-    // return MaterialButton(
-    //   minWidth: double.infinity,
-    //   height: 42,
-    //   child: Text(
-    //     "Submit",
-    //     style: TextStyle(color: Colors.white, fontSize: 16),
-    //   ),
-    //   color: darkBlue(),
-    //   onPressed: onSubmit,
-    // );
     return CurvedButton(
       onPressed: onSubmit,
       backgroundColor: navyBlue,
@@ -420,56 +312,6 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
   }
 
   Widget getAmount() {
-    // return Column(
-    //   crossAxisAlignment: CrossAxisAlignment.start,
-    //   children: <Widget>[
-    //     Text("Amount To Be Paid"),
-    //     SizedBox(
-    //       height: 4,
-    //     ),
-    //     Card(
-    //       margin: EdgeInsets.symmetric(horizontal: 0),
-    //       child: Container(
-    //         padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-    //         child: Row(
-    //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //           children: <Widget>[
-    //             Text(
-    //               "Price:",
-    //               style: TextStyle(
-    //                 fontWeight: FontWeight.bold,
-    //                 fontSize: 18,
-    //                 color: darkBlue(),
-    //               ),
-    //             ),
-    //             Row(
-    //               children: <Widget>[
-    //                 Text(
-    //                   worldCurrencies[userBloc.user.currency] + " ",
-    //                   style: TextStyle(
-    //                     fontFamily: "Roboto",
-    //                     fontWeight: FontWeight.bold,
-    //                     fontSize: 18,
-    //                     color: darkBlue(),
-    //                   ),
-    //                 ),
-    //                 Text(
-    //                   price,
-    //                   style: TextStyle(
-    //                     fontWeight: FontWeight.bold,
-    //                     fontSize: 18,
-    //                     color: darkBlue(),
-    //                   ),
-    //                 ),
-    //               ],
-    //             ),
-    //           ],
-    //         ),
-    //       ),
-    //     ),
-    //   ],
-    // );
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -535,54 +377,5 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
         ),
       ],
     );
-    // return Column(
-    //   crossAxisAlignment: CrossAxisAlignment.start,
-    //   children: <Widget>[
-    //     Text("Amount To Be Paid"),
-    //     SizedBox(
-    //       height: 4,
-    //     ),
-    //     Card(
-    //       margin: EdgeInsets.symmetric(horizontal: 0),
-    //       child: Container(
-    //         padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-    //         child: Row(
-    //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //           children: <Widget>[
-    //             Text(
-    //               "Price:",
-    //               style: TextStyle(
-    //                 fontWeight: FontWeight.bold,
-    //                 fontSize: 18,
-    //                 color: darkBlue(),
-    //               ),
-    //             ),
-    //             Row(
-    //               children: <Widget>[
-    //                 Text(
-    //                   worldCurrencies[userBloc.user.currency] + " ",
-    //                   style: TextStyle(
-    //                     fontFamily: "Roboto",
-    //                     fontWeight: FontWeight.bold,
-    //                     fontSize: 18,
-    //                     color: darkBlue(),
-    //                   ),
-    //                 ),
-    //                 Text(
-    //                   price,
-    //                   style: TextStyle(
-    //                     fontWeight: FontWeight.bold,
-    //                     fontSize: 18,
-    //                     color: darkBlue(),
-    //                   ),
-    //                 ),
-    //               ],
-    //             ),
-    //           ],
-    //         ),
-    //       ),
-    //     ),
-    //   ],
-    // );
   }
 }
