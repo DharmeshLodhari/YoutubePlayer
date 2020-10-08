@@ -1,5 +1,6 @@
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 
 import 'CustomBoxShadow.dart';
@@ -10,13 +11,14 @@ class UserDashboardItemTile extends StatelessWidget {
   IconData icon;
   Color iconColor;
   Function onTap;
+  double height;
 
-  UserDashboardItemTile({
-    @required this.title,
-    @required this.icon,
-    @required this.iconColor,
-    @required this.onTap,
-  });
+  UserDashboardItemTile(
+      {@required this.title,
+      @required this.icon,
+      @required this.iconColor,
+      @required this.onTap,
+      this.height = 100});
 
   @override
   Widget build(BuildContext context) {
@@ -29,25 +31,25 @@ class UserDashboardItemTile extends StatelessWidget {
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           child: Container(
-            height: 100,
+            decoration: BoxDecoration(
+              border: Border.all(color: lightGrey, width: 1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            height: height,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 flexibleSpace(flex: 3),
-                Card(
-                  elevation: 0,
-                  color: iconColor.withOpacity(0.08),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+                RoundedBackgroundIcon(
+                  height: 50,
+                  width: 50,
+                  icon: Icon(
+                    icon,
+                    color: iconColor,
+                    size: 20,
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Icon(
-                      icon,
-                      color: iconColor,
-                      size: 20,
-                    ),
-                  ),
+                  backgroundColor: iconColor.withOpacity(0.08),
+                  borderRadius: 20,
                 ),
                 flexibleSpace(),
                 Text(

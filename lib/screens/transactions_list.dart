@@ -344,7 +344,6 @@ class _TransactionListState extends State<TransactionList> {
   void handleSlideIsOpenChanged(bool value) {}
 
   List<Widget> listSecondaryActions(Transaction transaction) {
-    String caption = AppLocalization.of(context).send;
     return [
       SlideActionButton(
           backgroundColor: naturalGreen,

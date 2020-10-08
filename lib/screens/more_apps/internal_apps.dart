@@ -12,6 +12,8 @@ class _InternalAppsState extends State<InternalApps> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: appBar(),
       body: foregroundScreen(),
     );
   }
@@ -25,9 +27,8 @@ class _InternalAppsState extends State<InternalApps> {
             flex: 9,
             child: Column(
               children: <Widget>[
-                appBar(),
                 SizedBox(
-                  height: 24,
+                  height: 12,
                 ),
                 firstRowOfUserDashboardItem(),
                 SizedBox(
@@ -59,7 +60,7 @@ class _InternalAppsState extends State<InternalApps> {
       titleSpacing: 0,
       centerTitle: false,
       title: Text(
-        "More Apps",
+        "More apps",
         style: TextStyle(
             fontSize: 18, fontWeight: FontWeight.w700, color: blackFont),
       ),
@@ -75,35 +76,38 @@ class _InternalAppsState extends State<InternalApps> {
     );
   }
 
-  Widget thirdRowOfUserDashboardItem() {
+  Widget firstRowOfUserDashboardItem() {
     return Row(
       children: [
         Expanded(
             child: UserDashboardItemTile(
-          icon: SlydoAppIcon.transport_category,
-          title: "Bus",
+          icon: SlydoAppIcon.movies_moreapps,
+          title: "Movies",
           onTap: () {},
-          iconColor: HexColor("#374677"),
+          iconColor: HexColor("#9B51E0"),
+          height: 126,
         )),
         SizedBox(
           width: 12,
         ),
         Expanded(
             child: UserDashboardItemTile(
-          icon: SlydoAppIcon.cart,
-          title: "Train",
+          icon: SlydoAppIcon.music_moreapps,
+          title: "Music",
           onTap: () {},
           iconColor: HexColor("#FFAB00"),
+          height: 126,
         )),
         SizedBox(
           width: 12,
         ),
         Expanded(
             child: UserDashboardItemTile(
-          icon: SlydoAppIcon.store,
-          title: "Flight",
+          icon: SlydoAppIcon.news_moreapps,
+          title: "News",
           onTap: () {},
           iconColor: HexColor("#46CE7C"),
+          height: 126,
         )),
       ],
     );
@@ -114,64 +118,70 @@ class _InternalAppsState extends State<InternalApps> {
       children: [
         Expanded(
             child: UserDashboardItemTile(
-          icon: SlydoAppIcon.transactions,
+          icon: SlydoAppIcon.events_moreapps,
           title: "Events",
           onTap: () {},
           iconColor: HexColor("#46CECE"),
+          height: 126,
         )),
         SizedBox(
           width: 12,
         ),
         Expanded(
             child: UserDashboardItemTile(
-          icon: SlydoAppIcon.holidays_category,
+          icon: SlydoAppIcon.hotels_moreapps,
           title: "Hotels",
           onTap: () {},
-          iconColor: HexColor("#3F61DB"),
+          iconColor: HexColor("#F35B46"),
+          height: 126,
         )),
         SizedBox(
           width: 12,
         ),
         Expanded(
             child: UserDashboardItemTile(
-          icon: SlydoAppIcon.family_category,
+          icon: SlydoAppIcon.property_moreapps,
           title: "Property",
           onTap: () {},
-          iconColor: HexColor("#F35B46"),
+          iconColor: HexColor("#3F61DB"),
+          height: 126,
         )),
       ],
     );
   }
 
-  Widget firstRowOfUserDashboardItem() {
+  Widget thirdRowOfUserDashboardItem() {
     return Row(
       children: [
         Expanded(
             child: UserDashboardItemTile(
-          icon: SlydoAppIcon.entertainment_category,
-          title: "Movies",
+          icon: SlydoAppIcon.transport_category,
+          title: "Bus",
           onTap: () {},
-          iconColor: HexColor("#FFAB00"),
+          iconColor: HexColor("#374677"),
+          height: 126,
         )),
         SizedBox(
           width: 12,
         ),
         Expanded(
             child: UserDashboardItemTile(
-          icon: SlydoAppIcon.general_category,
-          title: "Music",
-          onTap: () {},
-          iconColor: HexColor("#EE78BF"),
-        )),
-        SizedBox(
-          width: 12,
-        ),
-        Expanded(
-            child: UserDashboardItemTile(
-          icon: SlydoAppIcon.general_category,
-          title: "News",
+          icon: SlydoAppIcon.train_moreapps,
+          title: "Train",
           onTap: () {},
           iconColor: HexColor("#46CE7C"),
+          height: 126,
+        )),
+        SizedBox(
+          width: 12,
+        ),
+        Expanded(
+            child: UserDashboardItemTile(
+          icon: SlydoAppIcon.flight_moreapps,
+          title: "Flight",
+          onTap: () {},
+          iconColor: HexColor("#F07097"),
+          height: 126,
         )),
       ],
     );
@@ -185,7 +195,8 @@ class _InternalAppsState extends State<InternalApps> {
           icon: SlydoAppIcon.shopping_category,
           title: "Shopping",
           onTap: () {},
-          iconColor: HexColor("#F07097"),
+          iconColor: HexColor("#5218E9"),
+          height: 126,
         )),
         SizedBox(
           width: 12,
@@ -195,17 +206,19 @@ class _InternalAppsState extends State<InternalApps> {
           icon: SlydoAppIcon.eatingout_category,
           title: "Eat out",
           onTap: () {},
-          iconColor: HexColor("#9B51E0"),
+          iconColor: HexColor("#F35B46"),
+          height: 126,
         )),
         SizedBox(
           width: 12,
         ),
         Expanded(
             child: UserDashboardItemTile(
-          icon: SlydoAppIcon.finances_category,
+          icon: SlydoAppIcon.wealth_moreapps,
           title: "Wealth",
           onTap: () {},
-          iconColor: HexColor("#5218E9"),
+          iconColor: HexColor("#FFC42E"),
+          height: 126,
         )),
       ],
     );

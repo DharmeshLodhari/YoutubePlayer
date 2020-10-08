@@ -130,7 +130,7 @@ class _UserDashboardState extends State<UserDashboard> {
       child: Column(
         children: [
           Expanded(
-            flex: 9,
+            flex: 10,
             child: Column(
               children: <Widget>[
                 flexibleSpace(),
@@ -143,6 +143,7 @@ class _UserDashboardState extends State<UserDashboard> {
                 secondRowOfUserDashboardItem(),
                 flexibleSpace(flex: 2),
                 thirdRowOfUserDashboardItem(),
+                flexibleSpace(flex: 1),
                 appVersionDataUI()
               ],
             ),
@@ -388,7 +389,7 @@ class _UserDashboardState extends State<UserDashboard> {
           onTap: () {
             Navigator.pushNamed(context, "/internal-apps");
           },
-          iconColor: HexColor("#EE78BF"),
+          iconColor: HexColor("#46CECE"),
         )),
         SizedBox(
           width: 12,
