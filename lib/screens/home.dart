@@ -170,58 +170,66 @@ class _HomeState extends State<Home> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         margin: EdgeInsets.zero,
         elevation: 0.0,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            ListTile(
-              contentPadding:
-                  EdgeInsets.symmetric(horizontal: 16, vertical: 4.0),
-              leading: ClipOval(
-                child: Container(
-                  height: 48,
-                  width: 48,
-                  child: CachedNetworkImage(
-                    imageUrl: userBloc.user.avatar,
-                    fit: BoxFit.fill,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: lightGrey, width: 1),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 16, vertical: 4.0),
+                leading: ClipOval(
+                  child: Container(
+                    height: 48,
+                    width: 48,
+                    child: CachedNetworkImage(
+                      imageUrl: userBloc.user.avatar,
+                      fit: BoxFit.fill,
+                    ),
                   ),
                 ),
+                title: Text(
+                  userBloc.user.fullName,
+                  maxLines: 1,
+                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+                ),
+                subtitle: Text(
+                  userBloc.user.userName,
+                  maxLines: 1,
+                  style: TextStyle(fontSize: 14),
+                ),
+                onTap: () {
+                  _auth
+                      .fetchCustomerProfile(userBloc.user.userName)
+                      .then((user) {
+                    Navigator.pushNamed(context, '/profile',
+                        arguments: {"searchedUser": user});
+                  });
+                },
               ),
-              title: Text(
-                userBloc.user.fullName,
-                maxLines: 1,
-                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+              Divider(
+                thickness: 1,
+                color: dividerColor,
+                height: 1,
               ),
-              subtitle: Text(
-                userBloc.user.userName,
-                maxLines: 1,
-                style: TextStyle(fontSize: 14),
-              ),
-              onTap: () {
-                _auth.fetchCustomerProfile(userBloc.user.userName).then((user) {
-                  Navigator.pushNamed(context, '/profile',
-                      arguments: {"searchedUser": user});
-                });
-              },
-            ),
-            Divider(
-              thickness: 1,
-              color: dividerColor,
-              height: 1,
-            ),
-            Container(
-                padding: EdgeInsets.symmetric(vertical: 32, horizontal: 32),
-                child: CachedNetworkImage(
-                  // height: MediaQuery.of(context).size.width / 1.5,
-                  width: MediaQuery.of(context).size.width / 1.7,
-                  imageUrl: userBloc.user.qrCode,
-                  colorBlendMode: BlendMode.darken,
-                  fit: BoxFit.fill,
-                  filterQuality: FilterQuality.high,
-                  placeholder: (context, url) => Center(
-                    child: CircularLoadingIndicator(),
-                  ),
-                )),
-          ],
+              Container(
+                  padding: EdgeInsets.symmetric(vertical: 32, horizontal: 32),
+                  child: CachedNetworkImage(
+                    // height: MediaQuery.of(context).size.width / 1.5,
+                    width: MediaQuery.of(context).size.width / 1.7,
+                    imageUrl: userBloc.user.qrCode,
+                    colorBlendMode: BlendMode.darken,
+                    fit: BoxFit.fill,
+                    filterQuality: FilterQuality.high,
+                    placeholder: (context, url) => Center(
+                      child: CircularLoadingIndicator(),
+                    ),
+                  )),
+            ],
+          ),
         ),
       ),
     );
@@ -234,6 +242,10 @@ class _HomeState extends State<Home> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         margin: EdgeInsets.zero,
         child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: lightGrey, width: 1),
+            borderRadius: BorderRadius.circular(10),
+          ),
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           child: Row(
             children: <Widget>[
