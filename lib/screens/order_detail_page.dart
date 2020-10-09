@@ -740,7 +740,7 @@ class VerticalListItem extends StatelessWidget {
         }
       },
       child: Container(
-        color: lightBlue(),
+       padding: EdgeInsets.symmetric(vertical: 2),
         child: child,
       ),
     );

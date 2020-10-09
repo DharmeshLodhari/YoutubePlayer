@@ -30,6 +30,22 @@ Widget customThemeBuilder(BuildContext context, Widget child) {
   );
 }
 
+BoxDecoration decorateBox() => BoxDecoration(
+      boxShadow: <BoxShadow>[
+        BoxShadow(
+          color: boxShadowTwo,
+          offset: Offset(0.0, 0.0),
+          blurRadius: 20.0,
+        ),
+      ],
+      color: Colors.white,
+      borderRadius: BorderRadius.all(
+        const Radius.circular(10.0),
+      ),
+      border: new Border.all(
+          color: lightGrey, width: 1.0, style: BorderStyle.solid),
+    );
+
 // for having expanded space
 Widget flexibleSpace({int flex = 1}) {
   return Expanded(

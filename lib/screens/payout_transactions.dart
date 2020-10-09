@@ -127,8 +127,11 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
               if (index == payoutList.length) {
                 return _buildIndicator();
               } else {
-                return PayoutTile(
-                  payout: payoutList[index],
+                return Container(
+                  padding: EdgeInsets.symmetric(vertical: 2),
+                  child: PayoutTile(
+                    payout: payoutList[index],
+                  ),
                 );
               }
             },

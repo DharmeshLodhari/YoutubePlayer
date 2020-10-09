@@ -1,5 +1,6 @@
 import 'package:Slydo/models/user.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
@@ -29,11 +30,9 @@ class UserTile extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
-      elevation: 3,
+      elevation: 0,
       child: Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: iconBtnGrey, width: 1)),
+        decoration: decorateBox(),
         child: ListTile(
           dense: true,
           title: Text(

@@ -648,7 +648,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
         }
       },
       child: Container(
-        color: Colors.white,
+        padding: EdgeInsets.symmetric(vertical: 2),
         child: PaymentRequestTile(
             paymentRequest: widget.paymentRequest,
             expandedWidget: expandedWidget()),

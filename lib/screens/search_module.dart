@@ -6,6 +6,7 @@ import 'package:Slydo/models/user.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/noItemInList.dart';
@@ -453,17 +454,14 @@ class _SearchModuleState extends State<SearchModule> {
 
   Widget userCard(CustomerProfile user) {
     return Container(
-      color: Colors.white,
       padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         margin: EdgeInsets.zero,
         shadowColor: boxShadowTwo,
-        elevation: 3,
+        elevation: 0,
         child: Container(
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: iconBtnGrey, width: 1)),
+          decoration: decorateBox(),
           child: Column(
             children: <Widget>[
               Padding(
@@ -539,17 +537,14 @@ class _SearchModuleState extends State<SearchModule> {
 
   Widget productCard(Product product, var object) {
     return Container(
-      color: Colors.white,
       padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         margin: EdgeInsets.zero,
         shadowColor: boxShadowTwo,
-        elevation: 3,
+        elevation: 0,
         child: Container(
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: iconBtnGrey, width: 1)),
+          decoration: decorateBox(),
           child: Column(
             children: <Widget>[
               Padding(
@@ -686,17 +681,14 @@ class _SearchModuleState extends State<SearchModule> {
 
   Widget getServiceCard(Service service, var object) {
     return Container(
-      color: Colors.white,
       padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         margin: EdgeInsets.zero,
         shadowColor: boxShadowTwo,
-        elevation: 3,
+        elevation: 0,
         child: Container(
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: iconBtnGrey, width: 1)),
+          decoration: decorateBox(),
           child: Column(
             children: <Widget>[
               Padding(
@@ -1081,7 +1073,10 @@ class VerticalListItem extends StatelessWidget {
         Navigator.pushNamed(context, '/profile',
             arguments: {"searchedUser": user});
       },
-      child: child,
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 2),
+        child: child,
+      ),
     );
   }
 }
@@ -1100,7 +1095,10 @@ class VerticalListItem1 extends StatelessWidget {
         Navigator.pushNamed(context, '/product',
             arguments: {"product": product});
       },
-      child: child,
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 2),
+        child: child,
+      ),
     );
   }
 }
@@ -1120,7 +1118,7 @@ class VerticalListItem2 extends StatelessWidget {
             arguments: {"service": service});
       },
       child: Container(
-        color: lightBlue(),
+        padding: EdgeInsets.symmetric(vertical: 2),
         child: child,
       ),
     );

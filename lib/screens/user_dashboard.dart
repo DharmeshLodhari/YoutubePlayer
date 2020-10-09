@@ -203,11 +203,12 @@ class _UserDashboardState extends State<UserDashboard> {
     return CustomBoxShadow(
       child: Card(
         shadowColor: boxShadowTwo,
-        elevation: 3,
+        elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         margin: EdgeInsets.zero,
         child: Container(
           width: double.infinity,
+          decoration: decorateBox(),
           child: Container(
             padding: EdgeInsets.only(left: 24, right: 24, top: 18, bottom: 24),
             child: Column(

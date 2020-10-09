@@ -503,7 +503,7 @@ class VerticalListItem extends StatelessWidget {
             arguments: {"order": order});
       },
       child: Container(
-        color: Colors.white,
+        padding: EdgeInsets.symmetric(vertical: 2),
         child: OrderTile(order: order),
       ),
     );

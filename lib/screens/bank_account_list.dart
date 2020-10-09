@@ -3,6 +3,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
@@ -241,11 +242,9 @@ class _BankAccountListState extends State<BankAccountList> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
-      elevation: 3,
+      elevation: 0,
       child: Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: iconBtnGrey, width: 1)),
+        decoration: decorateBox(),
         child: ListTile(
           dense: account.isDefault ? true : false,
           title: getTitle(account: account),
@@ -483,7 +482,7 @@ class VerticalListItem extends StatelessWidget {
               ? Slidable.of(context)?.open()
               : Slidable.of(context)?.close(),
       child: Container(
-        color: Colors.white,
+  padding: EdgeInsets.symmetric(vertical: 2),
         child: child,
       ),
     );

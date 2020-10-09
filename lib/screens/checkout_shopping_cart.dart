@@ -5,6 +5,7 @@ import 'package:Slydo/models/store.dart';
 import 'package:Slydo/screens/tiles/shopping_cart_tile.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:Slydo/widget/noItemInList.dart';
@@ -153,9 +154,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
       shadowColor: boxShadowTwo,
       elevation: 4,
       child: Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: iconBtnGrey, width: 1)),
+        decoration: decorateBox(),
         padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

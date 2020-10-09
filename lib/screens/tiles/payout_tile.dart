@@ -1,5 +1,6 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/models/payout.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -18,11 +19,9 @@ class PayoutTile extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
-      elevation: 3,
+      elevation: 0,
       child: Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: iconBtnGrey, width: 1)),
+        decoration: decorateBox(),
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: 1),
           child: ListTile(

@@ -333,7 +333,7 @@ class VerticalListItem extends StatelessWidget {
       onTap: () => Navigator.pushNamed(context, '/profile',
           arguments: {"searchedUser": user}),
       child: Container(
-        color: lightGrey,
+        padding: EdgeInsets.symmetric(vertical: 2),
         child: UserTile(user: user),
       ),
     );

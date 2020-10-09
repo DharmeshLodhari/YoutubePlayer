@@ -160,7 +160,7 @@ class _TransactionListState extends State<TransactionList> {
       },
       child: Scaffold(
         key: _scaffoldTransactionKey,
-        backgroundColor: graphWitheBackground,
+        backgroundColor: Colors.white,
         appBar: appBar(),
         body: SmartRefresher(
             enablePullDown: true,
@@ -435,7 +435,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
         }
       },
       child: Container(
-        color: graphWitheBackground,
+        padding: EdgeInsets.symmetric(vertical: 2),
         child: TransactionTile(
           transaction: widget.transaction,
           expandedWidget: expandedWidget(),

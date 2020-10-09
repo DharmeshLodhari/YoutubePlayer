@@ -171,10 +171,7 @@ class _HomeState extends State<Home> {
         margin: EdgeInsets.zero,
         elevation: 0.0,
         child: Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: lightGrey, width: 1),
-            borderRadius: BorderRadius.circular(10),
-          ),
+          decoration: decorateBox(),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
@@ -242,10 +239,7 @@ class _HomeState extends State<Home> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         margin: EdgeInsets.zero,
         child: Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: lightGrey, width: 1),
-            borderRadius: BorderRadius.circular(10),
-          ),
+          decoration: decorateBox(),
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           child: Row(
             children: <Widget>[

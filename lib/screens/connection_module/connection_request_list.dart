@@ -352,7 +352,7 @@ class VerticalListItem extends StatelessWidget {
               ? Slidable.of(context)?.open()
               : Slidable.of(context)?.close(),
       child: Container(
-        color: lightGrey,
+        padding: EdgeInsets.symmetric(vertical: 2),
         child: UserTile(user: user),
       ),
     );

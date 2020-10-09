@@ -2,6 +2,7 @@ import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -49,11 +50,9 @@ class _ShoppingCartTileForProductState
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
           shadowColor: boxShadowTwo,
-          elevation: 3,
+          elevation: 0,
           child: Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: iconBtnGrey, width: 1)),
+            decoration: decorateBox(),
             child: Column(
               children: <Widget>[
                 Padding(
@@ -251,11 +250,9 @@ class _ShoppingCartTileForServiceState
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
           shadowColor: boxShadowTwo,
-          elevation: 3,
+          elevation: 0,
           child: Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: iconBtnGrey, width: 1)),
+            decoration: decorateBox(),
             child: Column(
               children: <Widget>[
                 Padding(
