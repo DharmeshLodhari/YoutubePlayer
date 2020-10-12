@@ -20,13 +20,12 @@ class _InternalAppsState extends State<InternalApps> {
 
   Widget foregroundScreen() {
     return Container(
-      padding: EdgeInsets.only(left: 16, right: 16, top: 8),
       child: Column(
         children: [
           Expanded(
-            flex: 9,
-            child: Column(
-              children: <Widget>[
+            child: ListView(
+              padding: EdgeInsets.only(left: 16, right: 16),
+              children: [
                 SizedBox(
                   height: 12,
                 ),
@@ -46,7 +45,6 @@ class _InternalAppsState extends State<InternalApps> {
               ],
             ),
           ),
-          flexibleSpace()
         ],
       ),
     );

@@ -71,7 +71,9 @@ class _CustomizedPassCodeScreenState extends State<CustomizedPassCodeScreen>
     streamSubscription = widget.shouldTriggerVerification
         .listen((isValid) => _showValidation(isValid));
     controller = AnimationController(
-        duration: const Duration(milliseconds: 500), vsync: this);
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
     final Animation curve =
         CurvedAnimation(parent: controller, curve: ShakeCurve());
     animation = Tween(begin: 0.0, end: 10.0).animate(curve)

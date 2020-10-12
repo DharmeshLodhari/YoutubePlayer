@@ -50,6 +50,7 @@ class UserDashboardItemTile extends StatelessWidget {
                   ),
                   backgroundColor: iconColor.withOpacity(0.08),
                   borderRadius: 20,
+                  onTap: onTap,
                 ),
                 flexibleSpace(),
                 Text(

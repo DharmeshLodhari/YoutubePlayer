@@ -129,26 +129,19 @@ class _UserDashboardState extends State<UserDashboard> {
       padding: EdgeInsets.only(left: 16, right: 16, top: 8),
       child: Column(
         children: [
-          Expanded(
-            flex: 10,
-            child: Column(
-              children: <Widget>[
-                flexibleSpace(),
-                appBar(),
-                flexibleSpace(flex: 4),
-                accountBalanceCard(),
-                flexibleSpace(flex: 2),
-                firstRowOfUserDashboardItem(),
-                flexibleSpace(flex: 1),
-                secondRowOfUserDashboardItem(),
-                flexibleSpace(flex: 2),
-                thirdRowOfUserDashboardItem(),
-                flexibleSpace(flex: 1),
-                appVersionDataUI()
-              ],
-            ),
-          ),
-          flexibleSpace()
+          flexibleSpace(),
+          appBar(),
+          flexibleSpace(flex: 4),
+          accountBalanceCard(),
+          flexibleSpace(flex: 2),
+          firstRowOfUserDashboardItem(),
+          flexibleSpace(flex: 1),
+          secondRowOfUserDashboardItem(),
+          flexibleSpace(flex: 1),
+          thirdRowOfUserDashboardItem(),
+          flexibleSpace(flex: 3),
+          appVersionDataUI(),
+          flexibleSpace(flex: 3),
         ],
       ),
     );
