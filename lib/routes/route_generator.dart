@@ -5,6 +5,8 @@ import 'package:Slydo/screens/dashboard.dart';
 import 'package:Slydo/screens/explore.dart';
 import 'package:Slydo/screens/forms/add_bank_account.dart';
 import 'package:Slydo/screens/forms/add_document.dart';
+import 'package:Slydo/screens/forms/add_money_to_slydo_one.dart';
+import 'package:Slydo/screens/forms/add_money_to_slydo_two.dart';
 import 'package:Slydo/screens/forms/add_product.dart';
 import 'package:Slydo/screens/forms/add_service.dart';
 import 'package:Slydo/screens/forms/bvn_verification_page.dart';
@@ -403,6 +405,20 @@ class RouteGenerator {
       case '/internal-apps':
         return PageTransition(
           child: InternalApps(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case '/add-money-to-slydo-one':
+        return PageTransition(
+          child: AddMoneyToSlydoOne(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case '/add-money-to-slydo-two':
+        return PageTransition(
+          child: AddMoneyToSlydoTwo(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
           settings: settings,

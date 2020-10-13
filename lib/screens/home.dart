@@ -106,12 +106,40 @@ class _HomeState extends State<Home> {
         ],
       ),
       actions: <Widget>[
+        topUpBtn(),
+        SizedBox(
+          width: 8.0,
+        ),
         scanQRBtn(),
         SizedBox(
-          width: 10.0,
+          width: 8.0,
         ),
         messageBtn(),
       ],
+    );
+  }
+
+  Widget topUpBtn() {
+    return SizedBox(
+      height: 34,
+      width: 34,
+      child: InkWell(
+        child: Card(
+          elevation: 0,
+          color: lightGrey.withOpacity(0.1),
+          margin: EdgeInsets.symmetric(vertical: 10),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(
+            SlydoAppIcon.naira,
+            size: 16,
+          ),
+        ),
+        onTap: () {
+          Navigator.of(context).pushNamed('/add-money-to-slydo-one');
+        },
+      ),
     );
   }
 

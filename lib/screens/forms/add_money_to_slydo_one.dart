@@ -2,10 +2,10 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
-import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -14,27 +14,28 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
-class Payout extends StatefulWidget {
+class AddMoneyToSlydoOne extends StatefulWidget {
   @override
-  _PayoutState createState() => _PayoutState();
+  _AddMoneyToSlydoOneState createState() => _AddMoneyToSlydoOneState();
 }
 
-class _PayoutState extends State<Payout> {
+class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
   http.Response response;
 
   final _auth = AuthService();
-  final _formKey = GlobalKey<FormState>();
+  final _formKeyTwo = GlobalKey<FormState>();
 
   UserBloc userBloc;
   BankAccountBloc bankAccountBloc;
 
-  int amount;
   String errorMessage = "";
-  int accountBalance = 0;
+
+  String amount = "0";
+
+  String referenceNumber;
 
   @override
   void initState() {
-    getAccountBalance();
     super.initState();
   }
 
@@ -73,7 +74,7 @@ class _PayoutState extends State<Payout> {
         },
       ),
       title: Text(
-        AppLocalization.of(context).payout,
+        "Topup",
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -91,18 +92,21 @@ class _PayoutState extends State<Payout> {
         child: Column(
           children: [
             Expanded(
+              flex: 1,
               child: Form(
-                key: _formKey,
+                key: _formKeyTwo,
                 child: Column(
                   children: <Widget>[
-                    getUserBankAccount(),
-                    flexibleSpace(),
                     displayAmountField(),
                     flexibleSpace(),
-                    noteForUser(),
+                    amountUserGetMsg(),
                     flexibleSpace(),
-                    accountBalance <= 0 ? Container() : getSubmitButton(),
-                    flexibleSpace(flex: 2),
+                    amountUserGet(),
+                    flexibleSpace(),
+                    getReferenceButton(),
+                    flexibleSpace(),
+                    noteForUser(),
+                    flexibleSpace(flex: 3),
                   ],
                 ),
               ),
@@ -169,11 +173,8 @@ class _PayoutState extends State<Payout> {
       keyboardType: TextInputType.number,
       inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
       onChanged: (val) {
-        if (mounted) {
-          setState(() {
-            amount = int.parse(val);
-          });
-        }
+        amount = val.toString();
+        setState(() {});
       },
       validator: (val) {
         if (val.isNotEmpty) {
@@ -187,12 +188,28 @@ class _PayoutState extends State<Payout> {
     );
   }
 
-  Widget getSubmitButton() {
+  Widget referenceIdFiled() {
+    return CustomizedTextFormField(
+      labelText: "Reference number",
+      onChanged: (val) {
+        referenceNumber = val.toString();
+        setState(() {});
+      },
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        return "Please add reference number";
+      },
+    );
+  }
+
+  Widget getReferenceButton() {
     return CurvedButton(
       onPressed: onSubmit,
       backgroundColor: navyBlue,
       textColor: Colors.white,
-      text: AppLocalization.of(context).submitButton,
+      text: "Get reference",
     );
   }
 
@@ -200,66 +217,9 @@ class _PayoutState extends State<Payout> {
     //for closing the keypad if it is open
     FocusScope.of(context).unfocus();
 
-    // duration for close keyboard and open passcode bottomsheet
-    await Future.delayed(Duration(milliseconds: 500));
-
-    if (_formKey.currentState.validate()) {
+    if (_formKeyTwo.currentState.validate()) {
       try {
-        var data = {
-          "amount": amount,
-          "currency": userBloc.user.currency,
-        };
-        BottomSheetPassCode(
-            context: context,
-            isValidCallback: () {
-              showDialog(
-                  context: context,
-                  builder: (context) =>
-                      Center(child: CircularLoadingIndicator()));
-
-              _auth.accountPayout(data).then((value) {
-                response = value;
-                if (response.statusCode == 201) {
-                  Navigator.pop(context);
-                  Navigator.of(context).popAndPushNamed('/payout-list');
-                } else if (response.statusCode == 500) {
-                  Navigator.pop(context);
-                  if (mounted) {
-                    setState(() {
-                      errorMessage = AppLocalization.of(context).serverError;
-                      Toast.show(errorMessage, context,
-                          gravity: Toast.TOP,
-                          backgroundColor: darkBlue(),
-                          textColor: Colors.white);
-                    });
-                  }
-                } else if (response.statusCode == 700) {
-                  Navigator.pop(context);
-                  Navigator.pushNamed(context, "/bvn-verification");
-                } else if (response.statusCode == 800) {
-                  Navigator.pop(context);
-                  Navigator.pushNamed(context, "/add-document");
-                } else {
-                  Navigator.pop(context);
-                  if (mounted) {
-                    setState(() {
-                      errorMessage =
-                          AppLocalization.of(context).somethingWentWrong;
-                      Toast.show(errorMessage, context,
-                          gravity: Toast.TOP,
-                          backgroundColor: darkBlue(),
-                          textColor: Colors.white);
-                    });
-                  }
-                }
-              });
-            },
-            cancelCallBack: () {
-              Navigator.pop(context);
-              Scaffold.of(context).showSnackBar(SnackBar(
-                content: Text(AppLocalization.of(context).invalidPassword),
-              ));
-            });
+        Navigator.popAndPushNamed(context, "/add-money-to-slydo-two");
       } catch (e) {
         print(e);
         Toast.show(e, context,
@@ -270,21 +230,36 @@ class _PayoutState extends State<Payout> {
 
   Widget noteForUser() {
     return Text(
-      AppLocalization.of(context).noteForUser,
+      "You are about to transfer money into your Slydo wallet",
       style: TextStyle(
           fontSize: 12, color: blackFont, fontWeight: FontWeight.w600),
     );
   }
 
-  Future<void> getAccountBalance() async {
-    await _auth.getAccountBalance().then((value) {
-      var data = value;
-      var spendableBalance = data["spendable_balance"];
-      if (mounted) {
-        setState(() {
-          accountBalance = spendableBalance;
-        });
-      }
-    });
+  Widget amountUserGetMsg() {
+    return Text(
+      "You will get following amount in your Slydo wallet",
+      style: TextStyle(
+          fontSize: 12, color: blackFont, fontWeight: FontWeight.w600),
+    );
+  }
+
+  Widget amountUserGet() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          SlydoAppIcon.naira,
+          color: blackFont,
+          size: 24,
+        ),
+        Text(
+          " " +
+              (double.parse(amount) - (double.parse(amount) * 0.03)).toString(),
+          style: TextStyle(
+              fontSize: 36, color: blackFont, fontWeight: FontWeight.w600),
+        ),
+      ],
+    );
   }
 }
