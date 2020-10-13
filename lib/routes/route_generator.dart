@@ -418,7 +418,7 @@ class RouteGenerator {
         );
       case '/add-money-to-slydo-two':
         return PageTransition(
-          child: AddMoneyToSlydoTwo(),
+          child: AddMoneyToSlydoTwo(arguments: settings.arguments,),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
           settings: settings,

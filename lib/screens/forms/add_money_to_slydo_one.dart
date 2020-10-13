@@ -32,8 +32,6 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
 
   String amount = "0";
 
-  String referenceNumber;
-
   @override
   void initState() {
     super.initState();
@@ -188,22 +186,6 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
     );
   }
 
-  Widget referenceIdFiled() {
-    return CustomizedTextFormField(
-      labelText: "Reference number",
-      onChanged: (val) {
-        referenceNumber = val.toString();
-        setState(() {});
-      },
-      validator: (val) {
-        if (val.isNotEmpty) {
-          return null;
-        }
-        return "Please add reference number";
-      },
-    );
-  }
-
   Widget getReferenceButton() {
     return CurvedButton(
       onPressed: onSubmit,
@@ -217,14 +199,30 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
     //for closing the keypad if it is open
     FocusScope.of(context).unfocus();
 
+    var data = {"amount": amount.toString(), "currency": "NGN"};
+
+    showDialog(
+        context: context,
+        builder: (context) => Center(child: CircularLoadingIndicator()));
+
     if (_formKeyTwo.currentState.validate()) {
-      try {
-        Navigator.popAndPushNamed(context, "/add-money-to-slydo-two");
-      } catch (e) {
-        print(e);
-        Toast.show(e, context,
-            gravity: Toast.BOTTOM, backgroundColor: darkBlue());
-      }
+        _auth.topUpAccountByBank(data).then((value) {
+          if (value != null) {
+            Navigator.pop(context);
+            var result = value;
+            debugPrint(result.toString());
+            Navigator.popAndPushNamed(context, "/add-money-to-slydo-two",
+                arguments: result);
+          }
+        }).catchError((e){
+          Navigator.pop(context);
+          print(e);
+          Toast.show(e, context,
+              gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+        });
+
+    } else {
+      Navigator.pop(context);
     }
   }
 

@@ -1938,4 +1938,21 @@ class AuthService {
       }
     };
   }
+
+  Future<Map<String, dynamic>> topUpAccountByBank(
+      Map<String, dynamic> data) async {
+    var amount =
+        (double.parse(data["amount"]) - (double.parse(data["amount"]) * 0.03))
+            .toString();
+    await Future.delayed(Duration(seconds: 2));
+    // return Future.error("Something wrong please try later!");
+    return {"token": "123456789012", "amount": amount, "currency": "NGN"};
+  }
+
+  Future<bool> confirmTopUpWithReferenceNumber(
+      Map<String, dynamic> data) async {
+    await Future.delayed(Duration(seconds: 2));
+    // return Future.error("Something wrong please try later!");
+    return true;
+  }
 }

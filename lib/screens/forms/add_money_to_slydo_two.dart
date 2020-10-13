@@ -1,18 +1,18 @@
-import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
-import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
+// ignore: must_be_immutable
 class AddMoneyToSlydoTwo extends StatefulWidget {
+  var arguments;
+
+  AddMoneyToSlydoTwo({this.arguments});
   @override
   _AddMoneyToSlydoTwoState createState() => _AddMoneyToSlydoTwoState();
 }
@@ -23,27 +23,24 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
   final _auth = AuthService();
   final _formKeyTwo = GlobalKey<FormState>();
 
-  UserBloc userBloc;
-  BankAccountBloc bankAccountBloc;
-
   String errorMessage = "";
 
   String amount = "100";
 
-  String referenceNumber;
+  String referenceNumber = "";
 
   bool isChecked = false;
 
   @override
   void initState() {
+    debugPrint(widget.arguments.toString());
+    amount = widget.arguments["amount"];
+    referenceNumber = widget.arguments["token"];
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    userBloc = Provider.of<UserBloc>(context);
-    bankAccountBloc = Provider.of<BankAccountBloc>(context);
-
     return WillPopScope(
       onWillPop: () async {
         return true;
@@ -221,28 +218,6 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
     );
   }
 
-  Widget displayAmountField() {
-    return CustomizedTextFormField(
-      labelText: "Amount",
-      isAmount: true,
-      keyboardType: TextInputType.number,
-      inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
-      onChanged: (val) {
-        amount = val.toString();
-        setState(() {});
-      },
-      validator: (val) {
-        if (val.isNotEmpty) {
-          try {
-            int.parse(val);
-            return null;
-          } catch (e) {}
-        }
-        return AppLocalization.of(context).invalidAmount;
-      },
-    );
-  }
-
   Widget referenceIdFiled() {
     return Text(
       "abcdefgr7512",
@@ -324,14 +299,25 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
     //for closing the keypad if it is open
     FocusScope.of(context).unfocus();
 
+    showDialog(
+        context: context,
+        builder: (context) => Center(child: CircularLoadingIndicator()));
+
     if (_formKeyTwo.currentState.validate()) {
-      try {
-        Navigator.popUntil(context, ModalRoute.withName("/dashboard"));
-      } catch (e) {
+      var data = {"token": referenceNumber};
+      _auth.confirmTopUpWithReferenceNumber(data).then((value) {
+        if (value) {
+          Navigator.pop(context);
+          Navigator.popUntil(context, ModalRoute.withName("/dashboard"));
+        }
+      }).catchError((e) {
+        Navigator.pop(context);
         print(e);
         Toast.show(e, context,
             gravity: Toast.BOTTOM, backgroundColor: darkBlue());
-      }
+      });
+    } else {
+      Navigator.pop(context);
     }
   }
 
@@ -361,8 +347,7 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
           size: 24,
         ),
         Text(
-          " " +
-              (double.parse(amount) - (double.parse(amount) * 0.03)).toString(),
+          " " + amount,
           style: TextStyle(
               fontSize: 36, color: blackFont, fontWeight: FontWeight.w600),
         ),
