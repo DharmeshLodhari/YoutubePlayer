@@ -33,9 +33,10 @@ class _QRCodeViewState extends State<QRCodeView> {
 
   @override
   void initState() {
-    print(arguments);
     isRequest = arguments != null
-        ? arguments['isRequest'] != null ? arguments['isRequest'] : false
+        ? arguments['isRequest'] != null
+            ? arguments['isRequest']
+            : false
         : false;
     super.initState();
   }

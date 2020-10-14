@@ -5,7 +5,6 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:toast/toast.dart';
 
 // ignore: must_be_immutable
@@ -18,14 +17,12 @@ class AddMoneyToSlydoTwo extends StatefulWidget {
 }
 
 class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
-  http.Response response;
-
   final _auth = AuthService();
   final _formKeyTwo = GlobalKey<FormState>();
 
   String errorMessage = "";
 
-  String amount = "100";
+  String amount = "0";
 
   String referenceNumber = "";
 
@@ -33,7 +30,6 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
 
   @override
   void initState() {
-    debugPrint(widget.arguments.toString());
     amount = widget.arguments["amount"];
     referenceNumber = widget.arguments["token"];
     super.initState();
@@ -59,6 +55,7 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
+      centerTitle: false,
       automaticallyImplyLeading: false,
       leading: IconButton(
         icon: Icon(
@@ -81,59 +78,38 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
   Widget scaffoldBody() {
     return SingleChildScrollView(
       child: Container(
-        height: MediaQuery.of(context).size.height -
-            (AppBar().preferredSize.height +
-                MediaQuery.of(context).padding.top),
-        width: MediaQuery.of(context).size.width,
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        child: Column(
-          children: [
-            Expanded(
-              flex: 3,
-              child: Form(
-                key: _formKeyTwo,
-                child: Column(
-                  children: <Widget>[
-                    amountUserGetMsg(),
-                    flexibleSpace(),
-                    amountUserGet(),
-                    flexibleSpace(),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                          "Please enter the reference number below while sending money.",
-                          style: TextStyle(
-                              fontSize: 12,
-                              color: blackFont,
-                              fontWeight: FontWeight.w600)),
-                    ),
-                    flexibleSpace(),
-                    referenceIdFiled(),
-                    flexibleSpace(),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text("Please transfer the money to our account.",
-                          style: TextStyle(
-                              fontSize: 12,
-                              color: blackFont,
-                              fontWeight: FontWeight.w600)),
-                    ),
-                    flexibleSpace(),
-                    getUserBankAccountSlydo(),
-                    flexibleSpace(),
-                    userTopUpNote(),
-                    flexibleSpace(),
-                    transferredMoneyCheck(),
-                    flexibleSpace(),
-                    isChecked ? getSubmitButton() : Container(),
-                    flexibleSpace(),
-                    flexibleSpace(flex: 3),
-                  ],
-                ),
+        padding: EdgeInsets.only(left: 16, right: 16, top: 16),
+        child: Form(
+          key: _formKeyTwo,
+          child: Column(
+            children: <Widget>[
+              amountUserGetMsg(),
+              SizedBox(
+                height: 20,
               ),
-            ),
-            flexibleSpace()
-          ],
+              amountUserGet(),
+              SizedBox(
+                height: 28,
+              ),
+              referenceIdFiled(),
+              SizedBox(
+                height: 20,
+              ),
+              getUserBankAccountSlydo(),
+              SizedBox(
+                height: 24,
+              ),
+              userTopUpNote(),
+              SizedBox(
+                height: 16,
+              ),
+              transferredMoneyCheck(),
+              SizedBox(
+                height: 40,
+              ),
+              isChecked ? getSubmitButton() : Container(),
+            ],
+          ),
         ),
       ),
     );
@@ -156,73 +132,148 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
       elevation: 0,
       child: Container(
         decoration: decorateBox(),
-        child: ListTile(
-          dense: true,
-          title: Column(
-            children: [
-              Row(
+        child: Column(
+          children: [
+            ListTile(
+              title: Text("Please transfer the money to our account",
+                  style: TextStyle(
+                      fontSize: 14,
+                      color: blackFont,
+                      fontWeight: FontWeight.w400)),
+              leading: Image.asset(
+                "assets/images/category/slydo.png",
+                height: 36,
+                width: 36,
+              ),
+            ),
+            Divider(
+              thickness: 1,
+              color: dividerColor,
+            ),
+            Container(
+              padding:
+                  EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 20),
+              child: Column(
                 children: [
-                  Text(
-                    "Bank name:",
-                    style: TextStyle(color: darkGrey, fontSize: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          "Bank name",
+                          style: TextStyle(
+                              color: blackFont,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400),
+                        ),
+                      ),
+                      Expanded(
+                        child: Text(
+                          "GT Bank",
+                          style: TextStyle(
+                              color: blackFont,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14),
+                        ),
+                      ),
+                    ],
                   ),
-                  Text(
-                    " GT Bank",
-                    style: TextStyle(
-                        color: blackFont,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          "Account name",
+                          style: TextStyle(
+                              color: blackFont,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400),
+                        ),
+                      ),
+                      Expanded(
+                        child: Text(
+                          "Slydo Private Limited",
+                          style: TextStyle(
+                              color: blackFont,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'Account number',
+                          style: TextStyle(
+                              color: blackFont,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400),
+                        ),
+                      ),
+                      Expanded(
+                        child: Text(
+                          '8562014859',
+                          style: TextStyle(
+                              color: blackFont,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-              Row(
-                children: [
-                  Text(
-                    "Account name:",
-                    style: TextStyle(color: darkGrey, fontSize: 12),
-                  ),
-                  Text(
-                    " Slydo Private Limited",
-                    style: TextStyle(
-                        color: blackFont,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          subtitle: Row(
-            children: [
-              Text(
-                'Account number:',
-                style: TextStyle(color: darkGrey, fontSize: 12),
-              ),
-              Text(
-                ' 8562014859',
-                style: TextStyle(
-                  color: blackFont,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-          leading: Image.asset(
-            "assets/images/category/slydo.png",
-            height: 48,
-            width: 48,
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 
   Widget referenceIdFiled() {
-    return Text(
-      "abcdefgr7512",
-      style: TextStyle(
-          fontSize: 28, color: blackFont, fontWeight: FontWeight.w600),
+    return Card(
+      elevation: 0,
+      margin: EdgeInsets.zero,
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+        decoration: decorateBox(),
+        child: Column(
+          children: [
+            Text("Please enter the reference number below while sending money",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: 14,
+                    color: blackFont,
+                    fontWeight: FontWeight.w400,
+                    height: 1.5)),
+            SizedBox(
+              height: 16,
+            ),
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(vertical: 14),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: blackFont.withOpacity(0.05),
+              ),
+              child: Text(
+                "abcdefgr7512",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: 18,
+                    color: blackFont,
+                    fontWeight: FontWeight.w700),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -312,7 +363,7 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
         }
       }).catchError((e) {
         Navigator.pop(context);
-        print(e);
+        debugPrint(e);
         Toast.show(e, context,
             gravity: Toast.BOTTOM, backgroundColor: darkBlue());
       });
@@ -325,15 +376,18 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
     return Text(
       "You will get following amount in your Slydo wallet",
       style: TextStyle(
-          fontSize: 12, color: blackFont, fontWeight: FontWeight.w600),
+          fontSize: 14, color: blackFont, fontWeight: FontWeight.w400),
     );
   }
 
   Widget userTopUpNote() {
-    return Text(
-      "Please press this button only after you have transfer the fund.",
-      style:
-          TextStyle(fontSize: 12, color: mateRad, fontWeight: FontWeight.w600),
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Text(
+        "Please check the box below only after you transferred",
+        style: TextStyle(
+            fontSize: 12, color: mateRad, fontWeight: FontWeight.w600),
+      ),
     );
   }
 
@@ -343,13 +397,13 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
       children: [
         Icon(
           SlydoAppIcon.naira,
-          color: blackFont,
-          size: 24,
+          color: navyBlue,
+          size: 22,
         ),
         Text(
           " " + amount,
           style: TextStyle(
-              fontSize: 36, color: blackFont, fontWeight: FontWeight.w600),
+              fontSize: 36, color: navyBlue, fontWeight: FontWeight.w700),
         ),
       ],
     );

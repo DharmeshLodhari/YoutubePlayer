@@ -91,7 +91,6 @@ class _OrdersListState extends State<OrdersList> {
 
   void menuItemSelectionChange(String value, int index) {
     selectedMenuItemIndex = index;
-    debugPrint("selectedMenuItemIndex $selectedMenuItemIndex");
     filterValue = value;
     setState(() {});
     _onRefresh();
@@ -205,124 +204,6 @@ class _OrdersListState extends State<OrdersList> {
       ),
     );
   }
-
-  Widget _threeItemPopup() => PopupMenuButton(
-        padding: EdgeInsets.all(0),
-        captureInheritedThemes: true,
-        itemBuilder: (context) {
-          var list = List<PopupMenuEntry<Object>>();
-          list.add(
-            PopupMenuItem(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text(AppLocalization.of(context).filter),
-                  Icon(
-                    Icons.sort,
-                    color: Colors.black,
-                  )
-                ],
-              ),
-              value: 1,
-            ),
-          );
-          list.add(
-            PopupMenuDivider(
-              height: 10,
-            ),
-          );
-          list.add(
-            CheckedPopupMenuItem(
-              child: Text(
-                AppLocalization.of(context).all,
-                style: TextStyle(color: Colors.black),
-              ),
-              value: "",
-              checked: filterValue == "" ? true : false,
-            ),
-          );
-          list.add(
-            CheckedPopupMenuItem(
-              child: Text(
-                AppLocalization.of(context).newOrder,
-                style: TextStyle(color: Colors.green[600]),
-              ),
-              value: "new order",
-              checked: filterValue == "new order" ? true : false,
-            ),
-          );
-          list.add(
-            CheckedPopupMenuItem(
-              child: Text(
-                AppLocalization.of(context).awaitingPayment,
-                style: TextStyle(color: Colors.black),
-              ),
-              value: "awaiting payment",
-              checked: filterValue == "awaiting payment" ? true : false,
-            ),
-          );
-          list.add(
-            CheckedPopupMenuItem(
-              child: Text(
-                AppLocalization.of(context).canceled,
-                style: TextStyle(color: Colors.black),
-              ),
-              value: "canceled",
-              checked: filterValue == "canceled" ? true : false,
-            ),
-          );
-          list.add(
-            CheckedPopupMenuItem(
-              child: Text(
-                AppLocalization.of(context).completed,
-                style: TextStyle(color: Colors.black),
-              ),
-              value: "completed",
-              checked: filterValue == "completed" ? true : false,
-            ),
-          );
-          list.add(
-            CheckedPopupMenuItem(
-              child: Text(
-                AppLocalization.of(context).onHold,
-                style: TextStyle(color: Colors.black),
-              ),
-              value: "on hold",
-              checked: filterValue == "on hold" ? true : false,
-            ),
-          );
-          list.add(
-            CheckedPopupMenuItem(
-              child: Text(
-                AppLocalization.of(context).pending,
-                style: TextStyle(color: Colors.black),
-              ),
-              value: "pending",
-              checked: filterValue == "pending" ? true : false,
-            ),
-          );
-          list.add(
-            CheckedPopupMenuItem(
-              child: Text(
-                AppLocalization.of(context).processing,
-                style: TextStyle(color: Colors.black),
-              ),
-              value: "processing",
-              checked: filterValue == "processing" ? true : false,
-            ),
-          );
-          return list;
-        },
-        onSelected: (Object object) {
-          setState(() {
-            if (object != 1) {
-              filterValue = object;
-              filterValue = object;
-              _onRefresh();
-            }
-          });
-        },
-      );
 
   Widget _buildOrderList() {
     return noItemInList
@@ -447,26 +328,7 @@ class _OrdersListState extends State<OrdersList> {
   }
 
   List<Widget> listActionSlideActions(Order order, int index) {
-    return [
-      // IconSlideAction(
-      //   caption: AppLocalization.of(context).message,
-      //   color: Colors.green,
-      //   icon: Icons.message,
-      //   onTap: () {
-      //     var recipient = userBloc.user.userName == order.merchant
-      //         ? order.customer
-      //         : order.merchant;
-      //
-      //     Navigator.of(context).pushNamed('/compose_message', arguments: {
-      //       'recipient': recipient,
-      //       'subject': AppLocalization.of(context).orderDetail +
-      //           " : " +
-      //           AppLocalization.of(context).ref +
-      //           " #${order.id}",
-      //     });
-      //   },
-      // ),
-    ];
+    return [];
   }
 
   Widget _getSlidableWithLists(BuildContext context, Order order, int index) {

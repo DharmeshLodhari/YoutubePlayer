@@ -122,10 +122,6 @@ class AlignedGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final primarySize = keyboardSize.width > keyboardSize.height
-        ? keyboardSize.height
-        : keyboardSize.width;
-    final itemSize = (primarySize - runSpacing * (columns - 1)) / columns;
     return Wrap(
       runSpacing: runSpacing,
       spacing: spacing,

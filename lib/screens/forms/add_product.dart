@@ -34,7 +34,7 @@ class _AddProductState extends State<AddProduct> {
 
   int imageCount = 5;
   ScrollController _scrollController = ScrollController();
-  List<File> productImages = List<File>();
+  List<PickedFile> productImages = List<PickedFile>();
   String productName = "";
   String productDescription = "";
   String productShortDescription = "";
@@ -153,7 +153,9 @@ class _AddProductState extends State<AddProduct> {
           padding: EdgeInsets.only(right: 6),
           child: index != productImages.length
               ? showImage(index)
-              : productImages.length != imageCount ? addImageButton() : null,
+              : productImages.length != imageCount
+                  ? addImageButton()
+                  : null,
         ),
       ),
     );
@@ -215,7 +217,7 @@ class _AddProductState extends State<AddProduct> {
             ));
 
     if (imageSource != null) {
-      ImagePicker.pickImage(source: imageSource).then((value) {
+      ImagePicker().getImage(source: imageSource).then((value) {
         if (value != null) {
           setState(() {
             productImages.add(value);
@@ -243,7 +245,7 @@ class _AddProductState extends State<AddProduct> {
                 borderRadius: BorderRadius.circular(10),
                 image: DecorationImage(
                     image: FileImage(
-                      productImages[index],
+                      File(productImages[index].path),
                     ),
                     fit: BoxFit.fill),
               ),
@@ -622,7 +624,7 @@ class _AddProductState extends State<AddProduct> {
       if (productImages.length >= 1) {
         if (validateDropdown()) {
           Product product = Product();
-          product.localImages = productImages;
+          product.localImages = productImages.map((file) => File(file.path)).toList();
           product.name = productName;
           product.description = productDescription;
           product.shortDescription = productShortDescription;

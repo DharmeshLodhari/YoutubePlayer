@@ -61,7 +61,7 @@ class _ResultReturningPasswordPopupState
       maxLength: 4,
       maxLengthEnforced: true,
       onFieldSubmitted: verifyData,
-      autovalidate: true,
+      autovalidateMode: AutovalidateMode.always,
       autofocus: false,
       obscureText: true,
       validator: (value) {

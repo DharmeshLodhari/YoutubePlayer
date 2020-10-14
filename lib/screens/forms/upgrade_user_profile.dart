@@ -290,7 +290,6 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
         _auth
             .authenticate(userBloc.user.phoneNumber, userBloc.user.password)
             .then((newUser) {
-          print(newUser.type);
           if (mounted) {
             setState(() {
               userBloc.user = newUser;

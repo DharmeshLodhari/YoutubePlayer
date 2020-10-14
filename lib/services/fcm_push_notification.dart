@@ -1,18 +1,21 @@
 import 'dart:io';
 
 import 'package:Slydo/data/database_helper.dart';
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/device_info.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class PushNotificationService {
-  static final FirebaseMessaging _fcm = FirebaseMessaging();
-  final _auth = AuthService();
-  final _db = DatabaseHelper();
+  static FirebaseMessaging _fcm = FirebaseMessaging();
+  static AuthService _auth = AuthService();
+  static DatabaseHelper _db = DatabaseHelper();
   BuildContext context;
 
   PushNotificationService({@required this.context});
@@ -27,7 +30,6 @@ class PushNotificationService {
     _fcm.getToken().then((String token) async {
       data["token"] = token;
 
-      debugPrint(token);
       // this piece of code convert Map<dynamic,dynamic> data to Map<String,String> tempData
       // so we can store that data into database
       Map<String, dynamic> tempData = new Map<String, dynamic>();
@@ -53,10 +55,10 @@ class PushNotificationService {
           const IosNotificationSettings(sound: true, badge: true, alert: true));
 
       _fcm.onIosSettingsRegistered.listen((IosNotificationSettings settings) {
-        debugPrint("Settings registered: $settings");
+        // debugPrint("Settings registered: $settings");
       });
       _fcm.getToken().then((String token) {
-        debugPrint("firebase IOS token : $token");
+        // debugPrint("firebase IOS token : $token");
       });
     }
 
@@ -70,25 +72,29 @@ class PushNotificationService {
             : getIosNotification(message);
 
         debugPrint("Notification From onMessage:  $notification");
-
-        // show the notification in the dialog
-        bool result = await showDialogBoxWithImage(
-          context: context,
-          actionOneBgColor: greyBorderColor,
-          actionOneTextColor: blackFont,
-          actionTwoBgColor: naturalGreen,
-          actionTwoTextColor: Colors.white,
-          firstActionPrimary: false,
-          title: notification['title'],
-          description: notification['body'],
-          image: notification['image'],
-          actionOne: AppLocalization.of(context).cancel,
-          actionTwo: AppLocalization.of(context).navigate,
-        );
-        if (result) {
-          _navigateToItemDetail(notification);
-        } else {
-          Navigator.pop(context);
+        context = myGlobals.scaffoldKey.currentContext;
+        try {
+          // show the notification in the dialog
+          bool result = await showDialogBoxWithImage(
+            context: context,
+            actionOneBgColor: greyBorderColor,
+            actionOneTextColor: blackFont,
+            actionTwoBgColor: naturalGreen,
+            actionTwoTextColor: Colors.white,
+            firstActionPrimary: false,
+            title: notification['title'],
+            description: notification['body'],
+            image: notification['image'],
+            actionOne: AppLocalization.of(context).cancel,
+            actionTwo: AppLocalization.of(context).navigate,
+          );
+          if (result) {
+            _navigateToItemDetail(notification);
+          } else {
+            Navigator.pop(context);
+          }
+        } catch (error) {
+          debugPrint("Error:- " + error.toString());
         }
       },
 
@@ -161,23 +167,24 @@ class PushNotificationService {
     // title: You've Got Mail, vibrate: [200,100,200,100,200,100,400],
     // icon: null, badge: null, sound: null, link: null, tag: null, dir: auto,
     // actions: /detail_message/40892023-fa43-4652-b3eb-fd584f6530e9}
-
-    debugPrint("payload : $payload");
-    if (payload == "/request-payment") {
-      // Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
-      // DashboardBloc _dashboardBloc = Provider.of<DashboardBloc>(context);
-      // _dashboardBloc.index = 1;
-      Navigator.of(context)
-          .pushNamed('/dashboard', arguments: {"dashboardIndex": 1});
-    } else if (payload == "/transaction") {
-      Navigator.of(context).pushNamed('/transactions');
-    } else if (payload.length > 15 &&
-        payload.substring(0, 16) == "/detail_message/") {
-      //this variable will fetch the id of message from the response
-      String idOfMessage = payload.replaceAll("/detail_message/", "");
-      Navigator.of(context).pushNamed('/detail_message', arguments: {
-        'id': idOfMessage,
-      });
+    try {
+      debugPrint("payload : $payload");
+      if (payload == "/request-payment") {
+        Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
+        DashboardBloc _dashboardBloc = Provider.of<DashboardBloc>(context);
+        _dashboardBloc.index = 1;
+      } else if (payload == "/transaction") {
+        Navigator.of(context).pushNamed('/transactions');
+      } else if (payload.length > 15 &&
+          payload.substring(0, 16) == "/detail_message/") {
+        //this variable will fetch the id of message from the response
+        String idOfMessage = payload.replaceAll("/detail_message/", "");
+        Navigator.of(context).pushNamed('/detail_message', arguments: {
+          'id': idOfMessage,
+        });
+      }
+    } catch (error) {
+      debugPrint("new error:- $error");
     }
   }
 
@@ -187,7 +194,14 @@ class PushNotificationService {
   }
 
   Future<bool> logout() async {
-    debugPrint("logout calles!");
-    return await _fcm.deleteInstanceID();
+    debugPrint("logout called!");
+    bool result;
+    try {
+      result = await _fcm.deleteInstanceID();
+    } catch (e) {
+      debugPrint("logout error:- $e");
+    }
+
+    return result;
   }
 }

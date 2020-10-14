@@ -33,7 +33,7 @@ class _AddServiceState extends State<AddService> {
 
   int imageCount = 5;
   ScrollController _scrollController = ScrollController();
-  List<File> serviceImages = List<File>();
+  List<PickedFile> serviceImages = List<PickedFile>();
   String serviceName = "";
   String serviceShortDescription = "";
   String serviceDescription = "";
@@ -144,7 +144,9 @@ class _AddServiceState extends State<AddService> {
           padding: EdgeInsets.only(right: 6),
           child: index != serviceImages.length
               ? showImage(index)
-              : serviceImages.length != imageCount ? addImageButton() : null,
+              : serviceImages.length != imageCount
+                  ? addImageButton()
+                  : null,
         ),
       ),
     );
@@ -206,7 +208,7 @@ class _AddServiceState extends State<AddService> {
             ));
 
     if (imageSource != null) {
-      ImagePicker.pickImage(source: imageSource).then((value) {
+      ImagePicker().getImage(source: imageSource).then((value) {
         if (value != null) {
           if (mounted) {
             setState(() {
@@ -234,7 +236,7 @@ class _AddServiceState extends State<AddService> {
               borderRadius: BorderRadius.circular(10),
               image: DecorationImage(
                   image: FileImage(
-                    serviceImages[index],
+                    File(serviceImages[index].path),
                   ),
                   fit: BoxFit.fill),
             ),
@@ -459,7 +461,8 @@ class _AddServiceState extends State<AddService> {
       if (serviceImages.length >= 1) {
         if (validateDropdown()) {
           Service service = Service();
-          service.localImages = serviceImages;
+          service.localImages =
+              serviceImages.map((file) => File(file.path)).toList();
           service.name = serviceName;
           service.shortDescription = serviceShortDescription;
           service.description = serviceDescription;

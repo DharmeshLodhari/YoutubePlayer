@@ -321,7 +321,9 @@ class _UserInfoState extends State<UserInfo> {
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(30),
             color: _userBloc.user.type != "User"
-                ? _userBloc.user.type != "Business" ? starYellow : naturalGreen
+                ? _userBloc.user.type != "Business"
+                    ? starYellow
+                    : naturalGreen
                 : navyBlue),
         child: Text(
           _userBloc.user.type,

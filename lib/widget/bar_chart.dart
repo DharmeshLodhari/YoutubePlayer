@@ -93,7 +93,9 @@ class _BarChartState extends State<BarChart> {
               ),
             ),
           )
-        : isDataIsZero ? barChart() : noDataPresent();
+        : isDataIsZero
+            ? barChart()
+            : noDataPresent();
   }
 
   Widget barChart() {

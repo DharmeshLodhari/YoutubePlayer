@@ -400,7 +400,7 @@ class _RequestPaymentState extends State<RequestPayment> {
       labelText: "Amount",
       isAmount: true,
       keyboardType: TextInputType.number,
-      inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
+      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       onChanged: (val) {
         if (mounted) {
           setState(() {
@@ -728,7 +728,7 @@ class _RequestPaymentState extends State<RequestPayment> {
                   ));
                 });
           } catch (e) {
-            print(e);
+            debugPrint(e);
             Toast.show(e, context,
                 gravity: Toast.BOTTOM, backgroundColor: darkBlue());
           }

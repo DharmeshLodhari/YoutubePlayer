@@ -14,6 +14,7 @@ class CircleUIConfig {
       this.circleSize = 20});
 }
 
+// ignore: must_be_immutable
 class Circle extends StatelessWidget {
   final bool filled;
   final CircleUIConfig circleUIConfig;

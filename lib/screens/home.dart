@@ -6,6 +6,7 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
@@ -106,40 +107,12 @@ class _HomeState extends State<Home> {
         ],
       ),
       actions: <Widget>[
-        topUpBtn(),
-        SizedBox(
-          width: 8.0,
-        ),
         scanQRBtn(),
         SizedBox(
           width: 8.0,
         ),
         messageBtn(),
       ],
-    );
-  }
-
-  Widget topUpBtn() {
-    return SizedBox(
-      height: 34,
-      width: 34,
-      child: InkWell(
-        child: Card(
-          elevation: 0,
-          color: lightGrey.withOpacity(0.1),
-          margin: EdgeInsets.symmetric(vertical: 10),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Icon(
-            SlydoAppIcon.naira,
-            size: 16,
-          ),
-        ),
-        onTap: () {
-          Navigator.of(context).pushNamed('/add-money-to-slydo-one');
-        },
-      ),
     );
   }
 
@@ -193,70 +166,77 @@ class _HomeState extends State<Home> {
   }
 
   Widget displayUserInfo() {
-    return CustomBoxShadow(
-      child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        margin: EdgeInsets.zero,
-        elevation: 0.0,
-        child: Container(
-          decoration: decorateBox(),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ListTile(
-                contentPadding:
-                    EdgeInsets.symmetric(horizontal: 16, vertical: 4.0),
-                leading: ClipOval(
-                  child: Container(
-                    height: 48,
-                    width: 48,
-                    child: CachedNetworkImage(
-                      imageUrl: userBloc.user.avatar,
-                      fit: BoxFit.fill,
+    return GestureDetector(
+      child: CustomBoxShadow(
+        child: Card(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          margin: EdgeInsets.zero,
+          elevation: 0.0,
+          child: Container(
+            decoration: decorateBox(),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                ListTile(
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 16, vertical: 4.0),
+                  leading: ClipOval(
+                    child: Container(
+                      height: 48,
+                      width: 48,
+                      child: CachedNetworkImage(
+                        imageUrl: userBloc.user.avatar,
+                        fit: BoxFit.fill,
+                      ),
                     ),
                   ),
+                  title: Text(
+                    userBloc.user.fullName,
+                    maxLines: 1,
+                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+                  ),
+                  subtitle: Text(
+                    userBloc.user.userName,
+                    maxLines: 1,
+                    style: TextStyle(fontSize: 14),
+                  ),
+                  onTap: () {
+                    _auth
+                        .fetchCustomerProfile(userBloc.user.userName)
+                        .then((user) {
+                      Navigator.pushNamed(context, '/profile',
+                          arguments: {"searchedUser": user});
+                    });
+                  },
                 ),
-                title: Text(
-                  userBloc.user.fullName,
-                  maxLines: 1,
-                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+                Divider(
+                  thickness: 1,
+                  color: dividerColor,
+                  height: 1,
                 ),
-                subtitle: Text(
-                  userBloc.user.userName,
-                  maxLines: 1,
-                  style: TextStyle(fontSize: 14),
-                ),
-                onTap: () {
-                  _auth
-                      .fetchCustomerProfile(userBloc.user.userName)
-                      .then((user) {
-                    Navigator.pushNamed(context, '/profile',
-                        arguments: {"searchedUser": user});
-                  });
-                },
-              ),
-              Divider(
-                thickness: 1,
-                color: dividerColor,
-                height: 1,
-              ),
-              Container(
-                  padding: EdgeInsets.symmetric(vertical: 32, horizontal: 32),
-                  child: CachedNetworkImage(
-                    // height: MediaQuery.of(context).size.width / 1.5,
-                    width: MediaQuery.of(context).size.width / 1.7,
-                    imageUrl: userBloc.user.qrCode,
-                    colorBlendMode: BlendMode.darken,
-                    fit: BoxFit.fill,
-                    filterQuality: FilterQuality.high,
-                    placeholder: (context, url) => Center(
-                      child: CircularLoadingIndicator(),
-                    ),
-                  )),
-            ],
+                Container(
+                    padding: EdgeInsets.symmetric(vertical: 32, horizontal: 32),
+                    child: CachedNetworkImage(
+                      // height: MediaQuery.of(context).size.width / 1.5,
+                      width: MediaQuery.of(context).size.width / 1.7,
+                      imageUrl: userBloc.user.qrCode,
+                      colorBlendMode: BlendMode.darken,
+                      fit: BoxFit.fill,
+                      filterQuality: FilterQuality.high,
+                      placeholder: (context, url) => Center(
+                        child: CircularLoadingIndicator(),
+                      ),
+                    )),
+              ],
+            ),
           ),
         ),
       ),
+      onTap: () {
+        showSwipeHintCard(context: context);
+        // showHoldHintCard(context: context);
+      },
     );
   }
 

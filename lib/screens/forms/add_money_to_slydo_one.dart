@@ -10,7 +10,6 @@ import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
@@ -20,8 +19,6 @@ class AddMoneyToSlydoOne extends StatefulWidget {
 }
 
 class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
-  http.Response response;
-
   final _auth = AuthService();
   final _formKeyTwo = GlobalKey<FormState>();
 
@@ -60,6 +57,7 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
+      centerTitle: false,
       automaticallyImplyLeading: false,
       leading: IconButton(
         icon: Icon(
@@ -87,30 +85,29 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
                 MediaQuery.of(context).padding.top),
         width: MediaQuery.of(context).size.width,
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        child: Column(
-          children: [
-            Expanded(
-              flex: 1,
-              child: Form(
-                key: _formKeyTwo,
-                child: Column(
-                  children: <Widget>[
-                    displayAmountField(),
-                    flexibleSpace(),
-                    amountUserGetMsg(),
-                    flexibleSpace(),
-                    amountUserGet(),
-                    flexibleSpace(),
-                    getReferenceButton(),
-                    flexibleSpace(),
-                    noteForUser(),
-                    flexibleSpace(flex: 3),
-                  ],
-                ),
+        child: Form(
+          key: _formKeyTwo,
+          child: Column(
+            children: <Widget>[
+              displayAmountField(),
+              SizedBox(
+                height: 60,
               ),
-            ),
-            flexibleSpace()
-          ],
+              amountUserGetMsg(),
+              SizedBox(
+                height: 20,
+              ),
+              amountUserGet(),
+              SizedBox(
+                height: 60,
+              ),
+              getReferenceButton(),
+              SizedBox(
+                height: 24,
+              ),
+              noteForUser(),
+            ],
+          ),
         ),
       ),
     );
@@ -165,24 +162,31 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
   }
 
   Widget displayAmountField() {
-    return CustomizedTextFormField(
-      labelText: "Amount",
-      isAmount: true,
-      keyboardType: TextInputType.number,
-      inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
-      onChanged: (val) {
-        amount = val.toString();
-        setState(() {});
-      },
-      validator: (val) {
-        if (val.isNotEmpty) {
-          try {
-            int.parse(val);
-            return null;
-          } catch (e) {}
-        }
-        return AppLocalization.of(context).invalidAmount;
-      },
+    return Card(
+      elevation: 0,
+      margin: EdgeInsets.zero,
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+        decoration: decorateBox(),
+        child: CustomizedTextFormField(
+          labelText: "Amount",
+          isAmount: true,
+          keyboardType: TextInputType.number,
+          onChanged: (val) {
+            amount = val.toString();
+            setState(() {});
+          },
+          validator: (val) {
+            if (val.isNotEmpty) {
+              try {
+                int.parse(val);
+                return null;
+              } catch (e) {}
+            }
+            return AppLocalization.of(context).invalidAmount;
+          },
+        ),
+      ),
     );
   }
 
@@ -206,31 +210,36 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
         builder: (context) => Center(child: CircularLoadingIndicator()));
 
     if (_formKeyTwo.currentState.validate()) {
-        _auth.topUpAccountByBank(data).then((value) {
-          if (value != null) {
-            Navigator.pop(context);
-            var result = value;
-            debugPrint(result.toString());
-            Navigator.popAndPushNamed(context, "/add-money-to-slydo-two",
-                arguments: result);
-          }
-        }).catchError((e){
+      _auth.topUpAccountByBank(data).then((value) {
+        if (value != null) {
           Navigator.pop(context);
-          print(e);
-          Toast.show(e, context,
-              gravity: Toast.BOTTOM, backgroundColor: darkBlue());
-        });
-
+          var result = value;
+          Navigator.popAndPushNamed(context, "/add-money-to-slydo-two",
+              arguments: result);
+        }
+      }).catchError((e) {
+        Navigator.pop(context);
+        debugPrint(e);
+        Toast.show(e, context,
+            gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+      });
     } else {
       Navigator.pop(context);
     }
   }
 
   Widget noteForUser() {
-    return Text(
-      "You are about to transfer money into your Slydo wallet",
-      style: TextStyle(
-          fontSize: 12, color: blackFont, fontWeight: FontWeight.w600),
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 40),
+      child: Text(
+        "You are about to transfer money into your Slydo wallet",
+        textAlign: TextAlign.center,
+        style: TextStyle(
+            fontSize: 14,
+            color: darkGrey,
+            fontWeight: FontWeight.w400,
+            height: 1.5),
+      ),
     );
   }
 
@@ -238,24 +247,25 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
     return Text(
       "You will get following amount in your Slydo wallet",
       style: TextStyle(
-          fontSize: 12, color: blackFont, fontWeight: FontWeight.w600),
+          fontSize: 14, color: blackFont, fontWeight: FontWeight.w400),
     );
   }
 
   Widget amountUserGet() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Icon(
           SlydoAppIcon.naira,
-          color: blackFont,
-          size: 24,
+          color: navyBlue,
+          size: 22,
         ),
         Text(
           " " +
               (double.parse(amount) - (double.parse(amount) * 0.03)).toString(),
           style: TextStyle(
-              fontSize: 36, color: blackFont, fontWeight: FontWeight.w600),
+              fontSize: 36, color: navyBlue, fontWeight: FontWeight.w700),
         ),
       ],
     );

@@ -167,7 +167,6 @@ class _PayoutState extends State<Payout> {
       labelText: "Amount",
       isAmount: true,
       keyboardType: TextInputType.number,
-      inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
       onChanged: (val) {
         if (mounted) {
           setState(() {
@@ -261,7 +260,7 @@ class _PayoutState extends State<Payout> {
               ));
             });
       } catch (e) {
-        print(e);
+        debugPrint(e);
         Toast.show(e, context,
             gravity: Toast.BOTTOM, backgroundColor: darkBlue());
       }

@@ -228,8 +228,12 @@ class _DetailedMessageState extends State<DetailedMessage> {
       ),
       onPressed: () async {
         var action = isRecipient
-            ? message.isArchivedByRecipient ? "unarchive" : "archive"
-            : message.isArchivedBySender ? "unarchive" : "archive";
+            ? message.isArchivedByRecipient
+                ? "unarchive"
+                : "archive"
+            : message.isArchivedBySender
+                ? "unarchive"
+                : "archive";
         await _auth.updateMessage(message.id, action);
         setState(() {
           if (isRecipient) {
@@ -251,8 +255,12 @@ class _DetailedMessageState extends State<DetailedMessage> {
     // we are showing and modifying star icon by message's isStarredBySender property
     bool isRecipient = userBloc.user.userName == message.recipient;
     Color iconColor = isRecipient
-        ? message.isStarredByRecipient ? starYellow : greyBorderColor
-        : message.isStarredBySender ? starYellow : greyBorderColor;
+        ? message.isStarredByRecipient
+            ? starYellow
+            : greyBorderColor
+        : message.isStarredBySender
+            ? starYellow
+            : greyBorderColor;
     return IconButton(
       icon: Icon(
         SlydoAppIcon.star,

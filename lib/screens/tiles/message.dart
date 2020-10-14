@@ -131,15 +131,17 @@ class _MessageTileState extends State<MessageTile> {
                 ? AppLocalization.of(context).unstar
                 : AppLocalization.of(context).star;
         await _auth.updateMessage(partialMessage.id, action);
-        setState(() {
-          if (isRecipient) {
-            partialMessage.isStarredByRecipient =
-                partialMessage.isStarredByRecipient ? false : true;
-          } else {
-            partialMessage.isStarredBySender =
-                partialMessage.isStarredBySender ? false : true;
-          }
-        });
+
+        if (isRecipient) {
+          partialMessage.isStarredByRecipient =
+              partialMessage.isStarredByRecipient ? false : true;
+        } else {
+          partialMessage.isStarredBySender =
+              partialMessage.isStarredBySender ? false : true;
+        }
+        if (mounted) {
+          setState(() {});
+        }
       },
     );
   }

@@ -42,7 +42,7 @@ class _EditProductState extends State<EditProduct> {
 
   int imageCount = 5;
   ScrollController _scrollController = ScrollController();
-  List<File> productLocalImages = [];
+  List<PickedFile> productLocalImages = [];
   List<String> productImagesFromServer = List<String>();
   String productName = "";
   String productDescription = "";
@@ -319,7 +319,7 @@ class _EditProductState extends State<EditProduct> {
             ));
 
     if (imageSource != null) {
-      ImagePicker.pickImage(source: imageSource).then((value) {
+      ImagePicker().getImage(source: imageSource).then((value) {
         if (value != null) {
           if (mounted) {
             setState(() {
@@ -347,7 +347,7 @@ class _EditProductState extends State<EditProduct> {
               borderRadius: BorderRadius.circular(10),
               image: DecorationImage(
                   image: FileImage(
-                    productLocalImages[index],
+                    File(productLocalImages[index].path),
                   ),
                   fit: BoxFit.fill),
             ),
@@ -842,7 +842,8 @@ class _EditProductState extends State<EditProduct> {
           currentProduct.category = productCategory;
           currentProduct.condition = productCondition;
           currentProduct.price = productPrice;
-          currentProduct.localImages = productLocalImages;
+          currentProduct.localImages =
+              productLocalImages.map((file) => File(file.path)).toList();
           currentProduct.serverImages = productImagesFromServer;
           currentProduct.isAvailable = productIsAvailable;
           currentProduct.availableFrom = productAvailableFrom;

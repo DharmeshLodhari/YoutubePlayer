@@ -102,7 +102,6 @@ class _MessageListState extends State<MessageList> {
 
   void menuItemSelectionChange(String value, int index) {
     selectedMenuItemIndex = index;
-    debugPrint("selectedMenuItemIndex $selectedMenuItemIndex");
     filterValue = value;
     setState(() {});
     _onRefresh();
@@ -227,84 +226,6 @@ class _MessageListState extends State<MessageList> {
     );
   }
 
-  Widget _threeItemPopup() => PopupMenuButton(
-        padding: EdgeInsets.all(0),
-        captureInheritedThemes: true,
-        itemBuilder: (context) {
-          var list = List<PopupMenuEntry<Object>>();
-          list.add(
-            PopupMenuItem(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text(AppLocalization.of(context).filter),
-                  Icon(
-                    Icons.sort,
-                    color: Colors.black,
-                  )
-                ],
-              ),
-              value: 1,
-            ),
-          );
-          list.add(
-            PopupMenuDivider(
-              height: 10,
-            ),
-          );
-          list.add(
-            CheckedPopupMenuItem(
-              child: Text(
-                AppLocalization.of(context).all,
-                style: TextStyle(color: Colors.black),
-              ),
-              value: "all",
-              checked: filterValue == "all" ? true : false,
-            ),
-          );
-          list.add(
-            CheckedPopupMenuItem(
-              child: Text(
-                AppLocalization.of(context).archived,
-                style: TextStyle(color: Colors.black),
-              ),
-              value: "archived",
-              checked: filterValue == "archived" ? true : false,
-            ),
-          );
-
-          list.add(
-            CheckedPopupMenuItem(
-              child: Text(
-                AppLocalization.of(context).sent,
-                style: TextStyle(color: Colors.black),
-              ),
-              value: "sent",
-              checked: filterValue == "sent" ? true : false,
-            ),
-          );
-          list.add(
-            CheckedPopupMenuItem(
-              child: Text(
-                AppLocalization.of(context).starred,
-                style: TextStyle(color: Colors.black),
-              ),
-              value: "starred",
-              checked: filterValue == "starred" ? true : false,
-            ),
-          );
-          return list;
-        },
-        onSelected: (Object object) {
-          setState(() {
-            if (object != 1) {
-              filterValue = object;
-              _onRefresh();
-            }
-          });
-        },
-      );
-
   Widget _buildMessageList() {
     return noItemInList
         ? NoItemInList(
@@ -406,16 +327,24 @@ class _MessageListState extends State<MessageList> {
             : SlydoAppIcon.archive;
 
     String actionText = isRecipient
-        ? partialMessage.isArchivedByRecipient ? "Unarchive" : "Archive"
-        : partialMessage.isArchivedBySender ? "Unarchive" : "Archive";
+        ? partialMessage.isArchivedByRecipient
+            ? "Unarchive"
+            : "Archive"
+        : partialMessage.isArchivedBySender
+            ? "Unarchive"
+            : "Archive";
 
     return SlideActionButton(
         backgroundColor: naturalGreen,
         icon: actionIcon,
         onTap: () async {
           var action = isRecipient
-              ? partialMessage.isArchivedByRecipient ? "unarchive" : "archive"
-              : partialMessage.isArchivedBySender ? "unarchive" : "archive";
+              ? partialMessage.isArchivedByRecipient
+                  ? "unarchive"
+                  : "archive"
+              : partialMessage.isArchivedBySender
+                  ? "unarchive"
+                  : "archive";
           await _auth.updateMessage(partialMessage.id, action);
           setState(() {
             if (isRecipient) {

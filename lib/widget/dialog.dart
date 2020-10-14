@@ -131,3 +131,37 @@ Future<bool> showDialogBox({
     ],
   ).show();
 }
+
+void showSwipeHintCard({BuildContext context}) {
+  showDialog(
+    barrierDismissible: true,
+    context: context,
+    builder: (context) => Dialog(
+      elevation: 0,
+      insetPadding: EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        child: Image.asset(
+          "assets/images/card_swipe_hint.png",
+        ),
+      ),
+    ),
+  );
+}
+
+void showHoldHintCard({BuildContext context}) {
+  showDialog(
+    barrierDismissible: true,
+    context: context,
+    builder: (context) => Dialog(
+      elevation: 0,
+      insetPadding: EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        child: Image.asset(
+          "assets/images/card_hold_hint.png",
+        ),
+      ),
+    ),
+  );
+}

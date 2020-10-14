@@ -440,7 +440,7 @@ class _SendPaymentState extends State<SendPayment> {
       labelText: "Amount",
       isAmount: true,
       keyboardType: TextInputType.number,
-      inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
+      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       controller: _amountController,
       onChanged: (val) {
         if (mounted) {
@@ -774,7 +774,7 @@ class _SendPaymentState extends State<SendPayment> {
                   ));
                 });
           } catch (e) {
-            print(e);
+            debugPrint(e);
             Toast.show(e, context,
                 gravity: Toast.BOTTOM, backgroundColor: darkBlue());
           }

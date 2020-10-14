@@ -4,6 +4,7 @@ import 'package:Slydo/screens/checkout_shopping_cart.dart';
 import 'package:Slydo/screens/messagelist.dart';
 import 'package:Slydo/screens/search_module.dart';
 import 'package:Slydo/screens/user_dashboard.dart';
+import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:badges/badges.dart';
@@ -143,6 +144,7 @@ class _DashboardState extends State<Dashboard> {
         return false;
       },
       child: Scaffold(
+        key: myGlobals.scaffoldKey,
         backgroundColor: whiteBackground,
         body: PageView(
           controller: _dashboardBloc.pageController,
@@ -221,7 +223,7 @@ class _DashboardState extends State<Dashboard> {
           size: 16,
         ),
       ),
-      title: Container(),
+      label: "",
       activeIcon: activeIcon(icon: icon, title: title),
     );
   }

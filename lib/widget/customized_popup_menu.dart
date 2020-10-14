@@ -31,8 +31,8 @@ class CustomizedPopUpMenu {
     @required this.buttonKey,
     @required this.context,
     @required this.children,
-    @required this.right,
-    @required this.left,
+    this.right,
+    this.left,
     this.arrowPosition = Alignment.topRight,
     this.hasIcon = false,
     this.selectedIndex = 0,
@@ -230,9 +230,8 @@ class CustomizedPopUpMenu {
           bool isSelected = index == selectedIndex;
           return GestureDetector(
             onTap: () {
-              debugPrint("selected Index before tap: $selectedIndex");
               selectedIndex = index;
-              debugPrint("selected Index after tap: $selectedIndex");
+
               onChange(children[index].value, index);
               closeMenu();
             },

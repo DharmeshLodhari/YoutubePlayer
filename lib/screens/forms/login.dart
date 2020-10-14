@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/country_picker/country.dart';
@@ -9,15 +6,12 @@ import 'package:Slydo/models/country_picker/utils.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/services/auth.dart';
-import 'package:Slydo/services/device_info.dart';
 import 'package:Slydo/services/fcm_push_notification.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
-import 'package:Slydo/widget/dialog.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pinput/pin_put/pin_put.dart';
@@ -48,11 +42,6 @@ class _UserLoginState extends State<UserLogin> {
   TextEditingController passwordController;
   SharedPreferences _sharedPreferences;
   BasketBloc basketBloc;
-
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
-
-  // creating a instance of the databaseHelper
-  DatabaseHelper _db = DatabaseHelper();
 
   final FocusNode _pinPutFocusNode = FocusNode();
 
@@ -498,12 +487,9 @@ class _UserLoginState extends State<UserLogin> {
           userBloc.user = _user;
 
           //setting up notification
-          // setupNotification();
-
           notificationBloc.pushNotificationService =
               PushNotificationService(context: context);
           await notificationBloc.pushNotificationService.login();
-          // await PushNotificationService(context: context).login();
 
           // Get user's bank account if user is logged in
           if (_user != null) {
@@ -586,38 +572,6 @@ class _UserLoginState extends State<UserLogin> {
     });
   }
 
-  // ignore: missing_return
-  void onSelectNotification(String payload) {
-    // example of notification response
-    // {body: abiola.rasheed.2 sent you a message,
-    // title: You've Got Mail, vibrate: [200,100,200,100,200,100,400],
-    // icon: null, badge: null, sound: null, link: null, tag: null, dir: auto,
-    // actions: /detail_message/40892023-fa43-4652-b3eb-fd584f6530e9}
-
-    debugPrint("payload : $payload");
-    if (payload == "/request-payment") {
-      Navigator.of(context).pushNamedAndRemoveUntil(
-        "/dashboard",
-        (Route<dynamic> route) => false,
-        arguments: {"dashboardIndex": 1},
-      );
-    } else if (payload == "/transaction") {
-      Navigator.of(context).pushNamed('/transactions');
-    } else if (payload.length > 15 &&
-        payload.substring(0, 16) == "/detail_message/") {
-      //this variable will fetch the id of message from the response
-      String idOfMessage = payload.replaceAll("/detail_message/", "");
-      Navigator.of(context).pushNamed('/detail_message', arguments: {
-        'id': idOfMessage,
-      });
-    }
-  }
-
-  void _navigateToItemDetail(Map<String, dynamic> notification) async {
-    debugPrint("naviagate function is callled");
-    onSelectNotification(notification['actions']);
-  }
-
   void authenticateUser(Map<String, dynamic> navigate) async {
     SharedPreferences _sharedPreferences =
         await SharedPreferences.getInstance();
@@ -660,139 +614,6 @@ class _UserLoginState extends State<UserLogin> {
     } else {
       Navigator.of(context).pushNamed("/index");
     }
-  }
-
-  void setupNotification() async {
-    var data = await getDeviceInfo();
-    _firebaseMessaging.getToken().then((String token) async {
-      data["token"] = token;
-
-      // this piece of code convert Map<dynamic,dynamic> data to Map<String,String> tempData
-      // so we can store that data into database
-      Map<String, dynamic> tempData = new Map<String, dynamic>();
-      tempData['firebaseToken'] = data['token'];
-      tempData['type'] = data['type'];
-      tempData['mode'] = data['mode'];
-      tempData['deviceId'] = data['device_id'];
-      tempData['deviceName'] = data['device_name'];
-
-      // delete device info to database
-      await _db.deleteDevice();
-
-      // save device info to database
-      await _db.saveDevice(tempData);
-
-      // register device with the backend
-      await _auth.registerDevice(data);
-    });
-
-    if (Platform.isIOS) {
-      _firebaseMessaging.requestNotificationPermissions(
-          const IosNotificationSettings(sound: true, badge: true, alert: true));
-
-      _firebaseMessaging.onIosSettingsRegistered
-          .listen((IosNotificationSettings settings) {
-        debugPrint("Settings registered: $settings");
-      });
-      _firebaseMessaging.getToken().then((String token) {
-        debugPrint("firebase IOS token : $token");
-      });
-    }
-
-    _firebaseMessaging.configure(
-      // onMessage will be called when App is running and also app is in foreground
-      onMessage: (Map<String, dynamic> message) async {
-        debugPrint("onMessage: $message");
-        // creating notification from server payload
-        var notification = Platform.isAndroid
-            ? getAndroidNotification(message)
-            : getIosNotification(message);
-
-        debugPrint("Notification From onMessage:  $notification");
-
-        // show the notification in the dialog
-        bool result = await showDialogBoxWithImage(
-          context: context,
-          actionOneBgColor: greyBorderColor,
-          actionOneTextColor: blackFont,
-          actionTwoBgColor: naturalGreen,
-          actionTwoTextColor: Colors.white,
-          firstActionPrimary: false,
-          title: notification['title'],
-          description: notification['body'],
-          image: notification['image'],
-          actionOne: AppLocalization.of(context).cancel,
-          actionTwo: AppLocalization.of(context).navigate,
-        );
-        if (result) {
-          _navigateToItemDetail(notification);
-        } else {
-          Navigator.pop(context);
-        }
-      },
-
-      // onLaunch will be called when App is not running
-      onLaunch: (Map<String, dynamic> message) async {
-        debugPrint("onLaunch: $message");
-        // creating notification from server payload
-        var notification = Platform.isAndroid
-            ? getAndroidNotification(message)
-            : getIosNotification(message);
-
-        debugPrint("Notification From onLaunch:  $notification");
-
-        //navigate to the particular screen
-        _navigateToItemDetail(notification);
-      },
-      // onResume will be called when App is running and it is in background
-      onResume: (Map<String, dynamic> message) async {
-        debugPrint("onResume: $message");
-        // creating notification from server payload
-        var notification = Platform.isAndroid
-            ? getAndroidNotification(message)
-            : getIosNotification(message);
-
-        debugPrint("Notification From OnResume:  $notification");
-
-        //navigate to the particular screen
-        _navigateToItemDetail(notification);
-      },
-    );
-  }
-
-//  I/flutter ( 9569): onMessage: {notification: {title: Payment Received, body: Received NGN5}, data: {actions: /transaction, dir: auto, image: https://slydo-assets.s3.amazonaws.com/media/customer/avatar/77d91cd9345d4f50bb88d29c412eb0f7.jpg, vibrate: [200,100,200,100,200,100,400]}}
-//  I/flutter ( 9569): notification from android getnotification {body: Received NGN5, title: Payment Received, vibrate: [200,100,200,100,200,100,400], icon: null, badge: null, sound: null, link: null, tag: null, dir: auto, actions: /transaction, image: https://slydo-assets.s3.amazonaws.com/media/customer/avatar/77d91cd9345d4f50bb88d29c412eb0f7.jpg}
-//  I/flutter ( 9569): Notification From onMessage:  {body: Received NGN5, title: Payment Received, vibrate: [200,100,200,100,200,100,400], icon: null, badge: null, sound: null, link: null, tag: null, dir: auto, actions: /transaction, image: https://slydo-assets.s3.amazonaws.com/media/customer/avatar/77d91cd9345d4f50bb88d29c412eb0f7.jpg}
-
-  Map<String, dynamic> getAndroidNotification(Map<String, dynamic> message) {
-    Map<String, dynamic> notification = {};
-    notification["body"] = message['notification']['body'];
-    notification["title"] = message['notification']['title'];
-    notification["vibrate"] = message['data']['vibrate'];
-    notification["icon"] = message['data']['icon'];
-    notification["badge"] = message['data']['badge'];
-    notification["sound"] = message['data']['sound'];
-    notification["link"] = message['data']['link'];
-    notification["tag"] = message['data']['tag'];
-    notification["dir"] = message['data']['dir'];
-    notification["actions"] = message['data']['actions'];
-    notification['image'] = message['data']['image'];
-    debugPrint("notification from android getnotification $notification");
-    return notification;
-  }
-
-  Map<String, dynamic> getIosNotification(Map<String, dynamic> message) {
-    Map<String, dynamic> notification = {};
-    notification["body"] = message['notification']['body'];
-    notification["title"] = message['notification']['title'];
-    notification["vibrate"] = message['vibrate'];
-    notification["icon"] = message['notification']['icon'];
-    notification["tag"] = message['notification']['tag'];
-    notification["dir"] = message['dir'];
-    notification["actions"] = message['actions'];
-    notification['image'] = message['image'];
-    debugPrint("notification from IOS getnotification $notification");
-    return notification;
   }
 
   @override

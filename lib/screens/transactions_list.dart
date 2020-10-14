@@ -108,7 +108,6 @@ class _TransactionListState extends State<TransactionList> {
 
   void menuItemSelectionChange(String value, int index) {
     selectedMenuItemIndex = index;
-    debugPrint("selectedMenuItemIndex $selectedMenuItemIndex");
     setState(() {});
     switch (value) {
       case "received":

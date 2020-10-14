@@ -4,6 +4,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/screens/tiles/order_detail_item_tile.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -15,8 +16,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
-
-import '../utils/colors.dart';
 
 // ignore: must_be_immutable
 class OrderDetailPage extends StatefulWidget {
@@ -81,7 +80,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       selectedMenuItemIndex = index;
       updateStatus(value);
       statusOfOrder = value;
-      debugPrint("selectedMenuItemIndex $selectedMenuItemIndex");
       setState(() {});
     }
   }
@@ -667,14 +665,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   List<Widget> listActionSlideActions(int index) {
-    var item = consumable[index];
-    var conditionForUser =
-        item["type"] == "product" ? item["item"].seller : item["item"].provider;
-
-    bool isValid = true;
-    if (conditionForUser == userBloc.user.userName) {
-      isValid = false;
-    }
     return [];
   }
 
@@ -740,7 +730,7 @@ class VerticalListItem extends StatelessWidget {
         }
       },
       child: Container(
-       padding: EdgeInsets.symmetric(vertical: 2),
+        padding: EdgeInsets.symmetric(vertical: 2),
         child: child,
       ),
     );

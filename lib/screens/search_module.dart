@@ -31,11 +31,6 @@ class _SearchModuleState extends State<SearchModule> {
   UserBloc userBloc;
   static var filterValue = "Users";
   static String hint = "Find Users";
-  static Icon icon = Icon(
-    Icons.supervised_user_circle,
-    color: Colors.white,
-    size: 28,
-  );
 
   final _auth = AuthService();
   SlidableController slidableController;
@@ -119,7 +114,6 @@ class _SearchModuleState extends State<SearchModule> {
 
   void menuItemSelectionChange(String value, int index) {
     selectedMenuItemIndex = index;
-    debugPrint("selectedMenuItemIndex $selectedMenuItemIndex");
 
     searchItemTextController.text = "";
     count = 0;

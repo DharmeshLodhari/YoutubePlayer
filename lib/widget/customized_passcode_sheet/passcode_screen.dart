@@ -148,61 +148,6 @@ class _CustomizedPassCodeScreenState extends State<CustomizedPassCodeScreen>
         ),
       );
 
-  _buildLandscapePasscodeScreen() => Stack(
-        children: [
-          Positioned(
-            child: Center(
-              child: Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Container(
-                    child: Stack(
-                      children: <Widget>[
-                        Positioned(
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                widget.title,
-                                Container(
-                                  margin: const EdgeInsets.only(top: 20),
-                                  height: 40,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: _buildCircles(),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        widget.bottomWidget != null
-                            ? Positioned(
-                                child: Align(
-                                    alignment: Alignment.topCenter,
-                                    child: widget.bottomWidget),
-                              )
-                            : Container()
-                      ],
-                    ),
-                  ),
-                  _buildKeyboard(),
-                ],
-              ),
-            ),
-          ),
-          Positioned(
-            child: Align(
-              alignment: Alignment.bottomRight,
-              child: _buildDeleteButton(),
-            ),
-          )
-        ],
-      );
-
   _buildKeyboard() => Container(
         child: Keyboard(
           onKeyboardTap: _onKeyboardButtonPressed,
@@ -213,7 +158,6 @@ class _CustomizedPassCodeScreenState extends State<CustomizedPassCodeScreen>
 
   List<Widget> _buildCircles() {
     var list = <Widget>[];
-    var config = widget.circleUIConfig;
     var extraSize = animation.value;
     for (int i = 0; i < widget.passwordDigits; i++) {
       list.add(
@@ -292,7 +236,7 @@ class _CustomizedPassCodeScreenState extends State<CustomizedPassCodeScreen>
     if (widget.isValidCallback != null) {
       widget.isValidCallback();
     } else {
-      print(
+      debugPrint(
           "You didn't implement validation callback. Please handle a state by yourself then.");
     }
   }

@@ -378,17 +378,25 @@ class _UserDashboardState extends State<UserDashboard> {
       children: [
         Expanded(
             child: UserDashboardItemTile(
-          icon: SlydoAppIcon.general_category,
-          title: "More",
+          icon: SlydoAppIcon.naira,
+          title: "Topup",
           onTap: () {
-            Navigator.pushNamed(context, "/internal-apps");
+            Navigator.of(context).pushNamed('/add-money-to-slydo-one');
           },
-          iconColor: HexColor("#46CECE"),
+          iconColor: HexColor("#46CE7C"),
         )),
         SizedBox(
           width: 12,
         ),
-        Expanded(child: Container()),
+        Expanded(
+            child: UserDashboardItemTile(
+          icon: SlydoAppIcon.more,
+          title: "More",
+          onTap: () {
+            Navigator.pushNamed(context, "/internal-apps");
+          },
+          iconColor: HexColor("#374677"),
+        )),
         SizedBox(
           width: 12,
         ),
@@ -600,7 +608,7 @@ class _UserDashboardState extends State<UserDashboard> {
 
     if (imageSource != null) {
       final file =
-          await ImagePicker.pickImage(source: imageSource, imageQuality: 70);
+          await ImagePicker().getImage(source: imageSource, imageQuality: 70);
       if (file != null) {
         try {
           setState(() {
@@ -612,7 +620,7 @@ class _UserDashboardState extends State<UserDashboard> {
           var password = dbUser.password;
 
           // Upload Image new image
-          await _auth.updateCustomerAvatar(file);
+          await _auth.updateCustomerAvatar(File(file.path));
 
           // Get New updated user data and set new user data to userBloc
           await _auth.authenticate(phoneNumber, password).then((value) {

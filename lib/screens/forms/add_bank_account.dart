@@ -283,7 +283,6 @@ class _AddAccountState extends State<AddAccount> {
         _auth.getBankAccounts().then((accounts) {
           try {
             _bankAccount = accounts[0];
-            print(_bankAccount);
             if (_bankAccount != null) {
               bankAccountBloc.bankAccount = _bankAccount;
             }

@@ -20,8 +20,8 @@ class _AddDocumentState extends State<AddDocument> {
   //List of the all three form
   List _forms;
 
-  File documentImage;
-  File userImage;
+  PickedFile documentImage;
+  PickedFile userImage;
   bool isPassportAllowed = true;
   bool isDrivingLicenceAllowed = false;
   bool isIdentityCardAllowed = false;
@@ -235,7 +235,8 @@ class _AddDocumentState extends State<AddDocument> {
         ),
         subtitle: Text(AppLocalization.of(context).tapHereToContinue),
         onTap: () async {
-          ImagePicker.pickImage(source: ImageSource.camera, imageQuality: 70)
+          ImagePicker()
+              .getImage(source: ImageSource.camera, imageQuality: 70)
               .then((value) {
             setState(() {
               documentImage = value;
@@ -259,7 +260,8 @@ class _AddDocumentState extends State<AddDocument> {
         ),
         subtitle: Text(AppLocalization.of(context).tapHereToContinue),
         onTap: () async {
-          ImagePicker.pickImage(source: ImageSource.gallery, imageQuality: 70)
+          ImagePicker()
+              .getImage(source: ImageSource.gallery, imageQuality: 70)
               .then((value) {
             setState(() {
               documentImage = value;
@@ -279,7 +281,7 @@ class _AddDocumentState extends State<AddDocument> {
               ? Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Image.file(
-                    documentImage,
+                    File(documentImage.path),
                     filterQuality: FilterQuality.high,
                   ),
                 )
@@ -359,7 +361,8 @@ class _AddDocumentState extends State<AddDocument> {
         ),
         subtitle: Text(AppLocalization.of(context).tapHereToContinue),
         onTap: () {
-          ImagePicker.pickImage(source: ImageSource.camera, imageQuality: 70)
+          ImagePicker()
+              .getImage(source: ImageSource.camera, imageQuality: 70)
               .then((value) {
             setState(() {
               userImage = value;
@@ -379,7 +382,7 @@ class _AddDocumentState extends State<AddDocument> {
               ? Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Image.file(
-                    userImage,
+                    File(userImage.path),
                     filterQuality: FilterQuality.high,
                   ),
                 )
@@ -428,7 +431,8 @@ class _AddDocumentState extends State<AddDocument> {
                       .then((user) {
                     try {
                       _auth
-                          .verifyUserDetail(documentImage, userImage)
+                          .verifyUserDetail(
+                              File(documentImage.path), File(userImage.path))
                           .then((user) {
                         _auth
                             .authenticate(userBloc.user.phoneNumber,

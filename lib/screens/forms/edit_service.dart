@@ -43,7 +43,7 @@ class _EditServiceState extends State<EditService> {
 
   int imageCount = 5;
   ScrollController _scrollController = ScrollController();
-  List<File> serviceLocalImages = List<File>();
+  List<PickedFile> serviceLocalImages = List<PickedFile>();
   List<String> serviceImagesFromServer = List<String>();
   String serviceName = "";
   String serviceDescription = "";
@@ -299,7 +299,7 @@ class _EditServiceState extends State<EditService> {
             ));
 
     if (imageSource != null) {
-      ImagePicker.pickImage(source: imageSource).then((value) {
+      ImagePicker().getImage(source: imageSource).then((value) {
         if (value != null) {
           if (mounted) {
             setState(() {
@@ -327,7 +327,7 @@ class _EditServiceState extends State<EditService> {
               borderRadius: BorderRadius.circular(10),
               image: DecorationImage(
                   image: FileImage(
-                    serviceLocalImages[index],
+                    File(serviceLocalImages[index].path),
                   ),
                   fit: BoxFit.fill),
             ),
@@ -653,7 +653,8 @@ class _EditServiceState extends State<EditService> {
           // setting updated value
           currentService.name = serviceName;
           currentService.description = serviceDescription;
-          currentService.localImages = serviceLocalImages;
+          currentService.localImages =
+              serviceLocalImages.map((file) => File(file.path)).toList();
           currentService.serverImages = serviceImagesFromServer;
           currentService.category = serviceCategory;
           currentService.shortDescription = serviceShortDescription;
