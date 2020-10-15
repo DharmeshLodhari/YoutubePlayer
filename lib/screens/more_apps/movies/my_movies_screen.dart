@@ -1,3 +1,5 @@
+import 'package:Slydo/screens/more_apps/movies/my_movies_list.dart';
+import 'package:Slydo/screens/more_apps/movies/my_wish_list.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/material.dart';
 
@@ -116,24 +118,8 @@ class _MyMoviesScreenState extends State<MyMoviesScreen> {
     return IndexedStack(
       index: currentIndex,
       children: [
-        Container(
-          child: Center(
-            child: Text(
-              "Coming Soon !!!",
-              style: TextStyle(
-                  fontWeight: FontWeight.w600, color: blackFont, fontSize: 14),
-            ),
-          ),
-        ),
-        Container(
-          child: Center(
-            child: Text(
-              "Coming Soon !!!",
-              style: TextStyle(
-                  fontWeight: FontWeight.w600, color: navyBlue, fontSize: 14),
-            ),
-          ),
-        ),
+        MyMovieList(),
+        MyWishList(),
       ],
     );
   }

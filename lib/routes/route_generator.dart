@@ -24,6 +24,8 @@ import 'package:Slydo/screens/forms/user_address.dart';
 import 'package:Slydo/screens/messagelist.dart';
 import 'package:Slydo/screens/more_apps/more_apps.dart';
 import 'package:Slydo/screens/more_apps/movies/movie_dashboard.dart';
+import 'package:Slydo/screens/more_apps/movies/search_movie.dart';
+import 'package:Slydo/screens/more_apps/movies/specific_category_movie_list.dart';
 import 'package:Slydo/screens/order_detail_page.dart';
 import 'package:Slydo/screens/orders_list.dart';
 import 'package:Slydo/screens/payout_transactions.dart';
@@ -438,6 +440,22 @@ class RouteGenerator {
       case "/movies":
         return PageTransition(
           child: MovieDashboard(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case "/movie-category":
+        return PageTransition(
+          child: SpecificCategoryMovieList(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case "/search-movie":
+        return PageTransition(
+          child: SearchMovie(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
           settings: settings,

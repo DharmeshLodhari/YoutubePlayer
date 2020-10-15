@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 /// MOVIE
 
 class MovieDashboardBloc extends ChangeNotifier {
-  PageController _pageController = PageController(initialPage: 0);
-  int _index = 0;
+  static int _index = 0;
+  PageController _pageController = PageController(initialPage: _index);
 
   int get index => _index;
 
@@ -13,7 +13,7 @@ class MovieDashboardBloc extends ChangeNotifier {
   set index(int value) {
     _index = value;
     _pageController.animateToPage(_index,
-        duration: Duration(milliseconds: 1), curve: Curves.linear);
+        duration: Duration(milliseconds: 500), curve: Curves.linear);
     notifyListeners();
   }
 }

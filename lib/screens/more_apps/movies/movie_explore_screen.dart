@@ -169,7 +169,9 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
                         fontSize: 14,
                         color: navyBlue),
                   ),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.of(context).pushNamed("/movie-category");
+                  },
                 ),
               ],
             ),
@@ -322,7 +324,9 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
                         fontSize: 14,
                         color: navyBlue),
                   ),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.of(context).pushNamed("/movie-category");
+                  },
                 ),
               ],
             ),
