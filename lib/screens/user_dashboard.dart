@@ -393,7 +393,7 @@ class _UserDashboardState extends State<UserDashboard> {
           icon: SlydoAppIcon.more,
           title: "More",
           onTap: () {
-            Navigator.pushNamed(context, "/internal-apps");
+            Navigator.pushNamed(context, "/more-apps");
           },
           iconColor: HexColor("#374677"),
         )),

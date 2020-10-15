@@ -22,7 +22,8 @@ import 'package:Slydo/screens/forms/signup.dart';
 import 'package:Slydo/screens/forms/upgrade_user_profile.dart';
 import 'package:Slydo/screens/forms/user_address.dart';
 import 'package:Slydo/screens/messagelist.dart';
-import 'package:Slydo/screens/more_apps/internal_apps.dart';
+import 'package:Slydo/screens/more_apps/more_apps.dart';
+import 'package:Slydo/screens/more_apps/movies/movie_dashboard.dart';
 import 'package:Slydo/screens/order_detail_page.dart';
 import 'package:Slydo/screens/orders_list.dart';
 import 'package:Slydo/screens/payout_transactions.dart';
@@ -402,13 +403,9 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
-      case '/internal-apps':
-        return PageTransition(
-          child: InternalApps(),
-          type: PageTransitionType.downToUp,
-          curve: Curves.ease,
-          settings: settings,
-        );
+
+      /// TopUp
+
       case '/add-money-to-slydo-one':
         return PageTransition(
           child: AddMoneyToSlydoOne(),
@@ -421,6 +418,26 @@ class RouteGenerator {
           child: AddMoneyToSlydoTwo(
             arguments: settings.arguments,
           ),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      ///    More Apps Route     ///
+
+      case '/more-apps':
+        return PageTransition(
+          child: MoreApps(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      /// Movie Route
+
+      case "/movies":
+        return PageTransition(
+          child: MovieDashboard(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
           settings: settings,

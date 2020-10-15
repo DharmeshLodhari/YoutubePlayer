@@ -3,12 +3,12 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/user_dashboard_item_tile.dart';
 import 'package:flutter/material.dart';
 
-class InternalApps extends StatefulWidget {
+class MoreApps extends StatefulWidget {
   @override
-  _InternalAppsState createState() => _InternalAppsState();
+  _MoreAppsState createState() => _MoreAppsState();
 }
 
-class _InternalAppsState extends State<InternalApps> {
+class _MoreAppsState extends State<MoreApps> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -81,7 +81,9 @@ class _InternalAppsState extends State<InternalApps> {
             child: UserDashboardItemTile(
           icon: SlydoAppIcon.movies_moreapps,
           title: "Movies",
-          onTap: () {},
+          onTap: () {
+            Navigator.of(context).pushNamed("/movies");
+          },
           iconColor: HexColor("#9B51E0"),
           height: 126,
         )),

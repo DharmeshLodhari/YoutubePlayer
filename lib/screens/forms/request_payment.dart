@@ -277,34 +277,6 @@ class _RequestPaymentState extends State<RequestPayment> {
           );
   }
 
-  Widget showBackArrow() {
-    return IconButton(
-      icon: Icon(Icons.arrow_back_ios),
-      onPressed: () {
-        _payee = null;
-        Navigator.pop(context);
-      },
-    );
-  }
-
-  Widget displayQRCodeButton() {
-    return Padding(
-      padding: const EdgeInsets.all(8),
-      child: InkWell(
-        onTap: () {
-          Navigator.of(context)
-              .pushNamed('/scan-qr', arguments: {"isRequest": true});
-        },
-        child: Image.asset(
-          'assets/images/qr_code.png',
-          height: 24.0,
-          width: 24.0,
-          color: Colors.white,
-        ),
-      ),
-    );
-  }
-
   Widget getDisplayCard() {
     initializeDisplayCard();
     var avatarImage;

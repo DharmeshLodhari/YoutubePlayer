@@ -30,7 +30,7 @@ Widget customThemeBuilder(BuildContext context, Widget child) {
   );
 }
 
-BoxDecoration decorateBox() => BoxDecoration(
+BoxDecoration decorateBox({Color borderColor}) => BoxDecoration(
       boxShadow: <BoxShadow>[
         BoxShadow(
           color: boxShadowTwo,
@@ -43,7 +43,9 @@ BoxDecoration decorateBox() => BoxDecoration(
         const Radius.circular(10.0),
       ),
       border: new Border.all(
-          color: lightGrey, width: 1.0, style: BorderStyle.solid),
+          color: borderColor != null ? borderColor : lightGrey,
+          width: 1.0,
+          style: BorderStyle.solid),
     );
 
 // for having expanded space

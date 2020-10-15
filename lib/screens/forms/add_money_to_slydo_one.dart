@@ -27,7 +27,7 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
 
   String errorMessage = "";
 
-  String amount = "0";
+  String amount = "";
 
   @override
   void initState() {
@@ -171,6 +171,7 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
         child: CustomizedTextFormField(
           labelText: "Amount",
           isAmount: true,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           keyboardType: TextInputType.number,
           onChanged: (val) {
             amount = val.toString();
@@ -262,12 +263,18 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
           size: 22,
         ),
         Text(
-          " " +
-              (double.parse(amount) - (double.parse(amount) * 0.03)).toString(),
+          " " + getFinalAmount(),
           style: TextStyle(
               fontSize: 36, color: navyBlue, fontWeight: FontWeight.w700),
         ),
       ],
     );
+  }
+
+  String getFinalAmount() {
+    if (amount != "") {
+      return (double.parse(amount) - (double.parse(amount) * 0.03)).toString();
+    }
+    return "0.0";
   }
 }
