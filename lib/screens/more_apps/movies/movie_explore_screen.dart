@@ -1,7 +1,6 @@
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -53,29 +52,6 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
-      actions: <Widget>[
-        searchMovieBtn(),
-        SizedBox(
-          width: 16,
-        ),
-      ],
-    );
-  }
-
-  Widget searchMovieBtn() {
-    return RoundedBackgroundIcon(
-      height: 34,
-      width: 34,
-      icon: Icon(
-        SlydoAppIcon.search,
-        size: 16,
-        color: blackFont,
-      ),
-      onTap: () {
-        Navigator.of(context).pushNamed('/search-movie');
-      },
-      backgroundColor: iconBtnGrey,
-      enableMargin: true,
     );
   }
 
@@ -85,6 +61,10 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
       children: [
         SizedBox(
           height: 6,
+        ),
+        searchBox(),
+        SizedBox(
+          height: 32,
         ),
         movieCarouselSlider(),
         SizedBox(
@@ -111,6 +91,85 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
         ),
       ],
     ));
+  }
+
+  Widget searchBox() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          textSelectionHandleColor: navyBlue,
+        ),
+        child: InkWell(
+          onTap: () {
+            Navigator.of(context).pushNamed('/search-movie');
+          },
+          child: IgnorePointer(
+            ignoring: true,
+            child: TextFormField(
+              readOnly: true,
+              style: TextStyle(
+                fontSize: 16,
+                color: blackFont,
+                fontWeight: FontWeight.w600,
+              ),
+              cursorWidth: 1.5,
+              cursorColor: navyBlue,
+              decoration: InputDecoration(
+                hintStyle: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: darkGrey,
+                ),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    SlydoAppIcon.search,
+                    color: darkGrey,
+                    size: 14,
+                  ),
+                  onPressed: () {},
+                ),
+                hintText: "Search",
+                fillColor: Colors.white,
+                filled: true,
+                contentPadding: EdgeInsets.symmetric(vertical: 10),
+                prefix: Padding(
+                  padding: EdgeInsets.only(left: 16),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(
+                    color: dividerColor,
+                    width: 1.0,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(
+                    color: navyBlue,
+                    width: 1.0,
+                  ),
+                ),
+                errorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(
+                    color: dividerColor,
+                    width: 1.0,
+                  ),
+                ),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(
+                    color: dividerColor,
+                    width: 1.0,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Widget movieCarouselSlider() {
@@ -202,97 +261,102 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
   }
 
   Widget movieItemWithDetail({String movieName, String moviePoster}) {
-    return Card(
-      margin: EdgeInsets.zero,
-      elevation: 0,
-      child: Container(
-        width: 160,
-        decoration: decorateBox(borderColor: selectedListItemBackgroundBlue),
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).pushNamed("/movie-detail");
+      },
+      child: Card(
+        margin: EdgeInsets.zero,
+        elevation: 0,
         child: Container(
-          padding: EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image.network(
-                  moviePoster,
-                  height: 80,
-                  width: 130,
-                  fit: BoxFit.fill,
-                ),
-              ),
-              SizedBox(
-                height: 12,
-              ),
-              Text(
-                movieName,
-                softWrap: false,
-                overflow: TextOverflow.fade,
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
-                  color: blackFont,
-                ),
-              ),
-              SizedBox(
-                height: 1,
-              ),
-              Row(
-                children: [
-                  Icon(
-                    SlydoAppIcon.naira,
-                    color: navyBlue,
-                    size: 8,
+          width: 160,
+          decoration: decorateBox(borderColor: selectedListItemBackgroundBlue),
+          child: Container(
+            padding: EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.network(
+                    moviePoster,
+                    height: 80,
+                    width: 130,
+                    fit: BoxFit.fill,
                   ),
-                  Text(
-                    "34.00",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 12,
+                ),
+                SizedBox(
+                  height: 12,
+                ),
+                Text(
+                  movieName,
+                  softWrap: false,
+                  overflow: TextOverflow.fade,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                    color: blackFont,
+                  ),
+                ),
+                SizedBox(
+                  height: 1,
+                ),
+                Row(
+                  children: [
+                    Icon(
+                      SlydoAppIcon.naira,
                       color: navyBlue,
+                      size: 8,
                     ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Row(
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        SlydoAppIcon.star,
-                        color: starYellow,
-                        size: 12,
+                    Text(
+                      "34.00",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 12,
+                        color: navyBlue,
                       ),
-                      SizedBox(
-                        width: 4,
-                      ),
-                      Text(
-                        "7.8",
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w400,
-                          color: blackFont,
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          SlydoAppIcon.star,
+                          color: starYellow,
+                          size: 12,
                         ),
-                      )
-                    ],
-                  ),
-                  flexibleSpace(),
-                  Text(
-                    "2020 • Action",
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w400,
-                      color: darkGrey,
+                        SizedBox(
+                          width: 4,
+                        ),
+                        Text(
+                          "7.8",
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                            color: blackFont,
+                          ),
+                        )
+                      ],
                     ),
-                  )
-                ],
-              )
-            ],
+                    flexibleSpace(),
+                    Text(
+                      "2020 • Action",
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w400,
+                        color: darkGrey,
+                      ),
+                    )
+                  ],
+                )
+              ],
+            ),
           ),
         ),
       ),
@@ -356,13 +420,18 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
   }
 
   Widget moviePoster() {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(10),
-      child: CachedNetworkImage(
-        imageUrl: "https://i.ytimg.com/vi/Jd6FuSkDkmU/maxresdefault.jpg",
-        height: 132,
-        width: 218,
-        fit: BoxFit.fill,
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).pushNamed("/movie-detail");
+      },
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: CachedNetworkImage(
+          imageUrl: "https://i.ytimg.com/vi/Jd6FuSkDkmU/maxresdefault.jpg",
+          height: 132,
+          width: 218,
+          fit: BoxFit.fill,
+        ),
       ),
     );
   }

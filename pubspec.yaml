@@ -54,7 +54,7 @@ dependencies:
   sms_otp_auto_verify: ^1.2.2
   printing: ^3.6.1
   pdf: ^1.11.2
-  marquee: ^1.6.1
+  video_player: ^0.11.1+2
 
 
 dependency_overrides:

@@ -365,7 +365,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     );
   }
 
-  _buildProductDetailsPage(BuildContext context) {
+  Widget _buildProductDetailsPage(BuildContext context) {
     return ListView(
       controller: _scrollController,
       children: <Widget>[
