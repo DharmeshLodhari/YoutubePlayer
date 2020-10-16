@@ -184,18 +184,23 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
           initialPage: 0,
         ),
         items: imgList
-            .map((item) => Container(
-                  padding: EdgeInsets.symmetric(horizontal: 5),
-                  child: Center(
-                      child: ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                    child: CachedNetworkImage(
-                      imageUrl: item,
-                      fit: BoxFit.fill,
-                      height: double.infinity,
-                      width: double.infinity,
-                    ),
-                  )),
+            .map((item) => GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pushNamed("/movie-detail");
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 5),
+                    child: Center(
+                        child: ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      child: CachedNetworkImage(
+                        imageUrl: item,
+                        fit: BoxFit.fill,
+                        height: double.infinity,
+                        width: double.infinity,
+                      ),
+                    )),
+                  ),
                 ))
             .toList(),
       ),

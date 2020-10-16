@@ -1,0 +1,141 @@
+import 'dart:math';
+
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+
+class NewsTile extends StatefulWidget {
+  @override
+  _NewsTileState createState() => _NewsTileState();
+}
+
+class _NewsTileState extends State<NewsTile> {
+  bool isSelected = Random().nextBool();
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+        margin: EdgeInsets.zero,
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        child: Container(
+          decoration: decorateBox(),
+          child: Container(
+            child: Column(
+              children: [
+                Stack(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(10),
+                          topRight: Radius.circular(10)),
+                      child: CachedNetworkImage(
+                        height: 150,
+                        width: double.infinity,
+                        fit: BoxFit.fill,
+                        imageUrl:
+                            "https://www.cybersecurity-help.cz/upload/iblock/d41/d41cb17a66c03cdcba533b04a70a54ef.jpg",
+                      ),
+                    ),
+                    Positioned(
+                      right: 0,
+                      top: -5,
+                      child: IconButton(
+                        icon: Icon(
+                          isSelected
+                              ? SlydoAppIcon.heart_1
+                              : SlydoAppIcon.heart_empty,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                        onPressed: () {
+                          isSelected = !isSelected;
+                          setState(() {});
+                        },
+                      ),
+                    )
+                  ],
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Yuval Noah Harari: The world after coronavirus",
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: blackFont),
+                        maxLines: 2,
+                        softWrap: true,
+                        overflow: TextOverflow.clip,
+                      ),
+                      SizedBox(
+                        height: 4,
+                      ),
+                      Text(
+                        "Humankind is now facing a global crisis. Perhaps the biggest crisis of our generation...",
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: darkGrey),
+                        maxLines: 2,
+                        softWrap: true,
+                        overflow: TextOverflow.clip,
+                      )
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ));
+  }
+}
+
+class SubscriptionTile extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    Widget avatarImage = Container(
+        height: 48,
+        width: 48,
+        child: ClipOval(
+          child: CachedNetworkImage(
+            imageUrl:
+                "https://cdn.punchng.com/wp-content/uploads/2020/08/18131509/punch-logo-500x179-1.png",
+            colorBlendMode: BlendMode.darken,
+            fit: BoxFit.fitWidth,
+            filterQuality: FilterQuality.high,
+          ),
+        ));
+
+    Widget tile = Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      shadowColor: boxShadowTwo,
+      elevation: 0,
+      child: Container(
+        decoration: decorateBox(),
+        child: ListTile(
+          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          title: Text(
+            "Punch",
+            maxLines: 1,
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
+            overflow: TextOverflow.fade,
+            softWrap: false,
+          ),
+          leading: avatarImage,
+        ),
+      ),
+    );
+
+    return tile;
+  }
+}

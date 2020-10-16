@@ -34,11 +34,16 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
   }
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
         _controller.pause();
-        _controller.dispose();
         return Future.value(true);
       },
       child: Scaffold(
@@ -127,7 +132,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
         children: [
           Container(
             child: AspectRatio(
-              aspectRatio: 1.5,
+              aspectRatio: 1.7,
               child: Stack(
                 alignment: Alignment.bottomCenter,
                 children: <Widget>[
@@ -137,7 +142,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                   _controller.value.isPlaying
                       ? Container()
                       : Container(
-                    height: double.infinity,
+                          height: double.infinity,
                           child: CachedNetworkImage(
                             fit: BoxFit.fill,
                             imageUrl:
@@ -586,7 +591,7 @@ class _ControlsOverlay extends StatelessWidget {
               controller.setPlaybackSpeed(speed);
             },
             itemBuilder: (context) {
-              List popUpMenuItemList = [];
+              List<PopupMenuEntry<double>> popUpMenuItemList = [];
               _examplePlaybackRates.forEach((speed) {
                 popUpMenuItemList
                     .add(PopupMenuItem(value: speed, child: Text('${speed}x')));

@@ -1,3 +1,6 @@
+import 'package:Slydo/screens/more_apps/news/latest_news_list.dart';
+import 'package:Slydo/screens/more_apps/news/subscription_list.dart';
+import 'package:Slydo/screens/more_apps/news/trending_news_list.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/material.dart';
 
@@ -137,9 +140,9 @@ class _NewsDashboardState extends State<NewsDashboard> {
     return IndexedStack(
       index: currentIndex,
       children: [
-        Container(),
-        Container(),
-        Container(),
+        LatestNewsList(),
+        TrendingNewsList(),
+        SubscriptionList(),
       ],
     );
   }
