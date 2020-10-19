@@ -18,7 +18,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
   void initState() {
     super.initState();
     _controller = VideoPlayerController.network(
-      'https://cdn.jsdelivr.net/gh/BlackStriker99/cdnfiles/dawn-of-thunder.mp4',
+      'https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/e4199d196b558eb45681c194e3ce2734486e38aa/dawn-of-thunder.mp4?raw=true',
     );
 
     _controller.addListener(() {
@@ -121,12 +121,6 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
   }
 
   Widget scaffoldBody() {
-    return Container(
-      child: movieDetail(),
-    );
-  }
-
-  Widget movieDetail() {
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -149,8 +143,34 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                                 "https://c1.iggcdn.com/indiegogo-media-prod-cld/image/upload/c_fill,f_auto,h_630,w_1200/v1506734779/wcsmythcukjuuglotjvb.jpg",
                           ),
                         ),
-                  _ControlsOverlay(controller: _controller),
-                  VideoProgressIndicator(_controller, allowScrubbing: true),
+                  _ControlsOverlay(
+                    controller: _controller,
+                  ),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: VideoProgressIndicator(
+                            _controller,
+                            allowScrubbing: true,
+                            colors: VideoProgressColors(
+                                playedColor: navyBlue,
+                                backgroundColor: Colors.white12,
+                                bufferedColor: Colors.white30),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 4,
+                        ),
+                        Icon(
+                          Icons.fullscreen_rounded,
+                          color: Colors.white,
+                          size: 28,
+                        )
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -541,8 +561,8 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
   }
 }
 
-class _ControlsOverlay extends StatelessWidget {
-  const _ControlsOverlay({Key key, this.controller}) : super(key: key);
+class _ControlsOverlay extends StatefulWidget {
+  _ControlsOverlay({Key key, this.controller}) : super(key: key);
 
   static const _examplePlaybackRates = [
     0.25,
@@ -558,58 +578,125 @@ class _ControlsOverlay extends StatelessWidget {
   final VideoPlayerController controller;
 
   @override
+  __ControlsOverlayState createState() => __ControlsOverlayState();
+}
+
+class __ControlsOverlayState extends State<_ControlsOverlay> {
+  bool isPauseVisible = true;
+
+  bool isSelected = true;
+
+  @override
   Widget build(BuildContext context) {
     return Stack(
       children: <Widget>[
+        widget.controller.value.isPlaying
+            ? Container()
+            : Positioned(
+                right: 0,
+                top: -5,
+                child: IconButton(
+                  icon: Icon(
+                    isSelected
+                        ? SlydoAppIcon.heart_1
+                        : SlydoAppIcon.heart_empty,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                  onPressed: () {
+                    isSelected = !isSelected;
+                    setState(() {});
+                  },
+                ),
+              ),
         AnimatedSwitcher(
           duration: Duration(milliseconds: 50),
           reverseDuration: Duration(milliseconds: 200),
-          child: controller.value.isPlaying
-              ? SizedBox.shrink()
-              : Container(
-                  color: Colors.black26,
+          child: widget.controller.value.isPlaying
+              ? Opacity(
+                  opacity: isPauseVisible ? 1 : 0,
                   child: Center(
-                    child: Icon(
-                      Icons.play_arrow,
-                      color: Colors.white,
-                      size: 100.0,
+                    child: ClipOval(
+                      child: Container(
+                        color: Colors.white24,
+                        height: 70,
+                        width: 70,
+                        child: Center(
+                          child: Icon(
+                            Icons.pause,
+                            color: Colors.white,
+                            size: 40,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              : Center(
+                  child: ClipOval(
+                    child: Container(
+                      color: Colors.white24,
+                      height: 70,
+                      width: 70,
+                      child: Center(
+                        child: Icon(
+                          Icons.play_arrow_rounded,
+                          color: Colors.white,
+                          size: 40,
+                        ),
+                      ),
                     ),
                   ),
                 ),
         ),
         GestureDetector(
-          onTap: () {
-            controller.value.isPlaying ? controller.pause() : controller.play();
-          },
+          onTap: widget.controller.value.isPlaying
+              ? () {
+                  isPauseVisible = true;
+                  setState(() {});
+                  debugPrint("i am showing pause button");
+                  widget.controller.pause();
+                }
+              : () {
+                  widget.controller.play();
+                  debugPrint("i am called !!!");
+                  Future.delayed(
+                    Duration(seconds: 2),
+                  ).then((value) {
+                    debugPrint("i am hiding pause button");
+                    isPauseVisible = false;
+                    setState(() {});
+                  });
+                },
         ),
-        Align(
-          alignment: Alignment.topRight,
-          child: PopupMenuButton<double>(
-            initialValue: controller.value.playbackSpeed,
-            tooltip: 'Playback speed',
-            onSelected: (speed) {
-              controller.setPlaybackSpeed(speed);
-            },
-            itemBuilder: (context) {
-              List<PopupMenuEntry<double>> popUpMenuItemList = [];
-              _examplePlaybackRates.forEach((speed) {
-                popUpMenuItemList
-                    .add(PopupMenuItem(value: speed, child: Text('${speed}x')));
-              });
-              return popUpMenuItemList;
-            },
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                // Using less vertical padding as the text is also longer
-                // horizontally, so it feels like it would need more spacing
-                // horizontally (matching the aspect ratio of the video).
-                vertical: 12,
-                horizontal: 16,
-              ),
-              child: Text('${controller.value.playbackSpeed}x'),
-            ),
-          ),
-        ),
+        // Align(
+        //   alignment: Alignment.topRight,
+        //   child: PopupMenuButton<double>(
+        //     initialValue: widget.controller.value.playbackSpeed,
+        //     tooltip: 'Playback speed',
+        //     onSelected: (speed) {
+        //       widget.controller.setPlaybackSpeed(speed);
+        //     },
+        //     itemBuilder: (context) {
+        //       List<PopupMenuEntry<double>> popUpMenuItemList = [];
+        //       _ControlsOverlay._examplePlaybackRates.forEach((speed) {
+        //         popUpMenuItemList
+        //             .add(PopupMenuItem(value: speed, child: Text('${speed}x')));
+        //       });
+        //       return popUpMenuItemList;
+        //     },
+        //     child: Padding(
+        //       padding: const EdgeInsets.symmetric(
+        //         // Using less vertical padding as the text is also longer
+        //         // horizontally, so it feels like it would need more spacing
+        //         // horizontally (matching the aspect ratio of the video).
+        //         vertical: 12,
+        //         horizontal: 16,
+        //       ),
+        //       child: Text('${widget.controller.value.playbackSpeed}x'),
+        //     ),
+        //   ),
+        // ),
       ],
     );
   }

@@ -201,7 +201,7 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
                       ),
                     )),
                   ),
-                ))
+                ),)
             .toList(),
       ),
     );

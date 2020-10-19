@@ -5,7 +5,14 @@ import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
+// ignore: must_be_immutable
 class NewsTile extends StatefulWidget {
+  String title;
+
+  NewsTile({this.title, this.image});
+
+  String image;
+
   @override
   _NewsTileState createState() => _NewsTileState();
 }
@@ -34,8 +41,7 @@ class _NewsTileState extends State<NewsTile> {
                         height: 150,
                         width: double.infinity,
                         fit: BoxFit.fill,
-                        imageUrl:
-                            "https://www.cybersecurity-help.cz/upload/iblock/d41/d41cb17a66c03cdcba533b04a70a54ef.jpg",
+                        imageUrl: widget.image,
                       ),
                     ),
                     Positioned(
@@ -63,7 +69,7 @@ class _NewsTileState extends State<NewsTile> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Yuval Noah Harari: The world after coronavirus",
+                        widget.title,
                         style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
