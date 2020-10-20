@@ -1,9 +1,12 @@
+import 'package:Slydo/screens/more_apps/movies/video_player_test.dart';
+import 'package:Slydo/screens/more_apps/utils/video_plyer_controller/chewie_player.dart';
+import 'package:Slydo/screens/more_apps/utils/video_plyer_controller/chewie_progress_colors.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
 
 class MovieDetailPage extends StatefulWidget {
@@ -12,30 +15,54 @@ class MovieDetailPage extends StatefulWidget {
 }
 
 class _MovieDetailPageState extends State<MovieDetailPage> {
-  VideoPlayerController _controller;
+  VideoPlayerController _videoController;
+  ChewieController _chewieController;
+  TargetPlatform _platform;
 
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.network(
+    _videoController = VideoPlayerController.network(
       'https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/e4199d196b558eb45681c194e3ce2734486e38aa/dawn-of-thunder.mp4?raw=true',
     );
 
-    _controller.addListener(() {
-      if (mounted) {
-        setState(() {});
-      }
-    });
-    _controller.initialize().then((_) {
-      if (mounted) {
-        setState(() {});
-      }
-    });
+    _chewieController = ChewieController(
+      videoPlayerController: _videoController,
+      aspectRatio: 16 / 9,
+      allowedScreenSleep: false,
+      allowFullScreen: true,
+      // deviceOrientationsAfterFullScreen: [
+      //   DeviceOrientation.landscapeRight,
+      //   DeviceOrientation.landscapeLeft,
+      //   DeviceOrientation.portraitUp,
+      //   DeviceOrientation.portraitDown,
+      // ],
+
+      // showControls: false,
+      materialProgressColors: ChewieProgressColors(
+        playedColor: navyBlue,
+        handleColor: navyBlue,
+        backgroundColor: dividerColor,
+        bufferedColor: Colors.white30,
+      ),
+      placeholder: Container(
+        color: Colors.transparent,
+      ),
+      autoInitialize: true,
+    );
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _videoController.dispose();
+    _chewieController.dispose();
+
+    SystemChrome.setPreferredOrientations(
+      [
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ],
+    );
     super.dispose();
   }
 
@@ -43,7 +70,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
-        _controller.pause();
+        _videoController.pause();
         return Future.value(true);
       },
       child: Scaffold(
@@ -114,7 +141,16 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
         size: 16,
         color: blackFont,
       ),
-      onTap: () {},
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChewieDemo(
+              title: "Video Test",
+            ),
+          ),
+        );
+      },
       backgroundColor: iconBtnGrey,
       enableMargin: true,
     );
@@ -124,57 +160,64 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          Container(
-            child: AspectRatio(
-              aspectRatio: 1.7,
-              child: Stack(
-                alignment: Alignment.bottomCenter,
-                children: <Widget>[
-                  VideoPlayer(
-                    _controller,
-                  ),
-                  _controller.value.isPlaying
-                      ? Container()
-                      : Container(
-                          height: double.infinity,
-                          child: CachedNetworkImage(
-                            fit: BoxFit.fill,
-                            imageUrl:
-                                "https://c1.iggcdn.com/indiegogo-media-prod-cld/image/upload/c_fill,f_auto,h_630,w_1200/v1506734779/wcsmythcukjuuglotjvb.jpg",
-                          ),
-                        ),
-                  _ControlsOverlay(
-                    controller: _controller,
-                  ),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: VideoProgressIndicator(
-                            _controller,
-                            allowScrubbing: true,
-                            colors: VideoProgressColors(
-                                playedColor: navyBlue,
-                                backgroundColor: Colors.white12,
-                                bufferedColor: Colors.white30),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 4,
-                        ),
-                        Icon(
-                          Icons.fullscreen_rounded,
-                          color: Colors.white,
-                          size: 28,
-                        )
-                      ],
-                    ),
-                  ),
-                ],
+          AspectRatio(
+            aspectRatio: 16 / 10,
+            child: SafeArea(
+              child: Chewie(
+                controller: _chewieController,
               ),
             ),
           ),
+
+          // Container(
+          //   child: AspectRatio(
+          //     aspectRatio: 1.7,
+          //     child: Stack(
+          //       alignment: Alignment.bottomCenter,
+          //       children: <Widget>[
+          //
+          //         _videoController.value.isPlaying
+          //             ? Container()
+          //             : Container(
+          //                 height: double.infinity,
+          //                 child: CachedNetworkImage(
+          //                   fit: BoxFit.fill,
+          //                   imageUrl:
+          //                       "https://c1.iggcdn.com/indiegogo-media-prod-cld/image/upload/c_fill,f_auto,h_630,w_1200/v1506734779/wcsmythcukjuuglotjvb.jpg",
+          //                 ),
+          //               ),
+          //         _ControlsOverlay(
+          //           controller: _videoController,
+          //         ),
+          //         Container(
+          //           padding: EdgeInsets.symmetric(horizontal: 16),
+          //           child: Row(
+          //             children: [
+          //               Expanded(
+          //                 child: VideoProgressIndicator(
+          //                   _videoController,
+          //                   allowScrubbing: true,
+          //                   colors: VideoProgressColors(
+          //                       playedColor: navyBlue,
+          //                       backgroundColor: Colors.white12,
+          //                       bufferedColor: Colors.white30),
+          //                 ),
+          //               ),
+          //               SizedBox(
+          //                 width: 4,
+          //               ),
+          //               Icon(
+          //                 Icons.fullscreen_rounded,
+          //                 color: Colors.white,
+          //                 size: 28,
+          //               )
+          //             ],
+          //           ),
+          //         ),
+          //       ],
+          //     ),
+          //   ),
+          // ),
           Container(
             padding: EdgeInsets.symmetric(horizontal: 20),
             child: Column(

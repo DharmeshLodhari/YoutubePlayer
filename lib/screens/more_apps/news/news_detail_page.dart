@@ -468,34 +468,34 @@ class _ControlsOverlay extends StatelessWidget {
             controller.value.isPlaying ? controller.pause() : controller.play();
           },
         ),
-        Align(
-          alignment: Alignment.topRight,
-          child: PopupMenuButton<double>(
-            initialValue: controller.value.playbackSpeed,
-            tooltip: 'Playback speed',
-            onSelected: (speed) {
-              controller.setPlaybackSpeed(speed);
-            },
-            itemBuilder: (context) {
-              List<PopupMenuEntry<double>> popUpMenuItemList = [];
-              _examplePlaybackRates.forEach((speed) {
-                popUpMenuItemList
-                    .add(PopupMenuItem(value: speed, child: Text('${speed}x')));
-              });
-              return popUpMenuItemList;
-            },
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                // Using less vertical padding as the text is also longer
-                // horizontally, so it feels like it would need more spacing
-                // horizontally (matching the aspect ratio of the video).
-                vertical: 12,
-                horizontal: 16,
-              ),
-              child: Text('${controller.value.playbackSpeed}x'),
-            ),
-          ),
-        ),
+        // Align(
+        //   alignment: Alignment.topRight,
+        //   child: PopupMenuButton<double>(
+        //     initialValue: controller.value.playbackSpeed,
+        //     tooltip: 'Playback speed',
+        //     onSelected: (speed) {
+        //       controller.setPlaybackSpeed(speed);
+        //     },
+        //     itemBuilder: (context) {
+        //       List<PopupMenuEntry<double>> popUpMenuItemList = [];
+        //       _examplePlaybackRates.forEach((speed) {
+        //         popUpMenuItemList
+        //             .add(PopupMenuItem(value: speed, child: Text('${speed}x')));
+        //       });
+        //       return popUpMenuItemList;
+        //     },
+        //     child: Padding(
+        //       padding: const EdgeInsets.symmetric(
+        //         // Using less vertical padding as the text is also longer
+        //         // horizontally, so it feels like it would need more spacing
+        //         // horizontally (matching the aspect ratio of the video).
+        //         vertical: 12,
+        //         horizontal: 16,
+        //       ),
+        //       child: Text('${controller.value.playbackSpeed}x'),
+        //     ),
+        //   ),
+        // ),
       ],
     );
   }
