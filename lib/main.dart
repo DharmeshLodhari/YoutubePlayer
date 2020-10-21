@@ -67,8 +67,8 @@ void main() async {
           ChangeNotifierProvider<NotificationBloc>.value(
             value: NotificationBloc(),
           ),
-          ChangeNotifierProvider<MovieDashboardBloc>.value(
-            value: MovieDashboardBloc(),
+          ChangeNotifierProvider<BusDashboardBloc>.value(
+            value: BusDashboardBloc(),
           ),
         ], child: MyApp()),
       );

@@ -22,6 +22,7 @@ import 'package:Slydo/screens/forms/signup.dart';
 import 'package:Slydo/screens/forms/upgrade_user_profile.dart';
 import 'package:Slydo/screens/forms/user_address.dart';
 import 'package:Slydo/screens/messagelist.dart';
+import 'package:Slydo/screens/more_apps/bus/bus_dashboard.dart';
 import 'package:Slydo/screens/more_apps/more_apps.dart';
 import 'package:Slydo/screens/more_apps/movies/movie_dashboard.dart';
 import 'package:Slydo/screens/more_apps/movies/movie_detail_page.dart';
@@ -477,6 +478,24 @@ class RouteGenerator {
       case "/news":
         return PageTransition(
           child: NewsDashboard(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case "/news-detail":
+        return PageTransition(
+          child: NewsDetailPage(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      /// Bus
+
+      case "/bus":
+        return PageTransition(
+          child: BusDashboard(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
           settings: settings,

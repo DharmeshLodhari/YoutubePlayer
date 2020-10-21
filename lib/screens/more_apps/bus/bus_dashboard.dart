@@ -1,36 +1,36 @@
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/bus/bus_explore_screen.dart';
+import 'package:Slydo/screens/more_apps/bus/my_tickets_list.dart';
 import 'package:Slydo/screens/more_apps/movies/movie_dashboard_bloc.dart';
-import 'package:Slydo/screens/more_apps/movies/movie_explore_screen.dart';
-import 'package:Slydo/screens/more_apps/movies/my_movies_screen.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class MovieDashboard extends StatefulWidget {
+class BusDashboard extends StatefulWidget {
   @override
-  _MovieDashboardState createState() => _MovieDashboardState();
+  _BusDashboardState createState() => _BusDashboardState();
 }
 
-class _MovieDashboardState extends State<MovieDashboard> {
-  BusDashboardBloc _movieDashboardBloc;
+class _BusDashboardState extends State<BusDashboard> {
+  BusDashboardBloc _busDashboardBloc;
 
   @override
   Widget build(BuildContext context) {
-    _movieDashboardBloc = Provider.of<BusDashboardBloc>(context);
+    _busDashboardBloc = Provider.of<BusDashboardBloc>(context);
     return WillPopScope(
       onWillPop: () {
         return Future.value(true);
       },
       child: Scaffold(
         body: PageView(
-          controller: _movieDashboardBloc.pageController,
+          controller: _busDashboardBloc.pageController,
           onPageChanged: (index) {
-            _movieDashboardBloc.index = index;
+            _busDashboardBloc.index = index;
           },
           children: <Widget>[
-            MovieExploreScreen(),
-            MyMoviesScreen(),
+            BusExploreScreen(),
+            MyTicketList(),
           ],
         ),
         bottomNavigationBar: bottomNavigationBar(),
@@ -52,9 +52,9 @@ class _MovieDashboardState extends State<MovieDashboard> {
         showSelectedLabels: false,
         backgroundColor: Colors.white,
         elevation: 10,
-        currentIndex: _movieDashboardBloc.index,
+        currentIndex: _busDashboardBloc.index,
         onTap: (index) {
-          _movieDashboardBloc.index = index;
+          _busDashboardBloc.index = index;
         },
         items: [
           bottomNavigationBarItem(
@@ -63,7 +63,7 @@ class _MovieDashboardState extends State<MovieDashboard> {
           ),
           bottomNavigationBarItem(
             icon: SlydoAppIcon.user,
-            title: "My movies",
+            title: "My tickets",
           ),
         ],
       ),

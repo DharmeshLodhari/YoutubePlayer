@@ -1,10 +1,13 @@
 import 'package:Slydo/screens/more_apps/news/CustomChip.dart';
 import 'package:Slydo/screens/more_apps/news/news_tile.dart';
+import 'package:Slydo/screens/more_apps/utils/video_plyer_controller/chewie_player.dart';
+import 'package:Slydo/screens/more_apps/utils/video_plyer_controller/chewie_progress_colors.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
 
 class NewsDetailPage extends StatefulWidget {
@@ -15,6 +18,9 @@ class NewsDetailPage extends StatefulWidget {
 class _NewsDetailPageState extends State<NewsDetailPage> {
   VideoPlayerController _mainVideoController;
   VideoPlayerController _subVideoController;
+
+  ChewieController _chewieMainController;
+  ChewieController _chewieSubController;
 
   bool isVideoPlaying = false;
 
@@ -46,40 +52,72 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
   @override
   void initState() {
     super.initState();
+
     _mainVideoController = VideoPlayerController.network(
       'https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/a1f539f00f21c4cb3ac1cb76269f6a36ff6922d7/y2mate.com - Nigerians protesting anti-police brutality bring Lagos to standstill_480p.mp4?raw=true',
     );
 
-    _mainVideoController.addListener(() {
-      if (mounted) {
-        setState(() {});
-      }
-    });
-    _mainVideoController.initialize().then((_) {
-      if (mounted) {
-        setState(() {});
-      }
-    });
+    _chewieMainController = ChewieController(
+      videoPlayerController: _mainVideoController,
+      aspectRatio: 16 / 9,
+      allowedScreenSleep: false,
+      allowFullScreen: true,
+      deviceOrientationsAfterFullScreen: [
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ],
+      systemOverlaysAfterFullScreen: SystemUiOverlay.values,
+      // showControls: false,
+      materialProgressColors: ChewieProgressColors(
+        playedColor: navyBlue,
+        handleColor: Colors.white,
+        backgroundColor: dividerColor,
+        bufferedColor: Colors.white30,
+      ),
+      autoInitialize: true,
+    );
+
     _subVideoController = VideoPlayerController.network(
       'https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/a1f539f00f21c4cb3ac1cb76269f6a36ff6922d7/y2mate.com - Nigerians protesting anti-police brutality bring Lagos to standstill_480p.mp4?raw=true',
     );
 
-    _subVideoController.addListener(() {
-      if (mounted) {
-        setState(() {});
-      }
-    });
-    _subVideoController.initialize().then((_) {
-      if (mounted) {
-        setState(() {});
-      }
-    });
+    _chewieSubController = ChewieController(
+      videoPlayerController: _subVideoController,
+      aspectRatio: 16 / 9,
+      allowedScreenSleep: false,
+      allowFullScreen: true,
+      deviceOrientationsAfterFullScreen: [
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ],
+      systemOverlaysAfterFullScreen: SystemUiOverlay.values,
+      // showControls: false,
+      materialProgressColors: ChewieProgressColors(
+        playedColor: navyBlue,
+        handleColor: Colors.white,
+        backgroundColor: dividerColor,
+        bufferedColor: Colors.white30,
+      ),
+      autoInitialize: true,
+    );
   }
 
   @override
   void dispose() {
     _mainVideoController.dispose();
     _subVideoController.dispose();
+
+    _chewieMainController.dispose();
+    _chewieSubController.dispose();
+
+    SystemChrome.setPreferredOrientations(
+      [
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ],
+    );
+
+    SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
     super.dispose();
   }
 
@@ -228,63 +266,21 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
   }
 
   Widget videoPlayer() {
-    return Container(
-      child: AspectRatio(
-        aspectRatio: 1.7,
-        child: Stack(
-          alignment: Alignment.bottomCenter,
-          children: <Widget>[
-            VideoPlayer(
-              _mainVideoController,
-            ),
-            _mainVideoController.value.isPlaying
-                ? Container()
-                : Container(
-                    height: double.infinity,
-                    width: double.infinity,
-                    child: CachedNetworkImage(
-                      fit: BoxFit.fill,
-                      imageUrl:
-                          "https://cms.qz.com/wp-content/uploads/2018/06/RTR44FE-e1529169440642.jpg?quality=75&strip=all&w=800&h=600",
-                    ),
-                  ),
-            _ControlsOverlay(controller: _mainVideoController),
-            VideoProgressIndicator(_mainVideoController, allowScrubbing: true),
-          ],
-        ),
-      ),
+    return Chewie(
+      controller: _chewieMainController,
+      posterUrl:
+          "https://cms.qz.com/wp-content/uploads/2018/06/RTR44FE-e1529169440642.jpg?quality=75&strip=all&w=800&h=600",
+      titleName:
+          "End SARS: See how Nigeria anti-police brutality protests go global",
     );
   }
 
   Widget subVideoPlayer() {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(4),
-      child: Container(
-        child: AspectRatio(
-          aspectRatio: 2,
-          child: Stack(
-            alignment: Alignment.bottomCenter,
-            children: <Widget>[
-              VideoPlayer(
-                _subVideoController,
-              ),
-              _subVideoController.value.isPlaying
-                  ? Container()
-                  : Container(
-                      height: double.infinity,
-                      width: double.infinity,
-                      child: CachedNetworkImage(
-                        fit: BoxFit.fill,
-                        imageUrl:
-                            "https://cms.qz.com/wp-content/uploads/2018/06/RTR44FE-e1529169440642.jpg?quality=75&strip=all&w=800&h=600",
-                      ),
-                    ),
-              _ControlsOverlay(controller: _subVideoController),
-              VideoProgressIndicator(_subVideoController, allowScrubbing: true),
-            ],
-          ),
-        ),
-      ),
+    return Chewie(
+      controller: _chewieSubController,
+      titleName: "End SARS: See how Nigeria",
+      posterUrl:
+          "https://cms.qz.com/wp-content/uploads/2018/06/RTR44FE-e1529169440642.jpg?quality=75&strip=all&w=800&h=600",
     );
   }
 

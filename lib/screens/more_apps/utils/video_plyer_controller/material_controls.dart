@@ -10,8 +10,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
+// ignore: must_be_immutable
 class MaterialControls extends StatefulWidget {
-  const MaterialControls({Key key}) : super(key: key);
+  String posterUrl;
+  String titleName;
+
+  MaterialControls({Key key, this.posterUrl, this.titleName}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -72,8 +76,7 @@ class _MaterialControlsState extends State<MaterialControls> {
                   width: double.infinity,
                   child: CachedNetworkImage(
                     fit: BoxFit.fill,
-                    imageUrl:
-                        "https://c1.iggcdn.com/indiegogo-media-prod-cld/image/upload/c_fill,f_auto,h_630,w_1200/v1506734779/wcsmythcukjuuglotjvb.jpg",
+                    imageUrl: widget.posterUrl,
                   ),
                 ),
               ),
@@ -173,11 +176,17 @@ class _MaterialControlsState extends State<MaterialControls> {
                 children: <Widget>[
                   flexibleSpace(),
                   Text(
-                    "DAWN OF THUNDER",
+                    widget.titleName.length > 45
+                        ? widget.titleName.substring(0, 45) + "..."
+                        : widget.titleName,
                     style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400),
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.fade,
+                    softWrap: true,
                   ),
                   flexibleSpace(),
                   chewieController.isFullScreen
@@ -214,7 +223,6 @@ class _MaterialControlsState extends State<MaterialControls> {
                       color: Colors.white,
                     ),
                     onPressed: () {
-                      debugPrint("i am called!");
                       isWishList = !isWishList;
                       setState(() {});
                     },

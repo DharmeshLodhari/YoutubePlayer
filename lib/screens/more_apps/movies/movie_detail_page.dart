@@ -31,12 +31,6 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
       aspectRatio: 16 / 9,
       allowedScreenSleep: false,
       allowFullScreen: true,
-      // deviceOrientationsAfterFullScreen: [
-      //   DeviceOrientation.landscapeRight,
-      //   DeviceOrientation.landscapeLeft,
-      //   DeviceOrientation.portraitUp,
-      //   DeviceOrientation.portraitDown,
-      // ],
       deviceOrientationsAfterFullScreen: [
         DeviceOrientation.portraitUp,
         DeviceOrientation.portraitDown,
@@ -66,6 +60,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
     );
 
     SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+
     super.dispose();
   }
 
@@ -163,15 +158,12 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          AspectRatio(
-            aspectRatio: 16 / 10,
-            child: SafeArea(
-              child: Chewie(
-                controller: _chewieController,
-              ),
-            ),
+          Chewie(
+            controller: _chewieController,
+            posterUrl:
+                "https://c1.iggcdn.com/indiegogo-media-prod-cld/image/upload/c_fill,f_auto,h_630,w_1200/v1506734779/wcsmythcukjuuglotjvb.jpg",
+            titleName: "DAWN OF THUNDER",
           ),
-
           // Container(
           //   child: AspectRatio(
           //     aspectRatio: 1.7,

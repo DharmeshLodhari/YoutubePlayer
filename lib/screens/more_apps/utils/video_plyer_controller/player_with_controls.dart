@@ -4,8 +4,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
+// ignore: must_be_immutable
 class PlayerWithControls extends StatelessWidget {
-  PlayerWithControls({Key key}) : super(key: key);
+  String posterUrl;
+  String titleName;
+
+  PlayerWithControls({Key key, this.posterUrl, this.titleName})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +55,10 @@ class PlayerWithControls extends StatelessWidget {
     return chewieController.showControls
         ? chewieController.customControls != null
             ? chewieController.customControls
-            : MaterialControls()
+            : MaterialControls(
+                titleName: titleName,
+                posterUrl: posterUrl,
+              )
 
         // : Theme.of(context).platform == TargetPlatform.android
         //         ? MaterialControls()
