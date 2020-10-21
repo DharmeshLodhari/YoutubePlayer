@@ -37,16 +37,17 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
       //   DeviceOrientation.portraitUp,
       //   DeviceOrientation.portraitDown,
       // ],
-
+      deviceOrientationsAfterFullScreen: [
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ],
+      systemOverlaysAfterFullScreen: SystemUiOverlay.values,
       // showControls: false,
       materialProgressColors: ChewieProgressColors(
         playedColor: navyBlue,
-        handleColor: navyBlue,
+        handleColor: Colors.white,
         backgroundColor: dividerColor,
         bufferedColor: Colors.white30,
-      ),
-      placeholder: Container(
-        color: Colors.transparent,
       ),
       autoInitialize: true,
     );
@@ -63,6 +64,8 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
         DeviceOrientation.portraitDown,
       ],
     );
+
+    SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
     super.dispose();
   }
 

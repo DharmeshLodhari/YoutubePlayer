@@ -175,5 +175,14 @@ class _ProgressBarPainter extends CustomPainter {
       height * 3,
       colors.handlePaint,
     );
+
+    colors.handleBorderPaint.style = PaintingStyle.stroke;
+    colors.handleBorderPaint.strokeWidth = 1.5;
+
+    canvas.drawCircle(
+      Offset(playedPart, size.height / 2 + height / 2),
+      height * 3,
+      colors.handleBorderPaint,
+    );
   }
 }

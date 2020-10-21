@@ -1,6 +1,5 @@
 import 'dart:async';
 
-
 import 'package:Slydo/screens/more_apps/utils/video_plyer_controller/chewie_progress_colors.dart';
 import 'package:Slydo/screens/more_apps/utils/video_plyer_controller/player_with_controls.dart';
 import 'package:flutter/material.dart';
@@ -80,6 +79,7 @@ class ChewieState extends State<Chewie> {
       BuildContext context,
       Animation<double> animation,
       _ChewieControllerProvider controllerProvider) {
+    SystemChrome.setEnabledSystemUIOverlays([]);
     return Scaffold(
       resizeToAvoidBottomPadding: false,
       body: Container(

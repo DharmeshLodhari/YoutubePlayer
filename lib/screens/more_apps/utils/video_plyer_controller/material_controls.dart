@@ -4,6 +4,9 @@ import 'package:Slydo/screens/more_apps/utils/video_plyer_controller/chewie_play
 import 'package:Slydo/screens/more_apps/utils/video_plyer_controller/chewie_progress_colors.dart';
 import 'package:Slydo/screens/more_apps/utils/video_plyer_controller/material_progress_bar.dart';
 import 'package:Slydo/screens/more_apps/utils/video_plyer_controller/utils.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -25,6 +28,7 @@ class _MaterialControlsState extends State<MaterialControls> {
   Timer _showAfterExpandCollapseTimer;
   bool _dragging = false;
   bool _displayTapped = false;
+  bool isWishList = false;
 
   final barHeight = 48.0;
   final marginSize = 5.0;
@@ -57,19 +61,40 @@ class _MaterialControlsState extends State<MaterialControls> {
         onTap: () => _cancelAndRestartTimer(),
         child: AbsorbPointer(
           absorbing: _hideStuff,
-          child: Column(
-            children: <Widget>[
-              _latestValue != null &&
-                          !_latestValue.isPlaying &&
-                          _latestValue.duration == null ||
-                      _latestValue.isBuffering
-                  ? const Expanded(
-                      child: const Center(
-                        child: const CircularProgressIndicator(),
-                      ),
-                    )
-                  : _buildHitArea(),
-              _buildBottomBar(context),
+          child: Stack(
+            children: [
+              AnimatedOpacity(
+                opacity:
+                    _latestValue != null && _latestValue.isPlaying ? 0.0 : 1.0,
+                duration: Duration(milliseconds: 10),
+                child: Container(
+                  height: double.infinity,
+                  width: double.infinity,
+                  child: CachedNetworkImage(
+                    fit: BoxFit.fill,
+                    imageUrl:
+                        "https://c1.iggcdn.com/indiegogo-media-prod-cld/image/upload/c_fill,f_auto,h_630,w_1200/v1506734779/wcsmythcukjuuglotjvb.jpg",
+                  ),
+                ),
+              ),
+              Column(
+                children: <Widget>[
+                  _buildVideoTitle(),
+                  _latestValue != null &&
+                              !_latestValue.isPlaying &&
+                              _latestValue.duration == null ||
+                          _latestValue.isBuffering
+                      ? const Expanded(
+                          child: const Center(
+                            child: const CircularProgressIndicator(),
+                          ),
+                        )
+                      : _latestValue != null && !_latestValue.isPlaying
+                          ? _buildHitArea()
+                          : _buildHitAreaWhenPlaying(),
+                  _buildBottomBar(context),
+                ],
+              ),
             ],
           ),
         ),
@@ -114,17 +139,19 @@ class _MaterialControlsState extends State<MaterialControls> {
       duration: Duration(milliseconds: 300),
       child: Container(
         height: barHeight,
-        color: Theme.of(context).dialogBackgroundColor,
+        color: Colors.transparent,
+        padding: EdgeInsets.symmetric(horizontal: 16),
         child: Row(
           children: <Widget>[
-            _buildPlayPause(controller),
-            chewieController.isLive
-                ? Expanded(child: const Text('LIVE'))
-                : _buildPosition(iconColor),
+            // _buildPlayPause(controller),
+            // chewieController.isLive
+            //     ? Expanded(child: const Text('LIVE'))
+            //     : _buildPosition(iconColor),
             chewieController.isLive ? const SizedBox() : _buildProgressBar(),
-            chewieController.allowMuting
-                ? _buildMuteButton(controller)
-                : Container(),
+            _buildRemainingDuration(iconColor),
+            // chewieController.allowMuting
+            //     ? _buildMuteButton(controller)
+            //     : Container(),
             chewieController.allowFullScreen
                 ? _buildExpandButton()
                 : Container(),
@@ -134,28 +161,95 @@ class _MaterialControlsState extends State<MaterialControls> {
     );
   }
 
+  AnimatedOpacity _buildVideoTitle() {
+    return _latestValue != null && _latestValue.isPlaying
+        ? AnimatedOpacity(
+            opacity: _hideStuff ? 0.0 : 1.0,
+            duration: Duration(milliseconds: 300),
+            child: Container(
+              height: barHeight,
+              color: Colors.transparent,
+              child: Row(
+                children: <Widget>[
+                  flexibleSpace(),
+                  Text(
+                    "DAWN OF THUNDER",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400),
+                  ),
+                  flexibleSpace(),
+                  chewieController.isFullScreen
+                      ? IconButton(
+                          icon: Icon(
+                            Icons.close,
+                            size: 20,
+                            color: Colors.white,
+                          ),
+                          onPressed: () {
+                            _onExpandCollapse();
+                          },
+                        )
+                      : Container(),
+                ],
+              ),
+            ),
+          )
+        : AnimatedOpacity(
+            opacity: _hideStuff ? 0.0 : 1.0,
+            duration: Duration(milliseconds: 300),
+            child: Container(
+              height: barHeight,
+              color: Colors.transparent,
+              child: Row(
+                children: <Widget>[
+                  flexibleSpace(),
+                  IconButton(
+                    icon: Icon(
+                      isWishList
+                          ? SlydoAppIcon.heart_1
+                          : SlydoAppIcon.heart_empty,
+                      size: 20,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      debugPrint("i am called!");
+                      isWishList = !isWishList;
+                      setState(() {});
+                    },
+                  )
+                ],
+              ),
+            ),
+          );
+  }
+
   GestureDetector _buildExpandButton() {
     return GestureDetector(
-      onTap: _onExpandCollapse,
-      child: AnimatedOpacity(
-        opacity: _hideStuff ? 0.0 : 1.0,
-        duration: Duration(milliseconds: 300),
-        child: Container(
-          height: barHeight,
-          margin: EdgeInsets.only(right: 12.0),
-          padding: EdgeInsets.only(
-            left: 8.0,
-            right: 8.0,
-          ),
-          child: Center(
-            child: Icon(
-              chewieController.isFullScreen
-                  ? Icons.fullscreen_exit
-                  : Icons.fullscreen,
+      onTap: chewieController.isFullScreen
+          ? () {}
+          : () {
+              _onExpandCollapse();
+            },
+      child: chewieController.isFullScreen
+          ? Container()
+          : AnimatedOpacity(
+              opacity: _hideStuff ? 0.0 : 1.0,
+              duration: Duration(milliseconds: 300),
+              child: Container(
+                height: barHeight,
+                child: Center(
+                  child: Icon(
+                    chewieController.isFullScreen
+                        ? Icons.fullscreen_exit
+                        : SlydoAppIcon.full_screen,
+                    color: Colors.white,
+                    size: 18,
+                  ),
+                ),
+              ),
             ),
-          ),
-        ),
-      ),
     );
   }
 
@@ -190,12 +284,16 @@ class _MaterialControlsState extends State<MaterialControls> {
               child: GestureDetector(
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Theme.of(context).dialogBackgroundColor,
+                    color: Colors.white12,
                     borderRadius: BorderRadius.circular(48.0),
                   ),
                   child: Padding(
                     padding: EdgeInsets.all(12.0),
-                    child: Icon(Icons.play_arrow, size: 32.0),
+                    child: Icon(
+                      Icons.play_arrow_rounded,
+                      size: 32.0,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
@@ -204,6 +302,161 @@ class _MaterialControlsState extends State<MaterialControls> {
         ),
       ),
     );
+  }
+
+  Expanded _buildHitAreaWhenPlaying() {
+    return Expanded(
+      child: AnimatedOpacity(
+        opacity: _hideStuff ? 0.0 : 1.0,
+        duration: Duration(milliseconds: 300),
+        child: GestureDetector(
+          onTap: () {
+            if (_latestValue != null && _latestValue.isPlaying) {
+              if (_displayTapped) {
+                setState(() {
+                  _hideStuff = true;
+                });
+              } else
+                _cancelAndRestartTimer();
+            } else {
+              _playPause();
+
+              setState(() {
+                _hideStuff = true;
+              });
+            }
+          },
+          child: Row(
+            children: [
+              flexibleSpace(flex: 2),
+              rewindButton(),
+              flexibleSpace(flex: 1),
+              pauseButton(),
+              flexibleSpace(flex: 1),
+              forwardButton(),
+              flexibleSpace(flex: 2),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget rewindButton() {
+    return Container(
+      color: Colors.transparent,
+      child: Center(
+        child: AnimatedOpacity(
+          opacity: _latestValue != null && _latestValue.isPlaying && !_dragging
+              ? 1.0
+              : 0.0,
+          duration: Duration(milliseconds: 300),
+          child: GestureDetector(
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(48.0),
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(12.0),
+                child: Icon(
+                  SlydoAppIcon.ccw,
+                  size: 32.0,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            onTap: () {
+              rewindVideo();
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget pauseButton() {
+    return Container(
+      color: Colors.transparent,
+      child: Center(
+        child: AnimatedOpacity(
+          opacity: _latestValue != null && _latestValue.isPlaying && !_dragging
+              ? 1.0
+              : 0.0,
+          duration: Duration(milliseconds: 300),
+          child: GestureDetector(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white12,
+                borderRadius: BorderRadius.circular(48.0),
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(12.0),
+                child: Icon(
+                  Icons.pause,
+                  size: 32.0,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            onTap: () {
+              _playPause();
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget forwardButton() {
+    return Container(
+      color: Colors.transparent,
+      child: Center(
+        child: AnimatedOpacity(
+          opacity: _latestValue != null && _latestValue.isPlaying && !_dragging
+              ? 1.0
+              : 0.0,
+          duration: Duration(milliseconds: 300),
+          child: GestureDetector(
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(48.0),
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(12.0),
+                child: Icon(
+                  SlydoAppIcon.cw,
+                  size: 32.0,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            onTap: () {
+              forwardVideo();
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  void forwardVideo() {
+    if (chewieController != null &&
+        chewieController.videoPlayerController != null &&
+        _latestValue != null &&
+        _latestValue.position != null) {
+      chewieController.videoPlayerController
+          .seekTo(_latestValue.position + Duration(seconds: 10));
+    }
+  }
+
+  void rewindVideo() {
+    if (chewieController != null &&
+        chewieController.videoPlayerController != null &&
+        _latestValue != null &&
+        _latestValue.position != null) {
+      chewieController.videoPlayerController
+          .seekTo(_latestValue.position - Duration(seconds: 10));
+    }
   }
 
   GestureDetector _buildMuteButton(
@@ -273,9 +526,26 @@ class _MaterialControlsState extends State<MaterialControls> {
       padding: EdgeInsets.only(right: 24.0),
       child: Text(
         '${formatDuration(position)} / ${formatDuration(duration)}',
+        style: TextStyle(fontSize: 14.0, color: Colors.white),
+      ),
+    );
+  }
+
+  Widget _buildRemainingDuration(Color iconColor) {
+    final position = _latestValue != null && _latestValue.position != null
+        ? _latestValue.position
+        : Duration.zero;
+    final duration = _latestValue != null && _latestValue.duration != null
+        ? _latestValue.duration
+        : Duration.zero;
+    final remainingDuration = duration - position;
+
+    return Padding(
+      padding: const EdgeInsets.only(right: 12.0),
+      child: Text(
+        '${formatDuration(remainingDuration)}',
         style: TextStyle(
-          fontSize: 14.0,
-        ),
+            fontSize: 12.0, color: Colors.white, fontWeight: FontWeight.w600),
       ),
     );
   }
@@ -314,6 +584,7 @@ class _MaterialControlsState extends State<MaterialControls> {
       _hideStuff = true;
 
       chewieController.toggleFullScreen();
+
       _showAfterExpandCollapseTimer = Timer(Duration(milliseconds: 300), () {
         setState(() {
           _cancelAndRestartTimer();
@@ -364,7 +635,7 @@ class _MaterialControlsState extends State<MaterialControls> {
   Widget _buildProgressBar() {
     return Expanded(
       child: Padding(
-        padding: EdgeInsets.only(right: 20.0),
+        padding: EdgeInsets.only(right: 12.0),
         child: MaterialVideoProgressBar(
           controller,
           onDragStart: () {

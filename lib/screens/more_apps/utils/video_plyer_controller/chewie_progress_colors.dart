@@ -1,3 +1,4 @@
+import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/rendering.dart';
 
 class ChewieProgressColors {
@@ -9,10 +10,12 @@ class ChewieProgressColors {
   })  : playedPaint = Paint()..color = playedColor,
         bufferedPaint = Paint()..color = bufferedColor,
         handlePaint = Paint()..color = handleColor,
+        handleBorderPaint = Paint()..color = navyBlue,
         backgroundPaint = Paint()..color = backgroundColor;
 
   final Paint playedPaint;
   final Paint bufferedPaint;
   final Paint handlePaint;
+  final Paint handleBorderPaint;
   final Paint backgroundPaint;
 }
