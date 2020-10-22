@@ -1,18 +1,18 @@
-import 'package:Slydo/screens/more_apps/bus/bus_dashboard_bloc.dart';
-import 'package:Slydo/screens/more_apps/bus/bus_ticket_tile.dart';
+import 'package:Slydo/screens/more_apps/flight/flight_dashboard_bloc.dart';
+import 'package:Slydo/screens/more_apps/flight/flight_ticket_tile.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class SearchBus extends StatefulWidget {
+class SearchFlight extends StatefulWidget {
   @override
-  _SearchBusState createState() => _SearchBusState();
+  _SearchFlightState createState() => _SearchFlightState();
 }
 
-class _SearchBusState extends State<SearchBus> {
-  BusDashboardBloc _busDashboardBloc;
+class _SearchFlightState extends State<SearchFlight> {
+  FlightDashboardBloc _flightDashboardBloc;
 
   bool isSwap = false;
 
@@ -43,7 +43,7 @@ class _SearchBusState extends State<SearchBus> {
           size: 24,
         ),
         onPressed: () {
-          _busDashboardBloc.index = 0;
+          _flightDashboardBloc.index = 0;
           Navigator.pop(context);
         },
       ),
@@ -52,7 +52,7 @@ class _SearchBusState extends State<SearchBus> {
   }
 
   Widget scaffoldBody() {
-    _busDashboardBloc = Provider.of<BusDashboardBloc>(context);
+    _flightDashboardBloc = Provider.of<FlightDashboardBloc>(context);
     return SingleChildScrollView(
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 16),
@@ -65,7 +65,7 @@ class _SearchBusState extends State<SearchBus> {
               },
               child: Container(
                   padding: EdgeInsets.symmetric(vertical: 8),
-                  child: BusTicketTile()),
+                  child: FlightTicketTile()),
             ),
           ),
         ),

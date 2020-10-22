@@ -115,8 +115,8 @@ class SlydoAppIcon {
   static const IconData rewind_10 = IconData(0xe853, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData ccw = IconData(0xe854, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData cw = IconData(0xe855, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData swap = IconData(0xe856, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData arrow_right = IconData(0xe857, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData seat = IconData(0xe858, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData gate = IconData(0xe859, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData swap = IconData(0xe85a, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }

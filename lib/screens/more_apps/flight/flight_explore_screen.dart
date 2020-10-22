@@ -1,5 +1,5 @@
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/more_apps/bus/bus_dashboard_bloc.dart';
+import 'package:Slydo/screens/more_apps/flight/flight_dashboard_bloc.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -9,12 +9,12 @@ import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class BusExploreScreen extends StatefulWidget {
+class FlightExploreScreen extends StatefulWidget {
   @override
-  _BusExploreScreenState createState() => _BusExploreScreenState();
+  _FlightExploreScreenState createState() => _FlightExploreScreenState();
 }
 
-class _BusExploreScreenState extends State<BusExploreScreen> {
+class _FlightExploreScreenState extends State<FlightExploreScreen> {
   List<String> fromPlace = ["Lagos"];
   List<String> toPlace = ["Abuja"];
   List<String> classes = ["A", "B"];
@@ -25,7 +25,7 @@ class _BusExploreScreenState extends State<BusExploreScreen> {
 
   DateTime ticketDate = DateTime.now();
 
-  BusDashboardBloc _busDashboardBloc;
+  FlightDashboardBloc _flightDashboardBloc;
 
   @override
   Widget build(BuildContext context) {
@@ -50,12 +50,12 @@ class _BusExploreScreenState extends State<BusExploreScreen> {
           size: 24,
         ),
         onPressed: () {
-          _busDashboardBloc.index = 0;
+          _flightDashboardBloc.index = 0;
           Navigator.pop(context);
         },
       ),
       title: Text(
-        "Bus",
+        "Flight",
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -63,7 +63,7 @@ class _BusExploreScreenState extends State<BusExploreScreen> {
   }
 
   Widget scaffoldBody() {
-    _busDashboardBloc = Provider.of<BusDashboardBloc>(context);
+    _flightDashboardBloc = Provider.of<FlightDashboardBloc>(context);
     return SingleChildScrollView(
         child: Column(
       children: [
@@ -588,7 +588,7 @@ class _BusExploreScreenState extends State<BusExploreScreen> {
   Widget submitButton() {
     return CurvedButton(
       onPressed: () {
-        Navigator.of(context).pushNamed("/search-bus");
+        Navigator.of(context).pushNamed("/search-flight");
       },
       backgroundColor: navyBlue,
       textColor: Colors.white,

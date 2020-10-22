@@ -1,16 +1,16 @@
-import 'package:Slydo/screens/more_apps/bus/bus_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/bus/bus_ticket_tile.dart';
+import 'package:Slydo/screens/more_apps/flight/flight_dashboard_bloc.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class MyBusTicketList extends StatefulWidget {
+class MyFlightTicketList extends StatefulWidget {
   @override
-  _MyBusTicketListState createState() => _MyBusTicketListState();
+  _MyFlightTicketListState createState() => _MyFlightTicketListState();
 }
 
-class _MyBusTicketListState extends State<MyBusTicketList> {
-  BusDashboardBloc _busDashboardBloc;
+class _MyFlightTicketListState extends State<MyFlightTicketList> {
+  FlightDashboardBloc _flightDashboardBloc;
 
   @override
   Widget build(BuildContext context) {
@@ -34,12 +34,12 @@ class _MyBusTicketListState extends State<MyBusTicketList> {
           size: 24,
         ),
         onPressed: () {
-          _busDashboardBloc.index = 0;
+          _flightDashboardBloc.index = 0;
           Navigator.pop(context);
         },
       ),
       title: Text(
-        "Bus tickets",
+        "Flight tickets",
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -47,7 +47,7 @@ class _MyBusTicketListState extends State<MyBusTicketList> {
   }
 
   Widget scaffoldBody() {
-    _busDashboardBloc = Provider.of<BusDashboardBloc>(context);
+    _flightDashboardBloc = Provider.of<FlightDashboardBloc>(context);
 
     return SingleChildScrollView(
       child: Container(

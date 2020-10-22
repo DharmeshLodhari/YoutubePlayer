@@ -1,37 +1,37 @@
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/more_apps/bus/bus_dashboard_bloc.dart';
-import 'package:Slydo/screens/more_apps/bus/bus_explore_screen.dart';
-import 'package:Slydo/screens/more_apps/bus/my_bus_ticket_list.dart';
+import 'package:Slydo/screens/more_apps/flight/flight_dashboard_bloc.dart';
+import 'package:Slydo/screens/more_apps/flight/flight_explore_screen.dart';
+import 'package:Slydo/screens/more_apps/flight/my_flight_ticket_list.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class BusDashboard extends StatefulWidget {
+class FlightDashboard extends StatefulWidget {
   @override
-  _BusDashboardState createState() => _BusDashboardState();
+  _FlightDashboardState createState() => _FlightDashboardState();
 }
 
-class _BusDashboardState extends State<BusDashboard> {
-  BusDashboardBloc _busDashboardBloc;
+class _FlightDashboardState extends State<FlightDashboard> {
+  FlightDashboardBloc _flightDashboardBloc;
 
   @override
   Widget build(BuildContext context) {
-    _busDashboardBloc = Provider.of<BusDashboardBloc>(context);
+    _flightDashboardBloc = Provider.of<FlightDashboardBloc>(context);
     return WillPopScope(
       onWillPop: () {
-        _busDashboardBloc.index = 0;
+        _flightDashboardBloc.index = 0;
         return Future.value(true);
       },
       child: Scaffold(
         body: PageView(
-          controller: _busDashboardBloc.pageController,
+          controller: _flightDashboardBloc.pageController,
           onPageChanged: (index) {
-            _busDashboardBloc.index = index;
+            _flightDashboardBloc.index = index;
           },
           children: <Widget>[
-            BusExploreScreen(),
-            MyBusTicketList(),
+            FlightExploreScreen(),
+            MyFlightTicketList(),
           ],
         ),
         bottomNavigationBar: bottomNavigationBar(),
@@ -53,9 +53,9 @@ class _BusDashboardState extends State<BusDashboard> {
         showSelectedLabels: false,
         backgroundColor: Colors.white,
         elevation: 10,
-        currentIndex: _busDashboardBloc.index,
+        currentIndex: _flightDashboardBloc.index,
         onTap: (index) {
-          _busDashboardBloc.index = index;
+          _flightDashboardBloc.index = index;
         },
         items: [
           bottomNavigationBarItem(

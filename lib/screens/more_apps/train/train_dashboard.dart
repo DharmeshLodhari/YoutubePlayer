@@ -1,37 +1,37 @@
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/more_apps/bus/bus_dashboard_bloc.dart';
-import 'package:Slydo/screens/more_apps/bus/bus_explore_screen.dart';
-import 'package:Slydo/screens/more_apps/bus/my_bus_ticket_list.dart';
+import 'package:Slydo/screens/more_apps/train/my_train_ticket_list.dart';
+import 'package:Slydo/screens/more_apps/train/train_dashboard_bloc.dart';
+import 'package:Slydo/screens/more_apps/train/train_explore_screen.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class BusDashboard extends StatefulWidget {
+class TrainDashboard extends StatefulWidget {
   @override
-  _BusDashboardState createState() => _BusDashboardState();
+  _TrainDashboardState createState() => _TrainDashboardState();
 }
 
-class _BusDashboardState extends State<BusDashboard> {
-  BusDashboardBloc _busDashboardBloc;
+class _TrainDashboardState extends State<TrainDashboard> {
+  TrainDashboardBloc _trainDashboardBloc;
 
   @override
   Widget build(BuildContext context) {
-    _busDashboardBloc = Provider.of<BusDashboardBloc>(context);
+    _trainDashboardBloc = Provider.of<TrainDashboardBloc>(context);
     return WillPopScope(
       onWillPop: () {
-        _busDashboardBloc.index = 0;
+        _trainDashboardBloc.index = 0;
         return Future.value(true);
       },
       child: Scaffold(
         body: PageView(
-          controller: _busDashboardBloc.pageController,
+          controller: _trainDashboardBloc.pageController,
           onPageChanged: (index) {
-            _busDashboardBloc.index = index;
+            _trainDashboardBloc.index = index;
           },
           children: <Widget>[
-            BusExploreScreen(),
-            MyBusTicketList(),
+            TrainExploreScreen(),
+            MyTrainTicketList(),
           ],
         ),
         bottomNavigationBar: bottomNavigationBar(),
@@ -53,9 +53,9 @@ class _BusDashboardState extends State<BusDashboard> {
         showSelectedLabels: false,
         backgroundColor: Colors.white,
         elevation: 10,
-        currentIndex: _busDashboardBloc.index,
+        currentIndex: _trainDashboardBloc.index,
         onTap: (index) {
-          _busDashboardBloc.index = index;
+          _trainDashboardBloc.index = index;
         },
         items: [
           bottomNavigationBarItem(

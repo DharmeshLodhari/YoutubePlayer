@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_generator.dart';
 import 'package:Slydo/screens/more_apps/bus/bus_dashboard_bloc.dart';
+import 'package:Slydo/screens/more_apps/flight/flight_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/movies/movie_dashboard_bloc.dart';
+import 'package:Slydo/screens/more_apps/train/train_dashboard_bloc.dart';
 import 'package:Slydo/services/app_life_cycle.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -73,6 +75,12 @@ void main() async {
           ),
           ChangeNotifierProvider<BusDashboardBloc>.value(
             value: BusDashboardBloc(),
+          ),
+          ChangeNotifierProvider<TrainDashboardBloc>.value(
+            value: TrainDashboardBloc(),
+          ),
+          ChangeNotifierProvider<FlightDashboardBloc>.value(
+            value: FlightDashboardBloc(),
           ),
         ], child: MyApp()),
       );

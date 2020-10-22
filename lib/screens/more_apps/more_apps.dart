@@ -83,13 +83,7 @@ class _MoreAppsState extends State<MoreApps> {
           icon: SlydoAppIcon.movies_moreapps,
           title: "Movies",
           onTap: () {
-            showDialog(
-              context: context,
-              builder: (context) => Center(
-                child: CircularLoadingIndicator(),
-              ),
-            );
-            Navigator.of(context).popAndPushNamed("/movies");
+            Navigator.of(context).pushNamed("/movies");
           },
           iconColor: HexColor("#9B51E0"),
           height: 126,
@@ -173,13 +167,7 @@ class _MoreAppsState extends State<MoreApps> {
           icon: SlydoAppIcon.transport_category,
           title: "Bus",
           onTap: () {
-            showDialog(
-              context: context,
-              builder: (context) => Center(
-                child: CircularLoadingIndicator(),
-              ),
-            );
-            Navigator.of(context).popAndPushNamed("/bus");
+            Navigator.of(context).pushNamed("/bus");
           },
           iconColor: HexColor("#374677"),
           height: 126,
@@ -191,7 +179,9 @@ class _MoreAppsState extends State<MoreApps> {
             child: UserDashboardItemTile(
           icon: SlydoAppIcon.train_moreapps,
           title: "Train",
-          onTap: () {},
+          onTap: () {
+            Navigator.of(context).pushNamed("/train");
+          },
           iconColor: HexColor("#46CE7C"),
           height: 126,
         )),
@@ -202,7 +192,9 @@ class _MoreAppsState extends State<MoreApps> {
             child: UserDashboardItemTile(
           icon: SlydoAppIcon.flight_moreapps,
           title: "Flight",
-          onTap: () {},
+          onTap: () {
+            Navigator.of(context).pushNamed("/flight");
+          },
           iconColor: HexColor("#F07097"),
           height: 126,
         )),
