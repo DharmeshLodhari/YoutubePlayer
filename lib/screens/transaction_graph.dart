@@ -401,7 +401,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
                       width: 10,
                       child: ClipOval(
                         child: Container(
-                          color: mateRad,
+                          color: mateRed,
                         ),
                       ),
                     ),
@@ -659,7 +659,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
         } else {
           widgets.add(Text(
             "$series : $value",
-            style: TextStyle(fontSize: 12, color: mateRad),
+            style: TextStyle(fontSize: 12, color: mateRed),
           ));
         }
       });

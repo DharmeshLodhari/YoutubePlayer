@@ -807,7 +807,7 @@ class _EditProductState extends State<EditProduct> {
           Expanded(
             child: CurvedButton(
                 textColor: Colors.white,
-                backgroundColor: mateRad,
+                backgroundColor: mateRed,
                 text: AppLocalization.of(context).delete,
                 onPressed: () async {
                   FocusScope.of(context).unfocus();

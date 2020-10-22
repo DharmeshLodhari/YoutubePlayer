@@ -15,7 +15,7 @@ class _SubscriptionListState extends State<SubscriptionList> {
   Widget scaffoldBody() {
     return SingleChildScrollView(
       child: Column(
-        children: List.generate(20, (index) => SubscriptionTile()),
+        children: List.generate(10, (index) => SubscriptionTile()),
       ),
     );
   }

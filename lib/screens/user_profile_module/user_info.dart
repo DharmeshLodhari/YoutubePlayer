@@ -276,10 +276,10 @@ class _UserInfoState extends State<UserInfo> {
                                     width: 28,
                                     icon: Icon(
                                       SlydoAppIcon.block,
-                                      color: mateRad,
+                                      color: mateRed,
                                       size: 14,
                                     ),
-                                    backgroundColor: mateRad.withOpacity(0.1),
+                                    backgroundColor: mateRed.withOpacity(0.1),
                                   ),
                                   SizedBox(
                                     width: 8,
@@ -287,7 +287,7 @@ class _UserInfoState extends State<UserInfo> {
                                   Text(
                                     AppLocalization.of(context).blockUser,
                                     style:
-                                        TextStyle(color: mateRad, fontSize: 14),
+                                        TextStyle(color: mateRed, fontSize: 14),
                                   ),
                                 ],
                               ),
@@ -390,10 +390,10 @@ class _UserInfoState extends State<UserInfo> {
             width: 28,
             icon: Icon(
               SlydoAppIcon.cancel_connection_request,
-              color: mateRad,
+              color: mateRed,
               size: 14,
             ),
-            backgroundColor: mateRad.withOpacity(0.1),
+            backgroundColor: mateRed.withOpacity(0.1),
           ),
           SizedBox(
             width: 8,
@@ -401,7 +401,7 @@ class _UserInfoState extends State<UserInfo> {
           Expanded(
             child: Text(
               "Cancel Request",
-              style: TextStyle(color: mateRad, fontSize: 14),
+              style: TextStyle(color: mateRed, fontSize: 14),
             ),
           ),
         ],

@@ -1,5 +1,6 @@
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/user_dashboard_item_tile.dart';
 import 'package:flutter/material.dart';
 
@@ -82,7 +83,13 @@ class _MoreAppsState extends State<MoreApps> {
           icon: SlydoAppIcon.movies_moreapps,
           title: "Movies",
           onTap: () {
-            Navigator.of(context).pushNamed("/movies");
+            showDialog(
+              context: context,
+              builder: (context) => Center(
+                child: CircularLoadingIndicator(),
+              ),
+            );
+            Navigator.of(context).popAndPushNamed("/movies");
           },
           iconColor: HexColor("#9B51E0"),
           height: 126,
@@ -106,7 +113,13 @@ class _MoreAppsState extends State<MoreApps> {
           icon: SlydoAppIcon.news_moreapps,
           title: "News",
           onTap: () {
-            Navigator.of(context).pushNamed("/news");
+            showDialog(
+              context: context,
+              builder: (context) => Center(
+                child: CircularLoadingIndicator(),
+              ),
+            );
+            Navigator.of(context).popAndPushNamed("/news");
           },
           iconColor: HexColor("#46CE7C"),
           height: 126,
@@ -160,7 +173,13 @@ class _MoreAppsState extends State<MoreApps> {
           icon: SlydoAppIcon.transport_category,
           title: "Bus",
           onTap: () {
-            Navigator.of(context).pushNamed("/bus");
+            showDialog(
+              context: context,
+              builder: (context) => Center(
+                child: CircularLoadingIndicator(),
+              ),
+            );
+            Navigator.of(context).popAndPushNamed("/bus");
           },
           iconColor: HexColor("#374677"),
           height: 126,

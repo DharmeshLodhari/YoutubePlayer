@@ -120,7 +120,7 @@ class _DashboardState extends State<Dashboard> {
         if (_dashboardBloc.index == 0) {
           bool result = await showDialogBox(
             context: context,
-            actionOneBgColor: mateRad,
+            actionOneBgColor: mateRed,
             actionOneTextColor: Colors.white,
             actionTwoBgColor: greyBorderColor,
             actionTwoTextColor: blackFont,

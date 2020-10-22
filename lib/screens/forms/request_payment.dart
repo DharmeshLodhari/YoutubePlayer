@@ -244,7 +244,7 @@ class _RequestPaymentState extends State<RequestPayment> {
                                         Text(
                                           errorMessage,
                                           style: TextStyle(
-                                              color: mateRad,
+                                              color: mateRed,
                                               fontWeight: FontWeight.bold,
                                               fontSize: 16),
                                         ),

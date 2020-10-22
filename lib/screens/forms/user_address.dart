@@ -126,7 +126,7 @@ class _UserAddressState extends State<UserAddress> {
                     flexibleSpace(),
                     Text(
                       errorMessage,
-                      style: TextStyle(color: mateRad, fontSize: 14),
+                      style: TextStyle(color: mateRed, fontSize: 14),
                     ),
                     flexibleSpace(),
                     getSubmitButton(),

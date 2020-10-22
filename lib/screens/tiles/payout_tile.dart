@@ -77,7 +77,7 @@ class PayoutTile extends StatelessWidget {
     } else if (status == "Pending") {
       return starYellow;
     } else {
-      return mateRad;
+      return mateRed;
     }
   }
 

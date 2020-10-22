@@ -1,6 +1,6 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/bus/bus_explore_screen.dart';
-import 'package:Slydo/screens/more_apps/bus/my_tickets_list.dart';
+import 'package:Slydo/screens/more_apps/bus/my_bus_ticket_list.dart';
 import 'package:Slydo/screens/more_apps/movies/movie_dashboard_bloc.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -13,13 +13,14 @@ class BusDashboard extends StatefulWidget {
 }
 
 class _BusDashboardState extends State<BusDashboard> {
-  BusDashboardBloc _busDashboardBloc;
+  MovieDashboardBloc _busDashboardBloc;
 
   @override
   Widget build(BuildContext context) {
-    _busDashboardBloc = Provider.of<BusDashboardBloc>(context);
+    _busDashboardBloc = Provider.of<MovieDashboardBloc>(context);
     return WillPopScope(
       onWillPop: () {
+        _busDashboardBloc.index = 0;
         return Future.value(true);
       },
       child: Scaffold(
@@ -30,7 +31,7 @@ class _BusDashboardState extends State<BusDashboard> {
           },
           children: <Widget>[
             BusExploreScreen(),
-            MyTicketList(),
+            MyBusTicketList(),
           ],
         ),
         bottomNavigationBar: bottomNavigationBar(),

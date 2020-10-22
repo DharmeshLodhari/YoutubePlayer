@@ -23,7 +23,7 @@ class _SpecificCategoryMovieListState extends State<SpecificCategoryMovieList> {
             padding: EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               children: List.generate(
-                50,
+                10,
                 (index) => Container(
                     padding: EdgeInsets.symmetric(vertical: 8),
                     child: MovieTileGeneral()),

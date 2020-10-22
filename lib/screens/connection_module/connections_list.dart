@@ -184,7 +184,7 @@ class _ConnectionListState extends State<ConnectionList> {
   List<Widget> listSecondaryActions(CustomerProfile user, int index) {
     return [
       SlideActionButton(
-        backgroundColor: mateRad,
+        backgroundColor: mateRed,
         icon: SlydoAppIcon.block,
         onTap: () {
           blockUserAlert(user, index);
@@ -198,7 +198,7 @@ class _ConnectionListState extends State<ConnectionList> {
   List<Widget> listActionSlideActions(CustomerProfile user, int index) {
     return [
       SlideActionButton(
-        backgroundColor: mateRad,
+        backgroundColor: mateRed,
         icon: SlydoAppIcon.remove_connection,
         onTap: () {
           removeFromConnectionUserAlert(user, index);
@@ -213,18 +213,18 @@ class _ConnectionListState extends State<ConnectionList> {
     bool result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
-        backgroundColor: mateRad.withOpacity(0.08),
+        backgroundColor: mateRed.withOpacity(0.08),
         borderRadius: 20,
         width: 48,
         height: 48,
         icon: Icon(
           SlydoAppIcon.block,
-          color: mateRad,
+          color: mateRed,
           size: 16,
         ),
         enableMargin: false,
       ),
-      actionOneBgColor: mateRad,
+      actionOneBgColor: mateRed,
       actionOneTextColor: Colors.white,
       actionTwoBgColor: greyBorderColor,
       actionTwoTextColor: blackFont,
@@ -259,18 +259,18 @@ class _ConnectionListState extends State<ConnectionList> {
     bool result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
-        backgroundColor: mateRad.withOpacity(0.08),
+        backgroundColor: mateRed.withOpacity(0.08),
         borderRadius: 20,
         width: 48,
         height: 48,
         icon: Icon(
           SlydoAppIcon.delete,
-          color: mateRad,
+          color: mateRed,
           size: 16,
         ),
         enableMargin: false,
       ),
-      actionOneBgColor: mateRad,
+      actionOneBgColor: mateRed,
       actionOneTextColor: Colors.white,
       actionTwoBgColor: greyBorderColor,
       actionTwoTextColor: blackFont,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// MOVIE
+/// BUS
 
 class BusDashboardBloc extends ChangeNotifier {
   static int _index = 0;
@@ -13,7 +13,7 @@ class BusDashboardBloc extends ChangeNotifier {
   set index(int value) {
     _index = value;
     _pageController.animateToPage(_index,
-        duration: Duration(milliseconds: 500), curve: Curves.linear);
+        duration: Duration(milliseconds: 300), curve: Curves.linear);
     notifyListeners();
   }
 }

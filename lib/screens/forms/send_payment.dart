@@ -282,7 +282,7 @@ class _SendPaymentState extends State<SendPayment> {
                                         Text(
                                           errorMessage,
                                           style: TextStyle(
-                                              color: mateRad,
+                                              color: mateRed,
                                               fontWeight: FontWeight.bold,
                                               fontSize: 16),
                                         ),

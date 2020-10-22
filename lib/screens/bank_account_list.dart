@@ -366,7 +366,7 @@ class _BankAccountListState extends State<BankAccountList> {
   List<Widget> listActionSlideActions({BankAccount account}) {
     return [
       SlideActionButton(
-          backgroundColor: mateRad,
+          backgroundColor: mateRed,
           icon: SlydoAppIcon.remove,
           onTap: () {
             deleteBankAccount(account);

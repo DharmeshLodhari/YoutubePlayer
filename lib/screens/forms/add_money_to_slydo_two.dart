@@ -386,7 +386,7 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
       child: Text(
         "Please check the box below only after you transferred",
         style: TextStyle(
-            fontSize: 12, color: mateRad, fontWeight: FontWeight.w600),
+            fontSize: 12, color: mateRed, fontWeight: FontWeight.w600),
       ),
     );
   }

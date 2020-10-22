@@ -128,25 +128,6 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
       resizeToAvoidBottomInset: true,
       appBar: appBar(),
       body: scaffoldBody(),
-      floatingActionButton: floatingBtn(),
-    );
-  }
-
-  Widget floatingBtn() {
-    return FloatingActionButton(
-      child: Icon(
-        isVideoPlaying ? Icons.pause : Icons.play_arrow_rounded,
-        size: 30,
-      ),
-      onPressed: () {
-        if (isVideoPlaying) {
-          _mainVideoController.pause();
-        } else {
-          _mainVideoController.play();
-        }
-        isVideoPlaying = !isVideoPlaying;
-        setState(() {});
-      },
     );
   }
 

@@ -22,7 +22,7 @@ class UserDashboardItemTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return InkWell(
       child: CustomBoxShadow(
         child: Card(
           margin: EdgeInsets.zero,

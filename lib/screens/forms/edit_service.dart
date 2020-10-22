@@ -623,7 +623,7 @@ class _EditServiceState extends State<EditService> {
           child: CurvedButton(
               textColor: Colors.white,
               text: AppLocalization.of(context).delete,
-              backgroundColor: mateRad,
+              backgroundColor: mateRed,
               onPressed: () async {
                 FocusScope.of(context).unfocus();
                 deleteProduct();

@@ -13,11 +13,11 @@ class MovieDashboard extends StatefulWidget {
 }
 
 class _MovieDashboardState extends State<MovieDashboard> {
-  BusDashboardBloc _movieDashboardBloc;
+  MovieDashboardBloc _movieDashboardBloc;
 
   @override
   Widget build(BuildContext context) {
-    _movieDashboardBloc = Provider.of<BusDashboardBloc>(context);
+    _movieDashboardBloc = Provider.of<MovieDashboardBloc>(context);
     return WillPopScope(
       onWillPop: () {
         return Future.value(true);

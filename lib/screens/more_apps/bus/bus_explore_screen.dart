@@ -1,4 +1,5 @@
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/bus/bus_dashboard_bloc.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -6,6 +7,7 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class BusExploreScreen extends StatefulWidget {
   @override
@@ -22,6 +24,8 @@ class _BusExploreScreenState extends State<BusExploreScreen> {
   var selectedClass;
 
   DateTime ticketDate = DateTime.now();
+
+  BusDashboardBloc _busDashboardBloc;
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +50,7 @@ class _BusExploreScreenState extends State<BusExploreScreen> {
           size: 24,
         ),
         onPressed: () {
+          // _busDashboardBloc.index = 0;
           Navigator.pop(context);
         },
       ),
@@ -58,6 +63,7 @@ class _BusExploreScreenState extends State<BusExploreScreen> {
   }
 
   Widget scaffoldBody() {
+    _busDashboardBloc = Provider.of<BusDashboardBloc>(context);
     return SingleChildScrollView(
         child: Column(
       children: [
@@ -80,17 +86,20 @@ class _BusExploreScreenState extends State<BusExploreScreen> {
                   children: [
                     getFromPlaceDropDown(),
                     SizedBox(
-                      height: 10,
+                      height: 20,
                     ),
                     getToPlaceDropDown(),
                     SizedBox(
-                      height: 10,
+                      height: 20,
                     ),
                     getDateField(),
                     SizedBox(
-                      height: 10,
+                      height: 20,
                     ),
                     getClassDropDown(),
+                    SizedBox(
+                      height: 40,
+                    ),
                   ],
                 ),
               ),
@@ -98,7 +107,7 @@ class _BusExploreScreenState extends State<BusExploreScreen> {
           ),
         ),
         SizedBox(
-          height: 16,
+          height: 40,
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -578,7 +587,9 @@ class _BusExploreScreenState extends State<BusExploreScreen> {
 
   Widget submitButton() {
     return CurvedButton(
-      onPressed: () {},
+      onPressed: () {
+        Navigator.of(context).pushNamed("/search-bus");
+      },
       backgroundColor: navyBlue,
       textColor: Colors.white,
       text: "Search",

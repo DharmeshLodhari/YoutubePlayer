@@ -213,7 +213,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
   List<Widget> listActionSlideActions(CustomerProfile user, int index) {
     return [
       SlideActionButton(
-        backgroundColor: mateRad,
+        backgroundColor: mateRed,
         icon: SlydoAppIcon.cancel_connection_request,
         onTap: () {
           rejectRequestAlert(user, index);
@@ -228,18 +228,18 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
     bool result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
-        backgroundColor: mateRad.withOpacity(0.08),
+        backgroundColor: mateRed.withOpacity(0.08),
         borderRadius: 20,
         width: 48,
         height: 48,
         icon: Icon(
           SlydoAppIcon.false_icon,
-          color: mateRad,
+          color: mateRed,
           size: 16,
         ),
         enableMargin: false,
       ),
-      actionOneBgColor: mateRad,
+      actionOneBgColor: mateRed,
       actionOneTextColor: Colors.white,
       actionTwoBgColor: greyBorderColor,
       actionTwoTextColor: blackFont,

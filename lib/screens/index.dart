@@ -51,7 +51,7 @@ class _IndexState extends State<Index> {
       onWillPop: () async {
         bool result = await showDialogBox(
           context: context,
-          actionOneBgColor: mateRad,
+          actionOneBgColor: mateRed,
           actionOneTextColor: Colors.white,
           actionTwoBgColor: greyBorderColor,
           actionTwoTextColor: blackFont,

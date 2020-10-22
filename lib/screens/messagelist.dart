@@ -373,7 +373,7 @@ class _MessageListState extends State<MessageList> {
 
   Widget displayDeleteButton(PartialMessage partialMessage, int index) {
     return SlideActionButton(
-        backgroundColor: mateRad,
+        backgroundColor: mateRed,
         icon: Icons.delete,
         onTap: () {
           deleteMessage(partialMessage, index);
@@ -386,18 +386,18 @@ class _MessageListState extends State<MessageList> {
     bool result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
-        backgroundColor: mateRad.withOpacity(0.08),
+        backgroundColor: mateRed.withOpacity(0.08),
         borderRadius: 20,
         width: 48,
         height: 48,
         icon: Icon(
           SlydoAppIcon.delete,
-          color: mateRad,
+          color: mateRed,
           size: 16,
         ),
         enableMargin: false,
       ),
-      actionOneBgColor: mateRad,
+      actionOneBgColor: mateRed,
       actionOneTextColor: Colors.white,
       actionTwoBgColor: greyBorderColor,
       actionTwoTextColor: blackFont,
@@ -592,10 +592,10 @@ class _VerticalListItemState extends State<VerticalListItem> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             RoundedBackgroundIcon(
-              backgroundColor: mateRad.withOpacity(0.1),
+              backgroundColor: mateRed.withOpacity(0.1),
               icon: Icon(
                 SlydoAppIcon.remove,
-                color: mateRad,
+                color: mateRed,
                 size: 14,
               ),
               width: 32,

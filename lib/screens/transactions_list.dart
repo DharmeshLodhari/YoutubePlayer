@@ -555,10 +555,10 @@ class _VerticalListItemState extends State<VerticalListItem> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             RoundedBackgroundIcon(
-              backgroundColor: mateRad.withOpacity(0.1),
+              backgroundColor: mateRed.withOpacity(0.1),
               icon: Icon(
                 SlydoAppIcon.remove,
-                color: mateRad,
+                color: mateRed,
                 size: 14,
               ),
               width: 32,

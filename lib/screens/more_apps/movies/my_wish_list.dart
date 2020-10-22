@@ -16,7 +16,7 @@ class _MyWishListState extends State<MyWishList> {
           padding: EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             children: List.generate(
-              50,
+              7,
               (index) => Container(
                   padding: EdgeInsets.symmetric(vertical: 8),
                   child: MovieTileWithHeart()),

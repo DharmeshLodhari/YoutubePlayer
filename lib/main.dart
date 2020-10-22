@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_generator.dart';
+import 'package:Slydo/screens/more_apps/bus/bus_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/movies/movie_dashboard_bloc.dart';
 import 'package:Slydo/services/app_life_cycle.dart';
 import 'package:Slydo/utils/colors.dart';
@@ -66,6 +67,9 @@ void main() async {
           ),
           ChangeNotifierProvider<NotificationBloc>.value(
             value: NotificationBloc(),
+          ),
+          ChangeNotifierProvider<MovieDashboardBloc>.value(
+            value: MovieDashboardBloc(),
           ),
           ChangeNotifierProvider<BusDashboardBloc>.value(
             value: BusDashboardBloc(),

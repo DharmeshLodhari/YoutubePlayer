@@ -106,7 +106,7 @@ class _AddAccountState extends State<AddAccount> {
                       errorMessage != ""
                           ? Text(
                               errorMessage,
-                              style: TextStyle(color: mateRad, fontSize: 14),
+                              style: TextStyle(color: mateRed, fontSize: 14),
                             )
                           : Container(),
                       getUserAgreeCheckBoxWidget(),
