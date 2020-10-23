@@ -211,7 +211,9 @@ class _MoreAppsState extends State<MoreApps> {
             child: UserDashboardItemTile(
           icon: SlydoAppIcon.shopping_category,
           title: "Shopping",
-          onTap: () {},
+          onTap: () {
+            Navigator.of(context).pushNamed("/shopping");
+          },
           iconColor: HexColor("#5218E9"),
           height: 126,
         )),

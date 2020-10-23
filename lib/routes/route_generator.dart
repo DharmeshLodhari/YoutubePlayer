@@ -38,6 +38,7 @@ import 'package:Slydo/screens/more_apps/movies/search_movie.dart';
 import 'package:Slydo/screens/more_apps/movies/specific_category_movie_list.dart';
 import 'package:Slydo/screens/more_apps/news/news_dashboard.dart';
 import 'package:Slydo/screens/more_apps/news/news_detail_page.dart';
+import 'package:Slydo/screens/more_apps/shopping/shopping_explore_screen.dart';
 import 'package:Slydo/screens/more_apps/train/search_train.dart';
 import 'package:Slydo/screens/more_apps/train/train_dashboard.dart';
 import 'package:Slydo/screens/order_detail_page.dart';
@@ -596,6 +597,15 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
+
+      case "/shopping":
+        return PageTransition(
+          child: ShoppingExploreScreen(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
 
       default:
         // If there is no such named route in the switch statement, e.g. /third

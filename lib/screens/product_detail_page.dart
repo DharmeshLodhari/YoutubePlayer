@@ -204,11 +204,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       onTap: () {
         _dashboardBloc.index = 3;
         Navigator.popUntil(context, ModalRoute.withName("/dashboard"));
-        // Navigator.of(context).pushNamedAndRemoveUntil(
-        //   "/dashboard",
-        //   (Route<dynamic> route) => false,
-        //   arguments: {"dashboardIndex": 2},
-        // );
       },
       backgroundColor: iconBtnGrey,
       enableMargin: true,
