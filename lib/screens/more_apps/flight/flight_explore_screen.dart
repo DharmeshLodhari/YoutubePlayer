@@ -1,11 +1,9 @@
-import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/flight/flight_dashboard_bloc.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
-import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -18,14 +16,22 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
   List<String> fromPlace = ["Lagos"];
   List<String> toPlace = ["Abuja"];
   List<String> classes = ["A", "B"];
+  List<String> numberCount = List.generate(10, (index) => "$index");
+  List<String> ageForChildren = ["1", "2", "3"];
 
   var selectedFromPlace;
   var selectedToPlace;
   var selectedClass;
 
-  DateTime ticketDate = DateTime.now();
+  DateTime departureDate = DateTime.now();
+  DateTime arrivalDate = DateTime.now();
 
   FlightDashboardBloc _flightDashboardBloc;
+
+  var selectedTripType = "One way";
+
+  String selectedAdultCount;
+  String selectedChildrenCount;
 
   @override
   Widget build(BuildContext context) {
@@ -81,9 +87,16 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: iconBtnGrey, width: 1)),
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                padding: EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   children: [
+                    SizedBox(
+                      height: 20,
+                    ),
+                    getTripType(),
+                    SizedBox(
+                      height: 20,
+                    ),
                     getFromPlaceDropDown(),
                     SizedBox(
                       height: 20,
@@ -93,6 +106,10 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
                       height: 20,
                     ),
                     getDateField(),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    getPassengerCount(),
                     SizedBox(
                       height: 20,
                     ),
@@ -112,103 +129,203 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: submitButton(),
-        )
+        ),
+        SizedBox(
+          height: 40,
+        ),
       ],
     ));
   }
 
-  Widget getRecipientField() {
-    return CustomizedTextFormField(
-      labelText: AppLocalization.of(context).recipient,
+  Widget getTripType() {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: InkWell(
+                child: Row(
+                  children: [
+                    Icon(
+                      selectedTripType == "One way"
+                          ? Icons.radio_button_checked_sharp
+                          : Icons.radio_button_off_sharp,
+                      color: selectedTripType == "One way"
+                          ? navyBlue
+                          : dividerColor,
+                    ),
+                    SizedBox(
+                      width: 12,
+                    ),
+                    Text(
+                      "One way",
+                      textAlign: TextAlign.start,
+                      style: TextStyle(
+                          color: selectedTripType == "One way"
+                              ? navyBlue
+                              : blackFont,
+                          fontSize: 14.0,
+                          fontWeight: selectedTripType == "One way"
+                              ? FontWeight.w600
+                              : FontWeight.w400),
+                    )
+                  ],
+                ),
+                onTap: () {
+                  selectedTripType = "One way";
+                  setState(() {});
+                },
+              ),
+            ),
+            Expanded(
+              child: InkWell(
+                child: Row(
+                  children: [
+                    Icon(
+                      selectedTripType == "Round trip"
+                          ? Icons.radio_button_checked_sharp
+                          : Icons.radio_button_off_sharp,
+                      color: selectedTripType == "Round trip"
+                          ? navyBlue
+                          : dividerColor,
+                    ),
+                    SizedBox(
+                      width: 12,
+                    ),
+                    Text(
+                      "Round trip",
+                      textAlign: TextAlign.start,
+                      style: TextStyle(
+                          color: selectedTripType == "Round trip"
+                              ? navyBlue
+                              : blackFont,
+                          fontSize: 14.0,
+                          fontWeight: selectedTripType == "Round trip"
+                              ? FontWeight.w600
+                              : FontWeight.w400),
+                    )
+                  ],
+                ),
+                onTap: () {
+                  selectedTripType = "Round trip";
+                  setState(() {});
+                },
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
   Widget getDateField() {
-    return GestureDetector(
-      onTap: () {
-        showDatePicker(
-          builder: customThemeBuilder,
-          context: context,
-          initialDate: DateTime(
-              DateTime.now().year, DateTime.now().month, DateTime.now().day),
-          firstDate: DateTime(
-              DateTime.now().year, DateTime.now().month, DateTime.now().day),
-          lastDate: DateTime(2101),
-        ).then((value) {
-          ticketDate = DateTime(value.year, value.month, value.day);
-          setState(() {});
-        }).catchError((error) {});
-      },
-      child: CustomizedDropDownField(
-        title: "Date",
-        child: Container(
-          child: ListTile(
-            dense: true,
-            title: Text(
-              formatDate(ticketDate),
-              style: TextStyle(
-                color: blackFont,
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
+    return Row(
+      children: [
+        Expanded(
+          child: GestureDetector(
+            onTap: () {
+              showDatePicker(
+                builder: customThemeBuilder,
+                context: context,
+                initialDate: DateTime(DateTime.now().year, DateTime.now().month,
+                    DateTime.now().day),
+                firstDate: DateTime(DateTime.now().year, DateTime.now().month,
+                    DateTime.now().day),
+                lastDate: DateTime(2101),
+              ).then((value) {
+                departureDate = DateTime(value.year, value.month, value.day);
+                setState(() {});
+              }).catchError((error) {});
+            },
+            child: CustomizedDropDownField(
+              title: "Departure date",
+              child: Container(
+                child: ListTile(
+                  dense: true,
+                  title: Text(
+                    formatDateInDigit(departureDate),
+                    style: TextStyle(
+                      color: blackFont,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                    ),
+                    overflow: TextOverflow.fade,
+                    softWrap: false,
+                    maxLines: 1,
+                  ),
+                  trailing: Icon(
+                    SlydoAppIcon.date,
+                    size: 16,
+                    color: darkGrey,
+                  ),
+                ),
               ),
-            ),
-            trailing: Icon(
-              SlydoAppIcon.date,
-              size: 16,
-              color: darkGrey,
             ),
           ),
         ),
-      ),
+        selectedTripType == "Round trip"
+            ? SizedBox(
+                width: 10,
+              )
+            : Container(),
+        selectedTripType == "Round trip"
+            ? Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    showDatePicker(
+                      builder: customThemeBuilder,
+                      context: context,
+                      initialDate: DateTime(DateTime.now().year,
+                          DateTime.now().month, DateTime.now().day),
+                      firstDate: DateTime(DateTime.now().year,
+                          DateTime.now().month, DateTime.now().day),
+                      lastDate: DateTime(2101),
+                    ).then((value) {
+                      arrivalDate =
+                          DateTime(value.year, value.month, value.day);
+                      setState(() {});
+                    }).catchError((error) {});
+                  },
+                  child: CustomizedDropDownField(
+                    title: "Arrival date",
+                    child: Container(
+                      child: ListTile(
+                        dense: true,
+                        title: Text(
+                          formatDateInDigit(arrivalDate),
+                          style: TextStyle(
+                            color: blackFont,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
+                          overflow: TextOverflow.fade,
+                          softWrap: false,
+                          maxLines: 1,
+                        ),
+                        trailing: Icon(
+                          SlydoAppIcon.date,
+                          size: 16,
+                          color: darkGrey,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            : Container(),
+      ],
     );
   }
 
-  Widget getFromPlace() {
-    return Card(
-      margin: EdgeInsets.all(0),
-      child: Container(
-        padding: EdgeInsets.all(8),
-        width: double.infinity,
-        child: DropdownButton<String>(
-          isExpanded: true,
-          underline: Divider(
-            color: Colors.transparent,
-          ),
-          hint: Row(
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(left: 8.0),
-                child: Icon(
-                  Icons.category,
-                  color: Colors.grey[600],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 16.0),
-                child: Text(AppLocalization.of(context).category),
-              ),
-            ],
-          ),
-          value: selectedFromPlace,
-          onChanged: (String value) {
-            setState(() {
-              selectedFromPlace = value;
-            });
-          },
-          items: fromPlace.map((String category) {
-            return DropdownMenuItem<String>(
-              value: category,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 0),
-                child: Text(
-                  category,
-                  style: TextStyle(color: Colors.black),
-                ),
-              ),
-            );
-          }).toList(),
+  Widget getPassengerCount() {
+    return Row(
+      children: [
+        Expanded(child: getAdultCountDropDown()),
+        SizedBox(
+          width: 10,
         ),
-      ),
+        Expanded(child: getChildrenCountDropDown()),
+      ],
     );
   }
 
@@ -329,55 +446,6 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
     }
   }
 
-  Widget getToPlace() {
-    return Card(
-      margin: EdgeInsets.all(0),
-      child: Container(
-        padding: EdgeInsets.all(8),
-        width: double.infinity,
-        child: DropdownButton<String>(
-          isExpanded: true,
-          underline: Divider(
-            color: Colors.transparent,
-          ),
-          hint: Row(
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(left: 8.0),
-                child: Icon(
-                  Icons.category,
-                  color: Colors.grey[600],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 16.0),
-                child: Text(AppLocalization.of(context).category),
-              ),
-            ],
-          ),
-          value: selectedFromPlace,
-          onChanged: (String value) {
-            setState(() {
-              selectedFromPlace = value;
-            });
-          },
-          items: toPlace.map((String category) {
-            return DropdownMenuItem<String>(
-              value: category,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 0),
-                child: Text(
-                  category,
-                  style: TextStyle(color: Colors.black),
-                ),
-              ),
-            );
-          }).toList(),
-        ),
-      ),
-    );
-  }
-
   Widget getToPlaceDropDown() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -495,55 +563,6 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
     }
   }
 
-  Widget getClass() {
-    return Card(
-      margin: EdgeInsets.all(0),
-      child: Container(
-        padding: EdgeInsets.all(8),
-        width: double.infinity,
-        child: DropdownButton<String>(
-          isExpanded: true,
-          underline: Divider(
-            color: Colors.transparent,
-          ),
-          hint: Row(
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(left: 8.0),
-                child: Icon(
-                  Icons.category,
-                  color: Colors.grey[600],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 16.0),
-                child: Text(AppLocalization.of(context).category),
-              ),
-            ],
-          ),
-          value: selectedClass,
-          onChanged: (String value) {
-            setState(() {
-              selectedClass = value;
-            });
-          },
-          items: classes.map((String category) {
-            return DropdownMenuItem<String>(
-              value: category,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 0),
-                child: Text(
-                  category,
-                  style: TextStyle(color: Colors.black),
-                ),
-              ),
-            );
-          }).toList(),
-        ),
-      ),
-    );
-  }
-
   Widget getClassDropDown() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -582,17 +601,6 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget submitButton() {
-    return CurvedButton(
-      onPressed: () {
-        Navigator.of(context).pushNamed("/search-flight");
-      },
-      backgroundColor: navyBlue,
-      textColor: Colors.white,
-      text: "Search",
     );
   }
 
@@ -670,5 +678,250 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
       selectedClass = pressedPlace;
       setState(() {});
     }
+  }
+
+  Widget getAdultCountDropDown() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          "Adult",
+          style: TextStyle(color: darkGrey, fontSize: 14),
+        ),
+        SizedBox(
+          height: 6,
+        ),
+        Card(
+          elevation: 0,
+          color: Colors.white,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: BorderSide(color: greyBorderColor)),
+          margin: EdgeInsets.all(0),
+          borderOnForeground: true,
+          child: ListTile(
+            dense: true,
+            title: Text(
+              selectedAdultCount != null ? selectedAdultCount : "",
+              softWrap: false,
+              overflow: TextOverflow.fade,
+              style: TextStyle(
+                  color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+            trailing: Icon(
+              Icons.keyboard_arrow_down,
+              color: darkGrey,
+            ),
+            onTap: () {
+              selectAdultCount();
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  void selectAdultCount() async {
+    final pressedCategory = await showDialog<String>(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) => AlertDialog(
+              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              contentPadding: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              content: Container(
+                width: MediaQuery.of(context).size.width - 40,
+                child: Card(
+                  elevation: 2,
+                  shadowColor: Colors.transparent,
+                  margin: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: numberCount.map<Widget>((category) {
+                          if (selectedAdultCount == category) {
+                            return Container(
+                              color: selectedListItemBackgroundBlue,
+                              child: ListTile(
+                                dense: true,
+                                title: Text(
+                                  category,
+                                  overflow: TextOverflow.fade,
+                                  softWrap: false,
+                                  style: TextStyle(
+                                      color: navyBlue,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                trailing: Icon(
+                                  SlydoAppIcon.checked,
+                                  color: navyBlue,
+                                  size: 12,
+                                ),
+                                onTap: () {
+                                  Navigator.pop(context, category);
+                                },
+                              ),
+                            );
+                          }
+                          return ListTile(
+                            title: Text(
+                              category,
+                              softWrap: false,
+                              overflow: TextOverflow.fade,
+                              style: TextStyle(
+                                  color: blackFont,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                            dense: true,
+                            onTap: () {
+                              Navigator.pop(context, category);
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ));
+    if (pressedCategory != null) {
+      selectedAdultCount = pressedCategory;
+      setState(() {});
+    }
+  }
+
+  Widget getChildrenCountDropDown() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          "Children",
+          style: TextStyle(color: darkGrey, fontSize: 14),
+        ),
+        SizedBox(
+          height: 6,
+        ),
+        Card(
+          elevation: 0,
+          color: Colors.white,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: BorderSide(color: greyBorderColor)),
+          margin: EdgeInsets.all(0),
+          borderOnForeground: true,
+          child: ListTile(
+            dense: true,
+            title: Text(
+              selectedChildrenCount != null ? selectedChildrenCount : "",
+              softWrap: false,
+              overflow: TextOverflow.fade,
+              style: TextStyle(
+                  color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+            trailing: Icon(
+              Icons.keyboard_arrow_down,
+              color: darkGrey,
+            ),
+            onTap: () {
+              selectChildrenCount();
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  void selectChildrenCount() async {
+    final result = await showDialog<String>(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) => AlertDialog(
+              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              contentPadding: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              content: Container(
+                width: MediaQuery.of(context).size.width - 40,
+                child: Card(
+                  elevation: 2,
+                  shadowColor: Colors.transparent,
+                  margin: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: numberCount.map<Widget>((value) {
+                          if (selectedChildrenCount == value) {
+                            return Container(
+                              color: selectedListItemBackgroundBlue,
+                              child: ListTile(
+                                dense: true,
+                                title: Text(
+                                  value,
+                                  overflow: TextOverflow.fade,
+                                  softWrap: false,
+                                  style: TextStyle(
+                                      color: navyBlue,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                trailing: Icon(
+                                  SlydoAppIcon.checked,
+                                  color: navyBlue,
+                                  size: 12,
+                                ),
+                                onTap: () {
+                                  Navigator.pop(context, value);
+                                },
+                              ),
+                            );
+                          }
+                          return ListTile(
+                            title: Text(
+                              value,
+                              softWrap: false,
+                              overflow: TextOverflow.fade,
+                              style: TextStyle(
+                                  color: blackFont,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                            dense: true,
+                            onTap: () {
+                              Navigator.pop(context, value);
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ));
+    if (result != null) {
+      selectedChildrenCount = result;
+      setState(() {});
+    }
+  }
+
+  Widget submitButton() {
+    return CurvedButton(
+      onPressed: () {
+        Navigator.of(context).pushNamed("/search-flight");
+      },
+      backgroundColor: navyBlue,
+      textColor: Colors.white,
+      text: "Search",
+    );
   }
 }

@@ -80,3 +80,9 @@ String formatDate(DateTime dateTime) {
 
   return date;
 }
+
+String formatDateInDigit(DateTime dateTime) {
+  String date = "${dateTime.day}/${dateTime.month}/${dateTime.year}";
+
+  return date;
+}

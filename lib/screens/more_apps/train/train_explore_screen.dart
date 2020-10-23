@@ -5,7 +5,6 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
-import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -23,9 +22,12 @@ class _TrainExploreScreenState extends State<TrainExploreScreen> {
   var selectedToPlace;
   var selectedClass;
 
-  DateTime ticketDate = DateTime.now();
+  DateTime departureDate = DateTime.now();
+  DateTime arrivalDate = DateTime.now();
 
   TrainDashboardBloc _trainDashboardBloc;
+
+  var selectedTripType = "One way";
 
   @override
   Widget build(BuildContext context) {
@@ -81,9 +83,16 @@ class _TrainExploreScreenState extends State<TrainExploreScreen> {
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: iconBtnGrey, width: 1)),
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                padding: EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   children: [
+                    SizedBox(
+                      height: 20,
+                    ),
+                    getTripType(),
+                    SizedBox(
+                      height: 20,
+                    ),
                     getFromPlaceDropDown(),
                     SizedBox(
                       height: 20,
@@ -117,49 +126,183 @@ class _TrainExploreScreenState extends State<TrainExploreScreen> {
     ));
   }
 
-  Widget getRecipientField() {
-    return CustomizedTextFormField(
-      labelText: AppLocalization.of(context).recipient,
+  Widget getTripType() {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: InkWell(
+                child: Row(
+                  children: [
+                    Icon(
+                      selectedTripType == "One way"
+                          ? Icons.radio_button_checked_sharp
+                          : Icons.radio_button_off_sharp,
+                      color: selectedTripType == "One way"
+                          ? navyBlue
+                          : dividerColor,
+                    ),
+                    SizedBox(
+                      width: 12,
+                    ),
+                    Text(
+                      "One way",
+                      textAlign: TextAlign.start,
+                      style: TextStyle(
+                          color: selectedTripType == "One way"
+                              ? navyBlue
+                              : blackFont,
+                          fontSize: 14.0,
+                          fontWeight: selectedTripType == "One way"
+                              ? FontWeight.w600
+                              : FontWeight.w400),
+                    )
+                  ],
+                ),
+                onTap: () {
+                  selectedTripType = "One way";
+                  setState(() {});
+                },
+              ),
+            ),
+            Expanded(
+              child: InkWell(
+                child: Row(
+                  children: [
+                    Icon(
+                      selectedTripType == "Round trip"
+                          ? Icons.radio_button_checked_sharp
+                          : Icons.radio_button_off_sharp,
+                      color: selectedTripType == "Round trip"
+                          ? navyBlue
+                          : dividerColor,
+                    ),
+                    SizedBox(
+                      width: 12,
+                    ),
+                    Text(
+                      "Round trip",
+                      textAlign: TextAlign.start,
+                      style: TextStyle(
+                          color: selectedTripType == "Round trip"
+                              ? navyBlue
+                              : blackFont,
+                          fontSize: 14.0,
+                          fontWeight: selectedTripType == "Round trip"
+                              ? FontWeight.w600
+                              : FontWeight.w400),
+                    )
+                  ],
+                ),
+                onTap: () {
+                  selectedTripType = "Round trip";
+                  setState(() {});
+                },
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
   Widget getDateField() {
-    return GestureDetector(
-      onTap: () {
-        showDatePicker(
-          builder: customThemeBuilder,
-          context: context,
-          initialDate: DateTime(
-              DateTime.now().year, DateTime.now().month, DateTime.now().day),
-          firstDate: DateTime(
-              DateTime.now().year, DateTime.now().month, DateTime.now().day),
-          lastDate: DateTime(2101),
-        ).then((value) {
-          ticketDate = DateTime(value.year, value.month, value.day);
-          setState(() {});
-        }).catchError((error) {});
-      },
-      child: CustomizedDropDownField(
-        title: "Date",
-        child: Container(
-          child: ListTile(
-            dense: true,
-            title: Text(
-              formatDate(ticketDate),
-              style: TextStyle(
-                color: blackFont,
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
+    return Row(
+      children: [
+        Expanded(
+          child: GestureDetector(
+            onTap: () {
+              showDatePicker(
+                builder: customThemeBuilder,
+                context: context,
+                initialDate: DateTime(DateTime.now().year, DateTime.now().month,
+                    DateTime.now().day),
+                firstDate: DateTime(DateTime.now().year, DateTime.now().month,
+                    DateTime.now().day),
+                lastDate: DateTime(2101),
+              ).then((value) {
+                departureDate = DateTime(value.year, value.month, value.day);
+                setState(() {});
+              }).catchError((error) {});
+            },
+            child: CustomizedDropDownField(
+              title: "Departure date",
+              child: Container(
+                child: ListTile(
+                  dense: true,
+                  title: Text(
+                    formatDateInDigit(departureDate),
+                    style: TextStyle(
+                      color: blackFont,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                    ),
+                    overflow: TextOverflow.fade,
+                    softWrap: false,
+                    maxLines: 1,
+                  ),
+                  trailing: Icon(
+                    SlydoAppIcon.date,
+                    size: 16,
+                    color: darkGrey,
+                  ),
+                ),
               ),
-            ),
-            trailing: Icon(
-              SlydoAppIcon.date,
-              size: 16,
-              color: darkGrey,
             ),
           ),
         ),
-      ),
+        selectedTripType == "Round trip"
+            ? SizedBox(
+                width: 10,
+              )
+            : Container(),
+        selectedTripType == "Round trip"
+            ? Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    showDatePicker(
+                      builder: customThemeBuilder,
+                      context: context,
+                      initialDate: DateTime(DateTime.now().year,
+                          DateTime.now().month, DateTime.now().day),
+                      firstDate: DateTime(DateTime.now().year,
+                          DateTime.now().month, DateTime.now().day),
+                      lastDate: DateTime(2101),
+                    ).then((value) {
+                      arrivalDate =
+                          DateTime(value.year, value.month, value.day);
+                      setState(() {});
+                    }).catchError((error) {});
+                  },
+                  child: CustomizedDropDownField(
+                    title: "Arrival date",
+                    child: Container(
+                      child: ListTile(
+                        dense: true,
+                        title: Text(
+                          formatDateInDigit(arrivalDate),
+                          style: TextStyle(
+                            color: blackFont,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
+                          overflow: TextOverflow.fade,
+                          softWrap: false,
+                          maxLines: 1,
+                        ),
+                        trailing: Icon(
+                          SlydoAppIcon.date,
+                          size: 16,
+                          color: darkGrey,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            : Container(),
+      ],
     );
   }
 

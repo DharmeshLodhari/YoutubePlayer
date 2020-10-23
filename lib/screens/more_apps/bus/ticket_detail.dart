@@ -59,45 +59,126 @@ class _TicketDetailState extends State<TicketDetail> {
   Widget scaffoldBody() {
     _busDashboardBloc = Provider.of<BusDashboardBloc>(context);
     return SingleChildScrollView(
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-        child: Card(
-          elevation: 0,
-          margin: EdgeInsets.zero,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+      child: ticketWithImage(),
+    );
+  }
+
+  Widget ticketWithImage() {
+    return Container(
+      child: Stack(
+        children: [
+          Image.asset(
+            "assets/images/ticket_background.png",
           ),
-          shadowColor: iconBtnGrey,
-          child: Container(
-            decoration: decorateBox(),
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 20,
-                  ),
-                  bookingInfo(),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  MySeparator(color: dividerColor),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  boardingInfo(),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  MySeparator(color: dividerColor),
-                  Container(
-                    padding: EdgeInsets.all(40),
+          Container(
+            height: 470,
+            padding: EdgeInsets.symmetric(horizontal: 36),
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 40,
+                ),
+                bookingInfo(),
+                SizedBox(
+                  height: 20,
+                ),
+                MySeparator(color: dividerColor),
+                SizedBox(
+                  height: 20,
+                ),
+                boardingInfo(),
+                SizedBox(
+                  height: 24,
+                ),
+                MySeparator(color: dividerColor),
+                SizedBox(
+                  height: 40,
+                ),
+                Center(
+                  child: Container(
+                    height: 214,
+                    width: 214,
                     child: CachedNetworkImage(
                         imageUrl:
                             "https://www.pixavi.com/wp-content/uploads/2015/10/apb-qr-code.png"),
-                  )
-                ],
-              ),
+                  ),
+                )
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget ticketWithOutImage() {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+      child: Card(
+        elevation: 0,
+        margin: EdgeInsets.zero,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        shadowColor: iconBtnGrey,
+        child: Container(
+          decoration: decorateBox(),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 20,
+                ),
+                bookingInfo(),
+                SizedBox(
+                  height: 20,
+                ),
+                MySeparator(color: dividerColor),
+                SizedBox(
+                  height: 20,
+                ),
+                boardingInfo(),
+                SizedBox(
+                  height: 20,
+                ),
+                Stack(
+                  overflow: Overflow.visible,
+                  children: [
+                    Positioned(
+                      left: -30,
+                      top: -10,
+                      child: ClipOval(
+                          child: Container(
+                        height: 20,
+                        width: 20,
+                        color: lightGrey,
+                      )),
+                    ),
+                    Row(
+                      children: [
+                        Expanded(child: MySeparator(color: dividerColor)),
+                      ],
+                    ),
+                    Positioned(
+                      right: -30,
+                      top: -10,
+                      child: ClipOval(
+                          child: Container(
+                        height: 20,
+                        width: 20,
+                        color: lightGrey,
+                      )),
+                    ),
+                  ],
+                ),
+                Container(
+                  padding: EdgeInsets.all(40),
+                  child: CachedNetworkImage(
+                      imageUrl:
+                          "https://www.pixavi.com/wp-content/uploads/2015/10/apb-qr-code.png"),
+                )
+              ],
             ),
           ),
         ),
@@ -107,6 +188,7 @@ class _TicketDetailState extends State<TicketDetail> {
 
   Widget bookingInfo() {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         flexibleSpace(),
         Column(
@@ -136,29 +218,37 @@ class _TicketDetailState extends State<TicketDetail> {
         SizedBox(
           width: 12,
         ),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Text(
-              "2h30m",
-              style: TextStyle(
-                fontWeight: FontWeight.w400,
-                fontSize: 12,
-                color: darkGrey,
-              ),
-            ),
-            Stack(
-              children: [
-                Container(
-                  width: 50,
-                  child: MySeparator(color: blackFont),
+        Container(
+          width: 70,
+          height: 40,
+          child: Stack(
+            overflow: Overflow.visible,
+            children: [
+              Positioned(
+                top: 6,
+                child: Container(
+                  width: 70,
+                  child: Image.asset(
+                    "assets/images/arrow_right.png",
+                  ),
                 ),
-                Align(
-                    alignment: Alignment.centerRight,
-                    child: Icon(Icons.arrow_right))
-              ],
-            ),
-          ],
+              ),
+              Positioned(
+                top: -6,
+                left: 16,
+                child: Text(
+                  "2h30m",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 12,
+                    color: darkGrey,
+                  ),
+                  overflow: TextOverflow.visible,
+                  maxLines: 1,
+                ),
+              ),
+            ],
+          ),
         ),
         SizedBox(
           width: 12,
@@ -173,6 +263,9 @@ class _TicketDetailState extends State<TicketDetail> {
                 fontSize: 16,
                 color: blackFont,
               ),
+            ),
+            SizedBox(
+              height: 4,
             ),
             Text(
               "Abuja",

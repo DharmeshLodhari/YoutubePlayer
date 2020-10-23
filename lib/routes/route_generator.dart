@@ -25,6 +25,10 @@ import 'package:Slydo/screens/messagelist.dart';
 import 'package:Slydo/screens/more_apps/bus/bus_dashboard.dart';
 import 'package:Slydo/screens/more_apps/bus/search_bus.dart';
 import 'package:Slydo/screens/more_apps/bus/ticket_detail.dart';
+import 'package:Slydo/screens/more_apps/events/event_dashboard.dart';
+import 'package:Slydo/screens/more_apps/events/event_detail_page.dart';
+import 'package:Slydo/screens/more_apps/events/search_event.dart';
+import 'package:Slydo/screens/more_apps/events/specific_category_event_list.dart';
 import 'package:Slydo/screens/more_apps/flight/flight_dashboard.dart';
 import 'package:Slydo/screens/more_apps/flight/search_flight.dart';
 import 'package:Slydo/screens/more_apps/more_apps.dart';
@@ -474,6 +478,40 @@ class RouteGenerator {
       case "/movie-detail":
         return PageTransition(
           child: MovieDetailPage(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      /// Event Route
+
+      case "/events":
+        return PageTransition(
+          child: EventDashboard(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case "/event-category":
+        return PageTransition(
+          child: SpecificCategoryEventList(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case "/search-event":
+        return PageTransition(
+          child: SearchEvent(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case "/event-detail":
+        return PageTransition(
+          child: EventDetailPage(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
           settings: settings,

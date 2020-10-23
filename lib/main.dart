@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_generator.dart';
 import 'package:Slydo/screens/more_apps/bus/bus_dashboard_bloc.dart';
+import 'package:Slydo/screens/more_apps/events/event_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/flight/flight_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/movies/movie_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/train/train_dashboard_bloc.dart';
@@ -81,6 +82,9 @@ void main() async {
           ),
           ChangeNotifierProvider<FlightDashboardBloc>.value(
             value: FlightDashboardBloc(),
+          ),
+          ChangeNotifierProvider<EventDashboardBloc>.value(
+            value: EventDashboardBloc(),
           ),
         ], child: MyApp()),
       );
