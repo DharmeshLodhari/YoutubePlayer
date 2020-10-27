@@ -27,10 +27,15 @@ import 'package:Slydo/screens/more_apps/bus/search_bus.dart';
 import 'package:Slydo/screens/more_apps/bus/ticket_detail.dart';
 import 'package:Slydo/screens/more_apps/events/event_dashboard.dart';
 import 'package:Slydo/screens/more_apps/events/event_detail_page.dart';
+import 'package:Slydo/screens/more_apps/events/event_ticket_detail.dart';
 import 'package:Slydo/screens/more_apps/events/search_event.dart';
 import 'package:Slydo/screens/more_apps/events/specific_category_event_list.dart';
 import 'package:Slydo/screens/more_apps/flight/flight_dashboard.dart';
 import 'package:Slydo/screens/more_apps/flight/search_flight.dart';
+import 'package:Slydo/screens/more_apps/hotels/hotel_dashboard.dart';
+import 'package:Slydo/screens/more_apps/hotels/hotel_detail_page.dart';
+import 'package:Slydo/screens/more_apps/hotels/search_hotel.dart';
+import 'package:Slydo/screens/more_apps/hotels/specific_category_hotel_list.dart';
 import 'package:Slydo/screens/more_apps/more_apps.dart';
 import 'package:Slydo/screens/more_apps/movies/movie_dashboard.dart';
 import 'package:Slydo/screens/more_apps/movies/movie_detail_page.dart';
@@ -38,7 +43,7 @@ import 'package:Slydo/screens/more_apps/movies/search_movie.dart';
 import 'package:Slydo/screens/more_apps/movies/specific_category_movie_list.dart';
 import 'package:Slydo/screens/more_apps/news/news_dashboard.dart';
 import 'package:Slydo/screens/more_apps/news/news_detail_page.dart';
-import 'package:Slydo/screens/more_apps/shopping/shopping_explore_screen.dart';
+import 'package:Slydo/screens/more_apps/shopping/shopping_dashboard.dart';
 import 'package:Slydo/screens/more_apps/train/search_train.dart';
 import 'package:Slydo/screens/more_apps/train/train_dashboard.dart';
 import 'package:Slydo/screens/order_detail_page.dart';
@@ -518,6 +523,56 @@ class RouteGenerator {
           settings: settings,
         );
 
+      case "/event-ticket-detail":
+        return PageTransition(
+          child: EventTicketDetail(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      /// Hotel Route
+
+      case "/hotels":
+        return PageTransition(
+          child: HotelDashboard(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case "/hotel-category":
+        return PageTransition(
+          child: SpecificCategoryHotelList(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case "/search-hotel":
+        return PageTransition(
+          child: SearchHotel(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case "/hotel-detail":
+        return PageTransition(
+          child: HotelDetailPage(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case "/hotel-ticket-detail":
+        return PageTransition(
+          child: EventTicketDetail(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
       /// News
 
       case "/news":
@@ -600,12 +655,11 @@ class RouteGenerator {
 
       case "/shopping":
         return PageTransition(
-          child: ShoppingExploreScreen(),
+          child: ShoppingDashboard(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
           settings: settings,
         );
-
 
       default:
         // If there is no such named route in the switch statement, e.g. /third

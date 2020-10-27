@@ -1,4 +1,4 @@
-import 'package:Slydo/screens/more_apps/bus/bus_dashboard_bloc.dart';
+import 'package:Slydo/screens/more_apps/events/event_dashboard_bloc.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -7,13 +7,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class TicketDetail extends StatefulWidget {
+class EventTicketDetail extends StatefulWidget {
   @override
-  _TicketDetailState createState() => _TicketDetailState();
+  _EventTicketDetailState createState() => _EventTicketDetailState();
 }
 
-class _TicketDetailState extends State<TicketDetail> {
-  BusDashboardBloc _busDashboardBloc;
+class _EventTicketDetailState extends State<EventTicketDetail> {
+  EventDashboardBloc _eventDashboardBloc;
 
   bool isSwap = false;
 
@@ -57,7 +57,7 @@ class _TicketDetailState extends State<TicketDetail> {
   }
 
   Widget scaffoldBody() {
-    _busDashboardBloc = Provider.of<BusDashboardBloc>(context);
+    _eventDashboardBloc = Provider.of<EventDashboardBloc>(context);
     return SingleChildScrollView(
       child: ticketWithImage(),
     );
@@ -68,10 +68,10 @@ class _TicketDetailState extends State<TicketDetail> {
       child: Stack(
         children: [
           Image.asset(
-            "assets/images/bus_ticket_background.png",
+            "assets/images/event_ticket_background.png",
           ),
           Container(
-            height: 470,
+            height: 570,
             padding: EdgeInsets.symmetric(horizontal: 36),
             child: Column(
               children: [
@@ -80,15 +80,15 @@ class _TicketDetailState extends State<TicketDetail> {
                 ),
                 bookingInfo(),
                 SizedBox(
-                  height: 20,
+                  height: 24,
                 ),
                 MySeparator(color: dividerColor),
                 SizedBox(
-                  height: 20,
+                  height: 28,
                 ),
-                boardingInfo(),
+                placeInfo(),
                 SizedBox(
-                  height: 24,
+                  height: 16,
                 ),
                 MySeparator(color: dividerColor),
                 SizedBox(
@@ -138,7 +138,7 @@ class _TicketDetailState extends State<TicketDetail> {
                 SizedBox(
                   height: 20,
                 ),
-                boardingInfo(),
+                placeInfo(),
                 SizedBox(
                   height: 20,
                 ),
@@ -187,190 +187,135 @@ class _TicketDetailState extends State<TicketDetail> {
   }
 
   Widget bookingInfo() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        flexibleSpace(),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text(
-              "9:00 AM",
-              style: TextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: 16,
-                color: blackFont,
-              ),
-            ),
-            SizedBox(
-              height: 4,
-            ),
-            Text(
-              "Lagos",
-              style: TextStyle(
-                fontWeight: FontWeight.w400,
-                fontSize: 14,
-                color: blackFont,
-              ),
-            ),
-          ],
-        ),
-        SizedBox(
-          width: 12,
-        ),
-        Container(
-          width: 70,
-          height: 40,
-          child: Stack(
-            overflow: Overflow.visible,
-            children: [
-              Positioned(
-                top: 6,
-                child: Container(
-                  width: 70,
-                  child: Image.asset(
-                    "assets/images/arrow_right.png",
-                  ),
-                ),
-              ),
-              Positioned(
-                top: -6,
-                left: 16,
-                child: Text(
-                  "2h30m",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w400,
-                    fontSize: 12,
-                    color: darkGrey,
-                  ),
-                  overflow: TextOverflow.visible,
-                  maxLines: 1,
-                ),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(
-          width: 12,
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "11:00 AM",
-              style: TextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: 16,
-                color: blackFont,
-              ),
-            ),
-            SizedBox(
-              height: 4,
-            ),
-            Text(
-              "Abuja",
-              style: TextStyle(
-                fontWeight: FontWeight.w400,
-                fontSize: 14,
-                color: blackFont,
-              ),
-            ),
-          ],
-        ),
-        flexibleSpace()
-      ],
+    return Text(
+      '“Sundays on the beach" Brunch & beach party',
+      style: TextStyle(
+        fontWeight: FontWeight.w700,
+        fontSize: 18,
+        color: blackFont,
+      ),
+      textAlign: TextAlign.justify,
     );
   }
 
-  Widget boardingInfo() {
-    return Row(
+  Widget placeInfo() {
+    return Column(
       children: [
-        Expanded(
-          child: Row(
-            children: [
-              RoundedBackgroundIcon(
-                width: 32,
-                height: 32,
-                backgroundColor: lightGrey,
-                borderRadius: 12,
-                icon: Icon(
-                  SlydoAppIcon.gate,
-                  color: blackFont,
-                  size: 14,
-                ),
-              ),
-              SizedBox(
-                width: 12,
-              ),
-              Row(
+        Row(
+          children: [
+            Expanded(
+              child: Row(
                 children: [
-                  Text(
-                    "Gate : ",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 14,
+                  RoundedBackgroundIcon(
+                    backgroundColor: lightGrey,
+                    height: 32,
+                    width: 32,
+                    borderRadius: 12,
+                    icon: Icon(
+                      SlydoAppIcon.date,
+                      size: 14,
                       color: blackFont,
                     ),
                   ),
                   SizedBox(
-                    width: 4,
+                    width: 12,
                   ),
-                  Text(
-                    "G3",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 14,
-                      color: blackFont,
+                  Expanded(
+                    child: Text(
+                      "Sunday, October 18 • 6:54 PM",
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: blackFont),
                     ),
-                  ),
+                  )
                 ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-        Expanded(
-          child: Row(
-            children: [
-              RoundedBackgroundIcon(
-                width: 32,
-                height: 32,
-                backgroundColor: lightGrey,
-                borderRadius: 12,
-                icon: Icon(
-                  SlydoAppIcon.seat,
-                  color: blackFont,
-                  size: 14,
-                ),
-              ),
-              SizedBox(
-                width: 12,
-              ),
-              Row(
+        SizedBox(
+          height: 8,
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: Row(
                 children: [
-                  Text(
-                    "Seat : ",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 14,
+                  RoundedBackgroundIcon(
+                    backgroundColor: lightGrey,
+                    height: 32,
+                    borderRadius: 12,
+                    width: 32,
+                    icon: Icon(
+                      SlydoAppIcon.location,
+                      size: 14,
                       color: blackFont,
                     ),
                   ),
                   SizedBox(
-                    width: 4,
+                    width: 12,
                   ),
-                  Text(
-                    "B1",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 14,
+                  Expanded(
+                    child: Text(
+                      "Savana beach bar",
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: blackFont),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
+        SizedBox(
+          height: 8,
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: Row(
+                children: [
+                  RoundedBackgroundIcon(
+                    backgroundColor: lightGrey,
+                    borderRadius: 12,
+                    height: 32,
+                    width: 32,
+                    icon: Icon(
+                      SlydoAppIcon.price_tag,
+                      size: 14,
                       color: blackFont,
                     ),
                   ),
+                  SizedBox(
+                    width: 12,
+                  ),
+                  Row(
+                    children: [
+                      Icon(
+                        SlydoAppIcon.naira,
+                        color: navyBlue,
+                        size: 10,
+                      ),
+                      Text(
+                        "34.00",
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: navyBlue),
+                      )
+                    ],
+                  )
                 ],
               ),
-            ],
-          ),
-        )
+            ),
+          ],
+        ),
+        SizedBox(
+          height: 10,
+        ),
       ],
     );
   }

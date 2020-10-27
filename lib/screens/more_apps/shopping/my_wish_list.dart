@@ -1,4 +1,5 @@
-import 'package:Slydo/screens/more_apps/hotels/hotel_tile.dart';
+import 'package:Slydo/screens/more_apps/shopping/shopping_tile.dart';
+import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 class MyWishList extends StatefulWidget {
@@ -18,6 +19,7 @@ class _MyWishListState extends State<MyWishList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: appBar(),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Container(
@@ -27,13 +29,40 @@ class _MyWishListState extends State<MyWishList> {
                 .map(
                   (element) => Container(
                       padding: EdgeInsets.symmetric(vertical: 8),
-                      child: HotelTileWithHeart(
+                      child: ShoppingTileWithHeart(
                         imageUrl: element,
                       )),
                 )
                 .toList(),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget appBar() {
+    return AppBar(
+      elevation: 0,
+      backgroundColor: Colors.white,
+      titleSpacing: 0,
+      automaticallyImplyLeading: false,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      title: Text(
+        "My wishlist",
+        style: TextStyle(
+            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+        overflow: TextOverflow.fade,
+        softWrap: false,
+        maxLines: 1,
       ),
     );
   }

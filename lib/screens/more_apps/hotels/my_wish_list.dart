@@ -1,4 +1,4 @@
-import 'package:Slydo/screens/more_apps/hotels/hotel_tile.dart';
+import 'package:Slydo/screens/more_apps/events/event_tile.dart';
 import 'package:flutter/material.dart';
 
 class MyWishList extends StatefulWidget {
@@ -27,7 +27,7 @@ class _MyWishListState extends State<MyWishList> {
                 .map(
                   (element) => Container(
                       padding: EdgeInsets.symmetric(vertical: 8),
-                      child: HotelTileWithHeart(
+                      child: EventTileWithHeart(
                         imageUrl: element,
                       )),
                 )

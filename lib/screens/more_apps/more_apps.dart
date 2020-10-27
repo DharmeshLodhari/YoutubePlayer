@@ -142,7 +142,9 @@ class _MoreAppsState extends State<MoreApps> {
             child: UserDashboardItemTile(
           icon: SlydoAppIcon.hotels_moreapps,
           title: "Hotels",
-          onTap: () {},
+          onTap: () {
+            Navigator.of(context).pushNamed("/hotels");
+          },
           iconColor: HexColor("#F35B46"),
           height: 126,
         )),

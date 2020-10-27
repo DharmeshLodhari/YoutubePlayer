@@ -9,12 +9,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class EventDetailPage extends StatefulWidget {
+class HotelDetailPage extends StatefulWidget {
   @override
-  _EventDetailPageState createState() => _EventDetailPageState();
+  _HotelDetailPageState createState() => _HotelDetailPageState();
 }
 
-class _EventDetailPageState extends State<EventDetailPage> {
+class _HotelDetailPageState extends State<HotelDetailPage> {
   EventDashboardBloc _eventDashboardBloc;
 
   List<String> imgList = [
@@ -23,6 +23,14 @@ class _EventDetailPageState extends State<EventDetailPage> {
     "https://metab.ern-net.eu/wp-content/uploads/2018/04/London.jpg",
     "https://travel.home.sndimg.com/content/dam/images/travel/fullset/2015/05/28/big-ben-london-england.jpg",
     "https://a.travel-assets.com/findyours-php/viewfinder/images/res70/20000/20665-London.jpg"
+  ];
+
+  List<String> hotelImgList = [
+    "https://www.gannett-cdn.com/-mm-/05b227ad5b8ad4e9dcb53af4f31d7fbdb7fa901b/c=0-64-2119-1259/local/-/media/USATODAY/USATODAY/2014/08/13/1407953244000-177513283.jpg",
+    "https://www.thebalancesmb.com/thmb/R5CjZrWUBXBTVj48-MBx3PFIh5U=/3000x2000/filters:fill(auto,1)/hotel_room-627892060-5a7a30d1642dca00370179e6.jpg",
+    "https://media.istockphoto.com/photos/3d-rendering-modern-luxury-bedroom-suite-and-bathroom-picture-id928431714?k=6&m=928431714&s=612x612&w=0&h=IBnf0aE9zEmsaJ3nLep6UmK4u-KYQPdEQa6LY30Ivn4=",
+    "https://gritdaily.com/wp-content/uploads/2019/07/http-cdn.cnn_.com-cnnnext-dam-assets-190711000204-haneda-excel-hotel-tokyu-03.jpg",
+    "https://blisssaigon.com/wp-content/uploads/2019/10/iwood-R5v8Xtc0ecg-unsplash-1.jpg"
   ];
 
   List<String> availableDates = ["18", "25", "01", "08", "15"];
@@ -133,18 +141,12 @@ class _EventDetailPageState extends State<EventDetailPage> {
               SizedBox(
                 height: 8,
               ),
-              InkWell(
-                  onTap: () {
-                    Navigator.of(context).pushNamed("/event-ticket-detail");
-                  },
-                  child: Image.asset("assets/images/TICKET.png")),
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   children: [
                     Divider(
                       thickness: 1,
-                      height: 0,
                       color: dividerColor,
                     ),
                     SizedBox(
@@ -196,10 +198,19 @@ class _EventDetailPageState extends State<EventDetailPage> {
                 ),
                 moreLikeThis(),
                 SizedBox(
-                  height: 80,
+                  height: 12,
                 ),
               ],
             ),
+          ),
+          rentDetail(
+            categoryName: "Recommended for you",
+            moviePoster:
+                "https://m.media-amazon.com/images/I/A1o+mUmviOL._SS500_.jpg",
+            movieName: "The Cloud Of Northland Thunder",
+          ),
+          SizedBox(
+            height: 80,
           ),
         ],
       ),
@@ -216,7 +227,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
               width: double.infinity,
               height: double.infinity,
               imageUrl:
-                  "https://ichef.bbci.co.uk/news/976/cpsprodpb/D50C/production/_105204545_2men.jpg",
+                  "https://www.gannett-cdn.com/-mm-/05b227ad5b8ad4e9dcb53af4f31d7fbdb7fa901b/c=0-64-2119-1259/local/-/media/USATODAY/USATODAY/2014/08/13/1407953244000-177513283.jpg",
               fit: BoxFit.fill,
             ),
             Positioned(
@@ -242,20 +253,41 @@ class _EventDetailPageState extends State<EventDetailPage> {
 
   Widget eventNameAndHostInformation() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Expanded(
-              child: Text(
-                '“Sundays on the beach" Brunch & beach party',
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: blackFont),
-              ),
+            Text(
+              'Lake side cottage',
+              style: TextStyle(
+                  fontSize: 18, fontWeight: FontWeight.w700, color: blackFont),
             ),
+            Row(
+              children: [
+                Icon(
+                  SlydoAppIcon.star,
+                  color: starYellow,
+                  size: 11,
+                ),
+                SizedBox(
+                  width: 4,
+                ),
+                Text(
+                  "7.8",
+                  style: TextStyle(fontSize: 14, color: blackFont),
+                )
+              ],
+            )
           ],
+        ),
+        SizedBox(
+          height: 4,
+        ),
+        Text(
+          '3 beds • 2 bath • 1 livingroom',
+          style: TextStyle(
+              fontSize: 14, fontWeight: FontWeight.w400, color: darkGrey),
         ),
         SizedBox(
           height: 12,
@@ -294,146 +326,129 @@ class _EventDetailPageState extends State<EventDetailPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Information",
+          "Feature",
           style: TextStyle(
               fontSize: 12, fontWeight: FontWeight.w700, color: blackFont),
         ),
         SizedBox(
           height: 8,
         ),
-        Row(
+        Column(
           children: [
-            Expanded(
-              child: Column(
-                children: [
-                  Row(
+            Row(
+              children: [
+                Expanded(
+                  child: Row(
                     children: [
-                      Expanded(
-                        child: Row(
-                          children: [
-                            RoundedBackgroundIcon(
-                              backgroundColor: lightGrey,
-                              height: 32,
-                              width: 32,
-                              borderRadius: 12,
-                              icon: Icon(
-                                SlydoAppIcon.date,
-                                size: 14,
-                                color: blackFont,
-                              ),
-                            ),
-                            SizedBox(
-                              width: 12,
-                            ),
-                            Expanded(
-                              child: Text(
-                                "Sunday, October 18 • 6:54 PM",
-                                style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w400,
-                                    color: blackFont),
-                              ),
-                            )
-                          ],
+                      RoundedBackgroundIcon(
+                        backgroundColor: lightGrey,
+                        height: 32,
+                        width: 32,
+                        borderRadius: 12,
+                        icon: Icon(
+                          SlydoAppIcon.date,
+                          size: 14,
+                          color: blackFont,
                         ),
                       ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Row(
-                          children: [
-                            RoundedBackgroundIcon(
-                              backgroundColor: lightGrey,
-                              height: 32,
-                              borderRadius: 12,
-                              width: 32,
-                              icon: Icon(
-                                SlydoAppIcon.location,
-                                size: 14,
-                                color: blackFont,
-                              ),
-                            ),
-                            SizedBox(
-                              width: 12,
-                            ),
-                            Expanded(
-                              child: Text(
-                                "Savana beach bar",
-                                style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w400,
-                                    color: blackFont),
-                              ),
-                            )
-                          ],
-                        ),
+                      SizedBox(
+                        width: 12,
                       ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  Row(
-                    children: [
                       Expanded(
-                        child: Row(
-                          children: [
-                            RoundedBackgroundIcon(
-                              backgroundColor: lightGrey,
-                              borderRadius: 12,
-                              height: 32,
-                              width: 32,
-                              icon: Icon(
-                                SlydoAppIcon.price_tag,
-                                size: 14,
-                                color: blackFont,
-                              ),
-                            ),
-                            SizedBox(
-                              width: 12,
-                            ),
-                            Row(
-                              children: [
-                                Icon(
-                                  SlydoAppIcon.naira,
-                                  color: navyBlue,
-                                  size: 10,
-                                ),
-                                Text(
-                                  "34.00",
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w700,
-                                      color: navyBlue),
-                                )
-                              ],
-                            )
-                          ],
+                        child: Text(
+                          "Sunday, October 18 • 6:54 PM",
+                          style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              color: blackFont),
                         ),
-                      ),
+                      )
                     ],
                   ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-            RoundedBackgroundIcon(
-              backgroundColor: navyBlue.withOpacity(0.1),
-              borderRadius: 12,
-              height: 32,
-              width: 32,
-              icon: Icon(
-                SlydoAppIcon.location_circle,
-                size: 14,
-                color: navyBlue,
-              ),
+            SizedBox(
+              height: 8,
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: Row(
+                    children: [
+                      RoundedBackgroundIcon(
+                        backgroundColor: lightGrey,
+                        height: 32,
+                        borderRadius: 12,
+                        width: 32,
+                        icon: Icon(
+                          SlydoAppIcon.location,
+                          size: 14,
+                          color: blackFont,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 12,
+                      ),
+                      Expanded(
+                        child: Text(
+                          "Savana beach bar",
+                          style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              color: blackFont),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 8,
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: Row(
+                    children: [
+                      RoundedBackgroundIcon(
+                        backgroundColor: lightGrey,
+                        borderRadius: 12,
+                        height: 32,
+                        width: 32,
+                        icon: Icon(
+                          SlydoAppIcon.price_tag,
+                          size: 14,
+                          color: blackFont,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 12,
+                      ),
+                      Row(
+                        children: [
+                          Icon(
+                            SlydoAppIcon.naira,
+                            color: navyBlue,
+                            size: 10,
+                          ),
+                          Text(
+                            "34.00",
+                            style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                                color: navyBlue),
+                          )
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 8,
             ),
           ],
         ),
@@ -448,26 +463,174 @@ class _EventDetailPageState extends State<EventDetailPage> {
         Padding(
           padding: const EdgeInsets.only(left: 16),
           child: Text(
-            "Date & time",
+            "Property features",
             style: TextStyle(
                 fontSize: 12, fontWeight: FontWeight.w700, color: blackFont),
           ),
         ),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Container(
-            padding: EdgeInsets.symmetric(vertical: 16),
+        Container(
+          height: 100,
+        )
+      ],
+    );
+  }
+
+  Widget rentDetail(
+      {String categoryName, String movieName, String moviePoster}) {
+    return Container(
+      child: Column(
+        children: [
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 16),
             child: Row(
-              children: List.generate(availableDates.length, (index) {
-                return Container(
-                    padding: EdgeInsets.only(left: 16),
-                    child: dateAndTimeTile(
-                        availableDates[index], selectedDate == index, index));
-              }),
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text(
+                  categoryName,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 18,
+                    color: blackFont,
+                  ),
+                ),
+                GestureDetector(
+                  child: Text(
+                    "See all",
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                        color: navyBlue),
+                  ),
+                  onTap: () {
+                    Navigator.of(context).pushNamed("/hotel-category");
+                  },
+                ),
+              ],
+            ),
+          ),
+          Container(
+            height: 210,
+            color: Colors.white,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Container(
+                padding: EdgeInsets.only(left: 16),
+                child: Row(
+                  children: hotelImgList
+                      .map(
+                        (image) => Container(
+                          margin: EdgeInsets.only(right: 12),
+                          child:
+                              rentCard(cityPoster: image, cityName: movieName),
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget rentCard({String cityName, String cityPoster}) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).pushNamed("/hotel-detail");
+      },
+      child: Card(
+        margin: EdgeInsets.zero,
+        elevation: 0,
+        child: Container(
+          width: 160,
+          decoration: decorateBox(borderColor: selectedListItemBackgroundBlue),
+          child: Container(
+            padding: EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.network(
+                    cityPoster,
+                    height: 130,
+                    width: 130,
+                    fit: BoxFit.fill,
+                  ),
+                ),
+                SizedBox(
+                  height: 12,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              "From ",
+                              softWrap: false,
+                              overflow: TextOverflow.fade,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14,
+                                color: blackFont,
+                              ),
+                            ),
+                            Text(
+                              "₦",
+                              softWrap: false,
+                              overflow: TextOverflow.fade,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 14,
+                                  color: blackFont,
+                                  fontFamily: "Roborto"),
+                            ),
+                            Text(
+                              "34.00",
+                              softWrap: false,
+                              overflow: TextOverflow.fade,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14,
+                                color: blackFont,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Text(
+                          "/ month ",
+                          softWrap: false,
+                          overflow: TextOverflow.fade,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w400,
+                            fontSize: 12,
+                            color: darkGrey,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      "3 beds in London",
+                      softWrap: false,
+                      overflow: TextOverflow.fade,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontSize: 12,
+                        color: blackFont,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         ),
-      ],
+      ),
     );
   }
 
@@ -621,15 +784,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
       shadowColor: boxShadowTwo,
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
-        child: Row(
-          children: <Widget>[
-            addToCartWidget(),
-            SizedBox(
-              width: 8,
-            ),
-            _buildBuyButtonWidget(),
-          ],
-        ),
+        child: _buildBuyButtonWidget(),
       ),
     );
   }
@@ -650,13 +805,11 @@ class _EventDetailPageState extends State<EventDetailPage> {
   }
 
   Widget _buildBuyButtonWidget() {
-    return Expanded(
-      child: CurvedButton(
-        backgroundColor: navyBlue,
-        textColor: Colors.white,
-        text: "BUY NOW",
-        onPressed: () {},
-      ),
+    return CurvedButton(
+      backgroundColor: navyBlue,
+      textColor: Colors.white,
+      text: "BOOK",
+      onPressed: () {},
     );
   }
 }
