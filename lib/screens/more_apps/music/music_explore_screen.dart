@@ -213,34 +213,20 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
                 onTap: () {
                   Navigator.of(context).pushNamed("/music-detail");
                 },
-                child: Stack(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 5),
-                      child: Center(
-                          child: ClipRRect(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                        child: CachedNetworkImage(
-                          imageUrl: item,
-                          fit: BoxFit.fill,
-                          color: Colors.black12,
-                          colorBlendMode: BlendMode.darken,
-                          height: double.infinity,
-                          width: double.infinity,
-                        ),
-                      )),
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 5),
+                  child: Center(
+                      child: ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                    child: CachedNetworkImage(
+                      imageUrl: item,
+                      fit: BoxFit.fill,
+                      color: Colors.black12,
+                      colorBlendMode: BlendMode.darken,
+                      height: double.infinity,
+                      width: double.infinity,
                     ),
-                    Align(
-                      alignment: Alignment.center,
-                      child: Text(
-                        "Homestay",
-                        style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 22,
-                            color: Colors.white),
-                      ),
-                    ),
-                  ],
+                  )),
                 ),
               ),
             )
