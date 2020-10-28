@@ -7,6 +7,8 @@ import 'package:Slydo/screens/more_apps/events/event_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/flight/flight_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/hotels/hotel_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/movies/movie_dashboard_bloc.dart';
+import 'package:Slydo/screens/more_apps/music/music_dashboard_bloc.dart';
+import 'package:Slydo/screens/more_apps/property/property_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/train/train_dashboard_bloc.dart';
 import 'package:Slydo/services/app_life_cycle.dart';
@@ -93,6 +95,12 @@ void main() async {
           ),
           ChangeNotifierProvider<HotelDashboardBloc>.value(
             value: HotelDashboardBloc(),
+          ),
+          ChangeNotifierProvider<PropertyDashboardBloc>.value(
+            value: PropertyDashboardBloc(),
+          ),
+          ChangeNotifierProvider<MusicDashboardBloc>.value(
+            value: MusicDashboardBloc(),
           ),
         ], child: MyApp()),
       );

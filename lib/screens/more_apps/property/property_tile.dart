@@ -7,92 +7,15 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
-class HotelTile extends StatelessWidget {
+class PropertyTileWithHeart extends StatefulWidget {
   String imageUrl;
-  HotelTile({this.imageUrl});
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        margin: EdgeInsets.zero,
-        elevation: 0,
-        child: Container(
-          decoration: decorateBox(),
-          child: Container(
-            padding: EdgeInsets.all(12),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: CachedNetworkImage(
-                    imageUrl: imageUrl,
-                    fit: BoxFit.fill,
-                    height: 86,
-                    width: 68,
-                  ),
-                ),
-                SizedBox(
-                  width: 16,
-                ),
-                Expanded(
-                  child: Container(
-                    height: 86,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Thu, Oct 15 • 6:54 AM",
-                          softWrap: false,
-                          overflow: TextOverflow.fade,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12,
-                            color: mateRed,
-                          ),
-                        ),
-                        flexibleSpace(flex: 2),
-                        Text(
-                          "5th Borough food festival",
-                          softWrap: false,
-                          overflow: TextOverflow.fade,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 14,
-                            color: blackFont,
-                          ),
-                        ),
-                        flexibleSpace(),
-                        Text(
-                          "Clove lakes park",
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w400,
-                            color: blackFont,
-                          ),
-                        ),
-                        flexibleSpace(flex: 5),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ));
-  }
-}
-
-// ignore: must_be_immutable
-class HotelTileWithHeart extends StatefulWidget {
-  String imageUrl;
-  HotelTileWithHeart({this.imageUrl});
+  PropertyTileWithHeart({this.imageUrl});
 
   @override
-  _HotelTileWithHeartState createState() => _HotelTileWithHeartState();
+  _PropertyTileWithHeartState createState() => _PropertyTileWithHeartState();
 }
 
-class _HotelTileWithHeartState extends State<HotelTileWithHeart> {
+class _PropertyTileWithHeartState extends State<PropertyTileWithHeart> {
   List<String> hotelImgList = [
     "https://www.gannett-cdn.com/-mm-/05b227ad5b8ad4e9dcb53af4f31d7fbdb7fa901b/c=0-64-2119-1259/local/-/media/USATODAY/USATODAY/2014/08/13/1407953244000-177513283.jpg",
     "https://www.thebalancesmb.com/thmb/R5CjZrWUBXBTVj48-MBx3PFIh5U=/3000x2000/filters:fill(auto,1)/hotel_room-627892060-5a7a30d1642dca00370179e6.jpg",
@@ -299,12 +222,12 @@ class _HotelTileWithHeartState extends State<HotelTileWithHeart> {
   }
 }
 
-class HotelRoomImagesTile extends StatefulWidget {
+class PropertyImagesTile extends StatefulWidget {
   @override
-  _HotelRoomImagesTileState createState() => _HotelRoomImagesTileState();
+  _PropertyImagesTileState createState() => _PropertyImagesTileState();
 }
 
-class _HotelRoomImagesTileState extends State<HotelRoomImagesTile> {
+class _PropertyImagesTileState extends State<PropertyImagesTile> {
   List<String> hotelImgList = [
     "https://www.gannett-cdn.com/-mm-/05b227ad5b8ad4e9dcb53af4f31d7fbdb7fa901b/c=0-64-2119-1259/local/-/media/USATODAY/USATODAY/2014/08/13/1407953244000-177513283.jpg",
     "https://www.thebalancesmb.com/thmb/R5CjZrWUBXBTVj48-MBx3PFIh5U=/3000x2000/filters:fill(auto,1)/hotel_room-627892060-5a7a30d1642dca00370179e6.jpg",
@@ -355,7 +278,7 @@ class _HotelRoomImagesTileState extends State<HotelRoomImagesTile> {
                                 ),
                                 onTap: () {
                                   Navigator.of(context)
-                                      .pushNamed("/hotel-detail");
+                                      .pushNamed("/property-detail");
                                 },
                               ),
                             )
@@ -396,7 +319,7 @@ class _HotelRoomImagesTileState extends State<HotelRoomImagesTile> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              "House 1 for rent",
+                              "Lake side cottage",
                               softWrap: false,
                               overflow: TextOverflow.fade,
                               style: TextStyle(
@@ -420,7 +343,7 @@ class _HotelRoomImagesTileState extends State<HotelRoomImagesTile> {
                                           fontFamily: "Roborto"),
                                     ),
                                     Text(
-                                      "34.00",
+                                      "34000.00",
                                       softWrap: false,
                                       overflow: TextOverflow.fade,
                                       style: TextStyle(
@@ -430,16 +353,6 @@ class _HotelRoomImagesTileState extends State<HotelRoomImagesTile> {
                                       ),
                                     ),
                                   ],
-                                ),
-                                Text(
-                                  "/ month",
-                                  softWrap: false,
-                                  overflow: TextOverflow.fade,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 12,
-                                    color: darkGrey,
-                                  ),
                                 ),
                               ],
                             ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'hotel_tile.dart';
+import 'music_tile.dart';
 
 class MyWishList extends StatefulWidget {
   @override
@@ -28,7 +28,7 @@ class _MyWishListState extends State<MyWishList> {
                 .map(
                   (element) => Container(
                       padding: EdgeInsets.symmetric(vertical: 8),
-                      child: HotelTileWithHeart(
+                      child: MusicTileWithHeart(
                         imageUrl: element,
                       )),
                 )

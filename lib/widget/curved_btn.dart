@@ -34,3 +34,40 @@ class CurvedButton extends StatelessWidget {
     );
   }
 }
+
+// ignore: must_be_immutable
+class OutlineCurvedButton extends StatelessWidget {
+  String text = "Button";
+  Color backgroundColor = Colors.transparent;
+  Color textColor = navyBlue;
+  Function onPressed = () {};
+
+  OutlineCurvedButton({
+    this.text,
+    this.textColor,
+    this.backgroundColor,
+    this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: 42,
+      child: FlatButton(
+        shape: OutlineInputBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(10),
+            ),
+            borderSide: BorderSide(color: textColor)),
+        child: Text(
+          text,
+          style: TextStyle(
+              color: textColor, fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+        color: backgroundColor,
+        onPressed: onPressed,
+      ),
+    );
+  }
+}

@@ -95,7 +95,9 @@ class _MoreAppsState extends State<MoreApps> {
             child: UserDashboardItemTile(
           icon: SlydoAppIcon.music_moreapps,
           title: "Music",
-          onTap: () {},
+          onTap: () {
+            Navigator.of(context).pushNamed("/musics");
+          },
           iconColor: HexColor("#FFAB00"),
           height: 126,
         )),
@@ -155,7 +157,9 @@ class _MoreAppsState extends State<MoreApps> {
             child: UserDashboardItemTile(
           icon: SlydoAppIcon.property_moreapps,
           title: "Property",
-          onTap: () {},
+          onTap: () {
+            Navigator.of(context).pushNamed("/property");
+          },
           iconColor: HexColor("#3F61DB"),
           height: 126,
         )),

@@ -1,4 +1,3 @@
-import 'package:Slydo/screens/more_apps/events/event_dashboard_bloc.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -7,13 +6,15 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'hotel_dashboard_bloc.dart';
+
 class EventTicketDetail extends StatefulWidget {
   @override
   _EventTicketDetailState createState() => _EventTicketDetailState();
 }
 
 class _EventTicketDetailState extends State<EventTicketDetail> {
-  EventDashboardBloc _eventDashboardBloc;
+  HotelDashboardBloc _hotelDashboardBloc;
 
   bool isSwap = false;
 
@@ -57,7 +58,7 @@ class _EventTicketDetailState extends State<EventTicketDetail> {
   }
 
   Widget scaffoldBody() {
-    _eventDashboardBloc = Provider.of<EventDashboardBloc>(context);
+    _hotelDashboardBloc = Provider.of<HotelDashboardBloc>(context);
     return SingleChildScrollView(
       child: ticketWithImage(),
     );

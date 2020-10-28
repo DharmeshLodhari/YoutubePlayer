@@ -4,21 +4,21 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'hotel_dashboard_bloc.dart';
-import 'hotel_explore_screen.dart';
-import 'my_hotels_screen.dart';
+import 'music_dashboard_bloc.dart';
+import 'music_explore_screen.dart';
+import 'my_music_screen.dart';
 
-class HotelDashboard extends StatefulWidget {
+class MusicDashboard extends StatefulWidget {
   @override
-  _HotelDashboardState createState() => _HotelDashboardState();
+  _MusicDashboardState createState() => _MusicDashboardState();
 }
 
-class _HotelDashboardState extends State<HotelDashboard> {
-  HotelDashboardBloc _hotelDashboardBloc;
+class _MusicDashboardState extends State<MusicDashboard> {
+  MusicDashboardBloc _hotelDashboardBloc;
 
   @override
   Widget build(BuildContext context) {
-    _hotelDashboardBloc = Provider.of<HotelDashboardBloc>(context);
+    _hotelDashboardBloc = Provider.of<MusicDashboardBloc>(context);
     return WillPopScope(
       onWillPop: () {
         _hotelDashboardBloc.index = 0;
@@ -31,8 +31,8 @@ class _HotelDashboardState extends State<HotelDashboard> {
             _hotelDashboardBloc.index = index;
           },
           children: <Widget>[
-            HotelExploreScreen(),
-            MyHotelsScreen(),
+            MusicExploreScreen(),
+            MyMusicScreen(),
           ],
         ),
         bottomNavigationBar: bottomNavigationBar(),
@@ -65,7 +65,7 @@ class _HotelDashboardState extends State<HotelDashboard> {
           ),
           bottomNavigationBarItem(
             icon: SlydoAppIcon.user,
-            title: "My hotels",
+            title: "My musics",
           ),
         ],
       ),

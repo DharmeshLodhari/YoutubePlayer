@@ -6,14 +6,14 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 
-import 'hotel_tile.dart';
+import 'music_tile.dart';
 
-class SearchHotel extends StatefulWidget {
+class SearchMusic extends StatefulWidget {
   @override
-  _SearchHotelState createState() => _SearchHotelState();
+  _SearchMusicState createState() => _SearchMusicState();
 }
 
-class _SearchHotelState extends State<SearchHotel> {
+class _SearchMusicState extends State<SearchMusic> {
   List<String> movieCategoryList = ["Comedy", "Fantasy", "Sci-fi", "Action"];
   List<String> movieYearList = [
     "2001",
@@ -118,7 +118,7 @@ class _SearchHotelState extends State<SearchHotel> {
                       (element) => Container(
                           padding:
                               EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                          child: HotelTileWithHeart(
+                          child: MusicTileWithHeart(
                             imageUrl: element,
                           )),
                     )

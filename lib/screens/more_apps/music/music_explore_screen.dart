@@ -7,14 +7,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
-import 'hotel_tile.dart';
-
-class HotelExploreScreen extends StatefulWidget {
+class MusicExploreScreen extends StatefulWidget {
   @override
-  _HotelExploreScreenState createState() => _HotelExploreScreenState();
+  _MusicExploreScreenState createState() => _MusicExploreScreenState();
 }
 
-class _HotelExploreScreenState extends State<HotelExploreScreen> {
+class _MusicExploreScreenState extends State<MusicExploreScreen> {
   List<String> cityImgList = [
     "https://www.telegraph.co.uk/content/dam/Travel/Destinations/Europe/United%20Kingdom/London/london-aerial-thames-guide.jpg",
     "https://www.cityam.com/wp-content/uploads/2020/02/London_Tower_Bridge_City.jpg",
@@ -59,42 +57,9 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
         },
       ),
       title: Text(
-        "Hotels",
+        "Music",
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
-      ),
-      actions: [
-        locationChip(),
-        SizedBox(
-          width: 16,
-        )
-      ],
-    );
-  }
-
-  Widget locationChip() {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 10),
-      padding: EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(60),
-          color: navyBlue.withOpacity(0.1)),
-      child: Row(
-        children: [
-          Icon(
-            SlydoAppIcon.location,
-            color: blackFont,
-            size: 14,
-          ),
-          SizedBox(
-            width: 8,
-          ),
-          Text(
-            "London",
-            style: TextStyle(
-                color: blackFont, fontSize: 14, fontWeight: FontWeight.w700),
-          ),
-        ],
       ),
     );
   }
@@ -114,18 +79,18 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
           SizedBox(
             height: 40,
           ),
-          nearByYou(categoryName: "Nearby you"),
           rentDetail(
             categoryName: "Most recent discovery",
             moviePoster:
                 "https://m.media-amazon.com/images/I/A1o+mUmviOL._SS500_.jpg",
             movieName: "The Cloud Of Northland Thunder",
           ),
+          albumList(categoryName: "Most popular album"),
           SizedBox(
             height: 16,
           ),
           exploreByCity(
-            categoryName: "Explore by City",
+            categoryName: "Top celebrate",
             moviePoster:
                 "https://m.media-amazon.com/images/I/A1o+mUmviOL._SS500_.jpg",
             movieName: "The Cloud Of Northland Thunder",
@@ -536,7 +501,7 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
     );
   }
 
-  Widget nearByYou({String categoryName}) {
+  Widget albumList({String categoryName}) {
     return Container(
       child: Column(
         children: [
@@ -562,7 +527,7 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
                         color: navyBlue),
                   ),
                   onTap: () {
-                    Navigator.of(context).pushNamed("/hotel-category");
+                    Navigator.of(context).pushNamed("/music-category");
                   },
                 ),
               ],
@@ -572,25 +537,39 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
             color: Colors.white,
             padding: EdgeInsets.symmetric(vertical: 16),
             child: SingleChildScrollView(
-              scrollDirection: Axis.vertical,
+              scrollDirection: Axis.horizontal,
               child: Container(
-                padding: EdgeInsets.only(left: 16, right: 16),
-                child: Column(
-                  children: [
-                    Column(
-                      children: hotelImgList
-                          .map((element) => Container(
-                                margin: EdgeInsets.only(bottom: 12),
-                                child: HotelRoomImagesTile(),
-                              ))
-                          .toList(),
+                padding: EdgeInsets.only(left: 16),
+                child: Row(
+                  children: List.generate(
+                    5,
+                    (index) => Container(
+                      margin: EdgeInsets.only(right: 12),
+                      child: InkWell(
+                          onTap: () {
+                            Navigator.of(context).pushNamed("/music-detail");
+                          },
+                          child: albumPoster()),
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),
           )
         ],
+      ),
+    );
+  }
+
+  Widget albumPoster() {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10),
+      child: CachedNetworkImage(
+        imageUrl:
+            "https://www.naijaloaded.com.ng/wp-content/uploads/2019/10/erigga.jpg",
+        height: 132,
+        width: 218,
+        fit: BoxFit.fill,
       ),
     );
   }

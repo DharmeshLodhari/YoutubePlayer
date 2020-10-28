@@ -1,15 +1,15 @@
 import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/material.dart';
 
-import 'hotel_tile.dart';
+import 'music_tile.dart';
 
-class SpecificCategoryHotelList extends StatefulWidget {
+class SpecificCategoryMusicList extends StatefulWidget {
   @override
-  _SpecificCategoryHotelListState createState() =>
-      _SpecificCategoryHotelListState();
+  _SpecificCategoryMusicListState createState() =>
+      _SpecificCategoryMusicListState();
 }
 
-class _SpecificCategoryHotelListState extends State<SpecificCategoryHotelList> {
+class _SpecificCategoryMusicListState extends State<SpecificCategoryMusicList> {
   List<String> imgList = [
     "https://www.telegraph.co.uk/content/dam/Travel/Destinations/Europe/United%20Kingdom/London/london-aerial-thames-guide.jpg",
     "https://www.cityam.com/wp-content/uploads/2020/02/London_Tower_Bridge_City.jpg",

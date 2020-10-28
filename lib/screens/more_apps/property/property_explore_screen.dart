@@ -7,14 +7,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
-import 'hotel_tile.dart';
+import 'property_tile.dart';
 
-class HotelExploreScreen extends StatefulWidget {
+class PropertyExploreScreen extends StatefulWidget {
   @override
-  _HotelExploreScreenState createState() => _HotelExploreScreenState();
+  _PropertyExploreScreenState createState() => _PropertyExploreScreenState();
 }
 
-class _HotelExploreScreenState extends State<HotelExploreScreen> {
+class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
   List<String> cityImgList = [
     "https://www.telegraph.co.uk/content/dam/Travel/Destinations/Europe/United%20Kingdom/London/london-aerial-thames-guide.jpg",
     "https://www.cityam.com/wp-content/uploads/2020/02/London_Tower_Bridge_City.jpg",
@@ -59,7 +59,7 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
         },
       ),
       title: Text(
-        "Hotels",
+        "Property",
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -147,7 +147,7 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
         ),
         child: InkWell(
           onTap: () {
-            Navigator.of(context).pushNamed('/search-hotel');
+            Navigator.of(context).pushNamed('/search-property');
           },
           child: IgnorePointer(
             ignoring: true,
@@ -232,7 +232,7 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
             .map(
               (item) => GestureDetector(
                 onTap: () {
-                  Navigator.of(context).pushNamed("/hotel-detail");
+                  Navigator.of(context).pushNamed("/property-detail");
                 },
                 child: Stack(
                   children: [
@@ -297,7 +297,7 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
                         color: navyBlue),
                   ),
                   onTap: () {
-                    Navigator.of(context).pushNamed("/hotel-category");
+                    Navigator.of(context).pushNamed("/property-category");
                   },
                 ),
               ],
@@ -332,7 +332,7 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
   Widget rentCard({String cityName, String cityPoster}) {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).pushNamed("/hotel-detail");
+        Navigator.of(context).pushNamed("/property-detail");
       },
       child: Card(
         margin: EdgeInsets.zero,
@@ -387,7 +387,7 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
                                     fontFamily: "Roborto"),
                               ),
                               Text(
-                                "34.00",
+                                "2500.00",
                                 softWrap: false,
                                 overflow: TextOverflow.fade,
                                 style: TextStyle(
@@ -397,16 +397,6 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
                                 ),
                               ),
                             ],
-                          ),
-                        ),
-                        Text(
-                          "/ month ",
-                          softWrap: false,
-                          overflow: TextOverflow.fade,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 12,
-                            color: darkGrey,
                           ),
                         ),
                       ],
@@ -458,7 +448,7 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
                         color: navyBlue),
                   ),
                   onTap: () {
-                    Navigator.of(context).pushNamed("/hotel-category");
+                    Navigator.of(context).pushNamed("/property-category");
                   },
                 ),
               ],
@@ -492,7 +482,7 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
   Widget cityCard({String cityName, String cityPoster}) {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).pushNamed("/hotel-detail");
+        Navigator.of(context).pushNamed("/property-detail");
       },
       child: Card(
         margin: EdgeInsets.zero,
@@ -562,7 +552,7 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
                         color: navyBlue),
                   ),
                   onTap: () {
-                    Navigator.of(context).pushNamed("/hotel-category");
+                    Navigator.of(context).pushNamed("/property-category");
                   },
                 ),
               ],
@@ -581,7 +571,7 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
                       children: hotelImgList
                           .map((element) => Container(
                                 margin: EdgeInsets.only(bottom: 12),
-                                child: HotelRoomImagesTile(),
+                                child: PropertyImagesTile(),
                               ))
                           .toList(),
                     ),
@@ -599,7 +589,7 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
     bool temp = Random().nextBool();
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).pushNamed("/hotel-detail");
+        Navigator.of(context).pushNamed("/property-detail");
       },
       child: Container(
         height: 132,

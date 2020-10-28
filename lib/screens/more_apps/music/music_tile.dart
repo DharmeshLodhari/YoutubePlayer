@@ -7,9 +7,9 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
-class HotelTile extends StatelessWidget {
+class MusicTile extends StatelessWidget {
   String imageUrl;
-  HotelTile({this.imageUrl});
+  MusicTile({this.imageUrl});
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -84,15 +84,15 @@ class HotelTile extends StatelessWidget {
 }
 
 // ignore: must_be_immutable
-class HotelTileWithHeart extends StatefulWidget {
+class MusicTileWithHeart extends StatefulWidget {
   String imageUrl;
-  HotelTileWithHeart({this.imageUrl});
+  MusicTileWithHeart({this.imageUrl});
 
   @override
-  _HotelTileWithHeartState createState() => _HotelTileWithHeartState();
+  _MusicTileWithHeartState createState() => _MusicTileWithHeartState();
 }
 
-class _HotelTileWithHeartState extends State<HotelTileWithHeart> {
+class _MusicTileWithHeartState extends State<MusicTileWithHeart> {
   List<String> hotelImgList = [
     "https://www.gannett-cdn.com/-mm-/05b227ad5b8ad4e9dcb53af4f31d7fbdb7fa901b/c=0-64-2119-1259/local/-/media/USATODAY/USATODAY/2014/08/13/1407953244000-177513283.jpg",
     "https://www.thebalancesmb.com/thmb/R5CjZrWUBXBTVj48-MBx3PFIh5U=/3000x2000/filters:fill(auto,1)/hotel_room-627892060-5a7a30d1642dca00370179e6.jpg",

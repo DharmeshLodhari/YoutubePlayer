@@ -1,15 +1,18 @@
 import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-import 'hotel_tile.dart';
+import 'property_dashboard_bloc.dart';
+import 'property_tile.dart';
 
-class SpecificCategoryHotelList extends StatefulWidget {
+class SpecificCategoryPropertyList extends StatefulWidget {
   @override
-  _SpecificCategoryHotelListState createState() =>
-      _SpecificCategoryHotelListState();
+  _SpecificCategoryPropertyListState createState() =>
+      _SpecificCategoryPropertyListState();
 }
 
-class _SpecificCategoryHotelListState extends State<SpecificCategoryHotelList> {
+class _SpecificCategoryPropertyListState
+    extends State<SpecificCategoryPropertyList> {
   List<String> imgList = [
     "https://www.telegraph.co.uk/content/dam/Travel/Destinations/Europe/United%20Kingdom/London/london-aerial-thames-guide.jpg",
     "https://www.cityam.com/wp-content/uploads/2020/02/London_Tower_Bridge_City.jpg",
@@ -23,10 +26,14 @@ class _SpecificCategoryHotelListState extends State<SpecificCategoryHotelList> {
     "https://a.travel-assets.com/findyours-php/viewfinder/images/res70/20000/20665-London.jpg"
   ];
 
+  PropertyDashboardBloc _propertyDashboardBloc;
+
   @override
   Widget build(BuildContext context) {
+    _propertyDashboardBloc = Provider.of<PropertyDashboardBloc>(context);
     return WillPopScope(
       onWillPop: () async {
+        _propertyDashboardBloc.index = 0;
         return true;
       },
       child: Scaffold(
@@ -40,7 +47,7 @@ class _SpecificCategoryHotelListState extends State<SpecificCategoryHotelList> {
                   5,
                   (index) => Container(
                       padding: EdgeInsets.symmetric(vertical: 8),
-                      child: HotelRoomImagesTile())),
+                      child: PropertyImagesTile())),
             ),
           ),
         ),

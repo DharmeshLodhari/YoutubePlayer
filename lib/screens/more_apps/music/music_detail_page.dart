@@ -7,16 +7,16 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'hotel_dashboard_bloc.dart';
-import 'hotel_tile.dart';
+import 'music_dashboard_bloc.dart';
+import 'music_tile.dart';
 
-class HotelDetailPage extends StatefulWidget {
+class MusicDetailPage extends StatefulWidget {
   @override
-  _HotelDetailPageState createState() => _HotelDetailPageState();
+  _MusicDetailPageState createState() => _MusicDetailPageState();
 }
 
-class _HotelDetailPageState extends State<HotelDetailPage> {
-  HotelDashboardBloc _hotelDashboardBloc;
+class _MusicDetailPageState extends State<MusicDetailPage> {
+  MusicDashboardBloc _hotelDashboardBloc;
 
   List<String> imgList = [
     "https://www.telegraph.co.uk/content/dam/Travel/Destinations/Europe/United%20Kingdom/London/london-aerial-thames-guide.jpg",
@@ -51,7 +51,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    _hotelDashboardBloc = Provider.of<HotelDashboardBloc>(context);
+    _hotelDashboardBloc = Provider.of<MusicDashboardBloc>(context);
     return WillPopScope(
       onWillPop: () {
         _hotelDashboardBloc.index = 0;

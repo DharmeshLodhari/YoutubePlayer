@@ -34,6 +34,7 @@ import 'package:Slydo/screens/more_apps/flight/flight_dashboard.dart';
 import 'package:Slydo/screens/more_apps/flight/search_flight.dart';
 import 'package:Slydo/screens/more_apps/hotels/hotel_dashboard.dart';
 import 'package:Slydo/screens/more_apps/hotels/hotel_detail_page.dart';
+import 'package:Slydo/screens/more_apps/hotels/partner_detail_page.dart';
 import 'package:Slydo/screens/more_apps/hotels/search_hotel.dart';
 import 'package:Slydo/screens/more_apps/hotels/specific_category_hotel_list.dart';
 import 'package:Slydo/screens/more_apps/more_apps.dart';
@@ -41,8 +42,16 @@ import 'package:Slydo/screens/more_apps/movies/movie_dashboard.dart';
 import 'package:Slydo/screens/more_apps/movies/movie_detail_page.dart';
 import 'package:Slydo/screens/more_apps/movies/search_movie.dart';
 import 'package:Slydo/screens/more_apps/movies/specific_category_movie_list.dart';
+import 'package:Slydo/screens/more_apps/music/music_dashboard.dart';
+import 'package:Slydo/screens/more_apps/music/music_detail_page.dart';
+import 'package:Slydo/screens/more_apps/music/search_music.dart';
 import 'package:Slydo/screens/more_apps/news/news_dashboard.dart';
 import 'package:Slydo/screens/more_apps/news/news_detail_page.dart';
+import 'package:Slydo/screens/more_apps/property/property_dashboard.dart';
+import 'package:Slydo/screens/more_apps/property/property_detail_page.dart';
+import 'package:Slydo/screens/more_apps/property/search_property.dart';
+import 'package:Slydo/screens/more_apps/property/specific_category_property_list.dart';
+import 'package:Slydo/screens/more_apps/review/main_review.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_dashboard.dart';
 import 'package:Slydo/screens/more_apps/train/search_train.dart';
 import 'package:Slydo/screens/more_apps/train/train_dashboard.dart';
@@ -489,6 +498,40 @@ class RouteGenerator {
           settings: settings,
         );
 
+      /// Music
+
+      case "/musics":
+        return PageTransition(
+          child: MusicDashboard(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case "/music-category":
+        return PageTransition(
+          child: SpecificCategoryMovieList(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case "/search-music":
+        return PageTransition(
+          child: SearchMusic(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case "/music-detail":
+        return PageTransition(
+          child: MusicDetailPage(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
       /// Event Route
 
       case "/events":
@@ -568,6 +611,48 @@ class RouteGenerator {
       case "/hotel-ticket-detail":
         return PageTransition(
           child: EventTicketDetail(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case "/partner-detail":
+        return PageTransition(
+          child: PartnerDetailPage(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      /// Property Route
+
+      case "/property":
+        return PageTransition(
+          child: PropertyDashboard(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case "/property-category":
+        return PageTransition(
+          child: SpecificCategoryPropertyList(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case "/search-property":
+        return PageTransition(
+          child: SearchProperty(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case "/property-detail":
+        return PageTransition(
+          child: PropertyDetailPage(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
           settings: settings,
@@ -656,6 +741,16 @@ class RouteGenerator {
       case "/shopping":
         return PageTransition(
           child: ShoppingDashboard(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      /// Review
+
+      case "/reviews":
+        return PageTransition(
+          child: MainReview(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
           settings: settings,

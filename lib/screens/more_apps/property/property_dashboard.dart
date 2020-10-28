@@ -4,35 +4,35 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'hotel_dashboard_bloc.dart';
-import 'hotel_explore_screen.dart';
-import 'my_hotels_screen.dart';
+import 'my_wish_list.dart';
+import 'property_dashboard_bloc.dart';
+import 'property_explore_screen.dart';
 
-class HotelDashboard extends StatefulWidget {
+class PropertyDashboard extends StatefulWidget {
   @override
-  _HotelDashboardState createState() => _HotelDashboardState();
+  _PropertyDashboardState createState() => _PropertyDashboardState();
 }
 
-class _HotelDashboardState extends State<HotelDashboard> {
-  HotelDashboardBloc _hotelDashboardBloc;
+class _PropertyDashboardState extends State<PropertyDashboard> {
+  PropertyDashboardBloc _propertyDashboardBloc;
 
   @override
   Widget build(BuildContext context) {
-    _hotelDashboardBloc = Provider.of<HotelDashboardBloc>(context);
+    _propertyDashboardBloc = Provider.of<PropertyDashboardBloc>(context);
     return WillPopScope(
       onWillPop: () {
-        _hotelDashboardBloc.index = 0;
+        _propertyDashboardBloc.index = 0;
         return Future.value(true);
       },
       child: Scaffold(
         body: PageView(
-          controller: _hotelDashboardBloc.pageController,
+          controller: _propertyDashboardBloc.pageController,
           onPageChanged: (index) {
-            _hotelDashboardBloc.index = index;
+            _propertyDashboardBloc.index = index;
           },
           children: <Widget>[
-            HotelExploreScreen(),
-            MyHotelsScreen(),
+            PropertyExploreScreen(),
+            MyWishList(),
           ],
         ),
         bottomNavigationBar: bottomNavigationBar(),
@@ -54,9 +54,9 @@ class _HotelDashboardState extends State<HotelDashboard> {
         showSelectedLabels: false,
         backgroundColor: Colors.white,
         elevation: 10,
-        currentIndex: _hotelDashboardBloc.index,
+        currentIndex: _propertyDashboardBloc.index,
         onTap: (index) {
-          _hotelDashboardBloc.index = index;
+          _propertyDashboardBloc.index = index;
         },
         items: [
           bottomNavigationBarItem(
@@ -65,7 +65,7 @@ class _HotelDashboardState extends State<HotelDashboard> {
           ),
           bottomNavigationBarItem(
             icon: SlydoAppIcon.user,
-            title: "My hotels",
+            title: "My wishlist",
           ),
         ],
       ),

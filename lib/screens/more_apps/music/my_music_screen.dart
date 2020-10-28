@@ -2,22 +2,22 @@ import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'hotel_dashboard_bloc.dart';
-import 'my_hotel_list.dart';
+import 'music_dashboard_bloc.dart';
+import 'my_music_list.dart';
 import 'my_wish_list.dart';
 
-class MyHotelsScreen extends StatefulWidget {
+class MyMusicScreen extends StatefulWidget {
   @override
-  _MyHotelsScreenState createState() => _MyHotelsScreenState();
+  _MyMusicScreenState createState() => _MyMusicScreenState();
 }
 
-class _MyHotelsScreenState extends State<MyHotelsScreen> {
+class _MyMusicScreenState extends State<MyMusicScreen> {
   int currentIndex = 0;
 
-  HotelDashboardBloc _hotelDashboardBloc;
+  MusicDashboardBloc _hotelDashboardBloc;
   @override
   Widget build(BuildContext context) {
-    _hotelDashboardBloc = Provider.of<HotelDashboardBloc>(context);
+    _hotelDashboardBloc = Provider.of<MusicDashboardBloc>(context);
     return WillPopScope(
       onWillPop: () async {
         _hotelDashboardBloc.index = 0;
@@ -124,7 +124,7 @@ class _MyHotelsScreenState extends State<MyHotelsScreen> {
     return IndexedStack(
       index: currentIndex,
       children: [
-        MyEventList(),
+        MyMusicList(),
         MyWishList(),
       ],
     );

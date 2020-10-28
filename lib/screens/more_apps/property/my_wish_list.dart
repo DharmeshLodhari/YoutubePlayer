@@ -1,33 +1,31 @@
 import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-import 'hotel_tile.dart';
+import 'property_dashboard_bloc.dart';
+import 'property_tile.dart';
 
-class SpecificCategoryHotelList extends StatefulWidget {
+class MyWishList extends StatefulWidget {
   @override
-  _SpecificCategoryHotelListState createState() =>
-      _SpecificCategoryHotelListState();
+  _MyWishListState createState() => _MyWishListState();
 }
 
-class _SpecificCategoryHotelListState extends State<SpecificCategoryHotelList> {
+class _MyWishListState extends State<MyWishList> {
   List<String> imgList = [
-    "https://www.telegraph.co.uk/content/dam/Travel/Destinations/Europe/United%20Kingdom/London/london-aerial-thames-guide.jpg",
-    "https://www.cityam.com/wp-content/uploads/2020/02/London_Tower_Bridge_City.jpg",
-    "https://metab.ern-net.eu/wp-content/uploads/2018/04/London.jpg",
-    "https://travel.home.sndimg.com/content/dam/images/travel/fullset/2015/05/28/big-ben-london-england.jpg",
-    "https://a.travel-assets.com/findyours-php/viewfinder/images/res70/20000/20665-London.jpg",
     "https://www.telegraph.co.uk/content/dam/Travel/Destinations/Europe/United%20Kingdom/London/london-aerial-thames-guide.jpg",
     "https://www.cityam.com/wp-content/uploads/2020/02/London_Tower_Bridge_City.jpg",
     "https://metab.ern-net.eu/wp-content/uploads/2018/04/London.jpg",
     "https://travel.home.sndimg.com/content/dam/images/travel/fullset/2015/05/28/big-ben-london-england.jpg",
     "https://a.travel-assets.com/findyours-php/viewfinder/images/res70/20000/20665-London.jpg"
   ];
-
+  PropertyDashboardBloc _propertyDashboardBloc;
   @override
   Widget build(BuildContext context) {
+    _propertyDashboardBloc = Provider.of<PropertyDashboardBloc>(context);
     return WillPopScope(
       onWillPop: () async {
-        return true;
+        _propertyDashboardBloc.index = 0;
+        return Future.value(true);
       },
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -40,7 +38,7 @@ class _SpecificCategoryHotelListState extends State<SpecificCategoryHotelList> {
                   5,
                   (index) => Container(
                       padding: EdgeInsets.symmetric(vertical: 8),
-                      child: HotelRoomImagesTile())),
+                      child: PropertyImagesTile())),
             ),
           ),
         ),
@@ -65,7 +63,7 @@ class _SpecificCategoryHotelListState extends State<SpecificCategoryHotelList> {
         },
       ),
       title: Text(
-        "Popular in London",
+        "My wishlist",
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
         overflow: TextOverflow.fade,

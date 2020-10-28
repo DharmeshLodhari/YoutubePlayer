@@ -1,15 +1,15 @@
-import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-import 'hotel_tile.dart';
+import 'music_dashboard_bloc.dart';
+import 'music_tile.dart';
 
-class SpecificCategoryHotelList extends StatefulWidget {
+class MyMusicList extends StatefulWidget {
   @override
-  _SpecificCategoryHotelListState createState() =>
-      _SpecificCategoryHotelListState();
+  _MyMusicListState createState() => _MyMusicListState();
 }
 
-class _SpecificCategoryHotelListState extends State<SpecificCategoryHotelList> {
+class _MyMusicListState extends State<MyMusicList> {
   List<String> imgList = [
     "https://www.telegraph.co.uk/content/dam/Travel/Destinations/Europe/United%20Kingdom/London/london-aerial-thames-guide.jpg",
     "https://www.cityam.com/wp-content/uploads/2020/02/London_Tower_Bridge_City.jpg",
@@ -23,54 +23,34 @@ class _SpecificCategoryHotelListState extends State<SpecificCategoryHotelList> {
     "https://a.travel-assets.com/findyours-php/viewfinder/images/res70/20000/20665-London.jpg"
   ];
 
+  MusicDashboardBloc _hotelDashboardBloc;
+
   @override
   Widget build(BuildContext context) {
+    _hotelDashboardBloc = Provider.of<MusicDashboardBloc>(context);
     return WillPopScope(
       onWillPop: () async {
-        return true;
+        _hotelDashboardBloc.index = 0;
+        return Future.value(true);
       },
       child: Scaffold(
         backgroundColor: Colors.white,
-        appBar: appBar(),
         body: SingleChildScrollView(
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 16),
             child: Column(
-              children: List.generate(
-                  5,
-                  (index) => Container(
-                      padding: EdgeInsets.symmetric(vertical: 8),
-                      child: HotelRoomImagesTile())),
+              children: imgList
+                  .map(
+                    (element) => Container(
+                        padding: EdgeInsets.symmetric(vertical: 8),
+                        child: MusicTile(
+                          imageUrl: element,
+                        )),
+                  )
+                  .toList(),
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget appBar() {
-    return AppBar(
-      elevation: 0,
-      backgroundColor: Colors.white,
-      titleSpacing: 0,
-      automaticallyImplyLeading: false,
-      leading: IconButton(
-        icon: Icon(
-          Icons.keyboard_arrow_left,
-          color: navyBlue,
-          size: 24,
-        ),
-        onPressed: () {
-          Navigator.pop(context);
-        },
-      ),
-      title: Text(
-        "Popular in London",
-        style: TextStyle(
-            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
-        overflow: TextOverflow.fade,
-        softWrap: false,
-        maxLines: 1,
       ),
     );
   }

@@ -7,16 +7,16 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'hotel_dashboard_bloc.dart';
-import 'hotel_tile.dart';
+import 'property_dashboard_bloc.dart';
+import 'property_tile.dart';
 
-class HotelDetailPage extends StatefulWidget {
+class PropertyDetailPage extends StatefulWidget {
   @override
-  _HotelDetailPageState createState() => _HotelDetailPageState();
+  _PropertyDetailPageState createState() => _PropertyDetailPageState();
 }
 
-class _HotelDetailPageState extends State<HotelDetailPage> {
-  HotelDashboardBloc _hotelDashboardBloc;
+class _PropertyDetailPageState extends State<PropertyDetailPage> {
+  PropertyDashboardBloc _propertyDashboardBloc;
 
   List<String> imgList = [
     "https://www.telegraph.co.uk/content/dam/Travel/Destinations/Europe/United%20Kingdom/London/london-aerial-thames-guide.jpg",
@@ -51,18 +51,16 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    _hotelDashboardBloc = Provider.of<HotelDashboardBloc>(context);
+    _propertyDashboardBloc = Provider.of<PropertyDashboardBloc>(context);
     return WillPopScope(
       onWillPop: () {
-        _hotelDashboardBloc.index = 0;
+        // _propertyDashboardBloc.index = 0;
         return Future.value(true);
       },
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: appBar(),
         body: scaffoldBody(),
-        floatingActionButton: floatingActionBar(),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       ),
     );
   }
@@ -163,22 +161,6 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                       color: dividerColor,
                       height: 0,
                     ),
-                    selectDate(),
-                    SizedBox(
-                      height: 8,
-                    ),
-                    Divider(
-                      thickness: 1,
-                      color: dividerColor,
-                      height: 0,
-                    ),
-                    SizedBox(
-                      height: 12,
-                    ),
-                    availabilitySection(),
-                    SizedBox(
-                      height: 16,
-                    ),
                     Divider(
                       thickness: 1,
                       color: dividerColor,
@@ -241,7 +223,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
             ),
           ),
           rentDetail(
-            categoryName: "Recommended for you",
+            categoryName: "Similar properties",
             moviePoster:
                 "https://m.media-amazon.com/images/I/A1o+mUmviOL._SS500_.jpg",
             movieName: "The Cloud Of Northland Thunder",
@@ -800,7 +782,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                                     fontFamily: "Roborto"),
                               ),
                               Text(
-                                "34.00",
+                                "1600.00",
                                 softWrap: false,
                                 overflow: TextOverflow.fade,
                                 style: TextStyle(
@@ -810,16 +792,6 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                                 ),
                               ),
                             ],
-                          ),
-                        ),
-                        Text(
-                          "/ month ",
-                          softWrap: false,
-                          overflow: TextOverflow.fade,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 12,
-                            color: darkGrey,
                           ),
                         ),
                       ],
@@ -958,13 +930,30 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            "Reviews",
-            style: TextStyle(
-              fontWeight: FontWeight.w700,
-              fontSize: 16,
-              color: blackFont,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Reviews",
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 16,
+                  color: blackFont,
+                ),
+              ),
+              GestureDetector(
+                child: Text(
+                  "See all",
+                  style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      color: navyBlue),
+                ),
+                onTap: () {
+                  Navigator.of(context).pushNamed("/reviews");
+                },
+              ),
+            ],
           ),
           SizedBox(
             height: 16,
@@ -1015,32 +1004,6 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
     );
   }
 
-  Widget availabilitySection() {
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Availability",
-            style: TextStyle(
-              fontWeight: FontWeight.w700,
-              fontSize: 16,
-              color: blackFont,
-            ),
-          ),
-          SizedBox(
-            height: 8,
-          ),
-          OutlineCurvedButton(
-            text: "Add your dates",
-            onPressed: () {},
-            textColor: navyBlue,
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget selectDate() {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 16),
@@ -1077,42 +1040,6 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
       text: "Ask a question",
       onPressed: () {},
       textColor: navyBlue,
-    );
-  }
-
-  Widget floatingActionBar() {
-    return Card(
-      elevation: 50,
-      margin: EdgeInsets.zero,
-      shadowColor: boxShadowTwo,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
-        child: _buildBuyButtonWidget(),
-      ),
-    );
-  }
-
-  Widget addToCartWidget() {
-    return RoundedBackgroundIcon(
-      borderRadius: 16,
-      height: 44,
-      width: 44,
-      icon: Icon(
-        SlydoAppIcon.add_cart,
-        color: navyBlue,
-        size: 22,
-      ),
-      backgroundColor: navyBlue.withOpacity(0.08),
-      onTap: () async {},
-    );
-  }
-
-  Widget _buildBuyButtonWidget() {
-    return CurvedButton(
-      backgroundColor: navyBlue,
-      textColor: Colors.white,
-      text: "BOOK",
-      onPressed: () {},
     );
   }
 }

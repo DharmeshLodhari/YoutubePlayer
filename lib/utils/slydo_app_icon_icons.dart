@@ -120,4 +120,13 @@ class SlydoAppIcon {
   static const IconData seat = IconData(0xe858, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData gate = IconData(0xe859, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData swap = IconData(0xe85a, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData free_wifi = IconData(0xe85b, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData washer = IconData(0xe85c, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData garden = IconData(0xe85d, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData fire = IconData(0xe85e, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData achievement = IconData(0xe85f, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData kitchen = IconData(0xe860, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData tv = IconData(0xe861, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData bathroom = IconData(0xe862, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData partner = IconData(0xe863, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }

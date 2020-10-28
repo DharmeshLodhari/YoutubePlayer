@@ -1,7 +1,8 @@
-import 'package:Slydo/screens/more_apps/events/event_dashboard_bloc.dart';
-import 'package:Slydo/screens/more_apps/events/event_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import 'hotel_dashboard_bloc.dart';
+import 'hotel_tile.dart';
 
 class MyEventList extends StatefulWidget {
   @override
@@ -22,14 +23,14 @@ class _MyEventListState extends State<MyEventList> {
     "https://a.travel-assets.com/findyours-php/viewfinder/images/res70/20000/20665-London.jpg"
   ];
 
-  EventDashboardBloc _eventDashboardBloc;
+  HotelDashboardBloc _hotelDashboardBloc;
 
   @override
   Widget build(BuildContext context) {
-    _eventDashboardBloc = Provider.of<EventDashboardBloc>(context);
+    _hotelDashboardBloc = Provider.of<HotelDashboardBloc>(context);
     return WillPopScope(
       onWillPop: () async {
-        _eventDashboardBloc.index = 0;
+        _hotelDashboardBloc.index = 0;
         return Future.value(true);
       },
       child: Scaffold(
@@ -42,7 +43,7 @@ class _MyEventListState extends State<MyEventList> {
                   .map(
                     (element) => Container(
                         padding: EdgeInsets.symmetric(vertical: 8),
-                        child: EventTile(
+                        child: HotelTile(
                           imageUrl: element,
                         )),
                   )
