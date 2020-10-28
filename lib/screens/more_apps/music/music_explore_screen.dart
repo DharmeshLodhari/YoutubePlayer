@@ -13,19 +13,33 @@ class MusicExploreScreen extends StatefulWidget {
 }
 
 class _MusicExploreScreenState extends State<MusicExploreScreen> {
-  List<String> cityImgList = [
-    "https://www.telegraph.co.uk/content/dam/Travel/Destinations/Europe/United%20Kingdom/London/london-aerial-thames-guide.jpg",
-    "https://www.cityam.com/wp-content/uploads/2020/02/London_Tower_Bridge_City.jpg",
-    "https://metab.ern-net.eu/wp-content/uploads/2018/04/London.jpg",
-    "https://travel.home.sndimg.com/content/dam/images/travel/fullset/2015/05/28/big-ben-london-england.jpg",
-    "https://a.travel-assets.com/findyours-php/viewfinder/images/res70/20000/20665-London.jpg"
+  List<Map<String, String>> singerList = [
+    {
+      "name": "Wizkid",
+      "image":
+          "https://www.gstatic.com/tv/thumb/persons/1045961/1045961_v9_ba.jpg"
+    },
+    {
+      "name": "Davido",
+      "image":
+          "https://www.grammy.com/sites/com/files/styles/news_detail_header/public/frankfieber_20181022_8-sm-scaled.jpg?itok=OdyzBPFd"
+    },
+    {
+      "name": "Tiwa Savage",
+      "image":
+          "https://upload.wikimedia.org/wikipedia/commons/f/fa/Tiwa_Savage%27s_studio_portrait.jpg"
+    },
+    {
+      "name": "Sinach",
+      "image":
+          "https://kgo.googleusercontent.com/profile_vrt_raw_bytes_1587515408_10954.jpg"
+    },
   ];
-  List<String> hotelImgList = [
-    "https://www.gannett-cdn.com/-mm-/05b227ad5b8ad4e9dcb53af4f31d7fbdb7fa901b/c=0-64-2119-1259/local/-/media/USATODAY/USATODAY/2014/08/13/1407953244000-177513283.jpg",
-    "https://www.thebalancesmb.com/thmb/R5CjZrWUBXBTVj48-MBx3PFIh5U=/3000x2000/filters:fill(auto,1)/hotel_room-627892060-5a7a30d1642dca00370179e6.jpg",
-    "https://media.istockphoto.com/photos/3d-rendering-modern-luxury-bedroom-suite-and-bathroom-picture-id928431714?k=6&m=928431714&s=612x612&w=0&h=IBnf0aE9zEmsaJ3nLep6UmK4u-KYQPdEQa6LY30Ivn4=",
-    "https://gritdaily.com/wp-content/uploads/2019/07/http-cdn.cnn_.com-cnnnext-dam-assets-190711000204-haneda-excel-hotel-tokyu-03.jpg",
-    "https://blisssaigon.com/wp-content/uploads/2019/10/iwood-R5v8Xtc0ecg-unsplash-1.jpg"
+  List<String> albumImgList = [
+    "https://storage.googleapis.com/assets-pam-blog/2018/12/Dj-Neptune-Greatness.jpg",
+    "https://www.naijaloaded.com.ng/wp-content/uploads/2019/10/erigga.jpg",
+    "https://i.ytimg.com/vi/MuXtUDQ8Sug/maxresdefault.jpg",
+    "https://www.musicinafrica.net/sites/default/files/styles/article_slider_large/public/images/article/202008/djcuppy21.jpg?itok=ruxfue_g"
   ];
 
   CarouselController _carouselController = CarouselController();
@@ -112,7 +126,7 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
         ),
         child: InkWell(
           onTap: () {
-            Navigator.of(context).pushNamed('/search-hotel');
+            Navigator.of(context).pushNamed('/search-music');
           },
           child: IgnorePointer(
             ignoring: true,
@@ -193,11 +207,11 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
           aspectRatio: 2,
           initialPage: 0,
         ),
-        items: cityImgList
+        items: albumImgList
             .map(
               (item) => GestureDetector(
                 onTap: () {
-                  Navigator.of(context).pushNamed("/hotel-detail");
+                  Navigator.of(context).pushNamed("/music-detail");
                 },
                 child: Stack(
                   children: [
@@ -262,24 +276,25 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
                         color: navyBlue),
                   ),
                   onTap: () {
-                    Navigator.of(context).pushNamed("/hotel-category");
+                    Navigator.of(context).pushNamed("/music-category");
                   },
                 ),
               ],
             ),
           ),
           Container(
-            height: 210,
+            height: 242,
             color: Colors.white,
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Container(
                 padding: EdgeInsets.only(left: 16),
                 child: Row(
-                  children: hotelImgList
+                  children: albumImgList
                       .map(
                         (image) => Container(
-                          margin: EdgeInsets.only(right: 12),
+                          margin:
+                              EdgeInsets.only(right: 12, top: 16, bottom: 16),
                           child:
                               rentCard(cityPoster: image, cityName: movieName),
                         ),
@@ -297,7 +312,7 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
   Widget rentCard({String cityName, String cityPoster}) {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).pushNamed("/hotel-detail");
+        Navigator.of(context).pushNamed("/music-detail");
       },
       child: Card(
         margin: EdgeInsets.zero,
@@ -326,65 +341,39 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Row(
-                            children: [
-                              Text(
-                                "From ",
-                                softWrap: false,
-                                overflow: TextOverflow.fade,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 12,
-                                  color: blackFont,
-                                ),
-                              ),
-                              Text(
-                                "₦",
-                                softWrap: false,
-                                overflow: TextOverflow.fade,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 14,
-                                    color: blackFont,
-                                    fontFamily: "Roborto"),
-                              ),
-                              Text(
-                                "34.00",
-                                softWrap: false,
-                                overflow: TextOverflow.fade,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 14,
-                                  color: blackFont,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Text(
-                          "/ month ",
-                          softWrap: false,
-                          overflow: TextOverflow.fade,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 12,
-                            color: darkGrey,
-                          ),
-                        ),
-                      ],
-                    ),
                     Text(
-                      "3 beds in London",
+                      "Run it down",
                       softWrap: false,
                       overflow: TextOverflow.fade,
                       style: TextStyle(
-                        fontWeight: FontWeight.w400,
+                        fontWeight: FontWeight.w700,
                         fontSize: 12,
                         color: blackFont,
                       ),
+                    ),
+                    Row(
+                      children: [
+                        Text(
+                          "₦",
+                          softWrap: false,
+                          overflow: TextOverflow.fade,
+                          style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 12,
+                              color: navyBlue,
+                              fontFamily: "Roborto"),
+                        ),
+                        Text(
+                          "34.00",
+                          softWrap: false,
+                          overflow: TextOverflow.fade,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 12,
+                            color: navyBlue,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -423,7 +412,7 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
                         color: navyBlue),
                   ),
                   onTap: () {
-                    Navigator.of(context).pushNamed("/hotel-category");
+                    Navigator.of(context).pushNamed("/music-category");
                   },
                 ),
               ],
@@ -437,14 +426,16 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
               child: Container(
                 padding: EdgeInsets.only(left: 16),
                 child: Row(
-                  children: List.generate(
-                    5,
-                    (index) => Container(
-                      margin: EdgeInsets.only(right: 12),
-                      child: cityCard(
-                          cityPoster: moviePoster, cityName: movieName),
-                    ),
-                  ),
+                  children: singerList
+                      .map(
+                        (element) => Container(
+                          margin: EdgeInsets.only(right: 12),
+                          child: cityCard(
+                              cityPoster: element["image"],
+                              cityName: element["name"]),
+                        ),
+                      )
+                      .toList(),
                 ),
               ),
             ),
@@ -457,7 +448,7 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
   Widget cityCard({String cityName, String cityPoster}) {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).pushNamed("/hotel-detail");
+        Navigator.of(context).pushNamed("/music-detail");
       },
       child: Card(
         margin: EdgeInsets.zero,
@@ -472,7 +463,7 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  "Seoul",
+                  cityName,
                   softWrap: false,
                   overflow: TextOverflow.fade,
                   style: TextStyle(
@@ -487,7 +478,7 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: Image.network(
-                    "https://a.travel-assets.com/findyours-php/viewfinder/images/res70/20000/20665-London.jpg",
+                    cityPoster,
                     height: 130,
                     width: 130,
                     fit: BoxFit.fill,
@@ -578,7 +569,7 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
     bool temp = Random().nextBool();
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).pushNamed("/hotel-detail");
+        Navigator.of(context).pushNamed("/music-detail");
       },
       child: Container(
         height: 132,

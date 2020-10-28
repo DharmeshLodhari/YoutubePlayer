@@ -51,7 +51,7 @@ class _MyMusicScreenState extends State<MyMusicScreen> {
         },
       ),
       title: Text(
-        "My hotels",
+        "My Musics",
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
         overflow: TextOverflow.fade,
@@ -84,7 +84,7 @@ class _MyMusicScreenState extends State<MyMusicScreen> {
                     : Colors.white,
               ),
               child: Text(
-                "My hotels",
+                "My musics",
                 style: TextStyle(
                   color: currentIndex == 0 ? navyBlue : blackFont,
                   fontSize: 14,

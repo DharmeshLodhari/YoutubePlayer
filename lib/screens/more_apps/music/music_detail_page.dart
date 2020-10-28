@@ -1,3 +1,4 @@
+import 'package:Slydo/screens/more_apps/review/main_review.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';

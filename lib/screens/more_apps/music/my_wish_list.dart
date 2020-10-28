@@ -28,9 +28,7 @@ class _MyWishListState extends State<MyWishList> {
                 .map(
                   (element) => Container(
                       padding: EdgeInsets.symmetric(vertical: 8),
-                      child: MusicTileWithHeart(
-                        imageUrl: element,
-                      )),
+                      child: MusicTileWithHeart()),
                 )
                 .toList(),
           ),

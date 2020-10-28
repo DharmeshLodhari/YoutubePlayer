@@ -40,7 +40,7 @@ class _SpecificCategoryMusicListState extends State<SpecificCategoryMusicList> {
                   5,
                   (index) => Container(
                       padding: EdgeInsets.symmetric(vertical: 8),
-                      child: HotelRoomImagesTile())),
+                      child: MusicTileWithHeart())),
             ),
           ),
         ),

@@ -43,9 +43,7 @@ class _MyMusicListState extends State<MyMusicList> {
                   .map(
                     (element) => Container(
                         padding: EdgeInsets.symmetric(vertical: 8),
-                        child: MusicTile(
-                          imageUrl: element,
-                        )),
+                        child: MusicTileGeneral()),
                   )
                   .toList(),
             ),

@@ -118,9 +118,7 @@ class _SearchMusicState extends State<SearchMusic> {
                       (element) => Container(
                           padding:
                               EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                          child: MusicTileWithHeart(
-                            imageUrl: element,
-                          )),
+                          child: MusicTileWithHeart()),
                     )
                     .toList(),
               ),
