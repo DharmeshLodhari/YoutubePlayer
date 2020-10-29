@@ -42,6 +42,7 @@ import 'package:Slydo/screens/more_apps/movies/movie_dashboard.dart';
 import 'package:Slydo/screens/more_apps/movies/movie_detail_page.dart';
 import 'package:Slydo/screens/more_apps/movies/search_movie.dart';
 import 'package:Slydo/screens/more_apps/movies/specific_category_movie_list.dart';
+import 'package:Slydo/screens/more_apps/music/album_detail_page.dart';
 import 'package:Slydo/screens/more_apps/music/music_dashboard.dart';
 import 'package:Slydo/screens/more_apps/music/music_detail_page.dart';
 import 'package:Slydo/screens/more_apps/music/search_music.dart';
@@ -519,6 +520,14 @@ class RouteGenerator {
       case "/search-music":
         return PageTransition(
           child: SearchMusic(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case "/album-detail":
+        return PageTransition(
+          child: AlbumDetailPage(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
           settings: settings,

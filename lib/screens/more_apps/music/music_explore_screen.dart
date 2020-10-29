@@ -298,7 +298,7 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
   Widget rentCard({String cityName, String cityPoster}) {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).pushNamed("/music-detail");
+        Navigator.of(context).pushNamed("/album-detail");
       },
       child: Card(
         margin: EdgeInsets.zero,
@@ -434,7 +434,7 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
   Widget cityCard({String cityName, String cityPoster}) {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).pushNamed("/music-detail");
+        Navigator.of(context).pushNamed("/album-detail");
       },
       child: Card(
         margin: EdgeInsets.zero,

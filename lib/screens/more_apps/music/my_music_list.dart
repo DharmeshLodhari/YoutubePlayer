@@ -11,18 +11,15 @@ class MyMusicList extends StatefulWidget {
 
 class _MyMusicListState extends State<MyMusicList> {
   List<String> imgList = [
-    "https://www.telegraph.co.uk/content/dam/Travel/Destinations/Europe/United%20Kingdom/London/london-aerial-thames-guide.jpg",
-    "https://www.cityam.com/wp-content/uploads/2020/02/London_Tower_Bridge_City.jpg",
-    "https://metab.ern-net.eu/wp-content/uploads/2018/04/London.jpg",
-    "https://travel.home.sndimg.com/content/dam/images/travel/fullset/2015/05/28/big-ben-london-england.jpg",
-    "https://a.travel-assets.com/findyours-php/viewfinder/images/res70/20000/20665-London.jpg",
-    "https://www.telegraph.co.uk/content/dam/Travel/Destinations/Europe/United%20Kingdom/London/london-aerial-thames-guide.jpg",
-    "https://www.cityam.com/wp-content/uploads/2020/02/London_Tower_Bridge_City.jpg",
-    "https://metab.ern-net.eu/wp-content/uploads/2018/04/London.jpg",
-    "https://travel.home.sndimg.com/content/dam/images/travel/fullset/2015/05/28/big-ben-london-england.jpg",
-    "https://a.travel-assets.com/findyours-php/viewfinder/images/res70/20000/20665-London.jpg"
+    "https://storage.googleapis.com/assets-pam-blog/2018/12/Dj-Neptune-Greatness.jpg",
+    "https://www.naijaloaded.com.ng/wp-content/uploads/2019/10/erigga.jpg",
+    "https://i.ytimg.com/vi/MuXtUDQ8Sug/maxresdefault.jpg",
+    "https://www.musicinafrica.net/sites/default/files/styles/article_slider_large/public/images/article/202008/djcuppy21.jpg?itok=ruxfue_g",
+    "https://www.gstatic.com/tv/thumb/persons/1045961/1045961_v9_ba.jpg",
+    "https://www.grammy.com/sites/com/files/styles/news_detail_header/public/frankfieber_20181022_8-sm-scaled.jpg?itok=OdyzBPFd",
+    "https://upload.wikimedia.org/wikipedia/commons/f/fa/Tiwa_Savage%27s_studio_portrait.jpg",
+    "https://kgo.googleusercontent.com/profile_vrt_raw_bytes_1587515408_10954.jpg"
   ];
-
   MusicDashboardBloc _hotelDashboardBloc;
 
   @override
@@ -43,7 +40,9 @@ class _MyMusicListState extends State<MyMusicList> {
                   .map(
                     (element) => Container(
                         padding: EdgeInsets.symmetric(vertical: 8),
-                        child: MusicTileGeneral()),
+                        child: MusicTileGeneral(
+                          image: element,
+                        )),
                   )
                   .toList(),
             ),

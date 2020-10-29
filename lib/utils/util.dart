@@ -30,23 +30,27 @@ Widget customThemeBuilder(BuildContext context, Widget child) {
   );
 }
 
-BoxDecoration decorateBox({Color borderColor}) => BoxDecoration(
-      boxShadow: <BoxShadow>[
-        BoxShadow(
-          color: boxShadowTwo,
-          offset: Offset(0.0, 0.0),
-          blurRadius: 20.0,
-        ),
-      ],
-      color: Colors.white,
-      borderRadius: BorderRadius.all(
-        const Radius.circular(10.0),
+BoxDecoration decorateBox(
+    {Color borderColor, double borderRadius = 10, Color shadowColor}) {
+  if (shadowColor == null) shadowColor = boxShadowTwo;
+  return BoxDecoration(
+    boxShadow: <BoxShadow>[
+      BoxShadow(
+        color: shadowColor,
+        offset: Offset(0.0, 0.0),
+        blurRadius: 20.0,
       ),
-      border: new Border.all(
-          color: borderColor != null ? borderColor : lightGrey,
-          width: 1.0,
-          style: BorderStyle.solid),
-    );
+    ],
+    color: Colors.white,
+    borderRadius: BorderRadius.all(
+      Radius.circular(borderRadius),
+    ),
+    border: new Border.all(
+        color: borderColor != null ? borderColor : lightGrey,
+        width: 1.0,
+        style: BorderStyle.solid),
+  );
+}
 
 // for having expanded space
 Widget flexibleSpace({int flex = 1}) {

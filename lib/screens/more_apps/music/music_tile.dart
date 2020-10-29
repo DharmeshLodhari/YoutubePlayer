@@ -5,6 +5,7 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:percent_indicator/circular_percent_indicator.dart';
 
 // ignore: must_be_immutable
 class MusicTile extends StatelessWidget {
@@ -83,7 +84,11 @@ class MusicTile extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class MusicTileWithHeart extends StatefulWidget {
+  String image;
+  MusicTileWithHeart({this.image});
+
   @override
   _MusicTileWithHeartState createState() => _MusicTileWithHeartState();
 }
@@ -107,8 +112,7 @@ class _MusicTileWithHeartState extends State<MusicTileWithHeart> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: CachedNetworkImage(
-                  imageUrl:
-                      "https://www.naijaloaded.com.ng/wp-content/uploads/2019/10/erigga.jpg",
+                  imageUrl: widget.image,
                   fit: BoxFit.fill,
                 ),
               ),
@@ -170,7 +174,12 @@ class _MusicTileWithHeartState extends State<MusicTileWithHeart> {
   }
 }
 
+// ignore: must_be_immutable
 class MusicTileGeneral extends StatefulWidget {
+  String image;
+
+  MusicTileGeneral({this.image});
+
   @override
   _MusicTileGeneralState createState() => _MusicTileGeneralState();
 }
@@ -196,8 +205,7 @@ class _MusicTileGeneralState extends State<MusicTileGeneral> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: CachedNetworkImage(
-                  imageUrl:
-                      "https://www.musicinafrica.net/sites/default/files/styles/article_slider_large/public/images/article/202008/djcuppy21.jpg?itok=ruxfue_g",
+                  imageUrl: widget.image,
                   fit: BoxFit.fill,
                 ),
               ),
@@ -228,7 +236,7 @@ class _MusicTileGeneralState extends State<MusicTileGeneral> {
             trailing: IconButton(
               icon: Icon(
                 isDownloaded
-                    ? SlydoAppIcon.video_play
+                    ? SlydoAppIcon.music_play
                     : isChange
                         ? SlydoAppIcon.heart_empty
                         : SlydoAppIcon.heart_1,
@@ -249,73 +257,161 @@ class _MusicTileGeneralState extends State<MusicTileGeneral> {
   }
 }
 
-class PartnerTile extends StatelessWidget {
+// ignore: must_be_immutable
+class AlbumSongTile extends StatefulWidget {
+  String name;
+  int count;
+  AlbumSongTile({this.name, this.count});
+
+  @override
+  _AlbumSongTileState createState() => _AlbumSongTileState();
+}
+
+class _AlbumSongTileState extends State<AlbumSongTile> {
+  bool isDownloaded = Random().nextBool();
+
+  bool isChange = Random().nextBool();
+  bool isPlaying = Random().nextBool();
+
   @override
   Widget build(BuildContext context) {
     return Container(
+      padding: EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
-          Container(
-            height: 32,
-            width: 32,
-            child: ClipOval(
-              child: CachedNetworkImage(
-                imageUrl:
-                    "https://cdn.thewhistler.ng/wp-content/uploads/2020/06/ChiNna-Okoroafor-2.jpg",
-                fit: BoxFit.fill,
-                width: double.infinity,
-                height: double.infinity,
-              ),
-            ),
-          ),
-          SizedBox(
-            width: 16,
-          ),
+          isPlaying
+              ? Row(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.only(
+                          left: widget.count.toString().length == 1
+                              ? 12
+                              : widget.count.toString().length == 2
+                                  ? 8
+                                  : 4,
+                          right: widget.count.toString().length == 1
+                              ? 20
+                              : widget.count.toString().length == 2
+                                  ? 16
+                                  : 14),
+                      child: Text(
+                        "${widget.count}",
+                        style: TextStyle(
+                            fontSize: 14,
+                            color: blackFont,
+                            fontWeight: FontWeight.w400),
+                      ),
+                    ),
+                  ],
+                )
+              : Row(
+                  children: [
+                    CircularPercentIndicator(
+                      backgroundColor: dividerColor,
+                      radius: 30.0,
+                      lineWidth: 3.0,
+                      percent: 0.5,
+                      center: Icon(
+                        Icons.stop,
+                        color: navyBlue,
+                        size: 14,
+                      ),
+                      progressColor: navyBlue,
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                  ],
+                ),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  "Bond street dojo",
+                  widget.name,
                   style: TextStyle(
                       fontSize: 14,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w700,
                       color: blackFont),
+                  softWrap: false,
+                  overflow: TextOverflow.fade,
+                  maxLines: 1,
                 ),
                 SizedBox(
-                  width: 8,
+                  height: 4,
                 ),
-                Row(
-                  children: [
-                    Icon(
-                      SlydoAppIcon.star,
-                      color: starYellow,
-                      size: 11,
-                    ),
-                    SizedBox(
-                      width: 4,
-                    ),
-                    Text(
-                      "7.8 • Renter Friendly",
-                      style: TextStyle(
-                          fontSize: 12,
-                          color: blackFont,
-                          fontWeight: FontWeight.w400),
-                    )
-                  ],
+                Text(
+                  "THE ERIGMA II",
+                  style: TextStyle(
+                      fontSize: 14,
+                      color: blackFont,
+                      fontWeight: FontWeight.w400),
+                  softWrap: false,
+                  overflow: TextOverflow.fade,
+                  maxLines: 1,
+                ),
+              ],
+            ),
+          ),
+          Text(
+            "12:32",
+            style: TextStyle(
+              fontWeight: FontWeight.w400,
+              fontSize: 14,
+              color: blackFont,
+            ),
+          ),
+          SizedBox(
+            width: 20,
+          ),
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: navyBlue.withOpacity(0.08),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  SlydoAppIcon.naira,
+                  color: navyBlue,
+                  size: 8,
+                ),
+                Text(
+                  "34.00",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                    color: navyBlue,
+                  ),
                 ),
               ],
             ),
           ),
           SizedBox(
-            width: 16,
+            width: 20,
           ),
           Column(
             children: <Widget>[
-              Icon(
-                Icons.arrow_forward_ios_rounded,
-                color: navyBlue,
-                size: 16,
+              InkWell(
+                child: Icon(
+                  isDownloaded
+                      ? SlydoAppIcon.music_play
+                      : isChange
+                          ? SlydoAppIcon.heart_empty
+                          : SlydoAppIcon.heart_1,
+                  color: isDownloaded
+                      ? navyBlue
+                      : isChange
+                          ? blackFont
+                          : navyBlue,
+                  size: 20,
+                ),
+                onTap: () {
+                  isChange = !isChange;
+                  setState(() {});
+                },
               )
             ],
           ),

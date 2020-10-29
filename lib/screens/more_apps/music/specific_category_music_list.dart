@@ -11,18 +11,11 @@ class SpecificCategoryMusicList extends StatefulWidget {
 
 class _SpecificCategoryMusicListState extends State<SpecificCategoryMusicList> {
   List<String> imgList = [
-    "https://www.telegraph.co.uk/content/dam/Travel/Destinations/Europe/United%20Kingdom/London/london-aerial-thames-guide.jpg",
-    "https://www.cityam.com/wp-content/uploads/2020/02/London_Tower_Bridge_City.jpg",
-    "https://metab.ern-net.eu/wp-content/uploads/2018/04/London.jpg",
-    "https://travel.home.sndimg.com/content/dam/images/travel/fullset/2015/05/28/big-ben-london-england.jpg",
-    "https://a.travel-assets.com/findyours-php/viewfinder/images/res70/20000/20665-London.jpg",
-    "https://www.telegraph.co.uk/content/dam/Travel/Destinations/Europe/United%20Kingdom/London/london-aerial-thames-guide.jpg",
-    "https://www.cityam.com/wp-content/uploads/2020/02/London_Tower_Bridge_City.jpg",
-    "https://metab.ern-net.eu/wp-content/uploads/2018/04/London.jpg",
-    "https://travel.home.sndimg.com/content/dam/images/travel/fullset/2015/05/28/big-ben-london-england.jpg",
-    "https://a.travel-assets.com/findyours-php/viewfinder/images/res70/20000/20665-London.jpg"
+    "https://storage.googleapis.com/assets-pam-blog/2018/12/Dj-Neptune-Greatness.jpg",
+    "https://www.naijaloaded.com.ng/wp-content/uploads/2019/10/erigga.jpg",
+    "https://i.ytimg.com/vi/MuXtUDQ8Sug/maxresdefault.jpg",
+    "https://www.musicinafrica.net/sites/default/files/styles/article_slider_large/public/images/article/202008/djcuppy21.jpg?itok=ruxfue_g"
   ];
-
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -36,11 +29,16 @@ class _SpecificCategoryMusicListState extends State<SpecificCategoryMusicList> {
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 16),
             child: Column(
-              children: List.generate(
-                  5,
-                  (index) => Container(
+              children: imgList
+                  .map(
+                    (image) => Container(
                       padding: EdgeInsets.symmetric(vertical: 8),
-                      child: MusicTileWithHeart())),
+                      child: MusicTileWithHeart(
+                        image: image,
+                      ),
+                    ),
+                  )
+                  .toList(),
             ),
           ),
         ),
