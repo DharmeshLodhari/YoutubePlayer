@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -7,7 +8,6 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:provider/provider.dart';
 
 import 'music_dashboard_bloc.dart';
@@ -20,24 +20,68 @@ class MusicDetailPage extends StatefulWidget {
 class _MusicDetailPageState extends State<MusicDetailPage> {
   MusicDashboardBloc _musicDashboardBloc;
 
-  final assetsAudioPlayer = AssetsAudioPlayer();
+  AssetsAudioPlayer assetsAudioPlayer;
 
   bool isPlaying = false;
   bool isLoading = true;
 
+  LoopMode musicLoopMode = LoopMode.playlist;
+
   @override
   void initState() {
     loadMusic();
+
     super.initState();
   }
 
   void loadMusic() async {
     try {
+      assetsAudioPlayer = AssetsAudioPlayer.withId("test");
       await assetsAudioPlayer.open(
-          Audio.network(
-              "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/673e733fe5e055fb5d3d1e35500e0f4991d4faad/Martin Garrix - Animals (Original Mix).mp3"),
-          autoStart: true,
+          Playlist(audios: [
+            Audio.network(
+              "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/673e733fe5e055fb5d3d1e35500e0f4991d4faad/Martin Garrix - Animals (Original Mix).mp3",
+              metas: Metas(
+                title: "Animals (Original Mix)",
+                artist: "Martin Garrix",
+                album: "Animals",
+                image: MetasImage.network(
+                    "https://i.pinimg.com/originals/ce/de/a5/cedea5f757301128e39ebf13a36d3596.jpg"), //can be MetasImage.network
+              ),
+            ),
+            Audio.network(
+              "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/2b1a0b1c352114663125cb7226d1e443c3996daf/Drake - God s Plan.mp3",
+              metas: Metas(
+                title: "God's Plan",
+                artist: "DRAKE",
+                album: "God's Plan",
+                image: MetasImage.network(
+                    "https://i1.sndcdn.com/artworks-000564488507-04vehn-t500x500.jpg"), //can be MetasImage.network
+              ),
+            ),
+            Audio.network(
+              "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/673e733fe5e055fb5d3d1e35500e0f4991d4faad/Martin Garrix - Animals (Original Mix).mp3",
+              metas: Metas(
+                title: "Animals (Original Mix)",
+                artist: "Martin Garrix",
+                album: "Animals",
+                image: MetasImage.network(
+                    "https://i.pinimg.com/originals/ce/de/a5/cedea5f757301128e39ebf13a36d3596.jpg"), //can be MetasImage.network
+              ),
+            ),
+            Audio.network(
+              "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/2b1a0b1c352114663125cb7226d1e443c3996daf/Drake - God s Plan.mp3",
+              metas: Metas(
+                title: "God's Plan",
+                artist: "DRAKE",
+                album: "God's Plan",
+                image: MetasImage.network(
+                    "https://i1.sndcdn.com/artworks-000564488507-04vehn-t500x500.jpg"), //can be MetasImage.network
+              ),
+            )
+          ]),
           showNotification: true,
+          loopMode: LoopMode.playlist,
           playInBackground: PlayInBackground.enabled);
       isLoading = false;
       setState(() {});
@@ -45,12 +89,6 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
       debugPrint("t" + t.toString());
       //mp3 unreachable
     }
-  }
-
-  @override
-  void dispose() {
-    assetsAudioPlayer.dispose();
-    super.dispose();
   }
 
   var isWishList = false;
@@ -77,11 +115,16 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
       backgroundColor: Colors.white,
       titleSpacing: 0,
       automaticallyImplyLeading: false,
-      title: Text(
-        'THE ERIGMA II',
-        style: TextStyle(
-            fontSize: 18, fontWeight: FontWeight.w700, color: blackFont),
-      ),
+      title: assetsAudioPlayer.builderRealtimePlayingInfos(
+          builder: (context, info) {
+        return Text(
+          info == null || info.current == null
+              ? "ERIGMA II"
+              : info.current.audio.audio.metas.title,
+          style: TextStyle(
+              fontSize: 18, fontWeight: FontWeight.w700, color: blackFont),
+        );
+      }),
       leading: IconButton(
         icon: Icon(
           Icons.keyboard_arrow_left,
@@ -117,116 +160,97 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
   }
 
   Widget scaffoldBody() {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            height: 16,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          height: 16,
+        ),
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          child: musicPoster(),
+        ),
+        Flexible(
+          flex: 3,
+          child: SizedBox(
+            height: 40,
           ),
-          musicPoster(),
-          Flexible(
-            flex: 2,
-            child: SizedBox(
-              height: 40,
+        ),
+        assetsAudioPlayer.builderRealtimePlayingInfos(builder: (context, info) {
+          return Container(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  info == null || info.current == null
+                      ? "ERIGMA II"
+                      : info.current.audio.audio.metas.title,
+                  style: TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.w700,
+                      color: blackFont),
+                ),
+                SizedBox(
+                  height: 8,
+                ),
+                Text(
+                  info == null || info.current == null
+                      ? "ERIGGA"
+                      : info.current.audio.audio.metas.artist,
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: blackFont),
+                ),
+              ],
             ),
+          );
+        }),
+        Flexible(
+          flex: 1,
+          child: SizedBox(
+            height: 40,
           ),
-          Text(
-            "Up all night",
-            style: TextStyle(
-                fontSize: 26, fontWeight: FontWeight.w700, color: blackFont),
+        ),
+        progressIndicator(),
+        Flexible(
+          flex: 2,
+          child: SizedBox(
+            height: 40,
           ),
-          SizedBox(
-            height: 8,
+        ),
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          child: playerController(),
+        ),
+        Flexible(
+          flex: 4,
+          child: SizedBox(
+            height: 40,
           ),
-          Text(
-            "ERIGGA",
-            style: TextStyle(
-                fontSize: 14, fontWeight: FontWeight.w400, color: blackFont),
-          ),
-          Flexible(
-            flex: 1,
-            child: SizedBox(
-              height: 40,
-            ),
-          ),
-          progressIndicator(),
-          Flexible(
-            flex: 1,
-            child: SizedBox(
-              height: 40,
-            ),
-          ),
-          playerController(),
-          Flexible(
-            flex: 2,
-            child: SizedBox(
-              height: 40,
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   Widget progressIndicator() {
     return Column(
       children: [
-        LinearPercentIndicator(
-          width: MediaQuery.of(context).size.width - 40,
-          lineHeight: 2.0,
-          percent: 1,
-          animation: true,
-          restartAnimation: true,
-          animationDuration: 300000,
-          widgetIndicator: Container(
-            height: 10,
-            width: 10,
-            child: Stack(
-              overflow: Overflow.visible,
-              children: [
-                Positioned(
-                  top: -3,
-                  child: ClipOval(
-                    child: Container(
-                      color: navyBlue,
-                      width: 10,
-                      height: 10,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          linearStrokeCap: LinearStrokeCap.roundAll,
-          backgroundColor: dividerColor,
-          progressColor: navyBlue,
-        ),
-        SizedBox(
-          height: 8,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            StreamBuilder<Duration>(
-                stream: assetsAudioPlayer.currentPosition,
-                builder: (context, snapshot) {
-                  return Text(
-                    snapshot.data.toString(),
-                    style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w400,
-                        color: darkGrey),
-                  );
-                }),
-            Text(
-              "3:00",
-              style: TextStyle(
-                  fontSize: 12, fontWeight: FontWeight.w400, color: darkGrey),
-            ),
-          ],
-        )
+        assetsAudioPlayer.builderRealtimePlayingInfos(builder: (context, info) {
+          if (info == null || info.current == null) {
+            return SizedBox(
+              height: 50,
+            );
+          }
+          return PositionSeekWidget(
+            currentPosition: info.currentPosition,
+            duration: info.duration,
+            seekTo: (to) {
+              assetsAudioPlayer.seek(to);
+            },
+          );
+        }),
       ],
     );
   }
@@ -234,65 +258,90 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
   Widget playerController() {
     return Row(
       children: [
-        Icon(
-          SlydoAppIcon.music_suffle,
-          size: 16,
-          color: blackFont,
+        InkWell(
+          onTap: () {
+            assetsAudioPlayer.playlistPlayAtIndex(
+                Random().nextInt(assetsAudioPlayer.playlist.numberOfItems));
+          },
+          child: Icon(
+            SlydoAppIcon.music_suffle,
+            size: 16,
+            color: blackFont,
+          ),
         ),
         flexibleSpace(),
-        Icon(
-          SlydoAppIcon.music_back,
-          size: 16,
-          color: blackFont,
+        InkWell(
+          onTap: () {
+            assetsAudioPlayer.previous();
+          },
+          child: Icon(
+            SlydoAppIcon.music_back,
+            size: 16,
+            color: blackFont,
+          ),
         ),
         flexibleSpace(),
-        StreamBuilder<bool>(
-            stream: assetsAudioPlayer.isPlaying,
-            builder: (context, snapshot) {
-              return InkWell(
-                onTap: snapshot.data
-                    ? () {
-                        assetsAudioPlayer.pause();
-                      }
-                    : () {
-                        assetsAudioPlayer.play();
-                      },
-                child: Container(
-                  decoration: decorateBox(
-                      borderColor: Colors.white,
-                      borderRadius: 50,
-                      shadowColor: Colors.black12.withOpacity(0.08)),
-                  child: ClipOval(
-                    child: Container(
-                      height: 70,
-                      width: 70,
-                      child: StreamBuilder<bool>(
-                          stream: assetsAudioPlayer.isPlaying,
-                          builder: (context, snapshot) {
-                            return Icon(
-                              snapshot.data
-                                  ? Icons.pause
-                                  : SlydoAppIcon.music_play_1,
-                              size: snapshot.data ? 28 : 20,
-                              color: blackFont,
-                            );
-                          }),
-                    ),
-                  ),
-                ),
-              );
-            }),
-        flexibleSpace(),
-        Icon(
-          SlydoAppIcon.music_next,
-          size: 16,
-          color: blackFont,
+        InkWell(
+          onTap: () {
+            if (assetsAudioPlayer.isPlaying.value) {
+              assetsAudioPlayer.pause();
+              setState(() {});
+            } else {
+              assetsAudioPlayer.play();
+              setState(() {});
+            }
+          },
+          child: Container(
+            decoration: decorateBox(
+                borderColor: Colors.white,
+                borderRadius: 50,
+                shadowColor: Colors.black12.withOpacity(0.08)),
+            child: ClipOval(
+              child: Container(
+                height: 70,
+                width: 70,
+                child: StreamBuilder<bool>(
+                    initialData: false,
+                    stream: assetsAudioPlayer.isPlaying,
+                    builder: (context, snapshot) {
+                      return Icon(
+                        snapshot.data ? Icons.pause : SlydoAppIcon.music_play_1,
+                        size: snapshot.data ? 28 : 20,
+                        color: blackFont,
+                      );
+                    }),
+              ),
+            ),
+          ),
         ),
         flexibleSpace(),
-        Icon(
-          SlydoAppIcon.music_repeat,
-          size: 16,
-          color: blackFont,
+        InkWell(
+          onTap: () {
+            assetsAudioPlayer.next();
+          },
+          child: Icon(
+            SlydoAppIcon.music_next,
+            size: 16,
+            color: blackFont,
+          ),
+        ),
+        flexibleSpace(),
+        InkWell(
+          onTap: () {
+            if (musicLoopMode == LoopMode.playlist) {
+              assetsAudioPlayer.setLoopMode(LoopMode.single);
+              musicLoopMode = LoopMode.single;
+            } else if (musicLoopMode == LoopMode.single) {
+              assetsAudioPlayer.setLoopMode(LoopMode.playlist);
+              musicLoopMode = LoopMode.playlist;
+            }
+            setState(() {});
+          },
+          child: Icon(
+            SlydoAppIcon.music_repeat,
+            size: 16,
+            color: musicLoopMode == LoopMode.single ? navyBlue : blackFont,
+          ),
         ),
       ],
     );
@@ -305,12 +354,133 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
       child: Container(
         child: AspectRatio(
           aspectRatio: 1,
-          child: CachedNetworkImage(
-            imageUrl:
-                "https://www.naijaloaded.com.ng/wp-content/uploads/2019/10/erigga.jpg",
-            fit: BoxFit.fill,
-          ),
+          child: assetsAudioPlayer.builderRealtimePlayingInfos(
+              builder: (context, info) {
+            return CachedNetworkImage(
+              imageUrl: info == null || info.current == null
+                  ? "https://www.naijaloaded.com.ng/wp-content/uploads/2019/10/erigga.jpg"
+                  : info.current.audio.audio.metas.image.path,
+              fit: BoxFit.fill,
+            );
+          }),
         ),
+      ),
+    );
+  }
+}
+
+class PositionSeekWidget extends StatefulWidget {
+  final Duration currentPosition;
+  final Duration duration;
+  final Function(Duration) seekTo;
+
+  const PositionSeekWidget({
+    @required this.currentPosition,
+    @required this.duration,
+    @required this.seekTo,
+  });
+
+  @override
+  _PositionSeekWidgetState createState() => _PositionSeekWidgetState();
+}
+
+class _PositionSeekWidgetState extends State<PositionSeekWidget> {
+  Duration _visibleValue;
+  bool listenOnlyUserInterraction = false;
+  double get percent => widget.duration.inMilliseconds == 0
+      ? 0
+      : _visibleValue.inMilliseconds / widget.duration.inMilliseconds;
+
+  @override
+  void initState() {
+    super.initState();
+    _visibleValue = widget.currentPosition;
+  }
+
+  @override
+  void didUpdateWidget(PositionSeekWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!listenOnlyUserInterraction) {
+      _visibleValue = widget.currentPosition;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 20,
+      child: Stack(
+        overflow: Overflow.visible,
+        children: [
+          SliderTheme(
+            data: Theme.of(context).sliderTheme.copyWith(
+                trackHeight: 1,
+                thumbColor: navyBlue,
+                inactiveTrackColor: dividerColor,
+                trackShape: RoundedRectSliderTrackShape(),
+                activeTrackColor: navyBlue,
+                disabledThumbColor: Colors.white,
+                thumbShape: RoundSliderThumbShape(
+                    disabledThumbRadius: 5,
+                    enabledThumbRadius: 5,
+                    elevation: 1,
+                    pressedElevation: 4)),
+            child: Slider(
+              min: 0,
+              max: widget.duration.inMilliseconds.toDouble(),
+              inactiveColor: dividerColor,
+              activeColor: navyBlue,
+              value: percent * widget.duration.inMilliseconds.toDouble(),
+              onChangeEnd: (newValue) {
+                setState(() {
+                  listenOnlyUserInterraction = false;
+                  widget.seekTo(_visibleValue);
+                });
+              },
+              onChangeStart: (_) {
+                setState(() {
+                  listenOnlyUserInterraction = true;
+                });
+              },
+              onChanged: (newValue) {
+                setState(() {
+                  final to = Duration(milliseconds: newValue.floor());
+                  _visibleValue = to;
+                });
+              },
+            ),
+          ),
+          Positioned(
+            bottom: -16,
+            left: 20,
+            right: 20,
+            child: Container(
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Text(
+                    durationToString(widget.currentPosition),
+                    style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                        color: darkGrey),
+                  ),
+                  Expanded(
+                      child: SizedBox(
+                    width: 8,
+                  )),
+                  Text(
+                    durationToString(widget.duration),
+                    style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                        color: darkGrey),
+                  )
+                ],
+              ),
+            ),
+          )
+        ],
       ),
     );
   }

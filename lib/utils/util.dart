@@ -90,3 +90,27 @@ String formatDateInDigit(DateTime dateTime) {
 
   return date;
 }
+
+String formatDurationInSeconds({Duration duration}) {
+  String formattedDuration = "";
+  if (int.parse(duration.toString().substring(0, 1)) > 0) {
+    formattedDuration = duration.toString().substring(0, 7);
+  } else {
+    formattedDuration = duration.toString().substring(2, 7);
+  }
+
+  return formattedDuration;
+}
+
+String durationToString(Duration duration) {
+  String twoDigits(int n) {
+    if (n >= 10) return "$n";
+    return "0$n";
+  }
+
+  String twoDigitMinutes =
+      twoDigits(duration.inMinutes.remainder(Duration.minutesPerHour));
+  String twoDigitSeconds =
+      twoDigits(duration.inSeconds.remainder(Duration.secondsPerMinute));
+  return "$twoDigitMinutes:$twoDigitSeconds";
+}
