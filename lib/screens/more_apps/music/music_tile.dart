@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:Slydo/screens/more_apps/music/models/music_album.dart'
+    as musicAlbum;
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -263,9 +265,9 @@ class _MusicTileGeneralState extends State<MusicTileGeneral> {
 // ignore: must_be_immutable
 class AlbumSongTile extends StatefulWidget {
   MusicPlayer musicPlayer;
-  String name;
+  musicAlbum.Audio audio;
   int count;
-  AlbumSongTile({this.name, this.count, this.musicPlayer});
+  AlbumSongTile({this.audio, this.count, this.musicPlayer});
 
   @override
   _AlbumSongTileState createState() => _AlbumSongTileState();
@@ -355,7 +357,7 @@ class _AlbumSongTileState extends State<AlbumSongTile> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  widget.name,
+                  widget.audio.metas.title,
                   style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
@@ -368,7 +370,7 @@ class _AlbumSongTileState extends State<AlbumSongTile> {
                   height: 4,
                 ),
                 Text(
-                  "THE ERIGMA II",
+                  widget.audio.metas.artist,
                   style: TextStyle(
                       fontSize: 14,
                       color: blackFont,

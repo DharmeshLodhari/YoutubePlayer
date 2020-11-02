@@ -72,6 +72,7 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
             Audio.network(
               "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/ab04b116c1c257db491490aa8159fff960edeb55/Olamide-Wizkid-Kana.mp3",
               metas: Metas(
+                id: "3",
                 title: "Kana",
                 artist: "Olamide & Wizkid",
                 album: "Olamide & Wizkid",
@@ -92,6 +93,7 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
             Audio.network(
               "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/7454987a918388eec9174581ef08c52fb18eb412/Tekno-Sudden.mp3",
               metas: Metas(
+                id: "4",
                 title: "Sudden",
                 artist: "Tekno",
                 album: "Singles",
@@ -102,6 +104,7 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
             Audio.network(
               "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/7454987a918388eec9174581ef08c52fb18eb412/Davido_ChrisBrown.mp3",
               metas: Metas(
+                id: "5",
                 title: "Blow My Mind",
                 artist: "Davido",
                 album: "Blow My Mind ft Chris Brown",

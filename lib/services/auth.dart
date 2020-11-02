@@ -7,6 +7,7 @@ import 'package:Slydo/models/payout.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/models/user.dart';
+import 'package:Slydo/screens/more_apps/music/models/music_album.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
@@ -1957,18 +1958,77 @@ class AuthService {
 
   /// MUSIC
 
-  getMusicAlbum() {
+  Future<MusicAlbum> getMusicAlbum() async {
     var map = {
-      "src":
-          "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/673e733fe5e055fb5d3d1e35500e0f4991d4faad/Martin Garrix - Animals (Original Mix).mp3",
-      "metas": {
-        "id": 1,
-        "title": "Animals (Original Mix)",
-        "artist": "Martin Garrix",
-        "album": "Animals",
-        "image":
-            "https://i.pinimg.com/originals/ce/de/a5/cedea5f757301128e39ebf13a36d3596.jpg",
-      },
+      "id": 1,
+      "title": "Twice As Tall Album",
+      "image":
+          "https://trendybeatz.com/images/Burna-Boy-Twice-As-Tall-Album-Cover.jpg",
+      "audio": [
+        {
+          "src":
+              "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/f133a23f344e2e96b275800d505011f54a4dc20f/Burna-Boy-Monsters-You-Made-ft-Chris-Martin.mp3",
+          "metas": {
+            "id": "1",
+            "title": "Monsters You Made",
+            "artist": "Burna Boy",
+            "album": "Twice As Tall Album",
+            "image":
+                "https://trendybeatz.com/images/Burna-Boy-Twice-As-Tall-Album-Cover.jpg"
+          }
+        },
+        {
+          "src":
+              "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/673e733fe5e055fb5d3d1e35500e0f4991d4faad/Martin Garrix - Animals (Original Mix).mp3",
+          "metas": {
+            "id": "2",
+            "title": "Animals (Original Mix)",
+            "artist": "Martin Garrix",
+            "album": "Animals",
+            "image":
+                "https://i.pinimg.com/originals/ce/de/a5/cedea5f757301128e39ebf13a36d3596.jpg"
+          }
+        },
+        {
+          "src":
+              "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/ab04b116c1c257db491490aa8159fff960edeb55/Olamide-Wizkid-Kana.mp3",
+          "metas": {
+            "id": "3",
+            "title": "Kana",
+            "artist": "Olamide & Wizkid",
+            "album": "Olamide & Wizkid",
+            "image":
+                "https://www.naijavibes.com/wp-content/uploads/2018/05/Olamide-Kana-Artwork.jpg"
+          }
+        },
+        {
+          "src":
+              "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/7454987a918388eec9174581ef08c52fb18eb412/Tekno-Sudden.mp3",
+          "metas": {
+            "id": "4",
+            "title": "Sudden",
+            "artist": "Tekno",
+            "album": "Singles",
+            "image": "https://trendybeatz.com/images/tekno-sudden-artwork.jpg"
+          }
+        },
+        {
+          "src":
+              "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/7454987a918388eec9174581ef08c52fb18eb412/Davido_ChrisBrown.mp3",
+          "metas": {
+            "id": "5",
+            "title": "Blow My Mind",
+            "artist": "Davido",
+            "album": "Blow My Mind ft Chris Brown",
+            "image": "https://trendybeatz.com/images/Davido_ChrisBrown.jpg"
+          }
+        }
+      ]
     };
+
+    MusicAlbum album = MusicAlbum.fromJson(map);
+
+    await Future.delayed(Duration(seconds: 2));
+    return album;
   }
 }
