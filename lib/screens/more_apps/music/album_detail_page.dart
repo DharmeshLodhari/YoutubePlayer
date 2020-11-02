@@ -7,15 +7,29 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'music_dashboard_bloc.dart';
+import 'music_player.dart';
 import 'music_tile.dart';
 
+// ignore: must_be_immutable
 class AlbumDetailPage extends StatefulWidget {
+  var arguments;
+
+  AlbumDetailPage({this.arguments});
+
   @override
   _AlbumDetailPageState createState() => _AlbumDetailPageState();
 }
 
 class _AlbumDetailPageState extends State<AlbumDetailPage> {
   MusicDashboardBloc _musicDashboardBloc;
+
+  MusicPlayer musicPlayer;
+
+  @override
+  void initState() {
+    musicPlayer = widget.arguments["musicPlayer"];
+    super.initState();
+  }
 
   List<String> imgList = [
     "https://storage.googleapis.com/assets-pam-blog/2018/12/Dj-Neptune-Greatness.jpg",
@@ -44,11 +58,6 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
   ];
 
   bool isWishList = false;
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   void dispose() {
@@ -214,9 +223,14 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
                   children: songName
                       .map(
                         (name) => InkWell(
-                          child: AlbumSongTile(name: name, count: count++),
+                          child: AlbumSongTile(
+                            name: name,
+                            count: count++,
+                            musicPlayer: musicPlayer,
+                          ),
                           onTap: () {
-                            Navigator.pushNamed(context, "/music-detail");
+                            Navigator.pushNamed(context, "/music-detail",
+                                arguments: {"musicPlayer": musicPlayer});
                           },
                         ),
                       )

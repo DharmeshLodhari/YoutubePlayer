@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -11,8 +10,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'music_dashboard_bloc.dart';
+import 'music_player.dart';
 
+// ignore: must_be_immutable
 class MusicDetailPage extends StatefulWidget {
+  var arguments;
+
+  MusicDetailPage({this.arguments});
+
   @override
   _MusicDetailPageState createState() => _MusicDetailPageState();
 }
@@ -20,7 +25,8 @@ class MusicDetailPage extends StatefulWidget {
 class _MusicDetailPageState extends State<MusicDetailPage> {
   MusicDashboardBloc _musicDashboardBloc;
 
-  AssetsAudioPlayer assetsAudioPlayer;
+  // musicPlayer.audioPlayer musicPlayer.audioPlayer;
+  MusicPlayer musicPlayer;
 
   bool isPlaying = false;
   bool isLoading = true;
@@ -29,24 +35,28 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
 
   @override
   void initState() {
+    musicPlayer = widget.arguments["musicPlayer"];
     loadMusic();
-
     super.initState();
   }
 
   void loadMusic() async {
     try {
-      assetsAudioPlayer = AssetsAudioPlayer.withId("test");
-      await assetsAudioPlayer.open(
+      if (musicPlayer.audioPlayer.playerState.value == PlayerState.pause) {
+        return;
+      }
+
+      if (musicPlayer.audioPlayer.isPlaying.value == false) {
+        await musicPlayer.audioPlayer.open(
           Playlist(audios: [
             Audio.network(
-              "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/673e733fe5e055fb5d3d1e35500e0f4991d4faad/Martin Garrix - Animals (Original Mix).mp3",
+              "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/f133a23f344e2e96b275800d505011f54a4dc20f/Burna-Boy-Monsters-You-Made-ft-Chris-Martin.mp3",
               metas: Metas(
-                title: "Animals (Original Mix)",
-                artist: "Martin Garrix",
-                album: "Animals",
+                title: "Monsters You Made",
+                artist: "Burna Boy",
+                album: "Twice As Tall Album",
                 image: MetasImage.network(
-                    "https://i.pinimg.com/originals/ce/de/a5/cedea5f757301128e39ebf13a36d3596.jpg"), //can be MetasImage.network
+                    "https://trendybeatz.com/images/Burna-Boy-Twice-As-Tall-Album-Cover.jpg"), //can be MetasImage.network
               ),
             ),
             Audio.network(
@@ -60,6 +70,16 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
               ),
             ),
             Audio.network(
+              "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/ab04b116c1c257db491490aa8159fff960edeb55/Olamide-Wizkid-Kana.mp3",
+              metas: Metas(
+                title: "Kana",
+                artist: "Olamide & Wizkid",
+                album: "Olamide & Wizkid",
+                image: MetasImage.network(
+                    "https://www.naijavibes.com/wp-content/uploads/2018/05/Olamide-Kana-Artwork.jpg"), //can be MetasImage.network
+              ),
+            ),
+            Audio.network(
               "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/673e733fe5e055fb5d3d1e35500e0f4991d4faad/Martin Garrix - Animals (Original Mix).mp3",
               metas: Metas(
                 title: "Animals (Original Mix)",
@@ -70,19 +90,32 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
               ),
             ),
             Audio.network(
-              "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/2b1a0b1c352114663125cb7226d1e443c3996daf/Drake - God s Plan.mp3",
+              "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/7454987a918388eec9174581ef08c52fb18eb412/Tekno-Sudden.mp3",
               metas: Metas(
-                title: "God's Plan",
-                artist: "DRAKE",
-                album: "God's Plan",
+                title: "Sudden",
+                artist: "Tekno",
+                album: "Singles",
                 image: MetasImage.network(
-                    "https://i1.sndcdn.com/artworks-000564488507-04vehn-t500x500.jpg"), //can be MetasImage.network
+                    "https://trendybeatz.com/images/tekno-sudden-artwork.jpg"), //can be MetasImage.network
               ),
-            )
+            ),
+            Audio.network(
+              "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/7454987a918388eec9174581ef08c52fb18eb412/Davido_ChrisBrown.mp3",
+              metas: Metas(
+                title: "Blow My Mind",
+                artist: "Davido",
+                album: "Blow My Mind ft Chris Brown",
+                image: MetasImage.network(
+                    "https://trendybeatz.com/images/Davido_ChrisBrown.jpg"), //can be MetasImage.network
+              ),
+            ),
           ]),
           showNotification: true,
           loopMode: LoopMode.playlist,
-          playInBackground: PlayInBackground.enabled);
+          playInBackground: PlayInBackground.enabled,
+        );
+      }
+
       isLoading = false;
       setState(() {});
     } catch (t) {
@@ -115,7 +148,7 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
       backgroundColor: Colors.white,
       titleSpacing: 0,
       automaticallyImplyLeading: false,
-      title: assetsAudioPlayer.builderRealtimePlayingInfos(
+      title: musicPlayer.audioPlayer.builderRealtimePlayingInfos(
           builder: (context, info) {
         return Text(
           info == null || info.current == null
@@ -176,7 +209,8 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
             height: 40,
           ),
         ),
-        assetsAudioPlayer.builderRealtimePlayingInfos(builder: (context, info) {
+        musicPlayer.audioPlayer.builderRealtimePlayingInfos(
+            builder: (context, info) {
           return Container(
             padding: EdgeInsets.symmetric(horizontal: 20),
             child: Column(
@@ -237,7 +271,8 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
   Widget progressIndicator() {
     return Column(
       children: [
-        assetsAudioPlayer.builderRealtimePlayingInfos(builder: (context, info) {
+        musicPlayer.audioPlayer.builderRealtimePlayingInfos(
+            builder: (context, info) {
           if (info == null || info.current == null) {
             return SizedBox(
               height: 50,
@@ -247,7 +282,7 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
             currentPosition: info.currentPosition,
             duration: info.duration,
             seekTo: (to) {
-              assetsAudioPlayer.seek(to);
+              musicPlayer.audioPlayer.seek(to);
             },
           );
         }),
@@ -260,19 +295,21 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
       children: [
         InkWell(
           onTap: () {
-            assetsAudioPlayer.playlistPlayAtIndex(
-                Random().nextInt(assetsAudioPlayer.playlist.numberOfItems));
+            musicPlayer.toggleShuffle();
+            debugPrint("suffle:- ${musicPlayer.audioPlayer.shuffle}");
+            setState(() {});
           },
           child: Icon(
             SlydoAppIcon.music_suffle,
             size: 16,
-            color: blackFont,
+            color: musicPlayer.audioPlayer.shuffle ? navyBlue : blackFont,
           ),
         ),
         flexibleSpace(),
         InkWell(
           onTap: () {
-            assetsAudioPlayer.previous();
+            musicPlayer.audioPlayer.previous();
+            setState(() {});
           },
           child: Icon(
             SlydoAppIcon.music_back,
@@ -283,11 +320,11 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
         flexibleSpace(),
         InkWell(
           onTap: () {
-            if (assetsAudioPlayer.isPlaying.value) {
-              assetsAudioPlayer.pause();
+            if (musicPlayer.audioPlayer.isPlaying.value) {
+              musicPlayer.audioPlayer.pause();
               setState(() {});
             } else {
-              assetsAudioPlayer.play();
+              musicPlayer.audioPlayer.play();
               setState(() {});
             }
           },
@@ -302,7 +339,7 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
                 width: 70,
                 child: StreamBuilder<bool>(
                     initialData: false,
-                    stream: assetsAudioPlayer.isPlaying,
+                    stream: musicPlayer.audioPlayer.isPlaying,
                     builder: (context, snapshot) {
                       return Icon(
                         snapshot.data ? Icons.pause : SlydoAppIcon.music_play_1,
@@ -317,7 +354,7 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
         flexibleSpace(),
         InkWell(
           onTap: () {
-            assetsAudioPlayer.next();
+            musicPlayer.audioPlayer.next();
           },
           child: Icon(
             SlydoAppIcon.music_next,
@@ -329,10 +366,10 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
         InkWell(
           onTap: () {
             if (musicLoopMode == LoopMode.playlist) {
-              assetsAudioPlayer.setLoopMode(LoopMode.single);
+              musicPlayer.audioPlayer.setLoopMode(LoopMode.single);
               musicLoopMode = LoopMode.single;
             } else if (musicLoopMode == LoopMode.single) {
-              assetsAudioPlayer.setLoopMode(LoopMode.playlist);
+              musicPlayer.audioPlayer.setLoopMode(LoopMode.playlist);
               musicLoopMode = LoopMode.playlist;
             }
             setState(() {});
@@ -354,7 +391,7 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
       child: Container(
         child: AspectRatio(
           aspectRatio: 1,
-          child: assetsAudioPlayer.builderRealtimePlayingInfos(
+          child: musicPlayer.audioPlayer.builderRealtimePlayingInfos(
               builder: (context, info) {
             return CachedNetworkImage(
               imageUrl: info == null || info.current == null

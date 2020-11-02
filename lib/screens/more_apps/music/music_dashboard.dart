@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import 'music_dashboard_bloc.dart';
 import 'music_explore_screen.dart';
+import 'music_player.dart';
 import 'my_music_screen.dart';
 
 class MusicDashboard extends StatefulWidget {
@@ -14,11 +15,14 @@ class MusicDashboard extends StatefulWidget {
 }
 
 class _MusicDashboardState extends State<MusicDashboard> {
+  MusicPlayer musicPlayer;
+
   MusicDashboardBloc _hotelDashboardBloc;
 
   @override
   Widget build(BuildContext context) {
     _hotelDashboardBloc = Provider.of<MusicDashboardBloc>(context);
+    musicPlayer = Provider.of<MusicPlayer>(context);
     return WillPopScope(
       onWillPop: () {
         _hotelDashboardBloc.index = 0;
@@ -31,8 +35,10 @@ class _MusicDashboardState extends State<MusicDashboard> {
             _hotelDashboardBloc.index = index;
           },
           children: <Widget>[
-            MusicExploreScreen(),
-            MyMusicScreen(),
+            MusicExploreScreen(
+              musicPlayer: musicPlayer,
+            ),
+            MyMusicScreen(musicPlayer: musicPlayer),
           ],
         ),
         bottomNavigationBar: bottomNavigationBar(),

@@ -2,9 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'music_dashboard_bloc.dart';
+import 'music_player.dart';
 import 'music_tile.dart';
 
+// ignore: must_be_immutable
 class MyMusicList extends StatefulWidget {
+  MusicPlayer musicPlayer;
+
+  MyMusicList({this.musicPlayer});
+
   @override
   _MyMusicListState createState() => _MyMusicListState();
 }

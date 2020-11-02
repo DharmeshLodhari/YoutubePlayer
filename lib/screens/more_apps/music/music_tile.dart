@@ -3,9 +3,12 @@ import 'dart:math';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+
+import 'music_player.dart';
 
 // ignore: must_be_immutable
 class MusicTile extends StatelessWidget {
@@ -259,9 +262,10 @@ class _MusicTileGeneralState extends State<MusicTileGeneral> {
 
 // ignore: must_be_immutable
 class AlbumSongTile extends StatefulWidget {
+  MusicPlayer musicPlayer;
   String name;
   int count;
-  AlbumSongTile({this.name, this.count});
+  AlbumSongTile({this.name, this.count, this.musicPlayer});
 
   @override
   _AlbumSongTileState createState() => _AlbumSongTileState();
@@ -271,7 +275,11 @@ class _AlbumSongTileState extends State<AlbumSongTile> {
   bool isDownloaded = Random().nextBool();
 
   bool isChange = Random().nextBool();
-  bool isPlaying = Random().nextBool();
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -279,50 +287,69 @@ class _AlbumSongTileState extends State<AlbumSongTile> {
       padding: EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
-          isPlaying
-              ? Row(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.only(
-                          left: widget.count.toString().length == 1
-                              ? 12
-                              : widget.count.toString().length == 2
-                                  ? 8
-                                  : 4,
-                          right: widget.count.toString().length == 1
-                              ? 20
-                              : widget.count.toString().length == 2
-                                  ? 16
-                                  : 14),
-                      child: Text(
-                        "${widget.count}",
-                        style: TextStyle(
-                            fontSize: 14,
-                            color: blackFont,
-                            fontWeight: FontWeight.w400),
-                      ),
-                    ),
-                  ],
-                )
-              : Row(
-                  children: [
-                    CircularPercentIndicator(
-                      backgroundColor: dividerColor,
-                      radius: 30.0,
-                      lineWidth: 3.0,
-                      percent: 0.5,
-                      center: Icon(
-                        Icons.stop,
-                        color: navyBlue,
-                        size: 14,
-                      ),
-                      progressColor: navyBlue,
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                  ],
-                ),
+          StreamBuilder<RealtimePlayingInfos>(
+              stream: widget.musicPlayer.audioPlayer.realtimePlayingInfos,
+              initialData: RealtimePlayingInfos(
+                loopMode: null,
+                current: null,
+                currentPosition: null,
+                isBuffering: null,
+                playerId: null,
+                volume: null,
+                isShuffling: null,
+                isPlaying: false,
+              ),
+              builder: (context, snapshot) {
+                return snapshot.data.isPlaying
+                    ? Row(
+                        children: [
+                          InkWell(
+                            child: CircularPercentIndicator(
+                              backgroundColor: dividerColor,
+                              radius: 30.0,
+                              lineWidth: 3.0,
+                              percent: snapshot.data.playingPercent,
+                              center: Icon(
+                                Icons.stop,
+                                color: navyBlue,
+                                size: 14,
+                              ),
+                              progressColor: navyBlue,
+                            ),
+                            onTap: () {
+                              widget.musicPlayer.audioPlayer.stop();
+                            },
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                        ],
+                      )
+                    : Row(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.only(
+                                left: widget.count.toString().length == 1
+                                    ? 12
+                                    : widget.count.toString().length == 2
+                                        ? 8
+                                        : 4,
+                                right: widget.count.toString().length == 1
+                                    ? 20
+                                    : widget.count.toString().length == 2
+                                        ? 16
+                                        : 14),
+                            child: Text(
+                              "${widget.count}",
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  color: blackFont,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                          ),
+                        ],
+                      );
+              }),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

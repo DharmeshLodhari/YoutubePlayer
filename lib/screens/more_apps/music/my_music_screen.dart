@@ -1,3 +1,4 @@
+import 'package:Slydo/screens/more_apps/music/music_player.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -6,7 +7,12 @@ import 'music_dashboard_bloc.dart';
 import 'my_music_list.dart';
 import 'my_wish_list.dart';
 
+// ignore: must_be_immutable
 class MyMusicScreen extends StatefulWidget {
+  MusicPlayer musicPlayer;
+
+  MyMusicScreen({this.musicPlayer});
+
   @override
   _MyMusicScreenState createState() => _MyMusicScreenState();
 }

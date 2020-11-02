@@ -527,7 +527,9 @@ class RouteGenerator {
 
       case "/album-detail":
         return PageTransition(
-          child: AlbumDetailPage(),
+          child: AlbumDetailPage(
+            arguments: settings.arguments,
+          ),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
           settings: settings,
@@ -535,7 +537,9 @@ class RouteGenerator {
 
       case "/music-detail":
         return PageTransition(
-          child: MusicDetailPage(),
+          child: MusicDetailPage(
+            arguments: settings.arguments,
+          ),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
           settings: settings,

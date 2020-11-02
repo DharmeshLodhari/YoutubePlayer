@@ -1952,4 +1952,23 @@ class AuthService {
     // return Future.error("Something wrong please try later!");
     return true;
   }
+
+  /// MORE APPS
+
+  /// MUSIC
+
+  getMusicAlbum() {
+    var map = {
+      "src":
+          "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/673e733fe5e055fb5d3d1e35500e0f4991d4faad/Martin Garrix - Animals (Original Mix).mp3",
+      "metas": {
+        "id": 1,
+        "title": "Animals (Original Mix)",
+        "artist": "Martin Garrix",
+        "album": "Animals",
+        "image":
+            "https://i.pinimg.com/originals/ce/de/a5/cedea5f757301128e39ebf13a36d3596.jpg",
+      },
+    };
+  }
 }
