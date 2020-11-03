@@ -16,11 +16,11 @@ class PropertyExploreScreen extends StatefulWidget {
 
 class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
   List<String> cityImgList = [
-    "https://www.telegraph.co.uk/content/dam/Travel/Destinations/Europe/United%20Kingdom/London/london-aerial-thames-guide.jpg",
-    "https://www.cityam.com/wp-content/uploads/2020/02/London_Tower_Bridge_City.jpg",
-    "https://metab.ern-net.eu/wp-content/uploads/2018/04/London.jpg",
-    "https://travel.home.sndimg.com/content/dam/images/travel/fullset/2015/05/28/big-ben-london-england.jpg",
-    "https://a.travel-assets.com/findyours-php/viewfinder/images/res70/20000/20665-London.jpg"
+    "https://www.investopedia.com/thmb/yykxeXgS1D1U8NHWKTbWo0jaMRA=/680x440/filters:fill(auto,1)/houses_and_land-5bfc3326c9e77c0051812eb3.jpg",
+    "https://www.omgproperties.in/wp-content/uploads/2019/11/Budget-villas-in-palakkad.jpg",
+    "https://is1-3.housingcdn.com/4f2250e8/61aaf7e228e409f2b1e325cf59a537cd/v0/fs/richlook_luxurious_floor-sector_42-faridabad-richlook_property.jpeg",
+    "https://new-img.patrika.com/upload/2017/10/01/real_estate_property_home_1864135_835x547-m.jpg",
+    "https://im.proptiger.com/1/3029540/6/veda-elevation-103037128.jpeg"
   ];
   List<String> hotelImgList = [
     "https://www.gannett-cdn.com/-mm-/05b227ad5b8ad4e9dcb53af4f31d7fbdb7fa901b/c=0-64-2119-1259/local/-/media/USATODAY/USATODAY/2014/08/13/1407953244000-177513283.jpg",
@@ -234,34 +234,20 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
                 onTap: () {
                   Navigator.of(context).pushNamed("/property-detail");
                 },
-                child: Stack(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 5),
-                      child: Center(
-                          child: ClipRRect(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                        child: CachedNetworkImage(
-                          imageUrl: item,
-                          fit: BoxFit.fill,
-                          color: Colors.black12,
-                          colorBlendMode: BlendMode.darken,
-                          height: double.infinity,
-                          width: double.infinity,
-                        ),
-                      )),
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 5),
+                  child: Center(
+                      child: ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                    child: CachedNetworkImage(
+                      imageUrl: item,
+                      fit: BoxFit.fill,
+                      color: Colors.black12,
+                      colorBlendMode: BlendMode.darken,
+                      height: double.infinity,
+                      width: double.infinity,
                     ),
-                    Align(
-                      alignment: Alignment.center,
-                      child: Text(
-                        "Homestay",
-                        style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 22,
-                            color: Colors.white),
-                      ),
-                    ),
-                  ],
+                  )),
                 ),
               ),
             )

@@ -267,7 +267,8 @@ class AlbumSongTile extends StatefulWidget {
   MusicPlayer musicPlayer;
   musicAlbum.Audio audio;
   int count;
-  AlbumSongTile({this.audio, this.count, this.musicPlayer});
+  int index;
+  AlbumSongTile({this.audio, this.count, this.musicPlayer, this.index});
 
   @override
   _AlbumSongTileState createState() => _AlbumSongTileState();
@@ -302,7 +303,8 @@ class _AlbumSongTileState extends State<AlbumSongTile> {
                 isPlaying: false,
               ),
               builder: (context, snapshot) {
-                return snapshot.data.isPlaying
+                return snapshot.data.isPlaying &&
+                        snapshot.data.current.index == widget.index
                     ? Row(
                         children: [
                           InkWell(

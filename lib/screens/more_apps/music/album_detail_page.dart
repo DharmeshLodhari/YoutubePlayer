@@ -1,10 +1,12 @@
-import 'package:Slydo/screens/more_apps/music/models/music_album.dart';
+import 'package:Slydo/screens/more_apps/music/models/music_album.dart'
+    as MusicAlbum;
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -28,26 +30,48 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
 
   MusicPlayer musicPlayer;
   bool isLoading = false;
-  MusicAlbum musicAlbum = MusicAlbum(
-      audio: [],
-      title: "",
-      id: 0,
-      image:
-          "https://www.naijaloaded.com.ng/wp-content/uploads/2019/10/erigga.jpg");
+  MusicAlbum.MusicAlbum musicAlbum;
 
   @override
   void initState() {
     musicPlayer = widget.arguments["musicPlayer"];
-    getMusicAlbum();
+    musicAlbum = musicPlayer.musicAlbum;
+    if (musicAlbum.id == null) {
+      getMusicAlbum();
+    }
+
     super.initState();
   }
 
   void getMusicAlbum() {
     isLoading = true;
     setState(() {});
-    AuthService().getMusicAlbum().then((album) {
+    AuthService().getMusicAlbum().then((album) async {
       musicAlbum = album;
+      musicPlayer.musicAlbum = album;
       isLoading = false;
+      await musicPlayer.audioPlayer.open(
+        Playlist(
+          audios: musicAlbum.audio
+              .map((audio) => Audio.network(
+                    audio.src,
+                    cached: true,
+                    metas: Metas(
+                      id: audio.metas.id,
+                      title: audio.metas.title,
+                      artist: audio.metas.artist,
+                      album: audio.metas.title,
+                      image: MetasImage.network(
+                          audio.metas.image), //can be MetasImage.network
+                    ),
+                  ))
+              .toList(),
+        ),
+        autoStart: false,
+        showNotification: true,
+        loopMode: LoopMode.playlist,
+        playInBackground: PlayInBackground.enabled,
+      );
       setState(() {});
     });
   }
@@ -218,19 +242,29 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
                       padding: EdgeInsets.only(right: 20, left: 10),
                       child: Column(
                         children: musicAlbum.audio
+                            .asMap()
                             .map(
-                              (audio) => InkWell(
-                                child: AlbumSongTile(
-                                  audio: audio,
-                                  count: count++,
-                                  musicPlayer: musicPlayer,
+                              (i, audio) => MapEntry(
+                                i,
+                                InkWell(
+                                  child: AlbumSongTile(
+                                    audio: audio,
+                                    count: count++,
+                                    index: i,
+                                    musicPlayer: musicPlayer,
+                                  ),
+                                  onTap: () {
+                                    Navigator.pushNamed(
+                                        context, "/music-detail",
+                                        arguments: {
+                                          "musicPlayer": musicPlayer,
+                                          "index": i,
+                                        });
+                                  },
                                 ),
-                                onTap: () {
-                                  Navigator.pushNamed(context, "/music-detail",
-                                      arguments: {"musicPlayer": musicPlayer});
-                                },
                               ),
                             )
+                            .values
                             .toList(),
                       ),
                     ),

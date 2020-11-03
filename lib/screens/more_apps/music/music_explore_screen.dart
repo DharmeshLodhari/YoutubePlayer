@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 
 import 'music_player.dart';
 
+// ignore: must_be_immutable
 class MusicExploreScreen extends StatefulWidget {
   MusicPlayer musicPlayer;
 
@@ -217,7 +218,8 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
             .map(
               (item) => GestureDetector(
                 onTap: () {
-                  Navigator.of(context).pushNamed("/music-detail",arguments: {"musicPlayer":widget.musicPlayer});
+                  Navigator.of(context).pushNamed("/album-detail",
+                      arguments: {"musicPlayer": widget.musicPlayer});
                 },
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 5),
@@ -304,7 +306,8 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
   Widget rentCard({String cityName, String cityPoster}) {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).pushNamed("/album-detail",arguments: {"musicPlayer":widget.musicPlayer});
+        Navigator.of(context).pushNamed("/album-detail",
+            arguments: {"musicPlayer": widget.musicPlayer});
       },
       child: Card(
         margin: EdgeInsets.zero,
@@ -440,7 +443,8 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
   Widget cityCard({String cityName, String cityPoster}) {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).pushNamed("/album-detail",arguments: {"musicPlayer":widget.musicPlayer});
+        Navigator.of(context).pushNamed("/album-detail",
+            arguments: {"musicPlayer": widget.musicPlayer});
       },
       child: Card(
         margin: EdgeInsets.zero,
@@ -530,7 +534,8 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
                       margin: EdgeInsets.only(right: 12),
                       child: InkWell(
                           onTap: () {
-                            Navigator.of(context).pushNamed("/music-detail",arguments: {"musicPlayer":widget.musicPlayer});
+                            Navigator.of(context).pushNamed("/album-detail",
+                                arguments: {"musicPlayer": widget.musicPlayer});
                           },
                           child: albumPoster()),
                     ),
@@ -561,7 +566,8 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
     bool temp = Random().nextBool();
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).pushNamed("/music-detail",arguments: {"musicPlayer":widget.musicPlayer});
+        Navigator.of(context).pushNamed("/music-detail",
+            arguments: {"musicPlayer": widget.musicPlayer});
       },
       child: Container(
         height: 132,

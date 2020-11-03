@@ -27,6 +27,7 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
 
   // musicPlayer.audioPlayer musicPlayer.audioPlayer;
   MusicPlayer musicPlayer;
+  int trackIndex;
 
   bool isPlaying = false;
   bool isLoading = true;
@@ -36,87 +37,20 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
   @override
   void initState() {
     musicPlayer = widget.arguments["musicPlayer"];
+    trackIndex = widget.arguments["index"];
     loadMusic();
     super.initState();
   }
 
   void loadMusic() async {
     try {
-      if (musicPlayer.audioPlayer.playerState.value == PlayerState.pause) {
-        return;
-      }
-
-      if (musicPlayer.audioPlayer.isPlaying.value == false) {
-        await musicPlayer.audioPlayer.open(
-          Playlist(audios: [
-            Audio.network(
-              "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/f133a23f344e2e96b275800d505011f54a4dc20f/Burna-Boy-Monsters-You-Made-ft-Chris-Martin.mp3",
-              metas: Metas(
-                title: "Monsters You Made",
-                artist: "Burna Boy",
-                album: "Twice As Tall Album",
-                image: MetasImage.network(
-                    "https://trendybeatz.com/images/Burna-Boy-Twice-As-Tall-Album-Cover.jpg"), //can be MetasImage.network
-              ),
-            ),
-            Audio.network(
-              "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/2b1a0b1c352114663125cb7226d1e443c3996daf/Drake - God s Plan.mp3",
-              metas: Metas(
-                title: "God's Plan",
-                artist: "DRAKE",
-                album: "God's Plan",
-                image: MetasImage.network(
-                    "https://i1.sndcdn.com/artworks-000564488507-04vehn-t500x500.jpg"), //can be MetasImage.network
-              ),
-            ),
-            Audio.network(
-              "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/ab04b116c1c257db491490aa8159fff960edeb55/Olamide-Wizkid-Kana.mp3",
-              metas: Metas(
-                id: "3",
-                title: "Kana",
-                artist: "Olamide & Wizkid",
-                album: "Olamide & Wizkid",
-                image: MetasImage.network(
-                    "https://www.naijavibes.com/wp-content/uploads/2018/05/Olamide-Kana-Artwork.jpg"), //can be MetasImage.network
-              ),
-            ),
-            Audio.network(
-              "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/673e733fe5e055fb5d3d1e35500e0f4991d4faad/Martin Garrix - Animals (Original Mix).mp3",
-              metas: Metas(
-                title: "Animals (Original Mix)",
-                artist: "Martin Garrix",
-                album: "Animals",
-                image: MetasImage.network(
-                    "https://i.pinimg.com/originals/ce/de/a5/cedea5f757301128e39ebf13a36d3596.jpg"), //can be MetasImage.network
-              ),
-            ),
-            Audio.network(
-              "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/7454987a918388eec9174581ef08c52fb18eb412/Tekno-Sudden.mp3",
-              metas: Metas(
-                id: "4",
-                title: "Sudden",
-                artist: "Tekno",
-                album: "Singles",
-                image: MetasImage.network(
-                    "https://trendybeatz.com/images/tekno-sudden-artwork.jpg"), //can be MetasImage.network
-              ),
-            ),
-            Audio.network(
-              "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/7454987a918388eec9174581ef08c52fb18eb412/Davido_ChrisBrown.mp3",
-              metas: Metas(
-                id: "5",
-                title: "Blow My Mind",
-                artist: "Davido",
-                album: "Blow My Mind ft Chris Brown",
-                image: MetasImage.network(
-                    "https://trendybeatz.com/images/Davido_ChrisBrown.jpg"), //can be MetasImage.network
-              ),
-            ),
-          ]),
-          showNotification: true,
-          loopMode: LoopMode.playlist,
-          playInBackground: PlayInBackground.enabled,
-        );
+      if (musicPlayer.audioPlayer.isPlaying.value == true ||
+          musicPlayer.audioPlayer.playerState.value == PlayerState.pause) {
+        if (musicPlayer.audioPlayer.current.value.index != trackIndex) {
+          musicPlayer.audioPlayer.playlistPlayAtIndex(trackIndex);
+        }
+      } else {
+        musicPlayer.audioPlayer.playlistPlayAtIndex(trackIndex);
       }
 
       isLoading = false;

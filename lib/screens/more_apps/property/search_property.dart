@@ -1,4 +1,3 @@
-import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/movies/custom_slider_thumb_circle_for_range_slider.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -43,6 +42,14 @@ class _SearchPropertyState extends State<SearchProperty> {
     "https://a.travel-assets.com/findyours-php/viewfinder/images/res70/20000/20665-London.jpg"
   ];
 
+  /// type of property filter variables
+  bool typeIsAny = false;
+  bool typeIsApartment = false;
+  bool typeIsCondo = false;
+  bool typeIsDuplex = false;
+  bool typeIsHouse = false;
+  bool typeIsTownHouse = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,7 +81,7 @@ class _SearchPropertyState extends State<SearchProperty> {
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
-        filterMovieBtn(),
+        filterPropertyBtn(),
         SizedBox(
           width: 16,
         ),
@@ -82,7 +89,7 @@ class _SearchPropertyState extends State<SearchProperty> {
     );
   }
 
-  Widget filterMovieBtn() {
+  Widget filterPropertyBtn() {
     return RoundedBackgroundIcon(
       height: 34,
       width: 34,
@@ -92,7 +99,7 @@ class _SearchPropertyState extends State<SearchProperty> {
         color: blackFont,
       ),
       onTap: () {
-        showFilterMovieSheet();
+        showFilterPropertySheet();
       },
       backgroundColor: iconBtnGrey,
       enableMargin: true,
@@ -200,7 +207,7 @@ class _SearchPropertyState extends State<SearchProperty> {
     );
   }
 
-  void showFilterMovieSheet() {
+  void showFilterPropertySheet() {
     showModalBottomSheet<void>(
         backgroundColor: Colors.transparent,
         isScrollControlled: true,
@@ -217,11 +224,11 @@ class _SearchPropertyState extends State<SearchProperty> {
                     color: Colors.white,
                     margin: EdgeInsets.zero,
                     child: Container(
+                      height: MediaQuery.of(context).size.height * 0.66,
                       padding:
                           EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                       child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
+                        children: [
                           Text(
                             "Filter",
                             style: TextStyle(
@@ -230,27 +237,152 @@ class _SearchPropertyState extends State<SearchProperty> {
                                 color: blackFont),
                           ),
                           SizedBox(
-                            height: 40,
-                          ),
-                          getMovieCategoryDropDown(bottomSheetSetState),
-                          SizedBox(
                             height: 20,
                           ),
-                          getMovieYearDropDown(bottomSheetSetState),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          getMovieRatingSelection(bottomSheetSetState),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          getPriceSelection(bottomSheetSetState),
-                          SizedBox(
-                            height: 50,
-                          ),
-                          getFilerSubmitButton(),
-                          SizedBox(
-                            height: 10,
+                          Expanded(
+                            child: SingleChildScrollView(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  getPropertyType(
+                                    bottomSheetSetState,
+                                  ),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  getChipsList(
+                                    title: "Duration",
+                                    bottomSheetSetState: bottomSheetSetState,
+                                    children: [
+                                      {
+                                        "name": "At least a year",
+                                        "isSelected": true
+                                      },
+                                      {
+                                        "name": "At few months",
+                                        "isSelected": false
+                                      },
+                                      {
+                                        "name": "At few weeks",
+                                        "isSelected": false
+                                      },
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  getChipsList(
+                                    title: "Roommates",
+                                    bottomSheetSetState: bottomSheetSetState,
+                                    children: [
+                                      {
+                                        "name": "I need a roommate",
+                                        "isSelected": false
+                                      },
+                                      {
+                                        "name": "I don't want roommate",
+                                        "isSelected": true
+                                      },
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  getChipsList(
+                                    title: "Bedrooms",
+                                    bottomSheetSetState: bottomSheetSetState,
+                                    children: [
+                                      {"name": "Studio", "isSelected": false},
+                                      {"name": "1 bed", "isSelected": false},
+                                      {"name": "2 bed", "isSelected": true},
+                                      {"name": "3 bed", "isSelected": false},
+                                      {"name": "4+", "isSelected": false},
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  getChipsList(
+                                    title: "Bathrooms",
+                                    bottomSheetSetState: bottomSheetSetState,
+                                    children: [
+                                      {"name": "1 bath", "isSelected": false},
+                                      {"name": "2 bath", "isSelected": true},
+                                      {"name": "3 bath", "isSelected": false},
+                                      {"name": "4 bath", "isSelected": false},
+                                      {"name": "5+", "isSelected": false},
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  getChipsList(
+                                    title: "Pet Policy",
+                                    bottomSheetSetState: bottomSheetSetState,
+                                    children: [
+                                      {
+                                        "name": "Dogs allowed",
+                                        "isSelected": true
+                                      },
+                                      {
+                                        "name": "Cats allowed",
+                                        "isSelected": false
+                                      },
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  getChipsList(
+                                    title: "Furniture",
+                                    bottomSheetSetState: bottomSheetSetState,
+                                    children: [
+                                      {"name": "Furnished", "isSelected": true},
+                                      {
+                                        "name": "Unfurnished",
+                                        "isSelected": false
+                                      },
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  getChipsList(
+                                    title: "Amenities",
+                                    bottomSheetSetState: bottomSheetSetState,
+                                    children: [
+                                      {"name": "Any", "isSelected": false},
+                                      {"name": "Laundry", "isSelected": true},
+                                      {"name": "A/C", "isSelected": false},
+                                      {"name": "Heating", "isSelected": false},
+                                      {"name": "Parking", "isSelected": true},
+                                      {
+                                        "name": "Gated entry",
+                                        "isSelected": false
+                                      },
+                                      {"name": "Doorman", "isSelected": false},
+                                      {"name": "Gym", "isSelected": true},
+                                      {"name": "Pool", "isSelected": true},
+                                      {
+                                        "name": "Dishwasher",
+                                        "isSelected": false
+                                      },
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  getPriceSelection(bottomSheetSetState),
+                                  SizedBox(
+                                    height: 50,
+                                  ),
+                                  getFilerSubmitButton(),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -259,124 +391,145 @@ class _SearchPropertyState extends State<SearchProperty> {
         });
   }
 
-  Widget getMovieCategoryDropDown(StateSetter bottomSheetSetState) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          AppLocalization.of(context).category,
-          style: TextStyle(color: blackFont, fontSize: 14),
-        ),
-        SizedBox(
-          height: 6,
-        ),
-        Card(
-          elevation: 0,
-          color: Colors.white,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-              side: BorderSide(color: greyBorderColor)),
-          margin: EdgeInsets.all(0),
-          borderOnForeground: true,
-          child: ListTile(
-            dense: true,
-            title: Text(
-              selectedMovieCategory != null ? selectedMovieCategory : "",
-              softWrap: false,
-              overflow: TextOverflow.fade,
-              style: TextStyle(
-                color: blackFont,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
+  Widget getChipsList(
+      {String title,
+      StateSetter bottomSheetSetState,
+      List<Map<String, dynamic>> children}) {
+    return Container(
+      width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              color: blackFont,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
             ),
-            trailing: Icon(
-              Icons.keyboard_arrow_down,
-              color: darkGrey,
-            ),
-            onTap: () {
-              selectCategory(bottomSheetSetState);
-            },
           ),
-        ),
-      ],
+          SizedBox(
+            height: 8,
+          ),
+          Wrap(
+            direction: Axis.horizontal,
+            clipBehavior: Clip.hardEdge,
+            alignment: WrapAlignment.start,
+            runSpacing: 8,
+            spacing: 8,
+            children: children
+                .map((element) => selectionCard(
+                    title: element["name"],
+                    bottomSheetSetState: bottomSheetSetState,
+                    isSelected: element["isSelected"]))
+                .toList(),
+          ),
+        ],
+      ),
     );
   }
 
-  void selectCategory(StateSetter bottomSheetSetState) async {
-    final pressedCategory = await showDialog<String>(
-        barrierDismissible: false,
-        context: context,
-        builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-              contentPadding: EdgeInsets.zero,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              content: Container(
-                width: MediaQuery.of(context).size.width - 40,
-                child: Card(
-                  elevation: 2,
-                  shadowColor: Colors.transparent,
-                  margin: EdgeInsets.zero,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: movieCategoryList.map<Widget>((category) {
-                          if (selectedMovieCategory == category) {
-                            return Container(
-                              color: selectedListItemBackgroundBlue,
-                              child: ListTile(
-                                dense: true,
-                                title: Text(
-                                  category,
-                                  overflow: TextOverflow.fade,
-                                  softWrap: false,
-                                  style: TextStyle(
-                                      color: navyBlue,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                                trailing: Icon(
-                                  SlydoAppIcon.checked,
-                                  color: navyBlue,
-                                  size: 12,
-                                ),
-                                onTap: () {
-                                  Navigator.pop(context, category);
-                                },
-                              ),
-                            );
-                          }
-                          return ListTile(
-                            title: Text(
-                              category,
-                              softWrap: false,
-                              overflow: TextOverflow.fade,
-                              style: TextStyle(
-                                  color: blackFont,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400),
-                            ),
-                            dense: true,
-                            onTap: () {
-                              Navigator.pop(context, category);
-                            },
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ),
-                ),
+  Widget getPropertyType(StateSetter bottomSheetSetState) {
+    return Container(
+      width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Type",
+            style: TextStyle(
+              color: blackFont,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          SizedBox(
+            height: 8,
+          ),
+          Wrap(
+            direction: Axis.horizontal,
+            clipBehavior: Clip.hardEdge,
+            alignment: WrapAlignment.start,
+            runSpacing: 8,
+            spacing: 8,
+            children: [
+              selectionCard(
+                  title: "Any",
+                  bottomSheetSetState: bottomSheetSetState,
+                  isSelected: true),
+              selectionCard(
+                  title: "Apartment",
+                  bottomSheetSetState: bottomSheetSetState,
+                  isSelected: typeIsApartment),
+              selectionCard(
+                  title: "Condo",
+                  bottomSheetSetState: bottomSheetSetState,
+                  isSelected: typeIsCondo),
+              selectionCard(
+                  title: "Duplex",
+                  bottomSheetSetState: bottomSheetSetState,
+                  isSelected: typeIsDuplex),
+              selectionCard(
+                  title: "House",
+                  bottomSheetSetState: bottomSheetSetState,
+                  isSelected: typeIsHouse),
+              selectionCard(
+                  title: "Townhouse",
+                  bottomSheetSetState: bottomSheetSetState,
+                  isSelected: typeIsTownHouse),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget selectionCard(
+      {String title, StateSetter bottomSheetSetState, bool isSelected}) {
+    return InkWell(
+      onTap: () {
+        debugPrint("is Selected:- $isSelected");
+        isSelected = !isSelected;
+
+        setState(() {});
+        bottomSheetSetState(() {});
+        debugPrint("is Selected:- $isSelected");
+      },
+      child: Card(
+        shadowColor: boxShadowTwo,
+        elevation: 1,
+        margin: EdgeInsets.zero,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        child: Container(
+          decoration: BoxDecoration(
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                color: boxShadowTwo,
+                offset: Offset(0.0, 0.0),
+                blurRadius: 1.0,
               ),
-            ));
-    if (pressedCategory != null) {
-      selectedMovieCategory = pressedCategory;
-      bottomSheetSetState(() {});
-    }
+            ],
+            color: isSelected ? navyBlue : Colors.white,
+            borderRadius: BorderRadius.all(
+              Radius.circular(10),
+            ),
+            border: new Border.all(
+                color: isSelected ? navyBlue : lightGrey,
+                width: 1.0,
+                style: BorderStyle.solid),
+          ),
+          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: Text(
+            title,
+            style: TextStyle(
+              color: isSelected ? Colors.white : blackFont,
+              fontSize: 14,
+              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Widget getMovieYearDropDown(StateSetter bottomSheetSetState) {
