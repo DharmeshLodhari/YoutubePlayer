@@ -657,7 +657,7 @@ class RouteGenerator {
 
       case "/search-property":
         return PageTransition(
-          child: SearchProperty(),
+          child: SearchProperty(arguments: settings.arguments),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
           settings: settings,

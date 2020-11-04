@@ -100,6 +100,9 @@ void main() async {
           ChangeNotifierProvider<PropertyDashboardBloc>.value(
             value: PropertyDashboardBloc(),
           ),
+          ChangeNotifierProvider<PropertyFilterBloc>.value(
+            value: PropertyFilterBloc(),
+          ),
           ChangeNotifierProvider<MusicDashboardBloc>.value(
             value: MusicDashboardBloc(),
           ),

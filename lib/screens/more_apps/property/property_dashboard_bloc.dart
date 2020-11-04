@@ -17,3 +17,337 @@ class PropertyDashboardBloc extends ChangeNotifier {
     notifyListeners();
   }
 }
+
+/// Property Filter
+
+class PropertyFilterBloc extends ChangeNotifier {
+  /// type of property filter variables
+  bool _typeIsAny = false;
+  bool _typeIsApartment = false;
+  bool _typeIsCondo = false;
+  bool _typeIsDuplex = false;
+  bool _typeIsHouse = false;
+  bool _typeIsTownHouse = false;
+
+  /// duration of property filter variables
+  bool _durationAtLeastAYear = false;
+  bool _durationAtFewMonths = false;
+  bool _durationAtFewWeeks = false;
+
+  /// Roommates property filter variables
+  bool _roommatesNeeded = false;
+  bool _roommatesDoesNotNeeded = false;
+
+  /// Bedrooms property filter variables
+  bool _bedroomIsStudio = false;
+  bool _bedroomIs1 = false;
+  bool _bedroomIs2 = false;
+  bool _bedroomIs3 = false;
+  bool _bedroomIs4Plus = false;
+
+  /// Bathroom property filter variables
+  bool _bathroomIs1 = false;
+  bool _bathroomIs2 = false;
+  bool _bathroomIs3 = false;
+  bool _bathroomIs4 = false;
+  bool _bathroomIs5Plus = false;
+
+  /// Pet Policy property filter variables
+  bool _isDogAllowed = false;
+  bool _isCatAllowed = false;
+
+  /// Furniture property filter variables
+  bool _isFurnished = false;
+  bool _isUnfurnished = false;
+
+  /// Amenities property filter variables
+  bool _amenityIsAny = false;
+  bool _amenityIsLaundryAvailable = false;
+  bool _amenityIsACAvailable = false;
+  bool _amenityIsHeatingAvailable = false;
+  bool _amenityIsParkingAvailable = false;
+  bool _amenityIsGatedEntryAvailable = false;
+  bool _amenityIsDoormanAvailable = false;
+  bool _amenityIsGymAvailable = false;
+  bool _amenityIsPoolAvailable = false;
+  bool _amenityIsDishwasherAvailable = false;
+
+  /// Price filter
+  int _minPrice = 0;
+  int _maxPrice = 100;
+  int _selectedMinPrice = 0;
+  int _selectedMaxPrice = 50;
+
+  bool get typeIsAny => _typeIsAny;
+
+  set typeIsAny(bool value) {
+    _typeIsAny = value;
+    notifyListeners();
+  }
+
+  bool get typeIsApartment => _typeIsApartment;
+
+  set typeIsApartment(bool value) {
+    _typeIsApartment = value;
+    notifyListeners();
+  }
+
+  bool get typeIsCondo => _typeIsCondo;
+
+  set typeIsCondo(bool value) {
+    _typeIsCondo = value;
+    notifyListeners();
+  }
+
+  bool get typeIsDuplex => _typeIsDuplex;
+
+  set typeIsDuplex(bool value) {
+    _typeIsDuplex = value;
+    notifyListeners();
+  }
+
+  bool get typeIsHouse => _typeIsHouse;
+
+  set typeIsHouse(bool value) {
+    _typeIsHouse = value;
+    notifyListeners();
+  }
+
+  bool get typeIsTownHouse => _typeIsTownHouse;
+
+  set typeIsTownHouse(bool value) {
+    _typeIsTownHouse = value;
+    notifyListeners();
+  }
+
+  bool get durationAtLeastAYear => _durationAtLeastAYear;
+
+  set durationAtLeastAYear(bool value) {
+    _durationAtLeastAYear = value;
+    notifyListeners();
+  }
+
+  bool get durationAtFewMonths => _durationAtFewMonths;
+
+  set durationAtFewMonths(bool value) {
+    _durationAtFewMonths = value;
+    notifyListeners();
+  }
+
+  bool get durationAtFewWeeks => _durationAtFewWeeks;
+
+  set durationAtFewWeeks(bool value) {
+    _durationAtFewWeeks = value;
+    notifyListeners();
+  }
+
+  bool get roommatesNeeded => _roommatesNeeded;
+
+  set roommatesNeeded(bool value) {
+    _roommatesNeeded = value;
+    notifyListeners();
+  }
+
+  bool get roommatesDoesNotNeeded => _roommatesDoesNotNeeded;
+
+  set roommatesDoesNotNeeded(bool value) {
+    _roommatesDoesNotNeeded = value;
+    notifyListeners();
+  }
+
+  bool get bedroomIsStudio => _bedroomIsStudio;
+
+  set bedroomIsStudio(bool value) {
+    _bedroomIsStudio = value;
+    notifyListeners();
+  }
+
+  bool get bedroomIs1 => _bedroomIs1;
+
+  set bedroomIs1(bool value) {
+    _bedroomIs1 = value;
+    notifyListeners();
+  }
+
+  bool get bedroomIs2 => _bedroomIs2;
+
+  set bedroomIs2(bool value) {
+    _bedroomIs2 = value;
+    notifyListeners();
+  }
+
+  bool get bedroomIs3 => _bedroomIs3;
+
+  set bedroomIs3(bool value) {
+    _bedroomIs3 = value;
+    notifyListeners();
+  }
+
+  bool get bedroomIs4Plus => _bedroomIs4Plus;
+
+  set bedroomIs4Plus(bool value) {
+    _bedroomIs4Plus = value;
+    notifyListeners();
+  }
+
+  bool get bathroomIs1 => _bathroomIs1;
+
+  set bathroomIs1(bool value) {
+    _bathroomIs1 = value;
+    notifyListeners();
+  }
+
+  bool get bathroomIs2 => _bathroomIs2;
+
+  set bathroomIs2(bool value) {
+    _bathroomIs2 = value;
+    notifyListeners();
+  }
+
+  bool get bathroomIs3 => _bathroomIs3;
+
+  set bathroomIs3(bool value) {
+    _bathroomIs3 = value;
+    notifyListeners();
+  }
+
+  bool get bathroomIs4 => _bathroomIs4;
+
+  set bathroomIs4(bool value) {
+    _bathroomIs4 = value;
+    notifyListeners();
+  }
+
+  bool get bathroomIs5Plus => _bathroomIs5Plus;
+
+  set bathroomIs5Plus(bool value) {
+    _bathroomIs5Plus = value;
+    notifyListeners();
+  }
+
+  bool get isDogAllowed => _isDogAllowed;
+
+  set isDogAllowed(bool value) {
+    _isDogAllowed = value;
+    notifyListeners();
+  }
+
+  bool get isCatAllowed => _isCatAllowed;
+
+  set isCatAllowed(bool value) {
+    _isCatAllowed = value;
+    notifyListeners();
+  }
+
+  bool get isFurnished => _isFurnished;
+
+  set isFurnished(bool value) {
+    _isFurnished = value;
+    notifyListeners();
+  }
+
+  bool get isUnfurnished => _isUnfurnished;
+
+  set isUnfurnished(bool value) {
+    _isUnfurnished = value;
+    notifyListeners();
+  }
+
+  bool get amenityIsAny => _amenityIsAny;
+
+  set amenityIsAny(bool value) {
+    _amenityIsAny = value;
+    notifyListeners();
+  }
+
+  bool get amenityIsLaundryAvailable => _amenityIsLaundryAvailable;
+
+  set amenityIsLaundryAvailable(bool value) {
+    _amenityIsLaundryAvailable = value;
+    notifyListeners();
+  }
+
+  bool get amenityIsACAvailable => _amenityIsACAvailable;
+
+  set amenityIsACAvailable(bool value) {
+    _amenityIsACAvailable = value;
+    notifyListeners();
+  }
+
+  bool get amenityIsHeatingAvailable => _amenityIsHeatingAvailable;
+
+  set amenityIsHeatingAvailable(bool value) {
+    _amenityIsHeatingAvailable = value;
+    notifyListeners();
+  }
+
+  bool get amenityIsParkingAvailable => _amenityIsParkingAvailable;
+
+  set amenityIsParkingAvailable(bool value) {
+    _amenityIsParkingAvailable = value;
+    notifyListeners();
+  }
+
+  bool get amenityIsGatedEntryAvailable => _amenityIsGatedEntryAvailable;
+
+  set amenityIsGatedEntryAvailable(bool value) {
+    _amenityIsGatedEntryAvailable = value;
+    notifyListeners();
+  }
+
+  bool get amenityIsDoormanAvailable => _amenityIsDoormanAvailable;
+
+  set amenityIsDoormanAvailable(bool value) {
+    _amenityIsDoormanAvailable = value;
+    notifyListeners();
+  }
+
+  bool get amenityIsGymAvailable => _amenityIsGymAvailable;
+
+  set amenityIsGymAvailable(bool value) {
+    _amenityIsGymAvailable = value;
+    notifyListeners();
+  }
+
+  bool get amenityIsPoolAvailable => _amenityIsPoolAvailable;
+
+  set amenityIsPoolAvailable(bool value) {
+    _amenityIsPoolAvailable = value;
+    notifyListeners();
+  }
+
+  bool get amenityIsDishwasherAvailable => _amenityIsDishwasherAvailable;
+
+  set amenityIsDishwasherAvailable(bool value) {
+    _amenityIsDishwasherAvailable = value;
+    notifyListeners();
+  }
+
+  int get minPrice => _minPrice;
+
+  set minPrice(int value) {
+    _minPrice = value;
+    notifyListeners();
+  }
+
+  int get maxPrice => _maxPrice;
+
+  set maxPrice(int value) {
+    _maxPrice = value;
+    notifyListeners();
+  }
+
+  int get selectedMinPrice => _selectedMinPrice;
+
+  set selectedMinPrice(int value) {
+    _selectedMinPrice = value;
+    notifyListeners();
+  }
+
+  int get selectedMaxPrice => _selectedMaxPrice;
+
+  set selectedMaxPrice(int value) {
+    _selectedMaxPrice = value;
+    notifyListeners();
+  }
+}

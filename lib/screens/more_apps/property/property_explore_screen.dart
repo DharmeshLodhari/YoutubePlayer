@@ -1,11 +1,13 @@
 import 'dart:math';
 
+import 'package:Slydo/screens/more_apps/property/property_dashboard_bloc.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'property_tile.dart';
 
@@ -30,10 +32,15 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
     "https://blisssaigon.com/wp-content/uploads/2019/10/iwood-R5v8Xtc0ecg-unsplash-1.jpg"
   ];
 
+  List<String> cityName = ["Lagos", "Abuja", "Ibadan", "Port harcourt"];
+
   CarouselController _carouselController = CarouselController();
+
+  PropertyFilterBloc _propertyFilterBloc;
 
   @override
   Widget build(BuildContext context) {
+    _propertyFilterBloc = Provider.of<PropertyFilterBloc>(context);
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
@@ -110,10 +117,10 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
           SizedBox(
             height: 32,
           ),
-          cityCarouselSlider(),
-          SizedBox(
-            height: 40,
-          ),
+          // cityCarouselSlider(),
+          // SizedBox(
+          //   height: 40,
+          // ),
           nearByYou(categoryName: "Nearby you"),
           rentDetail(
             categoryName: "Most recent discovery",
@@ -147,7 +154,8 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
         ),
         child: InkWell(
           onTap: () {
-            Navigator.of(context).pushNamed('/search-property');
+            Navigator.of(context).pushNamed('/search-property',
+                arguments: {"filterBloc": _propertyFilterBloc});
           },
           child: IgnorePointer(
             ignoring: true,
@@ -448,14 +456,15 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
               child: Container(
                 padding: EdgeInsets.only(left: 16),
                 child: Row(
-                  children: List.generate(
-                    5,
-                    (index) => Container(
-                      margin: EdgeInsets.only(right: 12),
-                      child: cityCard(
-                          cityPoster: moviePoster, cityName: movieName),
-                    ),
-                  ),
+                  children: cityName
+                      .map(
+                        (city) => Container(
+                          margin: EdgeInsets.only(right: 12),
+                          child:
+                              cityCard(cityPoster: moviePoster, cityName: city),
+                        ),
+                      )
+                      .toList(),
                 ),
               ),
             ),
@@ -483,7 +492,7 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  "Seoul",
+                  cityName,
                   softWrap: false,
                   overflow: TextOverflow.fade,
                   style: TextStyle(
@@ -550,18 +559,17 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
             child: SingleChildScrollView(
               scrollDirection: Axis.vertical,
               child: Container(
-                padding: EdgeInsets.only(left: 16, right: 16),
+                padding: EdgeInsets.only(
+                  left: 16,
+                  bottom: 12,
+                ),
                 child: Column(
-                  children: [
-                    Column(
-                      children: hotelImgList
-                          .map((element) => Container(
-                                margin: EdgeInsets.only(bottom: 12),
-                                child: PropertyImagesTile(),
-                              ))
-                          .toList(),
-                    ),
-                  ],
+                  children: List.generate(
+                      1,
+                      (index) => Container(
+                            margin: EdgeInsets.only(right: 16),
+                            child: PropertyImagesTile(),
+                          )),
                 ),
               ),
             ),

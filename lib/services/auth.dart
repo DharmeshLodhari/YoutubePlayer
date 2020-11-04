@@ -19,6 +19,10 @@ final String secureBaseUrl = "https://api.slydo.co";
 final String localHostUrl = "https://127.0.0.1:8080";
 
 class AuthService {
+  final String baseUrl = "https://api.slydo.co";
+  final String secureBaseUrl = "https://api.slydo.co";
+  final String localHostUrl = "https://127.0.0.1:8080";
+
   DatabaseHelper _db = DatabaseHelper();
 
   // This function creates a user object from named args passed in
