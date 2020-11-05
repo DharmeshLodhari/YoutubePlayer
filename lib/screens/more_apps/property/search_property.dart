@@ -1,12 +1,17 @@
 import 'package:Slydo/screens/more_apps/movies/custom_slider_thumb_circle_for_range_slider.dart';
-import 'package:Slydo/screens/more_apps/property/property_dashboard_bloc.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
-import 'package:Slydo/widget/customized_popup_menu.dart';
+import 'package:Slydo/widget/customized_dropdown_field.dart';
+import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
+import 'package:search_widget/search_widget.dart';
 
+import 'property_auth.dart';
+import 'property_dashboard_bloc.dart';
 import 'property_tile.dart';
 
 // ignore: must_be_immutable
@@ -33,29 +38,18 @@ class _SearchPropertyState extends State<SearchProperty> {
     "https://a.travel-assets.com/findyours-php/viewfinder/images/res70/20000/20665-London.jpg"
   ];
 
-  GlobalKey _key = LabeledGlobalKey("searchType");
-  CustomizedPopUpMenu searchTypeSelectionMenu;
-  int selectedMenuItemIndex = 0;
-  bool isPopMenuOpen = false;
+  List<String> searchSuggestion = [];
 
-  void menuItemSelectionChange(String value, int index) {
-    selectedMenuItemIndex = index;
+  TextEditingController searchedText = TextEditingController();
+  String selectedSearch = "London";
 
-    setState(() {});
-  }
+  List<int> numberCount = List.generate(10, (index) => ++index);
+  RangeValues selectedPriceValue = RangeValues(20000, 50000);
 
-  void menuStateChange(bool isOpen) {
-    isPopMenuOpen = isOpen;
-    setState(() {});
-  }
-
-  String selectedMovieCategory;
-  String selectedMovieYear;
-  int selectedRating;
-  RangeValues selectedPriceValue = RangeValues(5, 56);
+  List<bool> isForBuyOrRent = [true, false];
 
   /// type of property filter variables
-  bool typeIsAny = false;
+  bool typeIsAny = true;
   bool typeIsApartment = false;
   bool typeIsCondo = false;
   bool typeIsDuplex = false;
@@ -63,23 +57,27 @@ class _SearchPropertyState extends State<SearchProperty> {
   bool typeIsTownHouse = false;
 
   /// duration of property filter variables
-  bool durationAtLeastAYear = false;
+  bool durationAtLeastAYear = true;
   bool durationAtFewMonths = false;
   bool durationAtFewWeeks = false;
+  bool durationAtFewDays = false;
+  DateTime checkInDate = DateTime.now();
+  DateTime checkOutDate = DateTime.now();
+  int selectedGuestCount = 1;
 
   /// Roommates property filter variables
   bool roommatesNeeded = false;
-  bool roommatesDoesNotNeeded = false;
+  bool roommatesDoesNotNeeded = true;
 
   /// Bedrooms property filter variables
-  bool bedroomIsStudio = false;
+  bool bedroomIsStudio = true;
   bool bedroomIs1 = false;
   bool bedroomIs2 = false;
   bool bedroomIs3 = false;
   bool bedroomIs4Plus = false;
 
   /// Bathroom property filter variables
-  bool bathroomIs1 = false;
+  bool bathroomIs1 = true;
   bool bathroomIs2 = false;
   bool bathroomIs3 = false;
   bool bathroomIs4 = false;
@@ -91,10 +89,10 @@ class _SearchPropertyState extends State<SearchProperty> {
 
   /// Furniture property filter variables
   bool isFurnished = false;
-  bool isUnfurnished = false;
+  bool isUnfurnished = true;
 
   /// Amenities property filter variables
-  bool amenityIsAny = false;
+  bool amenityIsAny = true;
   bool amenityIsLaundryAvailable = false;
   bool amenityIsACAvailable = false;
   bool amenityIsHeatingAvailable = false;
@@ -107,10 +105,17 @@ class _SearchPropertyState extends State<SearchProperty> {
 
   PropertyFilterBloc _propertyFilterBloc;
 
+  bool isLoading = false;
+
   @override
   void initState() {
     _propertyFilterBloc = widget.arguments["filterBloc"];
     setFilterProperty();
+
+    PropertyAuthService().getLocation().then((value) {
+      searchSuggestion.addAll(value);
+    });
+
     super.initState();
   }
 
@@ -124,6 +129,10 @@ class _SearchPropertyState extends State<SearchProperty> {
     durationAtLeastAYear = _propertyFilterBloc.durationAtLeastAYear;
     durationAtFewMonths = _propertyFilterBloc.durationAtFewMonths;
     durationAtFewWeeks = _propertyFilterBloc.durationAtFewWeeks;
+    durationAtFewDays = _propertyFilterBloc.durationAtFewDays;
+    checkInDate = _propertyFilterBloc.checkInDate;
+    checkOutDate = _propertyFilterBloc.checkOutDate;
+    selectedGuestCount = _propertyFilterBloc.selectedGuestCount;
     roommatesNeeded = _propertyFilterBloc.roommatesNeeded;
     roommatesDoesNotNeeded = _propertyFilterBloc.roommatesDoesNotNeeded;
     bedroomIsStudio = _propertyFilterBloc.bedroomIsStudio;
@@ -156,26 +165,6 @@ class _SearchPropertyState extends State<SearchProperty> {
 
   @override
   Widget build(BuildContext context) {
-    searchTypeSelectionMenu = CustomizedPopUpMenu(
-        buttonKey: _key,
-        context: context,
-        hasIcon: true,
-        children: [
-          CustomizedPopUpMenuItemWithIcon(
-              title: "Rent", value: "Users", icon: SlydoAppIcon.user),
-          CustomizedPopUpMenuItemWithIcon(
-              title: "Buy", value: "Products", icon: SlydoAppIcon.product),
-          CustomizedPopUpMenuItemWithIcon(
-              title: "Shortlet", value: "Services", icon: SlydoAppIcon.note_2),
-        ],
-        selectedIndex: selectedMenuItemIndex,
-        left: 16,
-        arrowPosition: Alignment.topLeft,
-        arrowLeftPadding: 16,
-        top: 14);
-    searchTypeSelectionMenu.onChange = menuItemSelectionChange;
-    searchTypeSelectionMenu.menuState = menuStateChange;
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: appBar(),
@@ -205,6 +194,10 @@ class _SearchPropertyState extends State<SearchProperty> {
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
+        locationChip(),
+        SizedBox(
+          width: 8,
+        ),
         filterPropertyBtn(),
         SizedBox(
           width: 16,
@@ -223,10 +216,37 @@ class _SearchPropertyState extends State<SearchProperty> {
         color: blackFont,
       ),
       onTap: () {
+        setFilterProperty();
         showFilterPropertySheet();
       },
       backgroundColor: iconBtnGrey,
       enableMargin: true,
+    );
+  }
+
+  Widget locationChip() {
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 10),
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(60), color: iconBtnGrey),
+      child: Row(
+        children: [
+          Icon(
+            SlydoAppIcon.location,
+            color: blackFont,
+            size: 14,
+          ),
+          SizedBox(
+            width: 8,
+          ),
+          Text(
+            selectedSearch,
+            style: TextStyle(
+                color: blackFont, fontSize: 14, fontWeight: FontWeight.w700),
+          ),
+        ],
+      ),
     );
   }
 
@@ -237,26 +257,70 @@ class _SearchPropertyState extends State<SearchProperty> {
           SizedBox(
             height: 6,
           ),
-          searchBox(),
+          // searchBox(),
+          searchBoxWithSuggestion(),
           SizedBox(
             height: 12,
           ),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: imgList
-                    .map(
-                      (element) => Container(
-                          padding:
-                              EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                          child: PropertyImagesTile()),
-                    )
-                    .toList(),
-              ),
-            ),
-          ),
+          isLoading
+              ? Expanded(
+                  child: Center(
+                    child: CircularLoadingIndicator(),
+                  ),
+                )
+              : selectedSearch == "London"
+                  ? Expanded(child: searchBackground())
+                  : Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: imgList
+                              .map(
+                                (element) => Container(
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 8, horizontal: 16),
+                                    child: PropertyImagesTile()),
+                              )
+                              .toList(),
+                        ),
+                      ),
+                    ),
         ],
       ),
+    );
+  }
+
+  Widget searchBackground() {
+    return NoItemInList(
+      msg: "Please type something to get results",
+      isResult: false,
+    );
+  }
+
+  Widget searchBoxWithSuggestion() {
+    return SearchWidget<String>(
+      dataList: searchSuggestion,
+      hideSearchBoxWhenItemSelected: false,
+      listContainerHeight: MediaQuery.of(context).size.height / 4,
+      queryBuilder: (String query, List<String> list) {
+        return list;
+      },
+      onItemSelected: (item) {
+        selectedSearch = item;
+        setState(() {});
+        getResult(item);
+      },
+      popupListItemBuilder: (String item) {
+        return PopupListItemWidget(item);
+      },
+      selectedItemBuilder:
+          (String selectedItem, VoidCallback deleteSelectedItem) {
+        return Container();
+      },
+      // widget customization
+      noItemsFoundWidget: NoItemsFound(),
+      textFieldBuilder: (tempController, FocusNode focusNode) {
+        return MyTextField(tempController, focusNode);
+      },
     );
   }
 
@@ -276,15 +340,26 @@ class _SearchPropertyState extends State<SearchProperty> {
           cursorWidth: 1.5,
           cursorColor: navyBlue,
           decoration: InputDecoration(
-            hintText: "Search here",
+            hintStyle: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: darkGrey,
+            ),
+            suffixIcon: IconButton(
+              icon: Icon(
+                SlydoAppIcon.search,
+                color: darkGrey,
+                size: 14,
+              ),
+              onPressed: () {},
+            ),
+            hintText: "Search",
             fillColor: Colors.white,
             filled: true,
             contentPadding: EdgeInsets.symmetric(vertical: 10),
-            prefixIcon: searchTypeSelection(),
             prefix: Padding(
-              padding: EdgeInsets.only(left: 12),
+              padding: EdgeInsets.only(left: 16),
             ),
-            suffixIcon: searchIcon(),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
               borderSide: BorderSide(
@@ -314,66 +389,17 @@ class _SearchPropertyState extends State<SearchProperty> {
               ),
             ),
           ),
-          onFieldSubmitted: (val) {
-            if (mounted) {
-              setState(() {});
-
-              FocusScope.of(context).unfocus();
-            }
-          },
         ),
       ),
     );
   }
 
-  Widget searchTypeSelection() {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(10), bottomLeft: Radius.circular(10)),
-        color: navyBlue,
-      ),
-      child: IconButton(
-        key: _key,
-        icon: Icon(
-          getSearchTypeIcon(),
-          color: Colors.white,
-          size: 16,
-        ),
-        onPressed: () {
-          if (searchTypeSelectionMenu.isMenuOpen) {
-            searchTypeSelectionMenu.closeMenu();
-          } else {
-            searchTypeSelectionMenu.openMenu();
-          }
-        },
-      ),
-    );
-  }
-
-  IconData getSearchTypeIcon() {
-    if (selectedMenuItemIndex == 2) {
-      return SlydoAppIcon.note_2;
-    } else if (selectedMenuItemIndex == 1) {
-      return SlydoAppIcon.product;
-    }
-    return SlydoAppIcon.user;
-  }
-
-  Widget searchIcon() {
-    return IconButton(
-      icon: Icon(
-        SlydoAppIcon.search,
-        color: darkGrey,
-        size: 16,
-      ),
-      onPressed: () {
-        if (mounted) {
-          setState(() {});
-          FocusScope.of(context).unfocus();
-        }
-      },
-    );
+  void getResult(String item) async {
+    isLoading = true;
+    setState(() {});
+    await Future.delayed(Duration(seconds: 2));
+    isLoading = false;
+    setState(() {});
   }
 
   void showFilterPropertySheet() {
@@ -413,257 +439,45 @@ class _SearchPropertyState extends State<SearchProperty> {
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: <Widget>[
-                                  getChipsList(
-                                    title: "Type",
+                                  buyOrRentSwitch(
+                                      bottomSheetSetState: bottomSheetSetState),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  getHouseTypeRequirement(
                                     bottomSheetSetState: bottomSheetSetState,
-                                    children: [
-                                      ChipData(
-                                          name: "Any",
-                                          isSelected: typeIsAny,
-                                          variableName: "typeIsAny"),
-                                      ChipData(
-                                          name: "Apartment",
-                                          isSelected: typeIsApartment,
-                                          variableName: "typeIsApartment"),
-                                      ChipData(
-                                          name: "Condo",
-                                          isSelected: typeIsCondo,
-                                          variableName: "typeIsCondo"),
-                                      ChipData(
-                                          name: "Duplex",
-                                          isSelected: typeIsDuplex,
-                                          variableName: "typeIsDuplex"),
-                                      ChipData(
-                                          name: "House",
-                                          isSelected: typeIsHouse,
-                                          variableName: "typeIsHouse"),
-                                      ChipData(
-                                          name: "Townhouse",
-                                          isSelected: typeIsTownHouse,
-                                          variableName: "typeIsTownHouse"),
-                                    ],
+                                  ),
+                                  getDurationRequirement(
+                                    bottomSheetSetState: bottomSheetSetState,
+                                  ),
+                                  getRoommatesRequirement(
+                                    bottomSheetSetState: bottomSheetSetState,
+                                  ),
+                                  getBedroomRequirement(
+                                    bottomSheetSetState: bottomSheetSetState,
+                                  ),
+                                  getBathroomRequirement(
+                                    bottomSheetSetState: bottomSheetSetState,
+                                  ),
+                                  getPetPolicyRequirement(
+                                    bottomSheetSetState: bottomSheetSetState,
+                                  ),
+                                  getFurnitureRequirement(
+                                    bottomSheetSetState: bottomSheetSetState,
+                                  ),
+                                  getAmenityRequirement(
+                                    bottomSheetSetState: bottomSheetSetState,
                                   ),
                                   SizedBox(
                                     height: 20,
                                   ),
-                                  getChipsList(
-                                    title: "Duration",
-                                    bottomSheetSetState: bottomSheetSetState,
-                                    children: [
-                                      ChipData(
-                                          name: "At least a year",
-                                          isSelected: durationAtLeastAYear,
-                                          variableName: "durationAtLeastAYear"),
-                                      ChipData(
-                                          name: "At few months",
-                                          isSelected: durationAtFewMonths,
-                                          variableName: "durationAtFewMonths"),
-                                      ChipData(
-                                          name: "At few weeks",
-                                          isSelected: durationAtFewWeeks,
-                                          variableName: "durationAtFewWeeks"),
-                                    ],
+                                  Divider(
+                                    height: 0,
+                                    thickness: 1,
+                                    color: dividerColor,
                                   ),
                                   SizedBox(
-                                    height: 20,
-                                  ),
-                                  getChipsList(
-                                    title: "Roommates",
-                                    bottomSheetSetState: bottomSheetSetState,
-                                    children: [
-                                      ChipData(
-                                        name: "I need a roommate",
-                                        isSelected: roommatesNeeded,
-                                        variableName: "roommatesNeeded",
-                                      ),
-                                      ChipData(
-                                        name: "I don't want roommate",
-                                        isSelected: roommatesDoesNotNeeded,
-                                        variableName: "roommatesDoesNotNeeded",
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  getChipsList(
-                                    title: "Bedrooms",
-                                    bottomSheetSetState: bottomSheetSetState,
-                                    children: [
-                                      ChipData(
-                                        name: "Studio",
-                                        isSelected: bedroomIsStudio,
-                                        variableName: "bedroomIsStudio",
-                                      ),
-                                      ChipData(
-                                        name: "1 bed",
-                                        isSelected: bedroomIs1,
-                                        variableName: "bedroomIs1",
-                                      ),
-                                      ChipData(
-                                        name: "2 bed",
-                                        isSelected: bedroomIs2,
-                                        variableName: "bedroomIs2",
-                                      ),
-                                      ChipData(
-                                        name: "3 bed",
-                                        isSelected: bedroomIs3,
-                                        variableName: "bedroomIs3",
-                                      ),
-                                      ChipData(
-                                        name: "4+",
-                                        isSelected: bedroomIs4Plus,
-                                        variableName: "bedroomIs4Plus",
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  getChipsList(
-                                    title: "Bathrooms",
-                                    bottomSheetSetState: bottomSheetSetState,
-                                    children: [
-                                      ChipData(
-                                        name: "1 bath",
-                                        isSelected: bathroomIs1,
-                                        variableName: "bathroomIs1",
-                                      ),
-                                      ChipData(
-                                        name: "2 bath",
-                                        isSelected: bathroomIs2,
-                                        variableName: "bathroomIs2",
-                                      ),
-                                      ChipData(
-                                        name: "3 bath",
-                                        isSelected: bathroomIs3,
-                                        variableName: "bathroomIs3",
-                                      ),
-                                      ChipData(
-                                        name: "4 bath",
-                                        isSelected: bathroomIs4,
-                                        variableName: "bathroomIs4",
-                                      ),
-                                      ChipData(
-                                        name: "5+",
-                                        isSelected: bathroomIs5Plus,
-                                        variableName: "bathroomIs5Plus",
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  getChipsList(
-                                    title: "Pet Policy",
-                                    bottomSheetSetState: bottomSheetSetState,
-                                    children: [
-                                      ChipData(
-                                        name: "Dogs allowed",
-                                        isSelected: isDogAllowed,
-                                        variableName: "isDogAllowed",
-                                      ),
-                                      ChipData(
-                                        name: "Cats allowed",
-                                        isSelected: isCatAllowed,
-                                        variableName: "isCatAllowed",
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  getChipsList(
-                                    title: "Furniture",
-                                    bottomSheetSetState: bottomSheetSetState,
-                                    children: [
-                                      ChipData(
-                                        name: "Furnished",
-                                        isSelected: isFurnished,
-                                        variableName: "isFurnished",
-                                      ),
-                                      ChipData(
-                                        name: "Unfurnished",
-                                        isSelected: isUnfurnished,
-                                        variableName: "isUnfurnished",
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  getChipsList(
-                                    title: "Amenities",
-                                    bottomSheetSetState: bottomSheetSetState,
-                                    children: [
-                                      ChipData(
-                                        name: "Any",
-                                        isSelected: amenityIsAny,
-                                        variableName: "amenityIsAny",
-                                      ),
-                                      ChipData(
-                                        name: "Laundry",
-                                        isSelected: amenityIsLaundryAvailable,
-                                        variableName:
-                                            "amenityIsLaundryAvailable",
-                                      ),
-                                      ChipData(
-                                        name: "A/C",
-                                        isSelected: amenityIsACAvailable,
-                                        variableName: "amenityIsACAvailable",
-                                      ),
-                                      ChipData(
-                                        name: "Heating",
-                                        isSelected: amenityIsHeatingAvailable,
-                                        variableName:
-                                            "amenityIsHeatingAvailable",
-                                      ),
-                                      ChipData(
-                                        name: "Parking",
-                                        isSelected: amenityIsParkingAvailable,
-                                        variableName:
-                                            "amenityIsParkingAvailable",
-                                      ),
-                                      ChipData(
-                                        name: "Gated entry",
-                                        isSelected:
-                                            amenityIsGatedEntryAvailable,
-                                        variableName:
-                                            "amenityIsGatedEntryAvailable",
-                                      ),
-                                      ChipData(
-                                        name: "Parking",
-                                        isSelected: amenityIsParkingAvailable,
-                                        variableName:
-                                            "amenityIsParkingAvailable",
-                                      ),
-                                      ChipData(
-                                        name: "Doorman",
-                                        isSelected: amenityIsDoormanAvailable,
-                                        variableName:
-                                            "amenityIsDoormanAvailable",
-                                      ),
-                                      ChipData(
-                                        name: "Gym",
-                                        isSelected: amenityIsGymAvailable,
-                                        variableName: "amenityIsGymAvailable",
-                                      ),
-                                      ChipData(
-                                        name: "Pool",
-                                        isSelected: amenityIsPoolAvailable,
-                                        variableName: "amenityIsPoolAvailable",
-                                      ),
-                                      ChipData(
-                                        name: "Dishwasher",
-                                        isSelected:
-                                            amenityIsDishwasherAvailable,
-                                        variableName:
-                                            "amenityIsDishwasherAvailable",
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 20,
+                                    height: 10,
                                   ),
                                   getPriceSelection(bottomSheetSetState),
                                   SizedBox(
@@ -684,6 +498,592 @@ class _SearchPropertyState extends State<SearchProperty> {
         });
   }
 
+  Widget getHouseTypeRequirement({StateSetter bottomSheetSetState}) {
+    return getChipsList(
+      title: "Type",
+      bottomSheetSetState: bottomSheetSetState,
+      children: [
+        ChipData(name: "Any", isSelected: typeIsAny, variableName: "typeIsAny"),
+        ChipData(
+            name: "Apartment",
+            isSelected: typeIsApartment,
+            variableName: "typeIsApartment"),
+        ChipData(
+            name: "Condo",
+            isSelected: typeIsCondo,
+            variableName: "typeIsCondo"),
+        ChipData(
+            name: "Duplex",
+            isSelected: typeIsDuplex,
+            variableName: "typeIsDuplex"),
+        ChipData(
+            name: "House",
+            isSelected: typeIsHouse,
+            variableName: "typeIsHouse"),
+        ChipData(
+            name: "Townhouse",
+            isSelected: typeIsTownHouse,
+            variableName: "typeIsTownHouse"),
+      ],
+    );
+  }
+
+  Widget getDurationRequirement({StateSetter bottomSheetSetState}) {
+    bool isForRent = isForBuyOrRent[1];
+    return !isForRent
+        ? Container()
+        : Column(
+            children: [
+              SizedBox(
+                height: 20,
+              ),
+              Divider(
+                height: 0,
+                thickness: 1,
+                color: dividerColor,
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              getChipsList(
+                title: "Duration",
+                bottomSheetSetState: bottomSheetSetState,
+                children: [
+                  ChipData(
+                      name: "At least a year",
+                      isSelected: durationAtLeastAYear,
+                      variableName: "durationAtLeastAYear"),
+                  ChipData(
+                      name: "At few months",
+                      isSelected: durationAtFewMonths,
+                      variableName: "durationAtFewMonths"),
+                  ChipData(
+                      name: "At few weeks",
+                      isSelected: durationAtFewWeeks,
+                      variableName: "durationAtFewWeeks"),
+                  ChipData(
+                      name: "At few days",
+                      isSelected: durationAtFewDays,
+                      variableName: "durationAtFewDays"),
+                ],
+              ),
+              getDateField(bottomSheetSetState: bottomSheetSetState),
+              getGuestCountDropDown(bottomSheetSetState: bottomSheetSetState),
+            ],
+          );
+  }
+
+  Widget getDateField({StateSetter bottomSheetSetState}) {
+    return durationAtLeastAYear || durationAtFewMonths
+        ? Container()
+        : Column(
+            children: [
+              SizedBox(
+                height: 12,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        showDatePicker(
+                          builder: customThemeBuilder,
+                          context: context,
+                          initialDate: DateTime(DateTime.now().year,
+                              DateTime.now().month, DateTime.now().day),
+                          firstDate: DateTime(DateTime.now().year,
+                              DateTime.now().month, DateTime.now().day),
+                          lastDate: DateTime(2101),
+                        ).then((value) {
+                          checkInDate =
+                              DateTime(value.year, value.month, value.day);
+                          bottomSheetSetState(() {});
+                        }).catchError((error) {});
+                      },
+                      child: CustomizedDropDownField(
+                        title: "Check in",
+                        titleColor: blackFont,
+                        child: Container(
+                          child: ListTile(
+                            dense: true,
+                            title: Text(
+                              formatDateInDigit(checkInDate),
+                              style: TextStyle(
+                                color: blackFont,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16,
+                              ),
+                              overflow: TextOverflow.fade,
+                              softWrap: false,
+                              maxLines: 1,
+                            ),
+                            trailing: Icon(
+                              SlydoAppIcon.date,
+                              size: 16,
+                              color: darkGrey,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        showDatePicker(
+                          builder: customThemeBuilder,
+                          context: context,
+                          initialDate: DateTime(DateTime.now().year,
+                              DateTime.now().month, DateTime.now().day),
+                          firstDate: DateTime(DateTime.now().year,
+                              DateTime.now().month, DateTime.now().day),
+                          lastDate: DateTime(2101),
+                        ).then((value) {
+                          checkOutDate =
+                              DateTime(value.year, value.month, value.day);
+                          bottomSheetSetState(() {});
+                        }).catchError((error) {});
+                      },
+                      child: CustomizedDropDownField(
+                        title: "Check out",
+                        titleColor: blackFont,
+                        child: Container(
+                          child: ListTile(
+                            dense: true,
+                            title: Text(
+                              formatDateInDigit(checkOutDate),
+                              style: TextStyle(
+                                color: blackFont,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16,
+                              ),
+                              overflow: TextOverflow.fade,
+                              softWrap: false,
+                              maxLines: 1,
+                            ),
+                            trailing: Icon(
+                              SlydoAppIcon.date,
+                              size: 16,
+                              color: darkGrey,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ],
+          );
+  }
+
+  Widget getGuestCountDropDown({StateSetter bottomSheetSetState}) {
+    return durationAtLeastAYear || durationAtFewMonths
+        ? Container()
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              SizedBox(
+                height: 12,
+              ),
+              Text(
+                "Guest",
+                style: TextStyle(color: blackFont, fontSize: 14),
+              ),
+              SizedBox(
+                height: 6,
+              ),
+              Card(
+                elevation: 0,
+                color: Colors.white,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    side: BorderSide(color: greyBorderColor)),
+                margin: EdgeInsets.all(0),
+                borderOnForeground: true,
+                child: ListTile(
+                  dense: true,
+                  title: Text(
+                    selectedGuestCount.toString(),
+                    softWrap: false,
+                    overflow: TextOverflow.fade,
+                    style: TextStyle(
+                        color: blackFont,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600),
+                  ),
+                  trailing: Icon(
+                    Icons.keyboard_arrow_down,
+                    color: darkGrey,
+                  ),
+                  onTap: () {
+                    selectGuestCount(bottomSheetSetState: bottomSheetSetState);
+                  },
+                ),
+              ),
+            ],
+          );
+  }
+
+  void selectGuestCount({StateSetter bottomSheetSetState}) async {
+    final pressedCategory = await showDialog<int>(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) => AlertDialog(
+              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              contentPadding: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              content: Container(
+                width: MediaQuery.of(context).size.width - 40,
+                child: Card(
+                  elevation: 2,
+                  shadowColor: Colors.transparent,
+                  margin: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: numberCount.map<Widget>((count) {
+                          if (selectedGuestCount == count) {
+                            return Container(
+                              color: selectedListItemBackgroundBlue,
+                              child: ListTile(
+                                dense: true,
+                                title: Text(
+                                  count.toString(),
+                                  overflow: TextOverflow.fade,
+                                  softWrap: false,
+                                  style: TextStyle(
+                                      color: navyBlue,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                trailing: Icon(
+                                  SlydoAppIcon.checked,
+                                  color: navyBlue,
+                                  size: 12,
+                                ),
+                                onTap: () {
+                                  Navigator.pop(context, count);
+                                },
+                              ),
+                            );
+                          }
+                          return ListTile(
+                            title: Text(
+                              count.toString(),
+                              softWrap: false,
+                              overflow: TextOverflow.fade,
+                              style: TextStyle(
+                                  color: blackFont,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                            dense: true,
+                            onTap: () {
+                              Navigator.pop(context, count);
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ));
+    if (pressedCategory != null) {
+      selectedGuestCount = pressedCategory;
+      bottomSheetSetState(() {});
+    }
+  }
+
+  Widget getRoommatesRequirement({StateSetter bottomSheetSetState}) {
+    bool isForRent = isForBuyOrRent[1];
+    return !isForRent
+        ? Container()
+        : Column(
+            children: [
+              SizedBox(
+                height: 20,
+              ),
+              Divider(
+                height: 0,
+                thickness: 1,
+                color: dividerColor,
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              getChipsList(
+                title: "Roommates",
+                bottomSheetSetState: bottomSheetSetState,
+                children: [
+                  ChipData(
+                    name: "I don't want roommate",
+                    isSelected: roommatesDoesNotNeeded,
+                    variableName: "roommatesDoesNotNeeded",
+                  ),
+                  ChipData(
+                    name: "I need a roommate",
+                    isSelected: roommatesNeeded,
+                    variableName: "roommatesNeeded",
+                  ),
+                ],
+              )
+            ],
+          );
+  }
+
+  Widget getPetPolicyRequirement({StateSetter bottomSheetSetState}) {
+    bool isForRent = isForBuyOrRent[1];
+    return !isForRent
+        ? Container()
+        : Column(
+            children: [
+              SizedBox(
+                height: 20,
+              ),
+              Divider(
+                height: 0,
+                thickness: 1,
+                color: dividerColor,
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              getChipsList(
+                title: "Pet Policy",
+                bottomSheetSetState: bottomSheetSetState,
+                children: [
+                  ChipData(
+                    name: "Dogs allowed",
+                    isSelected: isDogAllowed,
+                    variableName: "isDogAllowed",
+                  ),
+                  ChipData(
+                    name: "Cats allowed",
+                    isSelected: isCatAllowed,
+                    variableName: "isCatAllowed",
+                  ),
+                ],
+              ),
+            ],
+          );
+  }
+
+  Widget getBedroomRequirement({StateSetter bottomSheetSetState}) {
+    return Column(
+      children: [
+        SizedBox(
+          height: 20,
+        ),
+        Divider(
+          height: 0,
+          thickness: 1,
+          color: dividerColor,
+        ),
+        SizedBox(
+          height: 10,
+        ),
+        getChipsList(
+          title: "Bedrooms",
+          bottomSheetSetState: bottomSheetSetState,
+          children: [
+            ChipData(
+              name: "Studio",
+              isSelected: bedroomIsStudio,
+              variableName: "bedroomIsStudio",
+            ),
+            ChipData(
+              name: "1 bed",
+              isSelected: bedroomIs1,
+              variableName: "bedroomIs1",
+            ),
+            ChipData(
+              name: "2 bed",
+              isSelected: bedroomIs2,
+              variableName: "bedroomIs2",
+            ),
+            ChipData(
+              name: "3 bed",
+              isSelected: bedroomIs3,
+              variableName: "bedroomIs3",
+            ),
+            ChipData(
+              name: "4+",
+              isSelected: bedroomIs4Plus,
+              variableName: "bedroomIs4Plus",
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget getBathroomRequirement({StateSetter bottomSheetSetState}) {
+    return Column(
+      children: [
+        SizedBox(
+          height: 20,
+        ),
+        Divider(
+          height: 0,
+          thickness: 1,
+          color: dividerColor,
+        ),
+        SizedBox(
+          height: 10,
+        ),
+        getChipsList(
+          title: "Bathrooms",
+          bottomSheetSetState: bottomSheetSetState,
+          children: [
+            ChipData(
+              name: "1 bath",
+              isSelected: bathroomIs1,
+              variableName: "bathroomIs1",
+            ),
+            ChipData(
+              name: "2 bath",
+              isSelected: bathroomIs2,
+              variableName: "bathroomIs2",
+            ),
+            ChipData(
+              name: "3 bath",
+              isSelected: bathroomIs3,
+              variableName: "bathroomIs3",
+            ),
+            ChipData(
+              name: "4 bath",
+              isSelected: bathroomIs4,
+              variableName: "bathroomIs4",
+            ),
+            ChipData(
+              name: "5+",
+              isSelected: bathroomIs5Plus,
+              variableName: "bathroomIs5Plus",
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget getFurnitureRequirement({StateSetter bottomSheetSetState}) {
+    return Column(
+      children: [
+        SizedBox(
+          height: 20,
+        ),
+        Divider(
+          height: 0,
+          thickness: 1,
+          color: dividerColor,
+        ),
+        SizedBox(
+          height: 10,
+        ),
+        getChipsList(
+          title: "Furniture",
+          bottomSheetSetState: bottomSheetSetState,
+          children: [
+            ChipData(
+              name: "Furnished",
+              isSelected: isFurnished,
+              variableName: "isFurnished",
+            ),
+            ChipData(
+              name: "Unfurnished",
+              isSelected: isUnfurnished,
+              variableName: "isUnfurnished",
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget getAmenityRequirement({StateSetter bottomSheetSetState}) {
+    return Column(
+      children: [
+        SizedBox(
+          height: 20,
+        ),
+        Divider(
+          height: 0,
+          thickness: 1,
+          color: dividerColor,
+        ),
+        SizedBox(
+          height: 10,
+        ),
+        getChipsList(
+          title: "Amenities",
+          bottomSheetSetState: bottomSheetSetState,
+          children: [
+            ChipData(
+              name: "Any",
+              isSelected: amenityIsAny,
+              variableName: "amenityIsAny",
+            ),
+            ChipData(
+              name: "Laundry",
+              isSelected: amenityIsLaundryAvailable,
+              variableName: "amenityIsLaundryAvailable",
+            ),
+            ChipData(
+              name: "A/C",
+              isSelected: amenityIsACAvailable,
+              variableName: "amenityIsACAvailable",
+            ),
+            ChipData(
+              name: "Heating",
+              isSelected: amenityIsHeatingAvailable,
+              variableName: "amenityIsHeatingAvailable",
+            ),
+            ChipData(
+              name: "Parking",
+              isSelected: amenityIsParkingAvailable,
+              variableName: "amenityIsParkingAvailable",
+            ),
+            ChipData(
+              name: "Gated entry",
+              isSelected: amenityIsGatedEntryAvailable,
+              variableName: "amenityIsGatedEntryAvailable",
+            ),
+            ChipData(
+              name: "Doorman",
+              isSelected: amenityIsDoormanAvailable,
+              variableName: "amenityIsDoormanAvailable",
+            ),
+            ChipData(
+              name: "Gym",
+              isSelected: amenityIsGymAvailable,
+              variableName: "amenityIsGymAvailable",
+            ),
+            ChipData(
+              name: "Pool",
+              isSelected: amenityIsPoolAvailable,
+              variableName: "amenityIsPoolAvailable",
+            ),
+            ChipData(
+              name: "Dishwasher",
+              isSelected: amenityIsDishwasherAvailable,
+              variableName: "amenityIsDishwasherAvailable",
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
   Widget getChipsList(
       {String title,
       StateSetter bottomSheetSetState,
@@ -697,12 +1097,12 @@ class _SearchPropertyState extends State<SearchProperty> {
             title,
             style: TextStyle(
               color: blackFont,
-              fontSize: 14,
+              fontSize: 16,
               fontWeight: FontWeight.w600,
             ),
           ),
           SizedBox(
-            height: 8,
+            height: 16,
           ),
           Wrap(
             direction: Axis.horizontal,
@@ -717,6 +1117,65 @@ class _SearchPropertyState extends State<SearchProperty> {
                 .toList(),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget buyOrRentSwitch({StateSetter bottomSheetSetState}) {
+    return Container(
+      width: MediaQuery.of(context).size.width - 40,
+      height: 30,
+      child: Row(
+        children: [
+          ToggleButtons(
+            borderRadius: BorderRadius.circular(10),
+            fillColor: navyBlue,
+            borderColor: navyBlue,
+            constraints: BoxConstraints.expand(
+                height: 30,
+                width: (MediaQuery.of(context).size.width - 45) / 2),
+            selectedBorderColor: navyBlue,
+            children: <Widget>[
+              buyButton(),
+              rentButton(),
+            ],
+            isSelected: isForBuyOrRent,
+            onPressed: (int index) {
+              if (index == 0) {
+                isForBuyOrRent[0] = true;
+                isForBuyOrRent[1] = false;
+              } else {
+                isForBuyOrRent[0] = false;
+                isForBuyOrRent[1] = true;
+              }
+              bottomSheetSetState(() {});
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buyButton() {
+    return Container(
+      child: Text(
+        "Buy",
+        style: TextStyle(
+            fontWeight: isForBuyOrRent[0] ? FontWeight.w600 : FontWeight.w400,
+            fontSize: 16,
+            color: isForBuyOrRent[0] ? Colors.white : blackFont),
+      ),
+    );
+  }
+
+  Widget rentButton() {
+    return Container(
+      child: Text(
+        "Rent",
+        style: TextStyle(
+            fontWeight: isForBuyOrRent[1] ? FontWeight.w600 : FontWeight.w400,
+            fontSize: 16,
+            color: isForBuyOrRent[1] ? Colors.white : blackFont),
       ),
     );
   }
@@ -746,7 +1205,7 @@ class _SearchPropertyState extends State<SearchProperty> {
               Radius.circular(10),
             ),
             border: new Border.all(
-                color: chipData.isSelected ? navyBlue : lightGrey,
+                color: chipData.isSelected ? navyBlue : dividerColor,
                 width: 1.0,
                 style: BorderStyle.solid),
           ),
@@ -768,47 +1227,111 @@ class _SearchPropertyState extends State<SearchProperty> {
   void chipSelection({ChipData chipData, StateSetter bottomSheetSetState}) {
     switch (chipData.variableName) {
       case "typeIsAny":
-        typeIsAny = !typeIsAny;
+        if (typeIsAny == false) {
+          typeIsAny = true;
+          typeIsApartment = false;
+          typeIsCondo = false;
+          typeIsDuplex = false;
+          typeIsHouse = false;
+          typeIsTownHouse = false;
+        } else {
+          typeIsAny = false;
+        }
         bottomSheetSetState(() {});
         break;
       case "typeIsApartment":
-        typeIsApartment = !typeIsApartment;
+        if (typeIsApartment == false) {
+          typeIsApartment = true;
+          typeIsAny = false;
+        } else {
+          typeIsApartment = false;
+        }
         bottomSheetSetState(() {});
         break;
       case "typeIsCondo":
-        typeIsCondo = !typeIsCondo;
+        if (typeIsCondo == false) {
+          typeIsCondo = true;
+          typeIsAny = false;
+        } else {
+          typeIsCondo = false;
+        }
         bottomSheetSetState(() {});
         break;
       case "typeIsDuplex":
-        typeIsDuplex = !typeIsDuplex;
+        if (typeIsDuplex == false) {
+          typeIsDuplex = true;
+          typeIsAny = false;
+        } else {
+          typeIsDuplex = false;
+        }
         bottomSheetSetState(() {});
         break;
       case "typeIsHouse":
-        typeIsHouse = !typeIsHouse;
+        if (typeIsHouse == false) {
+          typeIsHouse = true;
+          typeIsAny = false;
+        } else {
+          typeIsHouse = false;
+        }
         bottomSheetSetState(() {});
         break;
       case "typeIsTownHouse":
-        typeIsTownHouse = !typeIsTownHouse;
+        if (typeIsTownHouse == false) {
+          typeIsTownHouse = true;
+          typeIsAny = false;
+        } else {
+          typeIsTownHouse = false;
+        }
         bottomSheetSetState(() {});
         break;
       case "durationAtLeastAYear":
-        durationAtLeastAYear = !durationAtLeastAYear;
+        if (durationAtLeastAYear == false) {
+          durationAtLeastAYear = true;
+          durationAtFewMonths = false;
+          durationAtFewWeeks = false;
+          durationAtFewDays = false;
+        }
         bottomSheetSetState(() {});
         break;
       case "durationAtFewMonths":
-        durationAtFewMonths = !durationAtFewMonths;
+        if (durationAtFewMonths == false) {
+          durationAtLeastAYear = false;
+          durationAtFewMonths = true;
+          durationAtFewWeeks = false;
+          durationAtFewDays = false;
+        }
         bottomSheetSetState(() {});
         break;
       case "durationAtFewWeeks":
-        durationAtFewWeeks = !durationAtFewWeeks;
+        if (durationAtFewWeeks == false) {
+          durationAtLeastAYear = false;
+          durationAtFewMonths = false;
+          durationAtFewDays = false;
+          durationAtFewWeeks = true;
+        }
+        bottomSheetSetState(() {});
+        break;
+      case "durationAtFewDays":
+        if (durationAtFewDays == false) {
+          durationAtLeastAYear = false;
+          durationAtFewMonths = false;
+          durationAtFewWeeks = false;
+          durationAtFewDays = true;
+        }
         bottomSheetSetState(() {});
         break;
       case "roommatesNeeded":
-        roommatesNeeded = !roommatesNeeded;
+        if (roommatesNeeded == false) {
+          roommatesNeeded = true;
+          roommatesDoesNotNeeded = false;
+        }
         bottomSheetSetState(() {});
         break;
       case "roommatesDoesNotNeeded":
-        roommatesDoesNotNeeded = !roommatesDoesNotNeeded;
+        if (roommatesDoesNotNeeded == false) {
+          roommatesNeeded = false;
+          roommatesDoesNotNeeded = true;
+        }
         bottomSheetSetState(() {});
         break;
       case "bedroomIsStudio":
@@ -860,51 +1383,121 @@ class _SearchPropertyState extends State<SearchProperty> {
         bottomSheetSetState(() {});
         break;
       case "isFurnished":
-        isFurnished = !isFurnished;
+        if (isFurnished == false) {
+          isFurnished = true;
+          isUnfurnished = false;
+        }
         bottomSheetSetState(() {});
         break;
       case "isUnfurnished":
-        isUnfurnished = !isUnfurnished;
+        if (isUnfurnished == false) {
+          isUnfurnished = true;
+          isFurnished = false;
+        }
         bottomSheetSetState(() {});
         break;
       case "amenityIsAny":
-        amenityIsAny = !amenityIsAny;
+        if (amenityIsAny == false) {
+          amenityIsAny = true;
+          amenityIsLaundryAvailable = false;
+          amenityIsACAvailable = false;
+          amenityIsHeatingAvailable = false;
+          amenityIsParkingAvailable = false;
+          amenityIsGatedEntryAvailable = false;
+          amenityIsDoormanAvailable = false;
+          amenityIsGymAvailable = false;
+          amenityIsPoolAvailable = false;
+          amenityIsDishwasherAvailable = false;
+        } else {
+          amenityIsAny = false;
+        }
         bottomSheetSetState(() {});
         break;
       case "amenityIsLaundryAvailable":
-        amenityIsLaundryAvailable = !amenityIsLaundryAvailable;
+        if (amenityIsLaundryAvailable == false) {
+          amenityIsLaundryAvailable = true;
+          amenityIsAny = false;
+        } else {
+          amenityIsLaundryAvailable = false;
+        }
+
         bottomSheetSetState(() {});
         break;
       case "amenityIsACAvailable":
-        amenityIsACAvailable = !amenityIsACAvailable;
+        if (amenityIsACAvailable == false) {
+          amenityIsACAvailable = true;
+          amenityIsAny = false;
+        } else {
+          amenityIsACAvailable = false;
+        }
         bottomSheetSetState(() {});
         break;
       case "amenityIsHeatingAvailable":
-        amenityIsHeatingAvailable = !amenityIsHeatingAvailable;
+        if (amenityIsHeatingAvailable == false) {
+          amenityIsHeatingAvailable = true;
+          amenityIsAny = false;
+        } else {
+          amenityIsHeatingAvailable = false;
+        }
+
         bottomSheetSetState(() {});
         break;
       case "amenityIsParkingAvailable":
-        amenityIsParkingAvailable = !amenityIsParkingAvailable;
+        if (amenityIsParkingAvailable == false) {
+          amenityIsParkingAvailable = true;
+          amenityIsAny = false;
+        } else {
+          amenityIsParkingAvailable = false;
+        }
+
         bottomSheetSetState(() {});
         break;
       case "amenityIsGatedEntryAvailable":
-        amenityIsGatedEntryAvailable = !amenityIsGatedEntryAvailable;
+        if (amenityIsGatedEntryAvailable == false) {
+          amenityIsGatedEntryAvailable = true;
+          amenityIsAny = false;
+        } else {
+          amenityIsGatedEntryAvailable = false;
+        }
+
         bottomSheetSetState(() {});
         break;
       case "amenityIsDoormanAvailable":
-        amenityIsDoormanAvailable = !amenityIsDoormanAvailable;
+        if (amenityIsDoormanAvailable == false) {
+          amenityIsDoormanAvailable = true;
+          amenityIsAny = false;
+        } else {
+          amenityIsDoormanAvailable = false;
+        }
+
         bottomSheetSetState(() {});
         break;
       case "amenityIsGymAvailable":
-        amenityIsGymAvailable = !amenityIsGymAvailable;
+        if (amenityIsGymAvailable == false) {
+          amenityIsGymAvailable = true;
+          amenityIsAny = false;
+        } else {
+          amenityIsGymAvailable = false;
+        }
+
         bottomSheetSetState(() {});
         break;
       case "amenityIsPoolAvailable":
-        amenityIsPoolAvailable = !amenityIsPoolAvailable;
+        if (amenityIsPoolAvailable == false) {
+          amenityIsPoolAvailable = true;
+          amenityIsAny = false;
+        } else {
+          amenityIsPoolAvailable = false;
+        }
         bottomSheetSetState(() {});
         break;
       case "amenityIsDishwasherAvailable":
-        amenityIsDishwasherAvailable = !amenityIsDishwasherAvailable;
+        if (amenityIsDishwasherAvailable == false) {
+          amenityIsDishwasherAvailable = true;
+          amenityIsAny = false;
+        } else {
+          amenityIsDishwasherAvailable = false;
+        }
         bottomSheetSetState(() {});
         break;
       default:
@@ -922,24 +1515,34 @@ class _SearchPropertyState extends State<SearchProperty> {
       SizedBox(
         height: 16,
       ),
-      SliderTheme(
-        data: SliderTheme.of(context).copyWith(
-          trackHeight: 1,
-          rangeThumbShape: CustomRangeThumbShape(
-              selectedPriceValue.start.toInt(), selectedPriceValue.end.toInt()),
-          overlayShape: RoundSliderOverlayShape(overlayRadius: 12.0),
-          minThumbSeparation: 30,
-        ),
-        child: RangeSlider(
-          activeColor: navyBlue,
-          inactiveColor: dividerColor,
-          onChanged: (RangeValues rangeValue) {
-            selectedPriceValue = rangeValue;
-            bottomSheetSetState(() {});
-          },
-          min: 0,
-          max: 100,
-          values: selectedPriceValue,
+      Container(
+        height: 20,
+        width: MediaQuery.of(context).size.width - 40,
+        child: Stack(
+          overflow: Overflow.visible,
+          children: [
+            SliderTheme(
+              data: SliderTheme.of(context).copyWith(
+                trackHeight: 1,
+                rangeThumbShape: CustomRangeThumbShapeForProperty(
+                    selectedPriceValue.start.toInt(),
+                    selectedPriceValue.end.toInt()),
+                overlayShape: RoundSliderOverlayShape(overlayRadius: 12.0),
+                minThumbSeparation: 30,
+              ),
+              child: RangeSlider(
+                activeColor: navyBlue,
+                inactiveColor: dividerColor,
+                onChanged: (RangeValues rangeValue) {
+                  selectedPriceValue = rangeValue;
+                  bottomSheetSetState(() {});
+                },
+                min: 1000,
+                max: 100000,
+                values: selectedPriceValue,
+              ),
+            ),
+          ],
         ),
       )
     ]);
@@ -951,6 +1554,7 @@ class _SearchPropertyState extends State<SearchProperty> {
       onPressed: () {
         updateFilterValue();
         Navigator.pop(context);
+        getResult("");
       },
       text: "Submit",
       textColor: Colors.white,
@@ -958,6 +1562,7 @@ class _SearchPropertyState extends State<SearchProperty> {
   }
 
   void updateFilterValue() {
+    _propertyFilterBloc.isForBuyOrRent = isForBuyOrRent;
     _propertyFilterBloc.typeIsAny = typeIsAny;
     _propertyFilterBloc.typeIsApartment = typeIsApartment;
     _propertyFilterBloc.typeIsCondo = typeIsCondo;
@@ -967,6 +1572,10 @@ class _SearchPropertyState extends State<SearchProperty> {
     _propertyFilterBloc.durationAtLeastAYear = durationAtLeastAYear;
     _propertyFilterBloc.durationAtFewMonths = durationAtFewMonths;
     _propertyFilterBloc.durationAtFewWeeks = durationAtFewWeeks;
+    _propertyFilterBloc.durationAtFewDays = durationAtFewDays;
+    _propertyFilterBloc.checkInDate = checkInDate;
+    _propertyFilterBloc.checkOutDate = checkOutDate;
+    _propertyFilterBloc.selectedGuestCount = selectedGuestCount;
     _propertyFilterBloc.roommatesNeeded = roommatesNeeded;
     _propertyFilterBloc.roommatesDoesNotNeeded = roommatesDoesNotNeeded;
     _propertyFilterBloc.bedroomIsStudio = bedroomIsStudio;
@@ -1004,4 +1613,165 @@ class ChipData {
   final String variableName;
 
   ChipData({this.name, this.isSelected, this.variableName});
+}
+
+class SelectedItemWidget extends StatelessWidget {
+  const SelectedItemWidget(this.selectedItem, this.deleteSelectedItem);
+
+  final String selectedItem;
+  final VoidCallback deleteSelectedItem;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        vertical: 2,
+        horizontal: 4,
+      ),
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(
+                left: 16,
+                right: 16,
+                top: 8,
+                bottom: 8,
+              ),
+              child: Text(
+                selectedItem,
+                style: const TextStyle(fontSize: 14),
+              ),
+            ),
+          ),
+          IconButton(
+            icon: Icon(Icons.delete_outline, size: 22),
+            color: Colors.grey[700],
+            onPressed: deleteSelectedItem,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class MyTextField extends StatelessWidget {
+  const MyTextField(this.controller, this.focusNode);
+
+  final TextEditingController controller;
+  final FocusNode focusNode;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          textSelectionHandleColor: navyBlue,
+        ),
+        child: TextFormField(
+          controller: controller,
+          focusNode: focusNode,
+          style: TextStyle(
+            fontSize: 16,
+            color: blackFont,
+            fontWeight: FontWeight.w600,
+          ),
+          cursorWidth: 1.5,
+          cursorColor: navyBlue,
+          decoration: InputDecoration(
+            hintStyle: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: darkGrey,
+            ),
+            suffixIcon: IconButton(
+              icon: Icon(
+                SlydoAppIcon.search,
+                color: darkGrey,
+                size: 14,
+              ),
+              onPressed: () {},
+            ),
+            hintText: "Search",
+            fillColor: Colors.white,
+            filled: true,
+            contentPadding: EdgeInsets.symmetric(vertical: 10),
+            prefix: Padding(
+              padding: EdgeInsets.only(left: 16),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: dividerColor,
+                width: 1.0,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: navyBlue,
+                width: 1.0,
+              ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: dividerColor,
+                width: 1.0,
+              ),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: dividerColor,
+                width: 1.0,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class NoItemsFound extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Icon(
+          SlydoAppIcon.search,
+          size: 20,
+          color: blackFont,
+        ),
+        const SizedBox(width: 10),
+        Text(
+          "No Items Found",
+          style: TextStyle(
+            fontSize: 16,
+            color: blackFont,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class PopupListItemWidget extends StatelessWidget {
+  const PopupListItemWidget(this.item);
+
+  final String item;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      child: Text(
+        item,
+        style: const TextStyle(fontSize: 16),
+      ),
+    );
+  }
 }

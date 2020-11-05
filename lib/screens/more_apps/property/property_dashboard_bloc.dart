@@ -21,8 +21,10 @@ class PropertyDashboardBloc extends ChangeNotifier {
 /// Property Filter
 
 class PropertyFilterBloc extends ChangeNotifier {
+  List<bool> _isForBuyOrRent = [true, false];
+
   /// type of property filter variables
-  bool _typeIsAny = false;
+  bool _typeIsAny = true;
   bool _typeIsApartment = false;
   bool _typeIsCondo = false;
   bool _typeIsDuplex = false;
@@ -30,23 +32,27 @@ class PropertyFilterBloc extends ChangeNotifier {
   bool _typeIsTownHouse = false;
 
   /// duration of property filter variables
-  bool _durationAtLeastAYear = false;
+  bool _durationAtLeastAYear = true;
   bool _durationAtFewMonths = false;
   bool _durationAtFewWeeks = false;
+  bool _durationAtFewDays = false;
+  DateTime _checkInDate = DateTime.now();
+  DateTime _checkOutDate = DateTime.now();
+  int _selectedGuestCount = 1;
 
   /// Roommates property filter variables
   bool _roommatesNeeded = false;
-  bool _roommatesDoesNotNeeded = false;
+  bool _roommatesDoesNotNeeded = true;
 
   /// Bedrooms property filter variables
-  bool _bedroomIsStudio = false;
+  bool _bedroomIsStudio = true;
   bool _bedroomIs1 = false;
   bool _bedroomIs2 = false;
   bool _bedroomIs3 = false;
   bool _bedroomIs4Plus = false;
 
   /// Bathroom property filter variables
-  bool _bathroomIs1 = false;
+  bool _bathroomIs1 = true;
   bool _bathroomIs2 = false;
   bool _bathroomIs3 = false;
   bool _bathroomIs4 = false;
@@ -58,10 +64,10 @@ class PropertyFilterBloc extends ChangeNotifier {
 
   /// Furniture property filter variables
   bool _isFurnished = false;
-  bool _isUnfurnished = false;
+  bool _isUnfurnished = true;
 
   /// Amenities property filter variables
-  bool _amenityIsAny = false;
+  bool _amenityIsAny = true;
   bool _amenityIsLaundryAvailable = false;
   bool _amenityIsACAvailable = false;
   bool _amenityIsHeatingAvailable = false;
@@ -77,6 +83,13 @@ class PropertyFilterBloc extends ChangeNotifier {
   int _maxPrice = 100;
   int _selectedMinPrice = 0;
   int _selectedMaxPrice = 50;
+
+  List<bool> get isForBuyOrRent => _isForBuyOrRent;
+
+  set isForBuyOrRent(List<bool> value) {
+    _isForBuyOrRent = value;
+    notifyListeners();
+  }
 
   bool get typeIsAny => _typeIsAny;
 
@@ -138,6 +151,13 @@ class PropertyFilterBloc extends ChangeNotifier {
 
   set durationAtFewWeeks(bool value) {
     _durationAtFewWeeks = value;
+    notifyListeners();
+  }
+
+  bool get durationAtFewDays => _durationAtFewDays;
+
+  set durationAtFewDays(bool value) {
+    _durationAtFewDays = value;
     notifyListeners();
   }
 
@@ -349,5 +369,70 @@ class PropertyFilterBloc extends ChangeNotifier {
   set selectedMaxPrice(int value) {
     _selectedMaxPrice = value;
     notifyListeners();
+  }
+
+  DateTime get checkInDate => _checkInDate;
+
+  set checkInDate(DateTime value) {
+    _checkInDate = value;
+    notifyListeners();
+  }
+
+  DateTime get checkOutDate => _checkOutDate;
+
+  set checkOutDate(DateTime value) {
+    _checkOutDate = value;
+    notifyListeners();
+  }
+
+  int get selectedGuestCount => _selectedGuestCount;
+
+  set selectedGuestCount(int value) {
+    _selectedGuestCount = value;
+    notifyListeners();
+  }
+
+  void resetFilter() {
+    _typeIsAny = true;
+    _typeIsApartment = false;
+    _typeIsCondo = false;
+    _typeIsDuplex = false;
+    _typeIsHouse = false;
+    _typeIsTownHouse = false;
+    _durationAtLeastAYear = true;
+    _durationAtFewMonths = false;
+    _durationAtFewWeeks = false;
+    _durationAtFewDays = false;
+    _checkInDate = DateTime.now();
+    _checkOutDate = DateTime.now();
+    _selectedGuestCount = 1;
+
+    _roommatesNeeded = false;
+    _roommatesDoesNotNeeded = true;
+
+    _bedroomIsStudio = true;
+    _bedroomIs1 = false;
+    _bedroomIs2 = false;
+    _bedroomIs3 = false;
+    _bedroomIs4Plus = false;
+    _bathroomIs1 = true;
+    _bathroomIs2 = false;
+    _bathroomIs3 = false;
+    _bathroomIs4 = false;
+    _bathroomIs5Plus = false;
+    _isDogAllowed = false;
+    _isCatAllowed = false;
+    _isFurnished = false;
+    _isUnfurnished = true;
+    _amenityIsAny = true;
+    _amenityIsLaundryAvailable = false;
+    _amenityIsACAvailable = false;
+    _amenityIsHeatingAvailable = false;
+    _amenityIsParkingAvailable = false;
+    _amenityIsGatedEntryAvailable = false;
+    _amenityIsDoormanAvailable = false;
+    _amenityIsGymAvailable = false;
+    _amenityIsPoolAvailable = false;
+    _amenityIsDishwasherAvailable = false;
   }
 }

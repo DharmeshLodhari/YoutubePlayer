@@ -37,7 +37,6 @@ class _SearchMusicState extends State<SearchMusic> {
     "https://www.musicinafrica.net/sites/default/files/styles/article_slider_large/public/images/article/202008/djcuppy21.jpg?itok=ruxfue_g"
   ];
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -113,7 +112,9 @@ class _SearchMusicState extends State<SearchMusic> {
                       (element) => Container(
                           padding:
                               EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                          child: MusicTileWithHeart(image: element,)),
+                          child: MusicTileWithHeart(
+                            image: element,
+                          )),
                     )
                     .toList(),
               ),
@@ -587,7 +588,7 @@ class _SearchMusicState extends State<SearchMusic> {
       SliderTheme(
         data: SliderTheme.of(context).copyWith(
           trackHeight: 1,
-          rangeThumbShape: CustomRangeThumbShape(
+          rangeThumbShape: CustomRangeThumbShapeForMovie(
               selectedPriceValue.start.toInt(), selectedPriceValue.end.toInt()),
           overlayShape: RoundSliderOverlayShape(overlayRadius: 12.0),
           minThumbSeparation: 30,

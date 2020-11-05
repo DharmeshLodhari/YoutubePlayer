@@ -2,11 +2,27 @@ import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
-class CustomizedDropDownField extends StatelessWidget {
+class CustomizedDropDownField extends StatefulWidget {
   Widget child;
   String title;
+  Color titleColor;
 
-  CustomizedDropDownField({@required this.child, @required this.title});
+  CustomizedDropDownField(
+      {@required this.child, @required this.title, this.titleColor});
+
+  @override
+  _CustomizedDropDownFieldState createState() =>
+      _CustomizedDropDownFieldState();
+}
+
+class _CustomizedDropDownFieldState extends State<CustomizedDropDownField> {
+  @override
+  void initState() {
+    if (widget.titleColor == null) {
+      widget.titleColor = darkGrey;
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,8 +30,8 @@ class CustomizedDropDownField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-          title,
-          style: TextStyle(color: darkGrey, fontSize: 14),
+          widget.title,
+          style: TextStyle(color: widget.titleColor, fontSize: 14),
         ),
         SizedBox(
           height: 6,
@@ -29,7 +45,7 @@ class CustomizedDropDownField extends StatelessWidget {
           margin: EdgeInsets.all(0),
           borderOnForeground: true,
           child: DropdownButtonHideUnderline(
-            child: ButtonTheme(alignedDropdown: true, child: child),
+            child: ButtonTheme(alignedDropdown: true, child: widget.child),
           ),
         ),
       ],

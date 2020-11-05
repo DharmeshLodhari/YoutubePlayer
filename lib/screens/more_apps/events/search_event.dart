@@ -593,7 +593,7 @@ class _SearchEventState extends State<SearchEvent> {
       SliderTheme(
         data: SliderTheme.of(context).copyWith(
           trackHeight: 1,
-          rangeThumbShape: CustomRangeThumbShape(
+          rangeThumbShape: CustomRangeThumbShapeForMovie(
               selectedPriceValue.start.toInt(), selectedPriceValue.end.toInt()),
           overlayShape: RoundSliderOverlayShape(overlayRadius: 12.0),
           minThumbSeparation: 30,

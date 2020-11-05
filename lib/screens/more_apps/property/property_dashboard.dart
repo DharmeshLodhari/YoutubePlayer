@@ -16,12 +16,17 @@ class PropertyDashboard extends StatefulWidget {
 class _PropertyDashboardState extends State<PropertyDashboard> {
   PropertyDashboardBloc _propertyDashboardBloc;
 
+  PropertyFilterBloc _propertyFilterBloc;
+
   @override
   Widget build(BuildContext context) {
     _propertyDashboardBloc = Provider.of<PropertyDashboardBloc>(context);
+    _propertyFilterBloc = Provider.of<PropertyFilterBloc>(context);
     return WillPopScope(
       onWillPop: () {
         _propertyDashboardBloc.index = 0;
+        _propertyFilterBloc.resetFilter();
+
         return Future.value(true);
       },
       child: Scaffold(
