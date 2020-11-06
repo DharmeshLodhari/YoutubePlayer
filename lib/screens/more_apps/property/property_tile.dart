@@ -1,3 +1,4 @@
+import 'package:Slydo/screens/more_apps/property/modals/PartialPropertyItem.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -5,6 +6,9 @@ import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+
+import 'modals/CityData.dart';
+import 'modals/PropertyItem.dart';
 
 // ignore: must_be_immutable
 class PropertyTileWithHeart extends StatefulWidget {
@@ -223,24 +227,21 @@ class _PropertyTileWithHeartState extends State<PropertyTileWithHeart> {
 }
 
 class PropertyImagesTile extends StatefulWidget {
+  final PropertyItem property;
+
+  PropertyImagesTile({this.property});
+
   @override
   _PropertyImagesTileState createState() => _PropertyImagesTileState();
 }
 
 class _PropertyImagesTileState extends State<PropertyImagesTile> {
-  List<String> hotelImgList = [
-    "https://www.gannett-cdn.com/-mm-/05b227ad5b8ad4e9dcb53af4f31d7fbdb7fa901b/c=0-64-2119-1259/local/-/media/USATODAY/USATODAY/2014/08/13/1407953244000-177513283.jpg",
-    "https://www.thebalancesmb.com/thmb/R5CjZrWUBXBTVj48-MBx3PFIh5U=/3000x2000/filters:fill(auto,1)/hotel_room-627892060-5a7a30d1642dca00370179e6.jpg",
-    "https://media.istockphoto.com/photos/3d-rendering-modern-luxury-bedroom-suite-and-bathroom-picture-id928431714?k=6&m=928431714&s=612x612&w=0&h=IBnf0aE9zEmsaJ3nLep6UmK4u-KYQPdEQa6LY30Ivn4=",
-    "https://gritdaily.com/wp-content/uploads/2019/07/http-cdn.cnn_.com-cnnnext-dam-assets-190711000204-haneda-excel-hotel-tokyu-03.jpg",
-    "https://blisssaigon.com/wp-content/uploads/2019/10/iwood-R5v8Xtc0ecg-unsplash-1.jpg"
-  ];
-
   int _current = 0;
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: MediaQuery.of(context).size.width - 40,
       child: CustomBoxShadow(
         child: Card(
             elevation: 3,
@@ -267,7 +268,7 @@ class _PropertyImagesTileState extends State<PropertyImagesTile> {
                                 });
                               }
                             }),
-                        items: hotelImgList
+                        items: widget.property.images
                             .map(
                               (e) => InkWell(
                                 child: CachedNetworkImage(
@@ -287,12 +288,12 @@ class _PropertyImagesTileState extends State<PropertyImagesTile> {
                       Positioned(
                         bottom: 0,
                         left: MediaQuery.of(context).size.width / 2 -
-                            ((5 * hotelImgList.length) + 16),
+                            ((5 * widget.property.images.length) + 16),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: hotelImgList.map((url) {
-                            int index = hotelImgList.indexOf(url);
+                          children: widget.property.images.map((url) {
+                            int index = widget.property.images.indexOf(url);
                             return Container(
                               width: 5.0,
                               height: 5.0,
@@ -319,7 +320,7 @@ class _PropertyImagesTileState extends State<PropertyImagesTile> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              "Lake side cottage",
+                              widget.property.name,
                               softWrap: false,
                               overflow: TextOverflow.fade,
                               style: TextStyle(
@@ -343,7 +344,7 @@ class _PropertyImagesTileState extends State<PropertyImagesTile> {
                                           fontFamily: "Roborto"),
                                     ),
                                     Text(
-                                      "34000.00",
+                                      widget.property.price,
                                       softWrap: false,
                                       overflow: TextOverflow.fade,
                                       style: TextStyle(
@@ -365,7 +366,9 @@ class _PropertyImagesTileState extends State<PropertyImagesTile> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              "Old Ken road, London SE15",
+                              widget.property.address1 +
+                                  ", " +
+                                  widget.property.address2,
                               softWrap: false,
                               overflow: TextOverflow.fade,
                               style: TextStyle(
@@ -385,7 +388,7 @@ class _PropertyImagesTileState extends State<PropertyImagesTile> {
                                   width: 4,
                                 ),
                                 Text(
-                                  "7.8",
+                                  widget.property.rating,
                                   style:
                                       TextStyle(fontSize: 14, color: blackFont),
                                 )
@@ -399,6 +402,159 @@ class _PropertyImagesTileState extends State<PropertyImagesTile> {
                 ],
               ),
             )),
+      ),
+    );
+  }
+}
+
+class PartialPropertyItemTile extends StatelessWidget {
+  final PartialPropertyItem property;
+
+  PartialPropertyItemTile({this.property});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).pushNamed("/property-detail");
+      },
+      child: Card(
+        margin: EdgeInsets.zero,
+        elevation: 0,
+        child: Container(
+          width: 160,
+          decoration: decorateBox(borderColor: selectedListItemBackgroundBlue),
+          child: Container(
+            padding: EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: CachedNetworkImage(
+                    imageUrl: property.image,
+                    height: 130,
+                    width: 130,
+                    fit: BoxFit.fill,
+                  ),
+                ),
+                SizedBox(
+                  height: 12,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Text(
+                                "From ",
+                                softWrap: false,
+                                overflow: TextOverflow.fade,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 12,
+                                  color: blackFont,
+                                ),
+                              ),
+                              Text(
+                                "₦",
+                                softWrap: false,
+                                overflow: TextOverflow.fade,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 14,
+                                    color: blackFont,
+                                    fontFamily: "Roborto"),
+                              ),
+                              Text(
+                                property.price,
+                                softWrap: false,
+                                overflow: TextOverflow.fade,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 14,
+                                  color: blackFont,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      property.shortDescription,
+                      softWrap: false,
+                      overflow: TextOverflow.fade,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontSize: 12,
+                        color: blackFont,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class CityItemCard extends StatelessWidget {
+  final CityData city;
+
+  CityItemCard({this.city});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).pushNamed("/property-detail");
+      },
+      child: Card(
+        margin: EdgeInsets.zero,
+        elevation: 0,
+        child: Container(
+          width: 160,
+          decoration: decorateBox(borderColor: selectedListItemBackgroundBlue),
+          child: Container(
+            padding: EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  city.name,
+                  softWrap: false,
+                  overflow: TextOverflow.fade,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
+                    color: blackFont,
+                  ),
+                ),
+                SizedBox(
+                  height: 12,
+                ),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: CachedNetworkImage(
+                    imageUrl: city.image,
+                    height: 130,
+                    width: 130,
+                    fit: BoxFit.fill,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

@@ -1,14 +1,22 @@
 import 'dart:math';
 
+import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/property/modals/CityData.dart';
 import 'package:Slydo/screens/more_apps/property/property_dashboard_bloc.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:toast/toast.dart';
 
+import 'modals/PartialPropertyItem.dart';
+import 'modals/PropertyItem.dart';
+import 'property_auth.dart';
 import 'property_tile.dart';
 
 class PropertyExploreScreen extends StatefulWidget {
@@ -17,26 +25,80 @@ class PropertyExploreScreen extends StatefulWidget {
 }
 
 class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
-  List<String> cityImgList = [
-    "https://www.investopedia.com/thmb/yykxeXgS1D1U8NHWKTbWo0jaMRA=/680x440/filters:fill(auto,1)/houses_and_land-5bfc3326c9e77c0051812eb3.jpg",
-    "https://www.omgproperties.in/wp-content/uploads/2019/11/Budget-villas-in-palakkad.jpg",
-    "https://is1-3.housingcdn.com/4f2250e8/61aaf7e228e409f2b1e325cf59a537cd/v0/fs/richlook_luxurious_floor-sector_42-faridabad-richlook_property.jpeg",
-    "https://new-img.patrika.com/upload/2017/10/01/real_estate_property_home_1864135_835x547-m.jpg",
-    "https://im.proptiger.com/1/3029540/6/veda-elevation-103037128.jpeg"
-  ];
-  List<String> hotelImgList = [
-    "https://www.gannett-cdn.com/-mm-/05b227ad5b8ad4e9dcb53af4f31d7fbdb7fa901b/c=0-64-2119-1259/local/-/media/USATODAY/USATODAY/2014/08/13/1407953244000-177513283.jpg",
-    "https://www.thebalancesmb.com/thmb/R5CjZrWUBXBTVj48-MBx3PFIh5U=/3000x2000/filters:fill(auto,1)/hotel_room-627892060-5a7a30d1642dca00370179e6.jpg",
-    "https://media.istockphoto.com/photos/3d-rendering-modern-luxury-bedroom-suite-and-bathroom-picture-id928431714?k=6&m=928431714&s=612x612&w=0&h=IBnf0aE9zEmsaJ3nLep6UmK4u-KYQPdEQa6LY30Ivn4=",
-    "https://gritdaily.com/wp-content/uploads/2019/07/http-cdn.cnn_.com-cnnnext-dam-assets-190711000204-haneda-excel-hotel-tokyu-03.jpg",
-    "https://blisssaigon.com/wp-content/uploads/2019/10/iwood-R5v8Xtc0ecg-unsplash-1.jpg"
-  ];
+  List<PropertyItem> nearByItem = [];
+  bool isNearByItemLoading = false;
 
-  List<String> cityName = ["Lagos", "Abuja", "Ibadan", "Port harcourt"];
+  List<PartialPropertyItem> mostRecentDiscovery = [];
+  bool isMostRecentDiscoveryLoading = false;
 
-  CarouselController _carouselController = CarouselController();
+  List<CityData> listOfCity = [];
+  bool isExploreByCityLoading = false;
+
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
 
   PropertyFilterBloc _propertyFilterBloc;
+
+  @override
+  void initState() {
+    getResult();
+    super.initState();
+  }
+
+  void getResult() {
+    getNearByItem();
+    getMostRecentDiscoveryItem();
+    getExploreByCityItem();
+  }
+
+  void getNearByItem() async {
+    isNearByItemLoading = true;
+    nearByItem.clear();
+    if (mounted) setState(() {});
+
+    nearByItem = await PropertyAuthService().getPropertyList();
+
+    isNearByItemLoading = false;
+    if (mounted) setState(() {});
+  }
+
+  void getMostRecentDiscoveryItem() async {
+    isMostRecentDiscoveryLoading = true;
+    mostRecentDiscovery.clear();
+    if (mounted) setState(() {});
+
+    mostRecentDiscovery = await PropertyAuthService().getPartialPropertyList();
+
+    isMostRecentDiscoveryLoading = false;
+    if (mounted) setState(() {});
+  }
+
+  void getExploreByCityItem() async {
+    isExploreByCityLoading = true;
+    listOfCity.clear();
+    if (mounted) setState(() {});
+
+    listOfCity = await PropertyAuthService().getCityList();
+
+    isExploreByCityLoading = false;
+    if (mounted) setState(() {});
+  }
+
+  void _onRefresh() async {
+    Connectivity().checkConnectivity().then((value) {
+      var connectionResult = value;
+      if (connectionResult == ConnectivityResult.wifi ||
+          connectionResult == ConnectivityResult.mobile) {
+        getResult();
+        _refreshController.refreshCompleted();
+      } else {
+        Toast.show(
+            AppLocalization.of(context).internetConnectionNotAvailable, context,
+            gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+        _refreshController.refreshCompleted();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +130,10 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
       title: Text(
         "Property",
         style: TextStyle(
-            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+          color: blackFont,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+        ),
       ),
       actions: [
         locationChip(),
@@ -107,40 +172,45 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
   }
 
   Widget scaffoldBody() {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          SizedBox(
-            height: 6,
-          ),
-          searchBox(),
-          SizedBox(
-            height: 32,
-          ),
-          // cityCarouselSlider(),
-          // SizedBox(
-          //   height: 40,
-          // ),
-          nearByYou(categoryName: "Nearby you"),
-          rentDetail(
-            categoryName: "Most recent discovery",
-            moviePoster:
-                "https://m.media-amazon.com/images/I/A1o+mUmviOL._SS500_.jpg",
-            movieName: "The Cloud Of Northland Thunder",
-          ),
-          SizedBox(
-            height: 16,
-          ),
-          exploreByCity(
-            categoryName: "Explore by City",
-            moviePoster:
-                "https://m.media-amazon.com/images/I/A1o+mUmviOL._SS500_.jpg",
-            movieName: "The Cloud Of Northland Thunder",
-          ),
-          SizedBox(
-            height: 10,
-          ),
-        ],
+    return SmartRefresher(
+      enablePullDown: true,
+      header: WaterDropHeader(
+        complete: Container(),
+        waterDropColor: navyBlue,
+      ),
+      controller: _refreshController,
+      onRefresh: _onRefresh,
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(
+              height: 6,
+            ),
+            searchBox(),
+            SizedBox(
+              height: 32,
+            ),
+            nearByYou(categoryName: "Nearby you"),
+            rentDetail(
+              categoryName: "Most recent discovery",
+              moviePoster:
+                  "https://m.media-amazon.com/images/I/A1o+mUmviOL._SS500_.jpg",
+              movieName: "The Cloud Of Northland Thunder",
+            ),
+            SizedBox(
+              height: 16,
+            ),
+            exploreByCity(
+              categoryName: "Explore by City",
+              moviePoster:
+                  "https://m.media-amazon.com/images/I/A1o+mUmviOL._SS500_.jpg",
+              movieName: "The Cloud Of Northland Thunder",
+            ),
+            SizedBox(
+              height: 10,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -225,45 +295,6 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
     );
   }
 
-  Widget cityCarouselSlider() {
-    return Container(
-      child: CarouselSlider(
-        carouselController: _carouselController,
-        options: CarouselOptions(
-          viewportFraction: 0.9,
-          enlargeCenterPage: false,
-          autoPlay: true,
-          aspectRatio: 2,
-          initialPage: 0,
-        ),
-        items: cityImgList
-            .map(
-              (item) => GestureDetector(
-                onTap: () {
-                  Navigator.of(context).pushNamed("/property-detail");
-                },
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 5),
-                  child: Center(
-                      child: ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                    child: CachedNetworkImage(
-                      imageUrl: item,
-                      fit: BoxFit.fill,
-                      color: Colors.black12,
-                      colorBlendMode: BlendMode.darken,
-                      height: double.infinity,
-                      width: double.infinity,
-                    ),
-                  )),
-                ),
-              ),
-            )
-            .toList(),
-      ),
-    );
-  }
-
   Widget rentDetail(
       {String categoryName, String movieName, String moviePoster}) {
     return Container(
@@ -300,23 +331,28 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
           Container(
             height: 210,
             color: Colors.white,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Container(
-                padding: EdgeInsets.only(left: 16),
-                child: Row(
-                  children: hotelImgList
-                      .map(
-                        (image) => Container(
-                          margin: EdgeInsets.only(right: 12),
-                          child:
-                              rentCard(cityPoster: image, cityName: movieName),
-                        ),
-                      )
-                      .toList(),
-                ),
-              ),
-            ),
+            child: isMostRecentDiscoveryLoading
+                ? Center(
+                    child: CircularLoadingIndicator(),
+                  )
+                : SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Container(
+                      padding: EdgeInsets.only(left: 16),
+                      child: Row(
+                        children: mostRecentDiscovery
+                            .map(
+                              (property) => Container(
+                                margin: EdgeInsets.only(right: 12),
+                                child: PartialPropertyItemTile(
+                                  property: property,
+                                ),
+                              ),
+                            )
+                            .toList(),
+                      ),
+                    ),
+                  ),
           )
         ],
       ),
@@ -451,23 +487,28 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
           Container(
             height: 210,
             color: Colors.white,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Container(
-                padding: EdgeInsets.only(left: 16),
-                child: Row(
-                  children: cityName
-                      .map(
-                        (city) => Container(
-                          margin: EdgeInsets.only(right: 12),
-                          child:
-                              cityCard(cityPoster: moviePoster, cityName: city),
-                        ),
-                      )
-                      .toList(),
-                ),
-              ),
-            ),
+            child: isExploreByCityLoading
+                ? Center(
+                    child: CircularLoadingIndicator(),
+                  )
+                : SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Container(
+                      padding: EdgeInsets.only(left: 16),
+                      child: Row(
+                        children: listOfCity
+                            .map(
+                              (city) => Container(
+                                margin: EdgeInsets.only(right: 12),
+                                child: CityItemCard(
+                                  city: city,
+                                ),
+                              ),
+                            )
+                            .toList(),
+                      ),
+                    ),
+                  ),
           )
         ],
       ),
@@ -556,23 +597,33 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
           Container(
             color: Colors.white,
             padding: EdgeInsets.symmetric(vertical: 16),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: Container(
-                padding: EdgeInsets.only(
-                  left: 16,
-                  bottom: 12,
-                ),
-                child: Column(
-                  children: List.generate(
-                      1,
-                      (index) => Container(
-                            margin: EdgeInsets.only(right: 16),
-                            child: PropertyImagesTile(),
-                          )),
-                ),
-              ),
-            ),
+            child: isNearByItemLoading
+                ? Container(
+                    height: 220,
+                    width: double.infinity,
+                    child: Center(
+                      child: CircularLoadingIndicator(),
+                    ),
+                  )
+                : SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Container(
+                      padding: EdgeInsets.only(
+                        left: 16,
+                        bottom: 12,
+                      ),
+                      child: Row(
+                        children: nearByItem
+                            .map((element) => Container(
+                                  margin: EdgeInsets.only(right: 16),
+                                  child: PropertyImagesTile(
+                                    property: element,
+                                  ),
+                                ))
+                            .toList(),
+                      ),
+                    ),
+                  ),
           )
         ],
       ),

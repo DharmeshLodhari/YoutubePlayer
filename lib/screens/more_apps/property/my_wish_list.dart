@@ -1,7 +1,14 @@
+import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/property/modals/PropertyItem.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:toast/toast.dart';
 
+import 'property_auth.dart';
 import 'property_dashboard_bloc.dart';
 import 'property_tile.dart';
 
@@ -19,9 +26,55 @@ class _MyWishListState extends State<MyWishList> {
     "https://a.travel-assets.com/findyours-php/viewfinder/images/res70/20000/20665-London.jpg"
   ];
   PropertyDashboardBloc _propertyDashboardBloc;
+
+  List<PropertyItem> myWishList = [];
+
+  bool isLoading = false;
+
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
+
+  @override
+  void initState() {
+    getResult("wishList");
+    super.initState();
+  }
+
+  void getResult(String item) async {
+    isLoading = true;
+    myWishList.clear();
+    if (mounted) {
+      setState(() {});
+    }
+
+    myWishList = await PropertyAuthService().getPropertyList();
+
+    isLoading = false;
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  void _onRefresh() async {
+    Connectivity().checkConnectivity().then((value) {
+      var connectionResult = value;
+      if (connectionResult == ConnectivityResult.wifi ||
+          connectionResult == ConnectivityResult.mobile) {
+        getResult("");
+        _refreshController.refreshCompleted();
+      } else {
+        Toast.show(
+            AppLocalization.of(context).internetConnectionNotAvailable, context,
+            gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+        _refreshController.refreshCompleted();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     _propertyDashboardBloc = Provider.of<PropertyDashboardBloc>(context);
+
     return WillPopScope(
       onWillPop: () async {
         _propertyDashboardBloc.index = 0;
@@ -30,18 +83,33 @@ class _MyWishListState extends State<MyWishList> {
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: appBar(),
-        body: SingleChildScrollView(
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              children: List.generate(
-                  5,
-                  (index) => Container(
-                      padding: EdgeInsets.symmetric(vertical: 8),
-                      child: PropertyImagesTile())),
-            ),
-          ),
-        ),
+        body: isLoading
+            ? Center(
+                child: CircularLoadingIndicator(),
+              )
+            : SmartRefresher(
+                enablePullDown: true,
+                header: WaterDropHeader(
+                  complete: Container(),
+                  waterDropColor: navyBlue,
+                ),
+                controller: _refreshController,
+                onRefresh: _onRefresh,
+                child: SingleChildScrollView(
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      children: myWishList
+                          .map((element) => Container(
+                              padding: EdgeInsets.symmetric(vertical: 8),
+                              child: PropertyImagesTile(
+                                property: element,
+                              )))
+                          .toList(),
+                    ),
+                  ),
+                ),
+              ),
       ),
     );
   }

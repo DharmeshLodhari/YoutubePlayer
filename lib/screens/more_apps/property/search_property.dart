@@ -1,4 +1,6 @@
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/movies/custom_slider_thumb_circle_for_range_slider.dart';
+import 'package:Slydo/screens/more_apps/property/modals/PropertyItem.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -7,8 +9,11 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:search_widget/search_widget.dart';
+import 'package:toast/toast.dart';
 
 import 'property_auth.dart';
 import 'property_dashboard_bloc.dart';
@@ -47,6 +52,11 @@ class _SearchPropertyState extends State<SearchProperty> {
   RangeValues selectedPriceValue = RangeValues(20000, 50000);
 
   List<bool> isForBuyOrRent = [true, false];
+
+  List<PropertyItem> propertyList = [];
+
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
 
   /// type of property filter variables
   bool typeIsAny = true;
@@ -163,6 +173,22 @@ class _SearchPropertyState extends State<SearchProperty> {
         _propertyFilterBloc.amenityIsDishwasherAvailable;
   }
 
+  void _onRefresh() async {
+    Connectivity().checkConnectivity().then((value) {
+      var connectionResult = value;
+      if (connectionResult == ConnectivityResult.wifi ||
+          connectionResult == ConnectivityResult.mobile) {
+        getResult("");
+        _refreshController.refreshCompleted();
+      } else {
+        Toast.show(
+            AppLocalization.of(context).internetConnectionNotAvailable, context,
+            gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+        _refreshController.refreshCompleted();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -268,19 +294,29 @@ class _SearchPropertyState extends State<SearchProperty> {
                     child: CircularLoadingIndicator(),
                   ),
                 )
-              : selectedSearch == "London"
+              : propertyList.isEmpty
                   ? Expanded(child: searchBackground())
                   : Expanded(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: imgList
-                              .map(
-                                (element) => Container(
-                                    padding: EdgeInsets.symmetric(
-                                        vertical: 8, horizontal: 16),
-                                    child: PropertyImagesTile()),
-                              )
-                              .toList(),
+                      child: SmartRefresher(
+                        enablePullDown: true,
+                        header: WaterDropHeader(
+                          complete: Container(),
+                          waterDropColor: navyBlue,
+                        ),
+                        controller: _refreshController,
+                        onRefresh: _onRefresh,
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: propertyList
+                                .map(
+                                  (element) => Container(
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 8, horizontal: 16),
+                                      child: PropertyImagesTile(
+                                          property: element)),
+                                )
+                                .toList(),
+                          ),
                         ),
                       ),
                     ),
@@ -396,10 +432,17 @@ class _SearchPropertyState extends State<SearchProperty> {
 
   void getResult(String item) async {
     isLoading = true;
-    setState(() {});
-    await Future.delayed(Duration(seconds: 2));
+    propertyList.clear();
+    if (mounted) {
+      setState(() {});
+    }
+
+    propertyList = await PropertyAuthService().getPropertyList();
+
     isLoading = false;
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   void showFilterPropertySheet() {
