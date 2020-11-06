@@ -192,7 +192,7 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
           ),
         ),
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 20),
+          padding: EdgeInsets.symmetric(horizontal: 10),
           child: playerController(),
         ),
         Flexible(
@@ -230,30 +230,28 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
   Widget playerController() {
     return Row(
       children: [
-        InkWell(
-          onTap: () {
-            musicPlayer.toggleShuffle();
-            debugPrint("suffle:- ${musicPlayer.audioPlayer.shuffle}");
-            setState(() {});
-          },
-          child: Icon(
-            SlydoAppIcon.music_suffle,
-            size: 16,
-            color: musicPlayer.audioPlayer.shuffle ? navyBlue : blackFont,
-          ),
-        ),
+        IconButton(
+            icon: Icon(
+              SlydoAppIcon.music_suffle,
+              size: 16,
+              color: musicPlayer.audioPlayer.shuffle ? navyBlue : blackFont,
+            ),
+            onPressed: () {
+              musicPlayer.toggleShuffle();
+              debugPrint("suffle:- ${musicPlayer.audioPlayer.shuffle}");
+              setState(() {});
+            }),
         flexibleSpace(),
-        InkWell(
-          onTap: () {
-            musicPlayer.audioPlayer.previous();
-            setState(() {});
-          },
-          child: Icon(
-            SlydoAppIcon.music_back,
-            size: 16,
-            color: blackFont,
-          ),
-        ),
+        IconButton(
+            icon: Icon(
+              SlydoAppIcon.music_back,
+              size: 16,
+              color: blackFont,
+            ),
+            onPressed: () {
+              musicPlayer.audioPlayer.previous();
+              setState(() {});
+            }),
         flexibleSpace(),
         InkWell(
           onTap: () {
@@ -289,34 +287,32 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
           ),
         ),
         flexibleSpace(),
-        InkWell(
-          onTap: () {
-            musicPlayer.audioPlayer.next();
-          },
-          child: Icon(
-            SlydoAppIcon.music_next,
-            size: 16,
-            color: blackFont,
-          ),
-        ),
+        IconButton(
+            icon: Icon(
+              SlydoAppIcon.music_next,
+              size: 16,
+              color: blackFont,
+            ),
+            onPressed: () {
+              musicPlayer.audioPlayer.next();
+            }),
         flexibleSpace(),
-        InkWell(
-          onTap: () {
-            if (musicLoopMode == LoopMode.playlist) {
-              musicPlayer.audioPlayer.setLoopMode(LoopMode.single);
-              musicLoopMode = LoopMode.single;
-            } else if (musicLoopMode == LoopMode.single) {
-              musicPlayer.audioPlayer.setLoopMode(LoopMode.playlist);
-              musicLoopMode = LoopMode.playlist;
-            }
-            setState(() {});
-          },
-          child: Icon(
-            SlydoAppIcon.music_repeat,
-            size: 16,
-            color: musicLoopMode == LoopMode.single ? navyBlue : blackFont,
-          ),
-        ),
+        IconButton(
+            icon: Icon(
+              SlydoAppIcon.music_repeat,
+              size: 16,
+              color: musicLoopMode == LoopMode.single ? navyBlue : blackFont,
+            ),
+            onPressed: () {
+              if (musicLoopMode == LoopMode.playlist) {
+                musicPlayer.audioPlayer.setLoopMode(LoopMode.single);
+                musicLoopMode = LoopMode.single;
+              } else if (musicLoopMode == LoopMode.single) {
+                musicPlayer.audioPlayer.setLoopMode(LoopMode.playlist);
+                musicLoopMode = LoopMode.playlist;
+              }
+              setState(() {});
+            }),
       ],
     );
   }

@@ -1,11 +1,22 @@
+import 'dart:math';
+
+import 'package:Slydo/screens/more_apps/property/modals/user_detail_item/PropertyDetailItem.dart';
+import 'package:Slydo/screens/more_apps/property/modals/user_detail_item/SimilarProperty.dart';
+import 'package:Slydo/screens/more_apps/property/property_auth.dart';
+import 'package:Slydo/screens/more_apps/utils/video_plyer_controller/chewie_player.dart';
+import 'package:Slydo/screens/more_apps/utils/video_plyer_controller/chewie_progress_colors.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:video_player/video_player.dart';
 
 import 'property_dashboard_bloc.dart';
 import 'property_tile.dart';
@@ -17,6 +28,9 @@ class PropertyDetailPage extends StatefulWidget {
 
 class _PropertyDetailPageState extends State<PropertyDetailPage> {
   PropertyDashboardBloc _propertyDashboardBloc;
+
+  VideoPlayerController _videoController;
+  ChewieController _chewieController;
 
   List<String> imgList = [
     "https://www.telegraph.co.uk/content/dam/Travel/Destinations/Europe/United%20Kingdom/London/london-aerial-thames-guide.jpg",
@@ -39,14 +53,77 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
 
   bool isWishList = false;
 
+  int _current = 0;
+
+  PropertyDetailItem property = PropertyDetailItem();
+  bool isLoading = false;
+  bool isVideo = false;
+
   @override
   void initState() {
+    getResult();
     super.initState();
+  }
+
+  void getResult() async {
+    isLoading = true;
+    if (mounted) setState(() {});
+
+    property = await PropertyAuthService().getProperty();
+
+    isVideo = Random().nextBool();
+    if (isVideo) {
+      debugPrint("video:- $isVideo");
+      initializeVideoPlayer();
+    }
+
+    isLoading = false;
+    if (mounted) setState(() {});
   }
 
   @override
   void dispose() {
+    if (isVideo) {
+      _videoController.dispose();
+      _chewieController.dispose();
+    }
+
+    SystemChrome.setPreferredOrientations(
+      [
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ],
+    );
+
+    SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+
     super.dispose();
+  }
+
+  void initializeVideoPlayer() {
+    _videoController = VideoPlayerController.network(
+      property.video,
+    );
+
+    _chewieController = ChewieController(
+      videoPlayerController: _videoController,
+      aspectRatio: 16 / 9,
+      allowedScreenSleep: false,
+      allowFullScreen: true,
+      deviceOrientationsAfterFullScreen: [
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ],
+      systemOverlaysAfterFullScreen: SystemUiOverlay.values,
+      // showControls: false,
+      materialProgressColors: ChewieProgressColors(
+        playedColor: navyBlue,
+        handleColor: Colors.white,
+        backgroundColor: dividerColor,
+        bufferedColor: Colors.white30,
+      ),
+      autoInitialize: true,
+    );
   }
 
   @override
@@ -125,115 +202,116 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
   }
 
   Widget scaffoldBody() {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          eventPoster(),
-          Column(
-            children: [
-              SizedBox(
-                height: 24,
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: eventNameAndHostInformation(),
-              ),
-              SizedBox(
-                height: 8,
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
+    return isLoading
+        ? Center(
+            child: CircularLoadingIndicator(),
+          )
+        : SingleChildScrollView(
+            child: Column(
+              children: [
+                eventPoster(),
+                Column(
                   children: [
-                    Divider(
-                      thickness: 1,
-                      color: dividerColor,
+                    SizedBox(
+                      height: 24,
+                    ),
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: eventNameAndHostInformation(),
                     ),
                     SizedBox(
-                      height: 12,
+                      height: 8,
                     ),
-                    features(),
-                    SizedBox(
-                      height: 16,
-                    ),
-                    Divider(
-                      thickness: 1,
-                      color: dividerColor,
-                      height: 0,
-                    ),
-                    Divider(
-                      thickness: 1,
-                      color: dividerColor,
-                      height: 0,
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        children: [
+                          Divider(
+                            thickness: 1,
+                            color: dividerColor,
+                          ),
+                          SizedBox(
+                            height: 12,
+                          ),
+                          features(),
+                          SizedBox(
+                            height: 16,
+                          ),
+                          Divider(
+                            thickness: 1,
+                            color: dividerColor,
+                            height: 0,
+                          ),
+                          Divider(
+                            thickness: 1,
+                            color: dividerColor,
+                            height: 0,
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 12,
-          ),
-          propertyFeature(),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              children: [
-                Divider(
-                  thickness: 1,
-                  color: dividerColor,
-                  height: 16,
-                ),
-                SizedBox(
-                  height: 8,
-                ),
-                aboutEvent(),
                 SizedBox(
                   height: 12,
                 ),
-                Divider(
-                  thickness: 1,
-                  color: dividerColor,
+                propertyFeature(),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    children: [
+                      Divider(
+                        thickness: 1,
+                        color: dividerColor,
+                        height: 16,
+                      ),
+                      SizedBox(
+                        height: 8,
+                      ),
+                      aboutEvent(),
+                      SizedBox(
+                        height: 12,
+                      ),
+                      Divider(
+                        thickness: 1,
+                        color: dividerColor,
+                      ),
+                      SizedBox(
+                        height: 12,
+                      ),
+                      eventLocation(),
+                      SizedBox(
+                        height: 16,
+                      ),
+                      Divider(
+                        thickness: 1,
+                        color: dividerColor,
+                        height: 0,
+                      ),
+                      SizedBox(
+                        height: 12,
+                      ),
+                      reviewsList(),
+                      aboutPartnerList(),
+                      SizedBox(
+                        height: 12,
+                      ),
+                      askQuestionBtn(),
+                      SizedBox(
+                        height: 40,
+                      ),
+                    ],
+                  ),
+                ),
+                rentDetail(
+                  categoryName: "Similar properties",
                 ),
                 SizedBox(
-                  height: 12,
-                ),
-                eventLocation(),
-                SizedBox(
-                  height: 16,
-                ),
-                Divider(
-                  thickness: 1,
-                  color: dividerColor,
-                  height: 0,
-                ),
-                SizedBox(
-                  height: 12,
-                ),
-                reviewsList(),
-                aboutPartnerList(),
-                SizedBox(
-                  height: 12,
-                ),
-                askQuestionBtn(),
-                SizedBox(
-                  height: 40,
+                  height: 10,
                 ),
               ],
             ),
-          ),
-          rentDetail(
-            categoryName: "Similar properties",
-            moviePoster:
-                "https://m.media-amazon.com/images/I/A1o+mUmviOL._SS500_.jpg",
-            movieName: "The Cloud Of Northland Thunder",
-          ),
-          SizedBox(
-            height: 60,
-          ),
-        ],
-      ),
-    );
+          );
   }
 
   Widget eventPoster() {
@@ -242,23 +320,78 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
         aspectRatio: 16 / 9,
         child: Stack(
           children: [
-            CachedNetworkImage(
-              width: double.infinity,
-              height: double.infinity,
-              imageUrl:
-                  "https://www.gannett-cdn.com/-mm-/05b227ad5b8ad4e9dcb53af4f31d7fbdb7fa901b/c=0-64-2119-1259/local/-/media/USATODAY/USATODAY/2014/08/13/1407953244000-177513283.jpg",
-              fit: BoxFit.fill,
-            ),
+            isVideo
+                ? Chewie(
+                    controller: _chewieController,
+                    posterUrl: property.images.first,
+                    titleName: property.name,
+                  )
+                : Stack(
+                    children: [
+                      CarouselSlider(
+                        options: CarouselOptions(
+                            viewportFraction: 1.0,
+                            enlargeCenterPage: true,
+                            autoPlay: false,
+                            // aspectRatio: 2,
+                            onPageChanged: (index, _) {
+                              if (mounted) {
+                                setState(() {
+                                  _current = index;
+                                });
+                              }
+                            }),
+                        items: property.images
+                            .map(
+                              (e) => InkWell(
+                                child: CachedNetworkImage(
+                                  width: double.infinity,
+                                  imageUrl: e,
+                                  fit: BoxFit.fill,
+                                  filterQuality: FilterQuality.high,
+                                ),
+                                onTap: () {},
+                              ),
+                            )
+                            .toList(),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        left: MediaQuery.of(context).size.width / 2 -
+                            ((5 * property.images.length)),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: property.images.map((url) {
+                            int index = property.images.indexOf(url);
+                            return Container(
+                              width: 5.0,
+                              height: 5.0,
+                              margin: EdgeInsets.symmetric(
+                                  vertical: 10.0, horizontal: 2.0),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: _current == index
+                                    ? Colors.white
+                                    : Colors.white30,
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ],
+                  ),
             Positioned(
-              right: 12,
-              top: 12,
+              right: 14,
+              top: 14,
               child: InkWell(
                 child: Icon(
                   isWishList ? SlydoAppIcon.heart_1 : SlydoAppIcon.heart_empty,
                   color: Colors.white,
-                  size: 22,
+                  size: 20,
                 ),
-                onTap: () {
+                onTap: () async {
+                  await PropertyAuthService().addToWishList();
                   isWishList = !isWishList;
                   setState(() {});
                 },
@@ -278,7 +411,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Lake side cottage',
+              property.name,
               style: TextStyle(
                   fontSize: 18, fontWeight: FontWeight.w700, color: blackFont),
             ),
@@ -293,7 +426,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
                   width: 4,
                 ),
                 Text(
-                  "7.8",
+                  property.partners.first.star,
                   style: TextStyle(fontSize: 14, color: blackFont),
                 )
               ],
@@ -304,7 +437,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
           height: 4,
         ),
         Text(
-          '3 beds • 2 bath • 1 livingroom',
+          property.shortDetail,
           style: TextStyle(
               fontSize: 14, fontWeight: FontWeight.w400, color: darkGrey),
         ),
@@ -318,8 +451,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
               width: 32,
               child: ClipOval(
                 child: CachedNetworkImage(
-                  imageUrl:
-                      "https://cdn.thewhistler.ng/wp-content/uploads/2020/06/ChiNna-Okoroafor-2.jpg",
+                  imageUrl: property.ownerAvatar,
                   fit: BoxFit.fill,
                   width: double.infinity,
                   height: double.infinity,
@@ -330,7 +462,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
               width: 12,
             ),
             Text(
-              "Bond street dojo",
+              property.ownerName,
               style: TextStyle(
                   fontSize: 14, fontWeight: FontWeight.w600, color: blackFont),
             )
@@ -665,8 +797,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
     );
   }
 
-  Widget rentDetail(
-      {String categoryName, String movieName, String moviePoster}) {
+  Widget rentDetail({String categoryName}) {
     return Container(
       child: Column(
         children: [
@@ -692,7 +823,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
                         color: navyBlue),
                   ),
                   onTap: () {
-                    Navigator.of(context).pushNamed("/hotel-category");
+                    Navigator.of(context).pushNamed("/property-category");
                   },
                 ),
               ],
@@ -706,12 +837,11 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
               child: Container(
                 padding: EdgeInsets.only(left: 16, top: 16, bottom: 16),
                 child: Row(
-                  children: hotelImgList
+                  children: property.similarProperties
                       .map(
-                        (image) => Container(
+                        (similarProperty) => Container(
                           margin: EdgeInsets.only(right: 12),
-                          child:
-                              rentCard(cityPoster: image, cityName: movieName),
+                          child: rentCard(similarProperty: similarProperty),
                         ),
                       )
                       .toList(),
@@ -724,10 +854,10 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
     );
   }
 
-  Widget rentCard({String cityName, String cityPoster}) {
+  Widget rentCard({SimilarProperty similarProperty}) {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).pushNamed("/hotel-detail");
+        Navigator.of(context).pushNamed("/property-detail");
       },
       child: Card(
         margin: EdgeInsets.zero,
@@ -743,8 +873,8 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
-                  child: Image.network(
-                    cityPoster,
+                  child: CachedNetworkImage(
+                    imageUrl: similarProperty.image,
                     height: 130,
                     width: 130,
                     fit: BoxFit.fill,
@@ -782,7 +912,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
                                     fontFamily: "Roborto"),
                               ),
                               Text(
-                                "1600.00",
+                                similarProperty.price,
                                 softWrap: false,
                                 overflow: TextOverflow.fade,
                                 style: TextStyle(
@@ -797,7 +927,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
                       ],
                     ),
                     Text(
-                      "3 beds in London",
+                      similarProperty.shortDescription,
                       softWrap: false,
                       overflow: TextOverflow.fade,
                       style: TextStyle(
@@ -875,7 +1005,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
           height: 12,
         ),
         Text(
-          '''Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pa.Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pa.''',
+          property.about,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w400,
@@ -959,12 +1089,12 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
             height: 16,
           ),
           Column(
-            children: List.generate(
-                3,
-                (index) => Container(
+            children: property.reviews
+                .map((review) => Container(
                       margin: EdgeInsets.only(bottom: 12),
                       child: ReviewTile(),
-                    )),
+                    ))
+                .toList(),
           ),
         ],
       ),
@@ -988,16 +1118,29 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
             height: 16,
           ),
           Column(
-            children: List.generate(
-                1,
-                (index) => Container(
+            children: property.partners
+                .map((partner) => Container(
                       margin: EdgeInsets.only(bottom: 12),
-                      child: InkWell(
-                          onTap: () {
-                            Navigator.of(context).pushNamed("/partner-detail");
-                          },
-                          child: PartnerTile()),
-                    )),
+                      child: Column(
+                        children: [
+                          InkWell(
+                              onTap: () {
+                                Navigator.of(context)
+                                    .pushNamed("/partner-detail");
+                              },
+                              child: PartnerTile()),
+                          SizedBox(
+                            height: 16,
+                          ),
+                          Divider(
+                            thickness: 1,
+                            color: dividerColor,
+                            height: 0,
+                          ),
+                        ],
+                      ),
+                    ))
+                .toList(),
           ),
         ],
       ),
@@ -1038,7 +1181,12 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
   Widget askQuestionBtn() {
     return OutlineCurvedButton(
       text: "Ask a question",
-      onPressed: () {},
+      onPressed: () {
+        Navigator.of(context).pushNamed('/compose_message', arguments: {
+          'recipient': property.ownerUserName,
+          'subject': "",
+        });
+      },
       textColor: navyBlue,
     );
   }
