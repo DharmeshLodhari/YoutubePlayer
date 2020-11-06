@@ -161,10 +161,6 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
       actions: <Widget>[
         shareBtn(),
         SizedBox(
-          width: 8,
-        ),
-        addToCartBtn(),
-        SizedBox(
           width: 16,
         ),
       ],
@@ -177,21 +173,6 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
       width: 34,
       icon: Icon(
         SlydoAppIcon.share,
-        size: 16,
-        color: blackFont,
-      ),
-      onTap: () {},
-      backgroundColor: iconBtnGrey,
-      enableMargin: true,
-    );
-  }
-
-  Widget addToCartBtn() {
-    return RoundedBackgroundIcon(
-      height: 34,
-      width: 34,
-      icon: Icon(
-        SlydoAppIcon.cart,
         size: 16,
         color: blackFont,
       ),
