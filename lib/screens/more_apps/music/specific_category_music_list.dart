@@ -1,6 +1,13 @@
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:toast/toast.dart';
 
+import 'models/PartialMusicItem.dart';
+import 'music_auth.dart';
 import 'music_tile.dart';
 
 class SpecificCategoryMusicList extends StatefulWidget {
@@ -10,12 +17,43 @@ class SpecificCategoryMusicList extends StatefulWidget {
 }
 
 class _SpecificCategoryMusicListState extends State<SpecificCategoryMusicList> {
-  List<String> imgList = [
-    "https://storage.googleapis.com/assets-pam-blog/2018/12/Dj-Neptune-Greatness.jpg",
-    "https://www.naijaloaded.com.ng/wp-content/uploads/2019/10/erigga.jpg",
-    "https://i.ytimg.com/vi/MuXtUDQ8Sug/maxresdefault.jpg",
-    "https://www.musicinafrica.net/sites/default/files/styles/article_slider_large/public/images/article/202008/djcuppy21.jpg?itok=ruxfue_g"
-  ];
+  List<PartialMusicItem> musicList = [];
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
+  bool isLoading = false;
+  @override
+  void initState() {
+    getResult();
+    super.initState();
+  }
+
+  void getResult() async {
+    isLoading = true;
+    musicList.clear();
+    if (mounted) setState(() {});
+
+    musicList = await MusicAuthService().getMusicItemList();
+
+    isLoading = false;
+    if (mounted) setState(() {});
+  }
+
+  void _onRefresh() async {
+    Connectivity().checkConnectivity().then((value) {
+      var connectionResult = value;
+      if (connectionResult == ConnectivityResult.wifi ||
+          connectionResult == ConnectivityResult.mobile) {
+        getResult();
+        _refreshController.refreshCompleted();
+      } else {
+        Toast.show(
+            AppLocalization.of(context).internetConnectionNotAvailable, context,
+            gravity: Toast.BOTTOM, backgroundColor: navyBlue);
+        _refreshController.refreshCompleted();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -25,23 +63,36 @@ class _SpecificCategoryMusicListState extends State<SpecificCategoryMusicList> {
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: appBar(),
-        body: SingleChildScrollView(
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              children: imgList
-                  .map(
-                    (image) => Container(
-                      padding: EdgeInsets.symmetric(vertical: 8),
-                      child: MusicTileWithHeart(
-                        image: image,
-                      ),
+        body: isLoading
+            ? Center(
+                child: CircularLoadingIndicator(),
+              )
+            : SmartRefresher(
+                enablePullDown: true,
+                header: WaterDropHeader(
+                  complete: Container(),
+                  waterDropColor: navyBlue,
+                ),
+                controller: _refreshController,
+                onRefresh: _onRefresh,
+                child: SingleChildScrollView(
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      children: musicList
+                          .map(
+                            (musicItem) => Container(
+                              padding: EdgeInsets.symmetric(vertical: 8),
+                              child: MusicTileWithHeart(
+                                musicItem: musicItem,
+                              ),
+                            ),
+                          )
+                          .toList(),
                     ),
-                  )
-                  .toList(),
-            ),
-          ),
-        ),
+                  ),
+                ),
+              ),
       ),
     );
   }

@@ -1,6 +1,5 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/movies/custom_slider_thumb_circle_for_range_slider.dart';
-import 'package:Slydo/screens/more_apps/property/modals/PropertyItem.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -15,6 +14,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:search_widget/search_widget.dart';
 import 'package:toast/toast.dart';
 
+import 'models/PropertyItem.dart';
 import 'property_auth.dart';
 import 'property_dashboard_bloc.dart';
 import 'property_tile.dart';

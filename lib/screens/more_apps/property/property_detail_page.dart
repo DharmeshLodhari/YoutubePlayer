@@ -1,8 +1,5 @@
 import 'dart:math';
 
-import 'package:Slydo/screens/more_apps/property/modals/user_detail_item/PropertyDetailItem.dart';
-import 'package:Slydo/screens/more_apps/property/modals/user_detail_item/SimilarProperty.dart';
-import 'package:Slydo/screens/more_apps/property/property_auth.dart';
 import 'package:Slydo/screens/more_apps/utils/video_plyer_controller/chewie_player.dart';
 import 'package:Slydo/screens/more_apps/utils/video_plyer_controller/chewie_progress_colors.dart';
 import 'package:Slydo/utils/colors.dart';
@@ -18,6 +15,9 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
+import 'models/user_detail_item/PropertyDetailItem.dart';
+import 'models/user_detail_item/SimilarProperty.dart';
+import 'property_auth.dart';
 import 'property_dashboard_bloc.dart';
 import 'property_tile.dart';
 

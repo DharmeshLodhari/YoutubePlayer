@@ -1,9 +1,9 @@
-import 'package:Slydo/screens/more_apps/property/modals/PartialPropertyItem.dart';
-import 'package:Slydo/screens/more_apps/property/modals/PropertyItem.dart';
-import 'package:Slydo/screens/more_apps/property/modals/user_detail_item/PropertyDetailItem.dart';
 import 'package:Slydo/services/auth.dart';
 
-import 'modals/CityData.dart';
+import 'models/CityData.dart';
+import 'models/PartialPropertyItem.dart';
+import 'models/PropertyItem.dart';
+import 'models/user_detail_item/PropertyDetailItem.dart';
 
 class PropertyAuthService extends AuthService {
   Future<List<String>> getLocation() async {
@@ -30,7 +30,7 @@ class PropertyAuthService extends AuthService {
         "rating": "7.8"
       }),
     );
-    await Future.delayed(Duration(seconds: 3));
+    await Future.delayed(Duration(seconds: 1));
     return propertyItem;
   }
 
@@ -54,7 +54,7 @@ class PropertyAuthService extends AuthService {
           }),
         )
         .toList();
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(Duration(seconds: 1));
     return propertyItem;
   }
 
@@ -70,7 +70,7 @@ class PropertyAuthService extends AuthService {
           }),
         )
         .toList();
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(Duration(seconds: 1));
     return cityItem;
   }
 
@@ -195,7 +195,7 @@ class PropertyAuthService extends AuthService {
     };
 
     PropertyDetailItem property = PropertyDetailItem.fromJson(dummyData);
-    await Future.delayed(Duration(seconds: 3));
+    await Future.delayed(Duration(seconds: 1));
     return property;
   }
 

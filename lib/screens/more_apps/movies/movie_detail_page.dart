@@ -1,8 +1,10 @@
-import 'package:Slydo/screens/more_apps/movies/video_player_test.dart';
+import 'package:Slydo/screens/more_apps/movies/models/MovieDetailItem.dart';
+import 'package:Slydo/screens/more_apps/movies/movie_auth.dart';
 import 'package:Slydo/screens/more_apps/utils/video_plyer_controller/chewie_player.dart';
 import 'package:Slydo/screens/more_apps/utils/video_plyer_controller/chewie_progress_colors.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
@@ -18,11 +20,22 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
   VideoPlayerController _videoController;
   ChewieController _chewieController;
 
+  bool isLoading = false;
+  MovieDetailItem movieDetailItem = MovieDetailItem();
+
   @override
   void initState() {
+    getMovieItem();
     super.initState();
+  }
+
+  void getMovieItem() async {
+    isLoading = true;
+    if (mounted) setState(() {});
+
+    movieDetailItem = await MovieAuthService().getMovie();
     _videoController = VideoPlayerController.network(
-      'https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/e4199d196b558eb45681c194e3ce2734486e38aa/dawn-of-thunder.mp4?raw=true',
+      movieDetailItem.video,
     );
 
     _chewieController = ChewieController(
@@ -44,6 +57,9 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
       ),
       autoInitialize: true,
     );
+
+    isLoading = false;
+    if (mounted) setState(() {});
   }
 
   @override
@@ -73,7 +89,11 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: appBar(),
-        body: scaffoldBody(),
+        body: isLoading
+            ? Center(
+                child: CircularLoadingIndicator(),
+              )
+            : scaffoldBody(),
         floatingActionButton: floatingActionBar(),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       ),
@@ -97,7 +117,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
         },
       ),
       title: Text(
-        "DAWN OF THUNDER",
+        movieDetailItem.name,
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -138,16 +158,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
         size: 16,
         color: blackFont,
       ),
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ChewieDemo(
-              title: "Video Test",
-            ),
-          ),
-        );
-      },
+      onTap: () {},
       backgroundColor: iconBtnGrey,
       enableMargin: true,
     );
@@ -159,9 +170,8 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
         children: [
           Chewie(
             controller: _chewieController,
-            posterUrl:
-                "https://c1.iggcdn.com/indiegogo-media-prod-cld/image/upload/c_fill,f_auto,h_630,w_1200/v1506734779/wcsmythcukjuuglotjvb.jpg",
-            titleName: "DAWN OF THUNDER",
+            posterUrl: movieDetailItem.poster,
+            titleName: movieDetailItem.name,
           ),
           Container(
             padding: EdgeInsets.symmetric(horizontal: 20),
@@ -219,7 +229,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              "DAWN OF THUNDER",
+              movieDetailItem.name,
               style: TextStyle(
                   fontSize: 16, fontWeight: FontWeight.w700, color: blackFont),
             ),
@@ -231,7 +241,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                   size: 12,
                 ),
                 Text(
-                  "34.00",
+                  movieDetailItem.price,
                   style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
@@ -255,7 +265,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
               width: 4,
             ),
             Text(
-              "7.8",
+              movieDetailItem.rating,
               style: TextStyle(fontSize: 14, color: blackFont),
             )
           ],
@@ -306,7 +316,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
             ),
             Expanded(
               child: Text(
-                "Comedy",
+                movieDetailItem.category,
                 style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -348,7 +358,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
             ),
             Expanded(
               child: Text(
-                "2020",
+                movieDetailItem.year,
                 style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -390,7 +400,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
             ),
             Expanded(
               child: Text(
-                "1h20m",
+                movieDetailItem.time,
                 style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -440,7 +450,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      "15+",
+                      movieDetailItem.viewingRating,
                       style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -470,7 +480,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
           height: 12,
         ),
         Text(
-          "Callan McAuliffe, Lorraine Nicholson, Daniel Eric Gold, Allyson Pratt ...",
+          movieDetailItem.starring,
           style: TextStyle(
               fontSize: 14, fontWeight: FontWeight.w400, color: blackFont),
         ),
@@ -491,12 +501,13 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
           height: 12,
         ),
         Text(
-          "Excepteur sint occaecat cupidatat non proident,sunt in culpa qui officia deserunt mollit anim id est laborum. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pa.Excepteur sint occaecat cupidatat non proident,sunt in culpa qui officia deserunt mollit anim id est laborum. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pa.",
+          movieDetailItem.description,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w400,
             color: darkGrey,
           ),
+          textAlign: TextAlign.justify,
         ),
       ],
     );

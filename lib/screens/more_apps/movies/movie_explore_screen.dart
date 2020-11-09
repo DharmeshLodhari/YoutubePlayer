@@ -1,9 +1,17 @@
+import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/movies/models/MovieItem.dart';
+import 'package:Slydo/screens/more_apps/movies/models/PartialMovieItem.dart';
+import 'package:Slydo/screens/more_apps/movies/movie_auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:toast/toast.dart';
 
 class MovieExploreScreen extends StatefulWidget {
   @override
@@ -11,15 +19,95 @@ class MovieExploreScreen extends StatefulWidget {
 }
 
 class _MovieExploreScreenState extends State<MovieExploreScreen> {
-  List<String> imgList = [
-    "https://c1.iggcdn.com/indiegogo-media-prod-cld/image/upload/c_fill,f_auto,h_630,w_1200/v1506734779/wcsmythcukjuuglotjvb.jpg",
-    "https://occ-0-92-1723.1.nflxso.net/dnm/api/v6/X194eJsgWBDE2aQbaNdmCXGUP-Y/AAAABfyfVmzawFldwvYxxIfCr5xg_lsH9NZoQMVve9upZzDxlhuUaeJIMvwH8HiEvISV6X8lJ3CtsOst33FYzzearPngMTxq1CI90Rz9UCPJ-uu8c4QegoJm-lzHI-uC.jpg",
-    "https://deythere.com/wp-content/uploads/2019/12/zero-hour.png",
-    "https://m.media-amazon.com/images/M/MV5BMDljNjk3MWYtYjA4Zi00MDUyLWI2ZmUtOTQ3ZTI4YWUxYTI5XkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg",
-    "https://www.bellanaija.com/wp-content/uploads/2017/01/Arbitration2-723x1024.jpg"
-  ];
-
   CarouselController _carouselController = CarouselController();
+
+  List<MovieItem> mostRecentDiscoveryList = [];
+  bool isMostRecentDiscoveryLoading = false;
+
+  List<PartialMovieItem> sliderList = [];
+  bool isSliderLoading = false;
+
+  List<MovieItem> nowAvailableTORent = [];
+  bool nowAvailableToRentLoading = false;
+
+  List<PartialMovieItem> indiePicksList = [];
+  bool isIndiePicksLoading = false;
+
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
+
+  @override
+  void initState() {
+    getResult();
+    super.initState();
+  }
+
+  void getResult() {
+    getMostRecentDiscoveryListItem();
+    getSliderListItem();
+    getNowAvailableToRentListItem();
+    getIndiePicksListItem();
+  }
+
+  void getMostRecentDiscoveryListItem() async {
+    isMostRecentDiscoveryLoading = true;
+    mostRecentDiscoveryList.clear();
+    if (mounted) setState(() {});
+
+    mostRecentDiscoveryList = await MovieAuthService().getMovieList();
+
+    isMostRecentDiscoveryLoading = false;
+    if (mounted) setState(() {});
+  }
+
+  void getSliderListItem() async {
+    isSliderLoading = true;
+    sliderList.clear();
+    if (mounted) setState(() {});
+
+    sliderList = await MovieAuthService().getPartialMovieList();
+
+    isSliderLoading = false;
+    if (mounted) setState(() {});
+  }
+
+  void getNowAvailableToRentListItem() async {
+    nowAvailableToRentLoading = true;
+    nowAvailableTORent.clear();
+    if (mounted) setState(() {});
+
+    nowAvailableTORent = await MovieAuthService().getMovieList();
+
+    nowAvailableToRentLoading = false;
+    if (mounted) setState(() {});
+  }
+
+  void getIndiePicksListItem() async {
+    isIndiePicksLoading = true;
+    indiePicksList.clear();
+    if (mounted) setState(() {});
+
+    indiePicksList = await MovieAuthService().getPartialMovieList();
+
+    isIndiePicksLoading = false;
+    if (mounted) setState(() {});
+  }
+
+  void _onRefresh() async {
+    Connectivity().checkConnectivity().then((value) {
+      var connectionResult = value;
+      if (connectionResult == ConnectivityResult.wifi ||
+          connectionResult == ConnectivityResult.mobile) {
+        getResult();
+        _refreshController.refreshCompleted();
+      } else {
+        Toast.show(
+            AppLocalization.of(context).internetConnectionNotAvailable, context,
+            gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+        _refreshController.refreshCompleted();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,41 +144,40 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
   }
 
   Widget scaffoldBody() {
-    return SingleChildScrollView(
-        child: Column(
-      children: [
-        SizedBox(
-          height: 6,
-        ),
-        searchBox(),
-        SizedBox(
-          height: 32,
-        ),
-        movieCarouselSlider(),
-        SizedBox(
-          height: 40,
-        ),
-        movieCategoryWithDetail(
-          categoryName: "Most recent discovery",
-          moviePoster:
-              "https://m.media-amazon.com/images/I/A1o+mUmviOL._SS500_.jpg",
-          movieName: "The Cloud Of Northland Thunder",
-        ),
-        movieCategoryWithOutDetail(categoryName: "Indie Picks"),
-        SizedBox(
-          height: 16,
-        ),
-        movieCategoryWithDetail(
-          categoryName: "Now available to rent",
-          moviePoster:
-              "https://c1.iggcdn.com/indiegogo-media-prod-cld/image/upload/c_fill,f_auto,h_630,w_1200/v1506734779/wcsmythcukjuuglotjvb.jpg",
-          movieName: "Dawn Of Thunder",
-        ),
-        SizedBox(
-          height: 10,
-        ),
-      ],
-    ));
+    return SmartRefresher(
+      enablePullDown: true,
+      header: WaterDropHeader(
+        complete: Container(),
+        waterDropColor: navyBlue,
+      ),
+      controller: _refreshController,
+      onRefresh: _onRefresh,
+      child: SingleChildScrollView(
+          child: Column(
+        children: [
+          SizedBox(
+            height: 6,
+          ),
+          searchBox(),
+          SizedBox(
+            height: 32,
+          ),
+          movieCarouselSlider(),
+          SizedBox(
+            height: 40,
+          ),
+          mostRecentDiscovery(),
+          indiePicks(),
+          SizedBox(
+            height: 16,
+          ),
+          nowAvailableToRent(),
+          SizedBox(
+            height: 10,
+          ),
+        ],
+      )),
+    );
   }
 
   Widget searchBox() {
@@ -174,43 +261,49 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
 
   Widget movieCarouselSlider() {
     return Container(
-      child: CarouselSlider(
-        carouselController: _carouselController,
-        options: CarouselOptions(
-          viewportFraction: 0.9,
-          enlargeCenterPage: false,
-          autoPlay: true,
-          aspectRatio: 2,
-          initialPage: 0,
-        ),
-        items: imgList
-            .map(
-              (item) => GestureDetector(
-                onTap: () {
-                  Navigator.of(context).pushNamed("/movie-detail");
-                },
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 5),
-                  child: Center(
-                      child: ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                    child: CachedNetworkImage(
-                      imageUrl: item,
-                      fit: BoxFit.fill,
-                      height: double.infinity,
-                      width: double.infinity,
-                    ),
-                  )),
-                ),
+      child: isSliderLoading
+          ? Container(
+              height: 180,
+              child: Center(
+                child: CircularLoadingIndicator(),
               ),
             )
-            .toList(),
-      ),
+          : CarouselSlider(
+              carouselController: _carouselController,
+              options: CarouselOptions(
+                viewportFraction: 0.9,
+                enlargeCenterPage: false,
+                autoPlay: true,
+                aspectRatio: 2,
+                initialPage: 0,
+              ),
+              items: sliderList
+                  .map(
+                    (item) => GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pushNamed("/movie-detail");
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 5),
+                        child: Center(
+                            child: ClipRRect(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          child: CachedNetworkImage(
+                            imageUrl: item.poster,
+                            fit: BoxFit.fill,
+                            height: double.infinity,
+                            width: double.infinity,
+                          ),
+                        )),
+                      ),
+                    ),
+                  )
+                  .toList(),
+            ),
     );
   }
 
-  Widget movieCategoryWithDetail(
-      {String categoryName, String movieName, String moviePoster}) {
+  Widget mostRecentDiscovery() {
     return Container(
       child: Column(
         children: [
@@ -220,7 +313,7 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
-                  categoryName,
+                  "Most recent discovery",
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 18,
@@ -245,29 +338,94 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
           Container(
             height: 210,
             color: Colors.white,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Container(
-                padding: EdgeInsets.only(left: 16),
-                child: Row(
-                  children: List.generate(
-                    5,
-                    (index) => Container(
-                      margin: EdgeInsets.only(right: 12),
-                      child: movieItemWithDetail(
-                          moviePoster: moviePoster, movieName: movieName),
+            child: isMostRecentDiscoveryLoading
+                ? Center(
+                    child: CircularLoadingIndicator(),
+                  )
+                : SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Container(
+                      padding: EdgeInsets.only(left: 16),
+                      child: Row(
+                        children: mostRecentDiscoveryList
+                            .map(
+                              (movie) => Container(
+                                margin: EdgeInsets.only(right: 12),
+                                child: movieItemWithDetail(movieItem: movie),
+                              ),
+                            )
+                            .toList(),
+                      ),
                     ),
                   ),
-                ),
-              ),
-            ),
           )
         ],
       ),
     );
   }
 
-  Widget movieItemWithDetail({String movieName, String moviePoster}) {
+  Widget nowAvailableToRent() {
+    return Container(
+      child: Column(
+        children: [
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text(
+                  "Now available to rent",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 18,
+                    color: blackFont,
+                  ),
+                ),
+                GestureDetector(
+                  child: Text(
+                    "See all",
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                        color: navyBlue),
+                  ),
+                  onTap: () {
+                    Navigator.of(context).pushNamed("/movie-category");
+                  },
+                ),
+              ],
+            ),
+          ),
+          Container(
+            height: 210,
+            color: Colors.white,
+            child: nowAvailableToRentLoading
+                ? Center(
+                    child: CircularLoadingIndicator(),
+                  )
+                : SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Container(
+                      padding: EdgeInsets.only(left: 16),
+                      child: Row(
+                        children: nowAvailableTORent
+                            .map(
+                              (movie) => Container(
+                                margin: EdgeInsets.only(right: 12),
+                                child: movieItemWithDetail(movieItem: movie),
+                              ),
+                            )
+                            .toList(),
+                      ),
+                    ),
+                  ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget movieItemWithDetail({MovieItem movieItem}) {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).pushNamed("/movie-detail");
@@ -286,8 +444,8 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
-                  child: Image.network(
-                    moviePoster,
+                  child: CachedNetworkImage(
+                    imageUrl: movieItem.poster,
                     height: 80,
                     width: 130,
                     fit: BoxFit.fill,
@@ -297,7 +455,7 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
                   height: 12,
                 ),
                 Text(
-                  movieName,
+                  movieItem.name,
                   softWrap: false,
                   overflow: TextOverflow.fade,
                   style: TextStyle(
@@ -317,7 +475,7 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
                       size: 8,
                     ),
                     Text(
-                      "34.00",
+                      movieItem.price,
                       style: TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: 12,
@@ -342,7 +500,7 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
                           width: 4,
                         ),
                         Text(
-                          "7.8",
+                          movieItem.rating,
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w400,
@@ -353,7 +511,7 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
                     ),
                     flexibleSpace(),
                     Text(
-                      "2020 • Action",
+                      "${movieItem.year} • ${movieItem.genre}",
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w400,
@@ -370,7 +528,7 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
     );
   }
 
-  Widget movieCategoryWithOutDetail({String categoryName}) {
+  Widget indiePicks() {
     return Container(
       child: Column(
         children: [
@@ -380,7 +538,7 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
-                  categoryName,
+                  "Indie Picks",
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 18,
@@ -405,28 +563,36 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
           Container(
             color: Colors.white,
             padding: EdgeInsets.symmetric(vertical: 16),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Container(
-                padding: EdgeInsets.only(left: 16),
-                child: Row(
-                  children: List.generate(
-                    5,
-                    (index) => Container(
-                      margin: EdgeInsets.only(right: 12),
-                      child: moviePoster(),
+            child: isIndiePicksLoading
+                ? Container(
+                    height: 132,
+                    child: Center(
+                      child: CircularLoadingIndicator(),
+                    ),
+                  )
+                : SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Container(
+                      padding: EdgeInsets.only(left: 16),
+                      child: Row(
+                        children: indiePicksList
+                            .map(
+                              (movie) => Container(
+                                margin: EdgeInsets.only(right: 12),
+                                child: moviePoster(partialMovieItem: movie),
+                              ),
+                            )
+                            .toList(),
+                      ),
                     ),
                   ),
-                ),
-              ),
-            ),
           )
         ],
       ),
     );
   }
 
-  Widget moviePoster() {
+  Widget moviePoster({PartialMovieItem partialMovieItem}) {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).pushNamed("/movie-detail");
@@ -434,7 +600,7 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(10),
         child: CachedNetworkImage(
-          imageUrl: "https://i.ytimg.com/vi/Jd6FuSkDkmU/maxresdefault.jpg",
+          imageUrl: partialMovieItem.poster,
           height: 132,
           width: 218,
           fit: BoxFit.fill,

@@ -1,11 +1,18 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/movies/custom_slider_thumb_circle_for_range_slider.dart';
+import 'package:Slydo/screens/more_apps/movies/models/MovieItem.dart';
+import 'package:Slydo/screens/more_apps/movies/movie_auth.dart';
 import 'package:Slydo/screens/more_apps/movies/movie_tile.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:toast/toast.dart';
 
 class SearchMovie extends StatefulWidget {
   @override
@@ -28,6 +35,44 @@ class _SearchMovieState extends State<SearchMovie> {
   String selectedMovieYear;
   int selectedRating;
   RangeValues selectedPriceValue = RangeValues(5, 56);
+
+  List<MovieItem> movieList = [];
+
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
+
+  bool isLoading = false;
+
+  void _onRefresh() async {
+    Connectivity().checkConnectivity().then((value) {
+      var connectionResult = value;
+      if (connectionResult == ConnectivityResult.wifi ||
+          connectionResult == ConnectivityResult.mobile) {
+        getResult("");
+        _refreshController.refreshCompleted();
+      } else {
+        Toast.show(
+            AppLocalization.of(context).internetConnectionNotAvailable, context,
+            gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+        _refreshController.refreshCompleted();
+      }
+    });
+  }
+
+  void getResult(String item) async {
+    isLoading = true;
+    movieList.clear();
+    if (mounted) {
+      setState(() {});
+    }
+
+    movieList = await MovieAuthService().getMovieList();
+
+    isLoading = false;
+    if (mounted) {
+      setState(() {});
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,6 +130,13 @@ class _SearchMovieState extends State<SearchMovie> {
     );
   }
 
+  Widget searchBackground() {
+    return NoItemInList(
+      msg: "Please type something to get results",
+      isResult: false,
+    );
+  }
+
   Widget scaffoldBody() {
     return Container(
       child: Column(
@@ -96,18 +148,38 @@ class _SearchMovieState extends State<SearchMovie> {
           SizedBox(
             height: 12,
           ),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: List.generate(
-                    10,
-                    (index) => Container(
-                        padding:
-                            EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                        child: MovieTileWithHeart())),
-              ),
-            ),
-          ),
+          isLoading
+              ? Expanded(
+                  child: Center(
+                    child: CircularLoadingIndicator(),
+                  ),
+                )
+              : movieList.isEmpty
+                  ? Expanded(child: searchBackground())
+                  : Expanded(
+                      child: SmartRefresher(
+                        enablePullDown: true,
+                        header: WaterDropHeader(
+                          complete: Container(),
+                          waterDropColor: navyBlue,
+                        ),
+                        controller: _refreshController,
+                        onRefresh: _onRefresh,
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: movieList
+                                .map(
+                                  (movie) => Container(
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 8, horizontal: 16),
+                                      child:
+                                          MovieTileWithHeart(movieItem: movie)),
+                                )
+                                .toList(),
+                          ),
+                        ),
+                      ),
+                    ),
         ],
       ),
     );
@@ -129,6 +201,9 @@ class _SearchMovieState extends State<SearchMovie> {
           ),
           cursorWidth: 1.5,
           cursorColor: navyBlue,
+          onFieldSubmitted: (test) {
+            getResult("");
+          },
           decoration: InputDecoration(
             hintStyle: TextStyle(
               fontSize: 14,
@@ -141,7 +216,9 @@ class _SearchMovieState extends State<SearchMovie> {
                 color: darkGrey,
                 size: 14,
               ),
-              onPressed: () {},
+              onPressed: () {
+                getResult("");
+              },
             ),
             hintText: "Search",
             fillColor: Colors.white,
@@ -599,7 +676,9 @@ class _SearchMovieState extends State<SearchMovie> {
   Widget getFilerSubmitButton() {
     return CurvedButton(
       backgroundColor: navyBlue,
-      onPressed: () {},
+      onPressed: () {
+        getResult("");
+      },
       text: "Submit",
       textColor: Colors.white,
     );

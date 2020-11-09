@@ -1,6 +1,4 @@
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/more_apps/property/modals/PropertyItem.dart';
-import 'package:Slydo/screens/more_apps/property/property_auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:connectivity/connectivity.dart';
@@ -9,6 +7,8 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:toast/toast.dart';
 
+import 'models/PropertyItem.dart';
+import 'property_auth.dart';
 import 'property_dashboard_bloc.dart';
 import 'property_tile.dart';
 

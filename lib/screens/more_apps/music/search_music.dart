@@ -2,10 +2,17 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/movies/custom_slider_thumb_circle_for_range_slider.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:toast/toast.dart';
 
+import 'models/PartialMusicItem.dart';
+import 'music_auth.dart';
 import 'music_tile.dart';
 
 class SearchMusic extends StatefulWidget {
@@ -30,12 +37,41 @@ class _SearchMusicState extends State<SearchMusic> {
   int selectedRating;
   RangeValues selectedPriceValue = RangeValues(5, 56);
 
-  List<String> albumImgList = [
-    "https://storage.googleapis.com/assets-pam-blog/2018/12/Dj-Neptune-Greatness.jpg",
-    "https://www.naijaloaded.com.ng/wp-content/uploads/2019/10/erigga.jpg",
-    "https://i.ytimg.com/vi/MuXtUDQ8Sug/maxresdefault.jpg",
-    "https://www.musicinafrica.net/sites/default/files/styles/article_slider_large/public/images/article/202008/djcuppy21.jpg?itok=ruxfue_g"
-  ];
+  List<PartialMusicItem> musicList = [];
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
+  bool isLoading = false;
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  void getResult() async {
+    isLoading = true;
+    musicList.clear();
+    if (mounted) setState(() {});
+
+    musicList = await MusicAuthService().getMusicItemList();
+
+    isLoading = false;
+    if (mounted) setState(() {});
+  }
+
+  void _onRefresh() async {
+    Connectivity().checkConnectivity().then((value) {
+      var connectionResult = value;
+      if (connectionResult == ConnectivityResult.wifi ||
+          connectionResult == ConnectivityResult.mobile) {
+        getResult();
+        _refreshController.refreshCompleted();
+      } else {
+        Toast.show(
+            AppLocalization.of(context).internetConnectionNotAvailable, context,
+            gravity: Toast.BOTTOM, backgroundColor: navyBlue);
+        _refreshController.refreshCompleted();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,6 +112,13 @@ class _SearchMusicState extends State<SearchMusic> {
     );
   }
 
+  Widget searchBackground() {
+    return NoItemInList(
+      msg: "Please type something to get results",
+      isResult: false,
+    );
+  }
+
   Widget filterMovieBtn() {
     return RoundedBackgroundIcon(
       height: 34,
@@ -104,22 +147,39 @@ class _SearchMusicState extends State<SearchMusic> {
           SizedBox(
             height: 12,
           ),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: albumImgList
-                    .map(
-                      (element) => Container(
-                          padding:
-                              EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                          child: MusicTileWithHeart(
-                            image: element,
-                          )),
-                    )
-                    .toList(),
-              ),
-            ),
-          ),
+          isLoading
+              ? Expanded(
+                  child: Center(
+                    child: CircularLoadingIndicator(),
+                  ),
+                )
+              : musicList.isEmpty
+                  ? Expanded(child: searchBackground())
+                  : Expanded(
+                      child: SmartRefresher(
+                        enablePullDown: true,
+                        header: WaterDropHeader(
+                          complete: Container(),
+                          waterDropColor: navyBlue,
+                        ),
+                        controller: _refreshController,
+                        onRefresh: _onRefresh,
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: musicList
+                                .map(
+                                  (musicItem) => Container(
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 8, horizontal: 16),
+                                      child: MusicTileWithHeart(
+                                        musicItem: musicItem,
+                                      )),
+                                )
+                                .toList(),
+                          ),
+                        ),
+                      ),
+                    ),
         ],
       ),
     );
@@ -141,6 +201,9 @@ class _SearchMusicState extends State<SearchMusic> {
           ),
           cursorWidth: 1.5,
           cursorColor: navyBlue,
+          onFieldSubmitted: (val) {
+            getResult();
+          },
           decoration: InputDecoration(
             hintStyle: TextStyle(
               fontSize: 14,
@@ -611,7 +674,9 @@ class _SearchMusicState extends State<SearchMusic> {
   Widget getFilerSubmitButton() {
     return CurvedButton(
       backgroundColor: navyBlue,
-      onPressed: () {},
+      onPressed: () {
+        getResult();
+      },
       text: "Submit",
       textColor: Colors.white,
     );

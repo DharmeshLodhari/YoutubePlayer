@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:Slydo/screens/more_apps/music/models/PartialMusicItem.dart';
 import 'package:Slydo/screens/more_apps/music/models/music_album.dart'
     as musicAlbum;
 import 'package:Slydo/utils/colors.dart';
@@ -91,8 +92,9 @@ class MusicTile extends StatelessWidget {
 
 // ignore: must_be_immutable
 class MusicTileWithHeart extends StatefulWidget {
-  String image;
-  MusicTileWithHeart({this.image});
+  final PartialMusicItem musicItem;
+
+  const MusicTileWithHeart({Key key, this.musicItem}) : super(key: key);
 
   @override
   _MusicTileWithHeartState createState() => _MusicTileWithHeartState();
@@ -117,7 +119,7 @@ class _MusicTileWithHeartState extends State<MusicTileWithHeart> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: CachedNetworkImage(
-                  imageUrl: widget.image,
+                  imageUrl: widget.musicItem.poster,
                   fit: BoxFit.fill,
                 ),
               ),
@@ -126,7 +128,7 @@ class _MusicTileWithHeartState extends State<MusicTileWithHeart> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Are you happy? ",
+                  widget.musicItem.name,
                   softWrap: false,
                   overflow: TextOverflow.fade,
                   style: TextStyle(
@@ -136,7 +138,7 @@ class _MusicTileWithHeartState extends State<MusicTileWithHeart> {
                   ),
                 ),
                 Text(
-                  "SHY Martin",
+                  widget.musicItem.name,
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w400,
@@ -154,7 +156,7 @@ class _MusicTileWithHeartState extends State<MusicTileWithHeart> {
                   size: 10,
                 ),
                 Text(
-                  "34.00",
+                  widget.musicItem.price,
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 14,
@@ -181,9 +183,9 @@ class _MusicTileWithHeartState extends State<MusicTileWithHeart> {
 
 // ignore: must_be_immutable
 class MusicTileGeneral extends StatefulWidget {
-  String image;
+  final PartialMusicItem partialMusicItem;
 
-  MusicTileGeneral({this.image});
+  const MusicTileGeneral({Key key, this.partialMusicItem}) : super(key: key);
 
   @override
   _MusicTileGeneralState createState() => _MusicTileGeneralState();
@@ -210,7 +212,7 @@ class _MusicTileGeneralState extends State<MusicTileGeneral> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: CachedNetworkImage(
-                  imageUrl: widget.image,
+                  imageUrl: widget.partialMusicItem.poster,
                   fit: BoxFit.fill,
                 ),
               ),
@@ -219,7 +221,7 @@ class _MusicTileGeneralState extends State<MusicTileGeneral> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Run it down",
+                  widget.partialMusicItem.name,
                   softWrap: false,
                   overflow: TextOverflow.fade,
                   style: TextStyle(
@@ -231,7 +233,7 @@ class _MusicTileGeneralState extends State<MusicTileGeneral> {
               ],
             ),
             subtitle: Text(
-              "Run it down",
+              widget.partialMusicItem.name,
               style: TextStyle(
                 fontWeight: FontWeight.w400,
                 fontSize: 12,

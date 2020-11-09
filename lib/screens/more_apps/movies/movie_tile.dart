@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:Slydo/screens/more_apps/movies/models/MovieItem.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -7,6 +8,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class MovieTile extends StatelessWidget {
+  final MovieItem movieItem;
+
+  const MovieTile({Key key, this.movieItem}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -23,8 +28,7 @@ class MovieTile extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: CachedNetworkImage(
-                  imageUrl:
-                      "https://c1.iggcdn.com/indiegogo-media-prod-cld/image/upload/c_fill,f_auto,h_630,w_1200/v1506734779/wcsmythcukjuuglotjvb.jpg",
+                  imageUrl: movieItem.poster,
                   fit: BoxFit.fill,
                 ),
               ),
@@ -33,7 +37,7 @@ class MovieTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Dawn Of Thunder",
+                  movieItem.name,
                   softWrap: false,
                   overflow: TextOverflow.fade,
                   style: TextStyle(
@@ -53,7 +57,7 @@ class MovieTile extends StatelessWidget {
                       width: 4,
                     ),
                     Text(
-                      "7.8",
+                      movieItem.rating,
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w400,
@@ -73,7 +77,7 @@ class MovieTile extends StatelessWidget {
                   size: 10,
                 ),
                 Text(
-                  "34.00",
+                  movieItem.price,
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 14,
@@ -88,6 +92,10 @@ class MovieTile extends StatelessWidget {
 }
 
 class MovieTileWithHeart extends StatefulWidget {
+  final MovieItem movieItem;
+
+  const MovieTileWithHeart({Key key, this.movieItem}) : super(key: key);
+
   @override
   _MovieTileWithHeartState createState() => _MovieTileWithHeartState();
 }
@@ -111,8 +119,7 @@ class _MovieTileWithHeartState extends State<MovieTileWithHeart> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: CachedNetworkImage(
-                  imageUrl:
-                      "https://c1.iggcdn.com/indiegogo-media-prod-cld/image/upload/c_fill,f_auto,h_630,w_1200/v1506734779/wcsmythcukjuuglotjvb.jpg",
+                  imageUrl: widget.movieItem.poster,
                   fit: BoxFit.fill,
                 ),
               ),
@@ -121,7 +128,7 @@ class _MovieTileWithHeartState extends State<MovieTileWithHeart> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Dawn Of Thunder",
+                  widget.movieItem.name,
                   softWrap: false,
                   overflow: TextOverflow.fade,
                   style: TextStyle(
@@ -141,7 +148,7 @@ class _MovieTileWithHeartState extends State<MovieTileWithHeart> {
                       width: 4,
                     ),
                     Text(
-                      "7.8",
+                      widget.movieItem.rating,
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w400,
@@ -161,7 +168,7 @@ class _MovieTileWithHeartState extends State<MovieTileWithHeart> {
                   size: 10,
                 ),
                 Text(
-                  "34.00",
+                  widget.movieItem.price,
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 14,
@@ -187,6 +194,9 @@ class _MovieTileWithHeartState extends State<MovieTileWithHeart> {
 }
 
 class MovieTileGeneral extends StatefulWidget {
+  final MovieItem movieItem;
+
+  const MovieTileGeneral({Key key, this.movieItem}) : super(key: key);
   @override
   _MovieTileGeneralState createState() => _MovieTileGeneralState();
 }
@@ -212,8 +222,7 @@ class _MovieTileGeneralState extends State<MovieTileGeneral> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: CachedNetworkImage(
-                  imageUrl:
-                      "https://c1.iggcdn.com/indiegogo-media-prod-cld/image/upload/c_fill,f_auto,h_630,w_1200/v1506734779/wcsmythcukjuuglotjvb.jpg",
+                  imageUrl: widget.movieItem.poster,
                   fit: BoxFit.fill,
                 ),
               ),
@@ -222,7 +231,7 @@ class _MovieTileGeneralState extends State<MovieTileGeneral> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Dawn Of Thunder",
+                  widget.movieItem.name,
                   softWrap: false,
                   overflow: TextOverflow.fade,
                   style: TextStyle(
@@ -242,7 +251,7 @@ class _MovieTileGeneralState extends State<MovieTileGeneral> {
                       width: 4,
                     ),
                     Text(
-                      "7.8",
+                      widget.movieItem.rating,
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w400,
@@ -262,7 +271,7 @@ class _MovieTileGeneralState extends State<MovieTileGeneral> {
                   size: 10,
                 ),
                 Text(
-                  "34.00",
+                  widget.movieItem.price,
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 14,

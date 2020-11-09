@@ -1,6 +1,5 @@
 import 'package:Slydo/screens/more_apps/music/models/music_album.dart'
     as MusicAlbum;
-import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -11,6 +10,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'music_auth.dart';
 import 'music_dashboard_bloc.dart';
 import 'music_player.dart';
 import 'music_tile.dart';
@@ -46,7 +46,7 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
   void getMusicAlbum() {
     isLoading = true;
     setState(() {});
-    AuthService().getMusicAlbum().then((album) async {
+    MusicAuthService().getMusicAlbum().then((album) async {
       musicAlbum = album;
       musicPlayer.musicAlbum = album;
       isLoading = false;
