@@ -1,14 +1,22 @@
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/news/CustomChip.dart';
+import 'package:Slydo/screens/more_apps/news/models/NewsDetailItem.dart';
 import 'package:Slydo/screens/more_apps/news/news_tile.dart';
 import 'package:Slydo/screens/more_apps/utils/video_plyer_controller/chewie_player.dart';
 import 'package:Slydo/screens/more_apps/utils/video_plyer_controller/chewie_progress_colors.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:toast/toast.dart';
 import 'package:video_player/video_player.dart';
+
+import 'news_auth.dart';
 
 class NewsDetailPage extends StatefulWidget {
   @override
@@ -24,37 +32,48 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
 
   bool isVideoPlaying = false;
 
-  List<Map<String, String>> relatedPostList = [
-    {
-      "title":
-          "End Sars: How Nigeria's anti-police brutality protests went global",
-      "image":
-          "https://ichef.bbci.co.uk/news/800/cpsprodpb/14978/production/_114944348_endsarshi063751597.jpg"
-    },
-    {
-      "title":
-          "End Sars protests: Osun governor escapes 'assassination attempt'",
-      "image":
-          "https://ichef.bbci.co.uk/news/800/cpsprodpb/9CEF/production/_114957104_sars.jpg"
-    },
-    {
-      "title": "End Sars: Hated Nigerian police unit's founder 'feels guilty'",
-      "image":
-          "https://ichef.bbci.co.uk/news/800/cpsprodpb/762D/production/_114935203_sarsfounder-1_moment.jpg"
-    },
-    {
-      "title": "Nigerian army warns 'trouble makers' amid protests",
-      "image":
-          "https://ichef.bbci.co.uk/live-experience/cps/624/cpsprodpb/vivo/live/images/2020/10/15/18c0f573-6b37-43aa-bfba-6b1f3b5a9a0f.jpg"
-    },
-  ];
+  NewsDetailItem newsDetailItem = NewsDetailItem();
+  bool isLoading = false;
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
 
   @override
   void initState() {
     super.initState();
+    getResult();
+  }
+
+  void _onRefresh() async {
+    Connectivity().checkConnectivity().then((value) {
+      var connectionResult = value;
+      if (connectionResult == ConnectivityResult.wifi ||
+          connectionResult == ConnectivityResult.mobile) {
+        getResult();
+        _refreshController.refreshCompleted();
+      } else {
+        Toast.show(
+            AppLocalization.of(context).internetConnectionNotAvailable, context,
+            gravity: Toast.BOTTOM, backgroundColor: navyBlue);
+        _refreshController.refreshCompleted();
+      }
+    });
+  }
+
+  void getResult() async {
+    isLoading = true;
+    if (mounted) {
+      setState(() {});
+    }
+
+    newsDetailItem = await NewsAuthService().getNewsDetail();
+
+    isLoading = false;
+    if (mounted) {
+      setState(() {});
+    }
 
     _mainVideoController = VideoPlayerController.network(
-      'https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/a1f539f00f21c4cb3ac1cb76269f6a36ff6922d7/y2mate.com - Nigerians protesting anti-police brutality bring Lagos to standstill_480p.mp4?raw=true',
+      newsDetailItem.video,
     );
 
     _chewieMainController = ChewieController(
@@ -78,7 +97,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
     );
 
     _subVideoController = VideoPlayerController.network(
-      'https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/a1f539f00f21c4cb3ac1cb76269f6a36ff6922d7/y2mate.com - Nigerians protesting anti-police brutality bring Lagos to standstill_480p.mp4?raw=true',
+      newsDetailItem.video,
     );
 
     _chewieSubController = ChewieController(
@@ -172,102 +191,112 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
   }
 
   Widget scaffoldBody() {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          SizedBox(
-            height: 6,
-          ),
-          videoPlayer(),
-          SizedBox(
-            height: 20,
-          ),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                newsTitle(),
-                SizedBox(
-                  height: 20,
-                ),
-                bloggerDetail(),
-                SizedBox(
-                  height: 20,
-                ),
-                newsShortDescription(),
-                SizedBox(
-                  height: 20,
-                ),
-                newsSubTitle(),
-                SizedBox(
-                  height: 20,
-                ),
-                newsFullDescription(),
-                SizedBox(
-                  height: 20,
-                ),
-                subVideoPlayer(),
-                SizedBox(
-                  height: 20,
-                ),
-                newsSubTitle(),
-                SizedBox(
-                  height: 20,
-                ),
-                newsFullDescription(),
-                SizedBox(
-                  height: 20,
-                ),
-                Divider(
-                  thickness: 1,
-                  color: dividerColor,
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                newsChips(),
-                SizedBox(
-                  height: 50,
-                ),
-                relatedPostTitle(),
-                SizedBox(
-                  height: 20,
-                ),
-                relatedPost(),
-                SizedBox(
-                  height: 20,
-                ),
-              ],
-            ),
+    return isLoading
+        ? Center(
+            child: CircularLoadingIndicator(),
           )
-        ],
-      ),
-    );
+        : SmartRefresher(
+            enablePullDown: true,
+            header: WaterDropHeader(
+              complete: Container(),
+              waterDropColor: navyBlue,
+            ),
+            controller: _refreshController,
+            onRefresh: _onRefresh,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 6,
+                  ),
+                  videoPlayer(),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        newsTitle(),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        bloggerDetail(),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        newsShortDescription(),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        newsSubTitle(),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        newsFullDescription(),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        subVideoPlayer(),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        newsSubTitle(),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        newsFullDescription(),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Divider(
+                          thickness: 1,
+                          color: dividerColor,
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        newsChips(),
+                        SizedBox(
+                          height: 50,
+                        ),
+                        relatedPostTitle(),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        relatedPost(),
+                        SizedBox(
+                          height: 20,
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+          );
   }
 
   Widget videoPlayer() {
     return Chewie(
       controller: _chewieMainController,
-      posterUrl:
-          "https://cms.qz.com/wp-content/uploads/2018/06/RTR44FE-e1529169440642.jpg?quality=75&strip=all&w=800&h=600",
-      titleName:
-          "End SARS: See how Nigeria anti-police brutality protests go global",
+      posterUrl: newsDetailItem.poster,
+      titleName: newsDetailItem.title,
     );
   }
 
   Widget subVideoPlayer() {
     return Chewie(
       controller: _chewieSubController,
-      titleName: "End SARS: See how Nigeria",
-      posterUrl:
-          "https://cms.qz.com/wp-content/uploads/2018/06/RTR44FE-e1529169440642.jpg?quality=75&strip=all&w=800&h=600",
+      titleName: newsDetailItem.title,
+      posterUrl: newsDetailItem.poster,
     );
   }
 
   Widget newsTitle() {
     return Text(
-      "End SARS: See how Nigeria anti-police brutality protests go global",
+      newsDetailItem.title,
       style: TextStyle(
         fontWeight: FontWeight.w700,
         fontSize: 18,
@@ -284,7 +313,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
         width: 32,
         child: ClipOval(
           child: CachedNetworkImage(
-            imageUrl: "https://i.imgur.com/cVDadwb.png",
+            imageUrl: newsDetailItem.authorAvatar,
           ),
         ),
       ),
@@ -294,7 +323,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
           Row(
             children: [
               Text(
-                "Blogger • ",
+                "${newsDetailItem.author} • ",
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 14,
@@ -302,7 +331,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
                 ),
               ),
               Text(
-                "June 01 ",
+                "${newsDetailItem.uploadTime} ",
                 style: TextStyle(
                   fontWeight: FontWeight.w400,
                   fontSize: 14,
@@ -312,7 +341,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
             ],
           ),
           CustomChip(
-            text: "5 mins read",
+            text: "${newsDetailItem.read} read",
           )
         ],
       ),
@@ -321,7 +350,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
 
   Widget newsShortDescription() {
     return Text(
-      "Customer Support is undergoing massive, irreversible change right now – find out how to stay ahead of the curve by adopting the Conversational Support Funnel...",
+      newsDetailItem.shortDescription,
       style: TextStyle(
         fontWeight: FontWeight.w400,
         fontSize: 14,
@@ -333,7 +362,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
 
   Widget newsSubTitle() {
     return Text(
-      "Zero Transaction Fee",
+      newsDetailItem.subHeader,
       style: TextStyle(
         fontWeight: FontWeight.w700,
         fontSize: 16,
@@ -345,9 +374,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
 
   Widget newsFullDescription() {
     return Text(
-      '''With a Slydo account, you can receive and make payment across Africa. Its operation is fast, secure and seamless. Your account comes with a unique QR, which you can send to other users to receive money from them. If you want to send money instead, you can scan the QR of the recipient and make an instant transfer.
-
-Safe and Secure Your Slydo account is very safe and secure. You have to set a 6-digit password for access to the app. You also have to set a 4-digit PIN to enable payment from your account. Your account balance is also protected with the same PIN. You have no need to worry about your data security. We encrypt your data at rest and in transit with end to end encryption for your protection''',
+      newsDetailItem.description,
       style: TextStyle(
         fontWeight: FontWeight.w400,
         fontSize: 14,
@@ -359,17 +386,9 @@ Safe and Secure Your Slydo account is very safe and secure. You have to set a 6-
 
   Widget newsChips() {
     return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: [
-        CustomChip(text: "Slydo"),
-        CustomChip(text: "Business"),
-        CustomChip(text: "Online store"),
-        CustomChip(text: "E-commerce"),
-        CustomChip(text: "Cashless"),
-        CustomChip(text: "Cashless"),
-      ],
-    );
+        spacing: 8,
+        runSpacing: 8,
+        children: newsDetailItem.tags.map((e) => CustomChip(text: e)).toList());
   }
 
   Widget relatedPostTitle() {
@@ -386,13 +405,12 @@ Safe and Secure Your Slydo account is very safe and secure. You have to set a 6-
 
   Widget relatedPost() {
     return Column(
-        children: relatedPostList
+        children: newsDetailItem.newsListItems
             .map((news) => Container(
                   child: Column(
                     children: [
                       NewsTile(
-                        title: news["title"],
-                        image: news["image"],
+                        newsListItem: news,
                       ),
                       SizedBox(
                         height: 16,
@@ -401,79 +419,5 @@ Safe and Secure Your Slydo account is very safe and secure. You have to set a 6-
                   ),
                 ))
             .toList());
-  }
-}
-
-class _ControlsOverlay extends StatelessWidget {
-  const _ControlsOverlay({Key key, this.controller}) : super(key: key);
-
-  static const _examplePlaybackRates = [
-    0.25,
-    0.5,
-    1.0,
-    1.5,
-    2.0,
-    3.0,
-    5.0,
-    10.0,
-  ];
-
-  final VideoPlayerController controller;
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        AnimatedSwitcher(
-          duration: Duration(milliseconds: 50),
-          reverseDuration: Duration(milliseconds: 200),
-          child: controller.value.isPlaying
-              ? SizedBox.shrink()
-              : Container(
-                  color: Colors.black26,
-                  child: Center(
-                    child: Icon(
-                      Icons.play_arrow,
-                      color: Colors.white,
-                      size: 100.0,
-                    ),
-                  ),
-                ),
-        ),
-        GestureDetector(
-          onTap: () {
-            controller.value.isPlaying ? controller.pause() : controller.play();
-          },
-        ),
-        // Align(
-        //   alignment: Alignment.topRight,
-        //   child: PopupMenuButton<double>(
-        //     initialValue: controller.value.playbackSpeed,
-        //     tooltip: 'Playback speed',
-        //     onSelected: (speed) {
-        //       controller.setPlaybackSpeed(speed);
-        //     },
-        //     itemBuilder: (context) {
-        //       List<PopupMenuEntry<double>> popUpMenuItemList = [];
-        //       _examplePlaybackRates.forEach((speed) {
-        //         popUpMenuItemList
-        //             .add(PopupMenuItem(value: speed, child: Text('${speed}x')));
-        //       });
-        //       return popUpMenuItemList;
-        //     },
-        //     child: Padding(
-        //       padding: const EdgeInsets.symmetric(
-        //         // Using less vertical padding as the text is also longer
-        //         // horizontally, so it feels like it would need more spacing
-        //         // horizontally (matching the aspect ratio of the video).
-        //         vertical: 12,
-        //         horizontal: 16,
-        //       ),
-        //       child: Text('${controller.value.playbackSpeed}x'),
-        //     ),
-        //   ),
-        // ),
-      ],
-    );
   }
 }

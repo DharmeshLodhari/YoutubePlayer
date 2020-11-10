@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/events/event_tile.dart';
+import 'package:Slydo/screens/more_apps/events/models/PartialEventItem.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -604,7 +605,8 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
                       children: imgList
                           .map((element) => Container(
                                 margin: EdgeInsets.only(bottom: 12),
-                                child: EventTileWithHeart(imageUrl: element),
+                                child: EventTileWithHeart(
+                                    partialEvent: PartialEventItem()),
                               ))
                           .toList(),
                     ),

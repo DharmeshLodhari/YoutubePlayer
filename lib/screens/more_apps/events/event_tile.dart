@@ -1,5 +1,4 @@
-import 'dart:math';
-
+import 'package:Slydo/screens/more_apps/events/models/PartialEventItem.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -7,8 +6,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class EventTile extends StatelessWidget {
-  String imageUrl;
-  EventTile({this.imageUrl});
+  final PartialEventItem partialEventItem;
+
+  const EventTile({Key key, this.partialEventItem}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -25,7 +26,7 @@ class EventTile extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: CachedNetworkImage(
-                    imageUrl: imageUrl,
+                    imageUrl: partialEventItem.image,
                     fit: BoxFit.fill,
                     height: 86,
                     width: 68,
@@ -41,7 +42,7 @@ class EventTile extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Thu, Oct 15 • 6:54 AM",
+                          partialEventItem.date_time,
                           softWrap: false,
                           overflow: TextOverflow.fade,
                           style: TextStyle(
@@ -52,7 +53,7 @@ class EventTile extends StatelessWidget {
                         ),
                         flexibleSpace(flex: 2),
                         Text(
-                          "5th Borough food festival",
+                          partialEventItem.name,
                           softWrap: false,
                           overflow: TextOverflow.fade,
                           style: TextStyle(
@@ -63,7 +64,7 @@ class EventTile extends StatelessWidget {
                         ),
                         flexibleSpace(),
                         Text(
-                          "Clove lakes park",
+                          partialEventItem.location,
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w400,
@@ -84,9 +85,9 @@ class EventTile extends StatelessWidget {
 
 // ignore: must_be_immutable
 class EventTileWithHeart extends StatefulWidget {
-  String imageUrl;
-  EventTileWithHeart({this.imageUrl});
+  final PartialEventItem partialEvent;
 
+  const EventTileWithHeart({Key key, this.partialEvent}) : super(key: key);
   @override
   _EventTileWithHeartState createState() => _EventTileWithHeartState();
 }
@@ -110,7 +111,7 @@ class _EventTileWithHeartState extends State<EventTileWithHeart> {
               ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: CachedNetworkImage(
-                  imageUrl: widget.imageUrl,
+                  imageUrl: widget.partialEvent.image,
                   fit: BoxFit.fill,
                   height: 86,
                   width: 68,
@@ -127,7 +128,7 @@ class _EventTileWithHeartState extends State<EventTileWithHeart> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        "Thu, Oct 15 • 6:54 AM",
+                        widget.partialEvent.date_time,
                         softWrap: false,
                         overflow: TextOverflow.fade,
                         style: TextStyle(
@@ -138,7 +139,7 @@ class _EventTileWithHeartState extends State<EventTileWithHeart> {
                       ),
                       flexibleSpace(flex: 2),
                       Text(
-                        "5th Borough food festival",
+                        widget.partialEvent.name,
                         softWrap: false,
                         overflow: TextOverflow.fade,
                         style: TextStyle(
@@ -149,7 +150,7 @@ class _EventTileWithHeartState extends State<EventTileWithHeart> {
                       ),
                       flexibleSpace(),
                       Text(
-                        "Clove lakes park",
+                        widget.partialEvent.location,
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w400,
@@ -166,7 +167,7 @@ class _EventTileWithHeartState extends State<EventTileWithHeart> {
                             size: 10,
                           ),
                           Text(
-                            "34.00",
+                            widget.partialEvent.price,
                             style: TextStyle(
                               fontWeight: FontWeight.w700,
                               fontSize: 14,
@@ -202,114 +203,5 @@ class _EventTileWithHeartState extends State<EventTileWithHeart> {
         ),
       ),
     );
-  }
-}
-
-class MovieTileGeneral extends StatefulWidget {
-  @override
-  _MovieTileGeneralState createState() => _MovieTileGeneralState();
-}
-
-class _MovieTileGeneralState extends State<MovieTileGeneral> {
-  bool isDownloaded = Random().nextBool();
-
-  bool isChange = Random().nextBool();
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        margin: EdgeInsets.zero,
-        elevation: 0,
-        child: Container(
-          decoration: decorateBox(),
-          child: ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-            leading: Container(
-              height: 68,
-              width: 68,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: CachedNetworkImage(
-                  imageUrl:
-                      "https://c1.iggcdn.com/indiegogo-media-prod-cld/image/upload/c_fill,f_auto,h_630,w_1200/v1506734779/wcsmythcukjuuglotjvb.jpg",
-                  fit: BoxFit.fill,
-                ),
-              ),
-            ),
-            title: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Dawn Of Thunder",
-                  softWrap: false,
-                  overflow: TextOverflow.fade,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                    color: blackFont,
-                  ),
-                ),
-                Row(
-                  children: [
-                    Icon(
-                      SlydoAppIcon.star,
-                      color: starYellow,
-                      size: 12,
-                    ),
-                    SizedBox(
-                      width: 4,
-                    ),
-                    Text(
-                      "7.8",
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w400,
-                        color: blackFont,
-                      ),
-                    )
-                  ],
-                ),
-              ],
-            ),
-            subtitle: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  SlydoAppIcon.naira,
-                  color: navyBlue,
-                  size: 10,
-                ),
-                Text(
-                  "34.00",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 14,
-                    color: navyBlue,
-                  ),
-                ),
-              ],
-            ),
-            trailing: IconButton(
-              icon: Icon(
-                isDownloaded
-                    ? SlydoAppIcon.video_play
-                    : isChange
-                        ? SlydoAppIcon.heart_empty
-                        : SlydoAppIcon.heart_1,
-                color: isDownloaded
-                    ? navyBlue
-                    : isChange
-                        ? blackFont
-                        : navyBlue,
-                size: 20,
-              ),
-              onPressed: () {
-                isChange = !isChange;
-                setState(() {});
-              },
-            ),
-          ),
-        ));
   }
 }

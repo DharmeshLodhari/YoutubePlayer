@@ -1,13 +1,21 @@
-import 'dart:math';
-
+import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/events/event_auth.dart';
 import 'package:Slydo/screens/more_apps/events/event_tile.dart';
+import 'package:Slydo/screens/more_apps/events/models/EventPoster.dart';
+import 'package:Slydo/screens/more_apps/events/models/PartialEventItem.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:toast/toast.dart';
+
+import 'models/CityData.dart';
 
 class EventExploreScreen extends StatefulWidget {
   @override
@@ -15,15 +23,95 @@ class EventExploreScreen extends StatefulWidget {
 }
 
 class _EventExploreScreenState extends State<EventExploreScreen> {
-  List<String> imgList = [
-    "https://www.telegraph.co.uk/content/dam/Travel/Destinations/Europe/United%20Kingdom/London/london-aerial-thames-guide.jpg",
-    "https://www.cityam.com/wp-content/uploads/2020/02/London_Tower_Bridge_City.jpg",
-    "https://metab.ern-net.eu/wp-content/uploads/2018/04/London.jpg",
-    "https://travel.home.sndimg.com/content/dam/images/travel/fullset/2015/05/28/big-ben-london-england.jpg",
-    "https://a.travel-assets.com/findyours-php/viewfinder/images/res70/20000/20665-London.jpg"
-  ];
+  List<EventPoster> eventPosterSlider = [];
+  bool isSliderLoading = false;
+
+  List<EventPoster> popularInLocation = [];
+  bool isPopularInLocationLoading = false;
+
+  List<CityData> listOfCity = [];
+  bool isExploreByCityLoading = false;
+
+  List<PartialEventItem> eventList = [];
+  bool isEventListLoading = false;
+
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
 
   CarouselController _carouselController = CarouselController();
+
+  @override
+  void initState() {
+    getResult();
+    super.initState();
+  }
+
+  void getResult() {
+    getSliderItem();
+    getPopularInLocationItem();
+    getExploreByCityItem();
+    getEventListItem();
+  }
+
+  void getSliderItem() async {
+    isSliderLoading = true;
+    eventPosterSlider.clear();
+    if (mounted) setState(() {});
+
+    eventPosterSlider = await EventAuthService().getEventPosterList();
+
+    isSliderLoading = false;
+    if (mounted) setState(() {});
+  }
+
+  void getPopularInLocationItem() async {
+    isPopularInLocationLoading = true;
+    popularInLocation.clear();
+    if (mounted) setState(() {});
+
+    popularInLocation = await EventAuthService().getEventPosterList();
+
+    isPopularInLocationLoading = false;
+    if (mounted) setState(() {});
+  }
+
+  void getExploreByCityItem() async {
+    isExploreByCityLoading = true;
+    listOfCity.clear();
+    if (mounted) setState(() {});
+
+    listOfCity = await EventAuthService().getCityList();
+
+    isExploreByCityLoading = false;
+    if (mounted) setState(() {});
+  }
+
+  void getEventListItem() async {
+    isEventListLoading = true;
+    eventList.clear();
+    if (mounted) setState(() {});
+
+    eventList = await EventAuthService().getPartialEventList();
+
+    isEventListLoading = false;
+    if (mounted) setState(() {});
+  }
+
+  void _onRefresh() async {
+    Connectivity().checkConnectivity().then((value) {
+      var connectionResult = value;
+      if (connectionResult == ConnectivityResult.wifi ||
+          connectionResult == ConnectivityResult.mobile) {
+        getResult();
+        _refreshController.refreshCompleted();
+      } else {
+        Toast.show(
+            AppLocalization.of(context).internetConnectionNotAvailable, context,
+            gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+        _refreshController.refreshCompleted();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,39 +148,43 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
   }
 
   Widget scaffoldBody() {
-    return SingleChildScrollView(
-        child: Column(
-      children: [
-        SizedBox(
-          height: 6,
-        ),
-        searchBox(),
-        SizedBox(
-          height: 32,
-        ),
-        movieCarouselSlider(),
-        SizedBox(
-          height: 40,
-        ),
-        eventCategoryWithOutDetail(categoryName: "Popular in London"),
-        SizedBox(
-          height: 16,
-        ),
-        exploreByCity(
-          categoryName: "Explore by City",
-          moviePoster:
-              "https://m.media-amazon.com/images/I/A1o+mUmviOL._SS500_.jpg",
-          movieName: "The Cloud Of Northland Thunder",
-        ),
-        SizedBox(
-          height: 16,
-        ),
-        foodFestivalEvent(categoryName: "Food festival events"),
-        SizedBox(
-          height: 10,
-        ),
-      ],
-    ));
+    return SmartRefresher(
+      enablePullDown: true,
+      header: WaterDropHeader(
+        complete: Container(),
+        waterDropColor: navyBlue,
+      ),
+      controller: _refreshController,
+      onRefresh: _onRefresh,
+      child: SingleChildScrollView(
+          child: Column(
+        children: [
+          SizedBox(
+            height: 6,
+          ),
+          searchBox(),
+          SizedBox(
+            height: 32,
+          ),
+          eventCarouselSlider(),
+          SizedBox(
+            height: 40,
+          ),
+          nearByEvents(),
+          SizedBox(
+            height: 16,
+          ),
+          exploreByCity(),
+          SizedBox(
+            height: 16,
+          ),
+          foodFestivalEvent(categoryName: "Food festival events"),
+          SizedBox(
+            height: 10,
+          ),
+        ],
+      )),
+    );
   }
 
   Widget searchBox() {
@@ -174,45 +266,51 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
     );
   }
 
-  Widget movieCarouselSlider() {
+  Widget eventCarouselSlider() {
     return Container(
-      child: CarouselSlider(
-        carouselController: _carouselController,
-        options: CarouselOptions(
-          viewportFraction: 0.9,
-          enlargeCenterPage: false,
-          autoPlay: true,
-          aspectRatio: 2,
-          initialPage: 0,
-        ),
-        items: imgList
-            .map(
-              (item) => GestureDetector(
-                onTap: () {
-                  Navigator.of(context).pushNamed("/event-detail");
-                },
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 5),
-                  child: Center(
-                      child: ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                    child: CachedNetworkImage(
-                      imageUrl: item,
-                      fit: BoxFit.fill,
-                      height: double.infinity,
-                      width: double.infinity,
-                    ),
-                  )),
-                ),
+      child: isSliderLoading
+          ? Container(
+              height: 180,
+              child: Center(
+                child: CircularLoadingIndicator(),
               ),
             )
-            .toList(),
-      ),
+          : CarouselSlider(
+              carouselController: _carouselController,
+              options: CarouselOptions(
+                viewportFraction: 0.9,
+                enlargeCenterPage: false,
+                autoPlay: true,
+                aspectRatio: 2,
+                initialPage: 0,
+              ),
+              items: eventPosterSlider
+                  .map(
+                    (item) => GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pushNamed("/event-detail");
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 5),
+                        child: Center(
+                            child: ClipRRect(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          child: CachedNetworkImage(
+                            imageUrl: item.image,
+                            fit: BoxFit.fill,
+                            height: double.infinity,
+                            width: double.infinity,
+                          ),
+                        )),
+                      ),
+                    ),
+                  )
+                  .toList(),
+            ),
     );
   }
 
-  Widget exploreByCity(
-      {String categoryName, String movieName, String moviePoster}) {
+  Widget exploreByCity() {
     return Container(
       child: Column(
         children: [
@@ -222,7 +320,7 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
-                  categoryName,
+                  "Explore by City",
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 18,
@@ -247,29 +345,33 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
           Container(
             height: 210,
             color: Colors.white,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Container(
-                padding: EdgeInsets.only(left: 16),
-                child: Row(
-                  children: List.generate(
-                    5,
-                    (index) => Container(
-                      margin: EdgeInsets.only(right: 12),
-                      child: cityCard(
-                          moviePoster: moviePoster, movieName: movieName),
+            child: isExploreByCityLoading
+                ? Center(
+                    child: CircularLoadingIndicator(),
+                  )
+                : SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Container(
+                      padding: EdgeInsets.only(left: 16),
+                      child: Row(
+                        children: listOfCity
+                            .map(
+                              (cityData) => Container(
+                                margin: EdgeInsets.only(right: 12),
+                                child: cityCard(cityData: cityData),
+                              ),
+                            )
+                            .toList(),
+                      ),
                     ),
                   ),
-                ),
-              ),
-            ),
           )
         ],
       ),
     );
   }
 
-  Widget cityCard({String movieName, String moviePoster}) {
+  Widget cityCard({CityData cityData}) {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).pushNamed("/event-detail");
@@ -287,7 +389,7 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  "Seoul",
+                  cityData.name,
                   softWrap: false,
                   overflow: TextOverflow.fade,
                   style: TextStyle(
@@ -301,8 +403,8 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
                 ),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
-                  child: Image.network(
-                    "https://a.travel-assets.com/findyours-php/viewfinder/images/res70/20000/20665-London.jpg",
+                  child: CachedNetworkImage(
+                    imageUrl: cityData.image,
                     height: 130,
                     width: 130,
                     fit: BoxFit.fill,
@@ -316,7 +418,7 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
     );
   }
 
-  Widget eventCategoryWithOutDetail({String categoryName}) {
+  Widget nearByEvents() {
     return Container(
       child: Column(
         children: [
@@ -326,7 +428,7 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
-                  categoryName,
+                  "Popular in London",
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 18,
@@ -351,20 +453,27 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
           Container(
             color: Colors.white,
             padding: EdgeInsets.symmetric(vertical: 16),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Container(
-                padding: EdgeInsets.only(left: 16),
-                child: Row(
-                  children: imgList
-                      .map((element) => Container(
-                            margin: EdgeInsets.only(right: 12),
-                            child: eventPoster(element),
-                          ))
-                      .toList(),
-                ),
-              ),
-            ),
+            child: isPopularInLocationLoading
+                ? Container(
+                    height: 100,
+                    child: Center(
+                      child: CircularLoadingIndicator(),
+                    ),
+                  )
+                : SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Container(
+                      padding: EdgeInsets.only(left: 16),
+                      child: Row(
+                        children: popularInLocation
+                            .map((element) => Container(
+                                  margin: EdgeInsets.only(right: 12),
+                                  child: eventPoster(eventPoster: element),
+                                ))
+                            .toList(),
+                      ),
+                    ),
+                  ),
           )
         ],
       ),
@@ -414,121 +523,140 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
                   children: [
                     Container(
                       height: 244,
-                      child: CustomBoxShadow(
-                        child: Card(
-                            elevation: 3,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)),
-                            margin: EdgeInsets.zero,
-                            shadowColor: boxShadowTwo,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: Column(
-                                children: <Widget>[
-                                  Expanded(
-                                    child: InkWell(
-                                      child: CachedNetworkImage(
-                                        width: double.infinity,
-                                        imageUrl:
-                                            "https://specialedshortbus.com/wp-content/uploads/2020/01/52.jpg",
-                                        fit: BoxFit.fill,
-                                        filterQuality: FilterQuality.high,
-                                      ),
-                                      onTap: () {
-                                        Navigator.of(context)
-                                            .pushNamed("/event-detail");
-                                      },
-                                    ),
-                                  ),
-                                  Container(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 16, vertical: 0),
-                                    child: Row(
-                                      children: [
+                      child: isEventListLoading
+                          ? Center(
+                              child: CircularLoadingIndicator(),
+                            )
+                          : CustomBoxShadow(
+                              child: Card(
+                                  elevation: 3,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10)),
+                                  margin: EdgeInsets.zero,
+                                  shadowColor: boxShadowTwo,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: Column(
+                                      children: <Widget>[
                                         Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                "Thu, Oct 15 • 6:54 AM",
-                                                softWrap: false,
-                                                overflow: TextOverflow.fade,
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 12,
-                                                  color: mateRed,
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                height: 2,
-                                              ),
-                                              Text(
-                                                "Bronx night market",
-                                                softWrap: false,
-                                                overflow: TextOverflow.fade,
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w700,
-                                                  fontSize: 14,
-                                                  color: blackFont,
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                height: 2,
-                                              ),
-                                              Text(
-                                                "Humankind is now facing a global crisis...",
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w400,
-                                                  color: darkGrey,
-                                                ),
-                                              ),
-                                            ],
+                                          child: InkWell(
+                                            child: CachedNetworkImage(
+                                              width: double.infinity,
+                                              imageUrl: eventList[0].image,
+                                              fit: BoxFit.fill,
+                                              filterQuality: FilterQuality.high,
+                                            ),
+                                            onTap: () {
+                                              Navigator.of(context)
+                                                  .pushNamed("/event-detail");
+                                            },
                                           ),
                                         ),
                                         Container(
-                                          height: 86,
-                                          child: Center(
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Icon(
-                                                  SlydoAppIcon.naira,
-                                                  color: navyBlue,
-                                                  size: 10,
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 16, vertical: 0),
+                                          child: Row(
+                                            children: [
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      eventList[0].date_time,
+                                                      softWrap: false,
+                                                      overflow:
+                                                          TextOverflow.fade,
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        fontSize: 12,
+                                                        color: mateRed,
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      height: 2,
+                                                    ),
+                                                    Text(
+                                                      eventList[0].title,
+                                                      softWrap: false,
+                                                      overflow:
+                                                          TextOverflow.fade,
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                        fontSize: 14,
+                                                        color: blackFont,
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      height: 2,
+                                                    ),
+                                                    Text(
+                                                      eventList[0]
+                                                          .short_description,
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                        color: darkGrey,
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
-                                                Text(
-                                                  "34.00",
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.w700,
-                                                    fontSize: 14,
-                                                    color: navyBlue,
+                                              ),
+                                              Container(
+                                                height: 86,
+                                                child: Center(
+                                                  child: Row(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    children: [
+                                                      Icon(
+                                                        SlydoAppIcon.naira,
+                                                        color: navyBlue,
+                                                        size: 10,
+                                                      ),
+                                                      Text(
+                                                        eventList[0].price,
+                                                        style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.w700,
+                                                          fontSize: 14,
+                                                          color: navyBlue,
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
                                                 ),
-                                              ],
-                                            ),
+                                              )
+                                            ],
                                           ),
                                         )
                                       ],
                                     ),
-                                  )
-                                ],
-                              ),
-                            )),
-                      ),
+                                  )),
+                            ),
                     ),
                     SizedBox(
                       height: 12,
                     ),
-                    Column(
-                      children: imgList
-                          .map((element) => Container(
-                                margin: EdgeInsets.only(bottom: 12),
-                                child: EventTileWithHeart(imageUrl: element),
-                              ))
-                          .toList(),
-                    ),
+                    isEventListLoading
+                        ? Container(
+                            height: 180,
+                            child: Center(
+                              child: CircularLoadingIndicator(),
+                            ),
+                          )
+                        : Column(
+                            children: eventList
+                                .map((partialEvent) => Container(
+                                      margin: EdgeInsets.only(bottom: 12),
+                                      child: EventTileWithHeart(
+                                          partialEvent: partialEvent),
+                                    ))
+                                .toList(),
+                          ),
                   ],
                 ),
               ),
@@ -539,8 +667,7 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
     );
   }
 
-  Widget eventPoster(String url) {
-    bool temp = Random().nextBool();
+  Widget eventPoster({EventPoster eventPoster}) {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).pushNamed("/event-detail");
@@ -557,14 +684,14 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
                 width: double.infinity,
                 color: Colors.black12,
                 colorBlendMode: BlendMode.darken,
-                imageUrl: url,
+                imageUrl: eventPoster.image,
                 fit: BoxFit.fill,
               ),
             ),
             Align(
               alignment: Alignment.center,
               child: Text(
-                temp ? "Beach event" : "Mongola",
+                eventPoster.name,
                 style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 18,

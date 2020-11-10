@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:Slydo/screens/more_apps/news/models/NewsListItem.dart';
+import 'package:Slydo/screens/more_apps/news/models/SubscriptionItem.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -7,11 +9,9 @@ import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
 class NewsTile extends StatefulWidget {
-  String title;
+  final NewsListItem newsListItem;
 
-  NewsTile({this.title, this.image});
-
-  String image;
+  const NewsTile({Key key, this.newsListItem}) : super(key: key);
 
   @override
   _NewsTileState createState() => _NewsTileState();
@@ -41,7 +41,7 @@ class _NewsTileState extends State<NewsTile> {
                         height: 150,
                         width: double.infinity,
                         fit: BoxFit.fill,
-                        imageUrl: widget.image,
+                        imageUrl: widget.newsListItem.image,
                       ),
                     ),
                     Positioned(
@@ -69,7 +69,7 @@ class _NewsTileState extends State<NewsTile> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widget.title,
+                        widget.newsListItem.title,
                         style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
@@ -82,7 +82,7 @@ class _NewsTileState extends State<NewsTile> {
                         height: 4,
                       ),
                       Text(
-                        "Humankind is now facing a global crisis. Perhaps the biggest crisis of our generation...",
+                        widget.newsListItem.description,
                         style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w400,
@@ -102,6 +102,10 @@ class _NewsTileState extends State<NewsTile> {
 }
 
 class SubscriptionTile extends StatelessWidget {
+  final SubscriptionItem subscriptionItem;
+
+  const SubscriptionTile({Key key, this.subscriptionItem}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     Widget avatarImage = Container(
@@ -109,8 +113,7 @@ class SubscriptionTile extends StatelessWidget {
         width: 48,
         child: ClipOval(
           child: CachedNetworkImage(
-            imageUrl:
-                "https://cdn.punchng.com/wp-content/uploads/2020/08/18131509/punch-logo-500x179-1.png",
+            imageUrl: subscriptionItem.image,
             colorBlendMode: BlendMode.darken,
             fit: BoxFit.fitWidth,
             filterQuality: FilterQuality.high,
@@ -127,7 +130,7 @@ class SubscriptionTile extends StatelessWidget {
         child: ListTile(
           contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           title: Text(
-            "Punch",
+            subscriptionItem.name,
             maxLines: 1,
             style: TextStyle(
               color: blackFont,

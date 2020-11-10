@@ -1,8 +1,11 @@
+import 'package:Slydo/screens/more_apps/events/event_auth.dart';
 import 'package:Slydo/screens/more_apps/events/event_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/events/event_tile.dart';
+import 'package:Slydo/screens/more_apps/events/models/EventDetailItem.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -30,9 +33,24 @@ class _EventDetailPageState extends State<EventDetailPage> {
 
   bool isWishList = false;
 
+  EventDetailItem event = EventDetailItem();
+  bool isLoading = false;
+  bool isVideo = false;
+
   @override
   void initState() {
+    getResult();
     super.initState();
+  }
+
+  void getResult() async {
+    isLoading = true;
+    if (mounted) setState(() {});
+
+    event = await EventAuthService().getEventDetailItem();
+
+    isLoading = false;
+    if (mounted) setState(() {});
   }
 
   @override
@@ -117,93 +135,98 @@ class _EventDetailPageState extends State<EventDetailPage> {
   }
 
   Widget scaffoldBody() {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          eventPoster(),
-          Column(
-            children: [
-              SizedBox(
-                height: 24,
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: eventNameAndHostInformation(),
-              ),
-              SizedBox(
-                height: 8,
-              ),
-              InkWell(
-                  onTap: () {
-                    Navigator.of(context).pushNamed("/event-ticket-detail");
-                  },
-                  child: Image.asset("assets/images/TICKET.png")),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
+    return isLoading
+        ? Center(
+            child: CircularLoadingIndicator(),
+          )
+        : SingleChildScrollView(
+            child: Column(
+              children: [
+                eventPoster(),
+                Column(
                   children: [
-                    Divider(
-                      thickness: 1,
-                      height: 0,
-                      color: dividerColor,
+                    SizedBox(
+                      height: 24,
+                    ),
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: eventNameAndHostInformation(),
                     ),
                     SizedBox(
-                      height: 12,
+                      height: 8,
                     ),
-                    eventTimeAndPlaceDetail(),
-                    SizedBox(
-                      height: 16,
-                    ),
-                    Divider(
-                      thickness: 1,
-                      color: dividerColor,
+                    InkWell(
+                        onTap: () {
+                          Navigator.of(context)
+                              .pushNamed("/event-ticket-detail");
+                        },
+                        child: Image.asset("assets/images/TICKET.png")),
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        children: [
+                          Divider(
+                            thickness: 1,
+                            height: 0,
+                            color: dividerColor,
+                          ),
+                          SizedBox(
+                            height: 12,
+                          ),
+                          eventTimeAndPlaceDetail(),
+                          SizedBox(
+                            height: 16,
+                          ),
+                          Divider(
+                            thickness: 1,
+                            color: dividerColor,
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 12,
-          ),
-          dateAndTime(),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              children: [
-                Divider(
-                  thickness: 1,
-                  color: dividerColor,
-                  height: 16,
-                ),
-                SizedBox(
-                  height: 8,
-                ),
-                aboutEvent(),
                 SizedBox(
                   height: 12,
                 ),
-                Divider(
-                  thickness: 1,
-                  color: dividerColor,
-                ),
-                SizedBox(
-                  height: 12,
-                ),
-                eventLocation(),
-                SizedBox(
-                  height: 40,
-                ),
-                moreLikeThis(),
-                SizedBox(
-                  height: 80,
+                dateAndTime(),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    children: [
+                      Divider(
+                        thickness: 1,
+                        color: dividerColor,
+                        height: 16,
+                      ),
+                      SizedBox(
+                        height: 8,
+                      ),
+                      aboutEvent(),
+                      SizedBox(
+                        height: 12,
+                      ),
+                      Divider(
+                        thickness: 1,
+                        color: dividerColor,
+                      ),
+                      SizedBox(
+                        height: 12,
+                      ),
+                      eventLocation(),
+                      SizedBox(
+                        height: 40,
+                      ),
+                      moreLikeThis(),
+                      SizedBox(
+                        height: 80,
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
-          ),
-        ],
-      ),
-    );
+          );
   }
 
   Widget eventPoster() {
@@ -215,8 +238,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
             CachedNetworkImage(
               width: double.infinity,
               height: double.infinity,
-              imageUrl:
-                  "https://ichef.bbci.co.uk/news/976/cpsprodpb/D50C/production/_105204545_2men.jpg",
+              imageUrl: event.image,
               fit: BoxFit.fill,
             ),
             Positioned(
@@ -248,7 +270,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
           children: [
             Expanded(
               child: Text(
-                '“Sundays on the beach" Brunch & beach party',
+                event.name,
                 style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
@@ -267,8 +289,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
               width: 32,
               child: ClipOval(
                 child: CachedNetworkImage(
-                  imageUrl:
-                      "https://cdn.thewhistler.ng/wp-content/uploads/2020/06/ChiNna-Okoroafor-2.jpg",
+                  imageUrl: event.ownerAvatar,
                   fit: BoxFit.fill,
                   width: double.infinity,
                   height: double.infinity,
@@ -279,7 +300,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
               width: 12,
             ),
             Text(
-              "Bond street dojo",
+              event.ownerName,
               style: TextStyle(
                   fontSize: 14, fontWeight: FontWeight.w600, color: blackFont),
             )
@@ -327,7 +348,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
                             ),
                             Expanded(
                               child: Text(
-                                "Sunday, October 18 • 6:54 PM",
+                                event.eventTime,
                                 style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w400,
@@ -363,7 +384,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
                             ),
                             Expanded(
                               child: Text(
-                                "Savana beach bar",
+                                event.location.first.name,
                                 style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w400,
@@ -405,7 +426,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
                                   size: 10,
                                 ),
                                 Text(
-                                  "34.00",
+                                  event.price,
                                   style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w700,
@@ -535,7 +556,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
           height: 12,
         ),
         Text(
-          '''Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pa.Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pa.''',
+          event.about,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w400,
@@ -602,10 +623,10 @@ class _EventDetailPageState extends State<EventDetailPage> {
             height: 12,
           ),
           Column(
-            children: imgList
+            children: event.similarEvent
                 .map((element) => Container(
                       margin: EdgeInsets.only(bottom: 12),
-                      child: EventTileWithHeart(imageUrl: element),
+                      child: EventTileWithHeart(partialEvent: element),
                     ))
                 .toList(),
           ),

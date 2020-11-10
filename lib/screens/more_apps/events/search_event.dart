@@ -3,9 +3,17 @@ import 'package:Slydo/screens/more_apps/events/event_tile.dart';
 import 'package:Slydo/screens/more_apps/movies/custom_slider_thumb_circle_for_range_slider.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:toast/toast.dart';
+
+import 'event_auth.dart';
+import 'models/PartialEventItem.dart';
 
 class SearchEvent extends StatefulWidget {
   @override
@@ -29,18 +37,43 @@ class _SearchEventState extends State<SearchEvent> {
   int selectedRating;
   RangeValues selectedPriceValue = RangeValues(5, 56);
 
-  List<String> imgList = [
-    "https://www.telegraph.co.uk/content/dam/Travel/Destinations/Europe/United%20Kingdom/London/london-aerial-thames-guide.jpg",
-    "https://www.cityam.com/wp-content/uploads/2020/02/London_Tower_Bridge_City.jpg",
-    "https://metab.ern-net.eu/wp-content/uploads/2018/04/London.jpg",
-    "https://travel.home.sndimg.com/content/dam/images/travel/fullset/2015/05/28/big-ben-london-england.jpg",
-    "https://a.travel-assets.com/findyours-php/viewfinder/images/res70/20000/20665-London.jpg",
-    "https://www.telegraph.co.uk/content/dam/Travel/Destinations/Europe/United%20Kingdom/London/london-aerial-thames-guide.jpg",
-    "https://www.cityam.com/wp-content/uploads/2020/02/London_Tower_Bridge_City.jpg",
-    "https://metab.ern-net.eu/wp-content/uploads/2018/04/London.jpg",
-    "https://travel.home.sndimg.com/content/dam/images/travel/fullset/2015/05/28/big-ben-london-england.jpg",
-    "https://a.travel-assets.com/findyours-php/viewfinder/images/res70/20000/20665-London.jpg"
-  ];
+  List<PartialEventItem> eventList = [];
+
+  bool isLoading = false;
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
+
+  void getResult() async {
+    isLoading = true;
+    eventList.clear();
+    if (mounted) setState(() {});
+
+    eventList = await EventAuthService().getPartialEventList();
+
+    isLoading = false;
+    if (mounted) setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  void _onRefresh() async {
+    Connectivity().checkConnectivity().then((value) {
+      var connectionResult = value;
+      if (connectionResult == ConnectivityResult.wifi ||
+          connectionResult == ConnectivityResult.mobile) {
+        getResult();
+        _refreshController.refreshCompleted();
+      } else {
+        Toast.show(
+            AppLocalization.of(context).internetConnectionNotAvailable, context,
+            gravity: Toast.BOTTOM, backgroundColor: navyBlue);
+        _refreshController.refreshCompleted();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -109,24 +142,39 @@ class _SearchEventState extends State<SearchEvent> {
           SizedBox(
             height: 12,
           ),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: imgList
-                    .map(
-                      (element) => Container(
-                          padding:
-                              EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                          child: EventTileWithHeart(
-                            imageUrl: element,
-                          )),
-                    )
-                    .toList(),
-              ),
-            ),
-          ),
+          isLoading
+              ? Expanded(
+                  child: Center(
+                    child: CircularLoadingIndicator(),
+                  ),
+                )
+              : eventList.isEmpty
+                  ? Expanded(child: searchBackground())
+                  : Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: eventList
+                              .map(
+                                (element) => Container(
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 8, horizontal: 16),
+                                    child: EventTileWithHeart(
+                                      partialEvent: element,
+                                    )),
+                              )
+                              .toList(),
+                        ),
+                      ),
+                    ),
         ],
       ),
+    );
+  }
+
+  Widget searchBackground() {
+    return NoItemInList(
+      msg: "Please type something to get results",
+      isResult: false,
     );
   }
 
@@ -138,6 +186,9 @@ class _SearchEventState extends State<SearchEvent> {
           textSelectionHandleColor: navyBlue,
         ),
         child: TextFormField(
+          onFieldSubmitted: (val) {
+            getResult();
+          },
           autofocus: true,
           style: TextStyle(
             fontSize: 16,
@@ -616,7 +667,10 @@ class _SearchEventState extends State<SearchEvent> {
   Widget getFilerSubmitButton() {
     return CurvedButton(
       backgroundColor: navyBlue,
-      onPressed: () {},
+      onPressed: () {
+        Navigator.pop(context);
+        getResult();
+      },
       text: "Submit",
       textColor: Colors.white,
     );
