@@ -190,13 +190,8 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
             SizedBox(
               height: 32,
             ),
-            nearByYou(categoryName: "Nearby you"),
-            rentDetail(
-              categoryName: "Most recent discovery",
-              moviePoster:
-                  "https://m.media-amazon.com/images/I/A1o+mUmviOL._SS500_.jpg",
-              movieName: "The Cloud Of Northland Thunder",
-            ),
+            nearByYou(),
+            mostRecentDiscoveryList(),
             SizedBox(
               height: 16,
             ),
@@ -295,8 +290,7 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
     );
   }
 
-  Widget rentDetail(
-      {String categoryName, String movieName, String moviePoster}) {
+  Widget mostRecentDiscoveryList() {
     return Container(
       child: Column(
         children: [
@@ -306,7 +300,7 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
-                  categoryName,
+                  "Most recent discovery",
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 18,
@@ -355,98 +349,6 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
                   ),
           )
         ],
-      ),
-    );
-  }
-
-  Widget rentCard({String cityName, String cityPoster}) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.of(context).pushNamed("/property-detail");
-      },
-      child: Card(
-        margin: EdgeInsets.zero,
-        elevation: 0,
-        child: Container(
-          width: 160,
-          decoration: decorateBox(borderColor: selectedListItemBackgroundBlue),
-          child: Container(
-            padding: EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Image.network(
-                    cityPoster,
-                    height: 130,
-                    width: 130,
-                    fit: BoxFit.fill,
-                  ),
-                ),
-                SizedBox(
-                  height: 12,
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Row(
-                            children: [
-                              Text(
-                                "From ",
-                                softWrap: false,
-                                overflow: TextOverflow.fade,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 12,
-                                  color: blackFont,
-                                ),
-                              ),
-                              Text(
-                                "₦",
-                                softWrap: false,
-                                overflow: TextOverflow.fade,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 14,
-                                    color: blackFont,
-                                    fontFamily: "Roborto"),
-                              ),
-                              Text(
-                                "2500.00",
-                                softWrap: false,
-                                overflow: TextOverflow.fade,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 14,
-                                  color: blackFont,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    Text(
-                      "3 beds in London",
-                      softWrap: false,
-                      overflow: TextOverflow.fade,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 12,
-                        color: blackFont,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
       ),
     );
   }
@@ -562,7 +464,7 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
     );
   }
 
-  Widget nearByYou({String categoryName}) {
+  Widget nearByYou() {
     return Container(
       child: Column(
         children: [
@@ -572,7 +474,7 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
-                  categoryName,
+                  "Nearby you",
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 18,

@@ -32,22 +32,6 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
   VideoPlayerController _videoController;
   ChewieController _chewieController;
 
-  List<String> imgList = [
-    "https://www.telegraph.co.uk/content/dam/Travel/Destinations/Europe/United%20Kingdom/London/london-aerial-thames-guide.jpg",
-    "https://www.cityam.com/wp-content/uploads/2020/02/London_Tower_Bridge_City.jpg",
-    "https://metab.ern-net.eu/wp-content/uploads/2018/04/London.jpg",
-    "https://travel.home.sndimg.com/content/dam/images/travel/fullset/2015/05/28/big-ben-london-england.jpg",
-    "https://a.travel-assets.com/findyours-php/viewfinder/images/res70/20000/20665-London.jpg"
-  ];
-
-  List<String> hotelImgList = [
-    "https://www.gannett-cdn.com/-mm-/05b227ad5b8ad4e9dcb53af4f31d7fbdb7fa901b/c=0-64-2119-1259/local/-/media/USATODAY/USATODAY/2014/08/13/1407953244000-177513283.jpg",
-    "https://www.thebalancesmb.com/thmb/R5CjZrWUBXBTVj48-MBx3PFIh5U=/3000x2000/filters:fill(auto,1)/hotel_room-627892060-5a7a30d1642dca00370179e6.jpg",
-    "https://media.istockphoto.com/photos/3d-rendering-modern-luxury-bedroom-suite-and-bathroom-picture-id928431714?k=6&m=928431714&s=612x612&w=0&h=IBnf0aE9zEmsaJ3nLep6UmK4u-KYQPdEQa6LY30Ivn4=",
-    "https://gritdaily.com/wp-content/uploads/2019/07/http-cdn.cnn_.com-cnnnext-dam-assets-190711000204-haneda-excel-hotel-tokyu-03.jpg",
-    "https://blisssaigon.com/wp-content/uploads/2019/10/iwood-R5v8Xtc0ecg-unsplash-1.jpg"
-  ];
-
   List<String> availableDates = ["18", "25", "01", "08", "15"];
   int selectedDate = 0;
 

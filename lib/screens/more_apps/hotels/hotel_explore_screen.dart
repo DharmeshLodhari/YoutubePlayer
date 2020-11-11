@@ -1,13 +1,20 @@
-import 'dart:math';
-
+import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/hotels/hotel_auth.dart';
+import 'package:Slydo/screens/more_apps/hotels/models/HotelRoomItem.dart';
+import 'package:Slydo/screens/more_apps/hotels/models/PartialHotelRoomItem.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:toast/toast.dart';
 
 import 'hotel_tile.dart';
+import 'models/CityData.dart';
 
 class HotelExploreScreen extends StatefulWidget {
   @override
@@ -15,22 +22,95 @@ class HotelExploreScreen extends StatefulWidget {
 }
 
 class _HotelExploreScreenState extends State<HotelExploreScreen> {
-  List<String> cityImgList = [
-    "https://www.telegraph.co.uk/content/dam/Travel/Destinations/Europe/United%20Kingdom/London/london-aerial-thames-guide.jpg",
-    "https://www.cityam.com/wp-content/uploads/2020/02/London_Tower_Bridge_City.jpg",
-    "https://metab.ern-net.eu/wp-content/uploads/2018/04/London.jpg",
-    "https://travel.home.sndimg.com/content/dam/images/travel/fullset/2015/05/28/big-ben-london-england.jpg",
-    "https://a.travel-assets.com/findyours-php/viewfinder/images/res70/20000/20665-London.jpg"
-  ];
-  List<String> hotelImgList = [
-    "https://www.gannett-cdn.com/-mm-/05b227ad5b8ad4e9dcb53af4f31d7fbdb7fa901b/c=0-64-2119-1259/local/-/media/USATODAY/USATODAY/2014/08/13/1407953244000-177513283.jpg",
-    "https://www.thebalancesmb.com/thmb/R5CjZrWUBXBTVj48-MBx3PFIh5U=/3000x2000/filters:fill(auto,1)/hotel_room-627892060-5a7a30d1642dca00370179e6.jpg",
-    "https://media.istockphoto.com/photos/3d-rendering-modern-luxury-bedroom-suite-and-bathroom-picture-id928431714?k=6&m=928431714&s=612x612&w=0&h=IBnf0aE9zEmsaJ3nLep6UmK4u-KYQPdEQa6LY30Ivn4=",
-    "https://gritdaily.com/wp-content/uploads/2019/07/http-cdn.cnn_.com-cnnnext-dam-assets-190711000204-haneda-excel-hotel-tokyu-03.jpg",
-    "https://blisssaigon.com/wp-content/uploads/2019/10/iwood-R5v8Xtc0ecg-unsplash-1.jpg"
-  ];
-
   CarouselController _carouselController = CarouselController();
+
+  List<PartialHotelRoomItem> sliderItem = [];
+  bool isSliderLoading = false;
+
+  List<HotelRoomItem> nearByItem = [];
+  bool isNearByItemLoading = false;
+
+  List<PartialHotelRoomItem> mostRecentDiscovery = [];
+  bool isMostRecentDiscoveryLoading = false;
+
+  List<CityData> listOfCity = [];
+  bool isExploreByCityLoading = false;
+
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
+
+  @override
+  void initState() {
+    getResult();
+    super.initState();
+  }
+
+  void getResult() {
+    getSliderItems();
+    getNearByItem();
+    getMostRecentDiscoveryItem();
+    getExploreByCityItem();
+  }
+
+  void getSliderItems() async {
+    isSliderLoading = true;
+    sliderItem.clear();
+    if (mounted) setState(() {});
+
+    sliderItem = await HotelAuthService().getPartialHotelRoomList();
+
+    isSliderLoading = false;
+    if (mounted) setState(() {});
+  }
+
+  void getNearByItem() async {
+    isNearByItemLoading = true;
+    nearByItem.clear();
+    if (mounted) setState(() {});
+
+    nearByItem = await HotelAuthService().getHotelRoomList();
+
+    isNearByItemLoading = false;
+    if (mounted) setState(() {});
+  }
+
+  void getMostRecentDiscoveryItem() async {
+    isMostRecentDiscoveryLoading = true;
+    mostRecentDiscovery.clear();
+    if (mounted) setState(() {});
+
+    mostRecentDiscovery = await HotelAuthService().getPartialHotelRoomList();
+
+    isMostRecentDiscoveryLoading = false;
+    if (mounted) setState(() {});
+  }
+
+  void getExploreByCityItem() async {
+    isExploreByCityLoading = true;
+    listOfCity.clear();
+    if (mounted) setState(() {});
+
+    listOfCity = await HotelAuthService().getCityList();
+
+    isExploreByCityLoading = false;
+    if (mounted) setState(() {});
+  }
+
+  void _onRefresh() async {
+    Connectivity().checkConnectivity().then((value) {
+      var connectionResult = value;
+      if (connectionResult == ConnectivityResult.wifi ||
+          connectionResult == ConnectivityResult.mobile) {
+        getResult();
+        _refreshController.refreshCompleted();
+      } else {
+        Toast.show(
+            AppLocalization.of(context).internetConnectionNotAvailable, context,
+            gravity: Toast.BOTTOM, backgroundColor: navyBlue);
+        _refreshController.refreshCompleted();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,40 +180,39 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
   }
 
   Widget scaffoldBody() {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          SizedBox(
-            height: 6,
-          ),
-          searchBox(),
-          SizedBox(
-            height: 32,
-          ),
-          cityCarouselSlider(),
-          SizedBox(
-            height: 40,
-          ),
-          nearByYou(categoryName: "Nearby you"),
-          rentDetail(
-            categoryName: "Most recent discovery",
-            moviePoster:
-                "https://m.media-amazon.com/images/I/A1o+mUmviOL._SS500_.jpg",
-            movieName: "The Cloud Of Northland Thunder",
-          ),
-          SizedBox(
-            height: 16,
-          ),
-          exploreByCity(
-            categoryName: "Explore by City",
-            moviePoster:
-                "https://m.media-amazon.com/images/I/A1o+mUmviOL._SS500_.jpg",
-            movieName: "The Cloud Of Northland Thunder",
-          ),
-          SizedBox(
-            height: 10,
-          ),
-        ],
+    return SmartRefresher(
+      enablePullDown: true,
+      header: WaterDropHeader(
+        complete: Container(),
+        waterDropColor: navyBlue,
+      ),
+      controller: _refreshController,
+      onRefresh: _onRefresh,
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(
+              height: 6,
+            ),
+            searchBox(),
+            SizedBox(
+              height: 32,
+            ),
+            cityCarouselSlider(),
+            SizedBox(
+              height: 40,
+            ),
+            nearByYou(),
+            mostRecentDiscoveryList(),
+            SizedBox(
+              height: 16,
+            ),
+            exploreByCity(),
+            SizedBox(
+              height: 10,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -219,220 +298,66 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
 
   Widget cityCarouselSlider() {
     return Container(
-      child: CarouselSlider(
-        carouselController: _carouselController,
-        options: CarouselOptions(
-          viewportFraction: 0.9,
-          enlargeCenterPage: false,
-          autoPlay: true,
-          aspectRatio: 2,
-          initialPage: 0,
-        ),
-        items: cityImgList
-            .map(
-              (item) => GestureDetector(
-                onTap: () {
-                  Navigator.of(context).pushNamed("/hotel-detail");
-                },
-                child: Stack(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 5),
-                      child: Center(
-                          child: ClipRRect(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                        child: CachedNetworkImage(
-                          imageUrl: item,
-                          fit: BoxFit.fill,
-                          color: Colors.black12,
-                          colorBlendMode: BlendMode.darken,
-                          height: double.infinity,
-                          width: double.infinity,
-                        ),
-                      )),
-                    ),
-                    Align(
-                      alignment: Alignment.center,
-                      child: Text(
-                        "Homestay",
-                        style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 22,
-                            color: Colors.white),
-                      ),
-                    ),
-                  ],
-                ),
+      child: isSliderLoading
+          ? Container(
+              height: 180,
+              child: Center(
+                child: CircularLoadingIndicator(),
               ),
             )
-            .toList(),
-      ),
-    );
-  }
-
-  Widget rentDetail(
-      {String categoryName, String movieName, String moviePoster}) {
-    return Container(
-      child: Column(
-        children: [
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  categoryName,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
-                    color: blackFont,
-                  ),
-                ),
-                GestureDetector(
-                  child: Text(
-                    "See all",
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                        color: navyBlue),
-                  ),
-                  onTap: () {
-                    Navigator.of(context).pushNamed("/hotel-category");
-                  },
-                ),
-              ],
-            ),
-          ),
-          Container(
-            height: 210,
-            color: Colors.white,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Container(
-                padding: EdgeInsets.only(left: 16),
-                child: Row(
-                  children: hotelImgList
-                      .map(
-                        (image) => Container(
-                          margin: EdgeInsets.only(right: 12),
-                          child:
-                              rentCard(cityPoster: image, cityName: movieName),
-                        ),
-                      )
-                      .toList(),
-                ),
+          : CarouselSlider(
+              carouselController: _carouselController,
+              options: CarouselOptions(
+                viewportFraction: 0.9,
+                enlargeCenterPage: false,
+                autoPlay: true,
+                aspectRatio: 2,
+                initialPage: 0,
               ),
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
-  Widget rentCard({String cityName, String cityPoster}) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.of(context).pushNamed("/hotel-detail");
-      },
-      child: Card(
-        margin: EdgeInsets.zero,
-        elevation: 0,
-        child: Container(
-          width: 160,
-          decoration: decorateBox(borderColor: selectedListItemBackgroundBlue),
-          child: Container(
-            padding: EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Image.network(
-                    cityPoster,
-                    height: 130,
-                    width: 130,
-                    fit: BoxFit.fill,
-                  ),
-                ),
-                SizedBox(
-                  height: 12,
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Row(
-                            children: [
-                              Text(
-                                "From ",
-                                softWrap: false,
-                                overflow: TextOverflow.fade,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 12,
-                                  color: blackFont,
-                                ),
+              items: sliderItem
+                  .map(
+                    (item) => GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pushNamed("/hotel-detail");
+                      },
+                      child: Stack(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.symmetric(horizontal: 5),
+                            child: Center(
+                                child: ClipRRect(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10)),
+                              child: CachedNetworkImage(
+                                imageUrl: item.image,
+                                fit: BoxFit.fill,
+                                color: Colors.black12,
+                                colorBlendMode: BlendMode.darken,
+                                height: double.infinity,
+                                width: double.infinity,
                               ),
-                              Text(
-                                "₦",
-                                softWrap: false,
-                                overflow: TextOverflow.fade,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 14,
-                                    color: blackFont,
-                                    fontFamily: "Roborto"),
-                              ),
-                              Text(
-                                "34.00",
-                                softWrap: false,
-                                overflow: TextOverflow.fade,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 14,
-                                  color: blackFont,
-                                ),
-                              ),
-                            ],
+                            )),
                           ),
-                        ),
-                        Text(
-                          "/ month ",
-                          softWrap: false,
-                          overflow: TextOverflow.fade,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 12,
-                            color: darkGrey,
+                          Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              "Homestay",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 22,
+                                  color: Colors.white),
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    Text(
-                      "3 beds in London",
-                      softWrap: false,
-                      overflow: TextOverflow.fade,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 12,
-                        color: blackFont,
+                        ],
                       ),
                     ),
-                  ],
-                ),
-              ],
+                  )
+                  .toList(),
             ),
-          ),
-        ),
-      ),
     );
   }
 
-  Widget exploreByCity(
-      {String categoryName, String movieName, String moviePoster}) {
+  Widget mostRecentDiscoveryList() {
     return Container(
       child: Column(
         children: [
@@ -442,7 +367,7 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
-                  categoryName,
+                  "Most recent discovery",
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 18,
@@ -467,76 +392,35 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
           Container(
             height: 210,
             color: Colors.white,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Container(
-                padding: EdgeInsets.only(left: 16),
-                child: Row(
-                  children: List.generate(
-                    5,
-                    (index) => Container(
-                      margin: EdgeInsets.only(right: 12),
-                      child: cityCard(
-                          cityPoster: moviePoster, cityName: movieName),
+            child: isMostRecentDiscoveryLoading
+                ? Center(
+                    child: CircularLoadingIndicator(),
+                  )
+                : SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Container(
+                      padding: EdgeInsets.only(left: 16),
+                      child: Row(
+                        children: mostRecentDiscovery
+                            .map(
+                              (hotelRoom) => Container(
+                                margin: EdgeInsets.only(right: 12),
+                                child: PartialHotelRoomItemTile(
+                                  hotelRoom: hotelRoom,
+                                ),
+                              ),
+                            )
+                            .toList(),
+                      ),
                     ),
                   ),
-                ),
-              ),
-            ),
           )
         ],
       ),
     );
   }
 
-  Widget cityCard({String cityName, String cityPoster}) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.of(context).pushNamed("/hotel-detail");
-      },
-      child: Card(
-        margin: EdgeInsets.zero,
-        elevation: 0,
-        child: Container(
-          width: 160,
-          decoration: decorateBox(borderColor: selectedListItemBackgroundBlue),
-          child: Container(
-            padding: EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  "Seoul",
-                  softWrap: false,
-                  overflow: TextOverflow.fade,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 14,
-                    color: blackFont,
-                  ),
-                ),
-                SizedBox(
-                  height: 12,
-                ),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Image.network(
-                    "https://a.travel-assets.com/findyours-php/viewfinder/images/res70/20000/20665-London.jpg",
-                    height: 130,
-                    width: 130,
-                    fit: BoxFit.fill,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget nearByYou({String categoryName}) {
+  Widget exploreByCity() {
     return Container(
       child: Column(
         children: [
@@ -546,7 +430,70 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
-                  categoryName,
+                  "Explore by City",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 18,
+                    color: blackFont,
+                  ),
+                ),
+                GestureDetector(
+                  child: Text(
+                    "See all",
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                        color: navyBlue),
+                  ),
+                  onTap: () {
+                    Navigator.of(context).pushNamed("/hotel-category");
+                  },
+                ),
+              ],
+            ),
+          ),
+          Container(
+            height: 210,
+            color: Colors.white,
+            child: isExploreByCityLoading
+                ? Center(
+                    child: CircularLoadingIndicator(),
+                  )
+                : SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Container(
+                      padding: EdgeInsets.only(left: 16),
+                      child: Row(
+                        children: listOfCity
+                            .map(
+                              (city) => Container(
+                                margin: EdgeInsets.only(right: 12),
+                                child: CityItemCard(
+                                  city: city,
+                                ),
+                              ),
+                            )
+                            .toList(),
+                      ),
+                    ),
+                  ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget nearByYou() {
+    return Container(
+      child: Column(
+        children: [
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text(
+                  "Nearby you",
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 18,
@@ -571,64 +518,34 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
           Container(
             color: Colors.white,
             padding: EdgeInsets.symmetric(vertical: 16),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: Container(
-                padding: EdgeInsets.only(left: 16, right: 16),
-                child: Column(
-                  children: [
-                    Column(
-                      children: hotelImgList
-                          .map((element) => Container(
-                                margin: EdgeInsets.only(bottom: 12),
-                                child: HotelRoomImagesTile(),
-                              ))
-                          .toList(),
+            child: isNearByItemLoading
+                ? Container(
+                    height: 220,
+                    width: double.infinity,
+                    child: Center(
+                      child: CircularLoadingIndicator(),
                     ),
-                  ],
-                ),
-              ),
-            ),
+                  )
+                : SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Container(
+                      padding: EdgeInsets.only(
+                        left: 16,
+                        bottom: 12,
+                      ),
+                      child: Row(
+                        children: nearByItem
+                            .map((element) => Container(
+                                  margin: EdgeInsets.only(right: 16),
+                                  child:
+                                      HotelRoomImagesTile(hotelRoom: element),
+                                ))
+                            .toList(),
+                      ),
+                    ),
+                  ),
           )
         ],
-      ),
-    );
-  }
-
-  Widget eventPoster(String url) {
-    bool temp = Random().nextBool();
-    return GestureDetector(
-      onTap: () {
-        Navigator.of(context).pushNamed("/hotel-detail");
-      },
-      child: Container(
-        height: 132,
-        width: 218,
-        child: Stack(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: CachedNetworkImage(
-                height: double.infinity,
-                width: double.infinity,
-                color: Colors.black12,
-                colorBlendMode: BlendMode.darken,
-                imageUrl: url,
-                fit: BoxFit.fill,
-              ),
-            ),
-            Align(
-              alignment: Alignment.center,
-              child: Text(
-                temp ? "Beach event" : "Mongola",
-                style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
-                    color: Colors.white),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

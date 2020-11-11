@@ -1,8 +1,6 @@
 import 'dart:math';
 
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/more_apps/events/event_tile.dart';
-import 'package:Slydo/screens/more_apps/events/models/PartialEventItem.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -14,6 +12,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import 'shopping_tile.dart';
 
 class ShoppingExploreScreen extends StatefulWidget {
   @override
@@ -605,8 +605,9 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
                       children: imgList
                           .map((element) => Container(
                                 margin: EdgeInsets.only(bottom: 12),
-                                child: EventTileWithHeart(
-                                    partialEvent: PartialEventItem()),
+                                child: ShoppingTile(
+                                  imageUrl: element,
+                                ),
                               ))
                           .toList(),
                     ),

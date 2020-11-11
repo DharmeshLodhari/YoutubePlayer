@@ -1,10 +1,18 @@
-import 'package:Slydo/screens/more_apps/train/train_dashboard_bloc.dart';
-import 'package:Slydo/screens/more_apps/train/train_ticket_tile.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:toast/toast.dart';
+
+import 'models/Transport.dart';
+import 'train_auth.dart';
+import 'train_dashboard_bloc.dart';
+import 'train_ticket_tile.dart';
 
 class SearchTrain extends StatefulWidget {
   @override
@@ -16,9 +24,43 @@ class _SearchTrainState extends State<SearchTrain> {
 
   bool isSwap = false;
 
+  List<Transport> transports = [];
+  bool isLoading = false;
+
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
+
   @override
   void initState() {
+    getResult();
     super.initState();
+  }
+
+  void getResult() async {
+    isLoading = true;
+    transports.clear();
+    if (mounted) setState(() {});
+
+    transports = await TrainAuthService().getAvailableTransports();
+
+    isLoading = false;
+    if (mounted) setState(() {});
+  }
+
+  void _onRefresh() async {
+    Connectivity().checkConnectivity().then((value) {
+      var connectionResult = value;
+      if (connectionResult == ConnectivityResult.wifi ||
+          connectionResult == ConnectivityResult.mobile) {
+        getResult();
+        _refreshController.refreshCompleted();
+      } else {
+        Toast.show(
+            AppLocalization.of(context).internetConnectionNotAvailable, context,
+            gravity: Toast.BOTTOM, backgroundColor: navyBlue);
+        _refreshController.refreshCompleted();
+      }
+    });
   }
 
   @override
@@ -53,23 +95,39 @@ class _SearchTrainState extends State<SearchTrain> {
 
   Widget scaffoldBody() {
     _trainDashboardBloc = Provider.of<TrainDashboardBloc>(context);
-    return SingleChildScrollView(
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16),
-        child: Column(
-          children: List.generate(
-            7,
-            (index) => InkWell(
-              onTap: () {
-                Navigator.of(context).pushNamed("/ticket-detail");
-              },
-              child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  child: TrainTicketTile()),
-            ),
-          ),
-        ),
+    return SmartRefresher(
+      enablePullDown: true,
+      header: WaterDropHeader(
+        complete: Container(),
+        waterDropColor: navyBlue,
       ),
+      controller: _refreshController,
+      onRefresh: _onRefresh,
+      child: isLoading
+          ? Center(
+              child: CircularLoadingIndicator(),
+            )
+          : SingleChildScrollView(
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  children: transports
+                      .map(
+                        (element) => InkWell(
+                          onTap: () {
+                            Navigator.of(context).pushNamed("/ticket-detail");
+                          },
+                          child: Container(
+                              padding: EdgeInsets.symmetric(vertical: 8),
+                              child: TrainTicketTile(
+                                transport: element,
+                              )),
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
+            ),
     );
   }
 
@@ -147,6 +205,7 @@ class _SearchTrainState extends State<SearchTrain> {
                             onTap: () {
                               isSwap = !isSwap;
                               setState(() {});
+                              getResult();
                             },
                             child: ClipOval(
                               child: Card(

@@ -1,6 +1,9 @@
+import 'package:Slydo/screens/more_apps/hotels/hotel_auth.dart';
+import 'package:Slydo/screens/more_apps/hotels/models/HotelRoomDetailItem.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -18,31 +21,29 @@ class HotelDetailPage extends StatefulWidget {
 class _HotelDetailPageState extends State<HotelDetailPage> {
   HotelDashboardBloc _hotelDashboardBloc;
 
-  List<String> imgList = [
-    "https://www.telegraph.co.uk/content/dam/Travel/Destinations/Europe/United%20Kingdom/London/london-aerial-thames-guide.jpg",
-    "https://www.cityam.com/wp-content/uploads/2020/02/London_Tower_Bridge_City.jpg",
-    "https://metab.ern-net.eu/wp-content/uploads/2018/04/London.jpg",
-    "https://travel.home.sndimg.com/content/dam/images/travel/fullset/2015/05/28/big-ben-london-england.jpg",
-    "https://a.travel-assets.com/findyours-php/viewfinder/images/res70/20000/20665-London.jpg"
-  ];
+  bool isLoading = false;
+  HotelRoomDetailItem hotelRoomDetailItem = HotelRoomDetailItem();
 
-  List<String> hotelImgList = [
-    "https://www.gannett-cdn.com/-mm-/05b227ad5b8ad4e9dcb53af4f31d7fbdb7fa901b/c=0-64-2119-1259/local/-/media/USATODAY/USATODAY/2014/08/13/1407953244000-177513283.jpg",
-    "https://www.thebalancesmb.com/thmb/R5CjZrWUBXBTVj48-MBx3PFIh5U=/3000x2000/filters:fill(auto,1)/hotel_room-627892060-5a7a30d1642dca00370179e6.jpg",
-    "https://media.istockphoto.com/photos/3d-rendering-modern-luxury-bedroom-suite-and-bathroom-picture-id928431714?k=6&m=928431714&s=612x612&w=0&h=IBnf0aE9zEmsaJ3nLep6UmK4u-KYQPdEQa6LY30Ivn4=",
-    "https://gritdaily.com/wp-content/uploads/2019/07/http-cdn.cnn_.com-cnnnext-dam-assets-190711000204-haneda-excel-hotel-tokyu-03.jpg",
-    "https://blisssaigon.com/wp-content/uploads/2019/10/iwood-R5v8Xtc0ecg-unsplash-1.jpg"
-  ];
+  @override
+  void initState() {
+    getResult();
+    super.initState();
+  }
+
+  void getResult() async {
+    isLoading = true;
+    if (mounted) setState(() {});
+
+    hotelRoomDetailItem = await HotelAuthService().getHotelRoomDetail();
+
+    isLoading = false;
+    if (mounted) setState(() {});
+  }
 
   List<String> availableDates = ["18", "25", "01", "08", "15"];
   int selectedDate = 0;
 
   bool isWishList = false;
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   void dispose() {
@@ -127,131 +128,135 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
   }
 
   Widget scaffoldBody() {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          eventPoster(),
-          Column(
-            children: [
-              SizedBox(
-                height: 24,
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: eventNameAndHostInformation(),
-              ),
-              SizedBox(
-                height: 8,
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
+    return isLoading
+        ? Center(
+            child: CircularLoadingIndicator(),
+          )
+        : SingleChildScrollView(
+            child: Column(
+              children: [
+                eventPoster(),
+                Column(
                   children: [
-                    Divider(
-                      thickness: 1,
-                      color: dividerColor,
-                    ),
                     SizedBox(
-                      height: 12,
+                      height: 24,
                     ),
-                    features(),
-                    SizedBox(
-                      height: 16,
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: eventNameAndHostInformation(),
                     ),
-                    Divider(
-                      thickness: 1,
-                      color: dividerColor,
-                      height: 0,
-                    ),
-                    selectDate(),
                     SizedBox(
                       height: 8,
                     ),
-                    Divider(
-                      thickness: 1,
-                      color: dividerColor,
-                      height: 0,
-                    ),
-                    SizedBox(
-                      height: 12,
-                    ),
-                    availabilitySection(),
-                    SizedBox(
-                      height: 16,
-                    ),
-                    Divider(
-                      thickness: 1,
-                      color: dividerColor,
-                      height: 0,
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        children: [
+                          Divider(
+                            thickness: 1,
+                            color: dividerColor,
+                          ),
+                          SizedBox(
+                            height: 12,
+                          ),
+                          features(),
+                          SizedBox(
+                            height: 16,
+                          ),
+                          Divider(
+                            thickness: 1,
+                            color: dividerColor,
+                            height: 0,
+                          ),
+                          selectDate(),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          Divider(
+                            thickness: 1,
+                            color: dividerColor,
+                            height: 0,
+                          ),
+                          SizedBox(
+                            height: 12,
+                          ),
+                          availabilitySection(),
+                          SizedBox(
+                            height: 16,
+                          ),
+                          Divider(
+                            thickness: 1,
+                            color: dividerColor,
+                            height: 0,
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 12,
-          ),
-          propertyFeature(),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              children: [
-                Divider(
-                  thickness: 1,
-                  color: dividerColor,
-                  height: 16,
-                ),
-                SizedBox(
-                  height: 8,
-                ),
-                aboutEvent(),
                 SizedBox(
                   height: 12,
                 ),
-                Divider(
-                  thickness: 1,
-                  color: dividerColor,
+                propertyFeature(),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    children: [
+                      Divider(
+                        thickness: 1,
+                        color: dividerColor,
+                        height: 16,
+                      ),
+                      SizedBox(
+                        height: 8,
+                      ),
+                      aboutEvent(),
+                      SizedBox(
+                        height: 12,
+                      ),
+                      Divider(
+                        thickness: 1,
+                        color: dividerColor,
+                      ),
+                      SizedBox(
+                        height: 12,
+                      ),
+                      eventLocation(),
+                      SizedBox(
+                        height: 16,
+                      ),
+                      Divider(
+                        thickness: 1,
+                        color: dividerColor,
+                        height: 0,
+                      ),
+                      SizedBox(
+                        height: 12,
+                      ),
+                      reviewsList(),
+                      aboutPartnerList(),
+                      SizedBox(
+                        height: 12,
+                      ),
+                      askQuestionBtn(),
+                      SizedBox(
+                        height: 40,
+                      ),
+                    ],
+                  ),
+                ),
+                rentDetail(
+                  categoryName: "Recommended for you",
+                  moviePoster:
+                      "https://m.media-amazon.com/images/I/A1o+mUmviOL._SS500_.jpg",
+                  movieName: "The Cloud Of Northland Thunder",
                 ),
                 SizedBox(
-                  height: 12,
-                ),
-                eventLocation(),
-                SizedBox(
-                  height: 16,
-                ),
-                Divider(
-                  thickness: 1,
-                  color: dividerColor,
-                  height: 0,
-                ),
-                SizedBox(
-                  height: 12,
-                ),
-                reviewsList(),
-                aboutPartnerList(),
-                SizedBox(
-                  height: 12,
-                ),
-                askQuestionBtn(),
-                SizedBox(
-                  height: 40,
+                  height: 60,
                 ),
               ],
             ),
-          ),
-          rentDetail(
-            categoryName: "Recommended for you",
-            moviePoster:
-                "https://m.media-amazon.com/images/I/A1o+mUmviOL._SS500_.jpg",
-            movieName: "The Cloud Of Northland Thunder",
-          ),
-          SizedBox(
-            height: 60,
-          ),
-        ],
-      ),
-    );
+          );
   }
 
   Widget eventPoster() {
@@ -296,7 +301,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Lake side cottage',
+              hotelRoomDetailItem.name,
               style: TextStyle(
                   fontSize: 18, fontWeight: FontWeight.w700, color: blackFont),
             ),
@@ -322,7 +327,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
           height: 4,
         ),
         Text(
-          '3 beds • 2 bath • 1 livingroom',
+          hotelRoomDetailItem.shortDetail,
           style: TextStyle(
               fontSize: 14, fontWeight: FontWeight.w400, color: darkGrey),
         ),
@@ -336,8 +341,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
               width: 32,
               child: ClipOval(
                 child: CachedNetworkImage(
-                  imageUrl:
-                      "https://cdn.thewhistler.ng/wp-content/uploads/2020/06/ChiNna-Okoroafor-2.jpg",
+                  imageUrl: hotelRoomDetailItem.ownerAvatar,
                   fit: BoxFit.fill,
                   width: double.infinity,
                   height: double.infinity,
@@ -348,7 +352,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
               width: 12,
             ),
             Text(
-              "Bond street dojo",
+              hotelRoomDetailItem.ownerName,
               style: TextStyle(
                   fontSize: 14, fontWeight: FontWeight.w600, color: blackFont),
             )
@@ -694,7 +698,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
-                  categoryName,
+                  "Recommended for you",
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 18,
@@ -724,12 +728,13 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
               child: Container(
                 padding: EdgeInsets.only(left: 16, top: 16, bottom: 16),
                 child: Row(
-                  children: hotelImgList
+                  children: hotelRoomDetailItem.recommendedItem
                       .map(
-                        (image) => Container(
+                        (partialHotelRoom) => Container(
                           margin: EdgeInsets.only(right: 12),
-                          child:
-                              rentCard(cityPoster: image, cityName: movieName),
+                          child: PartialHotelRoomItemTile(
+                            hotelRoom: partialHotelRoom,
+                          ),
                         ),
                       )
                       .toList(),
@@ -738,108 +743,6 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
             ),
           )
         ],
-      ),
-    );
-  }
-
-  Widget rentCard({String cityName, String cityPoster}) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.of(context).pushNamed("/hotel-detail");
-      },
-      child: Card(
-        margin: EdgeInsets.zero,
-        elevation: 0,
-        child: Container(
-          width: 160,
-          decoration: decorateBox(borderColor: selectedListItemBackgroundBlue),
-          child: Container(
-            padding: EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Image.network(
-                    cityPoster,
-                    height: 130,
-                    width: 130,
-                    fit: BoxFit.fill,
-                  ),
-                ),
-                SizedBox(
-                  height: 12,
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Row(
-                            children: [
-                              Text(
-                                "From ",
-                                softWrap: false,
-                                overflow: TextOverflow.fade,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 12,
-                                  color: blackFont,
-                                ),
-                              ),
-                              Text(
-                                "₦",
-                                softWrap: false,
-                                overflow: TextOverflow.fade,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 14,
-                                    color: blackFont,
-                                    fontFamily: "Roborto"),
-                              ),
-                              Text(
-                                "34.00",
-                                softWrap: false,
-                                overflow: TextOverflow.fade,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 14,
-                                  color: blackFont,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Text(
-                          "/ month ",
-                          softWrap: false,
-                          overflow: TextOverflow.fade,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 12,
-                            color: darkGrey,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Text(
-                      "3 beds in London",
-                      softWrap: false,
-                      overflow: TextOverflow.fade,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 12,
-                        color: blackFont,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
       ),
     );
   }
@@ -903,7 +806,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
           height: 12,
         ),
         Text(
-          '''Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pa.Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pa.''',
+          hotelRoomDetailItem.about,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w400,
@@ -970,12 +873,12 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
             height: 16,
           ),
           Column(
-            children: List.generate(
-                3,
-                (index) => Container(
+            children: hotelRoomDetailItem.reviews
+                .map((review) => Container(
                       margin: EdgeInsets.only(bottom: 12),
                       child: ReviewTile(),
-                    )),
+                    ))
+                .toList(),
           ),
         ],
       ),
@@ -999,16 +902,16 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
             height: 16,
           ),
           Column(
-            children: List.generate(
-                1,
-                (index) => Container(
+            children: hotelRoomDetailItem.partners
+                .map((partner) => Container(
                       margin: EdgeInsets.only(bottom: 12),
                       child: InkWell(
                           onTap: () {
                             Navigator.of(context).pushNamed("/partner-detail");
                           },
                           child: PartnerTile()),
-                    )),
+                    ))
+                .toList(),
           ),
         ],
       ),
@@ -1075,7 +978,12 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
   Widget askQuestionBtn() {
     return OutlineCurvedButton(
       text: "Ask a question",
-      onPressed: () {},
+      onPressed: () {
+        Navigator.of(context).pushNamed('/compose_message', arguments: {
+          'recipient': hotelRoomDetailItem.ownerUserName,
+          'subject': "",
+        });
+      },
       textColor: navyBlue,
     );
   }

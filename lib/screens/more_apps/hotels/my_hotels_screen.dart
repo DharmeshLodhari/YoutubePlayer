@@ -124,7 +124,7 @@ class _MyHotelsScreenState extends State<MyHotelsScreen> {
     return IndexedStack(
       index: currentIndex,
       children: [
-        MyEventList(),
+        MyHotelList(),
         MyWishList(),
       ],
     );

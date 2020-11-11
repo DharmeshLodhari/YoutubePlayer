@@ -163,7 +163,12 @@ class _PartnerDetailPageState extends State<PartnerDetailPage> {
   Widget askQuestionBtn() {
     return OutlineCurvedButton(
       text: "Ask a question",
-      onPressed: () {},
+      onPressed: () {
+        Navigator.of(context).pushNamed('/compose_message', arguments: {
+          'recipient': "brijesh.sakariya",
+          'subject': "",
+        });
+      },
       textColor: navyBlue,
     );
   }

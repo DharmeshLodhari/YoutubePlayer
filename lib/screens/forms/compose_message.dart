@@ -73,12 +73,15 @@ class _ComposeMessageState extends State<ComposeMessage> {
     super.initState();
   }
 
-  fetchCustomer() async {
+  void fetchCustomer() async {
     var customerProfile = await _auth.fetchCustomerProfile(recipient);
-    setState(() {
-      messageReceiver = customerProfile;
-      isValidRecipient = messageReceiver.userName != userBloc.user.userName;
-    });
+
+    messageReceiver = customerProfile;
+    isValidRecipient = messageReceiver.userName != userBloc.user.userName;
+
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   void makeUsernameLowercase() {

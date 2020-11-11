@@ -2,7 +2,13 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 
+import 'models/Transport.dart';
+
 class TrainTicketTile extends StatelessWidget {
+  final Transport transport;
+
+  const TrainTicketTile({Key key, this.transport}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -35,7 +41,7 @@ class TrainTicketTile extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "Slydo Train",
+                      transport.name,
                       style: TextStyle(
                         fontWeight: FontWeight.w400,
                         fontSize: 12,
@@ -51,7 +57,7 @@ class TrainTicketTile extends StatelessWidget {
                           size: 10,
                         ),
                         Text(
-                          "34.00",
+                          transport.price,
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
                             fontSize: 14,
@@ -69,7 +75,7 @@ class TrainTicketTile extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                      "Thu, Oct 15",
+                      transport.date,
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 12,
@@ -85,7 +91,7 @@ class TrainTicketTile extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "9:00 AM",
+                      transport.time,
                       style: TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: 16,
@@ -93,7 +99,7 @@ class TrainTicketTile extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      "15 minutes",
+                      transport.travel_time,
                       style: TextStyle(
                         fontWeight: FontWeight.w400,
                         fontSize: 12,
@@ -122,7 +128,7 @@ class TrainTicketTile extends StatelessWidget {
                           width: 4,
                         ),
                         Text(
-                          "Lagos",
+                          transport.from,
                           style: TextStyle(
                             fontWeight: FontWeight.w400,
                             fontSize: 12,
@@ -145,7 +151,7 @@ class TrainTicketTile extends StatelessWidget {
                           width: 4,
                         ),
                         Text(
-                          "Abuja",
+                          transport.to,
                           style: TextStyle(
                             fontWeight: FontWeight.w400,
                             fontSize: 12,

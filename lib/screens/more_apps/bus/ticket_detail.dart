@@ -2,10 +2,14 @@ import 'package:Slydo/screens/more_apps/bus/bus_dashboard_bloc.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import 'bus_auth.dart';
+import 'models/Ticket.dart';
 
 class TicketDetail extends StatefulWidget {
   @override
@@ -17,9 +21,23 @@ class _TicketDetailState extends State<TicketDetail> {
 
   bool isSwap = false;
 
+  List<Ticket> tickets = [Ticket()];
+  bool isLoading = false;
+
   @override
   void initState() {
+    getResult();
     super.initState();
+  }
+
+  void getResult() async {
+    isLoading = true;
+    if (mounted) setState(() {});
+
+    tickets = await BusAuthService().getTicket();
+
+    isLoading = false;
+    if (mounted) setState(() {});
   }
 
   @override
@@ -58,9 +76,13 @@ class _TicketDetailState extends State<TicketDetail> {
 
   Widget scaffoldBody() {
     _busDashboardBloc = Provider.of<BusDashboardBloc>(context);
-    return SingleChildScrollView(
-      child: ticketWithImage(),
-    );
+    return isLoading
+        ? Center(
+            child: CircularLoadingIndicator(),
+          )
+        : SingleChildScrollView(
+            child: ticketWithImage(),
+          );
   }
 
   Widget ticketWithImage() {
@@ -98,9 +120,7 @@ class _TicketDetailState extends State<TicketDetail> {
                   child: Container(
                     height: 214,
                     width: 214,
-                    child: CachedNetworkImage(
-                        imageUrl:
-                            "https://www.pixavi.com/wp-content/uploads/2015/10/apb-qr-code.png"),
+                    child: CachedNetworkImage(imageUrl: tickets[0].qrCode),
                   ),
                 )
               ],
@@ -195,7 +215,7 @@ class _TicketDetailState extends State<TicketDetail> {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text(
-              "9:00 AM",
+              tickets[0].fromTime,
               style: TextStyle(
                 fontWeight: FontWeight.w700,
                 fontSize: 16,
@@ -206,7 +226,7 @@ class _TicketDetailState extends State<TicketDetail> {
               height: 4,
             ),
             Text(
-              "Lagos",
+              tickets[0].from,
               style: TextStyle(
                 fontWeight: FontWeight.w400,
                 fontSize: 14,
@@ -237,7 +257,7 @@ class _TicketDetailState extends State<TicketDetail> {
                 top: -6,
                 left: 16,
                 child: Text(
-                  "2h30m",
+                  tickets[0].journeyTime,
                   style: TextStyle(
                     fontWeight: FontWeight.w400,
                     fontSize: 12,
@@ -257,7 +277,7 @@ class _TicketDetailState extends State<TicketDetail> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "11:00 AM",
+              tickets[0].toTime,
               style: TextStyle(
                 fontWeight: FontWeight.w700,
                 fontSize: 16,
@@ -268,7 +288,7 @@ class _TicketDetailState extends State<TicketDetail> {
               height: 4,
             ),
             Text(
-              "Abuja",
+              tickets[0].to,
               style: TextStyle(
                 fontWeight: FontWeight.w400,
                 fontSize: 14,
@@ -316,7 +336,7 @@ class _TicketDetailState extends State<TicketDetail> {
                     width: 4,
                   ),
                   Text(
-                    "G3",
+                    tickets[0].gate,
                     style: TextStyle(
                       fontWeight: FontWeight.w400,
                       fontSize: 14,
@@ -359,7 +379,7 @@ class _TicketDetailState extends State<TicketDetail> {
                     width: 4,
                   ),
                   Text(
-                    "B1",
+                    tickets[0].seat,
                     style: TextStyle(
                       fontWeight: FontWeight.w400,
                       fontSize: 14,

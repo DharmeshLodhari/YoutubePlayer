@@ -1,27 +1,60 @@
+import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/utils/colors.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:toast/toast.dart';
 
+import 'hotel_auth.dart';
 import 'hotel_dashboard_bloc.dart';
 import 'hotel_tile.dart';
+import 'models/HotelRoomItem.dart';
 
-class MyEventList extends StatefulWidget {
+class MyHotelList extends StatefulWidget {
   @override
-  _MyEventListState createState() => _MyEventListState();
+  _MyHotelListState createState() => _MyHotelListState();
 }
 
-class _MyEventListState extends State<MyEventList> {
-  List<String> imgList = [
-    "https://www.telegraph.co.uk/content/dam/Travel/Destinations/Europe/United%20Kingdom/London/london-aerial-thames-guide.jpg",
-    "https://www.cityam.com/wp-content/uploads/2020/02/London_Tower_Bridge_City.jpg",
-    "https://metab.ern-net.eu/wp-content/uploads/2018/04/London.jpg",
-    "https://travel.home.sndimg.com/content/dam/images/travel/fullset/2015/05/28/big-ben-london-england.jpg",
-    "https://a.travel-assets.com/findyours-php/viewfinder/images/res70/20000/20665-London.jpg",
-    "https://www.telegraph.co.uk/content/dam/Travel/Destinations/Europe/United%20Kingdom/London/london-aerial-thames-guide.jpg",
-    "https://www.cityam.com/wp-content/uploads/2020/02/London_Tower_Bridge_City.jpg",
-    "https://metab.ern-net.eu/wp-content/uploads/2018/04/London.jpg",
-    "https://travel.home.sndimg.com/content/dam/images/travel/fullset/2015/05/28/big-ben-london-england.jpg",
-    "https://a.travel-assets.com/findyours-php/viewfinder/images/res70/20000/20665-London.jpg"
-  ];
+class _MyHotelListState extends State<MyHotelList> {
+  List<HotelRoomItem> hotelRooms = [];
+  bool isLoading = false;
+
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
+
+  @override
+  void initState() {
+    getResult();
+    super.initState();
+  }
+
+  void getResult() async {
+    isLoading = true;
+    hotelRooms.clear();
+    if (mounted) setState(() {});
+
+    hotelRooms = await HotelAuthService().getHotelRoomList();
+
+    isLoading = false;
+    if (mounted) setState(() {});
+  }
+
+  void _onRefresh() async {
+    Connectivity().checkConnectivity().then((value) {
+      var connectionResult = value;
+      if (connectionResult == ConnectivityResult.wifi ||
+          connectionResult == ConnectivityResult.mobile) {
+        getResult();
+        _refreshController.refreshCompleted();
+      } else {
+        Toast.show(
+            AppLocalization.of(context).internetConnectionNotAvailable, context,
+            gravity: Toast.BOTTOM, backgroundColor: navyBlue);
+        _refreshController.refreshCompleted();
+      }
+    });
+  }
 
   HotelDashboardBloc _hotelDashboardBloc;
 
@@ -35,19 +68,28 @@ class _MyEventListState extends State<MyEventList> {
       },
       child: Scaffold(
         backgroundColor: Colors.white,
-        body: SingleChildScrollView(
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              children: imgList
-                  .map(
-                    (element) => Container(
-                        padding: EdgeInsets.symmetric(vertical: 8),
-                        child: HotelTile(
-                          imageUrl: element,
-                        )),
-                  )
-                  .toList(),
+        body: SmartRefresher(
+          enablePullDown: true,
+          header: WaterDropHeader(
+            complete: Container(),
+            waterDropColor: navyBlue,
+          ),
+          controller: _refreshController,
+          onRefresh: _onRefresh,
+          child: SingleChildScrollView(
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                children: hotelRooms
+                    .map(
+                      (element) => Container(
+                          padding: EdgeInsets.symmetric(vertical: 8),
+                          child: HotelRoomImagesTile(
+                            hotelRoom: element,
+                          )),
+                    )
+                    .toList(),
+              ),
             ),
           ),
         ),
