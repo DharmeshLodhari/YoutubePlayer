@@ -1,5 +1,6 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -66,22 +67,26 @@ class _MyWishListState extends State<MyWishList> {
         ),
         controller: _refreshController,
         onRefresh: _onRefresh,
-        child: SingleChildScrollView(
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              children: hotelRooms
-                  .map(
-                    (element) => Container(
-                        padding: EdgeInsets.symmetric(vertical: 8),
-                        child: HotelTileWithHeart(
-                          hotelRoom: element,
-                        )),
-                  )
-                  .toList(),
-            ),
-          ),
-        ),
+        child: isLoading
+            ? Center(
+                child: CircularLoadingIndicator(),
+              )
+            : SingleChildScrollView(
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    children: hotelRooms
+                        .map(
+                          (element) => Container(
+                              padding: EdgeInsets.symmetric(vertical: 8),
+                              child: HotelTileWithHeart(
+                                hotelRoom: element,
+                              )),
+                        )
+                        .toList(),
+                  ),
+                ),
+              ),
       ),
     );
   }

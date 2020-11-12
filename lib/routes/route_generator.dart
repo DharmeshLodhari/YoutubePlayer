@@ -37,6 +37,7 @@ import 'package:Slydo/screens/more_apps/hotels/hotel_detail_page.dart';
 import 'package:Slydo/screens/more_apps/hotels/partner_detail_page.dart';
 import 'package:Slydo/screens/more_apps/hotels/search_hotel.dart';
 import 'package:Slydo/screens/more_apps/hotels/specific_category_hotel_list.dart';
+import 'package:Slydo/screens/more_apps/mix_cart_item.dart';
 import 'package:Slydo/screens/more_apps/more_apps.dart';
 import 'package:Slydo/screens/more_apps/movies/movie_dashboard.dart';
 import 'package:Slydo/screens/more_apps/movies/movie_detail_page.dart';
@@ -54,7 +55,9 @@ import 'package:Slydo/screens/more_apps/property/property_detail_page.dart';
 import 'package:Slydo/screens/more_apps/property/search_property.dart';
 import 'package:Slydo/screens/more_apps/property/specific_category_property_list.dart';
 import 'package:Slydo/screens/more_apps/review/main_review.dart';
+import 'package:Slydo/screens/more_apps/shopping/search_product.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_dashboard.dart';
+import 'package:Slydo/screens/more_apps/shopping/specific_category_product_list.dart';
 import 'package:Slydo/screens/more_apps/train/search_train.dart';
 import 'package:Slydo/screens/more_apps/train/train_dashboard.dart';
 import 'package:Slydo/screens/order_detail_page.dart';
@@ -752,9 +755,27 @@ class RouteGenerator {
           settings: settings,
         );
 
+      /// Shopping
+
       case "/shopping":
         return PageTransition(
           child: ShoppingDashboard(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case "/shopping-category":
+        return PageTransition(
+          child: SpecificCategoryProductList(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case "/search-product":
+        return PageTransition(
+          child: SearchProduct(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
           settings: settings,
@@ -765,6 +786,14 @@ class RouteGenerator {
       case "/reviews":
         return PageTransition(
           child: MainReview(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case "/mix-cart-item":
+        return PageTransition(
+          child: MixCartItem(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
           settings: settings,

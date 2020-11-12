@@ -1,18 +1,23 @@
-import 'dart:math';
-
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:toast/toast.dart';
 
+import 'models/ShoppingProduct.dart';
 import 'shopping_tile.dart';
 
 class ShoppingExploreScreen extends StatefulWidget {
@@ -21,19 +26,99 @@ class ShoppingExploreScreen extends StatefulWidget {
 }
 
 class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
-  List<String> imgList = [
-    "https://cdn-images.farfetch-contents.com/14/74/09/49/14740949_23544540_600.jpg",
-    "https://i.pinimg.com/236x/11/94/65/1194653fe7741dd89aa7a931391c4b80.jpg",
-    "https://images-na.ssl-images-amazon.com/images/I/41Leu3gBUFL.jpg",
-    "https://assetscdn1.paytm.com/images/catalog/product/F/FO/FOOCLYMB-MEN-S-ONUS48054F58F7F3D/1593856301469_0..jpeg",
-    "https://images-na.ssl-images-amazon.com/images/I/81HSzsIkJdL._AC_SL1500_.jpg"
-  ];
-
   CarouselController _carouselController = CarouselController();
 
   var _dashboardBloc;
 
   BasketBloc basketBloc;
+
+  List<ShoppingProduct> sliderList = [];
+  bool isSliderLoading = false;
+
+  List<ShoppingProduct> todayDeal = [];
+  bool isTodayDealLoading = false;
+
+  List<ShoppingProduct> trendingProduct = [];
+  bool isTrendingProductLoading = false;
+
+  List<ShoppingProduct> discountProductList = [];
+  bool isDiscountProductListLoading = false;
+
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
+
+  @override
+  void initState() {
+    getResult();
+    super.initState();
+  }
+
+  void getResult() async {
+    getSliderProducts();
+    getTodayDealProducts();
+    getTrendingProducts();
+    getDiscountProducts();
+  }
+
+  void getSliderProducts() async {
+    isSliderLoading = true;
+    sliderList.clear();
+    if (mounted) setState(() {});
+
+    sliderList = await ShoppingAuthService().getProductList("", "");
+
+    isSliderLoading = false;
+    if (mounted) setState(() {});
+  }
+
+  void getTodayDealProducts() async {
+    isTodayDealLoading = true;
+    todayDeal.clear();
+    if (mounted) setState(() {});
+
+    todayDeal = await ShoppingAuthService().getProductList("", "");
+
+    isTodayDealLoading = false;
+    if (mounted) setState(() {});
+  }
+
+  void getTrendingProducts() async {
+    isTrendingProductLoading = true;
+    trendingProduct.clear();
+    if (mounted) setState(() {});
+
+    trendingProduct = await ShoppingAuthService().getProductList("", "");
+
+    isTrendingProductLoading = false;
+    if (mounted) setState(() {});
+  }
+
+  void getDiscountProducts() async {
+    isDiscountProductListLoading = true;
+    discountProductList.clear();
+    if (mounted) setState(() {});
+
+    discountProductList = await ShoppingAuthService().getProductList("", "");
+
+    isDiscountProductListLoading = false;
+    if (mounted) setState(() {});
+  }
+
+  void _onRefresh() async {
+    Connectivity().checkConnectivity().then((value) {
+      var connectionResult = value;
+      if (connectionResult == ConnectivityResult.wifi ||
+          connectionResult == ConnectivityResult.mobile) {
+        getResult();
+        _refreshController.refreshCompleted();
+      } else {
+        Toast.show(
+            AppLocalization.of(context).internetConnectionNotAvailable, context,
+            gravity: Toast.BOTTOM, backgroundColor: navyBlue);
+        _refreshController.refreshCompleted();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -124,39 +209,44 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
   }
 
   Widget scaffoldBody() {
-    return SingleChildScrollView(
+    return SmartRefresher(
+      enablePullDown: true,
+      header: WaterDropHeader(
+        complete: Container(),
+        waterDropColor: navyBlue,
+      ),
+      controller: _refreshController,
+      onRefresh: _onRefresh,
+      child: SingleChildScrollView(
         child: Column(
-      children: [
-        SizedBox(
-          height: 6,
+          children: [
+            SizedBox(
+              height: 6,
+            ),
+            searchBox(),
+            SizedBox(
+              height: 32,
+            ),
+            productCarouselSlider(),
+            SizedBox(
+              height: 40,
+            ),
+            getTodayDealList(),
+            SizedBox(
+              height: 16,
+            ),
+            trendingProductList(),
+            SizedBox(
+              height: 16,
+            ),
+            getDiscountDealList(),
+            SizedBox(
+              height: 10,
+            ),
+          ],
         ),
-        searchBox(),
-        SizedBox(
-          height: 32,
-        ),
-        movieCarouselSlider(),
-        SizedBox(
-          height: 40,
-        ),
-        eventCategoryWithOutDetail(categoryName: "Today's deal"),
-        SizedBox(
-          height: 16,
-        ),
-        exploreByCity(
-          categoryName: "Trending Products",
-          moviePoster:
-              "https://images-na.ssl-images-amazon.com/images/I/41Leu3gBUFL.jpg",
-          movieName: "The Cloud Of Northland Thunder",
-        ),
-        SizedBox(
-          height: 16,
-        ),
-        foodFestivalEvent(categoryName: "Deal's upto 75% off"),
-        SizedBox(
-          height: 10,
-        ),
-      ],
-    ));
+      ),
+    );
   }
 
   Widget searchBox() {
@@ -168,7 +258,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
         ),
         child: InkWell(
           onTap: () {
-            Navigator.of(context).pushNamed('/search-event');
+            Navigator.of(context).pushNamed("/search-product");
           },
           child: IgnorePointer(
             ignoring: true,
@@ -238,50 +328,54 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
     );
   }
 
-  Widget movieCarouselSlider() {
-    return Container(
-      child: CarouselSlider(
-        carouselController: _carouselController,
-        options: CarouselOptions(
-          viewportFraction: 0.9,
-          enlargeCenterPage: false,
-          autoPlay: true,
-          aspectRatio: 2,
-          initialPage: 0,
-        ),
-        items: imgList
-            .map(
-              (item) => GestureDetector(
-                onTap: () {
-                  AuthService()
-                      .getProduct("f0a6eed3-b8db-44b0-9b06-e20e02a01e0a")
-                      .then((value) {
-                    Navigator.pushNamed(context, '/product',
-                        arguments: {"product": value});
-                  });
-                },
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 5),
-                  child: Center(
-                      child: ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                    child: CachedNetworkImage(
-                      imageUrl: item,
-                      fit: BoxFit.fill,
-                      height: double.infinity,
-                      width: double.infinity,
-                    ),
-                  )),
-                ),
+  Widget productCarouselSlider() {
+    return isSliderLoading
+        ? Container(
+            height: 180,
+            child: Center(
+              child: CircularLoadingIndicator(),
+            ),
+          )
+        : Container(
+            child: CarouselSlider(
+              carouselController: _carouselController,
+              options: CarouselOptions(
+                viewportFraction: 0.9,
+                enlargeCenterPage: false,
+                autoPlay: true,
+                aspectRatio: 2,
+                initialPage: 0,
               ),
-            )
-            .toList(),
-      ),
-    );
+              items: sliderList
+                  .map(
+                    (product) => GestureDetector(
+                      onTap: () {
+                        AuthService().getProduct(product.id).then((value) {
+                          Navigator.pushNamed(context, '/product',
+                              arguments: {"product": value});
+                        });
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 5),
+                        child: Center(
+                            child: ClipRRect(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          child: CachedNetworkImage(
+                            imageUrl: product.cover,
+                            fit: BoxFit.fill,
+                            height: double.infinity,
+                            width: double.infinity,
+                          ),
+                        )),
+                      ),
+                    ),
+                  )
+                  .toList(),
+            ),
+          );
   }
 
-  Widget exploreByCity(
-      {String categoryName, String movieName, String moviePoster}) {
+  Widget trendingProductList() {
     return Container(
       child: Column(
         children: [
@@ -291,7 +385,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
-                  categoryName,
+                  "Trending Products",
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 18,
@@ -307,7 +401,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
                         color: navyBlue),
                   ),
                   onTap: () {
-                    Navigator.of(context).pushNamed("/event-category");
+                    Navigator.of(context).pushNamed("/shopping-category");
                   },
                 ),
               ],
@@ -316,34 +410,38 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
           Container(
             height: 210,
             color: Colors.white,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Container(
-                padding: EdgeInsets.only(left: 16),
-                child: Row(
-                  children: List.generate(
-                    5,
-                    (index) => Container(
-                      margin: EdgeInsets.only(right: 12),
-                      child: cityCard(
-                          moviePoster: moviePoster, movieName: movieName),
+            child: isTrendingProductLoading
+                ? Container(
+                    child: Center(
+                      child: CircularLoadingIndicator(),
+                    ),
+                  )
+                : SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Container(
+                      padding: EdgeInsets.only(left: 16),
+                      child: Row(
+                        children: trendingProduct
+                            .map(
+                              (product) => Container(
+                                margin: EdgeInsets.only(right: 12),
+                                child: productNameCard(product: product),
+                              ),
+                            )
+                            .toList(),
+                      ),
                     ),
                   ),
-                ),
-              ),
-            ),
           )
         ],
       ),
     );
   }
 
-  Widget cityCard({String movieName, String moviePoster}) {
+  Widget productNameCard({ShoppingProduct product}) {
     return GestureDetector(
       onTap: () {
-        AuthService()
-            .getProduct("f0a6eed3-b8db-44b0-9b06-e20e02a01e0a")
-            .then((value) {
+        AuthService().getProduct(product.id).then((value) {
           Navigator.pushNamed(context, '/product',
               arguments: {"product": value});
         });
@@ -361,7 +459,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  "Shoes",
+                  product.name,
                   softWrap: false,
                   overflow: TextOverflow.fade,
                   style: TextStyle(
@@ -369,14 +467,15 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
                     fontSize: 14,
                     color: blackFont,
                   ),
+                  maxLines: 1,
                 ),
                 SizedBox(
                   height: 12,
                 ),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
-                  child: Image.network(
-                    moviePoster,
+                  child: CachedNetworkImage(
+                    imageUrl: product.cover,
                     height: 130,
                     width: 130,
                     fit: BoxFit.fill,
@@ -390,7 +489,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
     );
   }
 
-  Widget eventCategoryWithOutDetail({String categoryName}) {
+  Widget getTodayDealList() {
     return Container(
       child: Column(
         children: [
@@ -400,7 +499,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
-                  categoryName,
+                  "Today's deal",
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 18,
@@ -416,7 +515,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
                         color: navyBlue),
                   ),
                   onTap: () {
-                    Navigator.of(context).pushNamed("/event-category");
+                    Navigator.of(context).pushNamed("/shopping-category");
                   },
                 ),
               ],
@@ -425,27 +524,34 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
           Container(
             color: Colors.white,
             padding: EdgeInsets.symmetric(vertical: 16),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Container(
-                padding: EdgeInsets.only(left: 16),
-                child: Row(
-                  children: imgList
-                      .map((element) => Container(
-                            margin: EdgeInsets.only(right: 12),
-                            child: eventPoster(element),
-                          ))
-                      .toList(),
-                ),
-              ),
-            ),
+            child: isTodayDealLoading
+                ? Container(
+                    height: 140,
+                    child: Center(
+                      child: CircularLoadingIndicator(),
+                    ),
+                  )
+                : SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Container(
+                      padding: EdgeInsets.only(left: 16),
+                      child: Row(
+                        children: todayDeal
+                            .map((product) => Container(
+                                  margin: EdgeInsets.only(right: 12),
+                                  child: productPoster(product: product),
+                                ))
+                            .toList(),
+                      ),
+                    ),
+                  ),
           )
         ],
       ),
     );
   }
 
-  Widget foodFestivalEvent({String categoryName}) {
+  Widget getDiscountDealList() {
     return Container(
       child: Column(
         children: [
@@ -455,7 +561,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
-                  categoryName,
+                  "Deal's upto 75% off",
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 18,
@@ -471,163 +577,182 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
                         color: navyBlue),
                   ),
                   onTap: () {
-                    Navigator.of(context).pushNamed("/event-category");
+                    Navigator.of(context).pushNamed("/shopping-category");
                   },
                 ),
               ],
             ),
           ),
-          Container(
-            color: Colors.white,
-            padding: EdgeInsets.symmetric(vertical: 16),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: Container(
-                padding: EdgeInsets.only(left: 16, right: 16),
-                child: Column(
-                  children: [
-                    Container(
-                      height: 244,
-                      child: CustomBoxShadow(
-                        child: Card(
-                            elevation: 3,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)),
-                            margin: EdgeInsets.zero,
-                            shadowColor: boxShadowTwo,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: Column(
-                                children: <Widget>[
-                                  Expanded(
-                                    child: InkWell(
-                                      child: CachedNetworkImage(
-                                        width: double.infinity,
-                                        imageUrl:
-                                            "https://images-na.ssl-images-amazon.com/images/I/81HSzsIkJdL._AC_SL1500_.jpg",
-                                        fit: BoxFit.fill,
-                                        filterQuality: FilterQuality.high,
-                                      ),
-                                      onTap: () {
-                                        AuthService()
-                                            .getProduct(
-                                                "f0a6eed3-b8db-44b0-9b06-e20e02a01e0a")
-                                            .then((value) {
-                                          Navigator.pushNamed(
-                                              context, '/product',
-                                              arguments: {"product": value});
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                  Container(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 16, vertical: 0),
-                                    child: Row(
-                                      children: [
+          isDiscountProductListLoading
+              ? Container(
+                  height: 200,
+                  child: Center(
+                    child: CircularLoadingIndicator(),
+                  ),
+                )
+              : Container(
+                  color: Colors.white,
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    child: Container(
+                      padding: EdgeInsets.only(left: 16, right: 16),
+                      child: Column(
+                        children: [
+                          Container(
+                            height: 244,
+                            child: CustomBoxShadow(
+                              child: Card(
+                                  elevation: 3,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10)),
+                                  margin: EdgeInsets.zero,
+                                  shadowColor: boxShadowTwo,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: Column(
+                                      children: <Widget>[
                                         Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                "Thu, Oct 15 • 6:54 AM",
-                                                softWrap: false,
-                                                overflow: TextOverflow.fade,
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 12,
-                                                  color: mateRed,
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                height: 2,
-                                              ),
-                                              Text(
-                                                "Bronx night market",
-                                                softWrap: false,
-                                                overflow: TextOverflow.fade,
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w700,
-                                                  fontSize: 14,
-                                                  color: blackFont,
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                height: 2,
-                                              ),
-                                              Text(
-                                                "Humankind is now facing a global crisis...",
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w400,
-                                                  color: darkGrey,
-                                                ),
-                                              ),
-                                            ],
+                                          child: InkWell(
+                                            child: CachedNetworkImage(
+                                              width: double.infinity,
+                                              imageUrl: discountProductList
+                                                  .first.cover,
+                                              fit: BoxFit.fill,
+                                              filterQuality: FilterQuality.high,
+                                            ),
+                                            onTap: () {
+                                              AuthService()
+                                                  .getProduct(
+                                                      discountProductList
+                                                          .first.id)
+                                                  .then((value) {
+                                                Navigator.pushNamed(
+                                                    context, '/product',
+                                                    arguments: {
+                                                      "product": value
+                                                    });
+                                              });
+                                            },
                                           ),
                                         ),
                                         Container(
-                                          height: 86,
-                                          child: Center(
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Icon(
-                                                  SlydoAppIcon.naira,
-                                                  color: navyBlue,
-                                                  size: 10,
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 16, vertical: 0),
+                                          child: Row(
+                                            children: [
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      discountProductList
+                                                          .first.name,
+                                                      softWrap: false,
+                                                      overflow:
+                                                          TextOverflow.fade,
+                                                      maxLines: 1,
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                        fontSize: 14,
+                                                        color: blackFont,
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      height: 2,
+                                                    ),
+                                                    Text(
+                                                      discountProductList.first
+                                                          .shortDescription,
+                                                      // softWrap: false,
+                                                      // overflow:
+                                                      //     TextOverflow.fade,
+                                                      maxLines: 1,
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                        color: darkGrey,
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
-                                                Text(
-                                                  "34.00",
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.w700,
-                                                    fontSize: 14,
-                                                    color: navyBlue,
+                                              ),
+                                              Container(
+                                                height: 60,
+                                                child: Center(
+                                                  child: Row(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    children: [
+                                                      Icon(
+                                                        SlydoAppIcon.naira,
+                                                        color: navyBlue,
+                                                        size: 10,
+                                                      ),
+                                                      Text(
+                                                        discountProductList
+                                                            .first.price
+                                                            .toString(),
+                                                        style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.w700,
+                                                          fontSize: 14,
+                                                          color: navyBlue,
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
                                                 ),
-                                              ],
-                                            ),
+                                              )
+                                            ],
                                           ),
                                         )
                                       ],
                                     ),
-                                  )
-                                ],
-                              ),
-                            )),
+                                  )),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 12,
+                          ),
+                          Column(
+                            children: discountProductList
+                                .map((product) => Container(
+                                      margin: EdgeInsets.only(bottom: 12),
+                                      child: InkWell(
+                                        onTap: () {
+                                          AuthService()
+                                              .getProduct(product.id)
+                                              .then((value) {
+                                            Navigator.pushNamed(
+                                                context, '/product',
+                                                arguments: {"product": value});
+                                          });
+                                        },
+                                        child: ShoppingTile(
+                                          product: product,
+                                        ),
+                                      ),
+                                    ))
+                                .toList(),
+                          ),
+                        ],
                       ),
                     ),
-                    SizedBox(
-                      height: 12,
-                    ),
-                    Column(
-                      children: imgList
-                          .map((element) => Container(
-                                margin: EdgeInsets.only(bottom: 12),
-                                child: ShoppingTile(
-                                  imageUrl: element,
-                                ),
-                              ))
-                          .toList(),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          )
+                  ),
+                )
         ],
       ),
     );
   }
 
-  Widget eventPoster(String url) {
-    bool temp = Random().nextBool();
+  Widget productPoster({ShoppingProduct product}) {
     return GestureDetector(
       onTap: () {
-        AuthService()
-            .getProduct("f0a6eed3-b8db-44b0-9b06-e20e02a01e0a")
-            .then((value) {
+        AuthService().getProduct(product.id).then((value) {
           Navigator.pushNamed(context, '/product',
               arguments: {"product": value});
         });
@@ -644,18 +769,20 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
                 width: double.infinity,
                 color: Colors.black12,
                 colorBlendMode: BlendMode.darken,
-                imageUrl: url,
+                imageUrl: product.cover,
                 fit: BoxFit.fill,
               ),
             ),
             Align(
               alignment: Alignment.center,
               child: Text(
-                temp ? "Beach event" : "Mongola",
+                product.name,
+                textAlign: TextAlign.center,
                 style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 18,
                     color: Colors.white),
+                maxLines: 2,
               ),
             ),
           ],

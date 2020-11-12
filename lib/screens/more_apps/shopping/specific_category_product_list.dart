@@ -1,8 +1,4 @@
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/more_apps/shopping/models/ShoppingProduct.dart';
-import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
-import 'package:Slydo/screens/more_apps/shopping/shopping_tile.dart';
-import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:connectivity/connectivity.dart';
@@ -10,25 +6,22 @@ import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:toast/toast.dart';
 
-class MyWishList extends StatefulWidget {
+import 'models/ShoppingProduct.dart';
+import 'shopping_auth.dart';
+import 'shopping_tile.dart';
+
+class SpecificCategoryProductList extends StatefulWidget {
   @override
-  _MyWishListState createState() => _MyWishListState();
+  _SpecificCategoryProductListState createState() =>
+      _SpecificCategoryProductListState();
 }
 
-class _MyWishListState extends State<MyWishList> {
-  List<String> imgList = [
-    "https://www.telegraph.co.uk/content/dam/Travel/Destinations/Europe/United%20Kingdom/London/london-aerial-thames-guide.jpg",
-    "https://www.cityam.com/wp-content/uploads/2020/02/London_Tower_Bridge_City.jpg",
-    "https://metab.ern-net.eu/wp-content/uploads/2018/04/London.jpg",
-    "https://travel.home.sndimg.com/content/dam/images/travel/fullset/2015/05/28/big-ben-london-england.jpg",
-    "https://a.travel-assets.com/findyours-php/viewfinder/images/res70/20000/20665-London.jpg"
-  ];
-
+class _SpecificCategoryProductListState
+    extends State<SpecificCategoryProductList> {
   List<ShoppingProduct> products = [];
-  bool isLoading = false;
-
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -57,7 +50,7 @@ class _MyWishListState extends State<MyWishList> {
       } else {
         Toast.show(
             AppLocalization.of(context).internetConnectionNotAvailable, context,
-            gravity: Toast.BOTTOM, backgroundColor: navyBlue);
+            gravity: Toast.BOTTOM, backgroundColor: darkBlue());
         _refreshController.refreshCompleted();
       }
     });
@@ -65,44 +58,39 @@ class _MyWishListState extends State<MyWishList> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: appBar(),
-      backgroundColor: Colors.white,
-      body: SmartRefresher(
-        enablePullDown: true,
-        header: WaterDropHeader(
-          complete: Container(),
-          waterDropColor: navyBlue,
-        ),
-        controller: _refreshController,
-        onRefresh: _onRefresh,
-        child: isLoading
+    return WillPopScope(
+      onWillPop: () async {
+        return true;
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: appBar(),
+        body: isLoading
             ? Center(
                 child: CircularLoadingIndicator(),
               )
-            : SingleChildScrollView(
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    children: products
-                        .map(
-                          (product) => InkWell(
-                            onTap: () {
-                              AuthService()
-                                  .getProduct(product.id)
-                                  .then((value) {
-                                Navigator.pushNamed(context, '/product',
-                                    arguments: {"product": value});
-                              });
-                            },
-                            child: Container(
+            : SmartRefresher(
+                enablePullDown: true,
+                header: WaterDropHeader(
+                  complete: Container(),
+                  waterDropColor: navyBlue,
+                ),
+                controller: _refreshController,
+                onRefresh: _onRefresh,
+                child: SingleChildScrollView(
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      children: products
+                          .map(
+                            (product) => Container(
                                 padding: EdgeInsets.symmetric(vertical: 8),
                                 child: ShoppingTileWithHeart(
                                   product: product,
                                 )),
-                          ),
-                        )
-                        .toList(),
+                          )
+                          .toList(),
+                    ),
                   ),
                 ),
               ),
@@ -127,7 +115,7 @@ class _MyWishListState extends State<MyWishList> {
         },
       ),
       title: Text(
-        "My wishlist",
+        "Today's deal",
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
         overflow: TextOverflow.fade,

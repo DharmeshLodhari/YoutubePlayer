@@ -4,6 +4,7 @@ import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -345,31 +346,58 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
         SizedBox(
           height: 4,
         ),
-        Text(
-          'ERIGGA',
-          style: TextStyle(
-              fontSize: 14, fontWeight: FontWeight.w400, color: blackFont),
-        ),
-        SizedBox(
-          height: 8,
-        ),
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Icon(
-              SlydoAppIcon.star,
-              color: starYellow,
-              size: 11,
+            Column(
+              children: [
+                Text(
+                  'ERIGGA',
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: blackFont),
+                ),
+                SizedBox(
+                  height: 8,
+                ),
+                Row(
+                  children: [
+                    Icon(
+                      SlydoAppIcon.star,
+                      color: starYellow,
+                      size: 11,
+                    ),
+                    SizedBox(
+                      width: 4,
+                    ),
+                    Text(
+                      "7.8",
+                      style: TextStyle(fontSize: 14, color: blackFont),
+                    )
+                  ],
+                ),
+              ],
             ),
-            SizedBox(
-              width: 4,
-            ),
-            Text(
-              "7.8",
-              style: TextStyle(fontSize: 14, color: blackFont),
+            Container(
+              width: MediaQuery.of(context).size.width / 3,
+              child: buyAlbumButton(),
             )
           ],
         ),
       ],
+    );
+  }
+
+  Widget buyAlbumButton() {
+    return CurvedButton(
+      height: 30,
+      backgroundColor: navyBlue,
+      onPressed: () {
+        Navigator.of(context).pushNamed("/mix-cart-item");
+      },
+      text: "Buy",
+      textColor: Colors.white,
     );
   }
 }

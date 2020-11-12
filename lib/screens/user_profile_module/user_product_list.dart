@@ -107,7 +107,7 @@ class _UserProductListState extends State<UserProductList> {
             isProductLoading = true;
           });
         }
-        Map<String, dynamic> result = await _auth.listProductsBySeller(
+        Map<String, dynamic> result = await _auth.listOfProduct(
             productNext, productPrevious,
             userId: widget.user.userName);
         productCount = result['count'];

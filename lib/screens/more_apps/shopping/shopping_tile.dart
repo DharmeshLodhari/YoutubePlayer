@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:Slydo/screens/more_apps/shopping/models/ShoppingProduct.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -8,8 +9,9 @@ import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
 class ShoppingTile extends StatelessWidget {
-  String imageUrl;
-  ShoppingTile({this.imageUrl});
+  final ShoppingProduct product;
+
+  const ShoppingTile({Key key, this.product}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -26,9 +28,9 @@ class ShoppingTile extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: CachedNetworkImage(
-                    imageUrl: imageUrl,
+                    imageUrl: product.cover,
                     fit: BoxFit.fill,
-                    height: 86,
+                    height: 60,
                     width: 68,
                   ),
                 ),
@@ -37,45 +39,58 @@ class ShoppingTile extends StatelessWidget {
                 ),
                 Expanded(
                   child: Container(
-                    height: 86,
+                    height: 60,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          "Thu, Oct 15 • 6:54 AM",
-                          softWrap: false,
-                          overflow: TextOverflow.fade,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12,
-                            color: mateRed,
-                          ),
-                        ),
                         flexibleSpace(flex: 2),
                         Text(
-                          "5th Borough food festival",
-                          softWrap: false,
-                          overflow: TextOverflow.fade,
+                          product.name,
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
                             fontSize: 14,
                             color: blackFont,
                           ),
+                          maxLines: 1,
                         ),
                         flexibleSpace(),
                         Text(
-                          "Clove lakes park",
+                          product.shortDescription,
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w400,
                             color: blackFont,
                           ),
+                          maxLines: 2,
                         ),
                         flexibleSpace(flex: 5),
                       ],
                     ),
                   ),
                 ),
+                Container(
+                  height: 60,
+                  child: Center(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          SlydoAppIcon.naira,
+                          color: navyBlue,
+                          size: 10,
+                        ),
+                        Text(
+                          product.price.toString(),
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14,
+                            color: navyBlue,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
               ],
             ),
           ),
@@ -85,9 +100,9 @@ class ShoppingTile extends StatelessWidget {
 
 // ignore: must_be_immutable
 class ShoppingTileWithHeart extends StatefulWidget {
-  String imageUrl;
-  ShoppingTileWithHeart({this.imageUrl});
+  final ShoppingProduct product;
 
+  const ShoppingTileWithHeart({Key key, this.product}) : super(key: key);
   @override
   _ShoppingTileWithHeartState createState() => _ShoppingTileWithHeartState();
 }
@@ -111,10 +126,10 @@ class _ShoppingTileWithHeartState extends State<ShoppingTileWithHeart> {
               ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: CachedNetworkImage(
-                  imageUrl: widget.imageUrl,
+                  imageUrl: widget.product.cover,
                   fit: BoxFit.fill,
-                  height: 86,
-                  width: 68,
+                  height: 60,
+                  width: 60,
                 ),
               ),
               SizedBox(
@@ -122,15 +137,14 @@ class _ShoppingTileWithHeartState extends State<ShoppingTileWithHeart> {
               ),
               Expanded(
                 child: Container(
-                  height: 86,
+                  height: 60,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        "Surface Book Pro",
-                        softWrap: false,
-                        overflow: TextOverflow.fade,
+                        widget.product.name,
+                        maxLines: 1,
                         style: TextStyle(
                           fontWeight: FontWeight.w700,
                           fontSize: 14,
@@ -141,7 +155,7 @@ class _ShoppingTileWithHeartState extends State<ShoppingTileWithHeart> {
                         height: 2,
                       ),
                       Text(
-                        "black",
+                        widget.product.seller,
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w400,
@@ -160,7 +174,7 @@ class _ShoppingTileWithHeartState extends State<ShoppingTileWithHeart> {
                             size: 10,
                           ),
                           Text(
-                            "34.00",
+                            widget.product.price.toString(),
                             style: TextStyle(
                               fontWeight: FontWeight.w700,
                               fontSize: 14,
@@ -174,7 +188,7 @@ class _ShoppingTileWithHeartState extends State<ShoppingTileWithHeart> {
                 ),
               ),
               Container(
-                height: 86,
+                height: 60,
                 child: Center(
                   child: IconButton(
                     icon: Icon(

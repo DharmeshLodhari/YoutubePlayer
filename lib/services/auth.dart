@@ -1022,7 +1022,7 @@ class AuthService {
   }
 
   // List Products
-  Future<Map<String, dynamic>> listProductsBySeller(
+  Future<Map<String, dynamic>> listOfProduct(
       String next, String previous,
       {String userId}) async {
     var url = "";
@@ -1034,6 +1034,7 @@ class AuthService {
     } else {
       url = next;
     }
+    debugPrint(url);
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
 
