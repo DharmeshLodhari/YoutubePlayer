@@ -117,7 +117,7 @@ class _SendPaymentState extends State<SendPayment> {
   }
 
   void initializeDisplayCard() {
-    if (!isFromProfile) {
+    if (!isFromProfile && product != null) {
       if (customerProfileBloc.customer != null) {
         if (mounted) {
           setState(() {
@@ -346,7 +346,7 @@ class _SendPaymentState extends State<SendPayment> {
 
     var avatarImage;
     var qrCodeImage;
-    if (_payee != null) {
+    if (_payee != null && product != null) {
       avatarImage = Container(
         height: 48,
         width: 48,
@@ -366,7 +366,7 @@ class _SendPaymentState extends State<SendPayment> {
       qrCodeImage = CachedNetworkImage(
         height: 48,
         width: 48,
-        imageUrl: _payee.qrCode,
+        imageUrl: _payee.qrCode ?? "",
         colorBlendMode: BlendMode.darken,
         fit: BoxFit.fill,
         filterQuality: FilterQuality.high,
