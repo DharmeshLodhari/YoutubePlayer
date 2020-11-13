@@ -45,4 +45,33 @@ class ShoppingAuthService extends AuthService {
       throw jsonData;
     }
   }
+
+  // List the  item with pagination
+  Future<Map<String, dynamic>> searchShoppingProducts(
+      String searchedText, String next, String previous) async {
+    String url = baseUrl + "/api/v1/search/products/?search=" + searchedText;
+    if (next == null) {
+      return null;
+    }
+    if (next != "") {
+      url = next;
+    }
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": jsonData["results"],
+      };
+      return result;
+    } else {
+      var jsonData = json.decode(response.body);
+      throw jsonData;
+    }
+  }
 }

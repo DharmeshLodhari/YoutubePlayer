@@ -1,7 +1,6 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/checkout_shopping_cart.dart';
-import 'package:Slydo/screens/messagelist.dart';
 import 'package:Slydo/screens/search_module.dart';
 import 'package:Slydo/screens/user_dashboard.dart';
 import 'package:Slydo/utils/global_key.dart';
@@ -33,7 +32,6 @@ class _DashboardState extends State<Dashboard> {
 
   int _currentIndex = 0;
   var arguments;
-  static var isLocked = true;
   List<Widget> screens;
   BasketBloc basketBloc;
 
@@ -46,25 +44,12 @@ class _DashboardState extends State<Dashboard> {
         if (arguments != null) {
           int indexFromRoute = arguments['dashboardIndex'];
 
-          isLocked =
-              arguments['isLocked'] != null ? arguments['isLocked'] : true;
-
           if (indexFromRoute != null) {
             setState(() {
               _currentIndex = indexFromRoute;
             });
           }
         }
-        screens = [
-          Home(),
-          PaymentRequestList(),
-          ShoppingCart(),
-          SearchModule(),
-          MessageList(),
-          UserDashboard(
-            arguments: {'isLocked': isLocked},
-          ),
-        ];
       });
     }
 
@@ -156,9 +141,7 @@ class _DashboardState extends State<Dashboard> {
             PaymentRequestList(),
             SearchModule(),
             ShoppingCart(),
-            UserDashboard(
-              arguments: {'isLocked': isLocked},
-            ),
+            UserDashboard(),
           ],
         ),
         bottomNavigationBar: bottomNavigationBar(),

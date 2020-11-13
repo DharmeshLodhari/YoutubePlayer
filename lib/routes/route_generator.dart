@@ -378,7 +378,7 @@ class RouteGenerator {
         );
       case '/user-dashboard':
         return PageTransition(
-          child: UserDashboard(arguments: settings.arguments),
+          child: UserDashboard(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
           settings: settings,

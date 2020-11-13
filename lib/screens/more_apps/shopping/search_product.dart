@@ -5,14 +5,10 @@ import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_tile.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:toast/toast.dart';
 
 class SearchProduct extends StatefulWidget {
   @override
@@ -38,45 +34,104 @@ class _SearchProductState extends State<SearchProduct> {
 
   List<ShoppingProduct> products = [];
 
+  GlobalKey<ScaffoldState> _scaffoldSearchKey = GlobalKey<ScaffoldState>();
+
   bool isLoading = false;
-  RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
 
-  void getResult() async {
-    isLoading = true;
-    products.clear();
-    if (mounted) setState(() {});
+  //pagination variables
+  int count = 0;
+  String next = "";
+  String previous = "";
+  ScrollController _scrollController = new ScrollController();
+  bool noItemInList = false;
+  bool isSearchIsEmpty = true;
+  String autoCompleteSearchText = "";
 
-    products = await ShoppingAuthService().getProductList("", "");
-
-    isLoading = false;
-    if (mounted) setState(() {});
-  }
+  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+              _scrollController.position.maxScrollExtent &&
+          _scrollController.position.pixels != 0) {
+        if (next != null) {
+          getList();
+        }
+      }
+    });
+
+    searchController.addListener(() {
+      if (searchController.text.length >= 5) {
+        setState(() {
+          count = 0;
+          next = "";
+          previous = "";
+          products.clear();
+          noItemInList = false;
+          getList();
+        });
+      }
+      if (products.isNotEmpty || searchController.text.length != 0) {
+        if (mounted) {
+          setState(() {
+            isSearchIsEmpty = false;
+          });
+        }
+      } else {
+        if (mounted) {
+          setState(() {
+            isSearchIsEmpty = true;
+          });
+        }
+      }
+    });
     super.initState();
   }
 
-  void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        getResult();
-        _refreshController.refreshCompleted();
-      } else {
-        Toast.show(
-            AppLocalization.of(context).internetConnectionNotAvailable, context,
-            gravity: Toast.BOTTOM, backgroundColor: navyBlue);
-        _refreshController.refreshCompleted();
+  void getList() async {
+    if (!isLoading) {
+      if (next != null && !isLoading) {
+        if (mounted) {
+          isLoading = true;
+          setState(() {});
+        }
+        Map<String, dynamic> result = await ShoppingAuthService()
+            .searchShoppingProducts(searchController.text, next, previous);
+        count = result['count'];
+        next = result['next'];
+        previous = result['previous'];
+        List tempList = result['results'];
+        if (mounted) {
+          isLoading = false;
+          try {
+            tempList.forEach((result) {
+              products.add(ShoppingProduct.fromJson(result));
+            });
+          } catch (e) {}
+          setState(() {});
+          debugPrint("$products");
+        }
       }
-    });
+      if (products.isEmpty) {
+        if (mounted) {
+          noItemInList = true;
+          setState(() {});
+        }
+      } else if (next == null && products.length > 6) {
+        _scaffoldSearchKey.currentState.showSnackBar(SnackBar(
+          content:
+              Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
+          duration: Duration(milliseconds: 500),
+        ));
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldSearchKey,
       backgroundColor: Colors.white,
       appBar: appBar(),
       body: scaffoldBody(),
@@ -141,14 +196,20 @@ class _SearchProductState extends State<SearchProduct> {
           SizedBox(
             height: 12,
           ),
-          isLoading
+          isSearchIsEmpty
               ? Expanded(
-                  child: Center(
-                    child: CircularLoadingIndicator(),
+                  child: NoItemInList(
+                    msg: AppLocalization.of(context)
+                        .pleaseTypeSomethingToGetResult,
+                    isResult: false,
                   ),
                 )
-              : products.isEmpty
-                  ? Expanded(child: searchBackground())
+              : noItemInList
+                  ? Expanded(
+                      child: NoItemInList(
+                        msg: AppLocalization.of(context).noResultFound,
+                      ),
+                    )
                   : Expanded(
                       child: SingleChildScrollView(
                         child: Column(
@@ -170,13 +231,6 @@ class _SearchProductState extends State<SearchProduct> {
     );
   }
 
-  Widget searchBackground() {
-    return NoItemInList(
-      msg: "Please type something to get results",
-      isResult: false,
-    );
-  }
-
   Widget searchBox() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16),
@@ -185,8 +239,18 @@ class _SearchProductState extends State<SearchProduct> {
           textSelectionHandleColor: navyBlue,
         ),
         child: TextFormField(
+          controller: searchController,
           onFieldSubmitted: (val) {
-            getResult();
+            if (mounted) {
+              setState(() {
+                count = 0;
+                next = "";
+                previous = "";
+                products.clear();
+                noItemInList = false;
+                getList();
+              });
+            }
           },
           autofocus: true,
           style: TextStyle(
@@ -668,7 +732,7 @@ class _SearchProductState extends State<SearchProduct> {
       backgroundColor: navyBlue,
       onPressed: () {
         Navigator.pop(context);
-        getResult();
+        getList();
       },
       text: "Submit",
       textColor: Colors.white,

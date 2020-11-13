@@ -11,6 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'hotel_dashboard_bloc.dart';
+
+
 import 'hotel_tile.dart';
 
 class HotelDetailPage extends StatefulWidget {
@@ -121,7 +123,9 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
         size: 16,
         color: blackFont,
       ),
-      onTap: () {},
+      onTap: () {
+        Navigator.of(context).pushNamed("/mix-cart-item");
+      },
       backgroundColor: iconBtnGrey,
       enableMargin: true,
     );
@@ -1020,7 +1024,15 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
       backgroundColor: navyBlue,
       textColor: Colors.white,
       text: "BOOK",
-      onPressed: () {},
+      onPressed: () {
+        Navigator.of(context).pushNamed(
+          '/send-payment',
+          arguments: {
+            'isFromProfile': false,
+            'isRequest': false,
+          },
+        );
+      },
     );
   }
 }

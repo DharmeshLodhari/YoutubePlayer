@@ -666,7 +666,9 @@ class _EventDetailPageState extends State<EventDetailPage> {
         size: 22,
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
-      onTap: () async {},
+      onTap: () async {
+        Navigator.of(context).pushNamed("/mix-cart-item");
+      },
     );
   }
 
@@ -676,7 +678,15 @@ class _EventDetailPageState extends State<EventDetailPage> {
         backgroundColor: navyBlue,
         textColor: Colors.white,
         text: "BUY NOW",
-        onPressed: () {},
+        onPressed: () {
+          Navigator.of(context).pushNamed(
+            '/send-payment',
+            arguments: {
+              'isFromProfile': false,
+              'isRequest': false,
+            },
+          );
+        },
       ),
     );
   }

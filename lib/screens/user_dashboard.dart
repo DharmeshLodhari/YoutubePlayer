@@ -26,20 +26,11 @@ import 'package:toast/toast.dart';
 
 // ignore: must_be_immutable
 class UserDashboard extends StatefulWidget {
-  var arguments;
-
-  UserDashboard({this.arguments});
-
   @override
-  _UserDashboardState createState() =>
-      _UserDashboardState(arguments: arguments);
+  _UserDashboardState createState() => _UserDashboardState();
 }
 
 class _UserDashboardState extends State<UserDashboard> {
-  var arguments;
-
-  _UserDashboardState({this.arguments});
-
   final GlobalKey<ScaffoldState> _scaffoldSettingKey =
       new GlobalKey<ScaffoldState>();
   final _auth = AuthService();
@@ -49,7 +40,6 @@ class _UserDashboardState extends State<UserDashboard> {
 
   bool isLoading = false;
   bool storeLocked = true;
-  bool isLocked = true;
   Language language;
   String accountBalance = "";
 
@@ -74,12 +64,6 @@ class _UserDashboardState extends State<UserDashboard> {
 
   @override
   void initState() {
-    setState(() {
-      isLocked = arguments['isLocked'] ?? true;
-    });
-    if (!isLocked) {
-      getAccountBalance();
-    }
     getAccountBalance();
     _initPackageInfo();
     getLanguage();

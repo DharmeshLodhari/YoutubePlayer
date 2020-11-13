@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:Slydo/screens/more_apps/shopping/models/ShoppingProduct.dart';
+import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -112,100 +113,108 @@ class _ShoppingTileWithHeartState extends State<ShoppingTileWithHeart> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.zero,
-      elevation: 0,
-      child: Container(
-        decoration: decorateBox(),
+    return InkWell(
+      onTap: () {
+        AuthService().getProduct(widget.product.id).then((value) {
+          Navigator.pushNamed(context, '/product',
+              arguments: {"product": value});
+        });
+      },
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        margin: EdgeInsets.zero,
+        elevation: 0,
         child: Container(
-          padding: EdgeInsets.all(12),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: CachedNetworkImage(
-                  imageUrl: widget.product.cover,
-                  fit: BoxFit.fill,
-                  height: 60,
-                  width: 60,
+          decoration: decorateBox(),
+          child: Container(
+            padding: EdgeInsets.all(12),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: CachedNetworkImage(
+                    imageUrl: widget.product.cover,
+                    fit: BoxFit.fill,
+                    height: 60,
+                    width: 60,
+                  ),
                 ),
-              ),
-              SizedBox(
-                width: 16,
-              ),
-              Expanded(
-                child: Container(
-                  height: 60,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.product.name,
-                        maxLines: 1,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 14,
-                          color: blackFont,
-                        ),
-                      ),
-                      SizedBox(
-                        height: 2,
-                      ),
-                      Text(
-                        widget.product.seller,
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w400,
-                          color: blackFont,
-                        ),
-                      ),
-                      SizedBox(
-                        height: 4,
-                      ),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            SlydoAppIcon.naira,
-                            color: navyBlue,
-                            size: 10,
+                SizedBox(
+                  width: 16,
+                ),
+                Expanded(
+                  child: Container(
+                    height: 60,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.product.name,
+                          maxLines: 1,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14,
+                            color: blackFont,
                           ),
-                          Text(
-                            widget.product.price.toString(),
-                            style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 14,
+                        ),
+                        SizedBox(
+                          height: 2,
+                        ),
+                        Text(
+                          widget.product.seller,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                            color: blackFont,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 4,
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              SlydoAppIcon.naira,
                               color: navyBlue,
+                              size: 10,
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Container(
-                height: 60,
-                child: Center(
-                  child: IconButton(
-                    icon: Icon(
-                      isChange
-                          ? SlydoAppIcon.heart_empty
-                          : SlydoAppIcon.heart_1,
-                      color: isChange ? blackFont : navyBlue,
-                      size: 20,
+                            Text(
+                              widget.product.price.toString(),
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14,
+                                color: navyBlue,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                    onPressed: () {
-                      isChange = !isChange;
-                      setState(() {});
-                    },
                   ),
                 ),
-              )
-            ],
+                Container(
+                  height: 60,
+                  child: Center(
+                    child: IconButton(
+                      icon: Icon(
+                        isChange
+                            ? SlydoAppIcon.heart_empty
+                            : SlydoAppIcon.heart_1,
+                        color: isChange ? blackFont : navyBlue,
+                        size: 20,
+                      ),
+                      onPressed: () {
+                        isChange = !isChange;
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                )
+              ],
+            ),
           ),
         ),
       ),
