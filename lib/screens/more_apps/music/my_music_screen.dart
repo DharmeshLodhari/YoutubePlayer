@@ -20,13 +20,13 @@ class MyMusicScreen extends StatefulWidget {
 class _MyMusicScreenState extends State<MyMusicScreen> {
   int currentIndex = 0;
 
-  MusicDashboardBloc _hotelDashboardBloc;
+  MusicDashboardBloc _musicDashboardBloc;
   @override
   Widget build(BuildContext context) {
-    _hotelDashboardBloc = Provider.of<MusicDashboardBloc>(context);
+    _musicDashboardBloc = Provider.of<MusicDashboardBloc>(context);
     return WillPopScope(
       onWillPop: () async {
-        _hotelDashboardBloc.index = 0;
+        _musicDashboardBloc.index = 0;
         return true;
       },
       child: DefaultTabController(
@@ -53,6 +53,7 @@ class _MyMusicScreenState extends State<MyMusicScreen> {
           size: 24,
         ),
         onPressed: () {
+          _musicDashboardBloc.index = 0;
           Navigator.pop(context);
         },
       ),
@@ -76,6 +77,7 @@ class _MyMusicScreenState extends State<MyMusicScreen> {
         indicator: BoxDecoration(),
         onTap: (int index) {
           currentIndex = index;
+
           setState(() {});
         },
         tabs: [

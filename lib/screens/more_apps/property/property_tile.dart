@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -402,6 +405,459 @@ class _PropertyImagesTileState extends State<PropertyImagesTile> {
                 ],
               ),
             )),
+      ),
+    );
+  }
+}
+
+class RentPropertyTile extends StatefulWidget {
+  final PropertyItem property;
+
+  RentPropertyTile({this.property});
+
+  @override
+  _RentPropertyTileState createState() => _RentPropertyTileState();
+}
+
+class _RentPropertyTileState extends State<RentPropertyTile> {
+  int _current = 0;
+  bool isAvailable;
+  bool isChange = false;
+
+  @override
+  Widget build(BuildContext context) {
+    isAvailable = Random().nextBool();
+    return InkWell(
+      onTap: () {
+        Navigator.of(context).pushNamed("/property-detail");
+      },
+      child: Stack(
+        children: [
+          Container(
+            width: MediaQuery.of(context).size.width - 40,
+            child: CustomBoxShadow(
+              child: Card(
+                  elevation: 3,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  margin: EdgeInsets.zero,
+                  shadowColor: boxShadowTwo,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Column(
+                      children: <Widget>[
+                        Stack(
+                          children: [
+                            CarouselSlider(
+                              options: CarouselOptions(
+                                  viewportFraction: 1.0,
+                                  enlargeCenterPage: true,
+                                  autoPlay: false,
+                                  aspectRatio: 2,
+                                  onPageChanged: (index, _) {
+                                    if (mounted) {
+                                      setState(() {
+                                        _current = index;
+                                      });
+                                    }
+                                  }),
+                              items: widget.property.images
+                                  .map(
+                                    (e) => CachedNetworkImage(
+                                      width: double.infinity,
+                                      imageUrl: e,
+                                      fit: BoxFit.fill,
+                                      filterQuality: FilterQuality.high,
+                                    ),
+                                  )
+                                  .toList(),
+                            ),
+                            Positioned(
+                              bottom: 0,
+                              left: MediaQuery.of(context).size.width / 2 -
+                                  ((5 * widget.property.images.length) + 16),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: widget.property.images.map((url) {
+                                  int index =
+                                      widget.property.images.indexOf(url);
+                                  return Container(
+                                    width: 5.0,
+                                    height: 5.0,
+                                    margin: EdgeInsets.symmetric(
+                                        vertical: 10.0, horizontal: 2.0),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: _current == index
+                                          ? Colors.white
+                                          : Colors.white30,
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                            Positioned(
+                              left: 16,
+                              top: 8,
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(4),
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        navyBlue,
+                                        navyBlue,
+                                      ],
+                                    )),
+                                child: Text(
+                                  isAvailable ? "Just added" : "Featured",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        "₦",
+                                        softWrap: false,
+                                        overflow: TextOverflow.fade,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 20,
+                                            color: navyBlue,
+                                            fontFamily: "Roborto"),
+                                      ),
+                                      Text(
+                                        widget.property.price,
+                                        softWrap: false,
+                                        overflow: TextOverflow.fade,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 22,
+                                          color: navyBlue,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Container(
+                                    height: 30,
+                                    width: 30,
+                                    child: ClipOval(
+                                      child: CachedNetworkImage(
+                                        imageUrl:
+                                            "https://cdn.thewhistler.ng/wp-content/uploads/2020/06/ChiNna-Okoroafor-2.jpg",
+                                        fit: BoxFit.fill,
+                                        width: double.infinity,
+                                        height: double.infinity,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 4,
+                              ),
+                              Text(
+                                widget.property.name,
+                                softWrap: false,
+                                overflow: TextOverflow.fade,
+                                maxLines: 1,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 14,
+                                  color: blackFont,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 4,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    widget.property.address1 +
+                                        ", " +
+                                        widget.property.address2,
+                                    softWrap: false,
+                                    overflow: TextOverflow.fade,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 14,
+                                      color: darkGrey,
+                                    ),
+                                  ),
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        SlydoAppIcon.star,
+                                        color: starYellow,
+                                        size: 11,
+                                      ),
+                                      SizedBox(
+                                        width: 4,
+                                      ),
+                                      Text(
+                                        widget.property.rating,
+                                        style: TextStyle(
+                                            fontSize: 14, color: blackFont),
+                                      )
+                                    ],
+                                  )
+                                ],
+                              ),
+                              SizedBox(
+                                height: 12,
+                              ),
+                              Divider(
+                                color: dividerColor,
+                                height: 0,
+                                thickness: 1,
+                              ),
+                              SizedBox(
+                                height: 12,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      RoundedBackgroundIcon(
+                                        backgroundColor: lightGrey,
+                                        borderRadius: 12,
+                                        height: 32,
+                                        width: 32,
+                                        icon: Icon(
+                                          SlydoAppIcon.couch,
+                                          size: 14,
+                                          color: blackFont,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 8,
+                                      ),
+                                      Text(
+                                        "2",
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w400,
+                                            color: blackFont),
+                                      )
+                                    ],
+                                  ),
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      RoundedBackgroundIcon(
+                                        backgroundColor: lightGrey,
+                                        borderRadius: 12,
+                                        height: 32,
+                                        width: 32,
+                                        icon: Icon(
+                                          SlydoAppIcon.bedroom,
+                                          size: 14,
+                                          color: blackFont,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 8,
+                                      ),
+                                      Text(
+                                        "3",
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w400,
+                                            color: blackFont),
+                                      )
+                                    ],
+                                  ),
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      RoundedBackgroundIcon(
+                                        backgroundColor: lightGrey,
+                                        borderRadius: 12,
+                                        height: 32,
+                                        width: 32,
+                                        icon: Icon(
+                                          SlydoAppIcon.bathroom,
+                                          size: 14,
+                                          color: blackFont,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 8,
+                                      ),
+                                      Text(
+                                        "2",
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w400,
+                                            color: blackFont),
+                                      )
+                                    ],
+                                  ),
+                                  // Row(
+                                  //   mainAxisSize: MainAxisSize.min,
+                                  //   children: [
+                                  //     RoundedBackgroundIcon(
+                                  //       backgroundColor: lightGrey,
+                                  //       borderRadius: 12,
+                                  //       height: 32,
+                                  //       width: 32,
+                                  //       icon: Icon(
+                                  //         SlydoAppIcon.free_wifi,
+                                  //         size: 14,
+                                  //         color: blackFont,
+                                  //       ),
+                                  //     ),
+                                  //     SizedBox(
+                                  //       width: 8,
+                                  //     ),
+                                  //     Text(
+                                  //       "Free wifi",
+                                  //       style: TextStyle(
+                                  //           fontSize: 14,
+                                  //           fontWeight: FontWeight.w400,
+                                  //           color: blackFont),
+                                  //     )
+                                  //   ],
+                                  // ),
+
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      RoundedBackgroundIcon(
+                                        backgroundColor: lightGrey,
+                                        borderRadius: 12,
+                                        height: 32,
+                                        width: 32,
+                                        icon: Icon(
+                                          SlydoAppIcon.toilet,
+                                          size: 14,
+                                          color: blackFont,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 8,
+                                      ),
+                                      Text(
+                                        "3",
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w400,
+                                            color: blackFont),
+                                      )
+                                    ],
+                                  ),
+                                  // Row(
+                                  //   mainAxisSize: MainAxisSize.min,
+                                  //   children: [
+                                  //     RoundedBackgroundIcon(
+                                  //       backgroundColor: lightGrey,
+                                  //       borderRadius: 12,
+                                  //       height: 32,
+                                  //       width: 32,
+                                  //       icon: Icon(
+                                  //         SlydoAppIcon.kitchen,
+                                  //         size: 14,
+                                  //         color: blackFont,
+                                  //       ),
+                                  //     ),
+                                  //     SizedBox(
+                                  //       width: 8,
+                                  //     ),
+                                  //     Text(
+                                  //       "Kitchen",
+                                  //       style: TextStyle(
+                                  //           fontSize: 14,
+                                  //           fontWeight: FontWeight.w400,
+                                  //           color: blackFont),
+                                  //     )
+                                  //   ],
+                                  // ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 12,
+                              ),
+                              Divider(
+                                color: dividerColor,
+                                height: 0,
+                                thickness: 1,
+                              ),
+                              SizedBox(
+                                height: 12,
+                              ),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  RoundedBackgroundIcon(
+                                    backgroundColor: lightGrey,
+                                    borderRadius: 12,
+                                    height: 32,
+                                    width: 32,
+                                    icon: Icon(
+                                      SlydoAppIcon.date,
+                                      size: 14,
+                                      color: blackFont,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 8,
+                                  ),
+                                  Text(
+                                    isAvailable
+                                        ? "Available immediately"
+                                        : "Available from 28th Dec 2020",
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w400,
+                                        color: blackFont),
+                                  )
+                                ],
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  )),
+            ),
+          ),
+          Positioned(
+            right: 10,
+            child: IconButton(
+              icon: Icon(
+                isChange ? SlydoAppIcon.heart_empty : SlydoAppIcon.heart_1,
+                color: Colors.white,
+                size: 20,
+              ),
+              onPressed: () {
+                isChange = !isChange;
+                setState(() {});
+              },
+            ),
+          )
+        ],
       ),
     );
   }

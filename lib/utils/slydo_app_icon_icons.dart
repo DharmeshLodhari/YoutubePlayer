@@ -135,4 +135,7 @@ class SlydoAppIcon {
   static const IconData music_next = IconData(0xe867, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData music_repeat = IconData(0xe868, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData music_suffle = IconData(0xe869, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData bedroom = IconData(0xe86a, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData couch = IconData(0xe86b, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData toilet = IconData(0xe86c, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }

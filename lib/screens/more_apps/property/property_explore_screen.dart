@@ -518,7 +518,7 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
                         children: nearByItem
                             .map((element) => Container(
                                   margin: EdgeInsets.only(right: 16),
-                                  child: PropertyImagesTile(
+                                  child: RentPropertyTile(
                                     property: element,
                                   ),
                                 ))

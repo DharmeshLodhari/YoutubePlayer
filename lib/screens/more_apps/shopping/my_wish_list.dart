@@ -1,12 +1,14 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/ShoppingProduct.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
+import 'package:Slydo/screens/more_apps/shopping/shopping_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_tile.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:toast/toast.dart';
 
@@ -16,13 +18,7 @@ class MyWishList extends StatefulWidget {
 }
 
 class _MyWishListState extends State<MyWishList> {
-  List<String> imgList = [
-    "https://www.telegraph.co.uk/content/dam/Travel/Destinations/Europe/United%20Kingdom/London/london-aerial-thames-guide.jpg",
-    "https://www.cityam.com/wp-content/uploads/2020/02/London_Tower_Bridge_City.jpg",
-    "https://metab.ern-net.eu/wp-content/uploads/2018/04/London.jpg",
-    "https://travel.home.sndimg.com/content/dam/images/travel/fullset/2015/05/28/big-ben-london-england.jpg",
-    "https://a.travel-assets.com/findyours-php/viewfinder/images/res70/20000/20665-London.jpg"
-  ];
+  ShoppingDashboardBloc shoppingDashboardBloc;
 
   List<ShoppingProduct> products = [];
   bool isLoading = false;
@@ -65,6 +61,7 @@ class _MyWishListState extends State<MyWishList> {
 
   @override
   Widget build(BuildContext context) {
+    shoppingDashboardBloc = Provider.of<ShoppingDashboardBloc>(context);
     return Scaffold(
       appBar: appBar(),
       backgroundColor: Colors.white,
@@ -123,6 +120,7 @@ class _MyWishListState extends State<MyWishList> {
           size: 24,
         ),
         onPressed: () {
+          shoppingDashboardBloc.index = 0;
           Navigator.pop(context);
         },
       ),

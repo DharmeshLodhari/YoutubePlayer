@@ -74,7 +74,7 @@ class _SpecificCategoryPropertyListState
                       children: propertyItem
                           .map((property) => Container(
                               padding: EdgeInsets.symmetric(vertical: 8),
-                              child: PropertyImagesTile(
+                              child: RentPropertyTile(
                                 property: property,
                               )))
                           .toList(),

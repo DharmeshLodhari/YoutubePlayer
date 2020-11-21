@@ -1,6 +1,7 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
+import 'package:Slydo/screens/more_apps/shopping/shopping_dashboard_bloc.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -28,7 +29,8 @@ class ShoppingExploreScreen extends StatefulWidget {
 class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
   CarouselController _carouselController = CarouselController();
 
-  var _dashboardBloc;
+  DashboardBloc _dashboardBloc;
+  ShoppingDashboardBloc shoppingDashboardBloc;
 
   BasketBloc basketBloc;
 
@@ -123,6 +125,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
   @override
   Widget build(BuildContext context) {
     _dashboardBloc = Provider.of<DashboardBloc>(context);
+    shoppingDashboardBloc = Provider.of<ShoppingDashboardBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
     return Scaffold(
       backgroundColor: Colors.white,
@@ -145,6 +148,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
           size: 24,
         ),
         onPressed: () {
+          shoppingDashboardBloc.index = 0;
           Navigator.pop(context);
         },
       ),
@@ -181,8 +185,9 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
         ),
       ),
       onTap: () {
-        _dashboardBloc.index = 3;
-        Navigator.popUntil(context, ModalRoute.withName("/dashboard"));
+        // _dashboardBloc.index = 3;
+        // Navigator.popUntil(context, ModalRoute.withName("/dashboard"));
+        Navigator.of(context).pushNamed("/mix-cart-item");
       },
       backgroundColor: iconBtnGrey,
       enableMargin: true,

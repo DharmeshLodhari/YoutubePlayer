@@ -47,6 +47,7 @@ class _MyHotelsScreenState extends State<MyHotelsScreen> {
           size: 24,
         ),
         onPressed: () {
+          _hotelDashboardBloc.index = 0;
           Navigator.pop(context);
         },
       ),

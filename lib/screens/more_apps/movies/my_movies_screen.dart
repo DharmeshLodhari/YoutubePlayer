@@ -1,7 +1,9 @@
+import 'package:Slydo/screens/more_apps/movies/movie_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/movies/my_movies_list.dart';
 import 'package:Slydo/screens/more_apps/movies/my_wish_list.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MyMoviesScreen extends StatefulWidget {
   @override
@@ -10,11 +12,14 @@ class MyMoviesScreen extends StatefulWidget {
 
 class _MyMoviesScreenState extends State<MyMoviesScreen> {
   int currentIndex = 0;
+  MovieDashboardBloc movieDashboardBloc;
 
   @override
   Widget build(BuildContext context) {
+    movieDashboardBloc = Provider.of<MovieDashboardBloc>(context);
     return WillPopScope(
       onWillPop: () async {
+        movieDashboardBloc.index = 0;
         return true;
       },
       child: DefaultTabController(
@@ -41,6 +46,7 @@ class _MyMoviesScreenState extends State<MyMoviesScreen> {
           size: 24,
         ),
         onPressed: () {
+          movieDashboardBloc.index = 0;
           Navigator.pop(context);
         },
       ),

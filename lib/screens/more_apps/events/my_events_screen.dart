@@ -1,7 +1,9 @@
+import 'package:Slydo/screens/more_apps/events/event_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/events/my_event_list.dart';
 import 'package:Slydo/screens/more_apps/events/my_wish_list.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MyEventsScreen extends StatefulWidget {
   @override
@@ -11,10 +13,14 @@ class MyEventsScreen extends StatefulWidget {
 class _MyEventsScreenState extends State<MyEventsScreen> {
   int currentIndex = 0;
 
+  EventDashboardBloc eventDashboardBloc;
+
   @override
   Widget build(BuildContext context) {
+    eventDashboardBloc = Provider.of<EventDashboardBloc>(context);
     return WillPopScope(
       onWillPop: () async {
+        eventDashboardBloc.index = 0;
         return true;
       },
       child: DefaultTabController(
@@ -41,6 +47,7 @@ class _MyEventsScreenState extends State<MyEventsScreen> {
           size: 24,
         ),
         onPressed: () {
+          eventDashboardBloc.index = 0;
           Navigator.pop(context);
         },
       ),
