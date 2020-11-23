@@ -3,14 +3,14 @@ class PartialHotelRoomItem {
   String image;
   String name;
   String price;
-  String short_description;
+  String shortDescription;
 
   PartialHotelRoomItem(
       {this.currency,
       this.image,
       this.name,
       this.price,
-      this.short_description});
+      this.shortDescription});
 
   factory PartialHotelRoomItem.fromJson(Map<String, dynamic> json) {
     return PartialHotelRoomItem(
@@ -18,7 +18,7 @@ class PartialHotelRoomItem {
       image: json['image'],
       name: json['name'],
       price: json['price'],
-      short_description: json['short_description'],
+      shortDescription: json['short_description'],
     );
   }
 
@@ -28,7 +28,7 @@ class PartialHotelRoomItem {
     data['image'] = this.image;
     data['name'] = this.name;
     data['price'] = this.price;
-    data['short_description'] = this.short_description;
+    data['short_description'] = this.shortDescription;
     return data;
   }
 }

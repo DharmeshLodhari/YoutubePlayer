@@ -3,9 +3,9 @@ class Review {
   String detail;
   String name;
   int star;
-  String user_avatar;
+  String userAvatar;
 
-  Review({this.date, this.detail, this.name, this.star, this.user_avatar});
+  Review({this.date, this.detail, this.name, this.star, this.userAvatar});
 
   factory Review.fromJson(Map<String, dynamic> json) {
     return Review(
@@ -13,7 +13,7 @@ class Review {
       detail: json['detail'],
       name: json['name'],
       star: json['star'],
-      user_avatar: json['user_avatar'],
+      userAvatar: json['user_avatar'],
     );
   }
 
@@ -23,7 +23,7 @@ class Review {
     data['detail'] = this.detail;
     data['name'] = this.name;
     data['star'] = this.star;
-    data['user_avatar'] = this.user_avatar;
+    data['user_avatar'] = this.userAvatar;
     return data;
   }
 }

@@ -20,6 +20,7 @@ class _CustomizedCheckBoxFieldState extends State<CustomizedCheckBoxField> {
   Widget build(BuildContext context) {
     return InkWell(
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           ClipRRect(
             clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -44,7 +45,9 @@ class _CustomizedCheckBoxFieldState extends State<CustomizedCheckBoxField> {
                     activeColor: navyBlue,
                     checkColor: Colors.white,
                     materialTapTargetSize: MaterialTapTargetSize.padded,
-                    onChanged: (val) {},
+                    onChanged: (val) {
+                      widget.onTap();
+                    },
                   ),
                 ),
               ),
@@ -53,15 +56,13 @@ class _CustomizedCheckBoxFieldState extends State<CustomizedCheckBoxField> {
           SizedBox(
             width: 12,
           ),
-          Expanded(
-            child: Text(
-              widget.title,
-              style: TextStyle(
-                  color: blackFont, fontSize: 14, fontWeight: FontWeight.w600),
-              maxLines: 1,
-              softWrap: false,
-              overflow: TextOverflow.fade,
-            ),
+          Text(
+            widget.title,
+            style: TextStyle(
+                color: blackFont, fontSize: 14, fontWeight: FontWeight.w600),
+            maxLines: 1,
+            softWrap: false,
+            overflow: TextOverflow.fade,
           ),
         ],
       ),

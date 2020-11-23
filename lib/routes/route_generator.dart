@@ -50,6 +50,8 @@ import 'package:Slydo/screens/more_apps/music/search_music.dart';
 import 'package:Slydo/screens/more_apps/music/specific_category_music_list.dart';
 import 'package:Slydo/screens/more_apps/news/news_dashboard.dart';
 import 'package:Slydo/screens/more_apps/news/news_detail_page.dart';
+import 'package:Slydo/screens/more_apps/property/forms/add_property.dart';
+import 'package:Slydo/screens/more_apps/property/forms/edit_property.dart';
 import 'package:Slydo/screens/more_apps/property/property_dashboard.dart';
 import 'package:Slydo/screens/more_apps/property/property_detail_page.dart';
 import 'package:Slydo/screens/more_apps/property/search_property.dart';
@@ -670,6 +672,21 @@ class RouteGenerator {
       case "/property-detail":
         return PageTransition(
           child: PropertyDetailPage(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case "/add-property":
+        return PageTransition(
+          child: AddProperty(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case "/edit-property":
+        return PageTransition(
+          child: EditProperty(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
           settings: settings,

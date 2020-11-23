@@ -4,7 +4,7 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'my_wish_list.dart';
+import 'my_property_screen.dart';
 import 'property_dashboard_bloc.dart';
 import 'property_explore_screen.dart';
 
@@ -37,7 +37,7 @@ class _PropertyDashboardState extends State<PropertyDashboard> {
           },
           children: <Widget>[
             PropertyExploreScreen(),
-            MyWishList(),
+            MyPropertiesScreen(),
           ],
         ),
         bottomNavigationBar: bottomNavigationBar(),
@@ -70,7 +70,7 @@ class _PropertyDashboardState extends State<PropertyDashboard> {
           ),
           bottomNavigationBarItem(
             icon: SlydoAppIcon.user,
-            title: "My wishlist",
+            title: "My properties",
           ),
         ],
       ),

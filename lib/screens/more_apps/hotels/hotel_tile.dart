@@ -574,7 +574,7 @@ class PartialHotelRoomItemTile extends StatelessWidget {
                       ],
                     ),
                     Text(
-                      hotelRoom.short_description,
+                      hotelRoom.shortDescription,
                       softWrap: false,
                       overflow: TextOverflow.fade,
                       style: TextStyle(

@@ -563,7 +563,7 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
                                                       CrossAxisAlignment.start,
                                                   children: [
                                                     Text(
-                                                      eventList[0].date_time,
+                                                      eventList[0].dateTime,
                                                       softWrap: false,
                                                       overflow:
                                                           TextOverflow.fade,
@@ -594,7 +594,7 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
                                                     ),
                                                     Text(
                                                       eventList[0]
-                                                          .short_description,
+                                                          .shortDescription,
                                                       style: TextStyle(
                                                         fontSize: 14,
                                                         fontWeight:

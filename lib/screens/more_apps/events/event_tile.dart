@@ -42,7 +42,7 @@ class EventTile extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          partialEventItem.date_time,
+                          partialEventItem.dateTime,
                           softWrap: false,
                           overflow: TextOverflow.fade,
                           style: TextStyle(
@@ -128,7 +128,7 @@ class _EventTileWithHeartState extends State<EventTileWithHeart> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        widget.partialEvent.date_time,
+                        widget.partialEvent.dateTime,
                         softWrap: false,
                         overflow: TextOverflow.fade,
                         style: TextStyle(

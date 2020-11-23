@@ -12,40 +12,35 @@ import 'property_auth.dart';
 import 'property_dashboard_bloc.dart';
 import 'property_tile.dart';
 
-class MyWishList extends StatefulWidget {
+class MyPropertyList extends StatefulWidget {
   @override
-  _MyWishListState createState() => _MyWishListState();
+  _MyPropertyListState createState() => _MyPropertyListState();
 }
 
-class _MyWishListState extends State<MyWishList> {
-  PropertyDashboardBloc _propertyDashboardBloc;
-
-  List<PropertyItem> myWishList = [];
-
+class _MyPropertyListState extends State<MyPropertyList> {
+  List<PropertyItem> properties = [];
   bool isLoading = false;
 
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
+  PropertyDashboardBloc _propertyDashboardBloc;
+
   @override
   void initState() {
-    getResult("wishList");
+    getResult();
     super.initState();
   }
 
-  void getResult(String item) async {
+  void getResult() async {
     isLoading = true;
-    myWishList.clear();
-    if (mounted) {
-      setState(() {});
-    }
+    properties.clear();
+    if (mounted) setState(() {});
 
-    myWishList = await PropertyAuthService().getPropertyList();
+    properties = await PropertyAuthService().getPropertyList();
 
     isLoading = false;
-    if (mounted) {
-      setState(() {});
-    }
+    if (mounted) setState(() {});
   }
 
   void _onRefresh() async {
@@ -53,12 +48,12 @@ class _MyWishListState extends State<MyWishList> {
       var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
-        getResult("");
+        getResult();
         _refreshController.refreshCompleted();
       } else {
         Toast.show(
             AppLocalization.of(context).internetConnectionNotAvailable, context,
-            gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+            gravity: Toast.BOTTOM, backgroundColor: navyBlue);
         _refreshController.refreshCompleted();
       }
     });
@@ -67,7 +62,6 @@ class _MyWishListState extends State<MyWishList> {
   @override
   Widget build(BuildContext context) {
     _propertyDashboardBloc = Provider.of<PropertyDashboardBloc>(context);
-
     return WillPopScope(
       onWillPop: () async {
         _propertyDashboardBloc.index = 0;
@@ -75,33 +69,35 @@ class _MyWishListState extends State<MyWishList> {
       },
       child: Scaffold(
         backgroundColor: Colors.white,
-        body: isLoading
-            ? Center(
-                child: CircularLoadingIndicator(),
-              )
-            : SmartRefresher(
-                enablePullDown: true,
-                header: WaterDropHeader(
-                  complete: Container(),
-                  waterDropColor: navyBlue,
-                ),
-                controller: _refreshController,
-                onRefresh: _onRefresh,
-                child: SingleChildScrollView(
+        body: SmartRefresher(
+          enablePullDown: true,
+          header: WaterDropHeader(
+            complete: Container(),
+            waterDropColor: navyBlue,
+          ),
+          controller: _refreshController,
+          onRefresh: _onRefresh,
+          child: isLoading
+              ? Center(
+                  child: CircularLoadingIndicator(),
+                )
+              : SingleChildScrollView(
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     child: Column(
-                      children: myWishList
-                          .map((element) => Container(
-                              padding: EdgeInsets.symmetric(vertical: 8),
-                              child: RentPropertyTile(
-                                property: element,
-                              )))
+                      children: properties
+                          .map(
+                            (element) => Container(
+                                padding: EdgeInsets.symmetric(vertical: 8),
+                                child: RentPropertyTileWithoutHeart(
+                                  property: element,
+                                )),
+                          )
                           .toList(),
                     ),
                   ),
                 ),
-              ),
+        ),
       ),
     );
   }

@@ -99,7 +99,7 @@ class TrainTicketTile extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      transport.travel_time,
+                      transport.travelTime,
                       style: TextStyle(
                         fontWeight: FontWeight.w400,
                         fontSize: 12,
