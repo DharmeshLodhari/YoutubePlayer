@@ -69,6 +69,8 @@ class _SendPaymentState extends State<SendPayment> {
   //variables for shoppingcart
   int itemIndex;
 
+  bool sendMoneyAnonymous = false;
+
   @override
   void initState() {
     isFromProfile =
@@ -279,13 +281,16 @@ class _SendPaymentState extends State<SendPayment> {
                                         flexibleSpace(),
                                         getReferenceField(),
                                         flexibleSpace(),
-                                        Text(
-                                          errorMessage,
-                                          style: TextStyle(
-                                              color: mateRed,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16),
-                                        ),
+                                        sendMoneyAnonymouslySwitch(),
+                                        errorMessage == ""
+                                            ? Container()
+                                            : Text(
+                                                errorMessage,
+                                                style: TextStyle(
+                                                    color: mateRed,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 16),
+                                              ),
                                         flexibleSpace(),
                                       ],
                                     ),
@@ -346,7 +351,7 @@ class _SendPaymentState extends State<SendPayment> {
 
     var avatarImage;
     var qrCodeImage;
-    if (_payee != null && product != null) {
+    if (_payee != null && product == null) {
       avatarImage = Container(
         height: 48,
         width: 48,
@@ -667,6 +672,29 @@ class _SendPaymentState extends State<SendPayment> {
           });
         }
       },
+    );
+  }
+
+  Widget sendMoneyAnonymouslySwitch() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          "Send money anonymously",
+          style: TextStyle(fontWeight: FontWeight.w400, color: darkGrey),
+        ),
+        Switch(
+          value: sendMoneyAnonymous,
+          onChanged: (value) {
+            setState(() {
+              sendMoneyAnonymous = value;
+            });
+          },
+          activeTrackColor: navyBlueLight,
+          activeColor: navyBlue,
+          inactiveTrackColor: navyBlueLight,
+        ),
+      ],
     );
   }
 

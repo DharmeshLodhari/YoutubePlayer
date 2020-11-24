@@ -40,15 +40,32 @@ class _AddPropertyState extends State<AddProperty> {
 
   List<String> cities = ["Lagos", "Kano", "Ibadan", "Benin City", "Abuja"];
 
-  bool amenityIsLaundryAvailable = false;
-  bool amenityIsACAvailable = false;
-  bool amenityIsHeatingAvailable = false;
-  bool amenityIsParkingAvailable = false;
-  bool amenityIsGatedEntryAvailable = false;
-  bool amenityIsDoormanAvailable = false;
-  bool amenityIsGymAvailable = false;
-  bool amenityIsPoolAvailable = false;
-  bool amenityIsDishwasherAvailable = false;
+  Map<String, bool> propertyAmenities = {
+    "Laundry": false,
+    "A/C": false,
+    "Heating": false,
+    "Parking": false,
+    "Gated entry": false,
+    "Doorman": false,
+    "Gym": false,
+    "Pool": false,
+    "Dishwasher": false,
+  };
+
+  Map<String, bool> propertyRentDuration = {
+    "At Least A Year": true,
+    "At Few Months": false,
+    "At Few Weeks": false,
+    "At Few Days": false
+  };
+
+  Map<String, bool> propertyPetPolicy = {
+    "Dogs allowed": false,
+    "Cats allowed": false
+  };
+
+  List<bool> isPropertyForSellOrRent = [true, false];
+  bool isPropertyFurnished = false;
 
   int imageCount = 5;
   ScrollController _scrollController = ScrollController();
@@ -57,13 +74,13 @@ class _AddPropertyState extends State<AddProperty> {
   String propertyDescription = "";
   String propertyAddressLineOne = "";
   String propertyAddressLineTwo = "";
-  String propertyPinCode = "";
+  String propertyPassCode = "";
   String propertyCity = "";
   String propertyCategory = "";
   String propertyCondition = "";
   String propertyPrice = "";
   String propertyManufacturer = "";
-  bool propertyAvailableImmediately = false;
+  bool propertyAvailableImmediately = true;
   DateTime propertyAvailableFrom = DateTime.now();
 
   @override
@@ -118,6 +135,8 @@ class _AddPropertyState extends State<AddProperty> {
               children: <Widget>[
                 SizedBox(height: 10),
                 addImages(),
+                SizedBox(height: 10),
+                sellOrRentSwitch(),
                 SizedBox(
                   height: 10,
                 ),
@@ -125,6 +144,8 @@ class _AddPropertyState extends State<AddProperty> {
                 SizedBox(
                   height: 10,
                 ),
+                isPropertyForSellOrRent[1] ? getRentDuration() : Container(),
+                isPropertyForSellOrRent[1] ? SizedBox(height: 10) : Container(),
                 Row(
                   children: <Widget>[
                     Expanded(child: getPropertyType()),
@@ -152,14 +173,18 @@ class _AddPropertyState extends State<AddProperty> {
                   height: 10,
                 ),
                 getAmenityField(),
-                SizedBox(height: 16),
+                SizedBox(height: 10),
+                getPropertyFurnitureDetailField(),
+                isPropertyForSellOrRent[1] ? SizedBox(height: 10) : Container(),
+                isPropertyForSellOrRent[1] ? getPetPolicyField() : Container(),
+                SizedBox(height: 10),
                 getAmountField(),
-                SizedBox(height: 16),
+                SizedBox(height: 10),
                 getPropertyAddressLineOne(),
                 SizedBox(height: 10),
                 getPropertyAddressLineTwo(),
                 SizedBox(height: 10),
-                getPropertyPinCode(),
+                getPropertyPassCode(),
                 SizedBox(height: 10),
                 getPropertyCity(),
                 SizedBox(height: 16),
@@ -172,9 +197,9 @@ class _AddPropertyState extends State<AddProperty> {
                     ? Container()
                     : SizedBox(height: 10),
                 getPropertyDescription(),
-                SizedBox(height: 40),
+                SizedBox(height: 20),
                 getSubmitButton(),
-                SizedBox(height: 40),
+                SizedBox(height: 30),
               ],
             ),
           ),
@@ -376,20 +401,247 @@ class _AddPropertyState extends State<AddProperty> {
     );
   }
 
-  Widget getPropertyPinCode() {
+  Widget getPropertyPassCode() {
     return CustomizedTextFormField(
-      labelText: "Pincode",
+      labelText: "Passcode",
       keyboardType: TextInputType.number,
       validator: (val) {
         if (val.isNotEmpty) {
           return null;
         }
-        return "Please enter pincode";
+        return "Please enter passcode";
       },
       onChanged: (val) {
-        propertyPinCode = val.toString();
+        propertyPassCode = val.toString();
       },
     );
+  }
+
+  Widget sellOrRentSwitch() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Property for",
+          style: TextStyle(color: darkGrey, fontSize: 14),
+        ),
+        SizedBox(
+          height: 8,
+        ),
+        Container(
+          width: MediaQuery.of(context).size.width - 40,
+          height: 30,
+          child: Row(
+            children: [
+              ToggleButtons(
+                borderRadius: BorderRadius.circular(10),
+                fillColor: navyBlue,
+                borderColor: navyBlue,
+                constraints: BoxConstraints.expand(
+                    height: 30,
+                    width: (MediaQuery.of(context).size.width - 45) / 2),
+                selectedBorderColor: navyBlue,
+                children: <Widget>[
+                  sellButton(),
+                  rentButton(),
+                ],
+                isSelected: isPropertyForSellOrRent,
+                onPressed: (int index) {
+                  if (index == 0) {
+                    isPropertyForSellOrRent[0] = true;
+                    isPropertyForSellOrRent[1] = false;
+                  } else {
+                    isPropertyForSellOrRent[0] = false;
+                    isPropertyForSellOrRent[1] = true;
+                  }
+                  setState(() {});
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget sellButton() {
+    return Container(
+      child: Text(
+        "Sell",
+        style: TextStyle(
+            fontWeight:
+                isPropertyForSellOrRent[0] ? FontWeight.w600 : FontWeight.w400,
+            fontSize: 16,
+            color: isPropertyForSellOrRent[0] ? Colors.white : blackFont),
+      ),
+    );
+  }
+
+  Widget rentButton() {
+    return Container(
+      child: Text(
+        "Rent",
+        style: TextStyle(
+            fontWeight:
+                isPropertyForSellOrRent[1] ? FontWeight.w600 : FontWeight.w400,
+            fontSize: 16,
+            color: isPropertyForSellOrRent[1] ? Colors.white : blackFont),
+      ),
+    );
+  }
+
+  Widget getRentDuration() {
+    return CustomizedDropDownField(
+      titleColor: darkGrey,
+      title: "Rent Duration",
+      child: ListTile(
+        dense: true,
+        title: Text(
+          getRentDurationSelection(),
+          style: TextStyle(
+              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+          maxLines: 1,
+          softWrap: false,
+          overflow: TextOverflow.ellipsis,
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          selectRentDuration();
+        },
+      ),
+    );
+  }
+
+  String getRentDurationSelection() {
+    String rentDuration = "";
+    propertyRentDuration.forEach((key, value) {
+      if (value) {
+        rentDuration += "$key, ";
+      }
+    });
+    if (rentDuration.length > 2) {
+      rentDuration = rentDuration.substring(0, rentDuration.length - 2);
+    }
+    return rentDuration;
+  }
+
+  void selectRentDuration() {
+    showDialog<String>(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) =>
+            StatefulBuilder(builder: (context, rentDurationStateSetter) {
+              return AlertDialog(
+                insetPadding:
+                    EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                contentPadding: EdgeInsets.zero,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+                content: Container(
+                  width: MediaQuery.of(context).size.width - 40,
+                  child: Card(
+                    elevation: 2,
+                    shadowColor: Colors.transparent,
+                    margin: EdgeInsets.zero,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            Column(
+                              children: propertyRentDuration.entries
+                                  .map<Widget>((entry) {
+                                if (entry.value) {
+                                  return Container(
+                                    color: selectedListItemBackgroundBlue,
+                                    child: ListTile(
+                                      dense: true,
+                                      title: Text(
+                                        entry.key,
+                                        overflow: TextOverflow.fade,
+                                        softWrap: false,
+                                        style: TextStyle(
+                                            color: navyBlue,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600),
+                                      ),
+                                      trailing: Icon(
+                                        SlydoAppIcon.checked,
+                                        color: navyBlue,
+                                        size: 12,
+                                      ),
+                                      onTap: () {
+                                        propertyRentDuration[entry.key] =
+                                            !propertyRentDuration[entry.key];
+                                        rentDurationStateSetter(() {});
+                                        setState(() {});
+                                      },
+                                    ),
+                                  );
+                                }
+                                return ListTile(
+                                  title: Text(
+                                    entry.key,
+                                    softWrap: false,
+                                    overflow: TextOverflow.fade,
+                                    style: TextStyle(
+                                        color: blackFont,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400),
+                                  ),
+                                  dense: true,
+                                  onTap: () {
+                                    propertyRentDuration[entry.key] =
+                                        !propertyRentDuration[entry.key];
+                                    rentDurationStateSetter(() {});
+                                    setState(() {});
+                                  },
+                                );
+                              }).toList(),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: <Widget>[
+                                MaterialButton(
+                                  child: Text(
+                                    "Cancel",
+                                    style: TextStyle(
+                                        color: blackFont,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                                MaterialButton(
+                                  child: Text(
+                                    "Ok",
+                                    style: TextStyle(
+                                        color: blackFont,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }));
   }
 
   Widget getPropertyCity() {
@@ -936,89 +1188,446 @@ class _AddPropertyState extends State<AddProperty> {
   }
 
   Widget getAmenityField() {
-    return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            "Amenities",
-            style: TextStyle(color: darkGrey, fontSize: 14),
-          ),
-          SizedBox(
-            height: 12,
-          ),
-          Wrap(
-            direction: Axis.horizontal,
-            runSpacing: 12,
-            spacing: 16,
-            children: [
-              CustomizedCheckBoxField(
-                  onTap: () {
-                    amenityIsLaundryAvailable = !amenityIsLaundryAvailable;
-                    setState(() {});
-                  },
-                  isChecked: amenityIsLaundryAvailable,
-                  title: "Laundry"),
-              CustomizedCheckBoxField(
-                  onTap: () {
-                    amenityIsACAvailable = !amenityIsACAvailable;
-                    setState(() {});
-                  },
-                  isChecked: amenityIsACAvailable,
-                  title: "A/C"),
-              CustomizedCheckBoxField(
-                  onTap: () {
-                    amenityIsHeatingAvailable = !amenityIsHeatingAvailable;
-                    setState(() {});
-                  },
-                  isChecked: amenityIsHeatingAvailable,
-                  title: "Heating"),
-              CustomizedCheckBoxField(
-                  onTap: () {
-                    amenityIsParkingAvailable = !amenityIsParkingAvailable;
-                    setState(() {});
-                  },
-                  isChecked: amenityIsParkingAvailable,
-                  title: "Parking"),
-              CustomizedCheckBoxField(
-                  onTap: () {
-                    amenityIsGatedEntryAvailable =
-                        !amenityIsGatedEntryAvailable;
-                    setState(() {});
-                  },
-                  isChecked: amenityIsGatedEntryAvailable,
-                  title: "Gated entry"),
-              CustomizedCheckBoxField(
-                  onTap: () {
-                    amenityIsDoormanAvailable = !amenityIsDoormanAvailable;
-                    setState(() {});
-                  },
-                  isChecked: amenityIsDoormanAvailable,
-                  title: "Doorman"),
-              CustomizedCheckBoxField(
-                  onTap: () {
-                    amenityIsGymAvailable = !amenityIsGymAvailable;
-                    setState(() {});
-                  },
-                  isChecked: amenityIsGymAvailable,
-                  title: "Gym"),
-              CustomizedCheckBoxField(
-                  onTap: () {
-                    amenityIsPoolAvailable = !amenityIsPoolAvailable;
-                    setState(() {});
-                  },
-                  isChecked: amenityIsPoolAvailable,
-                  title: "Pool"),
-              CustomizedCheckBoxField(
-                  onTap: () {
-                    amenityIsDishwasherAvailable =
-                        !amenityIsDishwasherAvailable;
-                    setState(() {});
-                  },
-                  isChecked: amenityIsDishwasherAvailable,
-                  title: "Dishwasher"),
-            ],
-          )
-        ]);
+    return CustomizedDropDownField(
+      titleColor: darkGrey,
+      title: "Amenity",
+      child: ListTile(
+        dense: true,
+        title: Text(
+          getAmenities(),
+          style: TextStyle(
+              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+          maxLines: 1,
+          softWrap: false,
+          overflow: TextOverflow.ellipsis,
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          selectAmenities();
+        },
+      ),
+    );
+  }
+
+  String getAmenities() {
+    String amenities = "";
+    propertyAmenities.forEach((key, value) {
+      if (value) {
+        amenities += "$key, ";
+      }
+    });
+    if (amenities.length > 2) {
+      amenities = amenities.substring(0, amenities.length - 2);
+    }
+    return amenities;
+  }
+
+  void selectAmenities() {
+    showDialog<String>(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) =>
+            StatefulBuilder(builder: (context, amenitiesStateSetter) {
+              return AlertDialog(
+                insetPadding:
+                    EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                contentPadding: EdgeInsets.zero,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+                content: Container(
+                  width: MediaQuery.of(context).size.width - 40,
+                  child: Card(
+                    elevation: 2,
+                    shadowColor: Colors.transparent,
+                    margin: EdgeInsets.zero,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            Column(
+                              children: propertyAmenities.entries
+                                  .map<Widget>((entry) {
+                                if (entry.value) {
+                                  return Container(
+                                    color: selectedListItemBackgroundBlue,
+                                    child: ListTile(
+                                      dense: true,
+                                      title: Text(
+                                        entry.key,
+                                        overflow: TextOverflow.fade,
+                                        softWrap: false,
+                                        style: TextStyle(
+                                            color: navyBlue,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600),
+                                      ),
+                                      trailing: Icon(
+                                        SlydoAppIcon.checked,
+                                        color: navyBlue,
+                                        size: 12,
+                                      ),
+                                      onTap: () {
+                                        propertyAmenities[entry.key] =
+                                            !propertyAmenities[entry.key];
+                                        amenitiesStateSetter(() {});
+                                        setState(() {});
+                                      },
+                                    ),
+                                  );
+                                }
+                                return ListTile(
+                                  title: Text(
+                                    entry.key,
+                                    softWrap: false,
+                                    overflow: TextOverflow.fade,
+                                    style: TextStyle(
+                                        color: blackFont,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400),
+                                  ),
+                                  dense: true,
+                                  onTap: () {
+                                    propertyAmenities[entry.key] =
+                                        !propertyAmenities[entry.key];
+                                    amenitiesStateSetter(() {});
+                                    setState(() {});
+                                  },
+                                );
+                              }).toList(),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: <Widget>[
+                                MaterialButton(
+                                  child: Text(
+                                    "Cancel",
+                                    style: TextStyle(
+                                        color: blackFont,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                                MaterialButton(
+                                  child: Text(
+                                    "Ok",
+                                    style: TextStyle(
+                                        color: blackFont,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }));
+  }
+
+  Widget getPetPolicyField() {
+    return CustomizedDropDownField(
+      titleColor: darkGrey,
+      title: "Pet Policy",
+      child: ListTile(
+        dense: true,
+        title: Text(
+          getPetPolicySelection(),
+          style: TextStyle(
+              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+          maxLines: 1,
+          softWrap: false,
+          overflow: TextOverflow.ellipsis,
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          selectPetPolicy();
+        },
+      ),
+    );
+  }
+
+  String getPetPolicySelection() {
+    String petPolicy = "";
+    propertyPetPolicy.forEach((key, value) {
+      if (value) {
+        petPolicy += "$key, ";
+      }
+    });
+    if (petPolicy.length > 2) {
+      petPolicy = petPolicy.substring(0, petPolicy.length - 2);
+    }
+    return petPolicy;
+  }
+
+  void selectPetPolicy() {
+    showDialog<String>(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) =>
+            StatefulBuilder(builder: (context, petPolicyStateSetter) {
+              return AlertDialog(
+                insetPadding:
+                    EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                contentPadding: EdgeInsets.zero,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+                content: Container(
+                  width: MediaQuery.of(context).size.width - 40,
+                  child: Card(
+                    elevation: 2,
+                    shadowColor: Colors.transparent,
+                    margin: EdgeInsets.zero,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            Column(
+                              children: propertyPetPolicy.entries
+                                  .map<Widget>((entry) {
+                                if (entry.value) {
+                                  return Container(
+                                    color: selectedListItemBackgroundBlue,
+                                    child: ListTile(
+                                      dense: true,
+                                      title: Text(
+                                        entry.key,
+                                        overflow: TextOverflow.fade,
+                                        softWrap: false,
+                                        style: TextStyle(
+                                            color: navyBlue,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600),
+                                      ),
+                                      trailing: Icon(
+                                        SlydoAppIcon.checked,
+                                        color: navyBlue,
+                                        size: 12,
+                                      ),
+                                      onTap: () {
+                                        propertyPetPolicy[entry.key] =
+                                            !propertyPetPolicy[entry.key];
+                                        petPolicyStateSetter(() {});
+                                        setState(() {});
+                                      },
+                                    ),
+                                  );
+                                }
+                                return ListTile(
+                                  title: Text(
+                                    entry.key,
+                                    softWrap: false,
+                                    overflow: TextOverflow.fade,
+                                    style: TextStyle(
+                                        color: blackFont,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400),
+                                  ),
+                                  dense: true,
+                                  onTap: () {
+                                    propertyPetPolicy[entry.key] =
+                                        !propertyPetPolicy[entry.key];
+                                    petPolicyStateSetter(() {});
+                                    setState(() {});
+                                  },
+                                );
+                              }).toList(),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: <Widget>[
+                                MaterialButton(
+                                  child: Text(
+                                    "Cancel",
+                                    style: TextStyle(
+                                        color: blackFont,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                                MaterialButton(
+                                  child: Text(
+                                    "Ok",
+                                    style: TextStyle(
+                                        color: blackFont,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }));
+  }
+
+  Widget getPropertyFurnitureDetailField() {
+    return CustomizedDropDownField(
+      titleColor: darkGrey,
+      title: "Furniture",
+      child: ListTile(
+        dense: true,
+        title: Text(
+          getPropertyFurnitureDetail(),
+          style: TextStyle(
+              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+          maxLines: 1,
+          softWrap: false,
+          overflow: TextOverflow.ellipsis,
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          selectFurnitureDetail();
+        },
+      ),
+    );
+  }
+
+  String getPropertyFurnitureDetail() {
+    return isPropertyFurnished ? "Furnished" : "Unfurnished";
+  }
+
+  void selectFurnitureDetail() {
+    showDialog<String>(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) =>
+            StatefulBuilder(builder: (context, furnitureDetailStateSetter) {
+              return AlertDialog(
+                  insetPadding:
+                      EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                  contentPadding: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  content: Container(
+                    width: MediaQuery.of(context).size.width - 40,
+                    child: Card(
+                      elevation: 2,
+                      shadowColor: Colors.transparent,
+                      margin: EdgeInsets.zero,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              color: isPropertyFurnished
+                                  ? selectedListItemBackgroundBlue
+                                  : Colors.white,
+                              child: ListTile(
+                                dense: true,
+                                title: Text(
+                                  "Furnished",
+                                  overflow: TextOverflow.fade,
+                                  softWrap: false,
+                                  style: TextStyle(
+                                      color: isPropertyFurnished
+                                          ? navyBlue
+                                          : blackFont,
+                                      fontSize: 16,
+                                      fontWeight: isPropertyFurnished
+                                          ? FontWeight.w600
+                                          : FontWeight.w400),
+                                ),
+                                trailing: isPropertyFurnished
+                                    ? Icon(
+                                        SlydoAppIcon.checked,
+                                        color: navyBlue,
+                                        size: 12,
+                                      )
+                                    : Container(
+                                        width: 1,
+                                      ),
+                                onTap: () {
+                                  isPropertyFurnished = !isPropertyFurnished;
+                                  furnitureDetailStateSetter(() {});
+                                  setState(() {});
+                                  Navigator.pop(context);
+                                },
+                              ),
+                            ),
+                            Container(
+                              color: isPropertyFurnished
+                                  ? Colors.white
+                                  : selectedListItemBackgroundBlue,
+                              child: ListTile(
+                                dense: true,
+                                title: Text(
+                                  "Unfurnished",
+                                  overflow: TextOverflow.fade,
+                                  softWrap: false,
+                                  style: TextStyle(
+                                      color: isPropertyFurnished
+                                          ? blackFont
+                                          : navyBlue,
+                                      fontSize: 16,
+                                      fontWeight: isPropertyFurnished
+                                          ? FontWeight.w400
+                                          : FontWeight.w600),
+                                ),
+                                trailing: isPropertyFurnished
+                                    ? Container(
+                                        width: 1,
+                                      )
+                                    : Icon(
+                                        SlydoAppIcon.checked,
+                                        color: navyBlue,
+                                        size: 12,
+                                      ),
+                                onTap: () {
+                                  isPropertyFurnished = !isPropertyFurnished;
+                                  furnitureDetailStateSetter(() {});
+                                  setState(() {});
+                                  Navigator.pop(context);
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ));
+            }));
   }
 
   Widget getAmountField() {
