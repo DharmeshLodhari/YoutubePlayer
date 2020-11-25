@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
@@ -16,9 +17,11 @@ import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 
 class AddProperty extends StatefulWidget {
   @override
@@ -53,10 +56,8 @@ class _AddPropertyState extends State<AddProperty> {
   };
 
   Map<String, bool> propertyRentDuration = {
-    "At Least A Year": true,
-    "At Few Months": false,
-    "At Few Weeks": false,
-    "At Few Days": false
+    "Short term": true,
+    "Long term": false,
   };
 
   Map<String, bool> propertyPetPolicy = {
@@ -66,11 +67,17 @@ class _AddPropertyState extends State<AddProperty> {
 
   List<bool> isPropertyForSellOrRent = [true, false];
   bool isPropertyFurnished = false;
+  bool isPropertyForLongTerm = true;
 
   int imageCount = 5;
-  ScrollController _scrollController = ScrollController();
+  ScrollController _imageScrollController = ScrollController();
+  ScrollController _videoScrollController = ScrollController();
+
   List<PickedFile> propertyImages = List<PickedFile>();
-  String propertyName = "";
+  List<PickedFile> propertyVideos = List<PickedFile>();
+  List<Uint8List> propertyVideoThumbnail = List<Uint8List>();
+
+  String propertyTagLine = "";
   String propertyDescription = "";
   String propertyAddressLineOne = "";
   String propertyAddressLineTwo = "";
@@ -136,11 +143,13 @@ class _AddPropertyState extends State<AddProperty> {
                 SizedBox(height: 10),
                 addImages(),
                 SizedBox(height: 10),
+                addVideos(),
+                SizedBox(height: 10),
                 sellOrRentSwitch(),
                 SizedBox(
                   height: 10,
                 ),
-                addTitleField(),
+                addTagNameField(),
                 SizedBox(
                   height: 10,
                 ),
@@ -221,7 +230,7 @@ class _AddPropertyState extends State<AddProperty> {
     return Container(
       height: 100,
       child: ListView.builder(
-        controller: _scrollController,
+        controller: _imageScrollController,
         scrollDirection: Axis.horizontal,
         itemCount: propertyImages.length + 1,
         itemBuilder: (context, index) => Container(
@@ -356,17 +365,178 @@ class _AddPropertyState extends State<AddProperty> {
     );
   }
 
-  Widget addTitleField() {
+  Widget addVideos() {
+    return Container(
+      height: 100,
+      child: ListView.builder(
+        controller: _videoScrollController,
+        scrollDirection: Axis.horizontal,
+        itemCount: propertyVideos.length + 1,
+        itemBuilder: (context, index) => Container(
+          padding: EdgeInsets.only(right: 6),
+          child: index != propertyVideos.length
+              ? showVideo(index)
+              : propertyVideos.length != imageCount
+                  ? addVideoButton()
+                  : null,
+        ),
+      ),
+    );
+  }
+
+  Widget addVideoButton() {
+    return CustomBoxShadow(
+      child: Card(
+        elevation: 3,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shadowColor: boxShadowTwo,
+        margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+        child: Container(
+          width: 100,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: InkWell(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Icon(
+                  SlydoAppIcon.movies_moreapps,
+                  color: darkGrey,
+                ),
+                SizedBox(
+                  height: 4,
+                ),
+                Text(
+                  "Add Video",
+                  style: TextStyle(color: darkGrey, fontSize: 14),
+                ),
+              ],
+            ),
+            onTap: () {
+              pickVideo();
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  void pickVideo() async {
+    final videoSource = await showDialog<ImageSource>(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text("Select video source"),
+              actions: <Widget>[
+                MaterialButton(
+                  child: Text(AppLocalization.of(context).camera),
+                  onPressed: () => Navigator.pop(context, ImageSource.camera),
+                ),
+                MaterialButton(
+                  child: Text(AppLocalization.of(context).gallary),
+                  onPressed: () => Navigator.pop(context, ImageSource.gallery),
+                )
+              ],
+            ));
+
+    if (videoSource != null) {
+      ImagePicker().getVideo(source: videoSource).then((value) {
+        if (value != null) {
+          setState(() {
+            propertyVideos.add(value);
+            getVideoThumbnail(propertyVideos.length - 1);
+          });
+        }
+      });
+    }
+  }
+
+  Widget showVideo(int index) {
+    return Container(
+      height: 100,
+      child: Stack(
+        children: <Widget>[
+          Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            shadowColor: dividerColor,
+            margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+            child: index < propertyVideoThumbnail.length
+                ? Container(
+                    width: 100,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      image: DecorationImage(
+                          image: MemoryImage(propertyVideoThumbnail[index]),
+                          fit: BoxFit.fill),
+                    ),
+                  )
+                : Container(
+                    width: 100,
+                    height: 100,
+                    child: Center(
+                      child: CircularLoadingIndicator(),
+                    ),
+                  ),
+          ),
+          Positioned(
+            right: 0,
+            top: 0,
+            child: IconButton(
+              padding: EdgeInsets.only(right: 6, top: 6),
+              alignment: Alignment.topRight,
+              icon: Container(
+                padding: EdgeInsets.all(2.0),
+                decoration: BoxDecoration(
+                  color: iconBtnGrey,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Icon(
+                  SlydoAppIcon.remove,
+                  color: blackFont,
+                  size: 15,
+                ),
+              ),
+              onPressed: () {
+                setState(() {
+                  propertyVideos.removeAt(index);
+                  propertyVideoThumbnail.removeAt(index);
+                });
+              },
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  void getVideoThumbnail(int index) async {
+    final uInt8list = await VideoThumbnail.thumbnailData(
+      video: propertyVideos[index].path,
+      imageFormat: ImageFormat.JPEG,
+      maxWidth:
+          100, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
+      quality: 25,
+    );
+    propertyVideoThumbnail.add(uInt8list);
+
+    setState(() {});
+  }
+
+  Widget addTagNameField() {
     return CustomizedTextFormField(
-      labelText: "Property name",
+      labelText: "Tag line",
+      hintText: "A beautiful lake side cottage",
       validator: (val) {
         if (val.isNotEmpty) {
           return null;
         }
-        return "Please enter property name";
+        return "Please enter tag line";
       },
       onChanged: (val) {
-        propertyName = val;
+        propertyTagLine = val;
       },
     );
   }
@@ -516,16 +686,7 @@ class _AddPropertyState extends State<AddProperty> {
   }
 
   String getRentDurationSelection() {
-    String rentDuration = "";
-    propertyRentDuration.forEach((key, value) {
-      if (value) {
-        rentDuration += "$key, ";
-      }
-    });
-    if (rentDuration.length > 2) {
-      rentDuration = rentDuration.substring(0, rentDuration.length - 2);
-    }
-    return rentDuration;
+    return isPropertyForLongTerm ? "Long term" : "Short term";
   }
 
   void selectRentDuration() {
@@ -551,91 +712,82 @@ class _AddPropertyState extends State<AddProperty> {
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(10),
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            Column(
-                              children: propertyRentDuration.entries
-                                  .map<Widget>((entry) {
-                                if (entry.value) {
-                                  return Container(
-                                    color: selectedListItemBackgroundBlue,
-                                    child: ListTile(
-                                      dense: true,
-                                      title: Text(
-                                        entry.key,
-                                        overflow: TextOverflow.fade,
-                                        softWrap: false,
-                                        style: TextStyle(
-                                            color: navyBlue,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600),
-                                      ),
-                                      trailing: Icon(
-                                        SlydoAppIcon.checked,
-                                        color: navyBlue,
-                                        size: 12,
-                                      ),
-                                      onTap: () {
-                                        propertyRentDuration[entry.key] =
-                                            !propertyRentDuration[entry.key];
-                                        rentDurationStateSetter(() {});
-                                        setState(() {});
-                                      },
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            color: isPropertyForLongTerm
+                                ? selectedListItemBackgroundBlue
+                                : Colors.white,
+                            child: ListTile(
+                              dense: true,
+                              title: Text(
+                                "Long term",
+                                overflow: TextOverflow.fade,
+                                softWrap: false,
+                                style: TextStyle(
+                                    color: isPropertyForLongTerm
+                                        ? navyBlue
+                                        : blackFont,
+                                    fontSize: 16,
+                                    fontWeight: isPropertyForLongTerm
+                                        ? FontWeight.w600
+                                        : FontWeight.w400),
+                              ),
+                              trailing: isPropertyForLongTerm
+                                  ? Icon(
+                                      SlydoAppIcon.checked,
+                                      color: navyBlue,
+                                      size: 12,
+                                    )
+                                  : Container(
+                                      width: 1,
                                     ),
-                                  );
-                                }
-                                return ListTile(
-                                  title: Text(
-                                    entry.key,
-                                    softWrap: false,
-                                    overflow: TextOverflow.fade,
-                                    style: TextStyle(
-                                        color: blackFont,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w400),
-                                  ),
-                                  dense: true,
-                                  onTap: () {
-                                    propertyRentDuration[entry.key] =
-                                        !propertyRentDuration[entry.key];
-                                    rentDurationStateSetter(() {});
-                                    setState(() {});
-                                  },
-                                );
-                              }).toList(),
+                              onTap: () {
+                                isPropertyForLongTerm = !isPropertyForLongTerm;
+                                rentDurationStateSetter(() {});
+                                setState(() {});
+                                Navigator.pop(context);
+                              },
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: <Widget>[
-                                MaterialButton(
-                                  child: Text(
-                                    "Cancel",
-                                    style: TextStyle(
-                                        color: blackFont,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w400),
-                                  ),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                                MaterialButton(
-                                  child: Text(
-                                    "Ok",
-                                    style: TextStyle(
-                                        color: blackFont,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w400),
-                                  ),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                              ],
+                          ),
+                          Container(
+                            color: isPropertyForLongTerm
+                                ? Colors.white
+                                : selectedListItemBackgroundBlue,
+                            child: ListTile(
+                              dense: true,
+                              title: Text(
+                                "Short term",
+                                overflow: TextOverflow.fade,
+                                softWrap: false,
+                                style: TextStyle(
+                                    color: isPropertyForLongTerm
+                                        ? blackFont
+                                        : navyBlue,
+                                    fontSize: 16,
+                                    fontWeight: isPropertyForLongTerm
+                                        ? FontWeight.w400
+                                        : FontWeight.w600),
+                              ),
+                              trailing: isPropertyForLongTerm
+                                  ? Container(
+                                      width: 1,
+                                    )
+                                  : Icon(
+                                      SlydoAppIcon.checked,
+                                      color: navyBlue,
+                                      size: 12,
+                                    ),
+                              onTap: () {
+                                isPropertyForLongTerm = !isPropertyForLongTerm;
+                                rentDurationStateSetter(() {});
+                                setState(() {});
+                                Navigator.pop(context);
+                              },
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -1785,7 +1937,7 @@ class _AddPropertyState extends State<AddProperty> {
 
   @override
   void dispose() {
-    _scrollController.dispose();
+    _imageScrollController.dispose();
     super.dispose();
   }
 }

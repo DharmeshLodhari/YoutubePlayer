@@ -686,9 +686,9 @@ class _SendPaymentState extends State<SendPayment> {
         Switch(
           value: sendMoneyAnonymous,
           onChanged: (value) {
-            setState(() {
-              sendMoneyAnonymous = value;
-            });
+            sendMoneyAnonymous = value;
+            setState(() {});
+            if (value) sendMoneyAnonymousAlert();
           },
           activeTrackColor: navyBlueLight,
           activeColor: navyBlue,
@@ -696,6 +696,98 @@ class _SendPaymentState extends State<SendPayment> {
         ),
       ],
     );
+  }
+
+  void sendMoneyAnonymousAlert() {
+    showDialog<String>(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) =>
+            StatefulBuilder(builder: (context, rentDurationStateSetter) {
+              return AlertDialog(
+                insetPadding:
+                    EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                contentPadding: EdgeInsets.zero,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+                content: Container(
+                  width: MediaQuery.of(context).size.width - 40,
+                  child: Card(
+                    elevation: 2,
+                    shadowColor: Colors.transparent,
+                    margin: EdgeInsets.zero,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Container(
+                        padding: EdgeInsets.only(top: 16, bottom: 8),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    color: Colors.white,
+                                    child: Text(
+                                      "Note",
+                                      overflow: TextOverflow.fade,
+                                      softWrap: false,
+                                      style: TextStyle(
+                                          color: blackFont,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w700),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 12,
+                                  ),
+                                  Container(
+                                    color: Colors.white,
+                                    child: Text(
+                                      "This transaction will be done anonymously recipient will not be able to see sender information. ",
+                                      style: TextStyle(
+                                          color: blackFont,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w400),
+                                      textAlign: TextAlign.justify,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                FlatButton(
+                                  padding: EdgeInsets.zero,
+                                  child: Text("OK",
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          color: blackFont,
+                                          fontWeight: FontWeight.w600)),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                )
+                              ],
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }));
   }
 
   Widget getSubmitButton() {
@@ -746,7 +838,8 @@ class _SendPaymentState extends State<SendPayment> {
               "description": reference.trim(),
               "latitude": userLocation.latitude,
               "longitude": userLocation.longitude,
-              "deviceData": deviceData
+              "deviceData": deviceData,
+              "anonymous": sendMoneyAnonymous
             };
 
             BottomSheetPassCode(

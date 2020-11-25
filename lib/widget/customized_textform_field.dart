@@ -17,6 +17,7 @@ class CustomizedTextFormField extends StatefulWidget {
   bool enabled;
   bool isAmount;
   String labelText;
+  String hintText;
   Color labelColor;
   int maxLength;
   int maxLines;
@@ -34,6 +35,7 @@ class CustomizedTextFormField extends StatefulWidget {
       this.isReadOnly = false,
       this.isAmount = false,
       this.labelText = "",
+      this.hintText = "",
       this.labelColor,
       this.maxLength,
       this.maxLines = 1,
@@ -97,6 +99,12 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
           textCapitalization: widget.textCapitalization,
           cursorColor: navyBlue,
           decoration: InputDecoration(
+            hintText: widget.hintText != null ? widget.hintText : null,
+            hintStyle: TextStyle(
+              color: darkGrey.withOpacity(0.5),
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
+            ),
             suffixIcon: widget.isPassword
                 ? IconButton(
                     icon: Icon(

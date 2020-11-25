@@ -60,6 +60,7 @@ dependencies:
   percent_indicator: ^2.1.8
   assets_audio_player: ^2.0.12
   search_widget: ^1.0.2
+  video_thumbnail: ^0.2.4
 
 
 
