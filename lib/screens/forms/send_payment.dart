@@ -190,7 +190,11 @@ class _SendPaymentState extends State<SendPayment> {
           color: navyBlue,
           size: 24,
         ),
-        onPressed: () {
+        onPressed: () async {
+          if (FocusScope.of(context).hasFocus) {
+            FocusScope.of(context).unfocus();
+            await Future.delayed(Duration(milliseconds: 300));
+          }
           _payee = null;
           Navigator.pop(context);
         },
@@ -710,81 +714,109 @@ class _SendPaymentState extends State<SendPayment> {
                 contentPadding: EdgeInsets.zero,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10)),
-                content: Container(
-                  width: MediaQuery.of(context).size.width - 40,
-                  child: Card(
-                    elevation: 2,
-                    shadowColor: Colors.transparent,
-                    margin: EdgeInsets.zero,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Container(
-                        padding: EdgeInsets.only(top: 16, bottom: 8),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 16,
-                              ),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    color: Colors.white,
-                                    child: Text(
-                                      "Note",
-                                      overflow: TextOverflow.fade,
-                                      softWrap: false,
-                                      style: TextStyle(
-                                          color: blackFont,
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w700),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 12,
-                                  ),
-                                  Container(
-                                    color: Colors.white,
-                                    child: Text(
-                                      "This transaction will be done anonymously recipient will not be able to see sender information. ",
-                                      style: TextStyle(
-                                          color: blackFont,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w400),
-                                      textAlign: TextAlign.justify,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
+                content: Stack(
+                  overflow: Overflow.visible,
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width - 40,
+                      child: Card(
+                        elevation: 2,
+                        shadowColor: Colors.transparent,
+                        margin: EdgeInsets.zero,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Container(
+                            padding: EdgeInsets.only(top: 16, bottom: 8),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                FlatButton(
-                                  padding: EdgeInsets.zero,
-                                  child: Text("OK",
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          color: blackFont,
-                                          fontWeight: FontWeight.w600)),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                  ),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        color: Colors.white,
+                                        child: Text(
+                                          "Note",
+                                          overflow: TextOverflow.fade,
+                                          softWrap: false,
+                                          style: TextStyle(
+                                              color: blackFont,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w700),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: 12,
+                                      ),
+                                      Container(
+                                        color: Colors.white,
+                                        child: Text(
+                                          "This transaction will be done anonymously recipient will not be able to see sender information. ",
+                                          style: TextStyle(
+                                              color: blackFont,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w400),
+                                          textAlign: TextAlign.justify,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    FlatButton(
+                                      padding: EdgeInsets.zero,
+                                      child: Text("OK",
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              color: blackFont,
+                                              fontWeight: FontWeight.w600)),
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                    )
+                                  ],
                                 )
                               ],
-                            )
-                          ],
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
+                    Positioned(
+                      left: (MediaQuery.of(context).size.width - 100) / 2,
+                      top: -30,
+                      child: ClipOval(
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              border:
+                                  Border.all(color: dividerColor, width: 1.5),
+                              borderRadius: BorderRadius.circular(60)),
+                          height: 60,
+                          width: 60,
+                          child: Center(
+                            child: Image.asset(
+                              "assets/images/anonymous.png",
+                              height: 45,
+                              fit: BoxFit.fitHeight,
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
                 ),
               );
             }));

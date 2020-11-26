@@ -130,6 +130,10 @@ class _RequestPaymentState extends State<RequestPayment> {
 
     return WillPopScope(
       onWillPop: () async {
+        if (FocusScope.of(context).hasFocus) {
+          FocusScope.of(context).unfocus();
+          await Future.delayed(Duration(milliseconds: 300));
+        }
         _payee = null;
         customerProfileBloc.customer = null;
         return true;

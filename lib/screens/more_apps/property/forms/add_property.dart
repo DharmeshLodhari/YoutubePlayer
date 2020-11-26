@@ -140,16 +140,66 @@ class _AddPropertyState extends State<AddProperty> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                SizedBox(height: 10),
+                SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  children: [
+                    Text(
+                      "Media",
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: blackFont),
+                    )
+                  ],
+                ),
+                SizedBox(
+                  height: 10,
+                ),
                 addImages(),
                 SizedBox(height: 10),
                 addVideos(),
-                SizedBox(height: 10),
+                SizedBox(
+                  height: 16,
+                ),
+                Row(
+                  children: [
+                    Text(
+                      "Property detail",
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: blackFont),
+                    )
+                  ],
+                ),
+                SizedBox(
+                  height: 10,
+                ),
                 sellOrRentSwitch(),
                 SizedBox(
                   height: 10,
                 ),
                 addTagNameField(),
+                SizedBox(
+                  height: 10,
+                ),
+                getPropertyDescription(),
+                SizedBox(
+                  height: 16,
+                ),
+                Row(
+                  children: [
+                    Text(
+                      "About property",
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: blackFont),
+                    )
+                  ],
+                ),
                 SizedBox(
                   height: 10,
                 ),
@@ -186,16 +236,6 @@ class _AddPropertyState extends State<AddProperty> {
                 getPropertyFurnitureDetailField(),
                 isPropertyForSellOrRent[1] ? SizedBox(height: 10) : Container(),
                 isPropertyForSellOrRent[1] ? getPetPolicyField() : Container(),
-                SizedBox(height: 10),
-                getAmountField(),
-                SizedBox(height: 10),
-                getPropertyAddressLineOne(),
-                SizedBox(height: 10),
-                getPropertyAddressLineTwo(),
-                SizedBox(height: 10),
-                getPropertyPassCode(),
-                SizedBox(height: 10),
-                getPropertyCity(),
                 SizedBox(height: 16),
                 getIsAvailableImmediately(),
                 SizedBox(height: 16),
@@ -205,7 +245,31 @@ class _AddPropertyState extends State<AddProperty> {
                 propertyAvailableImmediately
                     ? Container()
                     : SizedBox(height: 10),
-                getPropertyDescription(),
+                getAmountField(),
+                SizedBox(
+                  height: 16,
+                ),
+                Row(
+                  children: [
+                    Text(
+                      "Location",
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: blackFont),
+                    )
+                  ],
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                getPropertyAddressLineOne(),
+                SizedBox(height: 10),
+                getPropertyAddressLineTwo(),
+                SizedBox(height: 10),
+                getPropertyPassCode(),
+                SizedBox(height: 10),
+                getPropertyCity(),
                 SizedBox(height: 20),
                 getSubmitButton(),
                 SizedBox(height: 30),
