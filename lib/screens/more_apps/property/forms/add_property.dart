@@ -21,6 +21,7 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
+import 'package:video_player/video_player.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
 class AddProperty extends StatefulWidget {
@@ -91,6 +92,29 @@ class _AddPropertyState extends State<AddProperty> {
   DateTime propertyAvailableFrom = DateTime.now();
 
   @override
+  void deactivate() {
+    if (_controller != null) {
+      _controller.setVolume(0.0);
+      _controller.pause();
+    }
+    super.deactivate();
+  }
+
+  @override
+  void dispose() {
+    _disposeVideoController();
+    super.dispose();
+  }
+
+  Future<void> _disposeVideoController() async {
+    if (_toBeDisposed != null) {
+      await _toBeDisposed.dispose();
+    }
+    _toBeDisposed = _controller;
+    _controller = null;
+  }
+
+  @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
     return WillPopScope(
@@ -130,6 +154,30 @@ class _AddPropertyState extends State<AddProperty> {
     );
   }
 
+  VideoPlayerController _controller;
+  VideoPlayerController _toBeDisposed;
+
+  Text _getRetrieveErrorWidget() {
+    return null;
+  }
+
+  Widget _previewVideo() {
+    final Text retrieveError = _getRetrieveErrorWidget();
+    if (retrieveError != null) {
+      return retrieveError;
+    }
+    if (_controller == null) {
+      return const Text(
+        'You have not yet picked a video',
+        textAlign: TextAlign.center,
+      );
+    }
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: AspectRatioVideo(_controller),
+    );
+  }
+
   Widget scaffoldBody() {
     return SingleChildScrollView(
       child: Container(
@@ -143,6 +191,7 @@ class _AddPropertyState extends State<AddProperty> {
                 SizedBox(
                   height: 10,
                 ),
+                // _previewVideo(),
                 Row(
                   children: [
                     Text(
@@ -504,12 +553,20 @@ class _AddPropertyState extends State<AddProperty> {
             ));
 
     if (videoSource != null) {
-      ImagePicker().getVideo(source: videoSource).then((value) {
+      ImagePicker()
+          .getVideo(source: videoSource, maxDuration: Duration(minutes: 10))
+          .then((value) async {
+        debugPrint("$value");
         if (value != null) {
-          setState(() {
-            propertyVideos.add(value);
-            getVideoThumbnail(propertyVideos.length - 1);
-          });
+          propertyVideos.add(value);
+          getVideoThumbnail(propertyVideos.length - 1);
+          setState(() {});
+          _controller = VideoPlayerController.file(File(value.path));
+          await _controller.setVolume(1.0);
+          await _controller.initialize();
+          await _controller.setLooping(true);
+          await _controller.play();
+          setState(() {});
         }
       });
     }
@@ -1998,10 +2055,54 @@ class _AddPropertyState extends State<AddProperty> {
       ),
     );
   }
+}
+
+class AspectRatioVideo extends StatefulWidget {
+  AspectRatioVideo(this.controller);
+
+  final VideoPlayerController controller;
+
+  @override
+  AspectRatioVideoState createState() => AspectRatioVideoState();
+}
+
+class AspectRatioVideoState extends State<AspectRatioVideo> {
+  VideoPlayerController get controller => widget.controller;
+  bool initialized = false;
+
+  void _onVideoControllerUpdate() {
+    if (!mounted) {
+      return;
+    }
+    if (initialized != controller.value.initialized) {
+      initialized = controller.value.initialized;
+      setState(() {});
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    controller.addListener(_onVideoControllerUpdate);
+  }
 
   @override
   void dispose() {
-    _imageScrollController.dispose();
+    controller.removeListener(_onVideoControllerUpdate);
     super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (initialized) {
+      return Center(
+        child: AspectRatio(
+          aspectRatio: controller.value?.aspectRatio,
+          child: VideoPlayer(controller),
+        ),
+      );
+    } else {
+      return Container();
+    }
   }
 }

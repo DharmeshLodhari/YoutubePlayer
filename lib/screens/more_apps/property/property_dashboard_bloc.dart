@@ -31,6 +31,14 @@ class PropertyFilterBloc extends ChangeNotifier {
   bool _typeIsHouse = false;
   bool _typeIsTownHouse = false;
 
+  Map<String, bool> propertyType = {
+    "Any": true,
+    "Apartment": false,
+    "Condo": false,
+    "House": false,
+    "Town House": false
+  };
+
   /// duration of property filter variables
   bool _durationAtLeastAYear = true;
   bool _durationAtFewMonths = false;
@@ -39,6 +47,13 @@ class PropertyFilterBloc extends ChangeNotifier {
   DateTime _checkInDate = DateTime.now();
   DateTime _checkOutDate = DateTime.now();
   int _selectedGuestCount = 1;
+
+  Map<String, bool> propertyRentDuration = {
+    "At Least A Year": true,
+    "At Few Months": false,
+    "At Few Weeks": false,
+    "At Few Days": false,
+  };
 
   /// Roommates property filter variables
   bool _roommatesNeeded = false;
@@ -51,6 +66,14 @@ class PropertyFilterBloc extends ChangeNotifier {
   bool _bedroomIs3 = false;
   bool _bedroomIs4Plus = false;
 
+  Map<String, bool> propertyBedroom = {
+    "Studio": true,
+    "1": false,
+    "2": false,
+    "3": false,
+    "4+": false,
+  };
+
   /// Bathroom property filter variables
   bool _bathroomIs1 = true;
   bool _bathroomIs2 = false;
@@ -58,9 +81,22 @@ class PropertyFilterBloc extends ChangeNotifier {
   bool _bathroomIs4 = false;
   bool _bathroomIs5Plus = false;
 
+  Map<String, bool> propertyBathroom = {
+    "1": true,
+    "2": false,
+    "3": false,
+    "4": false,
+    "5+": false,
+  };
+
   /// Pet Policy property filter variables
   bool _isDogAllowed = false;
   bool _isCatAllowed = false;
+
+  Map<String, bool> propertyPetPolicy = {
+    "Dog allowed": true,
+    "Cat allowed": false
+  };
 
   /// Furniture property filter variables
   bool _isFurnished = false;
@@ -77,6 +113,19 @@ class PropertyFilterBloc extends ChangeNotifier {
   bool _amenityIsGymAvailable = false;
   bool _amenityIsPoolAvailable = false;
   bool _amenityIsDishwasherAvailable = false;
+
+  Map<String, bool> propertyAmenity = {
+    "Any": true,
+    "Laundry": false,
+    "A/C": false,
+    "Heating": false,
+    "Parking": false,
+    "Gated entry": false,
+    "Doorman": false,
+    "Gym": false,
+    "Pool": false,
+    "Dishwasher": false,
+  };
 
   /// Price filter
   int _minPrice = 0;

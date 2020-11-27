@@ -436,9 +436,8 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
         setState(() {
           isProductLoading = true;
         });
-        Map<String, dynamic> result = await _auth.listOfProduct(
-            productNext, productPrevious,
-            userId: user.userName);
+        Map<String, dynamic> result = await _auth
+            .listOfProduct(productNext, productPrevious, userId: user.userName);
         productCount = result['count'];
         productNext = result['next'];
         productPrevious = result['previous'];

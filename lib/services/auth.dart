@@ -1022,8 +1022,7 @@ class AuthService {
   }
 
   // List Products
-  Future<Map<String, dynamic>> listOfProduct(
-      String next, String previous,
+  Future<Map<String, dynamic>> listOfProduct(String next, String previous,
       {String userId}) async {
     var url = "";
     if (next == null) {

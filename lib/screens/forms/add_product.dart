@@ -624,7 +624,8 @@ class _AddProductState extends State<AddProduct> {
       if (productImages.length >= 1) {
         if (validateDropdown()) {
           Product product = Product();
-          product.localImages = productImages.map((file) => File(file.path)).toList();
+          product.localImages =
+              productImages.map((file) => File(file.path)).toList();
           product.name = productName;
           product.description = productDescription;
           product.shortDescription = productShortDescription;

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 
-
 import 'package:Slydo/screens/more_apps/utils/video_plyer_controller/chewie_player.dart';
 import 'package:Slydo/screens/more_apps/utils/video_plyer_controller/chewie_progress_colors.dart';
 import 'package:Slydo/screens/more_apps/utils/video_plyer_controller/cupertino_progress_bar.dart';

@@ -12,7 +12,6 @@ import 'package:provider/provider.dart';
 
 import 'hotel_dashboard_bloc.dart';
 
-
 import 'hotel_tile.dart';
 
 class HotelDetailPage extends StatefulWidget {

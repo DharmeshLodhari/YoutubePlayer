@@ -1547,7 +1547,7 @@ class _SearchPropertyState extends State<SearchProperty> {
       ),
       Container(
         height: 20,
-        width: MediaQuery.of(context).size.width - 40,
+        width: MediaQuery.of(context).size.width - 20,
         child: Stack(
           overflow: Overflow.visible,
           children: [
