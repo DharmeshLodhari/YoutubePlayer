@@ -18,6 +18,7 @@ import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_video_info/flutter_video_info.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
@@ -74,8 +75,8 @@ class _AddPropertyState extends State<AddProperty> {
   ScrollController _imageScrollController = ScrollController();
   ScrollController _videoScrollController = ScrollController();
 
-  List<PickedFile> propertyImages = List<PickedFile>();
-  List<PickedFile> propertyVideos = List<PickedFile>();
+  List<File> propertyImages = List<File>();
+  List<File> propertyVideos = List<File>();
   List<Uint8List> propertyVideoThumbnail = List<Uint8List>();
 
   String propertyTagLine = "";
@@ -417,7 +418,7 @@ class _AddPropertyState extends State<AddProperty> {
       ImagePicker().getImage(source: imageSource).then((value) {
         if (value != null) {
           setState(() {
-            propertyImages.add(value);
+            propertyImages.add(File(value.path));
           });
         }
       });
@@ -558,15 +559,25 @@ class _AddPropertyState extends State<AddProperty> {
           .then((value) async {
         debugPrint("$value");
         if (value != null) {
-          propertyVideos.add(value);
+          propertyVideos.add(File(value.path));
+
+          final videoInfo = FlutterVideoInfo();
+          var info = await videoInfo.getVideoInfo(value.path);
+          debugPrint("$info ");
+          debugPrint("${info.duration} ");
+          Duration d = Duration(milliseconds: info.duration.toInt());
+          debugPrint("${d.inMinutes}");
+          debugPrint("${info.filesize} ");
+          debugPrint("${info.title} ");
+
           getVideoThumbnail(propertyVideos.length - 1);
           setState(() {});
-          _controller = VideoPlayerController.file(File(value.path));
-          await _controller.setVolume(1.0);
-          await _controller.initialize();
-          await _controller.setLooping(true);
-          await _controller.play();
-          setState(() {});
+          // _controller = VideoPlayerController.file(File(value.path));
+          // await _controller.setVolume(1.0);
+          // await _controller.initialize();
+          // await _controller.setLooping(true);
+          // await _controller.play();
+          // setState(() {});
         }
       });
     }

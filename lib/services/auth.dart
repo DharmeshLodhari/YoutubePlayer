@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:Slydo/data/database_helper.dart';
+import 'package:Slydo/models/Contract.dart';
+import 'package:Slydo/models/Invoice.dart';
 import 'package:Slydo/models/message.dart';
 import 'package:Slydo/models/payout.dart';
 import 'package:Slydo/models/store.dart';
@@ -1955,5 +1957,52 @@ class AuthService {
     await Future.delayed(Duration(seconds: 2));
     // return Future.error("Something wrong please try later!");
     return true;
+  }
+
+  Future<List<Contract>> getContractList() async {
+    List<Contract> contracts = List.generate(
+        10,
+        (index) => Contract.fromJson({
+              "status": "Paid",
+              "uuid": "sadas",
+              "description": "Softwear Development",
+              "payee_name": "Stephen Blue",
+              "payee_id": "stephen.blue",
+              "payee_avatar":
+                  "https://png.pngtree.com/png-vector/20190704/ourmid/pngtree-businessman-user-avatar-free-vector-png-image_1538405.jpg",
+              "payment_period": "monthly",
+              "amount": "2000",
+              "currency": "NGN",
+              "created_at": "2020-11-10 16:56:44.184311",
+              "end_at": "2020-11-20 16:56:44.184311",
+              "paid_at": "2020-11-30 16:56:44.184311"
+            }));
+
+    await Future.delayed(Duration(seconds: 2));
+
+    return contracts;
+  }
+
+  Future<List<Invoice>> getInvoiceList() async {
+    List<Invoice> invoices = List.generate(
+        10,
+        (index) => Invoice.fromJson({
+              "status": "Paid",
+              "uuid": "sadas",
+              "description": "Softwear Development",
+              "payee_name": "Stephen Blue",
+              "payee_id": "stephen.blue",
+              "payee_avatar":
+                  "https://png.pngtree.com/png-vector/20190704/ourmid/pngtree-businessman-user-avatar-free-vector-png-image_1538405.jpg",
+              "amount": "2000",
+              "currency": "NGN",
+              "created_at": "2020-11-10 16:56:44.184311",
+              "due_date": "2020-11-20 16:56:44.184311",
+              "paid_at": "2020-11-30 16:56:44.184311"
+            }));
+
+    await Future.delayed(Duration(seconds: 2));
+
+    return invoices;
   }
 }

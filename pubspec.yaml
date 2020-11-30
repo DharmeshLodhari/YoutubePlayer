@@ -61,6 +61,7 @@ dependencies:
   assets_audio_player: ^2.0.12
   search_widget: ^1.0.2
   video_thumbnail: ^0.2.4
+  flutter_video_info: ^1.0.1
 
 
 

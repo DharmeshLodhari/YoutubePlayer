@@ -1,0 +1,283 @@
+import 'dart:math';
+
+import 'package:Slydo/data/currency.dart';
+import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/models/Contract.dart';
+import 'package:Slydo/models/Invoice.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+
+// ignore: must_be_immutable
+class ContractTile extends StatefulWidget {
+  final Contract contract;
+
+  ContractTile({this.contract});
+
+  @override
+  _ContractTileState createState() => _ContractTileState();
+}
+
+class _ContractTileState extends State<ContractTile> {
+  UserBloc userBloc;
+
+  @override
+  Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      shadowColor: boxShadowTwo,
+      elevation: 0,
+      child: Container(
+        decoration: decorateBox(),
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 8),
+          child: ListTile(
+            dense: true,
+            title: getTitle(),
+            subtitle: getSubTitle(context),
+            leading: getLeading(),
+            trailing: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                getAmount(),
+                SizedBox(
+                  height: 4,
+                ),
+                invoiceStatus()
+              ],
+            ),
+            onTap: () {},
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget invoiceStatus() {
+    bool isPaid = Random().nextBool();
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 2, horizontal: 4),
+      decoration: BoxDecoration(
+          color: isPaid ? naturalGreen : starYellow,
+          borderRadius: BorderRadius.circular(4)),
+      child: Text(isPaid ? "YEARLY" : "WEEKLY",
+          style: TextStyle(
+              color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12)),
+    );
+  }
+
+  Widget getTitle() {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 2),
+      child: Text(
+        "${widget.contract.payee_name}",
+        maxLines: 1,
+        style: TextStyle(
+            color: blackFont, fontWeight: FontWeight.bold, fontSize: 15),
+      ),
+    );
+  }
+
+  Widget getLeading() {
+    return ClipOval(
+      child: CachedNetworkImage(
+        imageUrl: widget.contract.payee_avatar,
+        height: 48,
+        width: 48,
+        colorBlendMode: BlendMode.darken,
+        fit: BoxFit.cover,
+        filterQuality: FilterQuality.high,
+        placeholder: (context, url) => widget.contract.payee_avatar == ""
+            ? Icon(Icons.person)
+            : CircularLoadingIndicator(),
+      ),
+    );
+  }
+
+  Widget getAmount() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Text(
+          worldCurrencies[widget.contract.currency],
+          style: TextStyle(
+              fontFamily: "Roboto",
+              color: navyBlue,
+              fontWeight: FontWeight.bold,
+              fontSize: 14),
+        ),
+        Text(
+          widget.contract.amount.toString(),
+          style: TextStyle(
+              color: navyBlue, fontWeight: FontWeight.bold, fontSize: 14),
+        ),
+      ],
+    );
+  }
+
+  Widget getSubTitle(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          "${widget.contract.description}",
+          style: TextStyle(color: darkGrey, fontSize: 12),
+          maxLines: 1,
+        ),
+        getDateTime(context),
+      ],
+    );
+  }
+
+  Widget getDateTime(BuildContext context) {
+    DateTime transactionTime = DateTime.parse(widget.contract.created_at);
+    String date = DateFormat("dd/MM/yyyy").format(transactionTime);
+    String time = DateFormat("hh:mm a").format(transactionTime);
+    return Text(
+      "$date • $time",
+      softWrap: false,
+      overflow: TextOverflow.visible,
+      style: TextStyle(color: darkGrey, fontSize: 10),
+    );
+  }
+}
+
+class InvoiceTile extends StatefulWidget {
+  final Invoice invoice;
+
+  InvoiceTile({this.invoice});
+
+  @override
+  _InvoiceTileState createState() => _InvoiceTileState();
+}
+
+class _InvoiceTileState extends State<InvoiceTile> {
+  UserBloc userBloc;
+
+  @override
+  Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      shadowColor: boxShadowTwo,
+      elevation: 0,
+      child: Container(
+        decoration: decorateBox(),
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 8),
+          child: ListTile(
+            dense: true,
+            title: getTitle(),
+            subtitle: getSubTitle(context),
+            leading: getLeading(),
+            trailing: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                getAmount(),
+                SizedBox(
+                  height: 4,
+                ),
+                invoiceStatus()
+              ],
+            ),
+            onTap: () {},
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget invoiceStatus() {
+    bool isPaid = Random().nextBool();
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 2, horizontal: 4),
+      decoration: BoxDecoration(
+          color: isPaid ? naturalGreen : starYellow,
+          borderRadius: BorderRadius.circular(4)),
+      child: Text(isPaid ? "PAID 30 NOV" : "PENDING",
+          style: TextStyle(
+              color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12)),
+    );
+  }
+
+  Widget getTitle() {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 2),
+      child: Text(
+        "${widget.invoice.payee_name}",
+        maxLines: 1,
+        style: TextStyle(
+            color: blackFont, fontWeight: FontWeight.bold, fontSize: 15),
+      ),
+    );
+  }
+
+  Widget getLeading() {
+    return ClipOval(
+      child: CachedNetworkImage(
+        imageUrl: widget.invoice.payee_avatar,
+        height: 48,
+        width: 48,
+        colorBlendMode: BlendMode.darken,
+        fit: BoxFit.cover,
+        filterQuality: FilterQuality.high,
+        placeholder: (context, url) => widget.invoice.payee_avatar == ""
+            ? Icon(Icons.person)
+            : CircularLoadingIndicator(),
+      ),
+    );
+  }
+
+  Widget getAmount() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Text(
+          worldCurrencies[widget.invoice.currency],
+          style: TextStyle(
+              fontFamily: "Roboto",
+              color: navyBlue,
+              fontWeight: FontWeight.bold,
+              fontSize: 14),
+        ),
+        Text(
+          widget.invoice.amount.toString(),
+          style: TextStyle(
+              color: navyBlue, fontWeight: FontWeight.bold, fontSize: 14),
+        ),
+      ],
+    );
+  }
+
+  Widget getSubTitle(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          "${widget.invoice.description}",
+          style: TextStyle(color: darkGrey, fontSize: 12),
+          maxLines: 1,
+        ),
+        getDateTime(context),
+      ],
+    );
+  }
+
+  Widget getDateTime(BuildContext context) {
+    DateTime transactionTime = DateTime.parse(widget.invoice.created_at);
+    String date = DateFormat("dd/MM/yyyy").format(transactionTime);
+    String time = DateFormat("hh:mm a").format(transactionTime);
+    return Text(
+      "$date • $time",
+      softWrap: false,
+      overflow: TextOverflow.visible,
+      style: TextStyle(color: darkGrey, fontSize: 10),
+    );
+  }
+}

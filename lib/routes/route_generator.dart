@@ -1,9 +1,11 @@
 import 'package:Slydo/screens/bank_account_list.dart';
 import 'package:Slydo/screens/card_payment_page.dart';
 import 'package:Slydo/screens/connection_module/connections_dashboard.dart';
+import 'package:Slydo/screens/contract_module/my_contract_screen.dart';
 import 'package:Slydo/screens/dashboard.dart';
 import 'package:Slydo/screens/explore.dart';
 import 'package:Slydo/screens/forms/add_bank_account.dart';
+import 'package:Slydo/screens/forms/add_contract.dart';
 import 'package:Slydo/screens/forms/add_document.dart';
 import 'package:Slydo/screens/forms/add_money_to_slydo_one.dart';
 import 'package:Slydo/screens/forms/add_money_to_slydo_two.dart';
@@ -456,6 +458,23 @@ class RouteGenerator {
           child: AddMoneyToSlydoTwo(
             arguments: settings.arguments,
           ),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      /// Contracts
+      case '/contracts':
+        return PageTransition(
+          child: MyContractScreen(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case '/add-contract':
+        return PageTransition(
+          child: AddContract(),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
           settings: settings,

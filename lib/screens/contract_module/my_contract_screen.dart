@@ -1,29 +1,55 @@
-
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import 'my_property_list.dart';
-import 'my_wish_list.dart';
-import 'property_dashboard_bloc.dart';
+import 'invoice_list.dart';
+import 'my_contract_list.dart';
 
-class MyPropertiesScreen extends StatefulWidget {
+class MyContractScreen extends StatefulWidget {
   @override
-  _MyPropertiesScreenState createState() => _MyPropertiesScreenState();
+  _MyContractScreenState createState() => _MyContractScreenState();
 }
 
-class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
+class _MyContractScreenState extends State<MyContractScreen> {
   int currentIndex = 0;
 
-  PropertyDashboardBloc _propertyDashboardBloc;
+  GlobalKey _key = LabeledGlobalKey("myInvoiceList");
+  CustomizedPopUpMenu menu;
+  int selectedMenuItemIndex = 0;
+  bool isPopMenuOpen = false;
+
+  void menuItemSelectionChange(String value, int index) {
+    selectedMenuItemIndex = index;
+    setState(() {});
+    switch (value) {
+    }
+  }
+
+  void menuStateChange(bool isOpen) {
+    isPopMenuOpen = isOpen;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
-    _propertyDashboardBloc = Provider.of<PropertyDashboardBloc>(context);
+    menu = CustomizedPopUpMenu(
+      buttonKey: _key,
+      context: context,
+      children: [
+        CustomizedPopUpMenuItem(title: "All", value: "all"),
+        CustomizedPopUpMenuItem(title: "Drafts", value: "drafts"),
+        CustomizedPopUpMenuItem(title: "Paid", value: "paid"),
+        CustomizedPopUpMenuItem(title: "Unpaid", value: "unpaid"),
+      ],
+      selectedIndex: selectedMenuItemIndex,
+      right: 16,
+    );
+    menu.onChange = menuItemSelectionChange;
+    menu.menuState = menuStateChange;
     return WillPopScope(
       onWillPop: () async {
-        _propertyDashboardBloc.index = 0;
         return true;
       },
       child: DefaultTabController(
@@ -50,12 +76,11 @@ class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
           size: 24,
         ),
         onPressed: () {
-          _propertyDashboardBloc.index = 0;
           Navigator.pop(context);
         },
       ),
       title: Text(
-        "My properties",
+        "My contracts",
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
         overflow: TextOverflow.fade,
@@ -64,7 +89,13 @@ class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
       ),
       bottom: tabBar(),
       actions: [
-        addPropertyButton(),
+        addContractAndInvoiceButton(),
+        currentIndex == 1
+            ? SizedBox(
+                width: 10.0,
+              )
+            : Container(),
+        currentIndex == 1 ? popUpMenuButton() : Container(),
         SizedBox(
           width: 16,
         )
@@ -72,7 +103,7 @@ class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
     );
   }
 
-  Widget addPropertyButton() {
+  Widget addContractAndInvoiceButton() {
     return RoundedBackgroundIcon(
       height: 34,
       width: 34,
@@ -82,10 +113,42 @@ class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
         color: blackFont,
       ),
       onTap: () {
-        Navigator.of(context).pushNamed("/add-property");
+        if (currentIndex == 0) {
+          Navigator.of(context).pushNamed("/add-contract");
+        }
       },
       backgroundColor: iconBtnGrey,
       enableMargin: true,
+    );
+  }
+
+  Widget popUpMenuButton() {
+    return SizedBox(
+      key: _key,
+      height: 34,
+      width: 34,
+      child: Card(
+        color: isPopMenuOpen ? navyBlue : iconBtnGrey,
+        elevation: 0,
+        margin: EdgeInsets.symmetric(vertical: 10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: IconButton(
+          icon: Icon(
+            Icons.more_vert,
+            color: isPopMenuOpen ? Colors.white : Colors.black,
+            size: 20,
+          ),
+          onPressed: () {
+            if (menu.isMenuOpen) {
+              menu.closeMenu();
+            } else {
+              menu.openMenu();
+            }
+          },
+        ),
+      ),
     );
   }
 
@@ -111,7 +174,7 @@ class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
                     : Colors.white,
               ),
               child: Text(
-                "My Properties",
+                "My Contracts",
                 style: TextStyle(
                   color: currentIndex == 0 ? navyBlue : blackFont,
                   fontSize: 14,
@@ -132,7 +195,7 @@ class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
                     : Colors.white,
               ),
               child: Text(
-                "Wishlist",
+                "Invoices",
                 style: TextStyle(
                   color: currentIndex == 1 ? navyBlue : blackFont,
                   fontSize: 14,
@@ -151,8 +214,8 @@ class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
     return IndexedStack(
       index: currentIndex,
       children: [
-        MyPropertyList(),
-        MyWishList(),
+        MyContractList(),
+        InvoiceList(),
       ],
     );
   }

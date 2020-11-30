@@ -4,6 +4,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/device.dart';
 import 'package:Slydo/models/transactions.dart';
+import 'package:Slydo/screens/contract_module/my_contract_screen.dart';
 import 'package:Slydo/screens/tiles/bank_account.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
@@ -345,11 +346,11 @@ class _UserDashboardState extends State<UserDashboard> {
         ),
         Expanded(
             child: UserDashboardItemTile(
-          icon: SlydoAppIcon.translation,
-          title: "Language",
+          icon: Icons.business_center_rounded,
+          title: "Business",
           onTap: () {
-            // changeLanguage();
-            changeLanguageBottomSheet();
+            Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => MyContractScreen()));
           },
           iconColor: HexColor("#5218E9"),
         )),
@@ -384,7 +385,16 @@ class _UserDashboardState extends State<UserDashboard> {
         SizedBox(
           width: 12,
         ),
-        Expanded(child: Container()),
+        Expanded(
+            child: UserDashboardItemTile(
+          icon: SlydoAppIcon.translation,
+          title: "Language",
+          onTap: () {
+            // changeLanguage();
+            changeLanguageBottomSheet();
+          },
+          iconColor: HexColor("#5218E9"),
+        )),
       ],
     );
   }
