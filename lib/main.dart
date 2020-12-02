@@ -109,6 +109,9 @@ void main() async {
           ChangeNotifierProvider<MusicPlayer>.value(
             value: MusicPlayer(),
           ),
+          ChangeNotifierProvider<AddInvoiceBloc>.value(
+            value: AddInvoiceBloc(),
+          ),
         ], child: MyApp()),
       );
     }, onError: (exception, stack) {

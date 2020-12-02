@@ -43,6 +43,8 @@ class _AddPropertyState extends State<AddProperty> {
   int bathroomCount = 0;
   int livingRoomCount = 0;
 
+  Duration videoLimit = Duration(minutes: 1);
+
   List<String> cities = ["Lagos", "Kano", "Ibadan", "Benin City", "Abuja"];
 
   Map<String, bool> propertyAmenities = {
@@ -557,21 +559,25 @@ class _AddPropertyState extends State<AddProperty> {
       ImagePicker()
           .getVideo(source: videoSource, maxDuration: Duration(minutes: 10))
           .then((value) async {
-        debugPrint("$value");
         if (value != null) {
-          propertyVideos.add(File(value.path));
-
           final videoInfo = FlutterVideoInfo();
           var info = await videoInfo.getVideoInfo(value.path);
-          debugPrint("$info ");
-          debugPrint("${info.duration} ");
-          Duration d = Duration(milliseconds: info.duration.toInt());
-          debugPrint("${d.inMinutes}");
-          debugPrint("${info.filesize} ");
-          debugPrint("${info.title} ");
+          Duration pickedVideoDuration =
+              Duration(milliseconds: info.duration.toInt());
+          if (pickedVideoDuration > videoLimit) {
+            Toast.show(
+                "The file you have selected is too long. Max length is ${videoLimit.inMinutes} minutes.",
+                context,
+                backgroundColor: blackFont,
+                textColor: Colors.white,
+                duration: 3);
+            return;
+          } else {
+            propertyVideos.add(File(value.path));
+            getVideoThumbnail(propertyVideos.length - 1);
+            setState(() {});
+          }
 
-          getVideoThumbnail(propertyVideos.length - 1);
-          setState(() {});
           // _controller = VideoPlayerController.file(File(value.path));
           // await _controller.setVolume(1.0);
           // await _controller.initialize();
@@ -649,7 +655,7 @@ class _AddPropertyState extends State<AddProperty> {
       video: propertyVideos[index].path,
       imageFormat: ImageFormat.JPEG,
       maxWidth:
-          100, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
+          512, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
       quality: 25,
     );
     propertyVideoThumbnail.add(uInt8list);

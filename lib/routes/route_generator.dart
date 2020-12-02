@@ -5,7 +5,6 @@ import 'package:Slydo/screens/contract_module/my_contract_screen.dart';
 import 'package:Slydo/screens/dashboard.dart';
 import 'package:Slydo/screens/explore.dart';
 import 'package:Slydo/screens/forms/add_bank_account.dart';
-import 'package:Slydo/screens/forms/add_contract.dart';
 import 'package:Slydo/screens/forms/add_document.dart';
 import 'package:Slydo/screens/forms/add_money_to_slydo_one.dart';
 import 'package:Slydo/screens/forms/add_money_to_slydo_two.dart';
@@ -13,6 +12,10 @@ import 'package:Slydo/screens/forms/add_product.dart';
 import 'package:Slydo/screens/forms/add_service.dart';
 import 'package:Slydo/screens/forms/bvn_verification_page.dart';
 import 'package:Slydo/screens/forms/compose_message.dart';
+import 'package:Slydo/screens/forms/contract_and_invoice/add_contract.dart';
+import 'package:Slydo/screens/forms/contract_and_invoice/invoice/add_invoice.dart';
+import 'package:Slydo/screens/forms/contract_and_invoice/invoice/add_invoice_item.dart';
+import 'package:Slydo/screens/forms/contract_and_invoice/invoice/edit_invoice_item.dart';
 import 'package:Slydo/screens/forms/edit_product.dart';
 import 'package:Slydo/screens/forms/edit_service.dart';
 import 'package:Slydo/screens/forms/forgot_password.dart';
@@ -463,7 +466,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      /// Contracts
+      /// Contracts & Invoice
       case '/contracts':
         return PageTransition(
           child: MyContractScreen(),
@@ -475,6 +478,32 @@ class RouteGenerator {
       case '/add-contract':
         return PageTransition(
           child: AddContract(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case '/add-invoice':
+        return PageTransition(
+          child: AddInvoice(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case '/add-invoice-item':
+        return PageTransition(
+          child: AddInvoiceItem(),
+          type: PageTransitionType.downToUp,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case '/edit-invoice-item':
+        return PageTransition(
+          child: EditInvoiceItem(
+            arguments: settings.arguments,
+          ),
           type: PageTransitionType.downToUp,
           curve: Curves.ease,
           settings: settings,

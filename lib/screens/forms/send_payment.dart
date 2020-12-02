@@ -489,58 +489,6 @@ class _SendPaymentState extends State<SendPayment> {
     );
   }
 
-  Widget getCategoryField() {
-    return Card(
-      margin: EdgeInsets.all(0),
-      child: Container(
-        padding: EdgeInsets.all(8),
-        width: double.infinity,
-        child: IgnorePointer(
-          ignoring: product != null || service != null,
-          child: DropdownButton<String>(
-            isExpanded: true,
-            underline: Divider(
-              color: Colors.transparent,
-            ),
-            hint: Row(
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
-                  child: Icon(
-                    Icons.category,
-                    color: Colors.grey[600],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 16.0),
-                  child: Text(AppLocalization.of(context).category),
-                ),
-              ],
-            ),
-            value: selectedCategory,
-            onChanged: (String value) {
-              setState(() {
-                selectedCategory = value;
-              });
-            },
-            items: paymentCategories.map((String category) {
-              return DropdownMenuItem<String>(
-                value: category,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 0),
-                  child: Text(
-                    category,
-                    style: TextStyle(color: Colors.black),
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget getCategoryDropDown() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

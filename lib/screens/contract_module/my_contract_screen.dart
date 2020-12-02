@@ -115,6 +115,8 @@ class _MyContractScreenState extends State<MyContractScreen> {
       onTap: () {
         if (currentIndex == 0) {
           Navigator.of(context).pushNamed("/add-contract");
+        } else if (currentIndex == 1) {
+          Navigator.of(context).pushNamed("/add-invoice");
         }
       },
       backgroundColor: iconBtnGrey,

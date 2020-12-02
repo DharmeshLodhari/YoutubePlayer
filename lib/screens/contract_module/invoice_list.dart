@@ -1,5 +1,5 @@
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/models/Invoice.dart';
+import 'package:Slydo/models/contract_and_invoice/Invoice.dart';
 import 'package:Slydo/screens/tiles/contract_tile.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';

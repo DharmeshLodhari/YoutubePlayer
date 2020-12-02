@@ -41,7 +41,6 @@ class _AddContractState extends State<AddContract> {
   final _sendPaymentScaffold = GlobalKey<ScaffoldState>();
   CustomerProfile _payee;
   UserBloc userBloc;
-  CustomerProfileBloc customerProfileBloc;
 
   bool isValidPayee = false;
   int amount;
@@ -53,6 +52,8 @@ class _AddContractState extends State<AddContract> {
 
   DateTime startingDate = DateTime.now();
   DateTime endingDate = DateTime.now();
+
+  PaymentDuration selectedDuration;
 
   @override
   void initState() {
@@ -70,37 +71,13 @@ class _AddContractState extends State<AddContract> {
     super.initState();
   }
 
-  void initializeDisplayCard() {
-    if (customerProfileBloc.customer.avatar != null) {
-      if (mounted) {
-        setState(() {
-          _payee = customerProfileBloc.customer;
-          recipient = _payee.userName;
-          _recipientController.text = recipient;
-          _auth.fetchCustomerProfile(recipient).then((customerProfile) {
-            if (customerProfile != null) {
-              if (mounted) {
-                setState(() {
-                  _payee = customerProfile;
-                  isValidPayee = _payee.userName != userBloc.user.userName;
-                });
-              }
-            }
-          });
-        });
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
-
     return WillPopScope(
       onWillPop: () async {
         _payee = null;
-        customerProfileBloc.customer = null;
+
         return true;
       },
       child: Scaffold(
@@ -213,7 +190,7 @@ class _AddContractState extends State<AddContract> {
                                   flexibleSpace(),
                                   getDateField(),
                                   flexibleSpace(),
-                                  getPaymentPeriodField(),
+                                  getPaymentPeriodDropDown(),
                                   flexibleSpace(),
                                   errorMessage == ""
                                       ? Container()
@@ -280,8 +257,6 @@ class _AddContractState extends State<AddContract> {
   }
 
   Widget getDisplayCard() {
-    initializeDisplayCard();
-
     var avatarImage;
     var qrCodeImage;
     if (_payee != null) {
@@ -511,19 +486,121 @@ class _AddContractState extends State<AddContract> {
     );
   }
 
-  Widget getPaymentPeriodField() {
-    return CustomizedTextFormField(
-      labelText: "Payment period",
-      textCapitalization: TextCapitalization.sentences,
-      controller: _referenceController,
-      onChanged: (val) {
-        if (mounted) {
-          setState(() {
-            reference = val;
-          });
-        }
-      },
+  Widget getPaymentPeriodDropDown() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          "Payment period",
+          style: TextStyle(color: darkGrey, fontSize: 14),
+        ),
+        SizedBox(
+          height: 6,
+        ),
+        Card(
+          elevation: 0,
+          color: Colors.white,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: BorderSide(color: greyBorderColor)),
+          margin: EdgeInsets.all(0),
+          borderOnForeground: true,
+          child: ListTile(
+            dense: true,
+            title: Text(
+              selectedDuration != null ? selectedDuration.name : "",
+              softWrap: false,
+              overflow: TextOverflow.fade,
+              style: TextStyle(
+                  color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+            trailing: Icon(
+              Icons.keyboard_arrow_down,
+              color: darkGrey,
+            ),
+            onTap: () {
+              selectDuration();
+            },
+          ),
+        ),
+      ],
     );
+  }
+
+  void selectDuration() async {
+    final pressedDuration = await showDialog<PaymentDuration>(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) => AlertDialog(
+              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              contentPadding: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              content: Container(
+                width: MediaQuery.of(context).size.width - 40,
+                child: Card(
+                  elevation: 2,
+                  shadowColor: Colors.transparent,
+                  margin: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: paymentDurations.map<Widget>((duration) {
+                          if (selectedDuration == duration) {
+                            return Container(
+                              color: selectedListItemBackgroundBlue,
+                              child: ListTile(
+                                dense: true,
+                                title: Text(
+                                  duration.name,
+                                  overflow: TextOverflow.fade,
+                                  softWrap: false,
+                                  style: TextStyle(
+                                      color: navyBlue,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                trailing: Icon(
+                                  SlydoAppIcon.checked,
+                                  color: navyBlue,
+                                  size: 12,
+                                ),
+                                onTap: () {
+                                  Navigator.pop(context, duration);
+                                },
+                              ),
+                            );
+                          }
+                          return ListTile(
+                            title: Text(
+                              duration.name,
+                              softWrap: false,
+                              overflow: TextOverflow.fade,
+                              style: TextStyle(
+                                  color: blackFont,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                            dense: true,
+                            onTap: () {
+                              Navigator.pop(context, duration);
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ));
+    if (pressedDuration != null) {
+      selectedDuration = pressedDuration;
+      setState(() {});
+    }
   }
 
   Widget getSubmitButton() {

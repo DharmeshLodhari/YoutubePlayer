@@ -1,3 +1,4 @@
+import 'package:Slydo/models/contract_and_invoice/InvoiceItem.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:Slydo/services/fcm_push_notification.dart';
@@ -225,5 +226,57 @@ class NotificationBloc extends ChangeNotifier {
   set pushNotificationService(PushNotificationService value) {
     _pushNotificationService = value;
     notifyListeners();
+  }
+}
+
+class AddInvoiceBloc extends ChangeNotifier {
+  List<InvoiceItem> _items = List<InvoiceItem>();
+  int _total = 0;
+
+  List<InvoiceItem> get items => _items;
+
+  set items(List<InvoiceItem> value) {
+    _items = value;
+    notifyListeners();
+  }
+
+  int get total => _total;
+
+  set total(int value) {
+    _total = value;
+    notifyListeners();
+  }
+
+  void addItem({InvoiceItem invoiceItem}) {
+    _items.add(invoiceItem);
+    updateTotal();
+    notifyListeners();
+  }
+
+  void removeItem({int index}) {
+    _items.removeAt(index);
+    updateTotal();
+    notifyListeners();
+  }
+
+  void updateItem({int index, InvoiceItem invoiceItem}) {
+    _items.removeAt(index);
+    _items.insert(index, invoiceItem);
+    updateTotal();
+    notifyListeners();
+  }
+
+  void clearItems() {
+    _items.clear();
+    total = 0;
+    notifyListeners();
+  }
+
+  void updateTotal() {
+    int sum = 0;
+    _items.forEach((element) {
+      sum += (element.price * element.qty);
+    });
+    _total = sum;
   }
 }

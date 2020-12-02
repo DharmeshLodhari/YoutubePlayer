@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:Slydo/data/database_helper.dart';
-import 'package:Slydo/models/Contract.dart';
-import 'package:Slydo/models/Invoice.dart';
+import 'package:Slydo/models/contract_and_invoice/Contract.dart';
+import 'package:Slydo/models/contract_and_invoice/Invoice.dart';
 import 'package:Slydo/models/message.dart';
 import 'package:Slydo/models/payout.dart';
 import 'package:Slydo/models/store.dart';

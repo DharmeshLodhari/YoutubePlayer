@@ -2,8 +2,8 @@ import 'dart:math';
 
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/models/Contract.dart';
-import 'package:Slydo/models/Invoice.dart';
+import 'package:Slydo/models/contract_and_invoice/Contract.dart';
+import 'package:Slydo/models/contract_and_invoice/Invoice.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -75,7 +75,7 @@ class _ContractTileState extends State<ContractTile> {
     return Padding(
       padding: EdgeInsets.only(bottom: 2),
       child: Text(
-        "${widget.contract.payee_name}",
+        "${widget.contract.payeeName}",
         maxLines: 1,
         style: TextStyle(
             color: blackFont, fontWeight: FontWeight.bold, fontSize: 15),
@@ -86,13 +86,13 @@ class _ContractTileState extends State<ContractTile> {
   Widget getLeading() {
     return ClipOval(
       child: CachedNetworkImage(
-        imageUrl: widget.contract.payee_avatar,
+        imageUrl: widget.contract.payeeAvatar,
         height: 48,
         width: 48,
         colorBlendMode: BlendMode.darken,
         fit: BoxFit.cover,
         filterQuality: FilterQuality.high,
-        placeholder: (context, url) => widget.contract.payee_avatar == ""
+        placeholder: (context, url) => widget.contract.payeeAvatar == ""
             ? Icon(Icons.person)
             : CircularLoadingIndicator(),
       ),
@@ -135,7 +135,7 @@ class _ContractTileState extends State<ContractTile> {
   }
 
   Widget getDateTime(BuildContext context) {
-    DateTime transactionTime = DateTime.parse(widget.contract.created_at);
+    DateTime transactionTime = DateTime.parse(widget.contract.createdAt);
     String date = DateFormat("dd/MM/yyyy").format(transactionTime);
     String time = DateFormat("hh:mm a").format(transactionTime);
     return Text(
@@ -210,7 +210,7 @@ class _InvoiceTileState extends State<InvoiceTile> {
     return Padding(
       padding: EdgeInsets.only(bottom: 2),
       child: Text(
-        "${widget.invoice.payee_name}",
+        "${widget.invoice.payeeName}",
         maxLines: 1,
         style: TextStyle(
             color: blackFont, fontWeight: FontWeight.bold, fontSize: 15),
@@ -221,13 +221,13 @@ class _InvoiceTileState extends State<InvoiceTile> {
   Widget getLeading() {
     return ClipOval(
       child: CachedNetworkImage(
-        imageUrl: widget.invoice.payee_avatar,
+        imageUrl: widget.invoice.payeeAvatar,
         height: 48,
         width: 48,
         colorBlendMode: BlendMode.darken,
         fit: BoxFit.cover,
         filterQuality: FilterQuality.high,
-        placeholder: (context, url) => widget.invoice.payee_avatar == ""
+        placeholder: (context, url) => widget.invoice.payeeAvatar == ""
             ? Icon(Icons.person)
             : CircularLoadingIndicator(),
       ),
@@ -270,7 +270,7 @@ class _InvoiceTileState extends State<InvoiceTile> {
   }
 
   Widget getDateTime(BuildContext context) {
-    DateTime transactionTime = DateTime.parse(widget.invoice.created_at);
+    DateTime transactionTime = DateTime.parse(widget.invoice.createdAt);
     String date = DateFormat("dd/MM/yyyy").format(transactionTime);
     String time = DateFormat("hh:mm a").format(transactionTime);
     return Text(

@@ -114,3 +114,17 @@ String durationToString(Duration duration) {
       twoDigits(duration.inSeconds.remainder(Duration.secondsPerMinute));
   return "$twoDigitMinutes:$twoDigitSeconds";
 }
+
+class PaymentDuration {
+  String name;
+  String value;
+
+  PaymentDuration({this.name, this.value});
+}
+
+List<PaymentDuration> paymentDurations = [
+  PaymentDuration(name: "Daily", value: "daily"),
+  PaymentDuration(name: "Weekly", value: "weekly"),
+  PaymentDuration(name: "Monthly", value: "monthly"),
+  PaymentDuration(name: "Yearly", value: "yearly"),
+];
