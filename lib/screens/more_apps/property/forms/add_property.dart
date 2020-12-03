@@ -43,7 +43,7 @@ class _AddPropertyState extends State<AddProperty> {
   int bathroomCount = 0;
   int livingRoomCount = 0;
 
-  Duration videoLimit = Duration(minutes: 1);
+  Duration videoLimit = Duration(minutes: 5);
 
   List<String> cities = ["Lagos", "Kano", "Ibadan", "Benin City", "Abuja"];
 
@@ -230,6 +230,23 @@ class _AddPropertyState extends State<AddProperty> {
                   height: 10,
                 ),
                 sellOrRentSwitch(),
+                SizedBox(
+                  height: 10,
+                ),
+                MaterialButton(
+                  color: navyBlue,
+                  onPressed: () async {
+                    // final Directory tempDir = await getTemporaryDirectory();
+                    // final Directory libCacheDir =
+                    //     new Directory("${tempDir.path}/libCachedImageData");
+                    // var result = await libCacheDir.delete(recursive: true);
+
+                    // DefaultCacheManager().emptyCache();
+                    // debugPrint("result ");
+                  },
+                  child: Text("Clear cache"),
+                ),
+
                 SizedBox(
                   height: 10,
                 ),
@@ -556,37 +573,189 @@ class _AddPropertyState extends State<AddProperty> {
             ));
 
     if (videoSource != null) {
-      ImagePicker()
-          .getVideo(source: videoSource, maxDuration: Duration(minutes: 10))
-          .then((value) async {
-        if (value != null) {
-          final videoInfo = FlutterVideoInfo();
-          var info = await videoInfo.getVideoInfo(value.path);
-          Duration pickedVideoDuration =
-              Duration(milliseconds: info.duration.toInt());
-          if (pickedVideoDuration > videoLimit) {
-            Toast.show(
-                "The file you have selected is too long. Max length is ${videoLimit.inMinutes} minutes.",
-                context,
-                backgroundColor: blackFont,
-                textColor: Colors.white,
-                duration: 3);
-            return;
-          } else {
-            propertyVideos.add(File(value.path));
-            getVideoThumbnail(propertyVideos.length - 1);
-            setState(() {});
-          }
+      bool isConditionAccepted = await videoLengthAlert();
+      if (isConditionAccepted != null && isConditionAccepted) {
+        ImagePicker()
+            .getVideo(source: videoSource, maxDuration: Duration(minutes: 10))
+            .then((value) async {
+          if (value != null) {
+            final videoInfo = FlutterVideoInfo();
+            var info = await videoInfo.getVideoInfo(value.path);
+            Duration pickedVideoDuration =
+                Duration(milliseconds: info.duration.toInt());
+            if (pickedVideoDuration > videoLimit) {
+              Toast.show(
+                  "The file you have selected is too long. Max length is ${videoLimit.inMinutes} minutes.",
+                  context,
+                  backgroundColor: blackFont,
+                  textColor: Colors.white,
+                  duration: 3);
+              return;
+            } else {
+              propertyVideos.add(File(value.path));
+              getVideoThumbnail(propertyVideos.length - 1);
+              setState(() {});
 
-          // _controller = VideoPlayerController.file(File(value.path));
-          // await _controller.setVolume(1.0);
-          // await _controller.initialize();
-          // await _controller.setLooping(true);
-          // await _controller.play();
-          // setState(() {});
-        }
-      });
+              // preview video
+              // _controller = VideoPlayerController.file(File(value.path));
+              // await _controller.setVolume(1.0);
+              // await _controller.initialize();
+              // await _controller.setLooping(true);
+              // await _controller.play();
+              // setState(() {});
+            }
+          }
+        });
+      }
     }
+  }
+
+  Future<bool> videoLengthAlert() async {
+    return await showDialog<bool>(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) =>
+            StatefulBuilder(builder: (context, videoLengthAlert) {
+              return AlertDialog(
+                insetPadding:
+                    EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                contentPadding: EdgeInsets.zero,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+                content: Stack(
+                  overflow: Overflow.visible,
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width - 40,
+                      child: Card(
+                        elevation: 2,
+                        shadowColor: Colors.transparent,
+                        margin: EdgeInsets.zero,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Container(
+                            padding: EdgeInsets.only(top: 16, bottom: 8),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                  ),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        color: Colors.white,
+                                        child: Text(
+                                          "Note",
+                                          overflow: TextOverflow.fade,
+                                          softWrap: false,
+                                          style: TextStyle(
+                                              color: blackFont,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w700),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: 12,
+                                      ),
+                                      RichText(
+                                        textAlign: TextAlign.justify,
+                                        text: new TextSpan(
+                                          // Note: Styles for TextSpans must be explicitly defined.
+                                          // Child text spans will inherit styles from parent
+                                          style: TextStyle(
+                                              color: blackFont,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w400),
+                                          children: <TextSpan>[
+                                            TextSpan(
+                                              text:
+                                                  'Please make sure your picked or captured video do not exceed ',
+                                            ),
+                                            TextSpan(
+                                                text:
+                                                    '${videoLimit.inMinutes} minutes',
+                                                style: new TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold)),
+                                            TextSpan(
+                                                text:
+                                                    ' otherwise it will be not uploaded.'),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    FlatButton(
+                                      padding: EdgeInsets.zero,
+                                      child: Text("OK",
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              color: blackFont,
+                                              fontWeight: FontWeight.w600)),
+                                      onPressed: () {
+                                        Navigator.pop(context, true);
+                                      },
+                                    ),
+                                    FlatButton(
+                                      padding: EdgeInsets.zero,
+                                      child: Text("CANCEL",
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              color: blackFont,
+                                              fontWeight: FontWeight.w600)),
+                                      onPressed: () {
+                                        Navigator.pop(context, false);
+                                      },
+                                    )
+                                  ],
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      left: (MediaQuery.of(context).size.width - 100) / 2,
+                      top: -30,
+                      child: ClipOval(
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              border:
+                                  Border.all(color: dividerColor, width: 1.5),
+                              borderRadius: BorderRadius.circular(60)),
+                          height: 60,
+                          width: 60,
+                          child: Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Image.asset(
+                                "assets/images/camera_icon.png",
+                                fit: BoxFit.fitWidth,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              );
+            }));
   }
 
   Widget showVideo(int index) {

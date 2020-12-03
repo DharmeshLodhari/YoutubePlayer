@@ -18,9 +18,12 @@ import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_video_info/flutter_video_info.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
+import 'package:video_player/video_player.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
 class EditProperty extends StatefulWidget {
@@ -40,6 +43,8 @@ class _EditPropertyState extends State<EditProperty> {
   int bedroomCount = 0;
   int bathroomCount = 0;
   int livingRoomCount = 0;
+
+  Duration videoLimit = Duration(minutes: 5);
 
   List<String> cities = ["Lagos", "Kano", "Ibadan", "Benin City", "Abuja"];
 
@@ -73,8 +78,8 @@ class _EditPropertyState extends State<EditProperty> {
   ScrollController _imageScrollController = ScrollController();
   ScrollController _videoScrollController = ScrollController();
 
-  List<PickedFile> propertyImages = List<PickedFile>();
-  List<PickedFile> propertyVideos = List<PickedFile>();
+  List<File> propertyImages = List<File>();
+  List<File> propertyVideos = List<File>();
   List<Uint8List> propertyVideoThumbnail = List<Uint8List>();
 
   String propertyTagLine = "";
@@ -89,6 +94,29 @@ class _EditPropertyState extends State<EditProperty> {
   String propertyManufacturer = "";
   bool propertyAvailableImmediately = true;
   DateTime propertyAvailableFrom = DateTime.now();
+
+  @override
+  void deactivate() {
+    if (_controller != null) {
+      _controller.setVolume(0.0);
+      _controller.pause();
+    }
+    super.deactivate();
+  }
+
+  @override
+  void dispose() {
+    _disposeVideoController();
+    super.dispose();
+  }
+
+  Future<void> _disposeVideoController() async {
+    if (_toBeDisposed != null) {
+      await _toBeDisposed.dispose();
+    }
+    _toBeDisposed = _controller;
+    _controller = null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -130,6 +158,30 @@ class _EditPropertyState extends State<EditProperty> {
     );
   }
 
+  VideoPlayerController _controller;
+  VideoPlayerController _toBeDisposed;
+
+  Text _getRetrieveErrorWidget() {
+    return null;
+  }
+
+  Widget _previewVideo() {
+    final Text retrieveError = _getRetrieveErrorWidget();
+    if (retrieveError != null) {
+      return retrieveError;
+    }
+    if (_controller == null) {
+      return const Text(
+        'You have not yet picked a video',
+        textAlign: TextAlign.center,
+      );
+    }
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: AspectRatioVideo(_controller),
+    );
+  }
+
   Widget scaffoldBody() {
     return SingleChildScrollView(
       child: Container(
@@ -143,6 +195,7 @@ class _EditPropertyState extends State<EditProperty> {
                 SizedBox(
                   height: 10,
                 ),
+                // _previewVideo(),
                 Row(
                   children: [
                     Text(
@@ -368,7 +421,7 @@ class _EditPropertyState extends State<EditProperty> {
       ImagePicker().getImage(source: imageSource).then((value) {
         if (value != null) {
           setState(() {
-            propertyImages.add(value);
+            propertyImages.add(File(value.path));
           });
         }
       });
@@ -504,15 +557,188 @@ class _EditPropertyState extends State<EditProperty> {
             ));
 
     if (videoSource != null) {
-      ImagePicker().getVideo(source: videoSource).then((value) {
-        if (value != null) {
-          setState(() {
-            propertyVideos.add(value);
-            getVideoThumbnail(propertyVideos.length - 1);
-          });
-        }
-      });
+      if (await videoLengthAlert()) {
+        ImagePicker()
+            .getVideo(source: videoSource, maxDuration: Duration(minutes: 10))
+            .then((value) async {
+          if (value != null) {
+            final videoInfo = FlutterVideoInfo();
+            var info = await videoInfo.getVideoInfo(value.path);
+            Duration pickedVideoDuration =
+                Duration(milliseconds: info.duration.toInt());
+            if (pickedVideoDuration > videoLimit) {
+              Toast.show(
+                  "The file you have selected is too long. Max length is ${videoLimit.inMinutes} minutes.",
+                  context,
+                  backgroundColor: blackFont,
+                  textColor: Colors.white,
+                  duration: 3);
+              return;
+            } else {
+              propertyVideos.add(File(value.path));
+              getVideoThumbnail(propertyVideos.length - 1);
+              setState(() {});
+
+              // preview video
+              // _controller = VideoPlayerController.file(File(value.path));
+              // await _controller.setVolume(1.0);
+              // await _controller.initialize();
+              // await _controller.setLooping(true);
+              // await _controller.play();
+              // setState(() {});
+            }
+          }
+        });
+      }
     }
+  }
+
+  Future<bool> videoLengthAlert() async {
+    return await showDialog<bool>(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) =>
+            StatefulBuilder(builder: (context, videoLengthAlert) {
+              return AlertDialog(
+                insetPadding:
+                    EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                contentPadding: EdgeInsets.zero,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+                content: Stack(
+                  overflow: Overflow.visible,
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width - 40,
+                      child: Card(
+                        elevation: 2,
+                        shadowColor: Colors.transparent,
+                        margin: EdgeInsets.zero,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Container(
+                            padding: EdgeInsets.only(top: 16, bottom: 8),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                  ),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        color: Colors.white,
+                                        child: Text(
+                                          "Note",
+                                          overflow: TextOverflow.fade,
+                                          softWrap: false,
+                                          style: TextStyle(
+                                              color: blackFont,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w700),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: 12,
+                                      ),
+                                      RichText(
+                                        textAlign: TextAlign.justify,
+                                        text: TextSpan(
+                                          // Note: Styles for TextSpans must be explicitly defined.
+                                          // Child text spans will inherit styles from parent
+                                          style: TextStyle(
+                                              color: blackFont,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w400),
+                                          children: <TextSpan>[
+                                            TextSpan(
+                                              text:
+                                                  'Please make sure your picked or captured video do not exceed ',
+                                            ),
+                                            TextSpan(
+                                                text:
+                                                    '${videoLimit.inMinutes} minutes',
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold)),
+                                            TextSpan(
+                                                text:
+                                                    ' otherwise it will be not uploaded.'),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    FlatButton(
+                                      padding: EdgeInsets.zero,
+                                      child: Text("OK",
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              color: blackFont,
+                                              fontWeight: FontWeight.w600)),
+                                      onPressed: () {
+                                        Navigator.pop(context, true);
+                                      },
+                                    ),
+                                    FlatButton(
+                                      padding: EdgeInsets.zero,
+                                      child: Text("CANCEL",
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              color: blackFont,
+                                              fontWeight: FontWeight.w600)),
+                                      onPressed: () {
+                                        Navigator.pop(context, false);
+                                      },
+                                    )
+                                  ],
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      left: (MediaQuery.of(context).size.width - 100) / 2,
+                      top: -30,
+                      child: ClipOval(
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              border:
+                                  Border.all(color: dividerColor, width: 1.5),
+                              borderRadius: BorderRadius.circular(60)),
+                          height: 60,
+                          width: 60,
+                          child: Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Image.asset(
+                                "assets/images/camera_icon.png",
+                                fit: BoxFit.fitWidth,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              );
+            }));
   }
 
   Widget showVideo(int index) {
@@ -581,7 +807,7 @@ class _EditPropertyState extends State<EditProperty> {
       video: propertyVideos[index].path,
       imageFormat: ImageFormat.JPEG,
       maxWidth:
-          100, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
+          512, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
       quality: 25,
     );
     propertyVideoThumbnail.add(uInt8list);
@@ -1998,10 +2224,54 @@ class _EditPropertyState extends State<EditProperty> {
       ),
     );
   }
+}
+
+class AspectRatioVideo extends StatefulWidget {
+  AspectRatioVideo(this.controller);
+
+  final VideoPlayerController controller;
+
+  @override
+  AspectRatioVideoState createState() => AspectRatioVideoState();
+}
+
+class AspectRatioVideoState extends State<AspectRatioVideo> {
+  VideoPlayerController get controller => widget.controller;
+  bool initialized = false;
+
+  void _onVideoControllerUpdate() {
+    if (!mounted) {
+      return;
+    }
+    if (initialized != controller.value.initialized) {
+      initialized = controller.value.initialized;
+      setState(() {});
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    controller.addListener(_onVideoControllerUpdate);
+  }
 
   @override
   void dispose() {
-    _imageScrollController.dispose();
+    controller.removeListener(_onVideoControllerUpdate);
     super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (initialized) {
+      return Center(
+        child: AspectRatio(
+          aspectRatio: controller.value?.aspectRatio,
+          child: VideoPlayer(controller),
+        ),
+      );
+    } else {
+      return Container();
+    }
   }
 }
