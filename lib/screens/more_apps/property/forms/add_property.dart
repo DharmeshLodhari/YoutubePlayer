@@ -43,7 +43,7 @@ class _AddPropertyState extends State<AddProperty> {
   int bathroomCount = 0;
   int livingRoomCount = 0;
 
-  Duration videoLimit = Duration(minutes: 5);
+  Duration videoLimit = Duration(minutes: 1);
 
   List<String> cities = ["Lagos", "Kano", "Ibadan", "Benin City", "Abuja"];
 
@@ -230,22 +230,31 @@ class _AddPropertyState extends State<AddProperty> {
                   height: 10,
                 ),
                 sellOrRentSwitch(),
-                SizedBox(
-                  height: 10,
-                ),
-                MaterialButton(
-                  color: navyBlue,
-                  onPressed: () async {
-                    // final Directory tempDir = await getTemporaryDirectory();
-                    // final Directory libCacheDir =
-                    //     new Directory("${tempDir.path}/libCachedImageData");
-                    // var result = await libCacheDir.delete(recursive: true);
-
-                    // DefaultCacheManager().emptyCache();
-                    // debugPrint("result ");
-                  },
-                  child: Text("Clear cache"),
-                ),
+                // SizedBox(
+                //   height: 10,
+                // ),
+                // MaterialButton(
+                //   color: navyBlue,
+                //   onPressed: () async {
+                //     final Directory tempDir = await getTemporaryDirectory();
+                //     final Directory libCacheDir =
+                //         new Directory("${tempDir.path}/");
+                //     // libCacheDir.deleteSync(
+                //     //   recursive: true,
+                //     // );
+                //     List<FileSystemEntity> list = libCacheDir.listSync(
+                //         followLinks: false, recursive: true);
+                //     List<FileSystemEntity> temp = new List<FileSystemEntity>();
+                //     list.forEach((element) {
+                //       // debugPrint("${element. FileSystemEntityType.file}");
+                //     });
+                //     debugPrint("${list.runtimeType}");
+                //     debugPrint("$list");
+                //     // DefaultCacheManager().emptyCache();
+                //     debugPrint("result ");
+                //   },
+                //   child: Text("Clear cache"),
+                // ),
 
                 SizedBox(
                   height: 10,

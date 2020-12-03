@@ -123,7 +123,8 @@ class PaymentDuration {
 }
 
 List<PaymentDuration> paymentDurations = [
-  PaymentDuration(name: "Daily", value: "daily"),
+  PaymentDuration(name: "Daily (7 days)", value: "daily"),
+  PaymentDuration(name: "Business day only (5 days)", value: "weekday_only"),
   PaymentDuration(name: "Weekly", value: "weekly"),
   PaymentDuration(name: "Monthly", value: "monthly"),
   PaymentDuration(name: "Yearly", value: "yearly"),

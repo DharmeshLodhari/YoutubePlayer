@@ -1969,7 +1969,7 @@ class AuthService {
               "payee_name": "Stephen Blue",
               "payee_id": "stephen.blue",
               "payee_avatar":
-                  "https://png.pngtree.com/png-vector/20190704/ourmid/pngtree-businessman-user-avatar-free-vector-png-image_1538405.jpg",
+                  "https://slydo-assets.s3.amazonaws.com/media/customer/avatar/a7269ba398324ee4920b44bd3ebca14b.jpg",
               "payment_period": "monthly",
               "amount": "2000",
               "currency": "NGN",
@@ -1993,7 +1993,7 @@ class AuthService {
               "payee_name": "Stephen Blue",
               "payee_id": "stephen.blue",
               "payee_avatar":
-                  "https://png.pngtree.com/png-vector/20190704/ourmid/pngtree-businessman-user-avatar-free-vector-png-image_1538405.jpg",
+                  "https://slydo-assets.s3.amazonaws.com/media/customer/avatar/a7269ba398324ee4920b44bd3ebca14b.jpg",
               "amount": "2000",
               "currency": "NGN",
               "created_at": "2020-11-10 16:56:44.184311",
