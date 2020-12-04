@@ -194,7 +194,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         padding: basketBloc.items.length == 0
             ? EdgeInsets.all(0)
             : EdgeInsets.all(4),
-        position: BadgePosition(right: 0, top: 0),
+        position: BadgePosition(end: 0, top: 0),
         child: Icon(
           SlydoAppIcon.cart,
           size: 16,
@@ -300,7 +300,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       badgeContent: getBadgeContent(),
       padding:
           basketBloc.items.length == 0 ? EdgeInsets.all(0) : EdgeInsets.all(4),
-      position: BadgePosition(right: 6, top: 6),
+      position: BadgePosition(end: 6, top: 6),
       child: IconButton(
         icon: Icon(
           Icons.shopping_cart,

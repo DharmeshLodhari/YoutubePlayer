@@ -4,6 +4,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/services/cache_manager.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
@@ -42,6 +43,12 @@ class _AddServiceState extends State<AddService> {
   String servicePrice = "";
   bool serviceIsAvailable = false;
   DateTime serviceAvailableFrom = DateTime.now();
+
+  @override
+  void deactivate() {
+    CacheManager().deleteCache();
+    super.deactivate();
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -101,14 +101,14 @@ class RouteGenerator {
       case '/login':
         return PageTransition(
           child: UserLogin(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
       case '/splash':
         return PageTransition(
           child: SplashScreen(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -117,7 +117,7 @@ class RouteGenerator {
           child: Index(
             arguments: settings.arguments,
           ),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -126,28 +126,28 @@ class RouteGenerator {
           child: Dashboard(
             arguments: settings.arguments,
           ),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
       case '/new-registration':
         return PageTransition(
           child: Registration(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
       case '/verify-registration-otp':
         return PageTransition(
           child: VerifyRegistrationOTPScreen(arguments: settings.arguments),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
       case '/verify-reset-password-otp':
         return PageTransition(
           child: VerifyResetPasswordOTPScreen(arguments: settings.arguments),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -156,42 +156,42 @@ class RouteGenerator {
           child: SignUp(
             arguments: settings.arguments,
           ),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
       case '/add-document':
         return PageTransition(
           child: AddDocument(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
       case '/home':
         return PageTransition(
           child: Home(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
       case '/accounts':
         return PageTransition(
           child: PaymentRequestList(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
       case '/transactions':
         return PageTransition(
           child: TransactionList(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
       case '/transaction-graph':
         return PageTransition(
           child: TransactionGraph(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -200,14 +200,14 @@ class RouteGenerator {
           child: TransactionDetail(
             arguments: settings.arguments,
           ),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
       case '/add-account':
         return PageTransition(
           child: AddAccount(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -216,7 +216,7 @@ class RouteGenerator {
           child: SendPayment(
             arguments: settings.arguments,
           ),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -225,35 +225,35 @@ class RouteGenerator {
           child: RequestPayment(
             arguments: settings.arguments,
           ),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
       case '/explore':
         return PageTransition(
           child: ExploreList(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
       case '/profile':
         return PageTransition(
           child: UserProfile(arguments: settings.arguments),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
       case '/product':
         return PageTransition(
           child: ProductDetailPage(arguments: settings.arguments),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
       case '/add-product':
         return PageTransition(
           child: AddProduct(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -262,7 +262,7 @@ class RouteGenerator {
           child: EditProduct(
             arguments: settings.arguments,
           ),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -271,14 +271,14 @@ class RouteGenerator {
           child: ServiceDetailPage(
             arguments: settings.arguments,
           ),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
       case '/add-service':
         return PageTransition(
           child: AddService(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -287,14 +287,14 @@ class RouteGenerator {
           child: EditService(
             arguments: settings.arguments,
           ),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
       case '/message-list':
         return PageTransition(
           child: MessageList(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -303,7 +303,7 @@ class RouteGenerator {
           child: ComposeMessage(
             arguments: settings.arguments,
           ),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -312,28 +312,28 @@ class RouteGenerator {
           child: DetailedMessage(
             arguments: settings.arguments,
           ),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
       case '/resultPasswordPopup':
         return PageTransition(
           child: ResultReturningPasswordPopup(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
       case '/add-bank-account':
         return PageTransition(
           child: AddAccount(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
       case '/bank-account-list':
         return PageTransition(
           child: BankAccountList(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -342,28 +342,28 @@ class RouteGenerator {
           child: QRCodeView(
             arguments: settings.arguments,
           ),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
       case '/payout':
         return PageTransition(
           child: Payout(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
       case '/payout-list':
         return PageTransition(
           child: PayoutTransactions(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
       case '/forgot-password':
         return PageTransition(
           child: ForgotPassword(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -372,77 +372,77 @@ class RouteGenerator {
           child: ResetPassword(
             arguments: settings.arguments,
           ),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
       case '/shopping-cart':
         return PageTransition(
           child: ShoppingCart(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
       case '/user-dashboard':
         return PageTransition(
           child: UserDashboard(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
       case '/orders-list':
         return PageTransition(
           child: OrdersList(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
       case '/order-detail-page':
         return PageTransition(
           child: OrderDetailPage(arguments: settings.arguments),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
       case '/bvn-verification':
         return PageTransition(
           child: BvnVerificationPage(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
       case '/card-payment-page':
         return PageTransition(
           child: CardPaymentPage(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
       case '/user-address':
         return PageTransition(
           child: UserAddress(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
       case '/friends-dashboard':
         return PageTransition(
           child: ConnectionDashboard(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
       case '/upgrade-user-profile':
         return PageTransition(
           child: UpgradeUserProfile(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
       case '/print-qr':
         return PageTransition(
           child: PrintQRCode(arguments: settings.arguments),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -452,7 +452,7 @@ class RouteGenerator {
       case '/add-money-to-slydo-one':
         return PageTransition(
           child: AddMoneyToSlydoOne(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -461,7 +461,7 @@ class RouteGenerator {
           child: AddMoneyToSlydoTwo(
             arguments: settings.arguments,
           ),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -470,7 +470,7 @@ class RouteGenerator {
       case '/contracts':
         return PageTransition(
           child: MyContractScreen(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -478,7 +478,7 @@ class RouteGenerator {
       case '/add-contract':
         return PageTransition(
           child: AddContract(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -486,7 +486,7 @@ class RouteGenerator {
       case '/add-invoice':
         return PageTransition(
           child: AddInvoice(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -494,7 +494,7 @@ class RouteGenerator {
       case '/add-invoice-item':
         return PageTransition(
           child: AddInvoiceItem(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -504,7 +504,7 @@ class RouteGenerator {
           child: EditInvoiceItem(
             arguments: settings.arguments,
           ),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -514,7 +514,7 @@ class RouteGenerator {
       case '/more-apps':
         return PageTransition(
           child: MoreApps(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -524,7 +524,7 @@ class RouteGenerator {
       case "/movies":
         return PageTransition(
           child: MovieDashboard(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -532,7 +532,7 @@ class RouteGenerator {
       case "/movie-category":
         return PageTransition(
           child: SpecificCategoryMovieList(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -540,7 +540,7 @@ class RouteGenerator {
       case "/search-movie":
         return PageTransition(
           child: SearchMovie(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -548,7 +548,7 @@ class RouteGenerator {
       case "/movie-detail":
         return PageTransition(
           child: MovieDetailPage(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -558,7 +558,7 @@ class RouteGenerator {
       case "/musics":
         return PageTransition(
           child: MusicDashboard(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -566,7 +566,7 @@ class RouteGenerator {
       case "/music-category":
         return PageTransition(
           child: SpecificCategoryMusicList(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -574,7 +574,7 @@ class RouteGenerator {
       case "/search-music":
         return PageTransition(
           child: SearchMusic(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -584,7 +584,7 @@ class RouteGenerator {
           child: AlbumDetailPage(
             arguments: settings.arguments,
           ),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -594,7 +594,7 @@ class RouteGenerator {
           child: MusicDetailPage(
             arguments: settings.arguments,
           ),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -604,7 +604,7 @@ class RouteGenerator {
       case "/events":
         return PageTransition(
           child: EventDashboard(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -612,7 +612,7 @@ class RouteGenerator {
       case "/event-category":
         return PageTransition(
           child: SpecificCategoryEventList(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -620,7 +620,7 @@ class RouteGenerator {
       case "/search-event":
         return PageTransition(
           child: SearchEvent(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -628,7 +628,7 @@ class RouteGenerator {
       case "/event-detail":
         return PageTransition(
           child: EventDetailPage(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -636,7 +636,7 @@ class RouteGenerator {
       case "/event-ticket-detail":
         return PageTransition(
           child: EventTicketDetail(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -646,7 +646,7 @@ class RouteGenerator {
       case "/hotels":
         return PageTransition(
           child: HotelDashboard(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -654,7 +654,7 @@ class RouteGenerator {
       case "/hotel-category":
         return PageTransition(
           child: SpecificCategoryHotelList(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -662,7 +662,7 @@ class RouteGenerator {
       case "/search-hotel":
         return PageTransition(
           child: SearchHotel(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -670,7 +670,7 @@ class RouteGenerator {
       case "/hotel-detail":
         return PageTransition(
           child: HotelDetailPage(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -678,7 +678,7 @@ class RouteGenerator {
       case "/hotel-ticket-detail":
         return PageTransition(
           child: EventTicketDetail(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -686,7 +686,7 @@ class RouteGenerator {
       case "/partner-detail":
         return PageTransition(
           child: PartnerDetailPage(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -696,7 +696,7 @@ class RouteGenerator {
       case "/property":
         return PageTransition(
           child: PropertyDashboard(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -704,7 +704,7 @@ class RouteGenerator {
       case "/property-category":
         return PageTransition(
           child: SpecificCategoryPropertyList(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -712,7 +712,7 @@ class RouteGenerator {
       case "/search-property":
         return PageTransition(
           child: SearchProperty(arguments: settings.arguments),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -720,7 +720,7 @@ class RouteGenerator {
       case "/property-detail":
         return PageTransition(
           child: PropertyDetailPage(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -728,14 +728,14 @@ class RouteGenerator {
       case "/add-property":
         return PageTransition(
           child: AddProperty(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
       case "/edit-property":
         return PageTransition(
           child: EditProperty(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -745,7 +745,7 @@ class RouteGenerator {
       case "/news":
         return PageTransition(
           child: NewsDashboard(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -753,7 +753,7 @@ class RouteGenerator {
       case "/news-detail":
         return PageTransition(
           child: NewsDetailPage(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -763,7 +763,7 @@ class RouteGenerator {
       case "/bus":
         return PageTransition(
           child: BusDashboard(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -771,7 +771,7 @@ class RouteGenerator {
       case "/search-bus":
         return PageTransition(
           child: SearchBus(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -779,7 +779,7 @@ class RouteGenerator {
       case "/ticket-detail":
         return PageTransition(
           child: TicketDetail(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -789,7 +789,7 @@ class RouteGenerator {
       case "/train":
         return PageTransition(
           child: TrainDashboard(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -797,7 +797,7 @@ class RouteGenerator {
       case "/search-train":
         return PageTransition(
           child: SearchTrain(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -807,7 +807,7 @@ class RouteGenerator {
       case "/flight":
         return PageTransition(
           child: FlightDashboard(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -815,7 +815,7 @@ class RouteGenerator {
       case "/search-flight":
         return PageTransition(
           child: SearchFlight(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -825,7 +825,7 @@ class RouteGenerator {
       case "/shopping":
         return PageTransition(
           child: ShoppingDashboard(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -833,7 +833,7 @@ class RouteGenerator {
       case "/shopping-category":
         return PageTransition(
           child: SpecificCategoryProductList(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -841,7 +841,7 @@ class RouteGenerator {
       case "/search-product":
         return PageTransition(
           child: SearchProduct(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -851,7 +851,7 @@ class RouteGenerator {
       case "/reviews":
         return PageTransition(
           child: MainReview(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
@@ -859,7 +859,7 @@ class RouteGenerator {
       case "/mix-cart-item":
         return PageTransition(
           child: MixCartItem(),
-          type: PageTransitionType.downToUp,
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );

@@ -7,6 +7,7 @@ import 'package:Slydo/models/store.dart';
 import 'package:Slydo/screens/more_apps/property/models/PropertyType.dart';
 import 'package:Slydo/screens/more_apps/property/utils/utils.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/services/cache_manager.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
@@ -100,6 +101,7 @@ class _AddPropertyState extends State<AddProperty> {
       _controller.setVolume(0.0);
       _controller.pause();
     }
+    CacheManager().deleteCache();
     super.deactivate();
   }
 
@@ -230,32 +232,6 @@ class _AddPropertyState extends State<AddProperty> {
                   height: 10,
                 ),
                 sellOrRentSwitch(),
-                // SizedBox(
-                //   height: 10,
-                // ),
-                // MaterialButton(
-                //   color: navyBlue,
-                //   onPressed: () async {
-                //     final Directory tempDir = await getTemporaryDirectory();
-                //     final Directory libCacheDir =
-                //         new Directory("${tempDir.path}/");
-                //     // libCacheDir.deleteSync(
-                //     //   recursive: true,
-                //     // );
-                //     List<FileSystemEntity> list = libCacheDir.listSync(
-                //         followLinks: false, recursive: true);
-                //     List<FileSystemEntity> temp = new List<FileSystemEntity>();
-                //     list.forEach((element) {
-                //       // debugPrint("${element. FileSystemEntityType.file}");
-                //     });
-                //     debugPrint("${list.runtimeType}");
-                //     debugPrint("$list");
-                //     // DefaultCacheManager().emptyCache();
-                //     debugPrint("result ");
-                //   },
-                //   child: Text("Clear cache"),
-                // ),
-
                 SizedBox(
                   height: 10,
                 ),

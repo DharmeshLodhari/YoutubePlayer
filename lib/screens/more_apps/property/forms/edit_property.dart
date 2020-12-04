@@ -7,6 +7,7 @@ import 'package:Slydo/models/store.dart';
 import 'package:Slydo/screens/more_apps/property/models/PropertyType.dart';
 import 'package:Slydo/screens/more_apps/property/utils/utils.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/services/cache_manager.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
@@ -20,7 +21,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_video_info/flutter_video_info.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 import 'package:video_player/video_player.dart';
@@ -44,7 +44,7 @@ class _EditPropertyState extends State<EditProperty> {
   int bathroomCount = 0;
   int livingRoomCount = 0;
 
-  Duration videoLimit = Duration(minutes: 5);
+  Duration videoLimit = Duration(minutes: 1);
 
   List<String> cities = ["Lagos", "Kano", "Ibadan", "Benin City", "Abuja"];
 
@@ -101,6 +101,7 @@ class _EditPropertyState extends State<EditProperty> {
       _controller.setVolume(0.0);
       _controller.pause();
     }
+    CacheManager().deleteCache();
     super.deactivate();
   }
 
@@ -557,7 +558,8 @@ class _EditPropertyState extends State<EditProperty> {
             ));
 
     if (videoSource != null) {
-      if (await videoLengthAlert()) {
+      bool isConditionAccepted = await videoLengthAlert();
+      if (isConditionAccepted != null && isConditionAccepted) {
         ImagePicker()
             .getVideo(source: videoSource, maxDuration: Duration(minutes: 10))
             .then((value) async {
@@ -651,7 +653,7 @@ class _EditPropertyState extends State<EditProperty> {
                                       ),
                                       RichText(
                                         textAlign: TextAlign.justify,
-                                        text: TextSpan(
+                                        text: new TextSpan(
                                           // Note: Styles for TextSpans must be explicitly defined.
                                           // Child text spans will inherit styles from parent
                                           style: TextStyle(
@@ -666,7 +668,7 @@ class _EditPropertyState extends State<EditProperty> {
                                             TextSpan(
                                                 text:
                                                     '${videoLimit.inMinutes} minutes',
-                                                style: TextStyle(
+                                                style: new TextStyle(
                                                     fontWeight:
                                                         FontWeight.bold)),
                                             TextSpan(

@@ -79,7 +79,7 @@ class _OrderTileForProductState extends State<OrderTileForProduct> {
       ),
       padding:
           qty.toString().length == 0 ? EdgeInsets.all(0) : EdgeInsets.all(4),
-      position: BadgePosition(right: -6, top: -6),
+      position: BadgePosition(end: -6, top: -6),
       // ignore: required onPressed
       child: ClipOval(
         child: CachedNetworkImage(
@@ -259,7 +259,7 @@ class _OrderTileForServiceState extends State<OrderTileForService> {
       ),
       padding:
           qty.toString().length == 0 ? EdgeInsets.all(0) : EdgeInsets.all(4),
-      position: BadgePosition(right: -6, top: -6),
+      position: BadgePosition(end: -6, top: -6),
       // ignore: required onPressed
       child: ClipOval(
         child: CachedNetworkImage(

@@ -36,17 +36,34 @@ class _SplashScreenState extends State<SplashScreen> {
   // bool for to check if internet connection is available or not
   var hasConnection = true;
 
-  Widget splashLogo = Container(
+  Widget splashLogo = Scaffold(
+      body: Container(
+    height: double.infinity,
+    width: double.infinity,
     color: navyBlue,
-    child: Center(
-        child: Image.asset(
-      "assets/images/appIcon/appIcon_foreground.png",
-      color: Colors.white,
-      height: 200,
-      fit: BoxFit.fill,
-      frameBuilder: imageFrameBuilder,
-    )),
-  );
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Image.asset(
+          "assets/images/app_logo.png",
+          color: Colors.white,
+          fit: BoxFit.fill,
+          height: 75,
+        ),
+        SizedBox(
+          height: 16,
+        ),
+        Text(
+          "Slydo",
+          style: TextStyle(
+              fontFamily: "CircularStd",
+              fontSize: 52,
+              color: Colors.white,
+              fontWeight: FontWeight.w600),
+        ),
+      ],
+    ),
+  ));
 
   @override
   void initState() {
@@ -65,6 +82,7 @@ class _SplashScreenState extends State<SplashScreen> {
             hasConnection = true;
           });
         }
+
         getLoggedInUser();
       } else {
         Toast.show(
@@ -131,6 +149,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    precacheImage(AssetImage("assets/images/app_logo.png"), context);
     basketBloc = Provider.of<BasketBloc>(context);
     return hasConnection
         // ? Container(
@@ -172,6 +191,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> getLoggedInUser() async {
+    await Future.delayed(Duration(seconds: 5));
     _sharedPreferences = await SharedPreferences.getInstance();
     final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
     final BankAccountBloc bankAccountBloc = Provider.of(context, listen: false);

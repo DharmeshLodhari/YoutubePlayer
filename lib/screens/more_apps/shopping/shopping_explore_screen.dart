@@ -177,7 +177,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
         padding: basketBloc.items.length == 0
             ? EdgeInsets.all(0)
             : EdgeInsets.all(4),
-        position: BadgePosition(right: 0, top: 0),
+        position: BadgePosition(end: 0, top: 0),
         child: Icon(
           SlydoAppIcon.cart,
           size: 16,

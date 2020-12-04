@@ -7,6 +7,7 @@ import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/screens/contract_module/my_contract_screen.dart';
 import 'package:Slydo/screens/tiles/bank_account.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/services/cache_manager.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -490,6 +491,8 @@ class _UserDashboardState extends State<UserDashboard> {
     // await notificationBloc.pushNotificationService.logout();
 
     await _auth.logOut();
+
+    CacheManager().deleteCache(clearAll: true);
 
     bankAccountBloc.bankAccount = BankAccount();
     dashboardBloc.index = 0;
