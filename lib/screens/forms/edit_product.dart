@@ -65,7 +65,6 @@ class _EditProductState extends State<EditProduct> {
   TextEditingController productManufacturerController = TextEditingController();
   TextEditingController productPriceController = TextEditingController();
 
-
   @override
   void deactivate() {
     CacheManager().deleteCache();

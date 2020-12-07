@@ -9,10 +9,10 @@ import 'package:Slydo/models/payout.dart';
 import 'package:Slydo/models/store.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/models/user.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
-import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
 final String baseUrl = "https://api.slydo.co";
@@ -1068,12 +1068,6 @@ class AuthService {
     }
   }
 
-  String dateToString(DateTime date) {
-    var formatter = new DateFormat('yyyy-MM-dd');
-    var formatted = formatter.format(date);
-    return formatted;
-  }
-
   // Add Product
   Future<bool> addProduct(Product product) async {
     var headers = await getAuthHeaders();
@@ -1959,7 +1953,14 @@ class AuthService {
     return true;
   }
 
+  /// Contract and Invoice
+  //get all contract list
   Future<List<Contract>> getContractList() async {
+    var url = secureBaseUrl + "/api/v1/transactions/payment-contract/";
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
+    debugPrint("response:- ${response.statusCode}");
+    debugPrint("response:- ${response.body}");
     List<Contract> contracts = List.generate(
         10,
         (index) => Contract.fromJson({
@@ -1983,7 +1984,42 @@ class AuthService {
     return contracts;
   }
 
+  Future<bool> addContract(Map data) async {
+    var url = secureBaseUrl + "/api/v1/transactions/payment-contract/";
+    var headers = await getAuthHeaders();
+
+    var _data = jsonEncode(data);
+    var response = await http.post(url, body: _data, headers: headers);
+    debugPrint("response:- ${response.statusCode}");
+    debugPrint("response:- ${response.body}");
+    if (response.statusCode == 201) {
+      return true;
+    } else {
+      var jsonData = json.decode(response.body);
+      Future.error(jsonData.toStiring());
+    }
+  }
+
+  Future<bool> updateContract(Contract contract) async {
+    var url = secureBaseUrl + "/api/v1/messaging/send/";
+    var headers = await getAuthHeaders();
+    var _data = contract.toJson();
+    var response = await http.post(url, body: _data, headers: headers);
+    if (response.statusCode == 201) {
+      return true;
+    } else {
+      var jsonData = json.decode(response.body);
+      throw jsonData;
+    }
+  }
+
+  //get all invoice list
   Future<List<Invoice>> getInvoiceList() async {
+    var url = secureBaseUrl + "/api/v1/transactions/invoice/";
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
+    debugPrint("response:- ${response.statusCode}");
+    debugPrint("response:- ${response.body}");
     List<Invoice> invoices = List.generate(
         10,
         (index) => Invoice.fromJson({
@@ -2004,5 +2040,33 @@ class AuthService {
     await Future.delayed(Duration(seconds: 2));
 
     return invoices;
+  }
+
+  Future<bool> addInvoice(Map data) async {
+    var url = secureBaseUrl + "/api/v1/transactions/invoice/";
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await http.post(url, body: _data, headers: headers);
+    debugPrint("response:- ${response.statusCode}");
+    debugPrint("response:- ${response.body}");
+    if (response.statusCode == 201) {
+      return true;
+    } else {
+      var jsonData = json.decode(response.body);
+      throw jsonData;
+    }
+  }
+
+  Future<bool> updateInvoice(Invoice invoice) async {
+    var url = secureBaseUrl + "/api/v1/messaging/send/";
+    var headers = await getAuthHeaders();
+    var _data = invoice.toJson();
+    var response = await http.post(url, body: _data, headers: headers);
+    if (response.statusCode == 201) {
+      return true;
+    } else {
+      var jsonData = json.decode(response.body);
+      throw jsonData;
+    }
   }
 }

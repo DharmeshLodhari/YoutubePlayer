@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import 'colors.dart';
 
@@ -100,6 +101,12 @@ String formatDurationInSeconds({Duration duration}) {
   }
 
   return formattedDuration;
+}
+
+String dateToString(DateTime date) {
+  var formatter = new DateFormat('yyyy-MM-dd');
+  var formatted = formatter.format(date);
+  return formatted;
 }
 
 String durationToString(Duration duration) {

@@ -1,8 +1,8 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/models/contract_and_invoice/Contract.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:Slydo/services/auth.dart';
-import 'package:Slydo/services/device_info.dart';
 import 'package:Slydo/services/location_service.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -52,6 +52,8 @@ class _AddContractState extends State<AddContract> {
 
   DateTime startingDate = DateTime.now();
   DateTime endingDate = DateTime.now();
+
+  Contract contract;
 
   PaymentDuration selectedDuration;
 
@@ -634,25 +636,26 @@ class _AddContractState extends State<AddContract> {
 
       if (isValidPayee && _formKey.currentState.validate()) {
         if (userBloc.user.userName != recipient) {
-          var userLocation;
-          Map deviceData;
           try {
-            userLocation = await locationService.getLocation();
-            deviceData = await getDeviceInfo();
             var data = {
-              "from_customer": userBloc.user.userName,
-              "to_customer": recipient.trim(),
-              "currency": userBloc.user.currency,
+              "contractor": recipient.trim().toString(),
+              "contractee": userBloc.user.userName.toString(),
+              "currency": userBloc.user.currency.toString(),
               "amount": amount.toString().trim(),
-              "notes": reference.trim(),
-              "description": reference.trim(),
-              "latitude": userLocation.latitude,
-              "longitude": userLocation.longitude,
-              "deviceData": deviceData,
+              "start_date": dateToString(startingDate),
+              "end_date": dateToString(endingDate),
+              "payment_duration": selectedDuration.value.toString(),
+              "note": " hello test contract",
             };
 
-            ///
-            Navigator.pop(context);
+            AuthService().addContract(data).then((result) {
+              if (result) {
+                Navigator.pop(context);
+              }
+            }).catchError((error) {
+              Toast.show(error.toString(), context,
+                  gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+            });
           } catch (e) {
             debugPrint(e);
             Toast.show(e, context,

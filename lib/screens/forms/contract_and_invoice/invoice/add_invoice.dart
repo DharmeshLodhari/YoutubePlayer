@@ -1,8 +1,8 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/models/contract_and_invoice/Invoice.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:Slydo/services/auth.dart';
-import 'package:Slydo/services/device_info.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -44,6 +44,8 @@ class _AddInvoiceState extends State<AddInvoice> {
 
   bool isValidPayee = false;
   int amount;
+
+  Invoice invoice;
 
   String errorMessage = "";
   String recipient;
@@ -811,21 +813,38 @@ class _AddInvoiceState extends State<AddInvoice> {
 
       if (isValidPayee && _formKey.currentState.validate()) {
         if (userBloc.user.userName != recipient) {
-          var userLocation;
-          Map deviceData;
           try {
-            deviceData = await getDeviceInfo();
             var data = {
               "from_customer": userBloc.user.userName,
               "to_customer": recipient.trim(),
-              "currency": userBloc.user.currency,
-              "amount": amount.toString().trim(),
-              "deviceData": deviceData,
+              "invoice_number": "215",
+              "invoice_date": dateToString(invoiceDate),
+              "due_date": dateToString(dueDate),
+              "items": [
+                {
+                  "name": "Software Development",
+                  "currency": "NGN",
+                  "amount": "10",
+                  "quantity": 2
+                },
+                {
+                  "name": "Website Development",
+                  "currency": "NGN",
+                  "amount": "5",
+                  "quantity": 5
+                }
+              ]
             };
 
-            ///
-            _addInvoiceBloc.clearItems();
-            Navigator.pop(context);
+            AuthService().addInvoice(data).then((result) {
+              if (result) {
+                _addInvoiceBloc.clearItems();
+                Navigator.pop(context);
+              }
+            }).catchError((error) {
+              Toast.show(error.toString(), context,
+                  gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+            });
           } catch (e) {
             debugPrint(e);
             Toast.show(e, context,

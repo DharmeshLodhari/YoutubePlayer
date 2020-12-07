@@ -8,4 +8,3 @@ Future<String> captureVideo(BuildContext context, Duration duration) async {
 
   return Future.value("");
 }
-
