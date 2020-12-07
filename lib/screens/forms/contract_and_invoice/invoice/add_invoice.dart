@@ -1,6 +1,7 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/models/contract_and_invoice/Invoice.dart';
+import 'package:Slydo/models/contract_and_invoice/Item.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
@@ -302,7 +303,7 @@ class _AddInvoiceState extends State<AddInvoice> {
                           style: TextStyle(fontSize: 12, color: darkGrey),
                         ),
                         Text(
-                          indexedValue.value.qty.toString(),
+                          indexedValue.value.quantity.toString(),
                           style: TextStyle(
                             fontSize: 12,
                             color: blackFont,
@@ -328,7 +329,7 @@ class _AddInvoiceState extends State<AddInvoice> {
                                   fontSize: 12),
                             ),
                             Text(
-                              indexedValue.value.price.toString(),
+                              indexedValue.value.amount.toString(),
                               style: TextStyle(
                                 fontSize: 12,
                                 color: blackFont,
@@ -351,7 +352,8 @@ class _AddInvoiceState extends State<AddInvoice> {
                               fontSize: 14),
                         ),
                         Text(
-                          (indexedValue.value.qty * indexedValue.value.price)
+                          (indexedValue.value.amount *
+                                  indexedValue.value.quantity)
                               .toString(),
                           style: TextStyle(
                               color: navyBlue,
@@ -814,26 +816,17 @@ class _AddInvoiceState extends State<AddInvoice> {
       if (isValidPayee && _formKey.currentState.validate()) {
         if (userBloc.user.userName != recipient) {
           try {
+            List<InvoiceItem> invoiceItem = List<InvoiceItem>();
+
+            invoiceItem = _addInvoiceBloc.items;
+
             var data = {
               "from_customer": userBloc.user.userName,
               "to_customer": recipient.trim(),
-              "invoice_number": "215",
+              "invoice_number": _invoiceController.text.trim().toString(),
               "invoice_date": dateToString(invoiceDate),
               "due_date": dateToString(dueDate),
-              "items": [
-                {
-                  "name": "Software Development",
-                  "currency": "NGN",
-                  "amount": "10",
-                  "quantity": 2
-                },
-                {
-                  "name": "Website Development",
-                  "currency": "NGN",
-                  "amount": "5",
-                  "quantity": 5
-                }
-              ]
+              "items": invoiceItem
             };
 
             AuthService().addInvoice(data).then((result) {

@@ -92,7 +92,8 @@ class _MyContractListState extends State<MyContractList> {
                               context,
                               ContractTile(
                                 contract: element,
-                              )),
+                              ),
+                              element),
                         )
                         .toList(),
                   ),
@@ -105,6 +106,7 @@ class _MyContractListState extends State<MyContractList> {
   Widget _getSlidableWithLists(
     BuildContext context,
     Widget contractTile,
+    Contract contract,
   ) {
     return Slidable(
       controller: _slideController,
@@ -112,27 +114,93 @@ class _MyContractListState extends State<MyContractList> {
       actionPane: SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
       child: VerticalListItem(contractTile),
-      actions: listActionSlideActions(),
-      secondaryActions: listSecondaryActions(),
+      actions: listActionSlideActions(contract),
+      secondaryActions: listSecondaryActions(contract),
     );
   }
 
-  List<Widget> listSecondaryActions() {
+  List<Widget> listSecondaryActions(Contract contract) {
     bool isPause = Random().nextBool();
+
+    // STOPPED = ("Stopped", _("Stopped"))
+    // ENDED = ("Ended", _("Ended"))
+    // ACTIVE = ("Active", _("Active"))
+    // PAUSED = ("Paused", _("Paused"))
 
     return [
       SlideActionButton(
-          backgroundColor: isPause ? starYellow : naturalGreen,
-          icon: isPause ? Icons.pause : Icons.play_arrow_rounded,
+          backgroundColor: getActionIconColor(contract),
+          icon: getActionIcon(contract),
           onTap: () {
-            _slideController.activeState.close();
+            // _slideController.activeState.close();
+            updateContractStatus(contract, getUpdateAction(contract));
           },
-          title: isPause ? "Pause" : "Resume",
+          title: getActionTitle(contract),
           slideController: _slideController),
     ];
   }
 
-  List<Widget> listActionSlideActions() {
+  Color getActionIconColor(Contract contract) {
+    switch (contract.status) {
+      case "Paused":
+        return starYellow;
+        break;
+      case "Active":
+        return naturalGreen;
+        break;
+      default:
+        return navyBlue;
+    }
+  }
+
+  IconData getActionIcon(Contract contract) {
+    switch (contract.status) {
+      case "Paused":
+        return Icons.play_arrow_rounded;
+        break;
+      case "Active":
+        return Icons.pause;
+        break;
+      default:
+        return Icons.ac_unit;
+    }
+  }
+
+  String getActionTitle(Contract contract) {
+    switch (contract.status) {
+      case "Paused":
+        return "Resume";
+        break;
+      case "Active":
+        return "Pause";
+        break;
+      default:
+        return "";
+    }
+  }
+
+  String getUpdateAction(Contract contract) {
+    switch (contract.status) {
+      case "Paused":
+        return "Active";
+        break;
+      case "Active":
+        return "Paused";
+        break;
+      default:
+        return "";
+    }
+  }
+
+  void updateContractStatus(Contract contract, String action) {
+    Map<String, String> data = {"status": action};
+
+    AuthService()
+        .updateContract(id: contract.id.toString(), data: data)
+        .then((value) {});
+  }
+
+  List<Widget> listActionSlideActions(Contract contract) {
     return [
       SlideActionButton(
           backgroundColor: mateRed,

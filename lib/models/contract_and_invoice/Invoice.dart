@@ -1,42 +1,49 @@
+import 'Item.dart';
+
 class Invoice {
-  String amount;
+  int amount;
   String createdAt;
   String currency;
-  String description;
   String dueDate;
-  String paidAt;
-  String payeeAvatar;
-  String payeeId;
-  String payeeName;
+  String fromCustomer;
+  String fromCustomerAvatar;
+  int id;
+  String invoiceDate;
+  List<InvoiceItem> items;
   String status;
-  String uuid;
+  String toCustomer;
+  String toCustomerAvatar;
 
   Invoice(
       {this.amount,
       this.createdAt,
       this.currency,
-      this.description,
       this.dueDate,
-      this.paidAt,
-      this.payeeAvatar,
-      this.payeeId,
-      this.payeeName,
+      this.fromCustomer,
+      this.fromCustomerAvatar,
+      this.id,
+      this.invoiceDate,
+      this.items,
       this.status,
-      this.uuid});
+      this.toCustomer,
+      this.toCustomerAvatar});
 
   factory Invoice.fromJson(Map<String, dynamic> json) {
     return Invoice(
       amount: json['amount'],
       createdAt: json['created_at'],
       currency: json['currency'],
-      description: json['description'],
       dueDate: json['due_date'],
-      paidAt: json['paid_at'],
-      payeeAvatar: json['payee_avatar'],
-      payeeId: json['payee_id'],
-      payeeName: json['payee_name'],
+      fromCustomer: json['from_customer'],
+      fromCustomerAvatar: json['from_customer_avatar'],
+      id: json['id'],
+      invoiceDate: json['invoice_date'],
+      items: json['items'] != null
+          ? (json['items'] as List).map((i) => InvoiceItem.fromJson(i)).toList()
+          : null,
       status: json['status'],
-      uuid: json['uuid'],
+      toCustomer: json['to_customer'],
+      toCustomerAvatar: json['to_customer_avatar'],
     );
   }
 
@@ -45,14 +52,17 @@ class Invoice {
     data['amount'] = this.amount;
     data['created_at'] = this.createdAt;
     data['currency'] = this.currency;
-    data['description'] = this.description;
     data['due_date'] = this.dueDate;
-    data['paid_at'] = this.paidAt;
-    data['payee_avatar'] = this.payeeAvatar;
-    data['payee_id'] = this.payeeId;
-    data['payee_name'] = this.payeeName;
+    data['from_customer'] = this.fromCustomer;
+    data['from_customer_avatar'] = this.fromCustomerAvatar;
+    data['id'] = this.id;
+    data['invoice_date'] = this.invoiceDate;
     data['status'] = this.status;
-    data['uuid'] = this.uuid;
+    data['to_customer'] = this.toCustomer;
+    data['to_customer_avatar'] = this.toCustomerAvatar;
+    if (this.items != null) {
+      data['items'] = this.items.map((v) => v.toJson()).toList();
+    }
     return data;
   }
 }

@@ -48,7 +48,7 @@ class _ContractTileState extends State<ContractTile> {
                 SizedBox(
                   height: 4,
                 ),
-                invoiceStatus()
+                getPaymentDuration()
               ],
             ),
             onTap: () {},
@@ -58,24 +58,68 @@ class _ContractTileState extends State<ContractTile> {
     );
   }
 
-  Widget invoiceStatus() {
+  Widget getPaymentDuration() {
     bool isPaid = Random().nextBool();
     return Container(
       padding: EdgeInsets.symmetric(vertical: 2, horizontal: 4),
       decoration: BoxDecoration(
-          color: isPaid ? naturalGreen : starYellow,
+          color: getPaymentDurationColor(),
           borderRadius: BorderRadius.circular(4)),
-      child: Text(isPaid ? "YEARLY" : "WEEKLY",
+      child: Text(getPaymentDurationText(),
           style: TextStyle(
               color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12)),
     );
+  }
+
+  Color getPaymentDurationColor() {
+    switch (widget.contract.paymentDuration) {
+      case "daily":
+        return starYellow;
+        break;
+      case "weekday_only":
+        return richPurple;
+        break;
+      case "weekly":
+        return naturalGreen;
+        break;
+      case "monthly":
+        return richPink;
+        break;
+      case "yearly":
+        return navyBlue;
+        break;
+      default:
+        return navyBlue;
+    }
+  }
+
+  String getPaymentDurationText() {
+    switch (widget.contract.paymentDuration) {
+      case "daily":
+        return "Daily";
+        break;
+      case "weekday_only":
+        return "Weekday";
+        break;
+      case "weekly":
+        return "Weekly";
+        break;
+      case "monthly":
+        return "Monthly";
+        break;
+      case "yearly":
+        return "Yearly";
+        break;
+      default:
+        return "";
+    }
   }
 
   Widget getTitle() {
     return Padding(
       padding: EdgeInsets.only(bottom: 2),
       child: Text(
-        "${widget.contract.payeeName}",
+        "${widget.contract.contractor}",
         maxLines: 1,
         style: TextStyle(
             color: blackFont, fontWeight: FontWeight.bold, fontSize: 15),
@@ -86,13 +130,13 @@ class _ContractTileState extends State<ContractTile> {
   Widget getLeading() {
     return ClipOval(
       child: CachedNetworkImage(
-        imageUrl: widget.contract.payeeAvatar,
+        imageUrl: widget.contract.contractorAvatar,
         height: 48,
         width: 48,
         colorBlendMode: BlendMode.darken,
         fit: BoxFit.cover,
         filterQuality: FilterQuality.high,
-        placeholder: (context, url) => widget.contract.payeeAvatar == ""
+        placeholder: (context, url) => widget.contract.contractorAvatar == ""
             ? Icon(Icons.person)
             : CircularLoadingIndicator(),
       ),
@@ -125,7 +169,7 @@ class _ContractTileState extends State<ContractTile> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-          "${widget.contract.description}",
+          "${widget.contract.note}",
           style: TextStyle(color: darkGrey, fontSize: 12),
           maxLines: 1,
         ),
@@ -194,23 +238,40 @@ class _InvoiceTileState extends State<InvoiceTile> {
   }
 
   Widget invoiceStatus() {
-    bool isPaid = Random().nextBool();
     return Container(
       padding: EdgeInsets.symmetric(vertical: 2, horizontal: 4),
       decoration: BoxDecoration(
-          color: isPaid ? naturalGreen : starYellow,
-          borderRadius: BorderRadius.circular(4)),
-      child: Text(isPaid ? "PAID 30 NOV" : "PENDING",
+          color: getStatusColor(), borderRadius: BorderRadius.circular(4)),
+      child: Text(widget.invoice.status,
           style: TextStyle(
               color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12)),
     );
+  }
+
+  Color getStatusColor() {
+    switch (widget.invoice.status) {
+      case "Draft":
+        return eyeGrey;
+        break;
+      case "Pending":
+        return starYellow;
+        break;
+      case "Paid":
+        return naturalGreen;
+        break;
+      case "Unpaid":
+        return mateRed;
+        break;
+      default:
+        return navyBlue;
+    }
   }
 
   Widget getTitle() {
     return Padding(
       padding: EdgeInsets.only(bottom: 2),
       child: Text(
-        "${widget.invoice.payeeName}",
+        "${widget.invoice.toCustomer}",
         maxLines: 1,
         style: TextStyle(
             color: blackFont, fontWeight: FontWeight.bold, fontSize: 15),
@@ -221,13 +282,13 @@ class _InvoiceTileState extends State<InvoiceTile> {
   Widget getLeading() {
     return ClipOval(
       child: CachedNetworkImage(
-        imageUrl: widget.invoice.payeeAvatar,
+        imageUrl: widget.invoice.toCustomerAvatar,
         height: 48,
         width: 48,
         colorBlendMode: BlendMode.darken,
         fit: BoxFit.cover,
         filterQuality: FilterQuality.high,
-        placeholder: (context, url) => widget.invoice.payeeAvatar == ""
+        placeholder: (context, url) => widget.invoice.toCustomerAvatar == ""
             ? Icon(Icons.person)
             : CircularLoadingIndicator(),
       ),
@@ -256,12 +317,18 @@ class _InvoiceTileState extends State<InvoiceTile> {
   }
 
   Widget getSubTitle(BuildContext context) {
+    DateTime dateAndTime = DateTime.parse(widget.invoice.dueDate);
+    String date = DateFormat("dd/MM/yyyy").format(dateAndTime);
+    String time = DateFormat("hh:mm a").format(dateAndTime);
+
+    bool paymentIsDue = dateAndTime.isBefore(DateTime.now());
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-          "${widget.invoice.description}",
-          style: TextStyle(color: darkGrey, fontSize: 12),
+          "Due Date:- $date • $time",
+          style:
+              TextStyle(color: paymentIsDue ? mateRed : darkGrey, fontSize: 10),
           maxLines: 1,
         ),
         getDateTime(context),
@@ -270,9 +337,9 @@ class _InvoiceTileState extends State<InvoiceTile> {
   }
 
   Widget getDateTime(BuildContext context) {
-    DateTime transactionTime = DateTime.parse(widget.invoice.createdAt);
-    String date = DateFormat("dd/MM/yyyy").format(transactionTime);
-    String time = DateFormat("hh:mm a").format(transactionTime);
+    DateTime dateAndTime = DateTime.parse(widget.invoice.createdAt);
+    String date = DateFormat("dd/MM/yyyy").format(dateAndTime);
+    String time = DateFormat("hh:mm a").format(dateAndTime);
     return Text(
       "$date • $time",
       softWrap: false,

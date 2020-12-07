@@ -1,4 +1,4 @@
-import 'package:Slydo/models/contract_and_invoice/InvoiceItem.dart';
+import 'package:Slydo/models/contract_and_invoice/Item.dart';
 import 'package:Slydo/models/transactions.dart';
 import 'package:Slydo/models/user.dart';
 import 'package:Slydo/services/fcm_push_notification.dart';
@@ -275,7 +275,7 @@ class AddInvoiceBloc extends ChangeNotifier {
   void updateTotal() {
     int sum = 0;
     _items.forEach((element) {
-      sum += (element.price * element.qty);
+      sum += (element.amount * element.quantity);
     });
     _total = sum;
   }

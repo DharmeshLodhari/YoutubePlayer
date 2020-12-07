@@ -1,6 +1,6 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/models/contract_and_invoice/InvoiceItem.dart';
+import 'package:Slydo/models/contract_and_invoice/Item.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/device_info.dart';
 import 'package:Slydo/utils/colors.dart';
@@ -237,8 +237,8 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
                     size: 2,
                   ),
                   onTap: () {
-                    if (_invoiceItem.qty > 1) {
-                      _invoiceItem.qty--;
+                    if (_invoiceItem.quantity > 1) {
+                      _invoiceItem.quantity--;
                       setState(() {});
                     }
                   }),
@@ -248,7 +248,7 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
                 ),
               ),
               Text(
-                _invoiceItem.qty.toString(),
+                _invoiceItem.quantity.toString(),
                 style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -267,7 +267,7 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
                     size: 16,
                   ),
                   onTap: () {
-                    _invoiceItem.qty++;
+                    _invoiceItem.quantity++;
                     setState(() {});
                   }),
             ],
@@ -302,7 +302,8 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
           };
 
           _invoiceItem.name = _descriptionController.text.trim();
-          _invoiceItem.price = int.parse(_amountController.text.trim());
+          _invoiceItem.amount = int.parse(_amountController.text.trim());
+          _invoiceItem.currency = userBloc.user.currency;
 
           addInvoiceBloc.addItem(invoiceItem: _invoiceItem);
 

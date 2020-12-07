@@ -1959,29 +1959,32 @@ class AuthService {
     var url = secureBaseUrl + "/api/v1/transactions/payment-contract/";
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
+    var jsonData = json.decode(response.body);
     debugPrint("response:- ${response.statusCode}");
     debugPrint("response:- ${response.body}");
-    List<Contract> contracts = List.generate(
-        10,
-        (index) => Contract.fromJson({
-              "status": "Paid",
-              "uuid": "sadas",
-              "description": "Softwear Development",
-              "payee_name": "Stephen Blue",
-              "payee_id": "stephen.blue",
-              "payee_avatar":
-                  "https://slydo-assets.s3.amazonaws.com/media/customer/avatar/a7269ba398324ee4920b44bd3ebca14b.jpg",
-              "payment_period": "monthly",
-              "amount": "2000",
-              "currency": "NGN",
-              "created_at": "2020-11-10 16:56:44.184311",
-              "end_at": "2020-11-20 16:56:44.184311",
-              "paid_at": "2020-11-30 16:56:44.184311"
-            }));
+    List data = jsonData["results"];
 
-    await Future.delayed(Duration(seconds: 2));
+    List<Contract> contracts = List<Contract>();
+
+    data.forEach((element) {
+      contracts.add(Contract.fromJson(element));
+    });
 
     return contracts;
+  }
+
+  Future<bool> getContract(String id) async {
+    var url = secureBaseUrl + "/api/v1/transactions/payment-contract/$id/";
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
+    debugPrint("response:- ${response.statusCode}");
+    debugPrint("response:- ${response.body}");
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      var jsonData = json.decode(response.body);
+      Future.error(jsonData.toStiring());
+    }
   }
 
   Future<bool> addContract(Map data) async {
@@ -1996,21 +1999,22 @@ class AuthService {
       return true;
     } else {
       var jsonData = json.decode(response.body);
-      Future.error(jsonData.toStiring());
+      Future.error(jsonData.toString());
     }
   }
 
-  Future<bool> updateContract(Contract contract) async {
-    var url = secureBaseUrl + "/api/v1/messaging/send/";
+  Future<bool> updateContract({String id, Map data}) async {
+    var url = secureBaseUrl + "/api/v1/transactions/payment-contract/$id/";
     var headers = await getAuthHeaders();
-    var _data = contract.toJson();
-    var response = await http.post(url, body: _data, headers: headers);
-    if (response.statusCode == 201) {
+    var _data = jsonEncode(data);
+    var response = await http.patch(url, body: _data, headers: headers);
+    debugPrint("response:- ${response.statusCode}");
+    debugPrint("response:- ${response.body}");
+    if (response.statusCode == 200) {
       return true;
-    } else {
-      var jsonData = json.decode(response.body);
-      throw jsonData;
     }
+    var jsonData = json.decode(response.body);
+    Future.error(jsonData.toString());
   }
 
   //get all invoice list
@@ -2020,24 +2024,14 @@ class AuthService {
     var response = await http.get(url, headers: headers);
     debugPrint("response:- ${response.statusCode}");
     debugPrint("response:- ${response.body}");
-    List<Invoice> invoices = List.generate(
-        10,
-        (index) => Invoice.fromJson({
-              "status": "Paid",
-              "uuid": "sadas",
-              "description": "Softwear Development",
-              "payee_name": "Stephen Blue",
-              "payee_id": "stephen.blue",
-              "payee_avatar":
-                  "https://slydo-assets.s3.amazonaws.com/media/customer/avatar/a7269ba398324ee4920b44bd3ebca14b.jpg",
-              "amount": "2000",
-              "currency": "NGN",
-              "created_at": "2020-11-10 16:56:44.184311",
-              "due_date": "2020-11-20 16:56:44.184311",
-              "paid_at": "2020-11-30 16:56:44.184311"
-            }));
+    var jsonData = json.decode(response.body);
+    List data = jsonData["results"];
 
-    await Future.delayed(Duration(seconds: 2));
+    List<Invoice> invoices = List<Invoice>();
+
+    data.forEach((element) {
+      invoices.add(Invoice.fromJson(element));
+    });
 
     return invoices;
   }
