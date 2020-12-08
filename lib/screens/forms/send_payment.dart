@@ -819,8 +819,9 @@ class _SendPaymentState extends State<SendPayment> {
               "latitude": userLocation.latitude,
               "longitude": userLocation.longitude,
               "deviceData": deviceData,
-              "anonymous": sendMoneyAnonymous
+              "is_anonymous": sendMoneyAnonymous
             };
+            debugPrint("$data");
 
             BottomSheetPassCode(
                 context: context,

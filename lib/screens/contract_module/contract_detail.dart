@@ -1,6 +1,6 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/models/transactions.dart';
+import 'package:Slydo/models/contract_and_invoice/Contract.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -23,7 +23,9 @@ class ContractDetail extends StatefulWidget {
 
 class _ContractDetailState extends State<ContractDetail> {
   var arguments;
-  Transaction transaction;
+  Contract contract;
+  // Contract contract;
+  bool isLoading = false;
 
   _ContractDetailState({this.arguments});
 
@@ -36,9 +38,15 @@ class _ContractDetailState extends State<ContractDetail> {
   }
 
   void fetchContract() async {
-    AuthService().getContract("").then((value) {});
-
-    transaction = arguments['transaction'];
+    isLoading = true;
+    setState(() {});
+    AuthService().getContract(arguments["id"].toString()).then((value) {
+      contract = value;
+      isLoading = false;
+      setState(() {});
+    }).catchError((error) {
+      debugPrint(error);
+    });
   }
 
   Widget showBackArrow() {
@@ -82,12 +90,12 @@ class _ContractDetailState extends State<ContractDetail> {
       ),
       centerTitle: false,
       title: Text(
-        AppLocalization.of(context).transaction,
+        "Contract",
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
-        openGraphBtn(),
+        transactionHistoryBtn(),
         SizedBox(
           width: 16,
         ),
@@ -95,37 +103,41 @@ class _ContractDetailState extends State<ContractDetail> {
     );
   }
 
-  Widget openGraphBtn() {
+  Widget transactionHistoryBtn() {
     return RoundedBackgroundIcon(
       height: 34,
       width: 34,
       icon: Icon(
-        SlydoAppIcon.location,
+        SlydoAppIcon.transactions,
         size: 16,
         color: blackFont,
       ),
-      onTap: transaction.latitude != "" ? goToMap : () {},
+      onTap: navigateToPage,
       backgroundColor: iconBtnGrey,
       enableMargin: true,
     );
   }
 
   Widget scaffoldBody() {
-    return SingleChildScrollView(
-      child: Container(
-        height: MediaQuery.of(context).size.height -
-            (AppBar().preferredSize.height +
-                MediaQuery.of(context).padding.top),
-        width: MediaQuery.of(context).size.width,
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        child: Column(
-          children: [
-            displayTransactionInfo(),
-            flexibleSpace(),
-          ],
-        ),
-      ),
-    );
+    return isLoading
+        ? Center(
+            child: CircularLoadingIndicator(),
+          )
+        : SingleChildScrollView(
+            child: Container(
+              height: MediaQuery.of(context).size.height -
+                  (AppBar().preferredSize.height +
+                      MediaQuery.of(context).padding.top),
+              width: MediaQuery.of(context).size.width,
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              child: Column(
+                children: [
+                  displayContractInfo(),
+                  flexibleSpace(),
+                ],
+              ),
+            ),
+          );
   }
 
   Widget displaySenderInfo() {
@@ -135,7 +147,7 @@ class _ContractDetailState extends State<ContractDetail> {
       subtitle: getSubtitle(),
       trailing: getAmount(),
       onTap: () async {
-        _auth.fetchCustomerProfile(transaction.payee).then((user) {
+        _auth.fetchCustomerProfile(contract.contractor).then((user) {
           Navigator.pushNamed(context, '/profile',
               arguments: {"searchedUser": user});
         });
@@ -145,15 +157,15 @@ class _ContractDetailState extends State<ContractDetail> {
 
   Widget getDescriptionWidget() {
     return Text(
-      "${transaction.description}",
+      "${contract.note}",
       maxLines: 1,
     );
   }
 
   Widget getSubtitle() {
-    DateTime transactionTime = DateTime.parse(transaction.createdAt);
-    String date = DateFormat("dd/MM/yyyy").format(transactionTime);
-    String time = DateFormat("hh:mm a").format(transactionTime);
+    DateTime dateAndTime = DateTime.parse(contract.createdAt);
+    String date = DateFormat("dd/MM/yyyy").format(dateAndTime);
+    String time = DateFormat("hh:mm a").format(dateAndTime);
 
     return Text(
       "$date • $time",
@@ -163,16 +175,23 @@ class _ContractDetailState extends State<ContractDetail> {
     );
   }
 
+  String formatDate(String datetime) {
+    DateTime dateAndTime = DateTime.parse(datetime);
+    String date = DateFormat("dd/MM/yyyy").format(dateAndTime);
+    String time = DateFormat("hh:mm a").format(dateAndTime);
+    return "$date • $time";
+  }
+
   Widget getLeading() {
     return ClipOval(
       child: CachedNetworkImage(
-        imageUrl: transaction.avatar,
+        imageUrl: contract.contractorAvatar,
         height: 48,
         width: 48,
         colorBlendMode: BlendMode.darken,
         fit: BoxFit.cover,
         filterQuality: FilterQuality.high,
-        placeholder: (context, url) => transaction.avatar == ""
+        placeholder: (context, url) => contract.contractorAvatar == ""
             ? Icon(Icons.person)
             : CircularLoadingIndicator(),
       ),
@@ -181,7 +200,7 @@ class _ContractDetailState extends State<ContractDetail> {
 
   Widget getSender() {
     return Text(
-      transaction.payee,
+      contract.contractor,
       style: TextStyle(
         color: blackFont,
         fontWeight: FontWeight.bold,
@@ -195,41 +214,42 @@ class _ContractDetailState extends State<ContractDetail> {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          worldCurrencies[transaction.currency],
+          worldCurrencies[contract.currency],
           style: TextStyle(
-            color: transaction.isCredit ? navyBlue : blackFont,
+            color: navyBlue,
             fontWeight: FontWeight.bold,
             fontSize: 14,
             fontFamily: "Roboto",
           ),
         ),
         Text(
-          transaction.amount.toString(),
+          contract.amount.toString(),
           style: TextStyle(
-              color: transaction.isCredit ? navyBlue : blackFont,
-              fontWeight: FontWeight.bold,
-              fontSize: 14),
+              color: navyBlue, fontWeight: FontWeight.bold, fontSize: 14),
         ),
       ],
     );
   }
 
-  Widget displayTransactionInfo() {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.zero,
-      shadowColor: dividerColor,
-      child: Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: dividerColor, width: 0.5)),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            displaySenderInfo(),
-            displayBodyOfTransaction(),
-          ],
+  Widget displayContractInfo() {
+    return Container(
+      decoration: decorateBox(),
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        margin: EdgeInsets.zero,
+        shadowColor: dividerColor,
+        child: Container(
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: dividerColor, width: 0.5)),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              displaySenderInfo(),
+              displayBodyOfTransaction(),
+            ],
+          ),
         ),
       ),
     );
@@ -247,24 +267,29 @@ class _ContractDetailState extends State<ContractDetail> {
             height: 0,
           ),
           detailTile(
-            SlydoAppIcon.user,
+            Icons.history_edu,
             AppLocalization.of(context).status,
-            transaction.status,
+            contract.status,
           ),
           detailTile(
-            SlydoAppIcon.category,
-            AppLocalization.of(context).category,
-            transaction.category,
+            Icons.timer,
+            "Payment duration",
+            contract.paymentDuration,
           ),
           detailTile(
             SlydoAppIcon.note_filled,
             AppLocalization.of(context).note,
-            transaction.note,
+            contract.note,
           ),
           detailTile(
-            SlydoAppIcon.note,
-            AppLocalization.of(context).description,
-            transaction.description,
+            SlydoAppIcon.date,
+            "Starting date",
+            formatDate(contract.startDate),
+          ),
+          detailTile(
+            SlydoAppIcon.date,
+            "Ending date",
+            formatDate(contract.startDate),
           ),
         ],
       ),
@@ -319,7 +344,7 @@ class _ContractDetailState extends State<ContractDetail> {
     );
   }
 
-  void goToMap() {
-    debugPrint("go to Map Called !");
+  void navigateToPage() {
+    Navigator.pushNamed(context, "/contract-transactions");
   }
 }

@@ -82,9 +82,22 @@ class _InvoiceListState extends State<InvoiceList> {
                 child: SingleChildScrollView(
                   child: Column(
                     children: invoiceList
-                        .map((element) => InvoiceTile(
+                        .map(
+                          (element) => GestureDetector(
+                            child: InvoiceTile(
                               invoice: element,
-                            ))
+                              onTap: () {
+                                Navigator.of(context).pushNamed(
+                                    "/invoice-detail",
+                                    arguments: {"id": element.id});
+                              },
+                            ),
+                            onTap: () {
+                              Navigator.of(context).pushNamed("/invoice-detail",
+                                  arguments: {"id": element.id});
+                            },
+                          ),
+                        )
                         .toList(),
                   ),
                 ),

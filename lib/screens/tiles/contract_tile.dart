@@ -14,8 +14,9 @@ import 'package:provider/provider.dart';
 // ignore: must_be_immutable
 class ContractTile extends StatefulWidget {
   final Contract contract;
+  final Function onTap;
 
-  ContractTile({this.contract});
+  ContractTile({this.contract, this.onTap});
 
   @override
   _ContractTileState createState() => _ContractTileState();
@@ -51,7 +52,7 @@ class _ContractTileState extends State<ContractTile> {
                 getPaymentDuration()
               ],
             ),
-            onTap: () {},
+            onTap: widget.onTap,
           ),
         ),
       ),
@@ -193,8 +194,9 @@ class _ContractTileState extends State<ContractTile> {
 
 class InvoiceTile extends StatefulWidget {
   final Invoice invoice;
+  final Function onTap;
 
-  InvoiceTile({this.invoice});
+  InvoiceTile({this.invoice, this.onTap});
 
   @override
   _InvoiceTileState createState() => _InvoiceTileState();
@@ -230,7 +232,7 @@ class _InvoiceTileState extends State<InvoiceTile> {
                 invoiceStatus()
               ],
             ),
-            onTap: () {},
+            onTap: widget.onTap,
           ),
         ),
       ),

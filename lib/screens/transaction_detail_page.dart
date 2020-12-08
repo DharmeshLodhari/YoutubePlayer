@@ -172,10 +172,12 @@ class _TransactionDetailState extends State<TransactionDetail> {
       subtitle: getSubtitle(),
       trailing: getAmount(),
       onTap: () async {
-        _auth.fetchCustomerProfile(transaction.payee).then((user) {
-          Navigator.pushNamed(context, '/profile',
-              arguments: {"searchedUser": user});
-        });
+        if (!transaction.isAnonymous) {
+          _auth.fetchCustomerProfile(transaction.payee).then((user) {
+            Navigator.pushNamed(context, '/profile',
+                arguments: {"searchedUser": user});
+          });
+        }
       },
     );
   }
@@ -202,17 +204,28 @@ class _TransactionDetailState extends State<TransactionDetail> {
 
   Widget getLeading() {
     return ClipOval(
-      child: CachedNetworkImage(
-        imageUrl: transaction.avatar,
-        height: 48,
-        width: 48,
-        colorBlendMode: BlendMode.darken,
-        fit: BoxFit.cover,
-        filterQuality: FilterQuality.high,
-        placeholder: (context, url) => transaction.avatar == ""
-            ? Icon(Icons.person)
-            : CircularLoadingIndicator(),
-      ),
+      child: transaction.isAnonymous
+          ? Container(
+              padding: EdgeInsets.all(4.0),
+              child: Image.asset(
+                "assets/images/anonymous.png",
+                height: 48,
+                width: 48,
+                colorBlendMode: BlendMode.darken,
+                fit: BoxFit.fitHeight,
+              ),
+            )
+          : CachedNetworkImage(
+              imageUrl: transaction.avatar,
+              height: 48,
+              width: 48,
+              colorBlendMode: BlendMode.darken,
+              fit: BoxFit.cover,
+              filterQuality: FilterQuality.high,
+              placeholder: (context, url) => transaction.avatar == ""
+                  ? Icon(Icons.person)
+                  : CircularLoadingIndicator(),
+            ),
     );
   }
 

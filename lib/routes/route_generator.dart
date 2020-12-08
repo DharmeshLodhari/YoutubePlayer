@@ -1,6 +1,9 @@
 import 'package:Slydo/screens/bank_account_list.dart';
 import 'package:Slydo/screens/card_payment_page.dart';
 import 'package:Slydo/screens/connection_module/connections_dashboard.dart';
+import 'package:Slydo/screens/contract_module/contract_detail.dart';
+import 'package:Slydo/screens/contract_module/contract_transaction_history.dart';
+import 'package:Slydo/screens/contract_module/invoice_detail.dart';
 import 'package:Slydo/screens/contract_module/my_contract_screen.dart';
 import 'package:Slydo/screens/dashboard.dart';
 import 'package:Slydo/screens/explore.dart';
@@ -483,6 +486,23 @@ class RouteGenerator {
           settings: settings,
         );
 
+      case '/contract-detail':
+        return PageTransition(
+          child: ContractDetail(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case '/contract-transactions':
+        return PageTransition(
+          child: ContractTransactionHistory(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
       case '/add-invoice':
         return PageTransition(
           child: AddInvoice(),
@@ -502,6 +522,16 @@ class RouteGenerator {
       case '/edit-invoice-item':
         return PageTransition(
           child: EditInvoiceItem(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case '/invoice-detail':
+        return PageTransition(
+          child: InvoiceDetail(
             arguments: settings.arguments,
           ),
           type: PageTransitionType.bottomToTop,

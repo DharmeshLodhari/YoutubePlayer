@@ -30,6 +30,7 @@ class Transaction {
   String longitude;
   int amount;
   bool isCredit;
+  bool isAnonymous;
 
   // Pass in as named parameter in constructor
   Transaction(
@@ -44,6 +45,7 @@ class Transaction {
       this.note,
       this.latitude,
       this.longitude,
+      this.isAnonymous,
       this.amount,
       this.isCredit});
 }

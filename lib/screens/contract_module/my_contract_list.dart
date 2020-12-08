@@ -87,14 +87,19 @@ class _MyContractListState extends State<MyContractList> {
               : SingleChildScrollView(
                   child: Column(
                     children: contracts
+                        .asMap()
                         .map(
-                          (element) => _getSlidableWithLists(
-                              context,
-                              ContractTile(
-                                contract: element,
-                              ),
-                              element),
+                          (index, element) => MapEntry(
+                            index,
+                            _getSlidableWithLists(
+                                context,
+                                ContractTile(
+                                  contract: element,
+                                ),
+                                index),
+                          ),
                         )
+                        .values
                         .toList(),
                   ),
                 ),
@@ -106,20 +111,20 @@ class _MyContractListState extends State<MyContractList> {
   Widget _getSlidableWithLists(
     BuildContext context,
     Widget contractTile,
-    Contract contract,
+    int index,
   ) {
     return Slidable(
       controller: _slideController,
       direction: Axis.horizontal,
       actionPane: SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
-      child: VerticalListItem(contractTile),
-      actions: listActionSlideActions(contract),
-      secondaryActions: listSecondaryActions(contract),
+      child: VerticalListItem(contractTile, contracts[index]),
+      actions: listActionSlideActions(index),
+      secondaryActions: listSecondaryActions(index),
     );
   }
 
-  List<Widget> listSecondaryActions(Contract contract) {
+  List<Widget> listSecondaryActions(int index) {
     bool isPause = Random().nextBool();
 
     // STOPPED = ("Stopped", _("Stopped"))
@@ -129,31 +134,39 @@ class _MyContractListState extends State<MyContractList> {
 
     return [
       SlideActionButton(
-          backgroundColor: getActionIconColor(contract),
-          icon: getActionIcon(contract),
+          backgroundColor: getSecondaryActionIconColor(index),
+          icon: getSecondaryActionIcon(index),
           onTap: () {
             // _slideController.activeState.close();
-            updateContractStatus(contract, getUpdateAction(contract));
+            updateContractStatus(index, getUpdateAction(index));
           },
-          title: getActionTitle(contract),
+          title: getSecondaryActionTitle(index),
           slideController: _slideController),
     ];
   }
 
-  Color getActionIconColor(Contract contract) {
+  Color getSecondaryActionIconColor(int index) {
+    Contract contract = contracts[index];
     switch (contract.status) {
       case "Paused":
-        return starYellow;
+        return naturalGreen;
         break;
       case "Active":
+        return starYellow;
+        break;
+      case "Stopped":
         return naturalGreen;
+        break;
+      case "Ended":
+        return starYellow;
         break;
       default:
         return navyBlue;
     }
   }
 
-  IconData getActionIcon(Contract contract) {
+  IconData getSecondaryActionIcon(int index) {
+    Contract contract = contracts[index];
     switch (contract.status) {
       case "Paused":
         return Icons.play_arrow_rounded;
@@ -161,12 +174,19 @@ class _MyContractListState extends State<MyContractList> {
       case "Active":
         return Icons.pause;
         break;
+      case "Stopped":
+        return Icons.play_arrow_rounded;
+        break;
+      case "Ended":
+        return Icons.pause;
+        break;
       default:
         return Icons.ac_unit;
     }
   }
 
-  String getActionTitle(Contract contract) {
+  String getSecondaryActionTitle(int index) {
+    Contract contract = contracts[index];
     switch (contract.status) {
       case "Paused":
         return "Resume";
@@ -174,12 +194,19 @@ class _MyContractListState extends State<MyContractList> {
       case "Active":
         return "Pause";
         break;
+      case "Stopped":
+        return "Resume";
+        break;
+      case "Ended":
+        return "Pause";
+        break;
       default:
         return "";
     }
   }
 
-  String getUpdateAction(Contract contract) {
+  String getUpdateAction(int index) {
+    Contract contract = contracts[index];
     switch (contract.status) {
       case "Paused":
         return "Active";
@@ -187,26 +214,49 @@ class _MyContractListState extends State<MyContractList> {
       case "Active":
         return "Paused";
         break;
+      case "Stopped":
+        return "Ended";
+        break;
+      case "Ended":
+        return "Stopped";
+        break;
       default:
         return "";
     }
   }
 
-  void updateContractStatus(Contract contract, String action) {
+  void updateContractStatus(int index, String action) {
+    Contract contract = contracts[index];
     Map<String, String> data = {"status": action};
 
     AuthService()
         .updateContract(id: contract.id.toString(), data: data)
-        .then((value) {});
+        .then((value) {
+      contracts[index].status = action;
+      setState(() {});
+      Toast.show(
+        "Status updated successfully",
+        context,
+        backgroundColor: blackFont,
+        textColor: Colors.white,
+      );
+    }).catchError((error) {
+      Toast.show(
+        "Status updated unsuccessfully",
+        context,
+        backgroundColor: mateRed,
+        textColor: Colors.white,
+      );
+    });
   }
 
-  List<Widget> listActionSlideActions(Contract contract) {
+  List<Widget> listActionSlideActions(int index) {
     return [
       SlideActionButton(
           backgroundColor: mateRed,
           icon: Icons.stop_circle_outlined,
           onTap: () {
-            _slideController.activeState.close();
+            updateContractStatus(index, getUpdateAction(index));
           },
           title: "Stop",
           slideController: _slideController),
@@ -219,17 +269,18 @@ class _MyContractListState extends State<MyContractList> {
 }
 
 class VerticalListItem extends StatelessWidget {
-  VerticalListItem(this.child);
+  VerticalListItem(this.child, this.contract);
 
   final Widget child;
+  final Contract contract;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () =>
-          Slidable.of(context)?.renderingMode == SlidableRenderingMode.none
-              ? Slidable.of(context)?.open()
-              : Slidable.of(context)?.close(),
+      onTap: () {
+        Navigator.of(context)
+            .pushNamed("/contract-detail", arguments: {"id": contract.id});
+      },
       child: Container(
         color: Colors.white,
         padding: EdgeInsets.symmetric(vertical: 2),

@@ -192,7 +192,9 @@ class _TransactionTileState extends State<TransactionTile> {
     return Padding(
       padding: EdgeInsets.only(bottom: 2),
       child: Text(
-        "${widget.transaction.payee}",
+        widget.transaction.isAnonymous
+            ? "Anonymous"
+            : "${widget.transaction.payee}",
         maxLines: 1,
         style: TextStyle(
             color: blackFont, fontWeight: FontWeight.bold, fontSize: 15),
@@ -202,17 +204,28 @@ class _TransactionTileState extends State<TransactionTile> {
 
   Widget getLeading() {
     return ClipOval(
-      child: CachedNetworkImage(
-        imageUrl: widget.transaction.avatar,
-        height: 48,
-        width: 48,
-        colorBlendMode: BlendMode.darken,
-        fit: BoxFit.cover,
-        filterQuality: FilterQuality.high,
-        placeholder: (context, url) => widget.transaction.avatar == ""
-            ? Icon(Icons.person)
-            : CircularLoadingIndicator(),
-      ),
+      child: widget.transaction.isAnonymous
+          ? Container(
+              padding: EdgeInsets.all(4.0),
+              child: Image.asset(
+                "assets/images/anonymous.png",
+                height: 48,
+                width: 48,
+                colorBlendMode: BlendMode.darken,
+                fit: BoxFit.fitHeight,
+              ),
+            )
+          : CachedNetworkImage(
+              imageUrl: widget.transaction.avatar,
+              height: 48,
+              width: 48,
+              colorBlendMode: BlendMode.darken,
+              fit: BoxFit.cover,
+              filterQuality: FilterQuality.high,
+              placeholder: (context, url) => widget.transaction.avatar == ""
+                  ? Icon(Icons.person)
+                  : CircularLoadingIndicator(),
+            ),
     );
   }
 

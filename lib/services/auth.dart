@@ -608,7 +608,7 @@ class AuthService {
     }
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
-
+    debugPrint("${response.body}");
     if (response.statusCode == 200) {
       List<Transaction> transactions = [];
       // This variable will hold list of transactions we got from server
@@ -617,15 +617,15 @@ class AuthService {
 
       for (var item in jsonData["results"]) {
         // if sender is not current user then
-        bool isCredit = (item["from_customer"] != user.userName &&
-                item["to_customer"] == user.userName)
-            ? true
-            : false;
+        bool isCredit = item["is_credit"];
 
         var payee = isCredit ? item["from_customer"] : item['to_customer'];
         var avatar = isCredit
             ? item["from_customer_avatar"]
             : item['to_customer_avatar'];
+
+        debugPrint("payee:- $payee");
+        debugPrint("avatar:- $avatar");
 
         Transaction transaction = Transaction(
             status: item['status'],
@@ -640,6 +640,7 @@ class AuthService {
             latitude: item['latitude'] ?? "",
             longitude: item['longitude'] ?? "",
             amount: item['amount'],
+            isAnonymous: item['is_anonymous'] ?? false,
             isCredit: isCredit);
         transactions.add(transaction);
       }
@@ -663,6 +664,7 @@ class AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.post(url, headers: headers, body: _data);
+    debugPrint("response body:- ${response.body}");
     return response;
   }
 
@@ -1973,17 +1975,17 @@ class AuthService {
     return contracts;
   }
 
-  Future<bool> getContract(String id) async {
+  Future<Contract> getContract(String id) async {
     var url = secureBaseUrl + "/api/v1/transactions/payment-contract/$id/";
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
-    debugPrint("response:- ${response.statusCode}");
-    debugPrint("response:- ${response.body}");
     if (response.statusCode == 200) {
-      return true;
+      Contract contract = Contract.fromJson(json.decode(response.body));
+
+      return contract;
     } else {
       var jsonData = json.decode(response.body);
-      Future.error(jsonData.toStiring());
+      return Future.error(jsonData.toStiring());
     }
   }
 
@@ -1992,14 +1994,14 @@ class AuthService {
     var headers = await getAuthHeaders();
 
     var _data = jsonEncode(data);
+    debugPrint("$_data");
     var response = await http.post(url, body: _data, headers: headers);
-    debugPrint("response:- ${response.statusCode}");
-    debugPrint("response:- ${response.body}");
+
     if (response.statusCode == 201) {
       return true;
     } else {
       var jsonData = json.decode(response.body);
-      Future.error(jsonData.toString());
+      return Future.error(jsonData.toString());
     }
   }
 
@@ -2014,7 +2016,7 @@ class AuthService {
       return true;
     }
     var jsonData = json.decode(response.body);
-    Future.error(jsonData.toString());
+    return Future.error(jsonData.toString());
   }
 
   //get all invoice list
@@ -2022,8 +2024,7 @@ class AuthService {
     var url = secureBaseUrl + "/api/v1/transactions/invoice/";
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
-    debugPrint("response:- ${response.statusCode}");
-    debugPrint("response:- ${response.body}");
+
     var jsonData = json.decode(response.body);
     List data = jsonData["results"];
 
@@ -2036,6 +2037,19 @@ class AuthService {
     return invoices;
   }
 
+  Future<Invoice> getInvoice(String id) async {
+    var url = secureBaseUrl + "/api/v1/transactions/invoice/$id/";
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      Invoice invoice = Invoice.fromJson(json.decode(response.body));
+      return invoice;
+    }
+    var jsonData = json.decode(response.body);
+    return Future.error(jsonData.toStiring());
+  }
+
   Future<bool> addInvoice(Map data) async {
     var url = secureBaseUrl + "/api/v1/transactions/invoice/";
     var headers = await getAuthHeaders();
@@ -2045,10 +2059,9 @@ class AuthService {
     debugPrint("response:- ${response.body}");
     if (response.statusCode == 201) {
       return true;
-    } else {
-      var jsonData = json.decode(response.body);
-      throw jsonData;
     }
+    var jsonData = json.decode(response.body);
+    return Future.error(jsonData.toStiring());
   }
 
   Future<bool> updateInvoice(Invoice invoice) async {
@@ -2058,9 +2071,8 @@ class AuthService {
     var response = await http.post(url, body: _data, headers: headers);
     if (response.statusCode == 201) {
       return true;
-    } else {
-      var jsonData = json.decode(response.body);
-      throw jsonData;
     }
+    var jsonData = json.decode(response.body);
+    return Future.error(jsonData.toStiring());
   }
 }
