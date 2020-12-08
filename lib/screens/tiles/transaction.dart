@@ -192,9 +192,7 @@ class _TransactionTileState extends State<TransactionTile> {
     return Padding(
       padding: EdgeInsets.only(bottom: 2),
       child: Text(
-        widget.transaction.isAnonymous
-            ? "Anonymous"
-            : "${widget.transaction.payee}",
+        "${widget.transaction.payee}",
         maxLines: 1,
         style: TextStyle(
             color: blackFont, fontWeight: FontWeight.bold, fontSize: 15),
