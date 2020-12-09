@@ -176,6 +176,9 @@ class _ContractDetailState extends State<ContractDetail> {
   }
 
   String formatDate(String datetime) {
+    if (datetime == null) {
+      return "";
+    }
     DateTime dateAndTime = DateTime.parse(datetime);
     String date = DateFormat("dd/MM/yyyy").format(dateAndTime);
     String time = DateFormat("hh:mm a").format(dateAndTime);

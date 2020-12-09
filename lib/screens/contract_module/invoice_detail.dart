@@ -314,6 +314,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
               Row(
                 children: [
                   Expanded(
+                    flex: 3,
                     child: Row(
                       children: [
                         Expanded(
@@ -328,7 +329,11 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                       ],
                     ),
                   ),
+                  SizedBox(
+                    width: 8,
+                  ),
                   Expanded(
+                    flex: 5,
                     child: Row(
                       children: [
                         Text(
@@ -348,7 +353,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                         ),
                         flexibleSpace(),
                         Text(
-                          "Total",
+                          "Sub total  ",
                           style: TextStyle(
                               color: blackFont,
                               fontSize: 12,
@@ -389,7 +394,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
                   Text(
-                    "Sub Total :- ",
+                    "Total :- ",
                     style: TextStyle(
                         color: blackFont,
                         fontSize: 14,
@@ -428,15 +433,23 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
       child: Row(
         children: [
           Expanded(
+            flex: 3,
             child: Row(
               children: [
                 Expanded(
-                  child: Text(item.name),
+                  child: Text(
+                    item.name,
+                    style: TextStyle(color: blackFont),
+                  ),
                 ),
               ],
             ),
           ),
+          SizedBox(
+            width: 12,
+          ),
           Expanded(
+            flex: 5,
             child: Row(
               children: [
                 Text(item.quantity.toString()),

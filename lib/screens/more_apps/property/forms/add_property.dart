@@ -12,6 +12,7 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/capture_video.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
@@ -80,6 +81,7 @@ class _AddPropertyState extends State<AddProperty> {
 
   List<File> propertyImages = List<File>();
   List<File> propertyVideos = List<File>();
+  List<File> testVideoFiles = List<File>();
   List<Uint8List> propertyVideoThumbnail = List<Uint8List>();
 
   String propertyTagLine = "";
@@ -216,6 +218,18 @@ class _AddPropertyState extends State<AddProperty> {
                 addVideos(),
                 SizedBox(
                   height: 16,
+                ),
+                Container(
+                  height: 60,
+                  width: 60,
+                  color: naturalGreen,
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.video_call_outlined,
+                      color: Colors.white,
+                    ),
+                    onPressed: captureVideo,
+                  ),
                 ),
                 Row(
                   children: [
@@ -502,6 +516,19 @@ class _AddPropertyState extends State<AddProperty> {
     );
   }
 
+  void captureVideo() async {
+    // String result = await captureVideo(context, Duration(seconds: 2));
+    // debugPrint("$result");
+    var path = await Navigator.push(
+        context, MaterialPageRoute(builder: (context) => VideoRecorder()));
+    if (path != null) {
+      debugPrint("$path");
+      propertyVideos.add(File(path));
+      getVideoThumbnail(propertyVideos.length - 1);
+      setState(() {});
+    }
+  }
+
   Widget addVideoButton() {
     return CustomBoxShadow(
       child: Card(
@@ -560,37 +587,41 @@ class _AddPropertyState extends State<AddProperty> {
     if (videoSource != null) {
       bool isConditionAccepted = await videoLengthAlert();
       if (isConditionAccepted != null && isConditionAccepted) {
-        ImagePicker()
-            .getVideo(source: videoSource, maxDuration: Duration(minutes: 10))
-            .then((value) async {
-          if (value != null) {
-            final videoInfo = FlutterVideoInfo();
-            var info = await videoInfo.getVideoInfo(value.path);
-            Duration pickedVideoDuration =
-                Duration(milliseconds: info.duration.toInt());
-            if (pickedVideoDuration > videoLimit) {
-              Toast.show(
-                  "The file you have selected is too long. Max length is ${videoLimit.inMinutes} minutes.",
-                  context,
-                  backgroundColor: blackFont,
-                  textColor: Colors.white,
-                  duration: 3);
-              return;
-            } else {
-              propertyVideos.add(File(value.path));
-              getVideoThumbnail(propertyVideos.length - 1);
-              setState(() {});
+        if (videoSource == ImageSource.gallery) {
+          ImagePicker()
+              .getVideo(source: videoSource, maxDuration: Duration(minutes: 10))
+              .then((value) async {
+            if (value != null) {
+              final videoInfo = FlutterVideoInfo();
+              var info = await videoInfo.getVideoInfo(value.path);
+              Duration pickedVideoDuration =
+                  Duration(milliseconds: info.duration.toInt());
+              if (pickedVideoDuration > videoLimit) {
+                Toast.show(
+                    "The file you have selected is too long. Max length is ${videoLimit.inMinutes} minutes.",
+                    context,
+                    backgroundColor: blackFont,
+                    textColor: Colors.white,
+                    duration: 3);
+                return;
+              } else {
+                propertyVideos.add(File(value.path));
+                getVideoThumbnail(propertyVideos.length - 1);
+                setState(() {});
 
-              // preview video
-              // _controller = VideoPlayerController.file(File(value.path));
-              // await _controller.setVolume(1.0);
-              // await _controller.initialize();
-              // await _controller.setLooping(true);
-              // await _controller.play();
-              // setState(() {});
+                // preview video
+                // _controller = VideoPlayerController.file(File(value.path));
+                // await _controller.setVolume(1.0);
+                // await _controller.initialize();
+                // await _controller.setLooping(true);
+                // await _controller.play();
+                // setState(() {});
+              }
             }
-          }
-        });
+          });
+        } else if (videoSource == ImageSource.camera) {
+          captureVideo();
+        }
       }
     }
   }

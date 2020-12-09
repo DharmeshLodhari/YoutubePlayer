@@ -50,8 +50,8 @@ class _ContractTransactionHistoryState
             isLoading = true;
           });
         }
-        Map<String, dynamic> result =
-            await AuthService().getTransactions(next, previous, false, false);
+        Map<String, dynamic> result = await AuthService()
+            .getContractTransactions(next, previous, false, false);
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
@@ -156,9 +156,8 @@ class _ContractTransactionHistoryState
               if (index == transactionList.length) {
                 return _buildIndicator();
               } else {
-                return TransactionTile(
+                return ContractTransactionTile(
                   transaction: transactionList[index],
-                  expandedWidget: Container(),
                 );
               }
             },

@@ -294,7 +294,8 @@ class _AddInvoiceState extends State<AddInvoice> {
                     contentPadding: EdgeInsets.zero,
                     title: Text(
                       indexedValue.value.name,
-                      style: TextStyle(fontSize: 16),
+                      style: TextStyle(fontSize: 14, color: blackFont),
+                      textAlign: TextAlign.justify,
                     ),
                     subtitle: Row(
                       children: [
