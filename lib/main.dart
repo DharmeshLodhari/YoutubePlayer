@@ -13,6 +13,7 @@ import 'package:Slydo/screens/more_apps/property/property_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/train/train_dashboard_bloc.dart';
 import 'package:Slydo/services/app_life_cycle.dart';
+import 'package:Slydo/services/timer_service.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
@@ -111,6 +112,9 @@ void main() async {
           ),
           ChangeNotifierProvider<AddInvoiceBloc>.value(
             value: AddInvoiceBloc(),
+          ),
+          ChangeNotifierProvider<TimerService>.value(
+            value: TimerService(),
           ),
         ], child: MyApp()),
       );

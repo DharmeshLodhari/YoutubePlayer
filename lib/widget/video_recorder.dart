@@ -16,10 +16,12 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:Slydo/services/timer_service.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
 // ignore: must_be_immutable
@@ -46,6 +48,8 @@ class _VideoRecorderState extends State<VideoRecorder> {
   Timer timer;
 
   Duration videoDuration;
+
+  TimerService timerService;
 
   Widget recordingButton = Container(
       height: 58,
@@ -100,51 +104,81 @@ class _VideoRecorderState extends State<VideoRecorder> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      // appBar: appBar(),
-      body: Stack(
-        children: <Widget>[
-          Container(
-            child: Center(
-              child: _cameraPreviewWidget(),
-            ),
-          ),
-          Container(
-            child: Padding(
-              padding: const EdgeInsets.all(1.0),
-            ),
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            decoration: BoxDecoration(
-              color: Colors.transparent,
-              border: Border.all(
-                color: controller != null && controller.value.isRecordingVideo
-                    ? mateRed
-                    : dividerColor,
-                width: 1.0,
+    timerService = Provider.of<TimerService>(context);
+    return WillPopScope(
+      onWillPop: () async {
+        timerService.stop();
+        timerService.reset();
+
+        return Future.value(true);
+      },
+      child: Scaffold(
+        key: _scaffoldKey,
+        // appBar: appBar(),
+        body: Stack(
+          children: <Widget>[
+            Container(
+              child: Center(
+                child: _cameraPreviewWidget(),
               ),
             ),
-          ),
-          Positioned(
-            bottom: 0,
-            child: Container(
-              padding: EdgeInsets.symmetric(vertical: 16),
+            Container(
+              child: Padding(
+                padding: const EdgeInsets.all(1.0),
+              ),
+              height: MediaQuery.of(context).size.height,
               width: MediaQuery.of(context).size.width,
-              color: Colors.black45,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  _cameraTogglesRowWidget(),
-                  _captureControlRowWidget(),
-                  _closeBtnWidget(),
+              decoration: BoxDecoration(
+                color: Colors.transparent,
+                border: Border.all(
+                  color: controller != null && controller.value.isRecordingVideo
+                      ? mateRed
+                      : dividerColor,
+                  width: 1.0,
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: 0,
+              child: Column(
+                children: [
+                  Text(
+                    getTimerDuration(timerService.currentDuration),
+                    style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600),
+                  ),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  Container(
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    width: MediaQuery.of(context).size.width,
+                    color: Colors.black45,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        _cameraTogglesRowWidget(),
+                        _captureControlRowWidget(),
+                        _closeBtnWidget(),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
+  }
+
+  String getTimerDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, "0");
+    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+    return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
   }
 
   Widget _closeBtnWidget() {
@@ -153,6 +187,8 @@ class _VideoRecorderState extends State<VideoRecorder> {
       alignment: Alignment.center,
       child: FlatButton(
         onPressed: () {
+          timerService.stop();
+          timerService.reset();
           Navigator.pop(context);
         },
         child: Icon(
@@ -339,12 +375,17 @@ class _VideoRecorderState extends State<VideoRecorder> {
   void _onRecordButtonPressed() {
     _startVideoRecording().then((String filePath) {
       if (filePath != null) {
+        timerService.start();
+        changeRecordIcon();
         Toast.show('Recording video started', context);
       }
-      changeRecordIcon();
+
       //Timer
       timer = Timer.periodic(videoDuration, (Timer t) {
         _onStopButtonPressed();
+        timerService.stop();
+        timerService.reset();
+
         timer.cancel();
       });
     });
@@ -352,12 +393,16 @@ class _VideoRecorderState extends State<VideoRecorder> {
 
   void _onStopButtonPressed() {
     _stopVideoRecording().then((_) {
-      if (mounted) setState(() {});
-      changeRecordIcon();
-      timer.cancel(); //when user close it manually
+      if (mounted) {
+        setState(() {});
+        changeRecordIcon();
+        timer.cancel(); //when user close it manually
+        timerService.stop();
+        timerService.reset();
 
-      Toast.show('Video recorded to $videoPath', context);
-      Navigator.pop(context, videoPath);
+        Toast.show('Video recorded to $videoPath', context);
+        Navigator.pop(context, videoPath);
+      }
     });
   }
 

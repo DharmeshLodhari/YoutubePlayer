@@ -6,6 +6,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
+import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -31,6 +32,8 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
   String businessName;
 
   final _auth = AuthService();
+
+  final _upgradeProfileScaffold = GlobalKey<ScaffoldState>();
 
   UserBloc userBloc;
 
@@ -62,9 +65,9 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
     _auth.getUserProfileUpgradeDetails().then((result) {
       if (mounted) {
         setState(() {
-          List profileUpgradeTypeAndPrice = result["results"]["data"];
+          List profileUpgradeTypeAndPrice = result;
           profileUpgradeTypeAndPrice.forEach((data) {
-            type.add({"name": data["name"], "price": data["price"]});
+            type.add({"name": data["account_type"], "price": data["price"]});
           });
           isLoading = false;
         });
@@ -80,6 +83,7 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
         return true;
       },
       child: Scaffold(
+        key: _upgradeProfileScaffold,
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
         appBar: appBar(),
@@ -180,7 +184,7 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
             selectedType = value;
             type.forEach((element) {
               if (element["name"] == selectedType) {
-                price = element["price"];
+                price = element["price"].toString();
               }
             });
           });
@@ -281,33 +285,48 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
       "business_name": businessName.toString().trim(),
       "default_payment_type": selectedCategory.toString().trim(),
     };
-    _auth.upgradeUserProfile(data).then((result) {
-      if (result) {
-        Toast.show(
-            "Request sent !! Your Profile Will Be Updated Soon !!", context,
-            textColor: Colors.white, backgroundColor: darkBlue());
 
-        _auth
-            .authenticate(userBloc.user.phoneNumber, userBloc.user.password)
-            .then((newUser) {
-          if (mounted) {
-            setState(() {
-              userBloc.user = newUser;
-            });
-          }
+    BottomSheetPassCode(
+        context: context,
+        isValidCallback: () {
+          showDialog(
+              context: context,
+              builder: (context) => Center(child: CircularLoadingIndicator()));
+          _auth.upgradeUserProfile(data).then((result) {
+            if (result) {
+              Toast.show("Request sent !! Your Profile Will Be Updated Soon !!",
+                  context,
+                  textColor: Colors.white, backgroundColor: darkBlue());
 
-          _auth.fetchCustomerProfile(userBloc.user.userName).then((user) {
-            Navigator.pop(context);
-            Navigator.pop(context);
-            Navigator.pushNamed(context, '/profile',
-                arguments: {"searchedUser": user});
+              _auth
+                  .authenticate(
+                      userBloc.user.phoneNumber, userBloc.user.password)
+                  .then((newUser) {
+                if (mounted) {
+                  setState(() {
+                    userBloc.user = newUser;
+                  });
+                }
+
+                _auth.fetchCustomerProfile(userBloc.user.userName).then((user) {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/profile',
+                      arguments: {"searchedUser": user});
+                });
+              });
+            } else {
+              Toast.show("Something Went Wrong !!", context,
+                  textColor: Colors.white, backgroundColor: darkBlue());
+            }
           });
+        },
+        cancelCallBack: () {
+          Navigator.pop(context);
+          _upgradeProfileScaffold.currentState.showSnackBar(SnackBar(
+            content: Text(AppLocalization.of(context).invalidPassword),
+          ));
         });
-      } else {
-        Toast.show("Something Went Wrong !!", context,
-            textColor: Colors.white, backgroundColor: darkBlue());
-      }
-    });
   }
 
   Widget getAmount() {

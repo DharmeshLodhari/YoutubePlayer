@@ -12,12 +12,14 @@ class UserDashboardItemTile extends StatelessWidget {
   Color iconColor;
   Function onTap;
   double height;
+  bool isLocked;
 
   UserDashboardItemTile(
       {@required this.title,
       @required this.icon,
       @required this.iconColor,
       @required this.onTap,
+      this.isLocked = false,
       this.height = 100});
 
   @override
@@ -36,31 +38,48 @@ class UserDashboardItemTile extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
             ),
             height: height,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+            child: Stack(
               children: [
-                flexibleSpace(flex: 3),
-                RoundedBackgroundIcon(
-                  height: 50,
-                  width: 50,
-                  icon: Icon(
-                    icon,
-                    color: iconColor,
-                    size: 20,
+                Center(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      flexibleSpace(flex: 3),
+                      RoundedBackgroundIcon(
+                        height: 50,
+                        width: 50,
+                        icon: Icon(
+                          icon,
+                          color: iconColor,
+                          size: 20,
+                        ),
+                        backgroundColor: iconColor.withOpacity(0.08),
+                        borderRadius: 20,
+                        onTap: onTap,
+                      ),
+                      flexibleSpace(),
+                      Text(
+                        title,
+                        style: TextStyle(
+                            color: blackFont,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14),
+                      ),
+                      flexibleSpace(flex: 3),
+                    ],
                   ),
-                  backgroundColor: iconColor.withOpacity(0.08),
-                  borderRadius: 20,
-                  onTap: onTap,
                 ),
-                flexibleSpace(),
-                Text(
-                  title,
-                  style: TextStyle(
-                      color: blackFont,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14),
-                ),
-                flexibleSpace(flex: 3),
+                isLocked
+                    ? Positioned(
+                        top: 6,
+                        right: 6,
+                        child: Icon(
+                          Icons.lock_outline_rounded,
+                          color: blackFont,
+                          size: 14,
+                        ),
+                      )
+                    : Container()
               ],
             ),
           ),

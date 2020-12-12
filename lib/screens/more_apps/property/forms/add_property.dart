@@ -96,6 +96,8 @@ class _AddPropertyState extends State<AddProperty> {
   bool propertyAvailableImmediately = true;
   DateTime propertyAvailableFrom = DateTime.now();
 
+  Duration videoDuration = Duration(seconds: 5);
+
   @override
   void deactivate() {
     if (_controller != null) {
@@ -218,18 +220,7 @@ class _AddPropertyState extends State<AddProperty> {
                 SizedBox(
                   height: 16,
                 ),
-                Container(
-                  height: 60,
-                  width: 60,
-                  color: naturalGreen,
-                  child: IconButton(
-                    icon: Icon(
-                      Icons.video_call_outlined,
-                      color: Colors.white,
-                    ),
-                    onPressed: captureVideo,
-                  ),
-                ),
+
                 Row(
                   children: [
                     Text(
@@ -516,10 +507,8 @@ class _AddPropertyState extends State<AddProperty> {
   }
 
   void captureVideo() async {
-    // String result = await captureVideo(context, Duration(seconds: 2));
-    // debugPrint("$result");
-    var path = await Navigator.of(context).pushNamed("/video-recorder",
-        arguments: {"duration": Duration(seconds: 5)});
+    var path = await Navigator.of(context)
+        .pushNamed("/video-recorder", arguments: {"duration": videoDuration});
     if (path != null) {
       debugPrint("$path");
       propertyVideos.add(File(path));

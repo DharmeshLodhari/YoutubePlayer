@@ -119,9 +119,8 @@ class _SendPaymentState extends State<SendPayment> {
   }
 
   void initializeDisplayCard() {
-
-    // TODO: check this condition
-    if (!isFromProfile && product != null) {
+    // if (!isFromProfile && product != null) {
+    if (!isFromProfile) {
       if (customerProfileBloc.customer != null) {
         if (mounted) {
           setState(() {
@@ -357,7 +356,7 @@ class _SendPaymentState extends State<SendPayment> {
 
     var avatarImage;
     var qrCodeImage;
-    if (_payee != null && product == null) {
+    if (_payee != null) {
       avatarImage = Container(
         height: 48,
         width: 48,

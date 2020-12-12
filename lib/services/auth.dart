@@ -1909,30 +1909,19 @@ class AuthService {
     return false;
   }
 
-  Future<Map<String, dynamic>> getUserProfileUpgradeDetails() async {
-//    var url = secureBaseUrl + "/api/v1/user/profile-pricing/";
-//    var headers = await getAuthHeaders();
-//    var response = await http.get(url, headers: headers);
-//    if (response.statusCode == 200) {
-//      var jsonData = json.decode(response.body);
-//
-//      Map<String, dynamic> result = {
-//        "results": jsonData["results"],
-//      };
-//      return result;
-//    } else {
-//      var jsonData = json.decode(response.body);
-//      throw jsonData;
-//    }
+  Future<List> getUserProfileUpgradeDetails() async {
+    var url = secureBaseUrl + "/api/v1/user/profile-pricing/";
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
 
-    return {
-      "results": {
-        "data": [
-          {"name": "Business", "price": "100"},
-          {"name": "Developer", "price": "200"},
-        ]
-      }
-    };
+      debugPrint("$jsonData");
+      return jsonData["results"];
+    } else {
+      var jsonData = json.decode(response.body);
+      throw jsonData;
+    }
   }
 
   Future<Map<String, dynamic>> topUpAccountByBank(

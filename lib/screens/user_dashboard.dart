@@ -300,6 +300,7 @@ class _UserDashboardState extends State<UserDashboard> {
             child: UserDashboardItemTile(
           icon: SlydoAppIcon.store,
           title: "My store",
+          isLocked: storeLocked,
           onTap: () {
             if (!storeLocked) {
               storeItemAndroidSheet();
@@ -349,6 +350,7 @@ class _UserDashboardState extends State<UserDashboard> {
             child: UserDashboardItemTile(
           icon: Icons.business_center_rounded,
           title: "Business",
+          isLocked: storeLocked,
           onTap: () {
             if (!storeLocked) {
               Navigator.of(context).push(
