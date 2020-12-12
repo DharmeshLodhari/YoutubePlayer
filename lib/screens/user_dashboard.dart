@@ -350,8 +350,10 @@ class _UserDashboardState extends State<UserDashboard> {
           icon: Icons.business_center_rounded,
           title: "Business",
           onTap: () {
-            Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => MyContractScreen()));
+            if (!storeLocked) {
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => MyContractScreen()));
+            }
           },
           iconColor: HexColor("#5218E9"),
         )),

@@ -22,7 +22,12 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:toast/toast.dart';
 
+// ignore: must_be_immutable
 class VideoRecorder extends StatefulWidget {
+  var arguments;
+
+  VideoRecorder({this.arguments});
+
   @override
   _VideoRecorderState createState() {
     return _VideoRecorderState();
@@ -38,9 +43,24 @@ class _VideoRecorderState extends State<VideoRecorder> {
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  Timer timer;
+
+  Duration videoDuration;
+
+  Widget recordingButton = Container(
+      height: 58,
+      width: 58,
+      decoration: BoxDecoration(
+        color: Colors.red,
+        borderRadius: BorderRadius.circular(50),
+        border: Border.all(color: Colors.white, width: 1.5),
+      ));
+
   @override
   void initState() {
     super.initState();
+
+    videoDuration = widget.arguments["duration"];
 
     // Get the listonNewCameraSelected of available cameras.
     // Then set the first camera as selected.
@@ -62,23 +82,18 @@ class _VideoRecorderState extends State<VideoRecorder> {
   Widget appBar() {
     return AppBar(
       elevation: 0,
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.transparent,
       titleSpacing: 0,
       automaticallyImplyLeading: false,
       leading: IconButton(
         icon: Icon(
           Icons.keyboard_arrow_left,
-          color: navyBlue,
-          size: 24,
+          color: Colors.white,
+          size: 28,
         ),
         onPressed: () {
           Navigator.pop(context);
         },
-      ),
-      title: Text(
-        "Capture video",
-        style: TextStyle(
-            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
     );
   }
@@ -87,39 +102,44 @@ class _VideoRecorderState extends State<VideoRecorder> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: appBar(),
-      body: Column(
+      // appBar: appBar(),
+      body: Stack(
         children: <Widget>[
-          Expanded(
-            child: Container(
-              child: Padding(
-                padding: const EdgeInsets.all(1.0),
-                child: Center(
-                  child: _cameraPreviewWidget(),
-                ),
-              ),
-              decoration: BoxDecoration(
-                color: Colors.black,
-                border: Border.all(
-                  color: controller != null && controller.value.isRecordingVideo
-                      ? mateRed
-                      : dividerColor,
-                  width: 3.0,
-                ),
+          Container(
+            child: Center(
+              child: _cameraPreviewWidget(),
+            ),
+          ),
+          Container(
+            child: Padding(
+              padding: const EdgeInsets.all(1.0),
+            ),
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              border: Border.all(
+                color: controller != null && controller.value.isRecordingVideo
+                    ? mateRed
+                    : dividerColor,
+                width: 1.0,
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(5.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                _cameraTogglesRowWidget(),
-                _captureControlRowWidget(),
-                Expanded(
-                  child: SizedBox(),
-                ),
-              ],
+          Positioned(
+            bottom: 0,
+            child: Container(
+              padding: EdgeInsets.symmetric(vertical: 16),
+              width: MediaQuery.of(context).size.width,
+              color: Colors.black45,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  _cameraTogglesRowWidget(),
+                  _captureControlRowWidget(),
+                  _closeBtnWidget(),
+                ],
+              ),
             ),
           ),
         ],
@@ -127,12 +147,28 @@ class _VideoRecorderState extends State<VideoRecorder> {
     );
   }
 
+  Widget _closeBtnWidget() {
+    return Expanded(
+        child: Align(
+      alignment: Alignment.center,
+      child: FlatButton(
+        onPressed: () {
+          Navigator.pop(context);
+        },
+        child: Icon(
+          Icons.close_rounded,
+          color: Colors.white,
+        ),
+      ),
+    ));
+  }
+
   IconData _getCameraLensIcon(CameraLensDirection direction) {
     switch (direction) {
       case CameraLensDirection.back:
-        return Icons.camera_rear;
+        return Icons.flip_camera_ios_outlined;
       case CameraLensDirection.front:
-        return Icons.camera_front;
+        return Icons.flip_camera_ios_outlined;
       case CameraLensDirection.external:
         return Icons.camera;
       default:
@@ -152,10 +188,14 @@ class _VideoRecorderState extends State<VideoRecorder> {
         ),
       );
     }
-
-    return AspectRatio(
-      aspectRatio: controller.value.aspectRatio,
-      child: CameraPreview(controller),
+    final size = MediaQuery.of(context).size;
+    final deviceRatio = size.width / size.height;
+    return Transform.scale(
+      scale: controller.value.aspectRatio / deviceRatio,
+      child: AspectRatio(
+        aspectRatio: controller.value.aspectRatio,
+        child: CameraPreview(controller),
+      ),
     );
   }
 
@@ -169,15 +209,16 @@ class _VideoRecorderState extends State<VideoRecorder> {
     CameraLensDirection lensDirection = selectedCamera.lensDirection;
 
     return Expanded(
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: FlatButton.icon(
-            onPressed: _onSwitchCamera,
-            icon: Icon(_getCameraLensIcon(lensDirection)),
-            label: Text(
-                "${lensDirection.toString().substring(lensDirection.toString().indexOf('.') + 1)}")),
+        child: Align(
+      alignment: Alignment.center,
+      child: FlatButton(
+        onPressed: _onSwitchCamera,
+        child: Icon(
+          _getCameraLensIcon(lensDirection),
+          color: Colors.white,
+        ),
       ),
-    );
+    ));
   }
 
   /// Display the control bar with buttons to record videos.
@@ -189,28 +230,65 @@ class _VideoRecorderState extends State<VideoRecorder> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           mainAxisSize: MainAxisSize.max,
           children: <Widget>[
-            IconButton(
-              icon: const Icon(Icons.videocam),
-              color: navyBlue,
-              onPressed: controller != null &&
-                      controller.value.isInitialized &&
-                      !controller.value.isRecordingVideo
-                  ? _onRecordButtonPressed
+            InkWell(
+              onTap: controller != null && controller.value.isInitialized
+                  ? !controller.value.isRecordingVideo
+                      ? _onRecordButtonPressed
+                      : _onStopButtonPressed
                   : null,
+              child: ClipOval(
+                child: AnimatedSwitcher(
+                  child: recordingButton,
+                  transitionBuilder: (child, animation) => ScaleTransition(
+                    scale: animation,
+                    child: child,
+                  ),
+                  duration: Duration(microseconds: 500),
+                ),
+              ),
             ),
-            IconButton(
-              icon: const Icon(Icons.stop),
-              color: mateRed,
-              onPressed: controller != null &&
-                      controller.value.isInitialized &&
-                      controller.value.isRecordingVideo
-                  ? _onStopButtonPressed
-                  : null,
-            )
+            // IconButton(
+            //   icon: const Icon(Icons.stop),
+            //   color: mateRed,
+            //   onPressed: controller != null &&
+            //           controller.value.isInitialized &&
+            //           controller.value.isRecordingVideo
+            //       ? _onStopButtonPressed
+            //       : null,
+            // )
           ],
         ),
       ),
     );
+  }
+
+  void changeRecordIcon() {
+    if (controller.value.isRecordingVideo) {
+      recordingButton = Container(
+        height: 58,
+        width: 58,
+        decoration: BoxDecoration(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(50),
+          border: Border.all(color: Colors.white, width: 1.5),
+        ),
+        child: Icon(
+          Icons.stop,
+          color: Colors.red,
+        ),
+      );
+      setState(() {});
+    } else if (!controller.value.isRecordingVideo) {
+      recordingButton = Container(
+          height: 58,
+          width: 58,
+          decoration: BoxDecoration(
+            color: Colors.red,
+            borderRadius: BorderRadius.circular(50),
+            border: Border.all(color: Colors.white, width: 1.5),
+          ));
+      setState(() {});
+    }
   }
 
   String timestamp() => DateTime.now().millisecondsSinceEpoch.toString();
@@ -220,7 +298,8 @@ class _VideoRecorderState extends State<VideoRecorder> {
       await controller.dispose();
     }
 
-    controller = CameraController(cameraDescription, ResolutionPreset.high);
+    controller = CameraController(cameraDescription, ResolutionPreset.high,
+        enableAudio: true);
 
     // If the controller is updated then update the UI.
     controller.addListener(() {
@@ -262,12 +341,21 @@ class _VideoRecorderState extends State<VideoRecorder> {
       if (filePath != null) {
         Toast.show('Recording video started', context);
       }
+      changeRecordIcon();
+      //Timer
+      timer = Timer.periodic(videoDuration, (Timer t) {
+        _onStopButtonPressed();
+        timer.cancel();
+      });
     });
   }
 
   void _onStopButtonPressed() {
     _stopVideoRecording().then((_) {
       if (mounted) setState(() {});
+      changeRecordIcon();
+      timer.cancel(); //when user close it manually
+
       Toast.show('Video recorded to $videoPath', context);
       Navigator.pop(context, videoPath);
     });

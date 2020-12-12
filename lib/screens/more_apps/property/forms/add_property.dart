@@ -12,7 +12,6 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
-import 'package:Slydo/widget/capture_video.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
@@ -519,8 +518,8 @@ class _AddPropertyState extends State<AddProperty> {
   void captureVideo() async {
     // String result = await captureVideo(context, Duration(seconds: 2));
     // debugPrint("$result");
-    var path = await Navigator.push(
-        context, MaterialPageRoute(builder: (context) => VideoRecorder()));
+    var path = await Navigator.of(context).pushNamed("/video-recorder",
+        arguments: {"duration": Duration(seconds: 5)});
     if (path != null) {
       debugPrint("$path");
       propertyVideos.add(File(path));

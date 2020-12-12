@@ -87,6 +87,7 @@ import 'package:Slydo/screens/verify_registration_OTP.dart';
 import 'package:Slydo/screens/verify_reset_password_OTP.dart';
 import 'package:Slydo/splash.dart';
 import 'package:Slydo/widget/resultReturningPasswordPopup.dart';
+import 'package:Slydo/widget/video_recorder.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -450,6 +451,16 @@ class RouteGenerator {
           settings: settings,
         );
 
+      /// Video Recorder
+
+      case '/video-recorder':
+        return PageTransition(
+          child: VideoRecorder(arguments: settings.arguments),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
       /// TopUp
 
       case '/add-money-to-slydo-one':
@@ -495,6 +506,7 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
+
       case '/contract-transactions':
         return PageTransition(
           child: ContractTransactionHistory(),

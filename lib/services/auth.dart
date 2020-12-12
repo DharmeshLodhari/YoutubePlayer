@@ -1910,7 +1910,7 @@ class AuthService {
   }
 
   Future<Map<String, dynamic>> getUserProfileUpgradeDetails() async {
-//    var url = secureBaseUrl + "/api/v1/transactions/payment-category/";
+//    var url = secureBaseUrl + "/api/v1/user/profile-pricing/";
 //    var headers = await getAuthHeaders();
 //    var response = await http.get(url, headers: headers);
 //    if (response.statusCode == 200) {

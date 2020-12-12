@@ -119,6 +119,8 @@ class _SendPaymentState extends State<SendPayment> {
   }
 
   void initializeDisplayCard() {
+
+    // TODO: check this condition
     if (!isFromProfile && product != null) {
       if (customerProfileBloc.customer != null) {
         if (mounted) {
