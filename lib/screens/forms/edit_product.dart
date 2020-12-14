@@ -178,6 +178,7 @@ class _EditProductState extends State<EditProduct> {
           child: Form(
             key: _formKey,
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 SizedBox(height: 10),
                 checkImageLimitForServerImage()

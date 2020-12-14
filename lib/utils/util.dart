@@ -81,7 +81,7 @@ List monthName = [
 
 String formatDate(DateTime dateTime) {
   String date =
-      "${dateTime.day} ${monthName[dateTime.month]}, ${dateTime.year}";
+      "${dateTime.day} ${monthName[dateTime.month - 1]}, ${dateTime.year}";
 
   return date;
 }

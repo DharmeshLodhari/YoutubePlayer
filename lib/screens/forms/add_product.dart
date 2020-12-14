@@ -100,6 +100,7 @@ class _AddProductState extends State<AddProduct> {
           child: Form(
             key: _formKey,
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 SizedBox(height: 10),
                 addImages(),

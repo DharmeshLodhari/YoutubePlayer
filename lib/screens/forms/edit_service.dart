@@ -168,6 +168,7 @@ class _EditServiceState extends State<EditService> {
           child: Form(
             key: _formKey,
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 SizedBox(height: 10),
                 checkImageLimitForServerImage()
