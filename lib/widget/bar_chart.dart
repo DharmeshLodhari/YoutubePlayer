@@ -1,8 +1,8 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/services/date_time_and_money_converter.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/date_time_and_money_converter.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:flutter/material.dart';

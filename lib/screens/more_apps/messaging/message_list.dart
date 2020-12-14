@@ -1,0 +1,632 @@
+import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/messaging/models/message.dart';
+import 'package:Slydo/screens/more_apps/messaging/tiles/message.dart';
+import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
+import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/customized_popup_menu.dart';
+import 'package:Slydo/widget/dialog.dart';
+import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:Slydo/widget/slide_action_button.dart';
+import 'package:connectivity/connectivity.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:toast/toast.dart';
+
+import 'message_auth.dart';
+
+class MessageList extends StatefulWidget {
+  @override
+  _MessageListState createState() => _MessageListState();
+}
+
+class _MessageListState extends State<MessageList> {
+  final GlobalKey<ScaffoldState> _scaffoldMessageKey =
+      new GlobalKey<ScaffoldState>();
+  final _messageAuth = MessageAuth();
+  SlidableController slidableController;
+  int count = 0;
+  String next = "";
+  String previous = "";
+  List messageList = [];
+  ScrollController _scrollController = new ScrollController();
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
+  bool isLoading = false;
+  bool noItemInList = false;
+  String filterValue = "all";
+  UserBloc userBloc;
+  RefreshBlocForMessages _refreshBloc;
+
+  GlobalKey _key = LabeledGlobalKey("messageListPopUpMenu");
+  CustomizedPopUpMenu menu;
+  int selectedMenuItemIndex = 0;
+  bool isPopMenuOpen = false;
+
+  @protected
+  void initState() {
+    this.getList();
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+              _scrollController.position.maxScrollExtent &&
+          _scrollController.position.pixels != 0) {
+        getList();
+      }
+    });
+    slidableController = SlidableController(
+      onSlideAnimationChanged: handleSlideAnimationChanged,
+      onSlideIsOpenChanged: handleSlideIsOpenChanged,
+    );
+
+    super.initState();
+  }
+
+  // refresh the list when lifecycle called onResume method
+  void _onRefreshOnResume() {
+    _refreshBloc = Provider.of<RefreshBlocForMessages>(context);
+    _refreshBloc
+      ..addListener(() {
+        if (_refreshBloc.isRefresh) {
+          if (mounted) {
+            _onRefresh();
+            _refreshBloc.isRefresh = false;
+          }
+        }
+      });
+  }
+
+  void _onRefresh() async {
+    Connectivity().checkConnectivity().then((value) {
+      var connectionResult = value;
+      if (connectionResult == ConnectivityResult.wifi ||
+          connectionResult == ConnectivityResult.mobile) {
+        count = 0;
+        next = "";
+        previous = "";
+        messageList = [];
+        getList();
+        _refreshController.refreshCompleted();
+      } else {
+        Toast.show(
+            AppLocalization.of(context).internetConnectionNotAvailable, context,
+            gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+        _refreshController.refreshCompleted();
+      }
+    });
+  }
+
+  void menuItemSelectionChange(String value, int index) {
+    selectedMenuItemIndex = index;
+    filterValue = value;
+    setState(() {});
+    _onRefresh();
+  }
+
+  void menuStateChange(bool isOpen) {
+    isPopMenuOpen = isOpen;
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
+
+    menu = CustomizedPopUpMenu(
+      buttonKey: _key,
+      context: context,
+      children: [
+        CustomizedPopUpMenuItem(
+            title: AppLocalization.of(context).all, value: "all"),
+        CustomizedPopUpMenuItem(
+            title: AppLocalization.of(context).archived, value: "archived"),
+        CustomizedPopUpMenuItem(
+            title: AppLocalization.of(context).sent, value: "sent"),
+        CustomizedPopUpMenuItem(
+            title: AppLocalization.of(context).starred, value: "starred"),
+      ],
+      selectedIndex: selectedMenuItemIndex,
+      right: 16,
+    );
+    menu.onChange = menuItemSelectionChange;
+    menu.menuState = menuStateChange;
+
+    // refresh the list when lifecycle called onResume method
+    _onRefreshOnResume();
+
+    return Scaffold(
+      key: _scaffoldMessageKey,
+      backgroundColor: Colors.white,
+      appBar: appBar(),
+      body: SmartRefresher(
+          enablePullDown: true,
+          header: WaterDropHeader(
+            complete: Container(),
+            waterDropColor: navyBlue,
+          ),
+          controller: _refreshController,
+          onRefresh: _onRefresh,
+          child: _buildMessageList()),
+      floatingActionButton: FloatingActionButton(
+        heroTag: "compose_message",
+        backgroundColor: navyBlue,
+        isExtended: false,
+        child: Icon(
+          SlydoAppIcon.text_message,
+          size: 20,
+        ),
+        onPressed: () {
+          Navigator.of(context).pushNamed("/compose_message");
+        },
+      ),
+    );
+  }
+
+  Widget appBar() {
+    return AppBar(
+      elevation: 0,
+      backgroundColor: Colors.white,
+      titleSpacing: 0,
+      automaticallyImplyLeading: false,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      title: Text(
+        AppLocalization.of(context).messages,
+        style: TextStyle(
+            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+      ),
+      actions: <Widget>[
+        popUpMenuButton(),
+        SizedBox(
+          width: 16,
+        ),
+      ],
+    );
+  }
+
+  Widget popUpMenuButton() {
+    return SizedBox(
+      key: _key,
+      height: 34,
+      width: 34,
+      child: Card(
+        color: isPopMenuOpen ? navyBlue : iconBtnGrey,
+        elevation: 0,
+        margin: EdgeInsets.symmetric(vertical: 10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: IconButton(
+          icon: Icon(
+            Icons.more_vert,
+            color: isPopMenuOpen ? Colors.white : Colors.black,
+            size: 20,
+          ),
+          onPressed: () {
+            if (menu.isMenuOpen) {
+              menu.closeMenu();
+            } else {
+              menu.openMenu();
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMessageList() {
+    return noItemInList
+        ? NoItemInList(
+            msg: AppLocalization.of(context).noMessages,
+          )
+        : ListView.builder(
+            padding: EdgeInsets.symmetric(vertical: 4),
+            //+1 for progressbar
+            itemCount: messageList.length + 1,
+            itemBuilder: (BuildContext context, int index) {
+              if (index == messageList.length) {
+                return _buildIndicator();
+              } else {
+                return _getSlidableWithLists(
+                    context, messageList[index], index);
+              }
+            },
+            controller: _scrollController,
+          );
+  }
+
+  Widget _buildIndicator() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: new Center(
+        child: new Opacity(
+            opacity: isLoading ? 1.0 : 00,
+            child: isLoading ? CircularLoadingIndicator() : Container()),
+      ),
+    );
+  }
+
+  void getList() async {
+    if (!isLoading) {
+      if (next != null && !isLoading) {
+        if (mounted) {
+          setState(() {
+            isLoading = true;
+          });
+        }
+        Map<String, dynamic> result = await _messageAuth
+            .listMessages(next, previous, filter: filterValue);
+        count = result['count'];
+        next = result['next'];
+        previous = result['previous'];
+        var tempList = result['results'];
+        if (mounted) {
+          setState(() {
+            noItemInList = false;
+            isLoading = false;
+            messageList.addAll(tempList);
+          });
+        }
+      }
+      if (messageList.isEmpty) {
+        if (mounted) {
+          setState(() {
+            noItemInList = true;
+          });
+        }
+      } else if (next == null && messageList.length > 6) {
+        _scaffoldMessageKey.currentState.showSnackBar(SnackBar(
+          content:
+              Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
+          duration: Duration(milliseconds: 500),
+        ));
+      }
+    }
+  }
+
+  void handleSlideAnimationChanged(Animation<double> slideAnimation) {}
+
+  void handleSlideIsOpenChanged(bool isOpen) {}
+
+  void _showSnackBar(BuildContext context, String text) {
+    _scaffoldMessageKey.currentState
+        .showSnackBar(SnackBar(content: Text(text)));
+  }
+
+  List<Widget> listActionSlideActions(
+      PartialMessage partialMessage, int index) {
+    return [displayArchivedUnArchivedButton(partialMessage, index)];
+  }
+
+  Widget displayArchivedUnArchivedButton(
+      PartialMessage partialMessage, int index) {
+    // this variable is responsible for the message which is user seeing isRecipient is seeing message
+    // or isSender is seeing message we got that user and check if it is recipient then
+    // we are showing and modifying archive icon by message's isArchivedByRecipient property and if it sender then
+    // we are showing and modifying archive icon by message's isArchivedBySender property
+    bool isRecipient = userBloc.user.userName == partialMessage.recipient;
+
+    IconData actionIcon = isRecipient
+        ? partialMessage.isArchivedByRecipient
+            ? SlydoAppIcon.unarchive
+            : SlydoAppIcon.archive
+        : partialMessage.isArchivedBySender
+            ? SlydoAppIcon.unarchive
+            : SlydoAppIcon.archive;
+
+    String actionText = isRecipient
+        ? partialMessage.isArchivedByRecipient
+            ? "Unarchive"
+            : "Archive"
+        : partialMessage.isArchivedBySender
+            ? "Unarchive"
+            : "Archive";
+
+    return SlideActionButton(
+        backgroundColor: naturalGreen,
+        icon: actionIcon,
+        onTap: () async {
+          var action = isRecipient
+              ? partialMessage.isArchivedByRecipient
+              ? "unarchive"
+              : "archive"
+              : partialMessage.isArchivedBySender
+              ? "unarchive"
+              : "archive";
+          await _messageAuth.updateMessage(partialMessage.id, action);
+          setState(() {
+            if (isRecipient) {
+              partialMessage.isArchivedByRecipient =
+              partialMessage.isArchivedByRecipient ? false : true;
+            } else {
+              partialMessage.isArchivedBySender =
+              partialMessage.isArchivedBySender ? false : true;
+            }
+          });
+        },
+        title: actionText,
+        slideController: slidableController);
+  }
+
+  void markArchivedUnArchivedMessage(PartialMessage partialMessage, int index) {
+    setState(() {
+      partialMessage.isArchivedByRecipient =
+          partialMessage.isArchivedByRecipient ? false : true;
+    });
+  }
+
+  List<Widget> listSecondaryActions(PartialMessage partialMessage, int index) {
+    return [displayDeleteButton(partialMessage, index)];
+  }
+
+  Widget displayDeleteButton(PartialMessage partialMessage, int index) {
+    return SlideActionButton(
+        backgroundColor: mateRed,
+        icon: Icons.delete,
+        onTap: () {
+          deleteMessage(partialMessage, index);
+        },
+        title: AppLocalization.of(context).delete,
+        slideController: slidableController);
+  }
+
+  void deleteMessage(PartialMessage partialMessage, int index) async {
+    bool result = await showDialogBox(
+      context: context,
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        backgroundColor: mateRed.withOpacity(0.08),
+        borderRadius: 20,
+        width: 48,
+        height: 48,
+        icon: Icon(
+          SlydoAppIcon.delete,
+          color: mateRed,
+          size: 16,
+        ),
+        enableMargin: false,
+      ),
+      actionOneBgColor: mateRed,
+      actionOneTextColor: Colors.white,
+      actionTwoBgColor: greyBorderColor,
+      actionTwoTextColor: blackFont,
+      title: AppLocalization.of(context).delete,
+      description: AppLocalization.of(context).areYouSureWantToDeleteThisMsg,
+      actionOne: AppLocalization.of(context).delete,
+      actionTwo: AppLocalization.of(context).cancel,
+    );
+    if (result) {
+      // call delete message _auth method
+      bool done = await _messageAuth.deleteMessage(messageList[index].id);
+      if (done) {
+        _showSnackBar(
+            context, AppLocalization
+            .of(context)
+            .messageIsDeletedSuccessfully);
+        setState(() {
+          messageList.removeAt(index);
+          if (messageList.length <= 9) {
+            getList();
+          }
+        });
+      } else {
+        _showSnackBar(context, AppLocalization.of(context).error);
+      }
+    }
+  }
+
+  Widget _getSlidableWithLists(
+      BuildContext context, PartialMessage partialMessage, int index) {
+    return Slidable(
+      key: Key(partialMessage.id),
+      controller: slidableController,
+      direction: Axis.horizontal,
+      actionPane: SlidableBehindActionPane(),
+      actionExtentRatio: 0.25,
+      child: VerticalListItem(partialMessage),
+      actions: listActionSlideActions(partialMessage, index),
+      secondaryActions: listSecondaryActions(partialMessage, index),
+    );
+  }
+
+  @override
+  void dispose() {
+    _refreshController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+}
+
+class VerticalListItem extends StatefulWidget {
+  VerticalListItem(this.partialMessage);
+
+  final PartialMessage partialMessage;
+
+  @override
+  _VerticalListItemState createState() => _VerticalListItemState();
+}
+
+class _VerticalListItemState extends State<VerticalListItem> {
+  final _auth = AuthService();
+  bool isExpanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () async {
+        Navigator.of(context).pushNamed('/detail_message',
+            arguments: {'id': widget.partialMessage.id});
+      },
+      onLongPress: () {
+        setState(() {
+          if (isExpanded) {
+            isExpanded = false;
+          } else {
+            isExpanded = true;
+          }
+        });
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 2),
+        child: MessageTile(
+            partialMessage: widget.partialMessage,
+            expandedWidget: expandedWidget()),
+      ),
+    );
+  }
+
+  Widget expandedWidget() {
+    return AnimatedContainer(
+      duration: Duration(milliseconds: 300),
+      height: isExpanded ? 48 : 0,
+      curve: Curves.fastOutSlowIn,
+      child: isExpanded
+          ? Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Container(
+                  height: 1,
+                  color: dividerColor,
+                ),
+                Expanded(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Expanded(child: sendMessageButton()),
+                      Container(
+                        width: 1,
+                        color: dividerColor,
+                        height: 48,
+                      ),
+                      Expanded(child: blockUserButton()),
+                    ],
+                  ),
+                ),
+              ],
+            )
+          : Container(),
+    );
+  }
+
+  Widget sendMessageButton() {
+    return Theme(
+      data: Theme.of(context).copyWith(
+        splashColor: Colors.white,
+        highlightColor: Colors.white,
+      ),
+      child: InkWell(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            RoundedBackgroundIcon(
+              backgroundColor: navyBlue.withOpacity(0.1),
+              icon: Icon(
+                SlydoAppIcon.text_message,
+                color: navyBlue,
+                size: 14,
+              ),
+              width: 32,
+              height: 32,
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            Text(
+              AppLocalization.of(context).message,
+              style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black),
+            )
+          ],
+        ),
+        onTap: () {
+          UserAuth()
+              .fetchCustomerProfile(widget.partialMessage.sender)
+              .then((user) {
+            setState(() {
+              isExpanded = false;
+            });
+            Navigator.of(context).pushNamed('/compose_message', arguments: {
+              'recipient': user.userName,
+              'subject': "",
+            });
+          });
+        },
+      ),
+    );
+  }
+
+  Widget blockUserButton() {
+    return Theme(
+      data: Theme.of(context).copyWith(
+        splashColor: Colors.white,
+        highlightColor: Colors.white,
+      ),
+      child: InkWell(
+        onTap: () {
+          UserAuth()
+              .fetchCustomerProfile(widget.partialMessage.sender)
+              .then((user) {
+            UserAuth().blockUser(user).then((result) {
+              setState(() {
+                isExpanded = false;
+              });
+              if (result) {
+                Toast.show(
+                    "${widget.partialMessage.sender} " +
+                        AppLocalization
+                            .of(context)
+                            .isBlocked,
+                    context);
+              } else {
+                Toast.show(AppLocalization
+                    .of(context)
+                    .error, context);
+              }
+            });
+          });
+        },
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            RoundedBackgroundIcon(
+              backgroundColor: mateRed.withOpacity(0.1),
+              icon: Icon(
+                SlydoAppIcon.remove,
+                color: mateRed,
+                size: 14,
+              ),
+              width: 32,
+              height: 32,
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            Text(
+              AppLocalization.of(context).blockUser,
+              style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}

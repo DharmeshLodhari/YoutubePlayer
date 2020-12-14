@@ -1,6 +1,6 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/checkout_shopping_cart.dart';
+import 'package:Slydo/screens/more_apps/shopping/screens/checkout_shopping_cart.dart';
 import 'package:Slydo/screens/search_module.dart';
 import 'package:Slydo/screens/user_dashboard.dart';
 import 'package:Slydo/utils/global_key.dart';
@@ -14,7 +14,7 @@ import 'package:provider/provider.dart';
 
 import '../utils/colors.dart';
 import 'home.dart';
-import 'request_payments_list.dart';
+import 'more_apps/payment_and_banking/screens/payment/request_payments_list.dart';
 
 // ignore: must_be_immutable
 class Dashboard extends StatefulWidget {

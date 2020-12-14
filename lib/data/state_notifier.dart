@@ -1,6 +1,6 @@
-import 'package:Slydo/models/contract_and_invoice/Item.dart';
-import 'package:Slydo/models/transactions.dart';
-import 'package:Slydo/models/user.dart';
+import 'package:Slydo/screens/more_apps/business/models/Item.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/fcm_push_notification.dart';
 import 'package:flutter/material.dart';
 

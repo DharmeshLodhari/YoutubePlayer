@@ -1,8 +1,8 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/models/store.dart';
-import 'package:Slydo/models/user.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -15,6 +15,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
+
+import 'more_apps/user_profile/user_auth.dart';
 
 class SearchModule extends StatefulWidget {
   @override
@@ -900,7 +902,7 @@ class _SearchModuleState extends State<SearchModule> {
         icon: SlydoAppIcon.send,
         onTap: () async {
           customerProfileBloc.customer =
-              await _auth.fetchCustomerProfile(user.userName);
+              await UserAuth().fetchCustomerProfile(user.userName);
           Navigator.of(context).pushNamed('/send-payment',
               arguments: <String, bool>{
                 'isFromProfile': false,
@@ -920,7 +922,7 @@ class _SearchModuleState extends State<SearchModule> {
         icon: SlydoAppIcon.receive,
         onTap: () async {
           customerProfileBloc.customer =
-              await _auth.fetchCustomerProfile(user.userName);
+          await UserAuth().fetchCustomerProfile(user.userName);
           Navigator.of(context).pushNamed('/request-payment',
               arguments: <String, bool>{
                 'isFromProfile': false,
@@ -953,7 +955,7 @@ class _SearchModuleState extends State<SearchModule> {
         icon: SlydoAppIcon.cart,
         onTap: () async {
           customerProfileBloc.customer =
-              await _auth.fetchCustomerProfile(product.seller);
+          await UserAuth().fetchCustomerProfile(product.seller);
           Navigator.of(context).pushNamed('/send-payment', arguments: {
             'isFromProfile': false,
             'isRequest': false,
@@ -1006,7 +1008,7 @@ class _SearchModuleState extends State<SearchModule> {
           icon: SlydoAppIcon.cart,
           onTap: () async {
             customerProfileBloc.customer =
-                await _auth.fetchCustomerProfile(service.provider);
+            await UserAuth().fetchCustomerProfile(service.provider);
             Navigator.of(context).pushNamed('/send-payment', arguments: {
               'isFromProfile': false,
               'isRequest': false,

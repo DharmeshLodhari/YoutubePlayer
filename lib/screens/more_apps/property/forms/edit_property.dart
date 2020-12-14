@@ -3,11 +3,11 @@ import 'dart:typed_data';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/models/store.dart';
 import 'package:Slydo/screens/more_apps/property/models/PropertyType.dart';
 import 'package:Slydo/screens/more_apps/property/utils/utils.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/services/auth.dart';
-import 'package:Slydo/services/cache_manager.dart';
+import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';

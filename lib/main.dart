@@ -10,7 +10,7 @@ import 'package:Slydo/screens/more_apps/movies/movie_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/music/music_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/music/music_player.dart';
 import 'package:Slydo/screens/more_apps/property/property_dashboard_bloc.dart';
-import 'package:Slydo/screens/more_apps/shopping/shopping_dashboard_bloc.dart';
+import 'package:Slydo/screens/more_apps/shopping/screens/shopping/shopping_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/train/train_dashboard_bloc.dart';
 import 'package:Slydo/services/app_life_cycle.dart';
 import 'package:Slydo/services/timer_service.dart';

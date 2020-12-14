@@ -13,6 +13,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
+import 'more_apps/user_profile/user_auth.dart';
+
 class Home extends StatefulWidget {
   @override
   _HomeState createState() => _HomeState();
@@ -202,7 +204,7 @@ class _HomeState extends State<Home> {
                     style: TextStyle(fontSize: 14),
                   ),
                   onTap: () {
-                    _auth
+                    UserAuth()
                         .fetchCustomerProfile(userBloc.user.userName)
                         .then((user) {
                       Navigator.pushNamed(context, '/profile',

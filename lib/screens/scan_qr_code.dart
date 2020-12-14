@@ -1,11 +1,13 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/models/store.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+
+import 'more_apps/user_profile/user_auth.dart';
 
 // ignore: must_be_immutable
 class QRCodeView extends StatefulWidget {
@@ -164,7 +166,8 @@ class _QRCodeViewState extends State<QRCodeView> {
 
   // Pull the user from the server
   void getRecipient(String recipient) async {
-    customerProfileBloc.customer = await _auth.fetchCustomerProfile(recipient);
+    customerProfileBloc.customer =
+        await UserAuth().fetchCustomerProfile(recipient);
   }
 
   Product getProduct(String productId) {

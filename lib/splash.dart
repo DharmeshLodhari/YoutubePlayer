@@ -1,6 +1,10 @@
-import 'package:Slydo/models/store.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/country_picker/country.dart';
+import 'package:Slydo/utils/country_picker/utils.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:connectivity/connectivity.dart';
@@ -14,9 +18,7 @@ import 'package:toast/toast.dart';
 
 import 'data/state_notifier.dart';
 import 'locale/app_localization.dart';
-import 'models/country_picker/country.dart';
-import 'models/country_picker/utils.dart';
-import 'models/device.dart';
+import 'screens/more_apps/user_profile/models/device.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -230,7 +232,7 @@ class _SplashScreenState extends State<SplashScreen> {
               userBloc.user = _user;
 
               if (_user != null) {
-                _auth.getBankAccounts().then((accounts) {
+                PaymentAndBankingAuth().getBankAccounts().then((accounts) {
                   try {
                     if (accounts.isNotEmpty) {
                       _bankAccount = accounts[0];
@@ -280,7 +282,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   void initializeShoppingCart() async {
     debugPrint("initializeShoppingCart called");
-    List items = await _auth.getShoppingCart();
+    List items = await ShoppingAuthService().getShoppingCart();
     items.forEach((element) {
       String type = element is Product ? "product" : "service";
       basketBloc.addItemToCart(item: element, type: type);

@@ -1,8 +1,8 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/models/store.dart';
-import 'package:Slydo/models/user.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/widget/noItemInList.dart';
@@ -13,6 +13,8 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:toast/toast.dart';
+
+import 'more_apps/shopping/shopping_auth.dart';
 
 // ignore: must_be_immutable
 class Profile extends StatefulWidget {
@@ -436,7 +438,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
         setState(() {
           isProductLoading = true;
         });
-        Map<String, dynamic> result = await _auth
+        Map<String, dynamic> result = await ShoppingAuthService()
             .listOfProduct(productNext, productPrevious, userId: user.userName);
         productCount = result['count'];
         productNext = result['next'];
@@ -526,9 +528,9 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
         setState(() {
           isServiceLoading = true;
         });
-        Map<String, dynamic> result = await _auth.listServicesByProvider(
-            serviceNext, servicePrevious,
-            userId: user.userName);
+        Map<String, dynamic> result = await ShoppingAuthService()
+            .listServicesByProvider(serviceNext, servicePrevious,
+                userId: user.userName);
         serviceCount = result['count'];
         serviceNext = result['next'];
         servicePrevious = result['previous'];

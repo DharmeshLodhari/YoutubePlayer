@@ -1,10 +1,10 @@
 import 'dart:math';
 
-import 'package:Slydo/screens/more_apps/utils/video_plyer_controller/chewie_player.dart';
-import 'package:Slydo/screens/more_apps/utils/video_plyer_controller/chewie_progress_colors.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/utils/video_player_controller/chewie_player.dart';
+import 'package:Slydo/utils/video_player_controller/chewie_progress_colors.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';

@@ -2,12 +2,12 @@ import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/models/device.dart';
-import 'package:Slydo/models/transactions.dart';
-import 'package:Slydo/screens/contract_module/my_contract_screen.dart';
-import 'package:Slydo/screens/tiles/bank_account.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/tiles/bank_account.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/device.dart';
 import 'package:Slydo/services/auth.dart';
-import 'package:Slydo/services/cache_manager.dart';
+import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -25,6 +25,8 @@ import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
+
+import 'more_apps/user_profile/user_auth.dart';
 
 // ignore: must_be_immutable
 class UserDashboard extends StatefulWidget {
@@ -353,8 +355,7 @@ class _UserDashboardState extends State<UserDashboard> {
           isLocked: storeLocked,
           onTap: () {
             if (!storeLocked) {
-              Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => MyContractScreen()));
+              Navigator.of(context).pushNamed("/contracts");
             }
           },
           iconColor: HexColor("#5218E9"),
@@ -520,7 +521,7 @@ class _UserDashboardState extends State<UserDashboard> {
   }
 
   Future<void> getAccountBalance() async {
-    await _auth.getAccountBalance().then((value) {
+    await PaymentAndBankingAuth().getAccountBalance().then((value) {
       var data = value;
       var spendableBalance = data["spendable_balance"];
       accountBalance = spendableBalance.toString();
@@ -621,7 +622,7 @@ class _UserDashboardState extends State<UserDashboard> {
           var password = dbUser.password;
 
           // Upload Image new image
-          await _auth.updateCustomerAvatar(File(file.path));
+          await UserAuth().updateCustomerAvatar(File(file.path));
 
           // Get New updated user data and set new user data to userBloc
           await _auth.authenticate(phoneNumber, password).then((value) {
@@ -736,7 +737,7 @@ class _UserDashboardState extends State<UserDashboard> {
                       title: "My profile",
                       icon: SlydoAppIcon.user,
                       onTap: () {
-                        _auth
+                        UserAuth()
                             .fetchCustomerProfile(userBloc.user.userName)
                             .then((user) {
                           Navigator.pop(context);
@@ -928,7 +929,7 @@ class _UserDashboardState extends State<UserDashboard> {
     ).then((String value) {
       if (value != null) {
         if (value == "My Profile") {
-          _auth.fetchCustomerProfile(userBloc.user.userName).then((user) {
+          UserAuth().fetchCustomerProfile(userBloc.user.userName).then((user) {
             Navigator.pushNamed(context, '/profile',
                 arguments: {"searchedUser": user});
           });

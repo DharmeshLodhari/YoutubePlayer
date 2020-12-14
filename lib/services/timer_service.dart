@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+/// timer for video recorder
+
 class TimerService extends ChangeNotifier {
   Stopwatch _watch;
   Timer _timer;

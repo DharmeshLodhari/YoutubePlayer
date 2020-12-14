@@ -1,4 +1,4 @@
-import 'package:Slydo/models/user.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:flutter/services.dart';
 import 'package:location/location.dart';
 
