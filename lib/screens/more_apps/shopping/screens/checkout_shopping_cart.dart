@@ -323,7 +323,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
 
   void navigateToSendPayment(Product product, int index) async {
     customerProfileBloc.customer =
-    await UserAuth().fetchCustomerProfile(product.seller);
+        await UserAuth().fetchCustomerProfile(product.seller);
     Navigator.of(context).pushNamed(
       '/send-payment',
       arguments: {
@@ -427,15 +427,14 @@ class _ShoppingCartState extends State<ShoppingCart> {
               isValidCallback: () async {
                 showDialog(
                   context: context,
-                  builder: (context) =>
-                      Center(
-                        child: CircularLoadingIndicator(),
-                      ),
+                  builder: (context) => Center(
+                    child: CircularLoadingIndicator(),
+                  ),
                 );
 
                 // Create the orders
                 var userOrder =
-                await ShoppingAuthService().placeOrderOfShoppingCart(data);
+                    await ShoppingAuthService().placeOrderOfShoppingCart(data);
 
                 if (userOrder != null) {
                   basketBloc.items.clear(); // Shopping cart

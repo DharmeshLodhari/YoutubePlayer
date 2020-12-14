@@ -343,19 +343,19 @@ class _MessageListState extends State<MessageList> {
         onTap: () async {
           var action = isRecipient
               ? partialMessage.isArchivedByRecipient
-              ? "unarchive"
-              : "archive"
+                  ? "unarchive"
+                  : "archive"
               : partialMessage.isArchivedBySender
-              ? "unarchive"
-              : "archive";
+                  ? "unarchive"
+                  : "archive";
           await _messageAuth.updateMessage(partialMessage.id, action);
           setState(() {
             if (isRecipient) {
               partialMessage.isArchivedByRecipient =
-              partialMessage.isArchivedByRecipient ? false : true;
+                  partialMessage.isArchivedByRecipient ? false : true;
             } else {
               partialMessage.isArchivedBySender =
-              partialMessage.isArchivedBySender ? false : true;
+                  partialMessage.isArchivedBySender ? false : true;
             }
           });
         },
@@ -414,9 +414,7 @@ class _MessageListState extends State<MessageList> {
       bool done = await _messageAuth.deleteMessage(messageList[index].id);
       if (done) {
         _showSnackBar(
-            context, AppLocalization
-            .of(context)
-            .messageIsDeletedSuccessfully);
+            context, AppLocalization.of(context).messageIsDeletedSuccessfully);
         setState(() {
           messageList.removeAt(index);
           if (messageList.length <= 9) {
@@ -589,14 +587,10 @@ class _VerticalListItemState extends State<VerticalListItem> {
               if (result) {
                 Toast.show(
                     "${widget.partialMessage.sender} " +
-                        AppLocalization
-                            .of(context)
-                            .isBlocked,
+                        AppLocalization.of(context).isBlocked,
                     context);
               } else {
-                Toast.show(AppLocalization
-                    .of(context)
-                    .error, context);
+                Toast.show(AppLocalization.of(context).error, context);
               }
             });
           });

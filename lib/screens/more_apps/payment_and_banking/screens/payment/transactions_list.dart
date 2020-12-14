@@ -352,7 +352,7 @@ class _TransactionListState extends State<TransactionList> {
           icon: SlydoAppIcon.send,
           onTap: () async {
             customerProfileBloc.customer =
-            await UserAuth().fetchCustomerProfile(transaction.payee);
+                await UserAuth().fetchCustomerProfile(transaction.payee);
             Navigator.of(context).pushNamed('/send-payment',
                 arguments: <String, bool>{
                   'isFromProfile': false,
@@ -371,7 +371,7 @@ class _TransactionListState extends State<TransactionList> {
           icon: SlydoAppIcon.receive,
           onTap: () async {
             customerProfileBloc.customer =
-            await UserAuth().fetchCustomerProfile(transaction.payee);
+                await UserAuth().fetchCustomerProfile(transaction.payee);
             Navigator.of(context).pushNamed('/request-payment',
                 arguments: <String, bool>{
                   'isFromProfile': false,
@@ -550,9 +550,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
               if (result) {
                 Toast.show(
                     "${widget.transaction.payee} " +
-                        AppLocalization
-                            .of(context)
-                            .isBlocked,
+                        AppLocalization.of(context).isBlocked,
                     context);
               } else {
                 Toast.show(AppLocalization.of(context).error, context);

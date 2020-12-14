@@ -270,27 +270,19 @@ class _DetailedMessageState extends State<DetailedMessage> {
       onPressed: () async {
         var action = isRecipient
             ? message.isStarredByRecipient
-            ? AppLocalization
-            .of(context)
-            .unstar
-            : AppLocalization
-            .of(context)
-            .star
+                ? AppLocalization.of(context).unstar
+                : AppLocalization.of(context).star
             : message.isStarredBySender
-            ? AppLocalization
-            .of(context)
-            .unstar
-            : AppLocalization
-            .of(context)
-            .star;
+                ? AppLocalization.of(context).unstar
+                : AppLocalization.of(context).star;
         await _messageAuth.updateMessage(message.id, action);
         setState(() {
           if (isRecipient) {
             message.isStarredByRecipient =
-            message.isStarredByRecipient ? false : true;
+                message.isStarredByRecipient ? false : true;
           } else {
             message.isStarredBySender =
-            message.isStarredBySender ? false : true;
+                message.isStarredBySender ? false : true;
           }
         });
       },

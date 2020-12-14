@@ -922,7 +922,7 @@ class _SearchModuleState extends State<SearchModule> {
         icon: SlydoAppIcon.receive,
         onTap: () async {
           customerProfileBloc.customer =
-          await UserAuth().fetchCustomerProfile(user.userName);
+              await UserAuth().fetchCustomerProfile(user.userName);
           Navigator.of(context).pushNamed('/request-payment',
               arguments: <String, bool>{
                 'isFromProfile': false,
@@ -955,7 +955,7 @@ class _SearchModuleState extends State<SearchModule> {
         icon: SlydoAppIcon.cart,
         onTap: () async {
           customerProfileBloc.customer =
-          await UserAuth().fetchCustomerProfile(product.seller);
+              await UserAuth().fetchCustomerProfile(product.seller);
           Navigator.of(context).pushNamed('/send-payment', arguments: {
             'isFromProfile': false,
             'isRequest': false,
@@ -1008,7 +1008,7 @@ class _SearchModuleState extends State<SearchModule> {
           icon: SlydoAppIcon.cart,
           onTap: () async {
             customerProfileBloc.customer =
-            await UserAuth().fetchCustomerProfile(service.provider);
+                await UserAuth().fetchCustomerProfile(service.provider);
             Navigator.of(context).pushNamed('/send-payment', arguments: {
               'isFromProfile': false,
               'isRequest': false,

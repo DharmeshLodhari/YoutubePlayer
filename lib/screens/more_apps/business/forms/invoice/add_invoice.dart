@@ -568,7 +568,7 @@ class _AddInvoiceState extends State<AddInvoice> {
             });
           }
           var customerProfile =
-          await UserAuth().fetchCustomerProfile(recipient);
+              await UserAuth().fetchCustomerProfile(recipient);
           if (mounted) {
             setState(() {
               _payee = customerProfile;

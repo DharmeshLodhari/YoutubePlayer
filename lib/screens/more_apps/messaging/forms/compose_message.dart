@@ -492,7 +492,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
             });
           }
           var customerProfile =
-          await UserAuth().fetchCustomerProfile(recipient);
+              await UserAuth().fetchCustomerProfile(recipient);
           setState(() {
             messageReceiver = customerProfile;
             isValidRecipient =

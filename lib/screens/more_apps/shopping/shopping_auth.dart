@@ -310,8 +310,8 @@ class ShoppingAuthService extends AuthService {
   }
 
   // List services
-  Future<Map<String, dynamic>> listServicesByProvider(String next,
-      String previous,
+  Future<Map<String, dynamic>> listServicesByProvider(
+      String next, String previous,
       {String userId}) async {
     var url = "";
     if (next == null) {
@@ -503,8 +503,8 @@ class ShoppingAuthService extends AuthService {
   }
 
   // List of Orders
-  Future<dynamic> listOrders(String next, String previous,
-      String filterValue) async {
+  Future<dynamic> listOrders(
+      String next, String previous, String filterValue) async {
     var url = "";
     if (next == null) {
       return null;
@@ -644,9 +644,10 @@ class ShoppingAuthService extends AuthService {
     return items;
   }
 
-  Future<List<dynamic>> ownersOrderProductsAndServices({@required String type,
-    @required String userId,
-    @required String exclude}) async {
+  Future<List<dynamic>> ownersOrderProductsAndServices(
+      {@required String type,
+      @required String userId,
+      @required String exclude}) async {
     String urlPart = type == "products"
         ? "sellers-other-products"
         : "providers-other-services";

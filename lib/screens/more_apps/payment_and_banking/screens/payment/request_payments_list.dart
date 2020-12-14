@@ -762,9 +762,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
               if (result) {
                 Toast.show(
                     "${widget.paymentRequest.payee} " +
-                        AppLocalization
-                            .of(context)
-                            .isBlocked,
+                        AppLocalization.of(context).isBlocked,
                     context);
               } else {
                 Toast.show(AppLocalization.of(context).error, context);

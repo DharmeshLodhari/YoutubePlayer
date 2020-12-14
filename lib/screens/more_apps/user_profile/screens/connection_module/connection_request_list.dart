@@ -150,7 +150,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
           });
         }
         Map<String, dynamic> result =
-        await UserAuth().listContactRequests(next, previous);
+            await UserAuth().listContactRequests(next, previous);
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
@@ -258,13 +258,9 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
       if (done) {
         _showSnackBar(
             context,
-            AppLocalization
-                .of(context)
-                .requestFrom +
+            AppLocalization.of(context).requestFrom +
                 " ${user.fullName} " +
-                AppLocalization
-                    .of(context)
-                    .isRejectedSuccessfully);
+                AppLocalization.of(context).isRejectedSuccessfully);
         setState(() {
           connectionRequestList.removeAt(index);
           if (connectionRequestList.length <= 9) {
@@ -310,9 +306,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
         _showSnackBar(
             context,
             "${user.fullName} " +
-                AppLocalization
-                    .of(context)
-                    .isAddedToYourContactList);
+                AppLocalization.of(context).isAddedToYourContactList);
         setState(() {
           connectionRequestList.removeAt(index);
           if (connectionRequestList.length <= 9) {

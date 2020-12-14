@@ -137,7 +137,7 @@ class _BlockListState extends State<BlockList> {
           });
         }
         Map<String, dynamic> result =
-        await UserAuth().listBlockUsers(next, previous);
+            await UserAuth().listBlockUsers(next, previous);
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
@@ -234,9 +234,7 @@ class _BlockListState extends State<BlockList> {
         _showSnackBar(
             context,
             "${user.fullName} " +
-                AppLocalization
-                    .of(context)
-                    .isUnblockedSuccessfully);
+                AppLocalization.of(context).isUnblockedSuccessfully);
         setState(() {
           blockList.removeAt(index);
           if (blockList.length <= 9) {

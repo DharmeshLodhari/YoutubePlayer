@@ -154,7 +154,7 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
             ),
             Container(
               padding:
-              EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 20),
+                  EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 20),
               child: Column(
                 children: [
                   Row(

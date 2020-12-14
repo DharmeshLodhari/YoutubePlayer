@@ -243,9 +243,7 @@ class _ConnectionListState extends State<ConnectionList> {
         _showSnackBar(
             context,
             "${user.fullName} " +
-                AppLocalization
-                    .of(context)
-                    .isBlockedSuccessfully);
+                AppLocalization.of(context).isBlockedSuccessfully);
         setState(() {
           connectionsList.removeAt(index);
           if (connectionsList.length <= 9) {
@@ -291,9 +289,7 @@ class _ConnectionListState extends State<ConnectionList> {
         _showSnackBar(
             context,
             "${user.fullName} " +
-                AppLocalization
-                    .of(context)
-                    .isRemovedSuccessfully);
+                AppLocalization.of(context).isRemovedSuccessfully);
         setState(() {
           connectionsList.removeAt(index);
           if (connectionsList.length <= 9) {
