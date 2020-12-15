@@ -193,7 +193,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> getLoggedInUser() async {
-    await Future.delayed(Duration(seconds: 5));
+    await Future.delayed(Duration(seconds: 3));
     _sharedPreferences = await SharedPreferences.getInstance();
     final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
     final BankAccountBloc bankAccountBloc = Provider.of(context, listen: false);

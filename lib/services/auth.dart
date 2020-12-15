@@ -19,35 +19,12 @@ class AuthService {
   DatabaseHelper _db = DatabaseHelper();
 
   // This function creates a user object from named args passed in
-  Future<User> createUser(
-    String uuid,
-    String url,
-    String phoneNumber,
-    String fullName,
-    String username,
-    String type,
-    String avatar,
-    String qrCode,
-    String password,
-    String currency,
-    bool isVerified,
-  ) async {
-    // Create user instance
-    User _user = User(
-      uuid: uuid,
-      url: url,
-      phoneNumber: phoneNumber,
-      fullName: fullName,
-      userName: username,
-      type: type,
-      avatar: avatar,
-      qrCode: qrCode,
-      password: password,
-      currency: currency,
-      isVerified: isVerified,
-    );
+  Future<User> createUser(Map<String, dynamic> userData) async {
     //delete old user if exist
     await _db.deleteUsers();
+
+    // Create user instance
+    User _user = User.fromJson(userData);
 
     await _db.saveUser(_user);
     return _user;
@@ -100,24 +77,13 @@ class AuthService {
 
       // Save user to database
       var jsonData = jsonResponse["user"];
+      debugPrint("$jsonData");
       jsonData["password"] = password;
       jsonData["url"] =
           secureBaseUrl + "/api/v1/user/customer/" + jsonData["username"];
-      // Delete user from db if one exist
-      await deleteUsers();
-      User user = await createUser(
-        jsonData["uuid"],
-        jsonData["url"],
-        jsonData["phone_number"],
-        jsonData["full_name"],
-        jsonData["username"],
-        jsonData["account_type"],
-        jsonData["avatar"],
-        jsonData["qr_code"],
-        jsonData["password"],
-        jsonData["default_currency"],
-        jsonData["is_verified"] ?? false,
-      );
+
+      User user = await createUser(jsonData);
+
       return user;
     }
     return User(

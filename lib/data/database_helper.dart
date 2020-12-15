@@ -158,9 +158,9 @@ class DatabaseHelper {
   // Get current user's jwt from db
   Future<Map<String, dynamic>> getJwt() async {
     var dbClient = await db;
-    var res = await dbClient.query("Jwt");
+    List<Map<String, dynamic>> res = await dbClient.query("Jwt");
 
-    if (res != null) {
+    if (res != null && res.length > 0) {
       try {
         return res[0];
       } catch (e) {
@@ -175,15 +175,16 @@ class DatabaseHelper {
   // get device information
   Future<Map<String, dynamic>> getDevice() async {
     var dbClient = await db;
-    var res = await dbClient.query("Device");
+    List<Map<String, dynamic>> res = await dbClient.query("Device");
 
-    try {
-      return res[0];
-    } catch (e) {
-      throw e;
+    if (res != null && res.length > 0) {
+      try {
+        return res[0];
+      } catch (e) {
+        throw e;
+      }
     }
-
-    // if the dbClient.query return error
+    return null;
   }
 
   // delete device

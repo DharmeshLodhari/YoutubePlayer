@@ -112,19 +112,7 @@ class UserAuth extends AuthService {
       if (response.statusCode == 200) {
         var jsonData = json.decode(responseBody);
 
-        User user = await createUser(
-          jsonData["uuid"],
-          jsonData["url"],
-          jsonData["phone_number"],
-          jsonData["full_name"],
-          jsonData["username"],
-          jsonData["account_type"],
-          jsonData["avatar"],
-          jsonData["qr_code"],
-          jsonData["password"],
-          jsonData["default_currency"],
-          jsonData["is_verified"] ?? true,
-        );
+        User user = await createUser(jsonData);
         return user;
       } else {
         throw responseBody;
