@@ -322,8 +322,8 @@ class _ChatScreenState extends State<ChatScreen> {
     MessageAuth().sendSocketMessage(data).then((value) {
       if (value) {
         messageController.text = "";
-        // int randomInt = Random().nextInt(5);
-        int randomInt = 2;
+        int randomInt = Random().nextInt(5);
+        // int randomInt = 2;
         switch (randomInt) {
           case 1:
             bool isSent = Random().nextBool();
