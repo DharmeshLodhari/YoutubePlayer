@@ -291,8 +291,8 @@ class PaymentAndBankingAuth extends AuthService {
       url = next;
     }
     var headers = await getAuthHeaders();
+
     var response = await http.get(url, headers: headers);
-    debugPrint("${response.body}");
     if (response.statusCode == 200) {
       List<Transaction> transactions = [];
       // This variable will hold list of transactions we got from server

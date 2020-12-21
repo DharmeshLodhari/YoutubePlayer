@@ -214,9 +214,7 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
     return CustomizedTextFormField(
       keyboardType: TextInputType.text,
       labelText: "Business name",
-      validator: (val) => val.length < 5
-          ? AppLocalization.of(context).validationTextMessage
-          : null,
+      validator: (val) => val == "" ? "Please enter business name" : null,
       onChanged: (val) {
         if (mounted) {
           setState(() {
@@ -287,50 +285,74 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
       "business_name": businessName.toString().trim(),
       "default_payment_type": selectedCategory.toString().trim(),
     };
+    if (validateDropdown()) {
+      if (_formKey.currentState.validate()) {
+        BottomSheetPassCode(
+            context: context,
+            isValidCallback: () {
+              showDialog(
+                  context: context,
+                  builder: (context) =>
+                      Center(child: CircularLoadingIndicator()));
+              UserAuth().upgradeUserProfile(data).then((result) {
+                if (result) {
+                  Toast.show(
+                      "Request sent !! Your Profile Will Be Updated Soon !!",
+                      context,
+                      textColor: Colors.white,
+                      backgroundColor: darkBlue());
 
-    BottomSheetPassCode(
-        context: context,
-        isValidCallback: () {
-          showDialog(
-              context: context,
-              builder: (context) => Center(child: CircularLoadingIndicator()));
-          UserAuth().upgradeUserProfile(data).then((result) {
-            if (result) {
-              Toast.show("Request sent !! Your Profile Will Be Updated Soon !!",
-                  context,
-                  textColor: Colors.white, backgroundColor: darkBlue());
+                  _auth
+                      .authenticate(
+                          userBloc.user.phoneNumber, userBloc.user.password)
+                      .then((newUser) {
+                    if (mounted) {
+                      setState(() {
+                        userBloc.user = newUser;
+                      });
+                    }
 
-              _auth
-                  .authenticate(
-                      userBloc.user.phoneNumber, userBloc.user.password)
-                  .then((newUser) {
-                if (mounted) {
-                  setState(() {
-                    userBloc.user = newUser;
+                    UserAuth()
+                        .fetchCustomerProfile(userBloc.user.userName)
+                        .then((user) {
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, '/profile',
+                          arguments: {"searchedUser": user});
+                    });
                   });
+                } else {
+                  Toast.show("Something Went Wrong !!", context,
+                      textColor: Colors.white, backgroundColor: darkBlue());
                 }
-
-                UserAuth()
-                    .fetchCustomerProfile(userBloc.user.userName)
-                    .then((user) {
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                  Navigator.pushNamed(context, '/profile',
-                      arguments: {"searchedUser": user});
-                });
               });
-            } else {
-              Toast.show("Something Went Wrong !!", context,
-                  textColor: Colors.white, backgroundColor: darkBlue());
-            }
-          });
-        },
-        cancelCallBack: () {
-          Navigator.pop(context);
-          _upgradeProfileScaffold.currentState.showSnackBar(SnackBar(
-            content: Text(AppLocalization.of(context).invalidPassword),
-          ));
-        });
+            },
+            cancelCallBack: () {
+              Navigator.pop(context);
+              _upgradeProfileScaffold.currentState.showSnackBar(SnackBar(
+                content: Text(AppLocalization.of(context).invalidPassword),
+              ));
+            });
+      }
+    }
+  }
+
+  bool validateDropdown() {
+    if (selectedType == null) {
+      Toast.show("Please select account type", context,
+          backgroundColor: blackFont,
+          textColor: Colors.white,
+          gravity: Toast.BOTTOM);
+      return false;
+    } else if (selectedCategory == null) {
+      Toast.show("Please select default payment type", context,
+          backgroundColor: blackFont,
+          textColor: Colors.white,
+          gravity: Toast.BOTTOM);
+      return false;
+    }
+
+    return true;
   }
 
   Widget getAmount() {

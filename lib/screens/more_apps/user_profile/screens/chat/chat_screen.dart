@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ChatScreen extends StatefulWidget {
-  var arguments;
+  final arguments;
 
   ChatScreen({this.arguments});
 
@@ -42,6 +42,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: appBar(),
       body: scaffoldBody(),
       floatingActionButton: floatingActionBar(),
@@ -149,19 +150,31 @@ class _ChatScreenState extends State<ChatScreen> {
       margin: EdgeInsets.zero,
       shadowColor: boxShadowTwo,
       child: Container(
-        height: 58,
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
+        height: MediaQuery.of(context).viewInsets.bottom != 0 ? 116 : 58,
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom != 0 ? 58 : 0,
+          left: 16,
+          right: 16,
+        ),
         child: Row(
           children: <Widget>[
-            requestMoneyBtn(),
-            SizedBox(
-              width: 8,
+            MediaQuery.of(context).viewInsets.bottom != 0
+                ? Container()
+                : Row(
+                    children: [
+                      requestMoneyBtn(),
+                      SizedBox(
+                        width: 8,
+                      ),
+                      sendMoneyBtn(),
+                      SizedBox(
+                        width: 8,
+                      ),
+                    ],
+                  ),
+            Expanded(
+              child: textMessageField(),
             ),
-            sendMoneyBtn(),
-            SizedBox(
-              width: 8,
-            ),
-            Expanded(child: textMessageField()),
             SizedBox(
               width: 8,
             ),
@@ -183,16 +196,18 @@ class _ChatScreenState extends State<ChatScreen> {
         size: 22,
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
-      onTap: () async{
+      onTap: () async {
         var customerProfileBloc =
-        Provider.of<CustomerProfileBloc>(context, listen: false);
+            Provider.of<CustomerProfileBloc>(context, listen: false);
         customerProfileBloc.customer =
             await UserAuth().fetchCustomerProfile(recipientUser.userName);
-        Navigator.of(context)
-            .pushNamed('/request-payment', arguments: <String, bool>{
-          'isFromProfile': false,
-          'isFromChat': true,
-        },);
+        Navigator.of(context).pushNamed(
+          '/request-payment',
+          arguments: <String, bool>{
+            'isFromProfile': false,
+            'isFromChat': true,
+          },
+        );
       },
     );
   }
@@ -213,11 +228,13 @@ class _ChatScreenState extends State<ChatScreen> {
             Provider.of<CustomerProfileBloc>(context, listen: false);
         customerProfileBloc.customer =
             await UserAuth().fetchCustomerProfile(recipientUser.userName);
-        Navigator.of(context)
-            .pushNamed('/send-payment', arguments: <String, bool>{
-          'isFromProfile': false,
-          'isFromChat': true,
-        },);
+        Navigator.of(context).pushNamed(
+          '/send-payment',
+          arguments: <String, bool>{
+            'isFromProfile': false,
+            'isFromChat': true,
+          },
+        );
       },
     );
   }
@@ -225,17 +242,22 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget textMessageField() {
     return TextFormField(
       controller: messageController,
+      cursorColor: blackFont,
+      cursorWidth: 1,
+      cursorHeight: 20,
+      cursorRadius: Radius.circular(16),
       decoration: InputDecoration(
         hintText: "Type message",
         hintStyle: TextStyle(
           color: darkGrey.withOpacity(0.5),
           fontSize: 16,
-          fontWeight: FontWeight.w400,
+          fontWeight: FontWeight.w500,
         ),
         prefix: Padding(
-          padding: EdgeInsets.only(left: 16),
+          padding: EdgeInsets.only(left: 12),
         ),
         contentPadding: EdgeInsets.symmetric(vertical: 10),
+        isDense: true,
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide(
@@ -276,17 +298,13 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget sendMessageBtn() {
-    return RoundedBackgroundIcon(
-      borderRadius: 16,
-      height: 44,
-      width: 44,
-      icon: Icon(
-        SlydoAppIcon.add,
-        color: naturalGreen,
+    return GestureDetector(
+      onTap: sendMessage,
+      child: Icon(
+        SlydoAppIcon.send_message,
+        color: navyBlue,
         size: 22,
       ),
-      backgroundColor: navyBlue.withOpacity(0.08),
-      onTap: sendMessage,
     );
   }
 
@@ -299,15 +317,35 @@ class _ChatScreenState extends State<ChatScreen> {
 
     MessageAuth().sendSocketMessage(data).then((value) {
       if (value) {
-        bool isSent = Random().nextBool();
-        // Widget getMessageUi = renderMessage(isSent: isSent);
-        // Widget getPaymentUI = renderPayment(isSent: isSent);
-        Widget getProductUI = renderProduct(isSent: isSent);
-        Widget getServiceUI = renderService(isSent: isSent);
+        int randomInt = Random().nextInt(4);
+        // int randomInt = 1;
+        switch (randomInt) {
+          case 1:
+            bool isSent = Random().nextBool();
+            Widget getMessageUi = renderMessage(isSent: isSent);
+            messageList.add(getMessageUi);
+            break;
+          case 2:
+            bool isSent = Random().nextBool();
+            Widget getPaymentUI = renderPayment(isSent: isSent);
+            messageList.add(getPaymentUI);
+            break;
+          case 3:
+            bool isSent = Random().nextBool();
+            Widget getProductUI = renderProduct(isSent: isSent);
+            messageList.add(getProductUI);
+            break;
+          case 4:
+            bool isSent = Random().nextBool();
+            Widget getServiceUI = renderService(isSent: isSent);
+            messageList.add(getServiceUI);
+            break;
 
-        // messageList.add(getMessageUi);
-        // messageList.add(getPaymentUI);
-        messageList.add(getServiceUI);
+          default:
+            Widget getTypingUI = renderTypingMsg();
+            messageList.add(getTypingUI);
+        }
+
         setState(() {});
       }
     });
@@ -320,12 +358,18 @@ class _ChatScreenState extends State<ChatScreen> {
           Expanded(
             child: SingleChildScrollView(
               child: Column(
-                children: messageList.map((e) => e).toList(),
+                children: messageList
+                    .map((e) => Container(
+                          child: e,
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        ))
+                    .toList(),
               ),
             ),
           ),
           SizedBox(
-            height: 60,
+            height: 58,
           )
         ],
       ),
@@ -333,16 +377,29 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget renderMessage({bool isSent}) {
-    if (isSent) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [Text("Hello")],
-      );
-    }
-
     return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [Text("Hello")],
+      mainAxisAlignment:
+          isSent ? MainAxisAlignment.end : MainAxisAlignment.start,
+      children: [
+        Container(
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: isSent ? navyBlue : chatBackgroundColor,
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(!isSent ? 0 : 10),
+                bottomRight: Radius.circular(isSent ? 0 : 10),
+                topLeft: Radius.circular(10),
+                topRight: Radius.circular(10),
+              ),
+            ),
+            child: Text(
+              "Hello",
+              style: TextStyle(
+                  color: isSent ? Colors.white : blackFont,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400),
+            ))
+      ],
     );
   }
 
@@ -453,12 +510,10 @@ class _ChatScreenState extends State<ChatScreen> {
               Container(
                 child: Row(
                   children: <Widget>[
-                    SizedBox(
-                      width: 8,
-                    ),
                     Expanded(
                       child: CurvedButton(
                         text: "Pay",
+                        height: 36,
                         backgroundColor: navyBlue,
                         textColor: Colors.white,
                         onPressed: () {},
@@ -469,14 +524,12 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                     Expanded(
                       child: CurvedButton(
+                        height: 36,
                         text: "Cancel",
                         backgroundColor: navyBlue,
                         textColor: Colors.white,
                         onPressed: () {},
                       ),
-                    ),
-                    SizedBox(
-                      width: 8,
                     ),
                   ],
                 ),
@@ -502,8 +555,9 @@ class _ChatScreenState extends State<ChatScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Image.network(
-                    "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZHVjdHxlbnwwfHwwfA%3D%3D&ixlib=rb-1.2.1&w=1000&q=80"),
+                CachedNetworkImage(
+                    imageUrl:
+                        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZHVjdHxlbnwwfHwwfA%3D%3D&ixlib=rb-1.2.1&w=1000&q=80"),
                 SizedBox(
                   height: 12,
                 ),
@@ -535,9 +589,6 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ],
                 ),
-                SizedBox(
-                  height: 8,
-                ),
               ],
             ),
           ),
@@ -557,8 +608,9 @@ class _ChatScreenState extends State<ChatScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Image.network(
-                  "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZHVjdHxlbnwwfHwwfA%3D%3D&ixlib=rb-1.2.1&w=1000&q=80"),
+              CachedNetworkImage(
+                  imageUrl:
+                      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZHVjdHxlbnwwfHwwfA%3D%3D&ixlib=rb-1.2.1&w=1000&q=80"),
               SizedBox(
                 height: 12,
               ),
@@ -594,13 +646,11 @@ class _ChatScreenState extends State<ChatScreen> {
                 height: 8,
               ),
               CurvedButton(
+                height: 36,
                 textColor: Colors.white,
                 backgroundColor: navyBlue,
                 text: "Buy",
                 onPressed: () {},
-              ),
-              SizedBox(
-                height: 8,
               ),
             ],
           ),
@@ -623,8 +673,9 @@ class _ChatScreenState extends State<ChatScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Image.network(
-                    "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZHVjdHxlbnwwfHwwfA%3D%3D&ixlib=rb-1.2.1&w=1000&q=80"),
+                CachedNetworkImage(
+                    imageUrl:
+                        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZHVjdHxlbnwwfHwwfA%3D%3D&ixlib=rb-1.2.1&w=1000&q=80"),
                 SizedBox(
                   height: 12,
                 ),
@@ -678,8 +729,9 @@ class _ChatScreenState extends State<ChatScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Image.network(
-                  "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZHVjdHxlbnwwfHwwfA%3D%3D&ixlib=rb-1.2.1&w=1000&q=80"),
+              CachedNetworkImage(
+                  imageUrl:
+                      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZHVjdHxlbnwwfHwwfA%3D%3D&ixlib=rb-1.2.1&w=1000&q=80"),
               SizedBox(
                 height: 12,
               ),
@@ -727,6 +779,13 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget renderTypingMsg() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [Text("Abiola is typing...")],
     );
   }
 }

@@ -21,9 +21,9 @@ class MessageAuth extends AuthService {
 
   Future<bool> sendSocketMessage(Map data) async {
     var url = secureBaseUrl + "/api/v1/messaging/send/";
-    var headers = await getAuthHeaders();
+    // var headers = await getAuthHeaders();
     // data["headers"] = headers;
-    var _data = jsonEncode(data);
+    // var _data = jsonEncode(data);
     // var response = await http.post(url, body: _data);
     // if (response.statusCode == 201) {
     //   return true;

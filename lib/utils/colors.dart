@@ -29,6 +29,7 @@ Color darkGrey = HexColor("#75818F");
 Color richPink = HexColor("#F07097");
 Color richPurple = HexColor("#9B51E0");
 Color lightGrey = HexColor("#FBFBFF");
+Color chatBackgroundColor = HexColor("#F4F5F6");
 Color iconBtnGrey = HexColor("#F8F9FF");
 Color greyBorderColor = HexColor("#DDE1E7");
 Color dividerColor = HexColor("#EBEDFC");
