@@ -54,6 +54,7 @@ class _SendPaymentState extends State<SendPayment> {
   Service service;
 
   bool isFromProfile = false;
+  bool isFromChat = false;
   bool isValidPayee = false;
   int amount;
   String reference = "";
@@ -77,6 +78,8 @@ class _SendPaymentState extends State<SendPayment> {
   void initState() {
     isFromProfile =
         widget.arguments != null ? widget.arguments['isFromProfile'] : false;
+    isFromChat =
+        widget.arguments != null ? widget.arguments['isFromChat'] : false;
     product = widget.arguments != null ? widget.arguments['product'] : null;
     service = widget.arguments != null ? widget.arguments['service'] : null;
     itemIndex = widget.arguments != null ? widget.arguments['itemIndex'] : null;
@@ -842,9 +845,11 @@ class _SendPaymentState extends State<SendPayment> {
                       Navigator.pop(context);
                       //Pop send payment page
                       Navigator.pop(context);
-                      Navigator.of(context).pushNamed(
-                        '/transactions',
-                      );
+                      if (!isFromChat) {
+                        Navigator.of(context).pushNamed(
+                          '/transactions',
+                        );
+                      }
                     } else if (response.statusCode == 500) {
                       Navigator.pop(context);
                       setState(() {

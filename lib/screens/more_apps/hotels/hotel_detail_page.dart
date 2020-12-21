@@ -1028,7 +1028,6 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
           '/send-payment',
           arguments: {
             'isFromProfile': false,
-            'isRequest': false,
           },
         );
       },

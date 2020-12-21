@@ -458,7 +458,6 @@ class _MixCartItemState extends State<MixCartItem> {
       '/send-payment',
       arguments: {
         'isFromProfile': false,
-        'isRequest': false,
         'product': product,
         'itemIndex': index
       },

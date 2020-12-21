@@ -332,7 +332,9 @@ class VerticalListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, '/profile',
+      // onTap: () => Navigator.pushNamed(context, '/profile',
+      //     arguments: {"searchedUser": user}),
+      onTap: () => Navigator.pushNamed(context, '/chat-screen',
           arguments: {"searchedUser": user}),
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 2),

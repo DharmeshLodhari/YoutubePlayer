@@ -53,6 +53,7 @@ class _RequestPaymentState extends State<RequestPayment> {
   http.Response response;
 
   bool isFromProfile = false;
+  bool isFromChat = false;
   bool isValidPayee = false;
   int amount;
   String reference = "";
@@ -62,6 +63,7 @@ class _RequestPaymentState extends State<RequestPayment> {
 
   //variables for categories
   bool isLoading = true;
+
   List<String> paymentCategoriesTest = List();
   String selectedCategory;
 
@@ -75,6 +77,8 @@ class _RequestPaymentState extends State<RequestPayment> {
             ? arguments['isFromProfile']
             : false
         : false;
+    isFromChat =
+        widget.arguments != null ? widget.arguments['isFromChat'] : false;
 
     /* adding listener on recipientFocus when user unFocus
     From Recipient Field then value of that field should be in lowerCase */
@@ -664,9 +668,16 @@ class _RequestPaymentState extends State<RequestPayment> {
                   _auth.createPaymentRequests(data).then((value) {
                     response = value;
                     if (response.statusCode == 201) {
-                      _dashboardBloc.index = 1;
-                      Navigator.popUntil(
-                          context, ModalRoute.withName("/dashboard"));
+                      if (!isFromChat) {
+                        _dashboardBloc.index = 1;
+                        Navigator.popUntil(
+                            context, ModalRoute.withName("/dashboard"));
+                      } else {
+                        //Pop Circular Progress Indicator
+                        Navigator.pop(context);
+                        //Pop request payment page
+                        Navigator.pop(context);
+                      }
                     } else if (response.statusCode == 500) {
                       Navigator.pop(context);
                       if (mounted) {

@@ -19,6 +19,21 @@ class MessageAuth extends AuthService {
     }
   }
 
+  Future<bool> sendSocketMessage(Map data) async {
+    var url = secureBaseUrl + "/api/v1/messaging/send/";
+    var headers = await getAuthHeaders();
+    // data["headers"] = headers;
+    var _data = jsonEncode(data);
+    // var response = await http.post(url, body: _data);
+    // if (response.statusCode == 201) {
+    //   return true;
+    // } else {
+    //   var jsonData = json.decode(response.body);
+    //   throw jsonData;
+    // }
+    return Future.value(true);
+  }
+
   // it will update the message actions:  [Archived,UnArchived,Starred,UnStarred]
   Future<bool> updateMessage(String id, String action) async {
     var url =

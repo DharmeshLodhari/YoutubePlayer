@@ -772,7 +772,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       '/send-payment',
       arguments: {
         'isFromProfile': false,
-        'isRequest': false,
         'product': product
       },
     );

@@ -328,7 +328,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
       '/send-payment',
       arguments: {
         'isFromProfile': false,
-        'isRequest': false,
         'product': product,
         'itemIndex': index
       },

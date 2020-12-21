@@ -157,7 +157,6 @@ class _QRCodeViewState extends State<QRCodeView> {
           '/send-payment',
           arguments: {
             'isFromProfile': false,
-            'isRequest': false,
           },
         );
       }

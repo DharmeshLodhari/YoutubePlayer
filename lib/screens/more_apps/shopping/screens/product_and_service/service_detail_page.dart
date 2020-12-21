@@ -762,7 +762,6 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       '/send-payment',
       arguments: {
         'isFromProfile': false,
-        'isRequest': false,
         'service': service
       },
     );

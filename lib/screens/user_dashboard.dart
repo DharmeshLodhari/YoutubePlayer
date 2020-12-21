@@ -381,26 +381,28 @@ class _UserDashboardState extends State<UserDashboard> {
         ),
         Expanded(
             child: UserDashboardItemTile(
-          icon: SlydoAppIcon.more,
-          title: "More",
-          onTap: () {
-            Navigator.pushNamed(context, "/more-apps");
-          },
-          iconColor: HexColor("#374677"),
-        )),
+              icon: SlydoAppIcon.translation,
+              title: "Language",
+              onTap: () {
+                // changeLanguage();
+                changeLanguageBottomSheet();
+              },
+              iconColor: HexColor("#5218E9"),
+            )),
         SizedBox(
           width: 12,
         ),
-        Expanded(
-            child: UserDashboardItemTile(
-          icon: SlydoAppIcon.translation,
-          title: "Language",
-          onTap: () {
-            // changeLanguage();
-            changeLanguageBottomSheet();
-          },
-          iconColor: HexColor("#5218E9"),
-        )),
+        // Expanded(
+        //     child: UserDashboardItemTile(
+        //   icon: SlydoAppIcon.more,
+        //   title: "More",
+        //   onTap: () {
+        //     Navigator.pushNamed(context, "/more-apps");
+        //   },
+        //   iconColor: HexColor("#374677"),
+        // )),
+      Expanded(child: Container()),
+
       ],
     );
   }
@@ -757,23 +759,12 @@ class _UserDashboardState extends State<UserDashboard> {
                     bottomSheetItem(
                       title: "My address",
                       icon: SlydoAppIcon.location,
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.pushNamed(
-                          context,
-                          '/user-address',
-                        );
-                      },
-                    ),
-                    bottomSheetItem(
-                      title: "My connection/ Request",
-                      icon: SlydoAppIcon.connections,
                       isLast: true,
                       onTap: () {
                         Navigator.pop(context);
                         Navigator.pushNamed(
                           context,
-                          '/friends-dashboard',
+                          '/user-address',
                         );
                       },
                     ),

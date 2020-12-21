@@ -561,7 +561,6 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
             '/send-payment',
             arguments: {
               'isFromProfile': false,
-              'isRequest': false,
             },
           );
         },

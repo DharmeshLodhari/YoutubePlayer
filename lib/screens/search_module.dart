@@ -906,7 +906,6 @@ class _SearchModuleState extends State<SearchModule> {
           Navigator.of(context).pushNamed('/send-payment',
               arguments: <String, bool>{
                 'isFromProfile': false,
-                'isRequest': false
               });
         },
         title: AppLocalization.of(context).send,
@@ -958,7 +957,6 @@ class _SearchModuleState extends State<SearchModule> {
               await UserAuth().fetchCustomerProfile(product.seller);
           Navigator.of(context).pushNamed('/send-payment', arguments: {
             'isFromProfile': false,
-            'isRequest': false,
             'product': product
           });
         },
@@ -1011,7 +1009,6 @@ class _SearchModuleState extends State<SearchModule> {
                 await UserAuth().fetchCustomerProfile(service.provider);
             Navigator.of(context).pushNamed('/send-payment', arguments: {
               'isFromProfile': false,
-              'isRequest': false,
               'service': service
             });
           }),

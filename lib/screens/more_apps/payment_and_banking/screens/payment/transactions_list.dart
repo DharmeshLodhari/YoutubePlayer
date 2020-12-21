@@ -356,7 +356,7 @@ class _TransactionListState extends State<TransactionList> {
             Navigator.of(context).pushNamed('/send-payment',
                 arguments: <String, bool>{
                   'isFromProfile': false,
-                  'isRequest': false
+
                 });
           },
           title: AppLocalization.of(context).send,

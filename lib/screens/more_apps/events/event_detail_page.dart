@@ -675,7 +675,6 @@ class _EventDetailPageState extends State<EventDetailPage> {
             '/send-payment',
             arguments: {
               'isFromProfile': false,
-              'isRequest': false,
             },
           );
         },

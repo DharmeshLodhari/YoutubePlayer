@@ -113,8 +113,36 @@ class _HomeState extends State<Home> {
         SizedBox(
           width: 8.0,
         ),
+        chatBtn(),
+        SizedBox(
+          width: 8.0,
+        ),
         messageBtn(),
       ],
+    );
+  }
+
+  Widget chatBtn() {
+    return SizedBox(
+      height: 34,
+      width: 34,
+      child: InkWell(
+        child: Card(
+          elevation: 0,
+          color: lightGrey.withOpacity(0.1),
+          margin: EdgeInsets.symmetric(vertical: 10),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(
+            SlydoAppIcon.text_message,
+            size: 16,
+          ),
+        ),
+        onTap: () {
+          Navigator.of(context).pushNamed('/friends-dashboard');
+        },
+      ),
     );
   }
 
@@ -313,7 +341,6 @@ class _HomeState extends State<Home> {
           Navigator.of(context).pushNamed('/request-payment',
               arguments: <String, bool>{
                 'isFromProfile': true,
-                'isRequest': true
               });
         },
       ),

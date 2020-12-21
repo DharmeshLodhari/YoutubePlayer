@@ -81,6 +81,7 @@ import 'package:Slydo/screens/more_apps/user_profile/forms/upgrade_user_profile.
 import 'package:Slydo/screens/more_apps/user_profile/forms/user_address.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/verify_registration_OTP.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/verify_reset_password_OTP.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/chat/chat_screen.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/connection_module/connections_dashboard.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module/user_profile.dart';
 import 'package:Slydo/screens/scan_qr_code.dart';
@@ -446,6 +447,16 @@ class RouteGenerator {
       case '/print-qr':
         return PageTransition(
           child: PrintQRCode(arguments: settings.arguments),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      /// Chat
+
+      case '/chat-screen':
+        return PageTransition(
+          child: ChatScreen(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
