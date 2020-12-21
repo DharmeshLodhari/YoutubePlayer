@@ -242,6 +242,10 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget textMessageField() {
     return TextFormField(
       controller: messageController,
+      textInputAction: TextInputAction.send,
+      onFieldSubmitted: (value) {
+        sendMessage();
+      },
       cursorColor: blackFont,
       cursorWidth: 1,
       cursorHeight: 20,
@@ -317,8 +321,9 @@ class _ChatScreenState extends State<ChatScreen> {
 
     MessageAuth().sendSocketMessage(data).then((value) {
       if (value) {
-        int randomInt = Random().nextInt(4);
-        // int randomInt = 1;
+        messageController.text = "";
+        // int randomInt = Random().nextInt(5);
+        int randomInt = 2;
         switch (randomInt) {
           case 1:
             bool isSent = Random().nextBool();
@@ -327,15 +332,20 @@ class _ChatScreenState extends State<ChatScreen> {
             break;
           case 2:
             bool isSent = Random().nextBool();
-            Widget getPaymentUI = renderPayment(isSent: isSent);
+            Widget getPaymentUI = renderSendPayment(isSent: isSent);
             messageList.add(getPaymentUI);
             break;
           case 3:
             bool isSent = Random().nextBool();
+            Widget getPaymentUI = renderPaymentRequest(isSent: isSent);
+            messageList.add(getPaymentUI);
+            break;
+          case 4:
+            bool isSent = Random().nextBool();
             Widget getProductUI = renderProduct(isSent: isSent);
             messageList.add(getProductUI);
             break;
-          case 4:
+          case 5:
             bool isSent = Random().nextBool();
             Widget getServiceUI = renderService(isSent: isSent);
             messageList.add(getServiceUI);
@@ -403,134 +413,197 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget renderPayment({bool isSent}) {
-    if (isSent) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Container(
-            decoration: BoxDecoration(
-                border: Border.all(color: dividerColor),
-                borderRadius: BorderRadius.circular(12)),
-            padding: EdgeInsets.all(8),
-            width: MediaQuery.of(context).size.width / 2,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text("Payment send",
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w600,
-                    )),
-                SizedBox(
-                  height: 12,
-                ),
-                Text("For rent"),
-                SizedBox(
-                  height: 8,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      SlydoAppIcon.naira,
-                      color: blackFont,
-                      size: 12,
-                    ),
-                    SizedBox(
-                      width: 6,
-                    ),
-                    Text(
-                      "500",
-                      style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w600,
-                          color: blackFont),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 8,
-                ),
-              ],
-            ),
-          ),
-        ],
-      );
-    }
-
+  Widget renderPaymentRequest({bool isSent}) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisAlignment:
+          isSent ? MainAxisAlignment.end : MainAxisAlignment.start,
       children: [
         Container(
           decoration: BoxDecoration(
-              border: Border.all(color: dividerColor),
-              borderRadius: BorderRadius.circular(12)),
+            color: chatBackgroundColor,
+            border: Border.all(color: chatBackgroundColor),
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(!isSent ? 0 : 10),
+              bottomRight: Radius.circular(isSent ? 0 : 10),
+              topLeft: Radius.circular(10),
+              topRight: Radius.circular(10),
+            ),
+          ),
           padding: EdgeInsets.all(8),
           width: MediaQuery.of(context).size.width / 2,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text("Payment Request",
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w600,
-                  )),
-              SizedBox(
-                height: 12,
-              ),
-              Text("For rent"),
-              SizedBox(
-                height: 8,
-              ),
               Row(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    SlydoAppIcon.naira,
-                    color: blackFont,
-                    size: 12,
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4.0),
+                    child: Icon(
+                      SlydoAppIcon.naira,
+                      color: blackFont,
+                      size: 16,
+                    ),
                   ),
                   SizedBox(
-                    width: 6,
+                    width: 2,
                   ),
                   Text(
                     "500",
                     style: TextStyle(
-                        fontSize: 28,
+                        fontSize: 32,
                         fontWeight: FontWeight.w600,
                         color: blackFont),
                   ),
                 ],
               ),
               SizedBox(
-                height: 8,
+                height: 4,
+              ),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "Shopping",
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: blackFont),
+                ),
+              ),
+              SizedBox(
+                height: 6,
+              ),
+              Container(
+                child: isSent
+                    ? Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: Container(),
+                          ),
+                          SizedBox(
+                            width: 8,
+                          ),
+                          Expanded(
+                            child: CurvedButton(
+                              text: "Cancel",
+                              height: 36,
+                              backgroundColor: navyBlue,
+                              textColor: Colors.white,
+                              onPressed: () {},
+                            ),
+                          ),
+                        ],
+                      )
+                    : Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: CurvedButton(
+                              text: "Pay",
+                              height: 36,
+                              backgroundColor: navyBlue,
+                              textColor: Colors.white,
+                              onPressed: () {},
+                            ),
+                          ),
+                          SizedBox(
+                            width: 8,
+                          ),
+                          Expanded(
+                            child: CurvedButton(
+                              height: 36,
+                              text: "Reject",
+                              backgroundColor: navyBlue,
+                              textColor: Colors.white,
+                              onPressed: () {},
+                            ),
+                          ),
+                        ],
+                      ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget renderSendPayment({bool isSent}) {
+    return Row(
+      mainAxisAlignment:
+          isSent ? MainAxisAlignment.end : MainAxisAlignment.start,
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: chatBackgroundColor,
+            border: Border.all(color: chatBackgroundColor),
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(!isSent ? 0 : 10),
+              bottomRight: Radius.circular(isSent ? 0 : 10),
+              topLeft: Radius.circular(10),
+              topRight: Radius.circular(10),
+            ),
+          ),
+          padding: EdgeInsets.all(8),
+          width: MediaQuery.of(context).size.width / 2,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4.0),
+                    child: Icon(
+                      SlydoAppIcon.naira,
+                      color: blackFont,
+                      size: 14,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 2,
+                  ),
+                  Text(
+                    "500",
+                    style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.w600,
+                        color: blackFont),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 4,
+              ),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "Shopping",
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: blackFont),
+                ),
+              ),
+              SizedBox(
+                height: 6,
               ),
               Container(
                 child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: CurvedButton(
-                        text: "Pay",
-                        height: 36,
-                        backgroundColor: navyBlue,
-                        textColor: Colors.white,
-                        onPressed: () {},
-                      ),
+                  children: [
+                    Icon(
+                      SlydoAppIcon.true_icon,
+                      size: 12,
+                      color: naturalGreen,
                     ),
                     SizedBox(
-                      width: 8,
+                      width: 4,
                     ),
-                    Expanded(
-                      child: CurvedButton(
-                        height: 36,
-                        text: "Cancel",
-                        backgroundColor: navyBlue,
-                        textColor: Colors.white,
-                        onPressed: () {},
-                      ),
-                    ),
+                    Text(
+                      isSent
+                          ? "You paid • 06:15 PM"
+                          : "You were paid • 10:13 AM",
+                      style: TextStyle(color: blackFont, fontSize: 12),
+                    )
                   ],
                 ),
               ),
