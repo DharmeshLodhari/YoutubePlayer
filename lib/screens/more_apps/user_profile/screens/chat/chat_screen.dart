@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:Slydo/data/state_notifier.dart';
@@ -10,7 +11,10 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
+import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/status.dart' as status;
 
 class ChatScreen extends StatefulWidget {
   final arguments;
@@ -28,14 +32,118 @@ class _ChatScreenState extends State<ChatScreen> {
 
   UserBloc userBloc;
 
-  List<Widget> messageList = [];
+  List<String> messageList = [];
+  IOWebSocketChannel channel;
+  String socketUrl = "wss://echo.websocket.org";
+
+  ScrollController messageScrollController;
+  bool fabIsVisible = false;
+
+  bool isConnected = false;
+  Duration connectionRetryDuration = Duration(seconds: 2);
 
   @override
   void initState() {
     messageController = TextEditingController();
     recipientUser = widget.arguments["searchedUser"];
 
+    connectSocket();
+
+    setupScrollController();
+
     super.initState();
+  }
+
+  void connectSocket() {
+    /// change socket url according to recipient user url
+    // socketUrl = "wss://slydo.co/chat/${recipientUser.userName}";
+
+    /// for connecting the socket
+    try {
+      channel = IOWebSocketChannel.connect(socketUrl);
+    } catch (e) {
+      debugPrint("Error to connect Web Socket !!!! ${channel.closeCode}");
+      Future.delayed(connectionRetryDuration).then((value) => connectSocket());
+    }
+
+    debugPrint("connected to $socketUrl ");
+    isConnected = true;
+
+    /// for listening message in the Socket
+    if (isConnected) {
+      debugPrint("Listener called!!");
+      channel.stream.listen((message) {
+        debugPrint("Got Message:- $message");
+        determineMessageType(message);
+      });
+    }
+  }
+
+  void setupScrollController() {
+    messageScrollController = ScrollController();
+
+    messageScrollController.addListener(() {
+      /// when scroll view is at top
+      if (messageScrollController.position.pixels ==
+          messageScrollController.position.maxScrollExtent) {
+        fetchPreviousMessages();
+      }
+
+      /// when scroll view is at last
+      if (messageScrollController.position.pixels ==
+          messageScrollController.position.minScrollExtent) {}
+
+      /// for floating button to show scroll to bottom
+
+      fabIsVisible = messageScrollController.position.userScrollDirection ==
+          ScrollDirection.forward;
+      if (messageScrollController.position.pixels == 0.0) {
+        fabIsVisible = false;
+      }
+
+      setState(() {});
+    });
+  }
+
+  void fetchPreviousMessages() {
+    debugPrint("Fetching previous messages !!");
+    List<String> previousMessages = List.generate(
+        8,
+        (index) => jsonEncode({
+              "sender": "black",
+              "recipient": "pankaj.sakariya",
+              "body": "test $index",
+              "type": "message",
+              "isSent": Random().nextBool()
+            }));
+
+    messageList.insertAll(0, previousMessages);
+    setState(() {});
+  }
+
+  void determineMessageType(String message) {
+    messageList.add(message);
+    setState(() {});
+    if (MediaQuery.of(context).viewInsets.bottom != 0) {
+      scrollToBottom();
+    }
+  }
+
+  void scrollToBottom() {
+    messageScrollController.animateTo(0.0,
+        duration: Duration(microseconds: 100),
+        curve: Curves.fastLinearToSlowEaseIn);
+  }
+
+  @override
+  void dispose() {
+    try {
+      channel.sink.close(status.goingAway);
+      debugPrint("Socket Connection close for $socketUrl");
+    } catch (e) {
+      debugPrint("ERROR:- to close Socket Connection");
+    }
+    super.dispose();
   }
 
   @override
@@ -45,8 +153,24 @@ class _ChatScreenState extends State<ChatScreen> {
       backgroundColor: Colors.white,
       appBar: appBar(),
       body: scaffoldBody(),
-      floatingActionButton: floatingActionBar(),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: Padding(
+        padding: EdgeInsets.only(bottom: 48),
+        child: AnimatedOpacity(
+          child: FloatingActionButton(
+            backgroundColor: dividerColor,
+            child: Icon(
+              Icons.keyboard_arrow_down_rounded,
+              size: 28,
+              color: blackFont,
+            ),
+            tooltip: "Increment",
+            onPressed: scrollToBottom,
+          ),
+          duration: Duration(milliseconds: 100),
+          opacity: fabIsVisible ? 1 : 0,
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 
@@ -144,17 +268,15 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget floatingActionBar() {
+  Widget messageActionBar() {
     return Card(
       elevation: 10,
       margin: EdgeInsets.zero,
       shadowColor: boxShadowTwo,
       child: Container(
-        height: MediaQuery.of(context).viewInsets.bottom != 0 ? 116 : 58,
+        height: 58,
         padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom != 0 ? 58 : 0,
           left: 16,
-          right: 16,
         ),
         child: Row(
           children: <Widget>[
@@ -174,9 +296,6 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
             Expanded(
               child: textMessageField(),
-            ),
-            SizedBox(
-              width: 8,
             ),
             sendMessageBtn(),
           ],
@@ -302,14 +421,63 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget sendMessageBtn() {
-    return GestureDetector(
+    return InkWell(
       onTap: sendMessage,
-      child: Icon(
-        SlydoAppIcon.send_message,
-        color: navyBlue,
-        size: 22,
+      child: Container(
+        padding: EdgeInsets.all(2),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 12,
+            ),
+            Icon(
+              SlydoAppIcon.send_message,
+              color: navyBlue,
+              size: 22,
+            ),
+            SizedBox(
+              width: 12,
+            ),
+          ],
+        ),
       ),
     );
+  }
+
+  Widget renderDataAccordingType(String message) {
+    // int randomInt = Random().nextInt(5);
+
+    Map<String, dynamic> messageData = jsonDecode(message);
+
+    String messageType = "message";
+
+    switch (messageType) {
+      case "message":
+        Widget getMessageUi = renderMessage(message: messageData);
+        return getMessageUi;
+        break;
+      case "2":
+        Widget getPaymentUI = renderSendPayment(message: messageData);
+        return getPaymentUI;
+
+        break;
+      case "3":
+        Widget getPaymentUI = renderPaymentRequest(message: messageData);
+        return getPaymentUI;
+        break;
+      case "4":
+        Widget getProductUI = renderProduct(message: messageData);
+        return getProductUI;
+        break;
+      case "5":
+        Widget getServiceUI = renderService(message: messageData);
+        return getServiceUI;
+        break;
+
+      default:
+        Widget getTypingUI = renderTypingMsg();
+        return getTypingUI;
+    }
   }
 
   void sendMessage() async {
@@ -317,45 +485,18 @@ class _ChatScreenState extends State<ChatScreen> {
       "sender": userBloc.user.userName,
       "recipient": recipientUser.userName.trim(),
       "body": messageController.text.trim(),
+      "type": "message",
+      "isSent": Random().nextBool()
     };
 
     MessageAuth().sendSocketMessage(data).then((value) {
       if (value) {
         messageController.text = "";
-        int randomInt = Random().nextInt(5);
-        // int randomInt = 2;
-        switch (randomInt) {
-          case 1:
-            bool isSent = Random().nextBool();
-            Widget getMessageUi = renderMessage(isSent: isSent);
-            messageList.add(getMessageUi);
-            break;
-          case 2:
-            bool isSent = Random().nextBool();
-            Widget getPaymentUI = renderSendPayment(isSent: isSent);
-            messageList.add(getPaymentUI);
-            break;
-          case 3:
-            bool isSent = Random().nextBool();
-            Widget getPaymentUI = renderPaymentRequest(isSent: isSent);
-            messageList.add(getPaymentUI);
-            break;
-          case 4:
-            bool isSent = Random().nextBool();
-            Widget getProductUI = renderProduct(isSent: isSent);
-            messageList.add(getProductUI);
-            break;
-          case 5:
-            bool isSent = Random().nextBool();
-            Widget getServiceUI = renderService(isSent: isSent);
-            messageList.add(getServiceUI);
-            break;
-
-          default:
-            Widget getTypingUI = renderTypingMsg();
-            messageList.add(getTypingUI);
+        try {
+          channel.sink.add(jsonEncode(data));
+        } catch (e) {
+          debugPrint("error $e");
         }
-
         setState(() {});
       }
     });
@@ -366,54 +507,70 @@ class _ChatScreenState extends State<ChatScreen> {
       child: Column(
         children: [
           Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: messageList
-                    .map((e) => Container(
-                          child: e,
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                        ))
-                    .toList(),
+            child: Theme(
+              data: ThemeData(highlightColor: navyBlue),
+              child: Scrollbar(
+                controller: messageScrollController,
+                radius: Radius.circular(10),
+                thickness: 3,
+                child: SingleChildScrollView(
+                  reverse: true,
+                  controller: messageScrollController,
+                  child: Column(
+                    children: messageList
+                        .map((message) => Container(
+                              child: renderDataAccordingType(message),
+                              padding:
+                                  EdgeInsets.only(left: 8, right: 8, bottom: 8),
+                            ))
+                        .toList(),
+                  ),
+                ),
               ),
             ),
           ),
-          SizedBox(
-            height: 58,
-          )
+          messageActionBar()
         ],
       ),
     );
   }
 
-  Widget renderMessage({bool isSent}) {
+  Widget renderMessage({Map<String, dynamic> message}) {
+    bool isSend = message["isSent"];
     return Row(
       mainAxisAlignment:
-          isSent ? MainAxisAlignment.end : MainAxisAlignment.start,
+          isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
       children: [
-        Container(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: isSent ? navyBlue : chatBackgroundColor,
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(!isSent ? 0 : 10),
-                bottomRight: Radius.circular(isSent ? 0 : 10),
-                topLeft: Radius.circular(10),
-                topRight: Radius.circular(10),
-              ),
-            ),
-            child: Text(
-              "Hello",
-              style: TextStyle(
-                  color: isSent ? Colors.white : blackFont,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400),
-            ))
+        Expanded(
+          child: Padding(
+            padding:
+                EdgeInsets.only(left: isSend ? 30 : 0, right: !isSend ? 30 : 0),
+            child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  color: isSend ? navyBlue : chatBackgroundColor,
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(!isSend ? 0 : 10),
+                    bottomRight: Radius.circular(isSend ? 0 : 10),
+                    topLeft: Radius.circular(10),
+                    topRight: Radius.circular(10),
+                  ),
+                ),
+                child: Text(
+                  message['body'],
+                  style: TextStyle(
+                      color: isSend ? Colors.white : blackFont,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500),
+                )),
+          ),
+        )
       ],
     );
   }
 
-  Widget renderPaymentRequest({bool isSent}) {
+  Widget renderPaymentRequest({Map<String, dynamic> message}) {
+    bool isSent = message["isSent"];
     return Row(
       mainAxisAlignment:
           isSent ? MainAxisAlignment.end : MainAxisAlignment.start,
@@ -527,7 +684,8 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget renderSendPayment({bool isSent}) {
+  Widget renderSendPayment({Map<String, dynamic> message}) {
+    bool isSent = message["isSent"];
     return Row(
       mainAxisAlignment:
           isSent ? MainAxisAlignment.end : MainAxisAlignment.start,
@@ -614,8 +772,9 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget renderProduct({bool isSent}) {
-    if (isSent) {
+  Widget renderProduct({Map<String, dynamic> message}) {
+    bool isSend = message["isSent"];
+    if (isSend) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -732,8 +891,9 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget renderService({bool isSent}) {
-    if (isSent) {
+  Widget renderService({Map<String, dynamic> message}) {
+    bool isSend = message["isSent"];
+    if (isSend) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [

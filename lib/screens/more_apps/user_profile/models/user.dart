@@ -1,5 +1,3 @@
-import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-
 class Address {
   String addressLineOne;
   String addressLineTwo;
@@ -26,6 +24,8 @@ class Address {
   }
 }
 
+enum UserStatus { ACTIVE, AWAY, UNKNOWN }
+
 class User {
   String uuid;
   String url;
@@ -37,13 +37,9 @@ class User {
   String qrCode;
   String password;
   String currency;
-
   bool isVerified;
-  final Setting setting = Setting(
-      enableService: true,
-      enableProduct: true,
-      enableExplore: false,
-      enableTransactionDetailPage: true);
+  String conversationId;
+  UserStatus status;
 
   // Pass in as named parameter in constructor
   User({
@@ -58,27 +54,9 @@ class User {
     this.password,
     this.currency = "₦",
     this.isVerified = false,
+    this.conversationId = "",
+    this.status = UserStatus.UNKNOWN,
   });
-
-  bool isBusinessUser() {
-    List businessUser = ["Seller", "Business", "Merchant"];
-
-    bool isBusinessUser = false;
-    businessUser.forEach(
-      (element) {
-        if (element == this.type) {
-          isBusinessUser = true;
-          return;
-        }
-      },
-    );
-    return isBusinessUser;
-  }
-
-  bool isAuthenticated() {
-    //  We should check here if instance has username then user is not Anonymous
-    return userName != null ? true : false;
-  }
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
