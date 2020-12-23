@@ -77,7 +77,6 @@ class AuthService {
 
       // Save user to database
       var jsonData = jsonResponse["user"];
-      debugPrint("$jsonData");
       jsonData["password"] = password;
       jsonData["url"] =
           secureBaseUrl + "/api/v1/user/customer/" + jsonData["username"];

@@ -1,3 +1,4 @@
+import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
@@ -403,7 +404,18 @@ class _UserLoginState extends State<UserLogin> {
                   ),
                   child: Checkbox(
                     value: isChecked,
-                    onChanged: (value) {},
+                    onChanged: (value) {
+                      if (mounted) {
+                        if (isChecked) {
+                          isChecked = false;
+                          isRemember = false;
+                        } else {
+                          isChecked = true;
+                          isRemember = true;
+                        }
+                        setState(() {});
+                      }
+                    },
                     activeColor: navyBlue,
                     checkColor: Colors.white,
                     materialTapTargetSize: MaterialTapTargetSize.padded,
@@ -461,8 +473,11 @@ class _UserLoginState extends State<UserLogin> {
 
   void login() async {
     final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+    final SocketProvider socketProvider =
+        Provider.of<SocketProvider>(context, listen: false);
     final BankAccountBloc bankAccountBloc =
         Provider.of<BankAccountBloc>(context, listen: false);
+
     if (_loginFormKey.currentState.validate()) {
       showDialog(context: context, builder: (context) => LoadingIndicator());
 
@@ -487,6 +502,8 @@ class _UserLoginState extends State<UserLogin> {
           //method call for storing user info into shared preference
           isRememberChecked();
           userBloc.user = _user;
+
+          socketProvider.currentUser = _user;
 
           //setting up notification
           notificationBloc.pushNotificationService =

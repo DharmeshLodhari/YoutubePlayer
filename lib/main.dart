@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_generator.dart';
 import 'package:Slydo/screens/more_apps/bus/bus_dashboard_bloc.dart';
@@ -115,6 +116,9 @@ void main() async {
           ),
           ChangeNotifierProvider<TimerService>.value(
             value: TimerService(),
+          ),
+          ChangeNotifierProvider<SocketProvider>.value(
+            value: SocketProvider(),
           ),
         ], child: MyApp()),
       );

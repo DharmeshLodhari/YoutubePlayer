@@ -16,6 +16,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
 
+import 'data/socket_provider.dart';
 import 'data/state_notifier.dart';
 import 'locale/app_localization.dart';
 import 'screens/more_apps/user_profile/models/device.dart';
@@ -32,7 +33,6 @@ class _SplashScreenState extends State<SplashScreen> {
   String phoneNumberFromPref;
   String passwordFromPref;
   SharedPreferences _sharedPreferences;
-  final _auth = AuthService();
   BasketBloc basketBloc;
 
   // bool for to check if internet connection is available or not
@@ -196,6 +196,8 @@ class _SplashScreenState extends State<SplashScreen> {
     await Future.delayed(Duration(seconds: 3));
     _sharedPreferences = await SharedPreferences.getInstance();
     final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+    final SocketProvider socketProvider =
+        Provider.of<SocketProvider>(context, listen: false);
     final BankAccountBloc bankAccountBloc = Provider.of(context, listen: false);
     final _auth = AuthService();
 
@@ -230,6 +232,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
             if (_user.fullName != null) {
               userBloc.user = _user;
+              socketProvider.currentUser = _user;
 
               if (_user != null) {
                 PaymentAndBankingAuth().getBankAccounts().then((accounts) {

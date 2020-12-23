@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
@@ -40,6 +41,7 @@ class _UserDashboardState extends State<UserDashboard> {
   final _auth = AuthService();
   UserBloc userBloc;
   BankAccountBloc bankAccountBloc;
+  SocketProvider socketProvider;
   BasketBloc basketBloc;
 
   bool isLoading = false;
@@ -77,6 +79,7 @@ class _UserDashboardState extends State<UserDashboard> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+    socketProvider = Provider.of<SocketProvider>(context);
     bankAccountBloc = Provider.of<BankAccountBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
     dashboardBloc = Provider.of<DashboardBloc>(context);
@@ -174,7 +177,7 @@ class _UserDashboardState extends State<UserDashboard> {
               context: (context),
               builder: (context) => Center(child: CircularLoadingIndicator()),
               barrierDismissible: false);
-          logoutUser(bankAccountBloc);
+          logoutUser();
         },
       ),
     );
@@ -381,14 +384,14 @@ class _UserDashboardState extends State<UserDashboard> {
         ),
         Expanded(
             child: UserDashboardItemTile(
-              icon: SlydoAppIcon.translation,
-              title: "Language",
-              onTap: () {
-                // changeLanguage();
-                changeLanguageBottomSheet();
-              },
-              iconColor: HexColor("#5218E9"),
-            )),
+          icon: SlydoAppIcon.translation,
+          title: "Language",
+          onTap: () {
+            // changeLanguage();
+            changeLanguageBottomSheet();
+          },
+          iconColor: HexColor("#5218E9"),
+        )),
         SizedBox(
           width: 12,
         ),
@@ -401,8 +404,7 @@ class _UserDashboardState extends State<UserDashboard> {
         //   },
         //   iconColor: HexColor("#374677"),
         // )),
-      Expanded(child: Container()),
-
+        Expanded(child: Container()),
       ],
     );
   }
@@ -491,7 +493,7 @@ class _UserDashboardState extends State<UserDashboard> {
           );
   }
 
-  void logoutUser(BankAccountBloc bankAccountBloc) async {
+  void logoutUser() async {
     emptyBasketCart();
     SharedPreferences _sharedPreferences;
 
@@ -500,6 +502,7 @@ class _UserDashboardState extends State<UserDashboard> {
     await _auth.logOut();
 
     CacheManager().deleteCache(clearAll: true);
+    socketProvider.close();
 
     bankAccountBloc.bankAccount = BankAccount();
     dashboardBloc.index = 0;

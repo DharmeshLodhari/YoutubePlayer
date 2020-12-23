@@ -1,5 +1,5 @@
+import 'dart:async';
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
@@ -15,7 +15,6 @@ import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/status.dart' as status;
-import 'package:Slydo/services/auth.dart';
 
 class ChatScreen extends StatefulWidget {
   final arguments;
@@ -35,13 +34,18 @@ class _ChatScreenState extends State<ChatScreen> {
 
   List<String> messageList = [];
   IOWebSocketChannel channel;
-  String socketUrl = "wss://slydo.co/ws/chat/89815ef4-0442-4073-b7b6-3fd10ab516be/";
+  String socketUrl = "wss://slydo.co/ws/chat";
 
   ScrollController messageScrollController;
   bool fabIsVisible = false;
 
   bool isConnected = false;
+  Timer _timerForRetryConnection;
   Duration connectionRetryDuration = Duration(seconds: 2);
+
+  Timer _timerForUserTypingState;
+  Duration userMessageTypingStateUpdateTime = Duration(seconds: 2);
+  bool isRecipientTyping = false;
 
   @override
   void initState() {
@@ -52,32 +56,94 @@ class _ChatScreenState extends State<ChatScreen> {
 
     setupScrollController();
 
+    messageController.addListener(sendUserTypingState);
+
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _timerForUserTypingState?.cancel();
+    _timerForRetryConnection?.cancel();
+    messageController.removeListener(sendUserTypingState);
+    messageController.dispose();
+
+    try {
+      channel.sink.close(status.goingAway);
+      debugPrint("Socket Connection close for $socketUrl");
+    } catch (e) {
+      debugPrint("ERROR:- to close Socket Connection");
+    }
+    super.dispose();
   }
 
   Future<void> connectSocket() async {
     /// change socket url according to recipient user url
-    // socketUrl = "wss://slydo.co/chat/${recipientUser.userName}";
+    var finalUrl = "$socketUrl/${recipientUser.conversationId}/";
+
+    // Set auth headers or socket will be closed
+    var headers = await MessageAuth().getAuthHeaders();
 
     /// for connecting the socket
     try {
-      // Set auth headers or socket will be closed
-      var headers = await MessageAuth().getAuthHeaders();
-      channel = IOWebSocketChannel.connect(socketUrl, headers: headers);
+      channel = IOWebSocketChannel.connect(finalUrl, headers: headers);
+      debugPrint("connected to $finalUrl ");
+      isConnected = true;
     } catch (e) {
-      debugPrint("Error to connect Web Socket !!!! ${channel.closeCode}");
-      Future.delayed(connectionRetryDuration).then((value) => connectSocket());
+      debugPrint("Error to connect Web Socket !!!! ");
+      reconnectSocket();
     }
-
-    debugPrint("connected to $socketUrl ");
-    isConnected = true;
 
     /// for listening message in the Socket
     if (isConnected) {
       debugPrint("Listener called!!");
       channel.stream.listen((message) {
+        /// listen every message from the socket
+
         debugPrint("Got Message:- $message");
         determineMessageType(message);
+      }).onError((error) {
+        /// if there is any error while listing the socket
+
+        isConnected = false;
+        debugPrint("ERROR:- While listening the Socket $error");
+        reconnectSocket();
+      });
+    }
+  }
+
+  void reconnectSocket() {
+    if (mounted) {
+      if (isConnected) {
+        _timerForRetryConnection?.cancel();
+      }
+      if (_timerForRetryConnection?.isActive ?? false) {
+        _timerForRetryConnection.cancel();
+      }
+
+      _timerForRetryConnection = Timer(connectionRetryDuration, () {
+        if (!isConnected) {
+          debugPrint("Trying to reconnect !!");
+          connectSocket();
+        } else {
+          _timerForRetryConnection.cancel();
+        }
+      });
+    }
+  }
+
+  void sendUserTypingState() {
+    if (_timerForUserTypingState?.isActive ?? true) {
+      userTyping();
+    }
+    if (messageController.text != "") {
+      if (_timerForUserTypingState?.isActive ?? false) {
+        _timerForUserTypingState.cancel();
+      }
+
+      _timerForUserTypingState = Timer(userMessageTypingStateUpdateTime, () {
+        // userTyping();
+        sendUserTypingState();
       });
     }
   }
@@ -104,49 +170,77 @@ class _ChatScreenState extends State<ChatScreen> {
         fabIsVisible = false;
       }
 
-      setState(() {});
+      if (mounted) setState(() {});
     });
   }
 
-  void fetchPreviousMessages() {
+  void fetchPreviousMessages() async {
     debugPrint("Fetching previous messages !!");
+
+    var headers = await MessageAuth().getAuthHeaders();
     List<String> previousMessages = List.generate(
         8,
         (index) => jsonEncode({
-              "sender": "black",
-              "recipient": "pankaj.sakariya",
-              "body": "test $index",
-              "type": "message",
-              "isSent": Random().nextBool()
+              "username": userBloc.user.userName,
+              "recipient": recipientUser.userName.trim(),
+              "message": "Previous $index",
+              "type": "chatroom_message",
+              "headers": headers,
             }));
 
     messageList.insertAll(0, previousMessages);
-    setState(() {});
+    if (mounted) setState(() {});
   }
 
-  void determineMessageType(String message) {
-    messageList.add(message);
-    setState(() {});
-    if (MediaQuery.of(context).viewInsets.bottom != 0) {
-      scrollToBottom();
+  void determineMessageType(String message) async {
+    Map<String, dynamic> messageData = jsonDecode(message);
+
+    switch (messageData['type']) {
+      case "chatroom_message":
+        messageList.add(message);
+
+        if (MediaQuery.of(context).viewInsets.bottom != 0) scrollToBottom();
+        if (mounted) setState(() {});
+
+        break;
+
+      case "user_typing_message":
+        if (messageData['username'] != userBloc.user.userName) {
+          isRecipientTyping = true;
+          if (mounted) setState(() {});
+
+          Future.delayed(Duration(seconds: 1)).then((value) {
+            isRecipientTyping = false;
+            if (mounted) setState(() {});
+          });
+        }
+
+        break;
+
+      default:
+        debugPrint("Message type:- ${messageData['type'] ?? messageData}");
     }
+  }
+
+  void userTyping() async {
+    var headers = await MessageAuth().getAuthHeaders();
+
+    var data = {
+      "username": userBloc.user.userName,
+      "recipient": recipientUser.userName.trim(),
+      "message": "",
+      // "type": "chatroom_message",
+      "type": "user_typing_message",
+      "headers": headers,
+    };
+
+    channel.sink.add(jsonEncode(data));
   }
 
   void scrollToBottom() {
     messageScrollController.animateTo(0.0,
         duration: Duration(microseconds: 100),
         curve: Curves.fastLinearToSlowEaseIn);
-  }
-
-  @override
-  void dispose() {
-    try {
-      channel.sink.close(status.goingAway);
-      debugPrint("Socket Connection close for $socketUrl");
-    } catch (e) {
-      debugPrint("ERROR:- to close Socket Connection");
-    }
-    super.dispose();
   }
 
   @override
@@ -219,7 +313,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   maxLines: 1,
                 ),
                 Text(
-                  "Online",
+                  isRecipientTyping ? "Typing.." : "Online",
                   style: TextStyle(
                     color: darkGrey,
                     fontSize: 12,
@@ -496,25 +590,16 @@ class _ChatScreenState extends State<ChatScreen> {
       "recipient": recipientUser.userName.trim(),
       "message": message,
       "type": "chatroom_message",
-      // "isSent": Random().nextBool(),
       "headers": headers,
     };
 
-    MessageAuth().sendSocketMessage(data).then((value) {
-      if (value) {
-        messageController.text = "";
-        try {
-
-          data["headers"] = headers;
-          channel.sink.add(jsonEncode(data));
-        } catch (e) {
-          debugPrint("error $e");
-        }
-        setState(() {});
-      }
-    });
-
-
+    messageController.text = "";
+    try {
+      channel.sink.add(jsonEncode(data));
+    } catch (e) {
+      debugPrint("error $e");
+    }
+    setState(() {});
   }
 
   Widget scaffoldBody() {
@@ -522,26 +607,42 @@ class _ChatScreenState extends State<ChatScreen> {
       child: Column(
         children: [
           Expanded(
-            child: Theme(
-              data: ThemeData(highlightColor: navyBlue),
-              child: Scrollbar(
-                controller: messageScrollController,
-                radius: Radius.circular(10),
-                thickness: 3,
-                child: SingleChildScrollView(
-                  reverse: true,
-                  controller: messageScrollController,
-                  child: Column(
-                    children: messageList
-                        .map((message) => Container(
-                              child: renderDataAccordingType(message),
-                              padding:
-                                  EdgeInsets.only(left: 8, right: 8, bottom: 8),
-                            ))
-                        .toList(),
+            child: Stack(
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Flexible(
+                      child: Image.asset(
+                        "assets/images/index_screen.png",
+                        width: MediaQuery.of(context).size.width,
+                        fit: BoxFit.fitWidth,
+                      ),
+                    ),
+                  ],
+                ),
+                Theme(
+                  data: ThemeData(highlightColor: navyBlue),
+                  child: Scrollbar(
+                    controller: messageScrollController,
+                    radius: Radius.circular(10),
+                    thickness: 3,
+                    child: SingleChildScrollView(
+                      reverse: true,
+                      controller: messageScrollController,
+                      child: Column(
+                        children: messageList
+                            .map((message) => Container(
+                                  child: renderDataAccordingType(message),
+                                  padding: EdgeInsets.only(
+                                      left: 8, right: 8, bottom: 8),
+                                ))
+                            .toList(),
+                      ),
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
           ),
           messageActionBar()
@@ -551,38 +652,35 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget renderMessage({Map<String, dynamic> message}) {
-    bool isSend = false;
-    // if message["username"] == userBloc.user.userName {
-    //   isSend = false;
-    //
-    // }
+    bool isSend = message["username"] == userBloc.user.userName;
     return Row(
       mainAxisAlignment:
           isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
       children: [
-        Expanded(
-          child: Padding(
-            padding:
-                EdgeInsets.only(left: isSend ? 30 : 0, right: !isSend ? 30 : 0),
-            child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                decoration: BoxDecoration(
-                  color: isSend ? navyBlue : chatBackgroundColor,
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(!isSend ? 0 : 10),
-                    bottomRight: Radius.circular(isSend ? 0 : 10),
-                    topLeft: Radius.circular(10),
-                    topRight: Radius.circular(10),
-                  ),
+        Padding(
+          padding:
+              EdgeInsets.only(left: isSend ? 30 : 0, right: !isSend ? 30 : 0),
+          child: Container(
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.8,
+              ),
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: isSend ? navyBlue : chatBackgroundColor,
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(!isSend ? 0 : 10),
+                  bottomRight: Radius.circular(isSend ? 0 : 10),
+                  topLeft: Radius.circular(10),
+                  topRight: Radius.circular(10),
                 ),
-                child: Text(
-                  message['message'],
-                  style: TextStyle(
-                      color: isSend ? Colors.white : blackFont,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500),
-                )),
-          ),
+              ),
+              child: Text(
+                message['message'],
+                style: TextStyle(
+                    color: isSend ? Colors.white : blackFont,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500),
+              )),
         )
       ],
     );

@@ -43,15 +43,15 @@ class User {
 
   // Pass in as named parameter in constructor
   User({
-    this.uuid,
-    this.url,
-    this.phoneNumber,
-    this.fullName,
-    this.userName,
-    this.type,
-    this.avatar,
-    this.qrCode,
-    this.password,
+    this.uuid = "",
+    this.url = "",
+    this.phoneNumber = "",
+    this.fullName = "",
+    this.userName = "",
+    this.type = "",
+    this.avatar = "",
+    this.qrCode = "",
+    this.password = "",
     this.currency = "₦",
     this.isVerified = false,
     this.conversationId = "",
@@ -132,6 +132,8 @@ class CustomerProfile {
   String avatar;
   String qrCode;
   String type;
+  String conversationId;
+  UserStatus status;
 
   // Pass in as named parameter in constructor
   CustomerProfile({
@@ -140,6 +142,8 @@ class CustomerProfile {
     this.avatar,
     this.qrCode,
     this.type = "user",
+    this.conversationId = "89815ef4-0442-4073-b7b6-3fd10ab516be",
+    this.status = UserStatus.UNKNOWN,
   });
 
   CustomerProfile.map(dynamic obj) {
@@ -148,6 +152,9 @@ class CustomerProfile {
     this.avatar = obj["avatar"];
     this.qrCode = obj["qrCode"];
     this.type = obj['type'] ?? 'user';
+    this.conversationId =
+        obj['conversation_id'] ?? "89815ef4-0442-4073-b7b6-3fd10ab516be";
+    this.status = obj['status'] ?? UserStatus.UNKNOWN;
   }
 
   Map<String, dynamic> toMap() {
@@ -157,6 +164,8 @@ class CustomerProfile {
     map["avatar"] = avatar;
     map["qrCode"] = qrCode;
     map["type"] = type;
+    map["conversation_id"] = conversationId;
+    map["status"] = status;
     return map;
   }
 }
