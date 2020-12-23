@@ -15,6 +15,7 @@ import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/status.dart' as status;
+import 'package:Slydo/services/auth.dart';
 
 class ChatScreen extends StatefulWidget {
   final arguments;
@@ -34,7 +35,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   List<String> messageList = [];
   IOWebSocketChannel channel;
-  String socketUrl = "wss://echo.websocket.org";
+  String socketUrl = "wss://slydo.co/ws/chat/89815ef4-0442-4073-b7b6-3fd10ab516be/";
 
   ScrollController messageScrollController;
   bool fabIsVisible = false;
@@ -54,13 +55,15 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
   }
 
-  void connectSocket() {
+  Future<void> connectSocket() async {
     /// change socket url according to recipient user url
     // socketUrl = "wss://slydo.co/chat/${recipientUser.userName}";
 
     /// for connecting the socket
     try {
-      channel = IOWebSocketChannel.connect(socketUrl);
+      // Set auth headers or socket will be closed
+      var headers = await MessageAuth().getAuthHeaders();
+      channel = IOWebSocketChannel.connect(socketUrl, headers: headers);
     } catch (e) {
       debugPrint("Error to connect Web Socket !!!! ${channel.closeCode}");
       Future.delayed(connectionRetryDuration).then((value) => connectSocket());
@@ -481,18 +484,28 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void sendMessage() async {
+    var headers = await MessageAuth().getAuthHeaders();
+    String message = messageController.text.trim();
+
+    if (message.isEmpty) {
+      return;
+    }
+
     var data = {
-      "sender": userBloc.user.userName,
+      "username": userBloc.user.userName,
       "recipient": recipientUser.userName.trim(),
-      "body": messageController.text.trim(),
-      "type": "message",
-      "isSent": Random().nextBool()
+      "message": message,
+      "type": "chatroom_message",
+      // "isSent": Random().nextBool(),
+      "headers": headers,
     };
 
     MessageAuth().sendSocketMessage(data).then((value) {
       if (value) {
         messageController.text = "";
         try {
+
+          data["headers"] = headers;
           channel.sink.add(jsonEncode(data));
         } catch (e) {
           debugPrint("error $e");
@@ -500,6 +513,8 @@ class _ChatScreenState extends State<ChatScreen> {
         setState(() {});
       }
     });
+
+
   }
 
   Widget scaffoldBody() {
@@ -536,7 +551,11 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget renderMessage({Map<String, dynamic> message}) {
-    bool isSend = message["isSent"];
+    bool isSend = false;
+    // if message["username"] == userBloc.user.userName {
+    //   isSend = false;
+    //
+    // }
     return Row(
       mainAxisAlignment:
           isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
@@ -557,7 +576,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                 ),
                 child: Text(
-                  message['body'],
+                  message['message'],
                   style: TextStyle(
                       color: isSend ? Colors.white : blackFont,
                       fontSize: 16,
