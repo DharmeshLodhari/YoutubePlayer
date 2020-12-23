@@ -164,6 +164,22 @@ class AuthService {
     return headers;
   }
 
+  Future<String> getAuthHeadersToken() async {
+    var tokenData = await _db.getJwt();
+    String expirationTime = tokenData['expiration'];
+
+    // Authenticate again if token has expired
+    if (hasTokenExpired(expirationTime)) {
+      debugPrint("Token Expired getting new one");
+      User _user = await getUser();
+      await authenticate(_user.phoneNumber, _user.password);
+      tokenData = await _db.getJwt(); // get new token now
+    }
+
+    String token = tokenData["access"];
+    return token;
+  }
+
   // Delete JWT from db
   Future<int> deleteJwt() async {
     return await _db.deleteJwt();
