@@ -141,10 +141,12 @@ class _ConnectionListState extends State<ConnectionList> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
+
         List tempList = result['results'];
         List<CustomerProfile> convertedIntoUserList = List<CustomerProfile>();
         tempList.forEach((element) {
           CustomerProfile user = CustomerProfile();
+          user.conversationId = element["conversation_id"] ?? "";
           user.fullName = element["full_name"] ?? "";
           user.userName = element["username"] ?? "";
           user.avatar = element["avatar"] ?? "";

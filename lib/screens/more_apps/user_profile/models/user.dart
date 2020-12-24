@@ -142,7 +142,7 @@ class CustomerProfile {
     this.avatar,
     this.qrCode,
     this.type = "user",
-    this.conversationId = "89815ef4-0442-4073-b7b6-3fd10ab516be",
+    this.conversationId = "",
     this.status = UserStatus.UNKNOWN,
   });
 
@@ -153,7 +153,7 @@ class CustomerProfile {
     this.qrCode = obj["qrCode"];
     this.type = obj['type'] ?? 'user';
     this.conversationId =
-        obj['conversation_id'] ?? "89815ef4-0442-4073-b7b6-3fd10ab516be";
+        obj['conversation_id'] ?? "";
     this.status = obj['status'] ?? UserStatus.UNKNOWN;
   }
 
