@@ -7,11 +7,14 @@ import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/status.dart' as status;
@@ -41,11 +44,18 @@ class _ChatScreenState extends State<ChatScreen> {
 
   bool isConnected = false;
   Timer _timerForRetryConnection;
+  int numberOfRetry = 30;
+  int countRetry = 0;
   Duration connectionRetryDuration = Duration(seconds: 2);
 
   Timer _timerForUserTypingState;
   Duration userMessageTypingStateUpdateTime = Duration(seconds: 2);
   bool isRecipientTyping = false;
+
+  bool isLoading = false;
+  int count = 0;
+  String next = "";
+  String previous = "";
 
   @override
   void initState() {
@@ -121,14 +131,22 @@ class _ChatScreenState extends State<ChatScreen> {
         _timerForRetryConnection.cancel();
       }
 
-      _timerForRetryConnection = Timer(connectionRetryDuration, () {
-        if (!isConnected) {
-          debugPrint("Trying to reconnect !!");
-          connectSocket();
-        } else {
-          _timerForRetryConnection.cancel();
-        }
-      });
+      /// for reconnection the socket as define
+
+      if (countRetry < numberOfRetry) {
+        _timerForRetryConnection = Timer(connectionRetryDuration, () {
+          if (!isConnected) {
+            countRetry++;
+            debugPrint("Trying to reconnect $countRetry!! ");
+
+            connectSocket();
+          } else {
+            _timerForRetryConnection.cancel();
+          }
+        });
+      } else {
+        _timerForRetryConnection?.cancel();
+      }
     }
   }
 
@@ -176,20 +194,34 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void fetchPreviousMessages() async {
     debugPrint("Fetching previous messages !!");
-
-    var headers = await MessageAuth().getAuthHeaders();
-    List<String> previousMessages = List.generate(
-        8,
-        (index) => jsonEncode({
-              "username": userBloc.user.userName,
-              "recipient": recipientUser.userName.trim(),
-              "message": "Previous $index",
-              "type": "chatroom_message",
-              "headers": headers,
-            }));
-
-    messageList.insertAll(0, previousMessages);
-    if (mounted) setState(() {});
+    if (!isLoading) {
+      if (next != null && !isLoading) {
+        if (mounted) {
+          isLoading = true;
+          setState(() {});
+        }
+        Map<String, dynamic> result = await MessageAuth().getChatMessages(
+            next, previous,
+            conversionId: recipientUser.conversationId);
+        count = result['count'];
+        next = result['next'];
+        previous = result['previous'];
+        var tempList = result['results'];
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+            messageList.insertAll(0, tempList);
+            if (mounted) setState(() {});
+          });
+        }
+      }
+      if (messageList.isEmpty) {
+        if (mounted) {
+          /// set flag if chat is empty
+          setState(() {});
+        }
+      }
+    }
   }
 
   void determineMessageType(String message) async {
@@ -378,7 +410,7 @@ class _ChatScreenState extends State<ChatScreen> {
         child: Row(
           children: <Widget>[
             MediaQuery.of(context).viewInsets.bottom != 0
-                ? Container()
+                ? addMediaButton()
                 : Row(
                     children: [
                       requestMoneyBtn(),
@@ -517,6 +549,78 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  Widget addMediaButton() {
+    return InkWell(
+      onTap: addMediaToMessage,
+      child: Container(
+        padding: EdgeInsets.all(2),
+        child: Row(
+          children: [
+            Icon(
+              SlydoAppIcon.add_image,
+              color: navyBlue,
+              size: 22,
+            ),
+            SizedBox(
+              width: 12,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void addMediaToMessage() async {
+    ImageSource imageSource = await selectMediaSource();
+    if (imageSource == null) return;
+  }
+
+  Future<ImageSource> selectMediaSource() async {
+    if (FocusScope.of(context).hasFocus) {
+      FocusScope.of(context).unfocus();
+    }
+
+    var source = await showModalBottomSheet<ImageSource>(
+        backgroundColor: Colors.transparent,
+        context: context,
+        builder: (BuildContext context) {
+          return Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20)),
+              ),
+              color: Colors.white,
+              margin: EdgeInsets.zero,
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    bottomSheetItem(
+                      title: "Camera",
+                      icon: Icons.camera_alt_rounded,
+                      iconSize: 18,
+                      onTap: () {
+                        Navigator.pop(context, ImageSource.camera);
+                      },
+                    ),
+                    bottomSheetItem(
+                      title: "Gallery",
+                      icon: SlydoAppIcon.image,
+                      isLast: true,
+                      onTap: () {
+                        Navigator.pop(context, ImageSource.gallery);
+                      },
+                    ),
+                  ],
+                ),
+              ));
+        });
+
+    return source;
+  }
+
   Widget sendMessageBtn() {
     return InkWell(
       onTap: sendMessage,
@@ -651,8 +755,39 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  Widget messageListBuilder() {
+    return ListView.builder(
+      reverse: true, controller: messageScrollController,
+      padding: EdgeInsets.symmetric(vertical: 4),
+      //+1 for progressbar
+      itemCount: messageList.length + 1,
+      itemBuilder: (BuildContext context, int index) {
+        if (index == messageList.length) {
+          return _buildIndicator();
+        } else {
+          return Container(
+            child: renderDataAccordingType(messageList[index]),
+            padding: EdgeInsets.only(left: 8, right: 8, bottom: 8),
+          );
+        }
+      },
+    );
+  }
+
+  Widget _buildIndicator() {
+    return new Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: new Center(
+        child: new Opacity(
+          opacity: isLoading ? 1.0 : 00,
+          child: CircularLoadingIndicator(),
+        ),
+      ),
+    );
+  }
+
   Widget renderMessage({Map<String, dynamic> message}) {
-    bool isSend = message["username"] == userBloc.user.userName;
+    bool isSend = message["author"] == userBloc.user.userName;
     return Row(
       mainAxisAlignment:
           isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
@@ -675,7 +810,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
               ),
               child: Text(
-                message['message'],
+                message['text'],
                 style: TextStyle(
                     color: isSend ? Colors.white : blackFont,
                     fontSize: 16,

@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/services/auth.dart';
@@ -6,7 +9,6 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
-import 'package:Slydo/widget/dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
@@ -26,9 +28,14 @@ class _HomeState extends State<Home> {
   AuthService _auth = AuthService();
   UserBloc userBloc;
 
+  SocketProvider socketProvider;
+
+  bool hasMessage = true;
+
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+    socketProvider = Provider.of<SocketProvider>(context);
 
     return Scaffold(
       key: _scaffoldHomeKey,
@@ -118,31 +125,73 @@ class _HomeState extends State<Home> {
           width: 8.0,
         ),
         messageBtn(),
+        SizedBox(
+          width: 4.0,
+        ),
       ],
     );
   }
 
   Widget chatBtn() {
-    return SizedBox(
-      height: 34,
-      width: 34,
-      child: InkWell(
-        child: Card(
-          elevation: 0,
-          color: lightGrey.withOpacity(0.1),
-          margin: EdgeInsets.symmetric(vertical: 10),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Icon(
-            SlydoAppIcon.text_message,
-            size: 16,
-          ),
+    return Stack(
+      overflow: Overflow.visible,
+      children: [
+        Column(
+          children: [
+            Expanded(
+              child: SizedBox(
+                height: 34,
+                width: 34,
+                child: InkWell(
+                  child: Card(
+                    elevation: 0,
+                    color: lightGrey.withOpacity(0.1),
+                    margin: EdgeInsets.symmetric(vertical: 10),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      SlydoAppIcon.text_message,
+                      size: 16,
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.of(context).pushNamed('/friends-dashboard');
+                  },
+                ),
+              ),
+            ),
+          ],
         ),
-        onTap: () {
-          Navigator.of(context).pushNamed('/friends-dashboard');
-        },
-      ),
+        StreamBuilder<dynamic>(
+            stream: null,
+            initialData: null,
+            builder: (context, snapshot) {
+              if (snapshot?.error == false) {
+                debugPrint("ERROR:- ${snapshot.error}");
+                return Container();
+              }
+              if (snapshot.hasData) {
+                debugPrint("Got Message:- ${snapshot.data}");
+                Map<String, dynamic> message = jsonDecode(snapshot.data);
+                if (message["hasMessage"]) {
+                  return Positioned(
+                    top: 8,
+                    right: -2,
+                    child: ClipOval(
+                      child: Container(
+                        height: 8,
+                        width: 8,
+                        color: mateRed,
+                      ),
+                    ),
+                  );
+                }
+                return Container();
+              }
+              return Container();
+            })
+      ],
     );
   }
 
@@ -264,7 +313,10 @@ class _HomeState extends State<Home> {
         ),
       ),
       onTap: () {
-        showSwipeHintCard(context: context);
+        socketProvider.add({"hasMessage": hasMessage});
+        hasMessage = !hasMessage;
+
+        // showSwipeHintCard(context: context);
         // showHoldHintCard(context: context);
       },
     );
@@ -338,10 +390,10 @@ class _HomeState extends State<Home> {
           ],
         ),
         onTap: () {
-          Navigator.of(context).pushNamed('/request-payment',
-              arguments: <String, bool>{
-                'isFromProfile': true,
-              });
+          Navigator.of(context)
+              .pushNamed('/request-payment', arguments: <String, bool>{
+            'isFromProfile': true,
+          });
         },
       ),
     );

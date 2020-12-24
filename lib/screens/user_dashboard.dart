@@ -14,11 +14,11 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:Slydo/widget/passcodePopup.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/user_dashboard_item_tile.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -433,64 +433,6 @@ class _UserDashboardState extends State<UserDashboard> {
         ],
       ),
     );
-  }
-
-  Widget myStore() {
-    return Stack(
-      children: <Widget>[
-        iconButton(
-          Icons.store_mall_directory,
-          AppLocalization.of(context).myStore,
-          () {
-            if (!storeLocked) {
-              Platform.isIOS ? storeItemIOSSheet() : storeItemAndroidSheet();
-            }
-          },
-        ),
-        storeLocked
-            ? Positioned(
-                child: GestureDetector(
-                  child: Icon(
-                    Icons.lock_outline,
-                    size: 18,
-                    color: Colors.grey,
-                  ),
-                  onTap: () {},
-                ),
-                right: 8,
-                top: 8,
-              )
-            : Container()
-      ],
-    );
-  }
-
-  Widget displayUserAvatar() {
-    return isLoading
-        ? Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Center(
-              child: CircularLoadingIndicator(),
-            ),
-          )
-        : Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: GestureDetector(
-              child: ClipOval(
-                child: CachedNetworkImage(
-                  imageUrl: userBloc.user.avatar,
-                  height: 40,
-                  width: 40,
-                  colorBlendMode: BlendMode.darken,
-                  fit: BoxFit.cover,
-                  filterQuality: FilterQuality.high,
-                  placeholder: (context, url) => userBloc.user.avatar == ""
-                      ? Icon(Icons.person)
-                      : CircularLoadingIndicator(),
-                ),
-              ),
-            ),
-          );
   }
 
   void logoutUser() async {
@@ -1068,39 +1010,7 @@ class _UserDashboardState extends State<UserDashboard> {
         });
   }
 
-  Widget bottomSheetItem(
-      {Function onTap, IconData icon, String title, bool isLast = false}) {
-    return InkWell(
-      child: Container(
-        width: double.infinity,
-        child: Padding(
-          padding: EdgeInsets.only(bottom: isLast ? 0 : 10),
-          child: Row(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              RoundedBackgroundIcon(
-                icon: Icon(
-                  icon,
-                  size: 14,
-                ),
-                backgroundColor: lightGrey,
-                width: 32,
-                height: 32,
-              ),
-              SizedBox(
-                width: 16,
-              ),
-              Text(
-                title,
-                style: TextStyle(fontSize: 16, color: blackFont),
-              )
-            ],
-          ),
-        ),
-      ),
-      onTap: onTap,
-    );
-  }
+
 
   Widget bottomSheetItemWithCheck(
       {Function onTap,

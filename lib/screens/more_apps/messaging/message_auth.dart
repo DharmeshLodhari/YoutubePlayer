@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:Slydo/screens/more_apps/messaging/models/message.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class MessageAuth extends AuthService {
@@ -139,5 +140,66 @@ class MessageAuth extends AuthService {
     } else {
       throw json.decode(response.body);
     }
+  }
+
+  // List messages filters: [archived,sent,starred,all]
+  Future<Map<String, dynamic>> getChatMessages(String next, String previous,
+      {String conversionId}) async {
+    var url = "";
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      url = secureBaseUrl + "/api/v1/chat/messages/" + conversionId + "/";
+      debugPrint("$url");
+    } else {
+      url = next;
+    }
+    var headers = await getAuthHeaders();
+
+    var response = await http.get(url, headers: headers);
+
+    debugPrint("response status code:- ${response.statusCode}");
+    debugPrint("response body:- ${response.body}");
+
+    // if (response.statusCode == 200) {
+    List<String> previousMessages = [];
+    // var jsonData = json.decode(response.body);
+    // for (var item in jsonData["results"]) {
+    // }
+
+    previousMessages = List.generate(
+        8,
+        (index) => jsonEncode({
+              "id": "8770286d-e3b6-46ee-8414-0c408fc91067",
+              "conversation": "89815ef4-0442-4073-b7b6-3fd10ab516be",
+              "author": "black",
+              "text": "q",
+              "is_read": false,
+              "was_edited": false,
+              "media": null,
+              "updated_at": "2020-12-24T13:34:37.046942+01:00",
+              "created_at": "2020-12-24T13:34:37.046964+01:00",
+              "type": "chatroom_message"
+            }));
+
+    // Map<String, dynamic> result = {
+    //   "count": jsonData["count"],
+    //   "next": jsonData["next"],
+    //   "previous": jsonData["previous"],
+    //   "results": previousMessages
+    // };
+    Map<String, dynamic> result = {
+      "count": 10,
+      "next": "",
+      "previous": "",
+      "results": previousMessages
+    };
+    return result;
+    // } else if (response.statusCode == 500) {
+    //   throw "Server Error";
+    // } else {
+    //   throw json.decode(response.body);
+    // }
   }
 }

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -21,6 +22,10 @@ class SocketProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  StreamController _streamController = StreamController.broadcast();
+
+  Stream get socketStream => _streamController.stream;
+
   IOWebSocketChannel get channel => _channel;
 
   /// for connecting the user socket
@@ -30,14 +35,11 @@ class SocketProvider extends ChangeNotifier {
       _channel = IOWebSocketChannel.connect(_socketUrl);
       debugPrint(
           "WebSocket Connected to $_socketUrl for user ${currentUser.userName}");
-
-      _channel.stream.listen((event) {
-        debugPrint("Data from user socket:- $event");
-      });
     } catch (e) {
       debugPrint(
           "ERROR:- While connecting WebSocket for user ${currentUser.userName}");
     }
+
     notifyListeners();
   }
 
@@ -60,6 +62,7 @@ class SocketProvider extends ChangeNotifier {
 
   void close() {
     _channel.sink.close();
+    _streamController.close();
     _channel = null;
     debugPrint(
         "WebSocket disconnected to $_socketUrl for user ${currentUser.userName}");
