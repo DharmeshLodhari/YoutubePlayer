@@ -64,6 +64,7 @@ dependencies:
   quiver: ^2.1.5
   camera: ^0.5.8+17
   web_socket_channel: ^1.1.0
+  photo_view: ^0.10.3
 
 
 

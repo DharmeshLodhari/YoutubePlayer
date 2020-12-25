@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
@@ -68,6 +69,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
     messageController.addListener(sendUserTypingState);
 
+    fetchPreviousMessages();
+
     super.initState();
   }
 
@@ -88,6 +91,8 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<void> connectSocket() async {
+    isConnected = false;
+
     /// change socket url according to recipient user url
     var finalUrl = "$socketUrl/${recipientUser.conversationId}/";
 
@@ -172,19 +177,20 @@ class _ChatScreenState extends State<ChatScreen> {
     messageScrollController.addListener(() {
       /// when scroll view is at top
       if (messageScrollController.position.pixels ==
-          messageScrollController.position.maxScrollExtent) {
-        fetchPreviousMessages();
-      }
+          messageScrollController.position.maxScrollExtent) {}
 
       /// when scroll view is at last
       if (messageScrollController.position.pixels ==
-          messageScrollController.position.minScrollExtent) {}
+          messageScrollController.position.minScrollExtent) {
+        fetchPreviousMessages();
+      }
 
       /// for floating button to show scroll to bottom
 
       fabIsVisible = messageScrollController.position.userScrollDirection ==
-          ScrollDirection.forward;
-      if (messageScrollController.position.pixels == 0.0) {
+          ScrollDirection.reverse;
+      if (messageScrollController.position.pixels ==
+          messageScrollController.position.maxScrollExtent) {
         fabIsVisible = false;
       }
 
@@ -206,12 +212,23 @@ class _ChatScreenState extends State<ChatScreen> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        var tempList = result['results'];
+        List<String> tempList = result['results'];
         if (mounted) {
           setState(() {
             isLoading = false;
-            messageList.insertAll(0, tempList);
+            bool isFirstTime;
+            if (messageList.isEmpty) {
+              isFirstTime = true;
+            } else {
+              isFirstTime = false;
+            }
+
+            messageList.insertAll(0, tempList.reversed);
+
             if (mounted) setState(() {});
+            Future.delayed(Duration(milliseconds: 100)).then((value) {
+              if (isFirstTime) scrollToBottom();
+            });
           });
         }
       }
@@ -270,7 +287,8 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void scrollToBottom() {
-    messageScrollController.animateTo(0.0,
+    messageScrollController.animateTo(
+        messageScrollController.position.maxScrollExtent,
         duration: Duration(microseconds: 100),
         curve: Curves.fastLinearToSlowEaseIn);
   }
@@ -573,6 +591,30 @@ class _ChatScreenState extends State<ChatScreen> {
   void addMediaToMessage() async {
     ImageSource imageSource = await selectMediaSource();
     if (imageSource == null) return;
+
+    PickedFile media = await ImagePicker().getImage(source: imageSource);
+
+    if (media == null) return;
+
+    var result = await Navigator.of(context).pushNamed(
+      "/send-media-to-chat-message",
+      arguments: {
+        "data": {
+          "username": userBloc.user.userName,
+          "recipient": recipientUser.userName.trim(),
+          "type": "chatroom_message",
+        },
+        "media": File(media.path),
+        "message": messageController.text.trim(),
+      },
+    ).catchError((error) {
+      debugPrint("Error: = = = = $error");
+    });
+
+    if (result == null) return;
+
+    messageController.text = "";
+    debugPrint("Result:- $result");
   }
 
   Future<ImageSource> selectMediaSource() async {
@@ -697,9 +739,9 @@ class _ChatScreenState extends State<ChatScreen> {
       "headers": headers,
     };
 
-    messageController.text = "";
     try {
       channel.sink.add(jsonEncode(data));
+      messageController.text = "";
     } catch (e) {
       debugPrint("error $e");
     }
@@ -731,19 +773,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     controller: messageScrollController,
                     radius: Radius.circular(10),
                     thickness: 3,
-                    child: SingleChildScrollView(
-                      reverse: true,
-                      controller: messageScrollController,
-                      child: Column(
-                        children: messageList
-                            .map((message) => Container(
-                                  child: renderDataAccordingType(message),
-                                  padding: EdgeInsets.only(
-                                      left: 8, right: 8, bottom: 8),
-                                ))
-                            .toList(),
-                      ),
-                    ),
+                    child: messageListBuilder(),
                   ),
                 ),
               ],
@@ -757,16 +787,16 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget messageListBuilder() {
     return ListView.builder(
-      reverse: true, controller: messageScrollController,
+      controller: messageScrollController,
       padding: EdgeInsets.symmetric(vertical: 4),
       //+1 for progressbar
       itemCount: messageList.length + 1,
       itemBuilder: (BuildContext context, int index) {
-        if (index == messageList.length) {
+        if (index == 0) {
           return _buildIndicator();
         } else {
           return Container(
-            child: renderDataAccordingType(messageList[index]),
+            child: renderDataAccordingType(messageList[index - 1]),
             padding: EdgeInsets.only(left: 8, right: 8, bottom: 8),
           );
         }
@@ -775,15 +805,17 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _buildIndicator() {
-    return new Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
-          opacity: isLoading ? 1.0 : 00,
-          child: CircularLoadingIndicator(),
-        ),
-      ),
-    );
+    return isLoading
+        ? Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: new Center(
+              child: new Opacity(
+                opacity: isLoading ? 1.0 : 00,
+                child: CircularLoadingIndicator(),
+              ),
+            ),
+          )
+        : Container();
   }
 
   Widget renderMessage({Map<String, dynamic> message}) {

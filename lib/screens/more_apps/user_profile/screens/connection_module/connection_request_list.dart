@@ -155,23 +155,17 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
         next = result['next'];
         previous = result['previous'];
         List tempList = result['results'];
-        List<CustomerProfile> convertedIntoUserList = List<CustomerProfile>();
+        List<CustomerProfile> users = List<CustomerProfile>();
+
         tempList.forEach((element) {
-          var data = cleanDisplayData(element);
-          debugPrint(data.toString());
-          CustomerProfile user = CustomerProfile();
-          user.fullName = data["full_name"] ?? "";
-          user.userName = data["username"] ?? "";
-          user.avatar = data["avatar"] ?? "";
-          user.qrCode = data["qr_code"] ?? "";
-          convertedIntoUserList.add(user);
+          Map<String, dynamic> data = cleanDisplayData(element);
+          users.add(CustomerProfile.fromJson(data));
         });
-        if (mounted) {
-          setState(() {
-            isLoading = false;
-            connectionRequestList.addAll(convertedIntoUserList);
-          });
-        }
+
+        isLoading = false;
+        connectionRequestList.addAll(users);
+
+        if (mounted) setState(() {});
       }
       if (connectionRequestList.isEmpty) {
         if (mounted) {

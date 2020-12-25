@@ -146,27 +146,28 @@ class CustomerProfile {
     this.status = UserStatus.UNKNOWN,
   });
 
-  CustomerProfile.map(dynamic obj) {
-    this.userName = obj["username"];
-    this.fullName = obj["fullName"];
-    this.avatar = obj["avatar"];
-    this.qrCode = obj["qrCode"];
-    this.type = obj['type'] ?? 'user';
-    this.conversationId =
-        obj['conversation_id'] ?? "";
-    this.status = obj['status'] ?? UserStatus.UNKNOWN;
+  factory CustomerProfile.fromJson(Map<String, dynamic> json) {
+    return CustomerProfile(
+      fullName: json['full_name'] ?? "",
+      userName: json['username'] ?? "",
+      avatar: json['avatar'] ?? "",
+      qrCode: json['qr_code'] ?? "",
+      type: json['type'] ?? "user",
+      conversationId: json['conversation_id'] ?? "",
+      status: json['status'] ?? UserStatus.UNKNOWN,
+    );
   }
 
-  Map<String, dynamic> toMap() {
-    var map = new Map<String, dynamic>();
-    map["fullName"] = fullName;
-    map["userName"] = userName;
-    map["avatar"] = avatar;
-    map["qrCode"] = qrCode;
-    map["type"] = type;
-    map["conversation_id"] = conversationId;
-    map["status"] = status;
-    return map;
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['full_name'] = this.fullName;
+    data['username'] = this.userName;
+    data['avatar'] = this.avatar;
+    data['qr_code'] = this.qrCode;
+    data['type'] = this.type;
+    data['conversation_id'] = this.conversationId;
+    data['status'] = this.status;
+    return data;
   }
 }
 

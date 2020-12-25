@@ -24,6 +24,8 @@ import 'package:Slydo/screens/more_apps/hotels/hotel_detail_page.dart';
 import 'package:Slydo/screens/more_apps/hotels/partner_detail_page.dart';
 import 'package:Slydo/screens/more_apps/hotels/search_hotel.dart';
 import 'package:Slydo/screens/more_apps/hotels/specific_category_hotel_list.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/forms/add_media_to_chat_message.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/screens/chat_screen.dart';
 import 'package:Slydo/screens/more_apps/messaging/forms/compose_message.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_list.dart';
 import 'package:Slydo/screens/more_apps/movies/movie_dashboard.dart';
@@ -81,7 +83,6 @@ import 'package:Slydo/screens/more_apps/user_profile/forms/upgrade_user_profile.
 import 'package:Slydo/screens/more_apps/user_profile/forms/user_address.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/verify_registration_OTP.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/verify_reset_password_OTP.dart';
-import 'package:Slydo/screens/more_apps/user_profile/screens/chat/chat_screen.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/connection_module/connections_dashboard.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module/user_profile.dart';
 import 'package:Slydo/screens/scan_qr_code.dart';
@@ -457,6 +458,14 @@ class RouteGenerator {
       case '/chat-screen':
         return PageTransition(
           child: ChatScreen(arguments: settings.arguments),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case '/send-media-to-chat-message':
+        return PageTransition(
+          child: AddMediaToChatMessage(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

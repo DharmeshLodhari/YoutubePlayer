@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:Slydo/screens/more_apps/messaging/models/message.dart';
 import 'package:Slydo/services/auth.dart';
@@ -20,19 +21,42 @@ class MessageAuth extends AuthService {
     }
   }
 
-  Future<bool> sendSocketMessage(Map data) async {
-    var url = secureBaseUrl + "/api/v1/messaging/send/";
-    // var headers = await getAuthHeaders();
-    // data["headers"] = headers;
-    // var _data = jsonEncode(data);
-    // var response = await http.post(url, body: _data);
-    // if (response.statusCode == 201) {
-    //   return true;
-    // } else {
-    //   var jsonData = json.decode(response.body);
-    //   throw jsonData;
-    // }
-    return Future.value(true);
+  Future<bool> sendSocketMessage(Map data, File media) async {
+    var url = secureBaseUrl + "/api/v1/chat/create/";
+    debugPrint("URL:- $url");
+    var headers = await getAuthHeaders();
+
+    data["headers"] = jsonEncode(headers);
+
+    var request = http.MultipartRequest("POST", Uri.parse(url));
+
+    data.forEach((k, v) {
+      request.fields[k] = v.toString();
+    });
+
+    // Add fields
+    // request.fields["media"] = media.path;
+
+    // Create multipart using filepath, string or bytes
+    var multipartFile = await http.MultipartFile.fromPath("media", media.path);
+
+    // Add multipart to request
+    request.files.add(multipartFile);
+
+    headers.forEach((k, v) => request.headers[k] = v);
+
+    var response = await request.send();
+    if (response.statusCode == 413) {
+      return Future.error(
+          "Please upload smaller image, Your image is too large.");
+    }
+    var responseBody = await response.stream.bytesToString();
+    debugPrint("$responseBody");
+    if (response.statusCode == 201) {
+      return true;
+    } else {
+      return Future.error("${response.statusCode} $responseBody");
+    }
   }
 
   // it will update the message actions:  [Archived,UnArchived,Starred,UnStarred]
@@ -159,47 +183,23 @@ class MessageAuth extends AuthService {
 
     var response = await http.get(url, headers: headers);
 
-    debugPrint("response status code:- ${response.statusCode}");
-    debugPrint("response body:- ${response.body}");
+    if (response.statusCode == 200) {
+      List<String> previousMessages = [];
+      var jsonData = json.decode(response.body);
+      for (var item in jsonData["results"])
+        previousMessages.add(jsonEncode(item));
 
-    // if (response.statusCode == 200) {
-    List<String> previousMessages = [];
-    // var jsonData = json.decode(response.body);
-    // for (var item in jsonData["results"]) {
-    // }
-
-    previousMessages = List.generate(
-        8,
-        (index) => jsonEncode({
-              "id": "8770286d-e3b6-46ee-8414-0c408fc91067",
-              "conversation": "89815ef4-0442-4073-b7b6-3fd10ab516be",
-              "author": "black",
-              "text": "q",
-              "is_read": false,
-              "was_edited": false,
-              "media": null,
-              "updated_at": "2020-12-24T13:34:37.046942+01:00",
-              "created_at": "2020-12-24T13:34:37.046964+01:00",
-              "type": "chatroom_message"
-            }));
-
-    // Map<String, dynamic> result = {
-    //   "count": jsonData["count"],
-    //   "next": jsonData["next"],
-    //   "previous": jsonData["previous"],
-    //   "results": previousMessages
-    // };
-    Map<String, dynamic> result = {
-      "count": 10,
-      "next": "",
-      "previous": "",
-      "results": previousMessages
-    };
-    return result;
-    // } else if (response.statusCode == 500) {
-    //   throw "Server Error";
-    // } else {
-    //   throw json.decode(response.body);
-    // }
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": previousMessages
+      };
+      return result;
+    } else if (response.statusCode == 500) {
+      throw "Server Error";
+    } else {
+      throw json.decode(response.body);
+    }
   }
 }

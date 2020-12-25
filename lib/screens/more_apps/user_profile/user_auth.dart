@@ -256,7 +256,8 @@ class UserAuth extends AuthService {
       };
       return result;
     } else {
-      var jsonData = json.decode(response.body);
+      debugPrint("${response.statusCode} ${response.body}");
+      var jsonData = jsonDecode(response.body);
       throw jsonData;
     }
   }

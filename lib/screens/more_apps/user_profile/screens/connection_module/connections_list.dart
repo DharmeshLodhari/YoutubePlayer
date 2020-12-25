@@ -143,29 +143,19 @@ class _ConnectionListState extends State<ConnectionList> {
         previous = result['previous'];
 
         List tempList = result['results'];
-        List<CustomerProfile> convertedIntoUserList = List<CustomerProfile>();
-        tempList.forEach((element) {
-          CustomerProfile user = CustomerProfile();
-          user.conversationId = element["conversation_id"] ?? "";
-          user.fullName = element["full_name"] ?? "";
-          user.userName = element["username"] ?? "";
-          user.avatar = element["avatar"] ?? "";
-          user.qrCode = element["qr_code"] ?? "";
-          convertedIntoUserList.add(user);
-        });
-        if (mounted) {
-          setState(() {
-            isLoading = false;
-            connectionsList.addAll(convertedIntoUserList);
-          });
-        }
+        List<CustomerProfile> users = List<CustomerProfile>();
+
+        tempList
+            .forEach((element) => users.add(CustomerProfile.fromJson(element)));
+
+        isLoading = false;
+        connectionsList.addAll(users);
+
+        if (mounted) setState(() {});
       }
       if (connectionsList.isEmpty) {
-        if (mounted) {
-          setState(() {
-            noItemInList = true;
-          });
-        }
+        noItemInList = true;
+        if (mounted) setState(() {});
       } else if (next == null && connectionsList.length > 6) {
         _scaffoldContactsListKey.currentState.showSnackBar(SnackBar(
           content:
