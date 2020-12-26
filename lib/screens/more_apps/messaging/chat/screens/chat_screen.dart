@@ -600,9 +600,8 @@ class _ChatScreenState extends State<ChatScreen> {
       "/send-media-to-chat-message",
       arguments: {
         "data": {
-          "username": userBloc.user.userName,
-          "recipient": recipientUser.userName.trim(),
-          "type": "chatroom_message",
+          "conversation": recipientUser.conversationId,
+          "author": userBloc.user.userName,
         },
         "media": File(media.path),
         "message": messageController.text.trim(),

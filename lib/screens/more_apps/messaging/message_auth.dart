@@ -25,8 +25,7 @@ class MessageAuth extends AuthService {
     var url = secureBaseUrl + "/api/v1/chat/create/";
     debugPrint("URL:- $url");
     var headers = await getAuthHeaders();
-
-    data["headers"] = jsonEncode(headers);
+    // debugPrint("data :- $data}");
 
     var request = http.MultipartRequest("POST", Uri.parse(url));
 
@@ -35,7 +34,7 @@ class MessageAuth extends AuthService {
     });
 
     // Add fields
-    // request.fields["media"] = media.path;
+    request.fields["media"] = media.path;
 
     // Create multipart using filepath, string or bytes
     var multipartFile = await http.MultipartFile.fromPath("media", media.path);
@@ -44,6 +43,10 @@ class MessageAuth extends AuthService {
     request.files.add(multipartFile);
 
     headers.forEach((k, v) => request.headers[k] = v);
+
+    request.fields.forEach((key, value) {
+      debugPrint("$key :- $value");
+    });
 
     var response = await request.send();
     if (response.statusCode == 413) {
