@@ -188,11 +188,16 @@ class PaymentAndBankingAuth extends AuthService {
   }
 
   // Patch payment status with empty data  patch
-  Future<bool> rejectPaymentRequests(PaymentRequest paymentRequest) async {
+  Future<bool> rejectPaymentRequests(PaymentRequest paymentRequest,
+      {String messageId}) async {
     var url = secureBaseUrl +
-        "/api/v1/transactions/request-payment/update/" +
-        paymentRequest.id +
-        "/";
+                "/api/v1/transactions/request-payment/update/" +
+                paymentRequest.id +
+                "/" +
+                messageId !=
+            null
+        ? "?messageId=$messageId"
+        : "";
     var headers = await getAuthHeaders();
     var data = {};
     var _data = jsonEncode(data);

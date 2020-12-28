@@ -1120,7 +1120,12 @@ class _ChatScreenState extends State<ChatScreen> {
                                 text: "Reject",
                                 backgroundColor: navyBlue,
                                 textColor: Colors.white,
-                                onPressed: () {},
+                                onPressed: () async {
+                                  var result = await PaymentAndBankingAuth()
+                                      .rejectPaymentRequests(paymentRequest,
+                                          messageId: message["message_id"]);
+                                  debugPrint("$result");
+                                },
                               ),
                             ),
                           ],
