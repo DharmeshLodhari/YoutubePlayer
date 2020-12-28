@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -19,6 +20,18 @@ Widget imageFrameBuilder(BuildContext context, Widget child, int frame,
   );
 }
 
+Widget imageErrorWidget(
+  BuildContext context,
+  String url,
+  dynamic error,
+) =>
+    CachedNetworkImage(
+      imageUrl:
+          "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png",
+      colorBlendMode: BlendMode.darken,
+      fit: BoxFit.fill,
+      filterQuality: FilterQuality.high,
+    );
 Widget customThemeBuilder(BuildContext context, Widget child) {
   return Theme(
     data: ThemeData.light().copyWith(

@@ -1,3 +1,5 @@
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+
 class BankAccount {
   String uuid;
   String bankAvatar;
@@ -96,8 +98,12 @@ class PaymentRequest {
       this.amount,
       this.isCredit});
 
-  factory PaymentRequest.fromJson(Map<String, dynamic> json) {
-    bool isCredit = false;
+  factory PaymentRequest.fromJson(Map<String, dynamic> json,
+      {User currentUser}) {
+    bool isCredit = (json["from_customer"] != currentUser.userName &&
+            json["to_customer"] == currentUser.userName)
+        ? true
+        : false;
 
     var payee = isCredit ? json["from_customer"] : json['to_customer'];
     var avatar =

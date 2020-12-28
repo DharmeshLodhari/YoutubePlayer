@@ -23,6 +23,7 @@ class UserTile extends StatelessWidget {
             colorBlendMode: BlendMode.darken,
             fit: BoxFit.fill,
             filterQuality: FilterQuality.high,
+            errorWidget: imageErrorWidget,
           ),
         ));
 

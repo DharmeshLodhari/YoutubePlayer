@@ -23,7 +23,7 @@ dependencies:
   mime_type: ^0.2.5
   firebase_crashlytics:
   firebase_core: ^0.4.0+9
-  cached_network_image:
+  cached_network_image: ^2.5.0
   toast: ^0.1.5
   shared_preferences:
   passcode_screen: ^1.0.2

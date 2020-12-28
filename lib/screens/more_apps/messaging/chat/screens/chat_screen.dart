@@ -9,6 +9,7 @@ import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -16,8 +17,11 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:toast/toast.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/status.dart' as status;
 
@@ -34,6 +38,7 @@ class _ChatScreenState extends State<ChatScreen> {
   CustomerProfile recipientUser;
 
   TextEditingController messageController;
+  FocusNode messageFocus;
 
   UserBloc userBloc;
 
@@ -62,6 +67,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     messageController = TextEditingController();
+    messageFocus = FocusNode();
     recipientUser = widget.arguments["searchedUser"];
 
     connectSocket();
@@ -69,6 +75,7 @@ class _ChatScreenState extends State<ChatScreen> {
     setupScrollController();
 
     messageController.addListener(sendUserTypingState);
+    messageController.addListener(searchUserProduct);
 
     fetchPreviousMessages();
 
@@ -80,6 +87,7 @@ class _ChatScreenState extends State<ChatScreen> {
     _timerForUserTypingState?.cancel();
     _timerForRetryConnection?.cancel();
     messageController.removeListener(sendUserTypingState);
+    messageController.removeListener(searchUserProduct);
     messageController.dispose();
 
     try {
@@ -172,6 +180,14 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  void searchUserProduct() {
+    if (messageController.text.isNotEmpty) {
+      if (messageController.text.toString().characters.first == '@') {
+        debugPrint("i am @");
+      }
+    }
+  }
+
   void setupScrollController() {
     messageScrollController = ScrollController();
 
@@ -228,7 +244,11 @@ class _ChatScreenState extends State<ChatScreen> {
 
             if (mounted) setState(() {});
             Future.delayed(Duration(milliseconds: 100)).then((value) {
-              if (isFirstTime) scrollToBottom();
+              if (isFirstTime)
+                scrollToBottom();
+              else {
+                scrollToTopWithTopSpace();
+              }
             });
           });
         }
@@ -249,9 +269,10 @@ class _ChatScreenState extends State<ChatScreen> {
       case "chatroom_message":
         messageList.add(message);
 
-        if (MediaQuery.of(context).viewInsets.bottom != 0) scrollToBottom();
         if (mounted) setState(() {});
-
+        if (MediaQuery.of(context).viewInsets.bottom != 0) scrollToBottom();
+        // Future.delayed(Duration(microseconds: 300))
+        //     .then((value) => scrollToBottom());
         break;
 
       case "user_typing_message":
@@ -264,7 +285,21 @@ class _ChatScreenState extends State<ChatScreen> {
             if (mounted) setState(() {});
           });
         }
+        break;
 
+      case "image":
+        Future.delayed(Duration(microseconds: 300))
+            .then((value) => scrollToBottom());
+        break;
+
+      case "transaction":
+        Future.delayed(Duration(microseconds: 300))
+            .then((value) => scrollToBottom());
+        break;
+
+      case "payment-request":
+        Future.delayed(Duration(microseconds: 300))
+            .then((value) => scrollToBottom());
         break;
 
       default:
@@ -288,10 +323,18 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void scrollToBottom() {
+    debugPrint("Scrolling to Bottom");
     messageScrollController.animateTo(
         messageScrollController.position.maxScrollExtent,
         duration: Duration(microseconds: 100),
-        curve: Curves.fastLinearToSlowEaseIn);
+        curve: Curves.easeOut);
+  }
+
+  void scrollToTopWithTopSpace() {
+    messageScrollController.animateTo(
+        messageScrollController.position.minScrollExtent + 10,
+        duration: Duration(microseconds: 100),
+        curve: Curves.easeOut);
   }
 
   @override
@@ -398,13 +441,7 @@ class _ChatScreenState extends State<ChatScreen> {
             colorBlendMode: BlendMode.darken,
             fit: BoxFit.fill,
             filterQuality: FilterQuality.high,
-            errorWidget: (context, url, error) => CachedNetworkImage(
-              imageUrl:
-                  "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png",
-              colorBlendMode: BlendMode.darken,
-              fit: BoxFit.fill,
-              filterQuality: FilterQuality.high,
-            ),
+            errorWidget: imageErrorWidget,
           ),
         ),
       );
@@ -518,6 +555,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return TextFormField(
       controller: messageController,
       textInputAction: TextInputAction.send,
+      focusNode: messageFocus,
       onFieldSubmitted: (value) {
         sendMessage();
       },
@@ -715,7 +753,6 @@ class _ChatScreenState extends State<ChatScreen> {
 
       case "transaction":
         Widget getPaymentUI = renderSendPayment(item: messageData);
-        // Widget getPaymentUI = renderMessage(message: messageData);
         return getPaymentUI;
 
         break;
@@ -764,6 +801,9 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget scaffoldBody() {
+    if (MediaQuery.of(context).viewInsets.bottom != 0) {
+      scrollToBottom();
+    }
     return Container(
       child: Column(
         children: [
@@ -835,208 +875,264 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget renderMessage({Map<String, dynamic> message}) {
     bool isSend = message["author"] == userBloc.user.userName;
-    return Row(
-      mainAxisAlignment:
-          isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
-      children: [
-        Padding(
-          padding:
-              EdgeInsets.only(left: isSend ? 30 : 0, right: !isSend ? 30 : 0),
-          child: Container(
-              constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.8,
-              ),
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: isSend ? navyBlue : chatBackgroundColor,
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(!isSend ? 0 : 10),
-                  bottomRight: Radius.circular(isSend ? 0 : 10),
-                  topLeft: Radius.circular(10),
-                  topRight: Radius.circular(10),
+    return GestureDetector(
+      onLongPress: () {
+        Clipboard.setData(new ClipboardData(text: message['text']));
+        Toast.show("Text copied !!", context,
+            gravity: Toast.BOTTOM,
+            duration: Toast.LENGTH_LONG,
+            backgroundColor: navyBlue,
+            textColor: Colors.white);
+      },
+      child: Row(
+        mainAxisAlignment:
+            isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
+        children: [
+          Padding(
+            padding:
+                EdgeInsets.only(left: isSend ? 30 : 0, right: !isSend ? 30 : 0),
+            child: Container(
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width * 0.8,
                 ),
-              ),
-              child: Text(
-                message['text'],
-                style: TextStyle(
-                    color: isSend ? Colors.white : blackFont,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500),
-              )),
-        )
-      ],
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  color: isSend ? navyBlue : chatBackgroundColor,
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(!isSend ? 0 : 10),
+                    bottomRight: Radius.circular(isSend ? 0 : 10),
+                    topLeft: Radius.circular(10),
+                    topRight: Radius.circular(10),
+                  ),
+                ),
+                child: Text(
+                  message['text'],
+                  style: TextStyle(
+                      color: isSend ? Colors.white : blackFont,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500),
+                )),
+          )
+        ],
+      ),
     );
   }
 
   Widget renderImageMedia({Map<String, dynamic> message}) {
     bool isSend = message["author"] == userBloc.user.userName;
-    return Row(
-      mainAxisAlignment:
-          isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
-      children: [
-        Container(
-          decoration: BoxDecoration(
-              border: Border.all(color: dividerColor),
-              borderRadius: BorderRadius.circular(12)),
-          padding: EdgeInsets.all(8),
-          width: MediaQuery.of(context).size.width / 2,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CachedNetworkImage(imageUrl: message['media']),
-              SizedBox(
-                height: 12,
+    return GestureDetector(
+      onLongPress: () {
+        Clipboard.setData(
+            new ClipboardData(text: message['text'] ?? message['media']));
+        Toast.show("Text copied !!", context,
+            gravity: Toast.BOTTOM,
+            duration: Toast.LENGTH_LONG,
+            backgroundColor: navyBlue,
+            textColor: Colors.white);
+      },
+      child: Row(
+        mainAxisAlignment:
+            isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
+        children: [
+          Container(
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width / 1.35,
+              minWidth: MediaQuery.of(context).size.width / 1.35,
+            ),
+            decoration: BoxDecoration(
+              color: isSend ? navyBlue : chatBackgroundColor,
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(!isSend ? 0 : 6),
+                bottomRight: Radius.circular(isSend ? 0 : 6),
+                topLeft: Radius.circular(6),
+                topRight: Radius.circular(6),
               ),
-              Text(
-                message['text'],
-                style: TextStyle(
-                    color: isSend ? Colors.white : blackFont,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500),
-              ),
-            ],
-          ),
-        )
-      ],
+            ),
+            padding: EdgeInsets.only(left: 4, right: 4, top: 4, bottom: 0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ClipRRect(
+                  child: CachedNetworkImage(
+                    height: MediaQuery.of(context).size.width / 1.35,
+                    width: MediaQuery.of(context).size.width / 1.35,
+                    imageUrl: message['media'],
+                    fit: BoxFit.cover,
+                    progressIndicatorBuilder:
+                        (context, url, downloadProgress) => Center(
+                      child: CircularProgressIndicator(
+                        value: downloadProgress.progress,
+                        strokeWidth: 2.5,
+                        valueColor: AlwaysStoppedAnimation(navyBlue),
+                        backgroundColor: Colors.transparent,
+                      ),
+                    ),
+                  ),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                SizedBox(
+                  height: 2,
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: 2.0),
+                  child: Text(
+                    message['text'],
+                    style: TextStyle(
+                        color: isSend ? Colors.white : blackFont,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500),
+                  ),
+                ),
+                SizedBox(
+                  height: 6,
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
     );
   }
 
   Widget renderPaymentRequest({Map<String, dynamic> message}) {
     bool isSent = message["author"] == userBloc.user.userName;
 
-    Map<String, dynamic> item = jsonDecode(message['text']);
+    PaymentRequest paymentRequest = PaymentRequest.fromJson(
+        jsonDecode(message['text']),
+        currentUser: userBloc.user);
 
-    bool isCredit = (item["from_customer"] != userBloc.user.userName &&
-            item["to_customer"] == userBloc.user.userName)
-        ? true
-        : false;
-
-    var payee = isCredit ? item["from_customer"] : item['to_customer'];
-    var avatar =
-        isCredit ? item["from_customer_avatar"] : item['to_customer_avatar'];
-
-    PaymentRequest paymentRequest = PaymentRequest(
-        status: item['status'],
-        id: item['id'].toString(),
-        description: item['description'],
-        payee: payee,
-        avatar: avatar,
-        currency: item['currency'],
-        createdAt: item['created_at'],
-        amount: item['amount'],
-        isCredit: isCredit);
-
-    return Row(
-      mainAxisAlignment:
-          isSent ? MainAxisAlignment.end : MainAxisAlignment.start,
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            color: chatBackgroundColor,
-            border: Border.all(color: chatBackgroundColor),
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(!isSent ? 0 : 10),
-              bottomRight: Radius.circular(isSent ? 0 : 10),
-              topLeft: Radius.circular(10),
-              topRight: Radius.circular(10),
+    return GestureDetector(
+      onLongPress: () {
+        if (paymentRequest.description.isNotEmpty) {
+          Clipboard.setData(
+              new ClipboardData(text: paymentRequest.description));
+          Toast.show("Text copied !!", context,
+              gravity: Toast.BOTTOM,
+              duration: Toast.LENGTH_LONG,
+              backgroundColor: navyBlue,
+              textColor: Colors.white);
+        }
+      },
+      child: Row(
+        mainAxisAlignment:
+            isSent ? MainAxisAlignment.end : MainAxisAlignment.start,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: chatBackgroundColor,
+              border: Border.all(color: chatBackgroundColor),
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(!isSent ? 0 : 10),
+                bottomRight: Radius.circular(isSent ? 0 : 10),
+                topLeft: Radius.circular(10),
+                topRight: Radius.circular(10),
+              ),
             ),
-          ),
-          padding: EdgeInsets.all(8),
-          width: MediaQuery.of(context).size.width / 2,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 4.0),
-                    child: Icon(
-                      SlydoAppIcon.naira,
-                      color: blackFont,
-                      size: 16,
+            padding: EdgeInsets.all(8),
+            width: MediaQuery.of(context).size.width / 1.8,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4.0),
+                      child: Icon(
+                        SlydoAppIcon.naira,
+                        color: blackFont,
+                        size: 16,
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    width: 2,
-                  ),
-                  Text(
-                    paymentRequest.amount.toString(),
+                    SizedBox(
+                      width: 2,
+                    ),
+                    Text(
+                      paymentRequest.amount.toString(),
+                      style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.w600,
+                          color: blackFont),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 4,
+                ),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    paymentRequest.description,
                     style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
                         color: blackFont),
                   ),
-                ],
-              ),
-              SizedBox(
-                height: 4,
-              ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  paymentRequest.description,
-                  style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color: blackFont),
                 ),
-              ),
-              SizedBox(
-                height: 6,
-              ),
-              Container(
-                child: isSent
-                    ? Row(
-                        children: <Widget>[
-                          Expanded(
-                            child: Container(),
-                          ),
-                          SizedBox(
-                            width: 8,
-                          ),
-                          Expanded(
-                            child: CurvedButton(
-                              text: "Cancel",
-                              height: 36,
-                              backgroundColor: navyBlue,
-                              textColor: Colors.white,
-                              onPressed: () {},
+                SizedBox(
+                  height: 6,
+                ),
+                Container(
+                  child: isSent
+                      ? Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: Container(),
                             ),
-                          ),
-                        ],
-                      )
-                    : Row(
-                        children: <Widget>[
-                          Expanded(
-                            child: CurvedButton(
-                              text: "Pay",
-                              height: 36,
-                              backgroundColor: navyBlue,
-                              textColor: Colors.white,
-                              onPressed: () {},
+                            SizedBox(
+                              width: 8,
                             ),
-                          ),
-                          SizedBox(
-                            width: 8,
-                          ),
-                          Expanded(
-                            child: CurvedButton(
-                              height: 36,
-                              text: "Reject",
-                              backgroundColor: navyBlue,
-                              textColor: Colors.white,
-                              onPressed: () {},
+                            Expanded(
+                              child: CurvedButton(
+                                text: "Cancel",
+                                height: 36,
+                                backgroundColor: navyBlue,
+                                textColor: Colors.white,
+                                onPressed: () {},
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-              ),
-            ],
+                          ],
+                        )
+                      : Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: CurvedButton(
+                                text: "Pay",
+                                height: 36,
+                                backgroundColor: navyBlue,
+                                textColor: Colors.white,
+                                onPressed: () {},
+                              ),
+                            ),
+                            SizedBox(
+                              width: 8,
+                            ),
+                            Expanded(
+                              child: CurvedButton(
+                                height: 36,
+                                text: "Reject",
+                                backgroundColor: navyBlue,
+                                textColor: Colors.white,
+                                onPressed: () {},
+                              ),
+                            ),
+                          ],
+                        ),
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
+  }
+
+  String getDateTime(String dateAndTime) {
+    DateTime requestTime = DateTime.parse(dateAndTime);
+    String date = DateFormat("dd/MM/yyyy").format(requestTime);
+    String time = DateFormat("hh:mm a").format(requestTime);
+    return "$date • $time";
   }
 
   Widget renderSendPayment({Map<String, dynamic> item}) {
@@ -1044,91 +1140,101 @@ class _ChatScreenState extends State<ChatScreen> {
 
     Transaction transaction = Transaction.fromJson(jsonDecode(item['text']));
 
-    DateTime createdAt = DateTime.parse(transaction.createdAt);
-
-    return Row(
-      mainAxisAlignment:
-          isSent ? MainAxisAlignment.end : MainAxisAlignment.start,
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            color: chatBackgroundColor,
-            border: Border.all(color: chatBackgroundColor),
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(!isSent ? 0 : 10),
-              bottomRight: Radius.circular(isSent ? 0 : 10),
-              topLeft: Radius.circular(10),
-              topRight: Radius.circular(10),
+    return GestureDetector(
+      onLongPress: () {
+        if (transaction.description.isNotEmpty) {
+          Clipboard.setData(new ClipboardData(text: transaction.description));
+          Toast.show("Text copied !!", context,
+              gravity: Toast.BOTTOM,
+              duration: Toast.LENGTH_LONG,
+              backgroundColor: navyBlue,
+              textColor: Colors.white);
+        }
+      },
+      child: Row(
+        mainAxisAlignment:
+            isSent ? MainAxisAlignment.end : MainAxisAlignment.start,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: chatBackgroundColor,
+              border: Border.all(color: chatBackgroundColor),
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(!isSent ? 0 : 10),
+                bottomRight: Radius.circular(isSent ? 0 : 10),
+                topLeft: Radius.circular(10),
+                topRight: Radius.circular(10),
+              ),
             ),
-          ),
-          padding: EdgeInsets.all(8),
-          width: MediaQuery.of(context).size.width / 2,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 4.0),
-                    child: Icon(
-                      SlydoAppIcon.naira,
-                      color: blackFont,
-                      size: 14,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 2,
-                  ),
-                  Text(
-                    transaction.amount.toString(),
-                    style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.w600,
-                        color: blackFont),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 4,
-              ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  transaction.description,
-                  style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color: blackFont),
-                ),
-              ),
-              SizedBox(
-                height: 6,
-              ),
-              Container(
-                child: Row(
+            padding: EdgeInsets.all(8),
+            width: MediaQuery.of(context).size.width / 1.8,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
                   children: [
-                    Icon(
-                      SlydoAppIcon.true_icon,
-                      size: 12,
-                      color: naturalGreen,
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4.0),
+                      child: Icon(
+                        SlydoAppIcon.naira,
+                        color: blackFont,
+                        size: 14,
+                      ),
                     ),
                     SizedBox(
-                      width: 4,
+                      width: 2,
                     ),
                     Text(
-                      isSent
-                          ? "You paid • 06:15 PM"
-                          : "You were paid • 10:13 AM",
-                      style: TextStyle(color: blackFont, fontSize: 12),
-                    )
+                      transaction.amount.toString(),
+                      style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.w600,
+                          color: blackFont),
+                    ),
                   ],
                 ),
-              ),
-            ],
+                SizedBox(
+                  height: 4,
+                ),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    transaction.description,
+                    style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: blackFont),
+                  ),
+                ),
+                SizedBox(
+                  height: 6,
+                ),
+                Container(
+                  child: Row(
+                    children: [
+                      Icon(
+                        SlydoAppIcon.true_icon,
+                        size: 12,
+                        color: naturalGreen,
+                      ),
+                      SizedBox(
+                        width: 4,
+                      ),
+                      Text(
+                        isSent
+                            ? "You paid • ${getDateTime(transaction.createdAt)}"
+                            : "You were paid • 10:13 AM",
+                        style: TextStyle(color: blackFont, fontSize: 12),
+                      )
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
