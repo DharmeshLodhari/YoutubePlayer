@@ -43,6 +43,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
   UserBloc userBloc;
 
+  var headers;
+
   List<String> messageList = [];
   IOWebSocketChannel channel;
   String socketUrl = "wss://slydo.co/ws/chat";
@@ -107,7 +109,7 @@ class _ChatScreenState extends State<ChatScreen> {
     var finalUrl = "$socketUrl/${recipientUser.conversationId}/";
 
     // Set auth headers or socket will be closed
-    var headers = await MessageAuth().getAuthHeaders();
+    headers = await MessageAuth().getAuthHeaders();
 
     /// for connecting the socket
     try {
@@ -309,8 +311,6 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void userTyping() async {
-    var headers = await MessageAuth().getAuthHeaders();
-
     var data = {
       "username": userBloc.user.userName,
       "recipient": recipientUser.userName.trim(),
@@ -777,7 +777,6 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void sendMessage() async {
-    var headers = await MessageAuth().getAuthHeaders();
     String message = messageController.text.trim();
 
     if (message.isEmpty) {
