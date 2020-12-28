@@ -201,6 +201,7 @@ class PaymentAndBankingAuth extends AuthService {
 
   // Create Payment request with data from user input  post method  return true / false
   Future<http.Response> createPaymentRequests(Map data) async {
+    debugPrint("Data sent:- $data");
     var url = secureBaseUrl + "/api/v1/transactions/request-payment/create/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);

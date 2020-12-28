@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/colors.dart';
@@ -387,18 +388,26 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget getUserIcon() => Container(
-      height: 36,
-      width: 36,
-      child: ClipOval(
-        child: CachedNetworkImage(
-          imageUrl: recipientUser.avatar == ""
-              ? "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png"
-              : recipientUser.avatar,
-          colorBlendMode: BlendMode.darken,
-          fit: BoxFit.fill,
-          filterQuality: FilterQuality.high,
+        height: 36,
+        width: 36,
+        child: ClipOval(
+          child: CachedNetworkImage(
+            imageUrl: recipientUser.avatar == ""
+                ? "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png"
+                : recipientUser.avatar,
+            colorBlendMode: BlendMode.darken,
+            fit: BoxFit.fill,
+            filterQuality: FilterQuality.high,
+            errorWidget: (context, url, error) => CachedNetworkImage(
+              imageUrl:
+                  "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png",
+              colorBlendMode: BlendMode.darken,
+              fit: BoxFit.fill,
+              filterQuality: FilterQuality.high,
+            ),
+          ),
         ),
-      ));
+      );
 
   Widget userProfileIcon() {
     return RoundedBackgroundIcon(
@@ -705,12 +714,12 @@ class _ChatScreenState extends State<ChatScreen> {
         break;
 
       case "transaction":
-        // Widget getPaymentUI = renderSendPayment(message: messageData);
-        Widget getPaymentUI = renderMessage(message: messageData);
+        Widget getPaymentUI = renderSendPayment(item: messageData);
+        // Widget getPaymentUI = renderMessage(message: messageData);
         return getPaymentUI;
 
         break;
-      case "3":
+      case "payment-request":
         Widget getPaymentUI = renderPaymentRequest(message: messageData);
         return getPaymentUI;
         break;
@@ -853,20 +862,17 @@ class _ChatScreenState extends State<ChatScreen> {
                     color: isSend ? Colors.white : blackFont,
                     fontSize: 16,
                     fontWeight: FontWeight.w500),
-              )
-          ),
+              )),
         )
       ],
     );
   }
 
-
-
   Widget renderImageMedia({Map<String, dynamic> message}) {
     bool isSend = message["author"] == userBloc.user.userName;
     return Row(
       mainAxisAlignment:
-      isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
+          isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
       children: [
         Container(
           decoration: BoxDecoration(
@@ -877,8 +883,7 @@ class _ChatScreenState extends State<ChatScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              CachedNetworkImage(
-                  imageUrl: message['media']),
+              CachedNetworkImage(imageUrl: message['media']),
               SizedBox(
                 height: 12,
               ),
@@ -889,7 +894,6 @@ class _ChatScreenState extends State<ChatScreen> {
                     fontSize: 16,
                     fontWeight: FontWeight.w500),
               ),
-
             ],
           ),
         )
@@ -897,10 +901,31 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-
-
   Widget renderPaymentRequest({Map<String, dynamic> message}) {
-    bool isSent = message["isSent"];
+    bool isSent = message["author"] == userBloc.user.userName;
+
+    Map<String, dynamic> item = jsonDecode(message['text']);
+
+    bool isCredit = (item["from_customer"] != userBloc.user.userName &&
+            item["to_customer"] == userBloc.user.userName)
+        ? true
+        : false;
+
+    var payee = isCredit ? item["from_customer"] : item['to_customer'];
+    var avatar =
+        isCredit ? item["from_customer_avatar"] : item['to_customer_avatar'];
+
+    PaymentRequest paymentRequest = PaymentRequest(
+        status: item['status'],
+        id: item['id'].toString(),
+        description: item['description'],
+        payee: payee,
+        avatar: avatar,
+        currency: item['currency'],
+        createdAt: item['created_at'],
+        amount: item['amount'],
+        isCredit: isCredit);
+
     return Row(
       mainAxisAlignment:
           isSent ? MainAxisAlignment.end : MainAxisAlignment.start,
@@ -936,7 +961,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     width: 2,
                   ),
                   Text(
-                    "500",
+                    paymentRequest.amount.toString(),
                     style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.w600,
@@ -950,7 +975,7 @@ class _ChatScreenState extends State<ChatScreen> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  "Shopping",
+                  paymentRequest.description,
                   style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
@@ -1014,8 +1039,13 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget renderSendPayment({Map<String, dynamic> message}) {
-    bool isSent = message["isSent"];
+  Widget renderSendPayment({Map<String, dynamic> item}) {
+    bool isSent = item["author"] == userBloc.user.userName;
+
+    Transaction transaction = Transaction.fromJson(jsonDecode(item['text']));
+
+    DateTime createdAt = DateTime.parse(transaction.createdAt);
+
     return Row(
       mainAxisAlignment:
           isSent ? MainAxisAlignment.end : MainAxisAlignment.start,
@@ -1051,7 +1081,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     width: 2,
                   ),
                   Text(
-                    "500",
+                    transaction.amount.toString(),
                     style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.w600,
@@ -1065,7 +1095,7 @@ class _ChatScreenState extends State<ChatScreen> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  "Shopping",
+                  transaction.description,
                   style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,

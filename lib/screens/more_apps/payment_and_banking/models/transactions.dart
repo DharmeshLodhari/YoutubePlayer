@@ -48,6 +48,29 @@ class Transaction {
       this.isAnonymous,
       this.amount,
       this.isCredit});
+
+  factory Transaction.fromJson(Map<String, dynamic> json) {
+    bool isCredit = json["is_credit"];
+    var payee = isCredit ? json["from_customer"] : json['to_customer'];
+    var avatar =
+        isCredit ? json["from_customer_avatar"] : json['to_customer_avatar'];
+
+    return Transaction(
+        status: json['status'],
+        uuid: json['slug'],
+        description: json['description'],
+        payee: payee,
+        avatar: avatar,
+        currency: json['currency'],
+        createdAt: json['created_at'],
+        category: json['category'],
+        note: json['notes'],
+        latitude: json['latitude'] ?? "",
+        longitude: json['longitude'] ?? "",
+        amount: json['amount'],
+        isAnonymous: json['is_anonymous'] ?? false,
+        isCredit: isCredit);
+  }
 }
 
 class PaymentRequest {
@@ -72,4 +95,23 @@ class PaymentRequest {
       this.currency,
       this.amount,
       this.isCredit});
+
+  factory PaymentRequest.fromJson(Map<String, dynamic> json) {
+    bool isCredit = false;
+
+    var payee = isCredit ? json["from_customer"] : json['to_customer'];
+    var avatar =
+        isCredit ? json["from_customer_avatar"] : json['to_customer_avatar'];
+
+    return PaymentRequest(
+        status: json['status'],
+        id: json['id'].toString(),
+        description: json['description'],
+        payee: payee,
+        avatar: avatar,
+        currency: json['currency'],
+        createdAt: json['created_at'],
+        amount: json['amount'],
+        isCredit: isCredit);
+  }
 }
