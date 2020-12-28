@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/colors.dart';
@@ -1102,7 +1103,12 @@ class _ChatScreenState extends State<ChatScreen> {
                                 height: 36,
                                 backgroundColor: navyBlue,
                                 textColor: Colors.white,
-                                onPressed: () {},
+                                onPressed: () async {
+                                  var response = await PaymentAndBankingAuth()
+                                      .acceptPaymentRequests(paymentRequest,
+                                          messageId: message["message_id"]);
+                                  debugPrint("${response.body}");
+                                },
                               ),
                             ),
                             SizedBox(

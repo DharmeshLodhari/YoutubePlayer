@@ -172,9 +172,14 @@ class PaymentAndBankingAuth extends AuthService {
   }
 
   // Accept Payment with POST method with empty data  post
-  Future<http.Response> acceptPaymentRequests(
-      PaymentRequest paymentRequest) async {
-    var url = secureBaseUrl + "/api/v1/transactions/request-payment/accept/";
+  Future<http.Response> acceptPaymentRequests(PaymentRequest paymentRequest,
+      {String messageId}) async {
+    var url = secureBaseUrl +
+                "/api/v1/transactions/request-payment/accept/" +
+                messageId !=
+            null
+        ? "?messageId=$messageId"
+        : "";
     var data = {"id": paymentRequest.id};
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
