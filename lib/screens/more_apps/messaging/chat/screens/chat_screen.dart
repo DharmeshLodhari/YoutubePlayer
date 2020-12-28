@@ -691,15 +691,22 @@ class _ChatScreenState extends State<ChatScreen> {
 
     Map<String, dynamic> messageData = jsonDecode(message);
 
-    String messageType = "message";
+    String messageType = messageData["kind"];
 
     switch (messageType) {
-      case "message":
+      case "text":
         Widget getMessageUi = renderMessage(message: messageData);
         return getMessageUi;
         break;
-      case "2":
-        Widget getPaymentUI = renderSendPayment(message: messageData);
+
+      case "image":
+        Widget getMessageUi = renderImageMedia(message: messageData);
+        return getMessageUi;
+        break;
+
+      case "transaction":
+        // Widget getPaymentUI = renderSendPayment(message: messageData);
+        Widget getPaymentUI = renderMessage(message: messageData);
         return getPaymentUI;
 
         break;
@@ -846,11 +853,51 @@ class _ChatScreenState extends State<ChatScreen> {
                     color: isSend ? Colors.white : blackFont,
                     fontSize: 16,
                     fontWeight: FontWeight.w500),
-              )),
+              )
+          ),
         )
       ],
     );
   }
+
+
+
+  Widget renderImageMedia({Map<String, dynamic> message}) {
+    bool isSend = message["author"] == userBloc.user.userName;
+    return Row(
+      mainAxisAlignment:
+      isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
+      children: [
+        Container(
+          decoration: BoxDecoration(
+              border: Border.all(color: dividerColor),
+              borderRadius: BorderRadius.circular(12)),
+          padding: EdgeInsets.all(8),
+          width: MediaQuery.of(context).size.width / 2,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CachedNetworkImage(
+                  imageUrl: message['media']),
+              SizedBox(
+                height: 12,
+              ),
+              Text(
+                message['text'],
+                style: TextStyle(
+                    color: isSend ? Colors.white : blackFont,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500),
+              ),
+
+            ],
+          ),
+        )
+      ],
+    );
+  }
+
+
 
   Widget renderPaymentRequest({Map<String, dynamic> message}) {
     bool isSent = message["isSent"];
@@ -1301,7 +1348,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget renderTypingMsg() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
-      children: [Text("Abiola is typing...")],
+      children: [Text("Typing...")],
     );
   }
 }

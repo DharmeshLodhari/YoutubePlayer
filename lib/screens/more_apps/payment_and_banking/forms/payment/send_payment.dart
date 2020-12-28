@@ -826,7 +826,8 @@ class _SendPaymentState extends State<SendPayment> {
               "latitude": userLocation.latitude,
               "longitude": userLocation.longitude,
               "deviceData": deviceData,
-              "is_anonymous": sendMoneyAnonymous
+              "is_anonymous": sendMoneyAnonymous,
+              "made_from_chat": isFromChat,
             };
             debugPrint("$data");
 

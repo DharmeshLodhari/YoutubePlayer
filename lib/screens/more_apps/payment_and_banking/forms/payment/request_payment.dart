@@ -656,6 +656,7 @@ class _RequestPaymentState extends State<RequestPayment> {
               "description": reference.trim(),
               "latitude": userLocation.latitude,
               "longitude": userLocation.longitude,
+              "made_from_chat": isFromChat,
             };
 
             BottomSheetPassCode(
