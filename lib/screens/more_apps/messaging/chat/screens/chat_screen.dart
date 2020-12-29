@@ -21,6 +21,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:keyboard_visibility/keyboard_visibility.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 import 'package:web_socket_channel/io.dart';
@@ -43,7 +44,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   UserBloc userBloc;
 
-  var headers;
+  Map<String, dynamic> headers;
 
   List<String> messageList = [];
   IOWebSocketChannel channel;
@@ -56,7 +57,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Timer _timerForRetryConnection;
   int numberOfRetry = 30;
   int countRetry = 0;
-  Duration connectionRetryDuration = Duration(seconds: 2);
+  Duration connectionRetryDuration = Duration(seconds: 3);
 
   Timer _timerForUserTypingState;
   Duration userMessageTypingStateUpdateTime = Duration(seconds: 2);
@@ -81,6 +82,8 @@ class _ChatScreenState extends State<ChatScreen> {
     messageController.addListener(searchUserProduct);
 
     fetchPreviousMessages();
+
+    setupKeyboardFocusListener();
 
     super.initState();
   }
@@ -109,7 +112,7 @@ class _ChatScreenState extends State<ChatScreen> {
     var finalUrl = "$socketUrl/${recipientUser.conversationId}/";
 
     // Set auth headers or socket will be closed
-    headers = await MessageAuth().getAuthHeaders();
+    if (headers == null) headers = await MessageAuth().getAuthHeaders();
 
     /// for connecting the socket
     try {
@@ -163,6 +166,7 @@ class _ChatScreenState extends State<ChatScreen> {
         });
       } else {
         _timerForRetryConnection?.cancel();
+        countRetry = 0;
       }
     }
   }
@@ -216,6 +220,21 @@ class _ChatScreenState extends State<ChatScreen> {
 
       if (mounted) setState(() {});
     });
+  }
+
+  void setupKeyboardFocusListener() {
+    KeyboardVisibilityNotification().addNewListener(
+      onChange: (bool visible) {
+        if (visible) {
+          if (mounted) {
+            Timer(
+                Duration(milliseconds: 100),
+                () => messageScrollController
+                    .jumpTo(messageScrollController.position.maxScrollExtent));
+          }
+        }
+      },
+    );
   }
 
   void fetchPreviousMessages() async {
@@ -273,9 +292,11 @@ class _ChatScreenState extends State<ChatScreen> {
         messageList.add(message);
 
         if (mounted) setState(() {});
-        if (MediaQuery.of(context).viewInsets.bottom != 0) scrollToBottom();
-        // Future.delayed(Duration(microseconds: 300))
-        //     .then((value) => scrollToBottom());
+
+        Timer(
+            Duration(milliseconds: 100),
+            () => messageScrollController
+                .jumpTo(messageScrollController.position.maxScrollExtent));
         break;
 
       case "user_typing_message":
@@ -320,7 +341,17 @@ class _ChatScreenState extends State<ChatScreen> {
       "headers": headers,
     };
 
-    channel.sink.add(jsonEncode(data));
+    try {
+      if (isConnected) {
+        channel.sink.add(jsonEncode(data));
+      } else {
+        throw Exception("Not Connected");
+      }
+    } catch (e) {
+      debugPrint("ERROR:- $e");
+      reconnectSocket();
+      channel.sink.add(jsonEncode(data));
+    }
   }
 
   void scrollToBottom() {
@@ -792,18 +823,26 @@ class _ChatScreenState extends State<ChatScreen> {
     };
 
     try {
-      channel.sink.add(jsonEncode(data));
-      messageController.text = "";
+      if (isConnected) {
+        channel.sink.add(jsonEncode(data));
+      } else {
+        throw Exception("Not Connected");
+      }
     } catch (e) {
-      debugPrint("error $e");
+      debugPrint("ERROR:- While adding data in WebSocket $e");
+      reconnectSocket();
+      channel.sink.add(jsonEncode(data));
+      debugPrint("Data added in webSocket :- $data");
     }
+
+    messageController.text = "";
     setState(() {});
   }
 
   Widget scaffoldBody() {
-    if (MediaQuery.of(context).viewInsets.bottom != 0) {
-      scrollToBottom();
-    }
+    // if (MediaQuery.of(context).viewInsets.bottom != 0) {
+    //   scrollToBottom();
+    // }
     return Container(
       child: Column(
         children: [

@@ -164,7 +164,7 @@ class _HomeState extends State<Home> {
           ],
         ),
         StreamBuilder<dynamic>(
-            stream: null,
+            stream: socketProvider.socketStream,
             initialData: null,
             builder: (context, snapshot) {
               if (snapshot?.error == false) {
@@ -221,26 +221,65 @@ class _HomeState extends State<Home> {
   }
 
   Widget messageBtn() {
-    return SizedBox(
-      height: 34,
-      width: 34,
-      child: InkWell(
-        child: Card(
-          elevation: 0,
-          color: lightGrey.withOpacity(0.1),
-          margin: EdgeInsets.symmetric(vertical: 10),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Icon(
-            SlydoAppIcon.message,
-            size: 16,
-          ),
+    return Stack(
+      overflow: Overflow.visible,
+      children: [
+        Column(
+          children: [
+            Expanded(
+              child: SizedBox(
+                height: 34,
+                width: 34,
+                child: InkWell(
+                  child: Card(
+                    elevation: 0,
+                    color: lightGrey.withOpacity(0.1),
+                    margin: EdgeInsets.symmetric(vertical: 10),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      SlydoAppIcon.message,
+                      size: 16,
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.of(context).pushNamed('/message-list');
+                  },
+                ),
+              ),
+            ),
+          ],
         ),
-        onTap: () {
-          Navigator.of(context).pushNamed('/message-list');
-        },
-      ),
+        StreamBuilder<dynamic>(
+            stream: socketProvider.socketStream,
+            initialData: null,
+            builder: (context, snapshot) {
+              if (snapshot?.error == false) {
+                debugPrint("ERROR:- ${snapshot.error}");
+                return Container();
+              }
+              if (snapshot.hasData) {
+                debugPrint("Got Message:- ${snapshot.data}");
+                Map<String, dynamic> message = jsonDecode(snapshot.data);
+                if (message["hasMessage"]) {
+                  return Positioned(
+                    top: 8,
+                    right: -2,
+                    child: ClipOval(
+                      child: Container(
+                        height: 8,
+                        width: 8,
+                        color: mateRed,
+                      ),
+                    ),
+                  );
+                }
+                return Container();
+              }
+              return Container();
+            })
+      ],
     );
   }
 
