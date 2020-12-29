@@ -969,6 +969,9 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget renderImageMedia({Map<String, dynamic> message}) {
     bool isSend = message["author"] == userBloc.user.userName;
+    String messageText = message['text'] ?? "";
+    bool isMessageEmpty = messageText == "";
+
     return GestureDetector(
       onTap: () {
         var result = Navigator.of(context).pushNamed(
@@ -1033,21 +1036,23 @@ class _ChatScreenState extends State<ChatScreen> {
                   borderRadius: BorderRadius.circular(4),
                 ),
                 SizedBox(
-                  height: 2,
+                  height: isMessageEmpty ? 2 : 2,
                 ),
-                Padding(
-                  padding: EdgeInsets.only(left: 2.0),
-                  child: Text(
-                    message['text'],
-                    style: TextStyle(
-                        color: isSend ? Colors.white : blackFont,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500),
-                  ),
-                ),
+                isMessageEmpty
+                    ? Container()
+                    : Padding(
+                        padding: EdgeInsets.only(left: 2.0),
+                        child: Text(
+                          messageText,
+                          style: TextStyle(
+                              color: isSend ? Colors.white : blackFont,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500),
+                        ),
+                      ),
                 SizedBox(
-                  height: 6,
-                ),
+                  height: isMessageEmpty ? 2 : 6,
+                )
               ],
             ),
           )
