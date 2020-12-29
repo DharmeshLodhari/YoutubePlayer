@@ -24,6 +24,7 @@ import 'package:intl/intl.dart';
 import 'package:keyboard_visibility/keyboard_visibility.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
+import 'package:uuid/uuid.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/status.dart' as status;
 
@@ -132,13 +133,18 @@ class _ChatScreenState extends State<ChatScreen> {
 
         debugPrint("Got Message:- $message");
         determineMessageType(message);
-      }).onError((error) {
-        /// if there is any error while listing the socket
+      })
+        ..onError((error) {
+          /// if there is any error while listing the socket
 
-        isConnected = false;
-        debugPrint("ERROR:- While listening the Socket $error");
-        reconnectSocket();
-      });
+          isConnected = false;
+          debugPrint("ERROR:- While listening the Socket $error");
+          reconnectSocket();
+        })
+        ..onDone(() {
+          debugPrint("onDone:-  OnDone Called !!!!");
+          reconnectSocket();
+        });
     }
   }
 
@@ -344,6 +350,7 @@ class _ChatScreenState extends State<ChatScreen> {
     try {
       if (isConnected) {
         channel.sink.add(jsonEncode(data));
+        debugPrint("Data sent!!!");
       } else {
         throw Exception("Not Connected");
       }
@@ -818,6 +825,7 @@ class _ChatScreenState extends State<ChatScreen> {
       "username": userBloc.user.userName,
       "recipient": recipientUser.userName.trim(),
       "message": message,
+      "check_id": Uuid().v4(),
       "type": "chatroom_message",
       "headers": headers,
     };
@@ -825,12 +833,14 @@ class _ChatScreenState extends State<ChatScreen> {
     try {
       if (isConnected) {
         channel.sink.add(jsonEncode(data));
+        debugPrint("Data sent!!!");
       } else {
         throw Exception("Not Connected");
       }
     } catch (e) {
       debugPrint("ERROR:- While adding data in WebSocket $e");
       reconnectSocket();
+
       channel.sink.add(jsonEncode(data));
       debugPrint("Data added in webSocket :- $data");
     }
@@ -960,6 +970,18 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget renderImageMedia({Map<String, dynamic> message}) {
     bool isSend = message["author"] == userBloc.user.userName;
     return GestureDetector(
+      onTap: () {
+        var result = Navigator.of(context).pushNamed(
+          "/view-chat-media",
+          arguments: {
+            "type": "image",
+            "file": message['media'],
+            "message": message['text']
+          },
+        );
+
+        debugPrint("Result:- $result");
+      },
       onLongPress: () {
         Clipboard.setData(
             new ClipboardData(text: message['text'] ?? message['media']));
