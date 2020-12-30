@@ -41,7 +41,7 @@ class _UserDashboardState extends State<UserDashboard> {
   final _auth = AuthService();
   UserBloc userBloc;
   BankAccountBloc bankAccountBloc;
-  SocketProvider socketProvider;
+  MainSocketProvider socketProvider;
   BasketBloc basketBloc;
 
   bool isLoading = false;
@@ -79,7 +79,7 @@ class _UserDashboardState extends State<UserDashboard> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    socketProvider = Provider.of<SocketProvider>(context);
+    socketProvider = Provider.of<MainSocketProvider>(context);
     bankAccountBloc = Provider.of<BankAccountBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
     dashboardBloc = Provider.of<DashboardBloc>(context);

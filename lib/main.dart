@@ -117,8 +117,8 @@ void main() async {
           ChangeNotifierProvider<TimerService>.value(
             value: TimerService(),
           ),
-          ChangeNotifierProvider<SocketProvider>.value(
-            value: SocketProvider(),
+          ChangeNotifierProvider<MainSocketProvider>.value(
+            value: MainSocketProvider(),
           ),
         ], child: MyApp()),
       );

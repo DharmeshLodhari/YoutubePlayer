@@ -117,7 +117,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
     /// for connecting the socket
     try {
-      channel = IOWebSocketChannel.connect(finalUrl, headers: headers);
+      channel = IOWebSocketChannel.connect(finalUrl,
+          headers: headers, pingInterval: Duration(seconds: 1));
       debugPrint("connected to $finalUrl ");
       isConnected = true;
     } catch (e) {
@@ -143,7 +144,6 @@ class _ChatScreenState extends State<ChatScreen> {
         })
         ..onDone(() {
           debugPrint("onDone:-  OnDone Called !!!!");
-          reconnectSocket();
         });
     }
   }
@@ -350,7 +350,6 @@ class _ChatScreenState extends State<ChatScreen> {
     try {
       if (isConnected) {
         channel.sink.add(jsonEncode(data));
-        debugPrint("Data sent!!!");
       } else {
         throw Exception("Not Connected");
       }
@@ -839,7 +838,7 @@ class _ChatScreenState extends State<ChatScreen> {
       }
     } catch (e) {
       debugPrint("ERROR:- While adding data in WebSocket $e");
-      reconnectSocket();
+      connectSocket();
 
       channel.sink.add(jsonEncode(data));
       debugPrint("Data added in webSocket :- $data");

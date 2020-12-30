@@ -196,8 +196,8 @@ class _SplashScreenState extends State<SplashScreen> {
     await Future.delayed(Duration(seconds: 3));
     _sharedPreferences = await SharedPreferences.getInstance();
     final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
-    final SocketProvider socketProvider =
-        Provider.of<SocketProvider>(context, listen: false);
+    final MainSocketProvider socketProvider =
+        Provider.of<MainSocketProvider>(context, listen: false);
     final BankAccountBloc bankAccountBloc = Provider.of(context, listen: false);
     final _auth = AuthService();
 

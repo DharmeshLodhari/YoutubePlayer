@@ -12,6 +12,8 @@ import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
@@ -28,14 +30,14 @@ class _HomeState extends State<Home> {
   AuthService _auth = AuthService();
   UserBloc userBloc;
 
-  SocketProvider socketProvider;
+  MainSocketProvider socketProvider;
 
   bool hasMessage = true;
 
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    socketProvider = Provider.of<SocketProvider>(context);
+    socketProvider = Provider.of<MainSocketProvider>(context);
 
     return Scaffold(
       key: _scaffoldHomeKey,
@@ -351,10 +353,21 @@ class _HomeState extends State<Home> {
           ),
         ),
       ),
-      onTap: () {
+      onTap: () async {
         socketProvider.add({"hasMessage": hasMessage});
         hasMessage = !hasMessage;
 
+        try {
+          bool res = await FlutterAppBadger.isAppBadgeSupported();
+          if (res) {
+            FlutterAppBadger.updateBadgeCount(1);
+            debugPrint('Supported');
+          } else {
+            debugPrint('Not Supported');
+          }
+        } on PlatformException {
+          debugPrint('Failed to get badge support.');
+        }
         // showSwipeHintCard(context: context);
         // showHoldHintCard(context: context);
       },

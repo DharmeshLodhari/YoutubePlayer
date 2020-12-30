@@ -473,8 +473,8 @@ class _UserLoginState extends State<UserLogin> {
 
   void login() async {
     final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
-    final SocketProvider socketProvider =
-        Provider.of<SocketProvider>(context, listen: false);
+    final MainSocketProvider socketProvider =
+        Provider.of<MainSocketProvider>(context, listen: false);
     final BankAccountBloc bankAccountBloc =
         Provider.of<BankAccountBloc>(context, listen: false);
 

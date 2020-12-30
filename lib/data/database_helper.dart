@@ -83,6 +83,8 @@ class DatabaseHelper {
                 "deviceName"	TEXT
              );
       ''');
+
+    // await db.execute('''CREATE TABLE "ChatUsers" ("")''');
   }
 
   // Close connect to the db
