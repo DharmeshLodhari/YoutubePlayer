@@ -64,7 +64,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Duration _timePeriodForSecond = Duration(seconds: 3);
   DateTime _lastSent = DateTime.now();
   DateTime _lastReceive = DateTime.now();
-  Duration _socketTimeout = Duration(seconds: 2);
+  Duration _socketTimeout = Duration(minutes: 4);
 
   Timer _timerForUserTypingState;
   Duration userMessageTypingStateUpdateTime = Duration(seconds: 2);
