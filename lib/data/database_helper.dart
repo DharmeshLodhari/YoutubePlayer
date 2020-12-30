@@ -84,7 +84,10 @@ class DatabaseHelper {
              );
       ''');
 
-    // await db.execute('''CREATE TABLE "ChatUsers" ("")''');
+    // await db.execute('''CREATE TABLE "ChatUsers" ("id" INTEGER PRIMARY KEY,
+    //                     "messageCount" INTEGER,
+    //                     "isRead" INTEGER
+    // );''');
   }
 
   // Close connect to the db
@@ -220,4 +223,23 @@ class DatabaseHelper {
     int res = await dbClient.insert("Device", data);
     return res;
   }
+
+
+  // save chatUsers to the database
+
+  saveChatUsers() async{
+
+    Database dbClient = await db;
+
+
+
+  }
+
+
+
+
+
+
+
+
 }

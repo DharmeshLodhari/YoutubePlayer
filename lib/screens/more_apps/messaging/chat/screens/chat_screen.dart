@@ -60,6 +60,12 @@ class _ChatScreenState extends State<ChatScreen> {
   int countRetry = 0;
   Duration connectionRetryDuration = Duration(seconds: 3);
 
+  Timer _timerForPingServer;
+  Duration _timePeriodForSecond = Duration(seconds: 3);
+  DateTime _lastSent = DateTime.now();
+  DateTime _lastReceive = DateTime.now();
+  Duration _socketTimeout = Duration(seconds: 2);
+
   Timer _timerForUserTypingState;
   Duration userMessageTypingStateUpdateTime = Duration(seconds: 2);
   bool isRecipientTyping = false;
@@ -79,6 +85,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
     setupScrollController();
 
+    pingServer();
+
     messageController.addListener(sendUserTypingState);
     messageController.addListener(searchUserProduct);
 
@@ -93,8 +101,11 @@ class _ChatScreenState extends State<ChatScreen> {
   void dispose() {
     _timerForUserTypingState?.cancel();
     _timerForRetryConnection?.cancel();
+    _timerForPingServer?.cancel();
+
     messageController.removeListener(sendUserTypingState);
     messageController.removeListener(searchUserProduct);
+
     messageController.dispose();
 
     try {
@@ -117,8 +128,11 @@ class _ChatScreenState extends State<ChatScreen> {
 
     /// for connecting the socket
     try {
-      channel = IOWebSocketChannel.connect(finalUrl,
-          headers: headers, pingInterval: Duration(seconds: 1));
+      channel = IOWebSocketChannel.connect(
+        finalUrl,
+        headers: headers,
+        pingInterval: Duration(seconds: 1),
+      );
       debugPrint("connected to $finalUrl ");
       isConnected = true;
     } catch (e) {
@@ -173,6 +187,53 @@ class _ChatScreenState extends State<ChatScreen> {
       } else {
         _timerForRetryConnection?.cancel();
         countRetry = 0;
+      }
+    }
+  }
+
+  void pingServer() {
+    if (mounted) {
+      if (_timerForPingServer?.isActive ?? false) {
+        _timerForPingServer.cancel();
+      }
+
+      /// for reconnection the socket as define
+      _timerForPingServer = Timer.periodic(_timePeriodForSecond, (time) {
+        debugPrint("ping Timer tic !!!");
+        ping();
+      });
+    }
+  }
+
+  void ping() async {
+    debugPrint("ping call !!!");
+    var currentTime = DateTime.now();
+
+    if (currentTime.difference(_lastSent) > _socketTimeout &&
+        currentTime.difference(_lastReceive) > _socketTimeout) {
+      var data = {
+        "message": "ping",
+        "type": "ping",
+        "headers": headers,
+      };
+
+      try {
+        if (isConnected) {
+          channel.sink.add(jsonEncode(data));
+          _lastSent = DateTime.now();
+          debugPrint("ping Done!!");
+        }
+      } catch (e) {
+        debugPrint("ERROR:- $e");
+
+        numberOfRetry = 0;
+        isConnected = false;
+
+        await connectSocket().then((value) {
+          channel.sink.add(jsonEncode(data));
+          _lastSent = DateTime.now();
+          debugPrint("ping Done!!");
+        });
       }
     }
   }
@@ -292,6 +353,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void determineMessageType(String message) async {
     Map<String, dynamic> messageData = jsonDecode(message);
+    _lastReceive = DateTime.now();
 
     switch (messageData['type']) {
       case "chatroom_message":
@@ -315,6 +377,8 @@ class _ChatScreenState extends State<ChatScreen> {
             if (mounted) setState(() {});
           });
         }
+        break;
+      case "pong":
         break;
 
       case "image":
@@ -350,13 +414,20 @@ class _ChatScreenState extends State<ChatScreen> {
     try {
       if (isConnected) {
         channel.sink.add(jsonEncode(data));
+        _lastSent = DateTime.now();
       } else {
         throw Exception("Not Connected");
       }
     } catch (e) {
       debugPrint("ERROR:- $e");
-      reconnectSocket();
-      channel.sink.add(jsonEncode(data));
+
+      numberOfRetry = 0;
+      isConnected = false;
+
+      await connectSocket().then((value) {
+        channel.sink.add(jsonEncode(data));
+        _lastSent = DateTime.now();
+      });
     }
   }
 
@@ -820,11 +891,27 @@ class _ChatScreenState extends State<ChatScreen> {
       return;
     }
 
+    /// message = Message(
+    //             check_id=data["check_id"],
+    //             conversation=data["conversation"],
+    //             author=data["author"],
+    //             text=data["text"],
+    //             media=data["media"],
+    //             kind=data["kind"],
+    //             read_by_author=data["read_by_author"],
+    //             was_edited=data["was_edited"],
+    //             updated_at=data["updated_at"],
+    //             created_at=data["created_at"],
+    //         )
+
     var data = {
-      "username": userBloc.user.userName,
-      "recipient": recipientUser.userName.trim(),
-      "message": message,
       "check_id": Uuid().v4(),
+      "conversation": recipientUser.conversationId,
+      "author": userBloc.user.userName,
+      "message": message,
+      "kind": "text",
+      "read_by_author": true,
+      "created_at": DateTime.now().toUtc().toString(),
       "type": "chatroom_message",
       "headers": headers,
     };
@@ -833,15 +920,20 @@ class _ChatScreenState extends State<ChatScreen> {
       if (isConnected) {
         channel.sink.add(jsonEncode(data));
         debugPrint("Data sent!!!");
+        _lastSent = DateTime.now();
       } else {
         throw Exception("Not Connected");
       }
     } catch (e) {
       debugPrint("ERROR:- While adding data in WebSocket $e");
-      connectSocket();
 
-      channel.sink.add(jsonEncode(data));
-      debugPrint("Data added in webSocket :- $data");
+      numberOfRetry = 0;
+      isConnected = false;
+      await connectSocket().then((value) {
+        channel.sink.add(jsonEncode(data));
+        _lastSent = DateTime.now();
+        debugPrint("Data added in webSocket :- $data");
+      });
     }
 
     messageController.text = "";

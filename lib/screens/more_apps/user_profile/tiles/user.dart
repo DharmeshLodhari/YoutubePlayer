@@ -1,6 +1,7 @@
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
@@ -58,10 +59,23 @@ class UserTile extends StatelessWidget {
             softWrap: false,
           ),
           leading: avatarImage,
+          trailing: getTrailing(),
         ),
       ),
     );
-
     return tile;
+  }
+
+  Widget getTrailing() {
+    return Badge(
+      elevation: 0,
+      badgeColor: naturalGreen,
+      animationType: BadgeAnimationType.slide,
+      badgeContent: Text(
+        "1",
+        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+      ),
+      position: BadgePosition(end: 0, top: 0),
+    );
   }
 }
