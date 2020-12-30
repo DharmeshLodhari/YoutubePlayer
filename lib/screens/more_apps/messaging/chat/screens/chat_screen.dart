@@ -1032,6 +1032,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         backgroundColor: Colors.transparent,
                       ),
                     ),
+                    errorWidget: imageErrorWidget,
                   ),
                   borderRadius: BorderRadius.circular(4),
                 ),

@@ -145,7 +145,7 @@ class AuthService {
     // Authenticate again if token has expired
     if (hasTokenExpired(expirationTime)) {
       debugPrint("Token Expired getting new one");
-      User _user = await getUser();
+      User _user = await _db.getUser();
       await authenticate(_user.phoneNumber, _user.password);
       tokenData = await _db.getJwt(); // get new token now
     }

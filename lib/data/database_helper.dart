@@ -14,6 +14,11 @@ class DatabaseHelper {
 
   static Database _db;
 
+  /// if _db fail to get this data then we will return this variables
+  User _user;
+  Map<String, String> _jwt;
+  Map<String, dynamic> _deviceData;
+
   Future<Database> get db async {
     if (_db != null) return _db;
     _db = await initDb();
@@ -88,6 +93,7 @@ class DatabaseHelper {
   // Save user to the db
   Future<int> saveUser(User user) async {
     var dbClient = await db;
+    _user = user;
     int res;
     try {
       res = await dbClient.insert("User", user.toMap());
@@ -103,6 +109,7 @@ class DatabaseHelper {
   // Delete user from db
   Future<int> deleteUsers() async {
     var dbClient = await db;
+    _user = null;
     int res = await dbClient.delete("User");
     debugPrint("User deleted from db");
     return res;
@@ -119,29 +126,35 @@ class DatabaseHelper {
   Future<User> getUser() async {
     // Get the user
     var dbClient = await db;
-    var res = await dbClient.query("User");
+    List<Map<String, dynamic>> res = await dbClient.query("User");
 //    List<User> users = [];
+    var user;
+    if (res != null && res.length > 0) {
+      var obj = res.first;
+      user = User(
+        uuid: obj["uuid"],
+        url: obj["url"],
+        phoneNumber: obj["phoneNumber"],
+        fullName: obj["fullName"],
+        userName: obj["userName"],
+        avatar: obj["avatar"],
+        qrCode: obj["qrCode"],
+        password: obj["password"],
+        isVerified: obj["is_verified"],
+      );
+    } else {
+      user = _user;
+    }
 
-    var obj = res[0];
-    var user = User(
-      uuid: obj["uuid"],
-      url: obj["url"],
-      phoneNumber: obj["phoneNumber"],
-      fullName: obj["fullName"],
-      userName: obj["userName"],
-      avatar: obj["avatar"],
-      qrCode: obj["qrCode"],
-      password: obj["password"],
-      isVerified: obj["is_verified"],
-    );
     return user;
   }
 
   // Jwt operations
 
   // save user's jwt to the db
-  Future<int> saveJwt(Map<String, dynamic> data) async {
+  Future<int> saveJwt(Map<String, String> data) async {
     var dbClient = await db;
+    _jwt = data;
     int res = await dbClient.insert("Jwt", data);
     debugPrint("Jwt saved to db");
     return res;
@@ -150,6 +163,7 @@ class DatabaseHelper {
   // Delete the jwt from the db
   Future<int> deleteJwt() async {
     var dbClient = await db;
+    _jwt = null;
     int res = await dbClient.delete("Jwt");
     debugPrint("Jwt deleted from db");
     return res;
@@ -161,13 +175,9 @@ class DatabaseHelper {
     List<Map<String, dynamic>> res = await dbClient.query("Jwt");
 
     if (res != null && res.length > 0) {
-      try {
-        return res[0];
-      } catch (e) {
-        throw e;
-      }
+      return res.first;
     }
-    return null;
+    return _jwt;
   }
 
   // Device operation
@@ -178,18 +188,16 @@ class DatabaseHelper {
     List<Map<String, dynamic>> res = await dbClient.query("Device");
 
     if (res != null && res.length > 0) {
-      try {
-        return res[0];
-      } catch (e) {
-        throw e;
-      }
+      return res.first;
+    } else {
+      return _deviceData;
     }
-    return null;
   }
 
   // delete device
   Future<int> deleteDevice() async {
     var dbClient = await db;
+    _deviceData = null;
     try {
       int res = await dbClient.delete("Device");
       return res;
@@ -206,6 +214,7 @@ class DatabaseHelper {
     try {
       await dbClient.delete("Device");
     } catch (e) {}
+    _deviceData = data;
     int res = await dbClient.insert("Device", data);
     return res;
   }
