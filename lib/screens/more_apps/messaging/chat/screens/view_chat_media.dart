@@ -1,5 +1,10 @@
+import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/video_player_controller/chewie_player.dart';
+import 'package:Slydo/utils/video_player_controller/chewie_progress_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:photo_view/photo_view.dart';
+import 'package:video_player/video_player.dart';
 
 class ViewChatMedia extends StatefulWidget {
   final arguments;
@@ -12,15 +17,69 @@ class ViewChatMedia extends StatefulWidget {
 
 class _ViewChatMediaState extends State<ViewChatMedia> {
   String type = "";
-  String file = "";
+  String url = "";
   String message = "";
+
+  VideoPlayerController _videoController;
+  ChewieController _chewieController;
+
+  bool isLoading = false;
 
   @override
   void initState() {
     type = widget.arguments["type"];
-    file = widget.arguments["file"];
+    url = widget.arguments["file"];
     message = widget.arguments["message"];
+
+    if (type == "video") {
+      isLoading = true;
+      if (mounted) setState(() {});
+
+      _videoController = VideoPlayerController.network(
+        url,
+      );
+      _chewieController = ChewieController(
+        videoPlayerController: _videoController,
+        aspectRatio: 16 / 9,
+        allowedScreenSleep: false,
+        allowFullScreen: true,
+        deviceOrientationsAfterFullScreen: [
+          DeviceOrientation.portraitUp,
+          DeviceOrientation.portraitDown,
+        ],
+        systemOverlaysAfterFullScreen: SystemUiOverlay.values,
+        // showControls: false,
+        materialProgressColors: ChewieProgressColors(
+          playedColor: navyBlue,
+          handleColor: Colors.white,
+          backgroundColor: dividerColor,
+          bufferedColor: Colors.white30,
+        ),
+        autoInitialize: true,
+      );
+
+      isLoading = false;
+      if (mounted) setState(() {});
+    }
+
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _videoController.dispose();
+    _chewieController.dispose();
+
+    SystemChrome.setPreferredOrientations(
+      [
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ],
+    );
+
+    SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+
+    super.dispose();
   }
 
   @override
@@ -31,6 +90,7 @@ class _ViewChatMediaState extends State<ViewChatMedia> {
           return Future.value(true);
         },
         child: Scaffold(
+          backgroundColor: Colors.black,
           body: scaffoldBody(),
         ),
       ),
@@ -44,10 +104,7 @@ class _ViewChatMediaState extends State<ViewChatMedia> {
           Expanded(
               child: Stack(
             children: [
-              ClipRect(
-                  child: PhotoView(
-                imageProvider: NetworkImage(file),
-              )),
+              getMediaItem(),
               Positioned(
                 top: 4,
                 left: 4,
@@ -96,5 +153,24 @@ class _ViewChatMediaState extends State<ViewChatMedia> {
         ],
       ),
     );
+  }
+
+  Widget getMediaItem() {
+    if (type == "image") {
+      return ClipRect(
+          child: PhotoView(
+        imageProvider: NetworkImage(url),
+      ));
+    }
+    if (type == "video") {
+      return Chewie(
+        controller: _chewieController,
+        posterUrl:
+            "https://c1.iggcdn.com/indiegogo-media-prod-cld/image/upload/c_fill,f_auto,h_630,w_1200/v1506734779/wcsmythcukjuuglotjvb.jpg",
+        titleName: "DAWN OF THUNDER",
+      );
+    } else {
+      return Container();
+    }
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
@@ -15,6 +16,7 @@ import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -25,6 +27,7 @@ import 'package:keyboard_visibility/keyboard_visibility.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 import 'package:uuid/uuid.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/status.dart' as status;
 
@@ -80,6 +83,10 @@ class _ChatScreenState extends State<ChatScreen> {
   Timer _timerForUserTypingState;
   Duration userMessageTypingStateUpdateTime = Duration(seconds: 2);
   bool isRecipientTyping = false;
+
+  bool isAudioPlaying = false;
+
+  double sliderValue = 5;
 
   @override
   void initState() {
@@ -859,6 +866,16 @@ class _ChatScreenState extends State<ChatScreen> {
         return getMessageUi;
         break;
 
+      case "video":
+        Widget getMessageUi = renderVideoMedia(message: messageData);
+        return getMessageUi;
+        break;
+
+      case "audio":
+        Widget getMessageUi = renderAudioMedia(message: messageData);
+        return getMessageUi;
+        break;
+
       case "transaction":
         Widget getPaymentUI = renderSendPayment(item: messageData);
         return getPaymentUI;
@@ -1079,7 +1096,7 @@ class _ChatScreenState extends State<ChatScreen> {
       },
       child: Row(
         mainAxisAlignment:
-        isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
+            isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
           Container(
             constraints: BoxConstraints(
@@ -1125,15 +1142,15 @@ class _ChatScreenState extends State<ChatScreen> {
                 isMessageEmpty
                     ? Container()
                     : Padding(
-                  padding: EdgeInsets.only(left: 2.0),
-                  child: Text(
-                    messageText,
-                    style: TextStyle(
-                        color: isSend ? Colors.white : blackFont,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500),
-                  ),
-                ),
+                        padding: EdgeInsets.only(left: 2.0),
+                        child: Text(
+                          messageText,
+                          style: TextStyle(
+                              color: isSend ? Colors.white : blackFont,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500),
+                        ),
+                      ),
                 SizedBox(
                   height: isMessageEmpty ? 2 : 6,
                 )
@@ -1143,6 +1160,230 @@ class _ChatScreenState extends State<ChatScreen> {
         ],
       ),
     );
+  }
+
+  Widget renderAudioMedia({Map<String, dynamic> message}) {
+    bool isSend = message["author"] == userBloc.user.userName;
+    String messageText = message['text'] ?? "";
+    bool isMessageEmpty = messageText == "";
+
+    return Row(
+      mainAxisAlignment:
+          isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
+      children: [
+        Container(
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width / 1.35,
+            minWidth: MediaQuery.of(context).size.width / 1.35,
+          ),
+          decoration: BoxDecoration(
+            color: chatBackgroundColor,
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(!isSend ? 0 : 6),
+              bottomRight: Radius.circular(isSend ? 0 : 6),
+              topLeft: Radius.circular(6),
+              topRight: Radius.circular(6),
+            ),
+          ),
+          padding: EdgeInsets.only(left: 4, right: 4, top: 4, bottom: 0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AudioWidget.network(
+                play: isAudioPlaying,
+                url:
+                    "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/f133a23f344e2e96b275800d505011f54a4dc20f/Burna-Boy-Monsters-You-Made-ft-Chris-Martin.mp3",
+                child: Row(
+                  children: [
+                    GestureDetector(
+                      child: Icon(
+                        isAudioPlaying
+                            ? Icons.pause_rounded
+                            : Icons.play_arrow_rounded,
+                        color: navyBlue,
+                        size: 28,
+                      ),
+                      onTap: () {
+                        isAudioPlaying = !isAudioPlaying;
+                        setState(() {});
+                      },
+                    ),
+                    Expanded(
+                      child: Slider(
+                        value: sliderValue,
+                        onChanged: (value) {
+                          sliderValue = value;
+                        },
+                        min: 0,
+                        max: 200,
+                      ),
+                    )
+                  ],
+                ),
+                onReadyToPlay: (duration) {
+                  //onReadyToPlay
+                },
+                onPositionChanged: (current, duration) {
+                  //onPositionChanged
+                },
+              )
+            ],
+          ),
+        )
+      ],
+    );
+  }
+
+  Future<Uint8List> getVideoThumbnail(String url) async {
+    Uint8List uInt8list = await VideoThumbnail.thumbnailData(
+      video: url,
+      imageFormat: ImageFormat.JPEG,
+      maxWidth:
+          512, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
+      quality: 25,
+    );
+
+    return uInt8list;
+  }
+
+  Widget renderVideoMedia({Map<String, dynamic> message}) {
+    bool isSend = message["author"] == userBloc.user.userName;
+    String messageText = message['text'] ?? "";
+    bool isMessageEmpty = messageText == "";
+
+    return GestureDetector(
+      onTap: () {
+        var result = Navigator.of(context).pushNamed(
+          "/view-chat-media",
+          arguments: {
+            "type": "video",
+            "file":
+                "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/e4199d196b558eb45681c194e3ce2734486e38aa/dawn-of-thunder.mp4?raw=true",
+            "message": message['text']
+          },
+        );
+
+        debugPrint("Result:- $result");
+      },
+      onLongPress: () {
+        Clipboard.setData(
+            new ClipboardData(text: message['text'] ?? message['media']));
+        Toast.show("Text copied !!", context,
+            gravity: Toast.BOTTOM,
+            duration: Toast.LENGTH_LONG,
+            backgroundColor: navyBlue,
+            textColor: Colors.white);
+      },
+      child: Row(
+        mainAxisAlignment:
+            isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
+        children: [
+          Container(
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width / 1.35,
+              minWidth: MediaQuery.of(context).size.width / 1.35,
+            ),
+            decoration: BoxDecoration(
+              color: isSend ? navyBlue : chatBackgroundColor,
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(!isSend ? 0 : 6),
+                bottomRight: Radius.circular(isSend ? 0 : 6),
+                topLeft: Radius.circular(6),
+                topRight: Radius.circular(6),
+              ),
+            ),
+            padding: EdgeInsets.only(left: 4, right: 4, top: 4, bottom: 0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  child: ClipRRect(
+                    child: Stack(
+                      children: [
+                        CachedNetworkImage(
+                          height: MediaQuery.of(context).size.width / 1.35,
+                          width: MediaQuery.of(context).size.width / 1.35,
+                          imageUrl:
+                              "https://c1.iggcdn.com/indiegogo-media-prod-cld/image/upload/c_fill,f_auto,h_630,w_1200/v1506734779/wcsmythcukjuuglotjvb.jpg",
+                          fit: BoxFit.cover,
+                          progressIndicatorBuilder:
+                              (context, url, downloadProgress) => Center(
+                            child: CircularProgressIndicator(
+                              value: downloadProgress.progress,
+                              strokeWidth: 2.5,
+                              valueColor: AlwaysStoppedAnimation(navyBlue),
+                              backgroundColor: Colors.transparent,
+                            ),
+                          ),
+                          errorWidget: imageErrorWidget,
+                        ),
+                        Container(
+                          width: MediaQuery.of(context).size.width / 1.35,
+                          height: MediaQuery.of(context).size.width / 1.35,
+                          child: Center(
+                            child: ClipOval(
+                              child: Container(
+                                height: 55,
+                                width: 55,
+                                color: Colors.white60,
+                                child: Center(
+                                  child: Icon(
+                                    Icons.play_arrow_rounded,
+                                    color: blackFont,
+                                    size: 28,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+                SizedBox(
+                  height: isMessageEmpty ? 2 : 2,
+                ),
+                isMessageEmpty
+                    ? Container()
+                    : Padding(
+                        padding: EdgeInsets.only(left: 2.0),
+                        child: Text(
+                          messageText,
+                          style: TextStyle(
+                              color: isSend ? Colors.white : blackFont,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500),
+                        ),
+                      ),
+                SizedBox(
+                  height: isMessageEmpty ? 2 : 6,
+                )
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget getVideoImage() {
+    Widget test = Container();
+    getVideoThumbnail(
+            "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/e4199d196b558eb45681c194e3ce2734486e38aa/dawn-of-thunder.mp4?raw=true")
+        .then((value) {
+      return Image.memory(
+        value,
+        height: MediaQuery.of(context).size.width / 1.35,
+        width: MediaQuery.of(context).size.width / 1.35,
+        fit: BoxFit.cover,
+        frameBuilder: imageFrameBuilder,
+      );
+    });
+    return test;
   }
 
   Widget renderPaymentRequest({Map<String, dynamic> message}) {
@@ -1166,7 +1407,7 @@ class _ChatScreenState extends State<ChatScreen> {
       },
       child: Row(
         mainAxisAlignment:
-        isSent ? MainAxisAlignment.end : MainAxisAlignment.start,
+            isSent ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
           Container(
             decoration: BoxDecoration(
@@ -1226,59 +1467,59 @@ class _ChatScreenState extends State<ChatScreen> {
                 Container(
                   child: isSent
                       ? Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Container(),
-                      ),
-                      SizedBox(
-                        width: 8,
-                      ),
-                      Expanded(
-                        child: CurvedButton(
-                          text: "Cancel",
-                          height: 36,
-                          backgroundColor: navyBlue,
-                          textColor: Colors.white,
-                          onPressed: () {},
-                        ),
-                      ),
-                    ],
-                  )
+                          children: <Widget>[
+                            Expanded(
+                              child: Container(),
+                            ),
+                            SizedBox(
+                              width: 8,
+                            ),
+                            Expanded(
+                              child: CurvedButton(
+                                text: "Cancel",
+                                height: 36,
+                                backgroundColor: navyBlue,
+                                textColor: Colors.white,
+                                onPressed: () {},
+                              ),
+                            ),
+                          ],
+                        )
                       : Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: CurvedButton(
-                          text: "Pay",
-                          height: 36,
-                          backgroundColor: navyBlue,
-                          textColor: Colors.white,
-                          onPressed: () async {
-                            var response = await PaymentAndBankingAuth()
-                                .acceptPaymentRequests(paymentRequest,
-                                messageId: message["message_id"]);
-                            debugPrint("${response.body}");
-                          },
+                          children: <Widget>[
+                            Expanded(
+                              child: CurvedButton(
+                                text: "Pay",
+                                height: 36,
+                                backgroundColor: navyBlue,
+                                textColor: Colors.white,
+                                onPressed: () async {
+                                  var response = await PaymentAndBankingAuth()
+                                      .acceptPaymentRequests(paymentRequest,
+                                          messageId: message["message_id"]);
+                                  debugPrint("${response.body}");
+                                },
+                              ),
+                            ),
+                            SizedBox(
+                              width: 8,
+                            ),
+                            Expanded(
+                              child: CurvedButton(
+                                height: 36,
+                                text: "Reject",
+                                backgroundColor: navyBlue,
+                                textColor: Colors.white,
+                                onPressed: () async {
+                                  var result = await PaymentAndBankingAuth()
+                                      .rejectPaymentRequests(paymentRequest,
+                                          messageId: message["message_id"]);
+                                  debugPrint("$result");
+                                },
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      SizedBox(
-                        width: 8,
-                      ),
-                      Expanded(
-                        child: CurvedButton(
-                          height: 36,
-                          text: "Reject",
-                          backgroundColor: navyBlue,
-                          textColor: Colors.white,
-                          onPressed: () async {
-                            var result = await PaymentAndBankingAuth()
-                                .rejectPaymentRequests(paymentRequest,
-                                messageId: message["message_id"]);
-                            debugPrint("$result");
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
               ],
             ),

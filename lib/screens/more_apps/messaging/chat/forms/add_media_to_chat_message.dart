@@ -5,9 +5,11 @@ import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
+import 'package:uuid/uuid.dart';
 
+// ignore: must_be_immutable
 class AddMediaToChatMessage extends StatefulWidget {
-  final arguments;
+  Map<String, dynamic> arguments;
 
   AddMediaToChatMessage({@required this.arguments});
 
@@ -16,7 +18,7 @@ class AddMediaToChatMessage extends StatefulWidget {
 }
 
 class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
-  Map<String, String> data;
+  Map<String, dynamic> data;
   File mediaFile;
 
   TextEditingController messageController;
@@ -177,7 +179,14 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
   void sendMessage() async {
     // Navigator.pop(context, Future.error("error"));
 
-    data['text'] = messageController.text.trim();
+    Map<String, dynamic> _data = {};
+    _data['text'] = messageController.text.trim();
+    _data['check_id'] = Uuid().v4();
+    _data['kind'] = "image";
+    _data['read_by_author'] = true;
+    _data['created_at'] = DateTime.now().toUtc().toString();
+    _data['type'] = "chatroom_message";
+    _data.addAll(data);
 
     showDialog(
         context: context,
@@ -185,7 +194,7 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
               child: CircularLoadingIndicator(),
             ));
 
-    MessageAuth().sendSocketMessage(data, mediaFile).then((value) {
+    MessageAuth().sendSocketMessage(_data, mediaFile).then((value) {
       Navigator.pop(context);
       Navigator.pop(context, true);
     }).catchError((error) {
