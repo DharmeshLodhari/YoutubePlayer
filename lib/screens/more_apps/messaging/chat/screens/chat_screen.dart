@@ -218,7 +218,6 @@ class _ChatScreenState extends State<ChatScreen> {
       var data = {
         "message": "ping",
         "type": "ping",
-        "headers": headers,
       };
 
       try {
@@ -407,12 +406,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void userTyping() async {
     var data = {
-      "username": userBloc.user.userName,
-      "recipient": recipientUser.userName.trim(),
-      "message": "",
-      // "type": "chatroom_message",
+      "message": "typing",
       "type": "user_typing_message",
-      "headers": headers,
     };
 
     try {
@@ -895,29 +890,15 @@ class _ChatScreenState extends State<ChatScreen> {
       return;
     }
 
-    /// message = Message(
-    //             check_id=data["check_id"],
-    //             conversation=data["conversation"],
-    //             author=data["author"],
-    //             text=data["text"],
-    //             media=data["media"],
-    //             kind=data["kind"],
-    //             read_by_author=data["read_by_author"],
-    //             was_edited=data["was_edited"],
-    //             updated_at=data["updated_at"],
-    //             created_at=data["created_at"],
-    //         )
-
     var data = {
       "check_id": Uuid().v4(),
-      "conversation": recipientUser.conversationId,
+      "conversation_id": recipientUser.conversationId,
       "author": userBloc.user.userName,
       "message": message,
       "kind": "text",
       "read_by_author": true,
       "created_at": DateTime.now().toUtc().toString(),
       "type": "chatroom_message",
-      "headers": headers,
     };
 
     try {
@@ -1062,6 +1043,13 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  String getDateTime(String dateAndTime) {
+    DateTime requestTime = DateTime.parse(dateAndTime);
+    String date = DateFormat("dd/MM/yyyy").format(requestTime);
+    String time = DateFormat("hh:mm a").format(requestTime);
+    return "$date • $time";
+  }
+
   Widget renderImageMedia({Map<String, dynamic> message}) {
     bool isSend = message["author"] == userBloc.user.userName;
     String messageText = message['text'] ?? "";
@@ -1091,7 +1079,7 @@ class _ChatScreenState extends State<ChatScreen> {
       },
       child: Row(
         mainAxisAlignment:
-            isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
+        isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
           Container(
             constraints: BoxConstraints(
@@ -1137,15 +1125,15 @@ class _ChatScreenState extends State<ChatScreen> {
                 isMessageEmpty
                     ? Container()
                     : Padding(
-                        padding: EdgeInsets.only(left: 2.0),
-                        child: Text(
-                          messageText,
-                          style: TextStyle(
-                              color: isSend ? Colors.white : blackFont,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500),
-                        ),
-                      ),
+                  padding: EdgeInsets.only(left: 2.0),
+                  child: Text(
+                    messageText,
+                    style: TextStyle(
+                        color: isSend ? Colors.white : blackFont,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500),
+                  ),
+                ),
                 SizedBox(
                   height: isMessageEmpty ? 2 : 6,
                 )
@@ -1178,7 +1166,7 @@ class _ChatScreenState extends State<ChatScreen> {
       },
       child: Row(
         mainAxisAlignment:
-            isSent ? MainAxisAlignment.end : MainAxisAlignment.start,
+        isSent ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
           Container(
             decoration: BoxDecoration(
@@ -1238,59 +1226,59 @@ class _ChatScreenState extends State<ChatScreen> {
                 Container(
                   child: isSent
                       ? Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: Container(),
-                            ),
-                            SizedBox(
-                              width: 8,
-                            ),
-                            Expanded(
-                              child: CurvedButton(
-                                text: "Cancel",
-                                height: 36,
-                                backgroundColor: navyBlue,
-                                textColor: Colors.white,
-                                onPressed: () {},
-                              ),
-                            ),
-                          ],
-                        )
-                      : Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: CurvedButton(
-                                text: "Pay",
-                                height: 36,
-                                backgroundColor: navyBlue,
-                                textColor: Colors.white,
-                                onPressed: () async {
-                                  var response = await PaymentAndBankingAuth()
-                                      .acceptPaymentRequests(paymentRequest,
-                                          messageId: message["message_id"]);
-                                  debugPrint("${response.body}");
-                                },
-                              ),
-                            ),
-                            SizedBox(
-                              width: 8,
-                            ),
-                            Expanded(
-                              child: CurvedButton(
-                                height: 36,
-                                text: "Reject",
-                                backgroundColor: navyBlue,
-                                textColor: Colors.white,
-                                onPressed: () async {
-                                  var result = await PaymentAndBankingAuth()
-                                      .rejectPaymentRequests(paymentRequest,
-                                          messageId: message["message_id"]);
-                                  debugPrint("$result");
-                                },
-                              ),
-                            ),
-                          ],
+                    children: <Widget>[
+                      Expanded(
+                        child: Container(),
+                      ),
+                      SizedBox(
+                        width: 8,
+                      ),
+                      Expanded(
+                        child: CurvedButton(
+                          text: "Cancel",
+                          height: 36,
+                          backgroundColor: navyBlue,
+                          textColor: Colors.white,
+                          onPressed: () {},
                         ),
+                      ),
+                    ],
+                  )
+                      : Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: CurvedButton(
+                          text: "Pay",
+                          height: 36,
+                          backgroundColor: navyBlue,
+                          textColor: Colors.white,
+                          onPressed: () async {
+                            var response = await PaymentAndBankingAuth()
+                                .acceptPaymentRequests(paymentRequest,
+                                messageId: message["message_id"]);
+                            debugPrint("${response.body}");
+                          },
+                        ),
+                      ),
+                      SizedBox(
+                        width: 8,
+                      ),
+                      Expanded(
+                        child: CurvedButton(
+                          height: 36,
+                          text: "Reject",
+                          backgroundColor: navyBlue,
+                          textColor: Colors.white,
+                          onPressed: () async {
+                            var result = await PaymentAndBankingAuth()
+                                .rejectPaymentRequests(paymentRequest,
+                                messageId: message["message_id"]);
+                            debugPrint("$result");
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -1298,13 +1286,6 @@ class _ChatScreenState extends State<ChatScreen> {
         ],
       ),
     );
-  }
-
-  String getDateTime(String dateAndTime) {
-    DateTime requestTime = DateTime.parse(dateAndTime);
-    String date = DateFormat("dd/MM/yyyy").format(requestTime);
-    String time = DateFormat("hh:mm a").format(requestTime);
-    return "$date • $time";
   }
 
   Widget renderSendPayment({Map<String, dynamic> item}) {
