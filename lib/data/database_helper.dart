@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io' as io;
 
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatUserModel.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
@@ -224,22 +225,11 @@ class DatabaseHelper {
     return res;
   }
 
-
   // save chatUsers to the database
 
-  saveChatUsers() async{
-
+  saveChatUsers(List<ChatUserModel> users) async {
     Database dbClient = await db;
 
-
-
+    // dbClient.batch().
   }
-
-
-
-
-
-
-
-
 }

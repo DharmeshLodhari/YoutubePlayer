@@ -46,8 +46,9 @@ class BottomSheetPassCode {
                 passwordEnteredCallback: _onPassCodeEntered,
                 cancelButton: Container(
                   padding: EdgeInsets.only(
+                      top: MediaQuery.of(context).size.height > 600 ? 0 : 16,
                       right: MediaQuery.of(context).size.width / 6 - 34,
-                      bottom: 25),
+                      bottom:  MediaQuery.of(context).size.height > 600 ? 25 : 8),
                   child: Text(
                     AppLocalization.of(context).cancel,
                     style: TextStyle(

@@ -194,7 +194,11 @@ class _UserDashboardState extends State<UserDashboard> {
           width: double.infinity,
           decoration: decorateBox(),
           child: Container(
-            padding: EdgeInsets.only(left: 24, right: 24, top: 18, bottom: 24),
+            padding: EdgeInsets.only(
+                left: 24,
+                right: 24,
+                top: MediaQuery.of(context).size.height > 600 ? 18 : 12,
+                bottom: MediaQuery.of(context).size.height > 600 ? 24 : 12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -1009,8 +1013,6 @@ class _UserDashboardState extends State<UserDashboard> {
               ));
         });
   }
-
-
 
   Widget bottomSheetItemWithCheck(
       {Function onTap,

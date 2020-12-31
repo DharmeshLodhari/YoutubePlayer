@@ -114,7 +114,8 @@ class _CustomizedPassCodeScreenState extends State<CustomizedPassCodeScreen>
                         borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(20),
                             topRight: Radius.circular(20))),
-                    height: 150,
+                    height:
+                        MediaQuery.of(context).size.height > 600 ? 150 : 125,
                     child: Column(
                       children: [
                         flexibleSpace(),

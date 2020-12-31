@@ -38,42 +38,48 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  CustomerProfile recipientUser;
-
+  /// Text message controller
   TextEditingController messageController;
   FocusNode messageFocus;
 
+  /// Current chat users
   UserBloc userBloc;
+  CustomerProfile recipientUser;
 
-  Map<String, dynamic> headers;
-
+  /// Messages list variables
   List<String> messageList = [];
+  bool isLoading = false;
+  int count = 0;
+  String next = "";
+  String previous = "";
+
+  /// Socket variables
   IOWebSocketChannel channel;
   String socketUrl = "wss://slydo.co/ws/chat";
+  Map<String, dynamic> headers;
 
+  /// Message scrolling variables
   ScrollController messageScrollController;
   bool fabIsVisible = false;
 
+  /// Reconnect server variables
   bool isConnected = false;
   Timer _timerForRetryConnection;
   int numberOfRetry = 30;
   int countRetry = 0;
   Duration connectionRetryDuration = Duration(seconds: 3);
 
+  /// ping server variables
   Timer _timerForPingServer;
   Duration _timePeriodForSecond = Duration(seconds: 3);
   DateTime _lastSent = DateTime.now();
   DateTime _lastReceive = DateTime.now();
-  Duration _socketTimeout = Duration(minutes: 3);
+  Duration _socketTimeout = Duration(seconds: 20);
 
+  /// User typing state variables
   Timer _timerForUserTypingState;
   Duration userMessageTypingStateUpdateTime = Duration(seconds: 2);
   bool isRecipientTyping = false;
-
-  bool isLoading = false;
-  int count = 0;
-  String next = "";
-  String previous = "";
 
   @override
   void initState() {
@@ -199,14 +205,12 @@ class _ChatScreenState extends State<ChatScreen> {
 
       /// for reconnection the socket as define
       _timerForPingServer = Timer.periodic(_timePeriodForSecond, (time) {
-        debugPrint("ping Timer tic !!!");
         ping();
       });
     }
   }
 
   void ping() async {
-    debugPrint("ping call !!!");
     var currentTime = DateTime.now();
 
     if (currentTime.difference(_lastSent) > _socketTimeout &&
@@ -221,7 +225,7 @@ class _ChatScreenState extends State<ChatScreen> {
         if (isConnected) {
           channel.sink.add(jsonEncode(data));
           _lastSent = DateTime.now();
-          debugPrint("ping Done!!");
+          debugPrint("ping sent!!");
         }
       } catch (e) {
         debugPrint("ERROR:- $e");

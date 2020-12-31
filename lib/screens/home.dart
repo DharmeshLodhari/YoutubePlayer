@@ -43,16 +43,22 @@ class _HomeState extends State<Home> {
       key: _scaffoldHomeKey,
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
-      body: Container(
-        height: MediaQuery.of(context).size.height -
-            (AppBar().preferredSize.height),
-        width: MediaQuery.of(context).size.width,
-        color: Colors.white,
-        child: Stack(
-          children: <Widget>[
-            backgroundScreen(),
-            foregroundScreen(),
-          ],
+      body: SingleChildScrollView(
+        child: Container(
+          height: MediaQuery.of(context).size.height -
+              (AppBar().preferredSize.height),
+          width: MediaQuery.of(context).size.width,
+          color: Colors.white,
+          child: Stack(
+            children: <Widget>[
+              backgroundScreen(),
+              Column(
+                children: [
+                  Expanded(child: foregroundScreen()),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -77,7 +83,7 @@ class _HomeState extends State<Home> {
       child: Column(
         children: <Widget>[
           Expanded(
-            flex: 9,
+            flex: MediaQuery.of(context).size.height > 600 ? 9 : 50,
             child: Column(
               children: <Widget>[
                 flexibleSpace(),
@@ -299,6 +305,8 @@ class _HomeState extends State<Home> {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 ListTile(
+                  dense:
+                      MediaQuery.of(context).size.height > 600 ? false : true,
                   contentPadding:
                       EdgeInsets.symmetric(horizontal: 16, vertical: 4.0),
                   leading: ClipOval(
@@ -338,7 +346,7 @@ class _HomeState extends State<Home> {
                 Container(
                     padding: EdgeInsets.symmetric(vertical: 32, horizontal: 32),
                     child: CachedNetworkImage(
-                      // height: MediaQuery.of(context).size.width / 1.5,
+                      height: MediaQuery.of(context).size.width / 1.7,
                       width: MediaQuery.of(context).size.width / 1.7,
                       imageUrl: userBloc.user.qrCode,
                       colorBlendMode: BlendMode.darken,
@@ -382,7 +390,10 @@ class _HomeState extends State<Home> {
         margin: EdgeInsets.zero,
         child: Container(
           decoration: decorateBox(),
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          padding: EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: MediaQuery.of(context).size.height > 600 ? 16 : 8,
+          ),
           child: Row(
             children: <Widget>[
               Expanded(
