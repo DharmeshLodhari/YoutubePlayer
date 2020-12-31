@@ -71,10 +71,10 @@ class _ChatScreenState extends State<ChatScreen> {
 
   /// ping server variables
   Timer _timerForPingServer;
-  Duration _timePeriodForSecond = Duration(seconds: 3);
+  Duration _timePeriodForSecond = Duration(seconds: 20);
   DateTime _lastSent = DateTime.now();
   DateTime _lastReceive = DateTime.now();
-  Duration _socketTimeout = Duration(seconds: 20);
+  Duration _socketTimeout = Duration(seconds: 19);
 
   /// User typing state variables
   Timer _timerForUserTypingState;
