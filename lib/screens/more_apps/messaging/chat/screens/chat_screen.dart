@@ -175,7 +175,17 @@ class _ChatScreenState extends State<ChatScreen> {
         })
         ..onDone(() {
           debugPrint("On Done called:-  Socket Closed !!!!");
-          isConnected = false;
+
+          if (mounted) {
+            isConnected = false;
+
+            /// fetching latest messages
+            count = 0;
+            next = "";
+            previous = "";
+            messageList.clear();
+            fetchPreviousMessages(showLoading: false);
+          }
         });
     }
   }
@@ -380,14 +390,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
     switch (messageData['type']) {
       case "chatroom_message":
-        messageList.add(message);
+        checkMessageToAdd(message: message);
 
-        if (mounted) setState(() {});
-
-        Timer(
-            Duration(milliseconds: 100),
-            () => messageScrollController
-                .jumpTo(messageScrollController.position.maxScrollExtent));
         break;
 
       case "user_typing_message":
@@ -424,6 +428,36 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  void checkMessageToAdd({String message}) {
+    if (messageList.length > 0) {
+      Map<String, dynamic> newMessage = jsonDecode(message);
+      Map<String, dynamic> previousMessage = jsonDecode(messageList.last);
+
+      debugPrint("new message :- ${newMessage['check_id']}");
+      debugPrint("previousMessage message :- ${previousMessage['check_id']}");
+
+      if (newMessage['check_id'] == previousMessage['check_id'] &&
+          newMessage["text"] == previousMessage["text"]) {
+        return;
+      } else {
+        addMessageToChat(message: message);
+      }
+    } else {
+      addMessageToChat(message: message);
+    }
+  }
+
+  void addMessageToChat({String message}) {
+    messageList.add(message);
+
+    if (mounted) setState(() {});
+
+    Timer(
+        Duration(milliseconds: 100),
+        () => messageScrollController
+            .jumpTo(messageScrollController.position.maxScrollExtent));
+  }
+
   void userTyping() async {
     var data = {
       "message": "typing",
@@ -435,13 +469,6 @@ class _ChatScreenState extends State<ChatScreen> {
         numberOfRetry = 0;
         isConnected = false;
         await connectSocket();
-
-        /// fetching latest messages
-        count = 0;
-        next = "";
-        previous = "";
-        messageList.clear();
-        fetchPreviousMessages(showLoading: false);
       }
 
       channel.sink.add(jsonEncode(data));
@@ -939,13 +966,6 @@ class _ChatScreenState extends State<ChatScreen> {
       numberOfRetry = 0;
       isConnected = false;
       await connectSocket();
-
-      /// fetching latest messages
-      count = 0;
-      next = "";
-      previous = "";
-      messageList.clear();
-      fetchPreviousMessages(showLoading: false);
     }
 
     if (message.isEmpty) {
