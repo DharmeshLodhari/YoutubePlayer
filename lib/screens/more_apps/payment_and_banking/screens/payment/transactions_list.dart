@@ -353,11 +353,10 @@ class _TransactionListState extends State<TransactionList> {
           onTap: () async {
             customerProfileBloc.customer =
                 await UserAuth().fetchCustomerProfile(transaction.payee);
-            Navigator.of(context).pushNamed('/send-payment',
-                arguments: <String, bool>{
-                  'isFromProfile': false,
-
-                });
+            Navigator.of(context)
+                .pushNamed('/send-payment', arguments: <String, bool>{
+              'isFromProfile': false,
+            });
           },
           title: AppLocalization.of(context).send,
           slideController: _slideController),

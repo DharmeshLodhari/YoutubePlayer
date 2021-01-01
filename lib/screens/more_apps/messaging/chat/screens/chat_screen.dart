@@ -5,6 +5,7 @@ import 'dart:typed_data';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
+import 'package:Slydo/screens/more_apps/music/music_detail_page.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -84,9 +85,9 @@ class _ChatScreenState extends State<ChatScreen> {
   Duration userMessageTypingStateUpdateTime = Duration(seconds: 2);
   bool isRecipientTyping = false;
 
+  /// Music Player
+  AssetsAudioPlayer _audioPlayer = AssetsAudioPlayer();
   bool isAudioPlaying = false;
-
-  double sliderValue = 5;
 
   @override
   void initState() {
@@ -115,6 +116,9 @@ class _ChatScreenState extends State<ChatScreen> {
     _timerForUserTypingState?.cancel();
     _timerForRetryConnection?.cancel();
     _timerForPingServer?.cancel();
+
+    _audioPlayer?.stop();
+    _audioPlayer?.dispose();
 
     messageController.removeListener(sendUserTypingState);
     messageController.removeListener(searchUserProduct);
@@ -170,7 +174,8 @@ class _ChatScreenState extends State<ChatScreen> {
           reconnectSocket();
         })
         ..onDone(() {
-          debugPrint("onDone:-  OnDone Called !!!!");
+          debugPrint("On Done called:-  Socket Closed !!!!");
+          isConnected = false;
         });
     }
   }
@@ -231,7 +236,10 @@ class _ChatScreenState extends State<ChatScreen> {
         if (isConnected) {
           channel.sink.add(jsonEncode(data));
           _lastSent = DateTime.now();
+          isConnected = false;
           debugPrint("ping sent!!");
+        } else {
+          throw Exception("Not Connected");
         }
       } catch (e) {
         debugPrint("ERROR:- $e");
@@ -242,6 +250,7 @@ class _ChatScreenState extends State<ChatScreen> {
         await connectSocket().then((value) {
           channel.sink.add(jsonEncode(data));
           _lastSent = DateTime.now();
+          isConnected = false;
           debugPrint("ping Done!!");
         });
       }
@@ -314,13 +323,15 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  void fetchPreviousMessages() async {
+  void fetchPreviousMessages({bool showLoading = true}) async {
     debugPrint("Fetching previous messages !!");
     if (!isLoading) {
       if (next != null && !isLoading) {
         if (mounted) {
-          isLoading = true;
-          setState(() {});
+          if (showLoading) {
+            isLoading = true;
+            setState(() {});
+          }
         }
         Map<String, dynamic> result = await MessageAuth().getChatMessages(
             next, previous,
@@ -364,6 +375,8 @@ class _ChatScreenState extends State<ChatScreen> {
   void determineMessageType(String message) async {
     Map<String, dynamic> messageData = jsonDecode(message);
     _lastReceive = DateTime.now();
+    isConnected = true;
+    if (mounted) setState(() {});
 
     switch (messageData['type']) {
       case "chatroom_message":
@@ -418,12 +431,21 @@ class _ChatScreenState extends State<ChatScreen> {
     };
 
     try {
-      if (isConnected) {
-        channel.sink.add(jsonEncode(data));
-        _lastSent = DateTime.now();
-      } else {
-        throw Exception("Not Connected");
+      if (!isConnected) {
+        numberOfRetry = 0;
+        isConnected = false;
+        await connectSocket();
+
+        /// fetching latest messages
+        count = 0;
+        next = "";
+        previous = "";
+        messageList.clear();
+        fetchPreviousMessages(showLoading: false);
       }
+
+      channel.sink.add(jsonEncode(data));
+      _lastSent = DateTime.now();
     } catch (e) {
       debugPrint("ERROR:- $e");
 
@@ -754,6 +776,14 @@ class _ChatScreenState extends State<ChatScreen> {
     ImageSource imageSource = await selectMediaSource();
     if (imageSource == null) return;
 
+    // FilePickerResult pickedMedia = await FilePicker.platform
+    //     .pickFiles(allowMultiple: false, type: FileType.media);
+
+    // if (pickedMedia != null) {
+    //   File file = File(pickedMedia.files.single.path);
+
+    // }
+
     PickedFile media = await ImagePicker().getImage(source: imageSource);
 
     if (media == null) return;
@@ -862,7 +892,7 @@ class _ChatScreenState extends State<ChatScreen> {
         break;
 
       case "image":
-        Widget getMessageUi = renderImageMedia(message: messageData);
+        Widget getMessageUi = renderAudioMedia(message: messageData);
         return getMessageUi;
         break;
 
@@ -902,6 +932,21 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void sendMessage() async {
     String message = messageController.text.trim();
+
+    /// this is a second level of protection to ensure the connection
+    /// this code of bloc is replicated in userTyping()
+    if (!isConnected) {
+      numberOfRetry = 0;
+      isConnected = false;
+      await connectSocket();
+
+      /// fetching latest messages
+      count = 0;
+      next = "";
+      previous = "";
+      messageList.clear();
+      fetchPreviousMessages(showLoading: false);
+    }
 
     if (message.isEmpty) {
       return;
@@ -1173,9 +1218,9 @@ class _ChatScreenState extends State<ChatScreen> {
       children: [
         Container(
           constraints: BoxConstraints(
-            maxWidth: MediaQuery.of(context).size.width / 1.35,
-            minWidth: MediaQuery.of(context).size.width / 1.35,
-          ),
+              maxWidth: MediaQuery.of(context).size.width / 1.35,
+              minWidth: MediaQuery.of(context).size.width / 1.35,
+              minHeight: 50),
           decoration: BoxDecoration(
             color: chatBackgroundColor,
             borderRadius: BorderRadius.only(
@@ -1190,43 +1235,85 @@ class _ChatScreenState extends State<ChatScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              AudioWidget.network(
-                play: isAudioPlaying,
-                url:
-                    "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/f133a23f344e2e96b275800d505011f54a4dc20f/Burna-Boy-Monsters-You-Made-ft-Chris-Martin.mp3",
-                child: Row(
-                  children: [
-                    GestureDetector(
-                      child: Icon(
-                        isAudioPlaying
-                            ? Icons.pause_rounded
-                            : Icons.play_arrow_rounded,
-                        color: navyBlue,
-                        size: 28,
-                      ),
-                      onTap: () {
-                        isAudioPlaying = !isAudioPlaying;
-                        setState(() {});
-                      },
-                    ),
-                    Expanded(
-                      child: Slider(
-                        value: sliderValue,
-                        onChanged: (value) {
-                          sliderValue = value;
+              Row(
+                children: [
+                  Container(
+                    padding: EdgeInsets.only(top: 6, left: 4),
+                    child: _audioPlayer.builderRealtimePlayingInfos(
+                        builder: (context, info) {
+                      if (info == null || info.current == null) {
+                        return GestureDetector(
+                          child: Icon(
+                            Icons.play_arrow_rounded,
+                            color: navyBlue,
+                            size: 32,
+                          ),
+                          onTap: () {
+                            _audioPlayer.open(
+                              Audio.network(
+                                  "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/f133a23f344e2e96b275800d505011f54a4dc20f/Burna-Boy-Monsters-You-Made-ft-Chris-Martin.mp3"),
+                              autoStart: true,
+                            );
+                            isAudioPlaying = !isAudioPlaying;
+                            setState(() {});
+                          },
+                        );
+                      }
+                      return GestureDetector(
+                        child: Icon(
+                          _audioPlayer.isPlaying.value
+                              ? Icons.pause_rounded
+                              : Icons.play_arrow_rounded,
+                          color: navyBlue,
+                          size: 32,
+                        ),
+                        onTap: () {
+                          if (_audioPlayer.isPlaying.value) {
+                            _audioPlayer.pause();
+                          } else {
+                            _audioPlayer.play();
+                          }
+                          setState(() {});
                         },
-                        min: 0,
-                        max: 200,
+                      );
+                    }),
+                  ),
+                  _audioPlayer.builderRealtimePlayingInfos(
+                      builder: (context, info) {
+                    if (info == null || info.current == null) {
+                      return Expanded(
+                        child: Column(
+                          children: [
+                            PositionSeekWidget(
+                              currentPosition: Duration.zero,
+                              duration: Duration.zero,
+                              seekTo: (to) {},
+                            ),
+                            SizedBox(
+                              height: 6,
+                            )
+                          ],
+                        ),
+                      );
+                    }
+                    return Expanded(
+                      child: Column(
+                        children: [
+                          PositionSeekWidget(
+                            currentPosition: info.currentPosition,
+                            duration: info.duration,
+                            seekTo: (to) {
+                              _audioPlayer.seek(to);
+                            },
+                          ),
+                          SizedBox(
+                            height: 6,
+                          )
+                        ],
                       ),
-                    )
-                  ],
-                ),
-                onReadyToPlay: (duration) {
-                  //onReadyToPlay
-                },
-                onPositionChanged: (current, duration) {
-                  //onPositionChanged
-                },
+                    );
+                  }),
+                ],
               )
             ],
           ),

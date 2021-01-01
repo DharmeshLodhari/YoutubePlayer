@@ -20,6 +20,7 @@ class AddMediaToChatMessage extends StatefulWidget {
 class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
   Map<String, dynamic> data;
   File mediaFile;
+  String mediaType;
 
   TextEditingController messageController;
 

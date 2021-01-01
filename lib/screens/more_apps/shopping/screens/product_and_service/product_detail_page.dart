@@ -770,10 +770,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   void navigateToSendPayment() {
     Navigator.of(context).pushNamed(
       '/send-payment',
-      arguments: {
-        'isFromProfile': false,
-        'product': product
-      },
+      arguments: {'isFromProfile': false, 'product': product},
     );
   }
 

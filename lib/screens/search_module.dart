@@ -903,10 +903,10 @@ class _SearchModuleState extends State<SearchModule> {
         onTap: () async {
           customerProfileBloc.customer =
               await UserAuth().fetchCustomerProfile(user.userName);
-          Navigator.of(context).pushNamed('/send-payment',
-              arguments: <String, bool>{
-                'isFromProfile': false,
-              });
+          Navigator.of(context)
+              .pushNamed('/send-payment', arguments: <String, bool>{
+            'isFromProfile': false,
+          });
         },
         title: AppLocalization.of(context).send,
         backgroundColor: naturalGreen,
@@ -955,10 +955,8 @@ class _SearchModuleState extends State<SearchModule> {
         onTap: () async {
           customerProfileBloc.customer =
               await UserAuth().fetchCustomerProfile(product.seller);
-          Navigator.of(context).pushNamed('/send-payment', arguments: {
-            'isFromProfile': false,
-            'product': product
-          });
+          Navigator.of(context).pushNamed('/send-payment',
+              arguments: {'isFromProfile': false, 'product': product});
         },
         title: AppLocalization.of(context).buy,
         backgroundColor: naturalGreen,
@@ -1007,10 +1005,8 @@ class _SearchModuleState extends State<SearchModule> {
           onTap: () async {
             customerProfileBloc.customer =
                 await UserAuth().fetchCustomerProfile(service.provider);
-            Navigator.of(context).pushNamed('/send-payment', arguments: {
-              'isFromProfile': false,
-              'service': service
-            });
+            Navigator.of(context).pushNamed('/send-payment',
+                arguments: {'isFromProfile': false, 'service': service});
           }),
     ];
   }

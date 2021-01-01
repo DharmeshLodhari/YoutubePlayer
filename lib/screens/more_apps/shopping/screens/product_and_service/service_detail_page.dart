@@ -760,10 +760,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   void navigateToSendPayment() {
     Navigator.of(context).pushNamed(
       '/send-payment',
-      arguments: {
-        'isFromProfile': false,
-        'service': service
-      },
+      arguments: {'isFromProfile': false, 'service': service},
     );
   }
 
