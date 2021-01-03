@@ -25,7 +25,6 @@ class MessageAuth extends AuthService {
     var url = secureBaseUrl + "/api/v1/chat/create/";
     debugPrint("URL:- $url");
     var headers = await getAuthHeaders();
-    // debugPrint("data :- $data}");
 
     var request = http.MultipartRequest("POST", Uri.parse(url));
 
@@ -205,4 +204,22 @@ class MessageAuth extends AuthService {
       throw json.decode(response.body);
     }
   }
+
+
+
+  // Get status of the user you are chatting with
+  Future<Map> getChatUserStatus(String id) async {
+    var url = secureBaseUrl + "/api/v1/chat/retrieve-user-chat-status/" + id + "/";
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
+    var jsonData = json.decode(response.body);
+    if (response.statusCode == 200) {
+      return jsonData;
+    } else {
+      return {};
+    }
+  }
+
+
+
 }
