@@ -10,10 +10,7 @@ class MainSocketProvider extends ChangeNotifier {
   IOWebSocketChannel _channel;
 
   User _currentUser;
-
   String _socketUrl = "wss://slydo.co/ws/main";
-  // String _socketUrl = "wss://echo.websocket.org";
-
   var _headers;
 
   bool _isConnected = false;
@@ -23,6 +20,19 @@ class MainSocketProvider extends ChangeNotifier {
   Duration _connectionRetryDuration = Duration(seconds: 3);
 
   User get currentUser => _currentUser;
+
+  /// Reconnect server variables
+  bool isConnected = false;
+  int numberOfRetry = 30;
+  int countRetry = 0;
+  Duration connectionRetryDuration = Duration(seconds: 3);
+
+  /// ping server variables
+  Timer _timerForPingServer;
+  Duration _timePeriodForSecond = Duration(seconds: 20);
+  DateTime _lastSent = DateTime.now();
+  DateTime _lastReceive = DateTime.now();
+  Duration _socketTimeout = Duration(seconds: 19);
 
   set currentUser(User value) {
     _currentUser = value;
@@ -36,8 +46,54 @@ class MainSocketProvider extends ChangeNotifier {
 
   IOWebSocketChannel get channel => _channel;
 
+  void pingServer() {
+    if (_timerForPingServer?.isActive ?? false) {
+        _timerForPingServer.cancel();
+    }
+
+    /// for reconnection the socket as define
+    _timerForPingServer = Timer.periodic(_timePeriodForSecond, (time) {
+      ping();
+    });
+  }
+
+  void ping() async {
+    var currentTime = DateTime.now();
+
+    if (currentTime.difference(_lastSent) > _socketTimeout &&
+        currentTime.difference(_lastReceive) > _socketTimeout) {
+      var data = {
+        "message": "ping",
+        "type": "ping",
+      };
+
+      try {
+        if (isConnected) {
+          channel.sink.add(jsonEncode(data));
+          _lastSent = DateTime.now();
+          isConnected = false;
+          print("ping sent!!");
+        } else {
+          throw Exception("Not Connected");
+        }
+      } catch (e) {
+        print("ERROR:- $e");
+
+        numberOfRetry = 0;
+        isConnected = false;
+
+        await connect().then((value) {
+          channel.sink.add(jsonEncode(data));
+          _lastSent = DateTime.now();
+          isConnected = false;
+          print("ping Done!!");
+        });
+      }
+    }
+  }
+
   /// for connecting the user socket
-  void connect() async {
+  Future<void> connect() async {
     _isConnected = false;
 
     /// change socket url according to recipient user url
@@ -67,8 +123,9 @@ class MainSocketProvider extends ChangeNotifier {
 
       _streamController.stream.listen((message) {
         /// listen every message from the socket
+        debugPrint("Got Message on main socket:- $message");
 
-        debugPrint("Got Message:- $message");
+
       }).onError((error) {
         /// if there is any error while listing the socket
 
