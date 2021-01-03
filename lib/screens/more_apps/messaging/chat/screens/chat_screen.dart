@@ -89,6 +89,9 @@ class _ChatScreenState extends State<ChatScreen> {
   AssetsAudioPlayer _audioPlayer = AssetsAudioPlayer();
   bool isAudioPlaying = false;
 
+  /// User status
+  String userStatus = "";
+
   @override
   void initState() {
     messageController = TextEditingController();
@@ -98,7 +101,7 @@ class _ChatScreenState extends State<ChatScreen> {
     connectSocket();
 
     setupScrollController();
-
+    getUserStatus();
     pingServer();
 
     messageController.addListener(sendUserTypingState);
@@ -173,18 +176,18 @@ class _ChatScreenState extends State<ChatScreen> {
           debugPrint("ERROR:- While listening the Socket $error");
           reconnectSocket();
         })
-        ..onDone(() {
+        ..onDone(() async {
           debugPrint("On Done called:-  Socket Closed !!!!");
 
           if (mounted) {
             isConnected = false;
 
             /// fetching latest messages
-            count = 0;
-            next = "";
-            previous = "";
-            messageList.clear();
-            fetchPreviousMessages(showLoading: false);
+            // count = 0;
+            // next = "";
+            // previous = "";
+            // messageList.clear();
+            // fetchPreviousMessages(showLoading: false);
           }
         });
     }
@@ -247,12 +250,12 @@ class _ChatScreenState extends State<ChatScreen> {
           channel.sink.add(jsonEncode(data));
           _lastSent = DateTime.now();
           isConnected = false;
-          debugPrint("ping sent!!");
+          print("ping sent!!");
         } else {
           throw Exception("Not Connected");
         }
       } catch (e) {
-        debugPrint("ERROR:- $e");
+        print("ERROR:- $e");
 
         numberOfRetry = 0;
         isConnected = false;
@@ -261,9 +264,10 @@ class _ChatScreenState extends State<ChatScreen> {
           channel.sink.add(jsonEncode(data));
           _lastSent = DateTime.now();
           isConnected = false;
-          debugPrint("ping Done!!");
+          print("ping Done!!");
         });
       }
+      getUserStatus();
     }
   }
 
@@ -387,6 +391,7 @@ class _ChatScreenState extends State<ChatScreen> {
     _lastReceive = DateTime.now();
     isConnected = true;
     if (mounted) setState(() {});
+    getUserStatus();
 
     switch (messageData['type']) {
       case "chatroom_message":
@@ -441,9 +446,11 @@ class _ChatScreenState extends State<ChatScreen> {
         return;
       } else {
         addMessageToChat(message: message);
+        scrollToBottom();
       }
     } else {
       addMessageToChat(message: message);
+      scrollToBottom();
     }
   }
 
@@ -571,7 +578,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   maxLines: 1,
                 ),
                 Text(
-                  isRecipientTyping ? "Typing.." : "Online",
+                  isRecipientTyping ? "Typing.." : userStatus, //"Online",
                   style: TextStyle(
                     color: darkGrey,
                     fontSize: 12,
@@ -592,6 +599,42 @@ class _ChatScreenState extends State<ChatScreen> {
       //   )
       // ],
     );
+  }
+
+  void  getUserStatus() async {
+    var data = await MessageAuth().getChatUserStatus(recipientUser.userName);
+
+    print("userdata:$data");
+    setState(() {
+      if (data["status"] == "Online")
+        {
+          userStatus = "Online";
+        }
+      else{
+        DateTime  now = new DateTime.now();
+        DateTime today = new DateTime(now.year, now.month, now.day);
+        DateTime yesterday = now.subtract(Duration(days: 1));
+
+        DateTime lastSeenDateTime = DateTime.parse(data["last_seen"]);
+        DateTime lastSeenDate = new DateTime(lastSeenDateTime.year, lastSeenDateTime.month, lastSeenDateTime.day);
+
+        String lastSeenDateString = DateFormat("dd/MM/yyyy").format(lastSeenDateTime);
+        String lastSeenTime = DateFormat("hh:mm a").format(lastSeenDateTime);
+
+        if (today == lastSeenDate){
+          userStatus = 'last seen today at ' + lastSeenTime;
+          return;
+        }
+
+        if (yesterday == lastSeenDate){
+          userStatus = 'last seen yesterday at ' + lastSeenTime;
+          return;
+        }
+        //Todo: Add within last 7 day (last seen Monday at 1.30 AM)
+        userStatus = 'last seen ' + lastSeenDateString + ' ' + lastSeenTime;
+      }
+
+    });
   }
 
   Widget getUserIcon() => Container(
@@ -911,7 +954,6 @@ class _ChatScreenState extends State<ChatScreen> {
     Map<String, dynamic> messageData = jsonDecode(message);
 
     String messageType = messageData["kind"];
-
     switch (messageType) {
       case "text":
         Widget getMessageUi = renderMessage(message: messageData);
@@ -919,7 +961,7 @@ class _ChatScreenState extends State<ChatScreen> {
         break;
 
       case "image":
-        Widget getMessageUi = renderAudioMedia(message: messageData);
+        Widget getMessageUi = renderImageMedia(message: messageData);
         return getMessageUi;
         break;
 
@@ -1229,8 +1271,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget renderAudioMedia({Map<String, dynamic> message}) {
     bool isSend = message["author"] == userBloc.user.userName;
-    String messageText = message['text'] ?? "";
-    bool isMessageEmpty = messageText == "";
+    // String messageText = message['text'] ?? "";
+    // bool isMessageEmpty = messageText == "";
 
     return Row(
       mainAxisAlignment:
