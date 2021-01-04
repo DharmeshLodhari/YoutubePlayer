@@ -1,15 +1,17 @@
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+
 class ChatUserModel {
-  String id;
+  String conversationId;
   int isRead;
 
   /// isRead  0 = unread  1 = read
   int messageCount;
 
-  ChatUserModel({this.id, this.isRead = 0, this.messageCount = 0});
+  ChatUserModel({this.conversationId, this.isRead = 0, this.messageCount = 0});
 
   factory ChatUserModel.fromJson(Map<String, dynamic> json) {
     return ChatUserModel(
-      id: json['id'],
+      conversationId: json['id'],
       isRead: json['isRead'],
       messageCount: json['messageCount'],
     );
@@ -17,9 +19,17 @@ class ChatUserModel {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
+    data['conversationId'] = this.conversationId;
     data['isRead'] = this.isRead;
     data['messageCount'] = this.messageCount;
     return data;
+  }
+
+  factory ChatUserModel.fromCustomerProfile(CustomerProfile user) {
+    return ChatUserModel(
+      conversationId: user.conversationId,
+      isRead: 1,
+      messageCount: 0,
+    );
   }
 }

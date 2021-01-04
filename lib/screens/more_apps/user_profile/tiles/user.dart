@@ -1,3 +1,5 @@
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatUserModel.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
@@ -67,15 +69,42 @@ class UserTile extends StatelessWidget {
   }
 
   Widget getTrailing() {
-    return Badge(
-      elevation: 0,
-      badgeColor: naturalGreen,
-      animationType: BadgeAnimationType.slide,
-      badgeContent: Text(
-        "1",
-        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
-      ),
-      position: BadgePosition(end: 0, top: 0),
-    );
+    return FutureBuilder<ChatUserModel>(
+        future: ChatUserManager().getUser(user.conversationId),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            debugPrint(
+                "Error:- while retrieving message count ${snapshot.error}");
+            return Container(
+              width: 1,
+              height: 1,
+            );
+          } else if (snapshot.hasData) {
+            debugPrint("Data:- ${snapshot.data.messageCount}");
+
+            if (snapshot.data.messageCount == 0) {
+              return Container(
+                width: 1,
+                height: 1,
+              );
+            }
+
+            return Badge(
+              elevation: 0,
+              badgeColor: naturalGreen,
+              animationType: BadgeAnimationType.slide,
+              badgeContent: Text(
+                "${snapshot.data.messageCount}",
+                style:
+                    TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+              ),
+              position: BadgePosition(end: 0, top: 0),
+            );
+          }
+          return Container(
+            width: 1,
+            height: 1,
+          );
+        });
   }
 }

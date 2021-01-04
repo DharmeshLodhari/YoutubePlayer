@@ -1,4 +1,5 @@
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/tiles/user.dart';
 import 'package:Slydo/services/auth.dart';
@@ -152,6 +153,9 @@ class _ConnectionListState extends State<ConnectionList> {
         connectionsList.addAll(users);
 
         if (mounted) setState(() {});
+
+        /// adding chat Users in database
+        ChatUserManager().addUsers(users);
       }
       if (connectionsList.isEmpty) {
         noItemInList = true;

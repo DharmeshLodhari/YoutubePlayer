@@ -1,7 +1,10 @@
+import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_message_handler.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'block_list.dart';
 import 'connection_request_list.dart';
@@ -16,6 +19,22 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
   int currentIndex = 0;
 
   var filterValue = "Connections";
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      MainSocketProvider mainSocketProvider =
+          Provider.of<MainSocketProvider>(context, listen: false);
+
+      mainSocketProvider.listen((event) {
+        debugPrint("==================== $event");
+        MainSocketMessageHandler(message: event);
+        setState(() {});
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +53,10 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
         ),
       ),
     );
+  }
+
+  void listenSocket() async {
+    return Future.value();
   }
 
   Widget appBar() {

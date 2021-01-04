@@ -653,7 +653,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     var item = consumable[index];
     Map data = {
       "type": item["type"],
-      "id": item.id,
+      "id": item.conversationId,
     };
 
     _auth.removeItemToShoppingCart(data);

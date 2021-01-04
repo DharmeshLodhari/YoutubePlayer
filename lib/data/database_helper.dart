@@ -30,7 +30,7 @@ class DatabaseHelper {
 
   initDb() async {
     io.Directory documentsDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentsDirectory.path, "main.db");
+    String path = join(documentsDirectory.path, "main1.db");
     var theDb = await openDatabase(path,
         version: 1, onCreate: _onCreate, onUpgrade: _onUpgrade);
     return theDb;
@@ -44,6 +44,7 @@ class DatabaseHelper {
       // db.execute("ALTER TABLE table_name ADD column_name TEXT;")  adding column
       // db.execute("ALTER TABLE table_name DROP column_name;")  adding column
 //      db.execute("ALTER TABLE User ADD is_verified INTEGER;");
+
     } else {
       debugPrint("No migrations to apply");
     }
@@ -85,10 +86,13 @@ class DatabaseHelper {
              );
       ''');
 
-    // await db.execute('''CREATE TABLE "ChatUsers" ("id" INTEGER PRIMARY KEY,
-    //                     "messageCount" INTEGER,
-    //                     "isRead" INTEGER
-    // );''');
+    // Create the ChatUsers table
+    await db
+        .execute('''CREATE TABLE "ChatUsers" ("conversationId" TEXT PRIMARY KEY,
+                     "messageCount" INTEGER,
+                     "isRead" INTEGER     
+              );
+    ''');
   }
 
   // Close connect to the db
@@ -225,11 +229,46 @@ class DatabaseHelper {
     return res;
   }
 
-  // save chatUsers to the database
-
-  saveChatUsers(List<ChatUserModel> users) async {
+  Future<Map<String, dynamic>> getChatUser(String conversationId) async {
     Database dbClient = await db;
 
+    List<Map<String, dynamic>> result = await dbClient.query("ChatUsers",
+        where: "conversationId = ?", whereArgs: [conversationId]);
+
+    return result.first;
+  }
+
+  // save chatUsers to the database
+
+  void saveChatUsers(List<ChatUserModel> users) async {
+    Database dbClient = await db;
+
+    Batch insertUserBatch = dbClient.batch();
+
+    users.forEach((user) {
+      insertUserBatch.insert("ChatUsers", user.toJson(),
+          conflictAlgorithm: ConflictAlgorithm.ignore);
+    });
+
+    var results = await insertUserBatch.commit();
+    debugPrint("Save User Result:- $results");
     // dbClient.batch().
+  }
+
+  // delete chatUsers
+  Future<int> deleteChatUsers() async {
+    var dbClient = await db;
+    int res = await dbClient.delete("ChatUsers");
+    debugPrint("ChatUsers deleted from db");
+    return res;
+  }
+
+  Future<int> updateChatUser(String conversationId) async {
+    var dbClient = await db;
+    await dbClient.execute(
+        "UPDATE ChatUsers SET messageCount = messageCount + 1 where conversationId = ?",
+        [conversationId]);
+    debugPrint("ChatUsers updated from db");
+    return 0;
   }
 }

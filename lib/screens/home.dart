@@ -12,11 +12,10 @@ import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
+import 'more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'more_apps/user_profile/user_auth.dart';
 
 class Home extends StatefulWidget {
@@ -181,21 +180,20 @@ class _HomeState extends State<Home> {
               }
               if (snapshot.hasData) {
                 debugPrint("Got Message:- ${snapshot.data}");
+
                 Map<String, dynamic> message = jsonDecode(snapshot.data);
-                if (message["hasMessage"]) {
-                  return Positioned(
-                    top: 8,
-                    right: -2,
-                    child: ClipOval(
-                      child: Container(
-                        height: 8,
-                        width: 8,
-                        color: mateRed,
-                      ),
+
+                return Positioned(
+                  top: 8,
+                  right: -2,
+                  child: ClipOval(
+                    child: Container(
+                      height: 8,
+                      width: 8,
+                      color: naturalGreen,
                     ),
-                  );
-                }
-                return Container();
+                  ),
+                );
               }
               return Container();
             })
@@ -268,22 +266,18 @@ class _HomeState extends State<Home> {
                 return Container();
               }
               if (snapshot.hasData) {
-                debugPrint("Got Message:- ${snapshot.data}");
                 Map<String, dynamic> message = jsonDecode(snapshot.data);
-                if (message["hasMessage"]) {
-                  return Positioned(
-                    top: 8,
-                    right: -2,
-                    child: ClipOval(
-                      child: Container(
-                        height: 8,
-                        width: 8,
-                        color: mateRed,
-                      ),
+                return Positioned(
+                  top: 8,
+                  right: -2,
+                  child: ClipOval(
+                    child: Container(
+                      height: 8,
+                      width: 8,
+                      color: naturalGreen,
                     ),
-                  );
-                }
-                return Container();
+                  ),
+                );
               }
               return Container();
             })
@@ -362,20 +356,8 @@ class _HomeState extends State<Home> {
         ),
       ),
       onTap: () async {
-        socketProvider.add({"hasMessage": hasMessage});
-        hasMessage = !hasMessage;
+        ChatUserManager().clearChatUsers();
 
-        try {
-          bool res = await FlutterAppBadger.isAppBadgeSupported();
-          if (res) {
-            FlutterAppBadger.updateBadgeCount(1);
-            debugPrint('Supported');
-          } else {
-            debugPrint('Not Supported');
-          }
-        } on PlatformException {
-          debugPrint('Failed to get badge support.');
-        }
         // showSwipeHintCard(context: context);
         // showHoldHintCard(context: context);
       },

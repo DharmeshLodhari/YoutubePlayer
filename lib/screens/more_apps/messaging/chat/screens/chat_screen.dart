@@ -601,39 +601,39 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  void  getUserStatus() async {
+  void getUserStatus() async {
     var data = await MessageAuth().getChatUserStatus(recipientUser.userName);
 
     print("userdata:$data");
     setState(() {
-      if (data["status"] == "Online")
-        {
-          userStatus = "Online";
-        }
-      else{
-        DateTime  now = new DateTime.now();
+      if (data["status"] == "Online") {
+        userStatus = "Online";
+      } else {
+        DateTime now = new DateTime.now();
         DateTime today = new DateTime(now.year, now.month, now.day);
         DateTime yesterday = now.subtract(Duration(days: 1));
 
         DateTime lastSeenDateTime = DateTime.parse(data["last_seen"]);
-        DateTime lastSeenDate = new DateTime(lastSeenDateTime.year, lastSeenDateTime.month, lastSeenDateTime.day);
+        DateTime lastSeenDate = new DateTime(lastSeenDateTime.year,
+            lastSeenDateTime.month, lastSeenDateTime.day);
 
-        String lastSeenDateString = DateFormat("dd/MM/yyyy").format(lastSeenDateTime);
+        String lastSeenDateString =
+            DateFormat("dd/MM/yyyy").format(lastSeenDateTime);
         String lastSeenTime = DateFormat("hh:mm a").format(lastSeenDateTime);
 
-        if (today == lastSeenDate){
+        if (today == lastSeenDate) {
           userStatus = 'last seen today at ' + lastSeenTime;
           return;
         }
 
-        if (yesterday == lastSeenDate){
+        if (yesterday == lastSeenDate) {
           userStatus = 'last seen yesterday at ' + lastSeenTime;
           return;
         }
         //Todo: Add within last 7 day (last seen Monday at 1.30 AM)
-        userStatus = 'last seen ' + lastSeenDateString + ' ' + lastSeenTime;
-      }
 
+        userStatus = 'last seen ' + lastSeenDateString + ' at ' + lastSeenTime;
+      }
     });
   }
 
