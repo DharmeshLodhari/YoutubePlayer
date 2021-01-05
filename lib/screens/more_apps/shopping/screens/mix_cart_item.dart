@@ -401,7 +401,8 @@ class _MixCartItemState extends State<MixCartItem> {
     basketBloc.addItemToCart(item: basketBloc.items[index]["item"], type: type);
     var mapData;
     basketBloc.items.forEach((element) {
-      if (element["item"].conversationId == basketBloc.items[index]["item"].conversationId) {
+      if (element["item"].conversationId ==
+          basketBloc.items[index]["item"].conversationId) {
         mapData = element;
         return;
       }
@@ -421,7 +422,8 @@ class _MixCartItemState extends State<MixCartItem> {
 
     var mapData;
     basketBloc.items.forEach((element) {
-      if (element["item"].conversationId == basketBloc.items[index]["item"].conversationId) {
+      if (element["item"].conversationId ==
+          basketBloc.items[index]["item"].conversationId) {
         mapData = element;
         return;
       }

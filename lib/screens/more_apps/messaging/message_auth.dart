@@ -205,11 +205,10 @@ class MessageAuth extends AuthService {
     }
   }
 
-
-
   // Get status of the user you are chatting with
   Future<Map> getChatUserStatus(String id) async {
-    var url = secureBaseUrl + "/api/v1/chat/retrieve-user-chat-status/" + id + "/";
+    var url =
+        secureBaseUrl + "/api/v1/chat/retrieve-user-chat-status/" + id + "/";
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
     var jsonData = json.decode(response.body);
@@ -219,7 +218,4 @@ class MessageAuth extends AuthService {
       return {};
     }
   }
-
-
-
 }

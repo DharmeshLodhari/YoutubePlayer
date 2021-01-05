@@ -411,7 +411,8 @@ class _MessageListState extends State<MessageList> {
     );
     if (result) {
       // call delete message _auth method
-      bool done = await _messageAuth.deleteMessage(messageList[index].conversationId);
+      bool done =
+          await _messageAuth.deleteMessage(messageList[index].conversationId);
       if (done) {
         _showSnackBar(
             context, AppLocalization.of(context).messageIsDeletedSuccessfully);

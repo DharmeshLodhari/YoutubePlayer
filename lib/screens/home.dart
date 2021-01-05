@@ -160,34 +160,35 @@ class _HomeState extends State<Home> {
                       size: 16,
                     ),
                   ),
-                  onTap: () {
-                    Navigator.of(context).pushNamed('/friends-dashboard');
+                  onTap: () async {
+                    var result = await Navigator.of(context)
+                        .pushNamed('/friends-dashboard');
+                    setState(() {});
                   },
                 ),
               ),
             ),
           ],
         ),
-        StreamBuilder<dynamic>(
-            stream: socketProvider.socketStream,
-            initialData: null,
+        FutureBuilder(
+            future: ChatUserManager().checkForChatMessagesCount(),
+            initialData: false,
             builder: (context, snapshot) {
-              if (snapshot?.error == false) {
-                debugPrint("ERROR:- ${snapshot.error}");
-                return Container();
-              }
               if (snapshot.hasData) {
-                return Positioned(
-                  top: 8,
-                  right: -2,
-                  child: ClipOval(
-                    child: Container(
-                      height: 8,
-                      width: 8,
-                      color: naturalGreen,
+                if (snapshot.data == true) {
+                  return Positioned(
+                    top: 8,
+                    right: -2,
+                    child: ClipOval(
+                      child: Container(
+                        height: 8,
+                        width: 8,
+                        color: naturalGreen,
+                      ),
                     ),
-                  ),
-                );
+                  );
+                }
+                return Container();
               }
               return Container();
             })
@@ -256,21 +257,21 @@ class _HomeState extends State<Home> {
             initialData: null,
             builder: (context, snapshot) {
               if (snapshot?.error == false) {
-                debugPrint("ERROR:- ${snapshot.error}");
                 return Container();
               }
               if (snapshot.hasData) {
-                return Positioned(
-                  top: 8,
-                  right: -2,
-                  child: ClipOval(
-                    child: Container(
-                      height: 8,
-                      width: 8,
-                      color: naturalGreen,
-                    ),
-                  ),
-                );
+                return Container();
+                // return Positioned(
+                //   top: 8,
+                //   right: -2,
+                //   child: ClipOval(
+                //     child: Container(
+                //       height: 8,
+                //       width: 8,
+                //       color: naturalGreen,
+                //     ),
+                //   ),
+                // );
               }
               return Container();
             })

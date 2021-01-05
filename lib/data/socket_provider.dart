@@ -48,7 +48,7 @@ class MainSocketProvider extends ChangeNotifier {
 
   void pingServer() {
     if (_timerForPingServer?.isActive ?? false) {
-        _timerForPingServer.cancel();
+      _timerForPingServer.cancel();
     }
 
     /// for reconnection the socket as define
@@ -124,8 +124,6 @@ class MainSocketProvider extends ChangeNotifier {
       _streamController.stream.listen((message) {
         /// listen every message from the socket
         debugPrint("Got Message on main socket:- $message");
-
-
       }).onError((error) {
         /// if there is any error while listing the socket
 

@@ -92,6 +92,14 @@ List monthName = [
   "December"
 ];
 
+String formatTime(String date) {
+  DateTime dateTime = DateTime.parse(date);
+
+  String time = DateFormat("hh:mm a").format(dateTime);
+
+  return time;
+}
+
 String formatDate(DateTime dateTime) {
   String date =
       "${dateTime.day} ${monthName[dateTime.month - 1]}, ${dateTime.year}";

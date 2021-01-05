@@ -45,6 +45,7 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   /// Text message controller
   TextEditingController messageController;
+  TextEditingController searchProductController;
   FocusNode messageFocus;
 
   /// Current chat users
@@ -110,6 +111,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     messageController = TextEditingController();
+    searchProductController = TextEditingController();
     messageFocus = FocusNode();
     recipientUser = widget.arguments["searchedUser"];
 
@@ -128,6 +130,9 @@ class _ChatScreenState extends State<ChatScreen> {
 
     super.initState();
   }
+
+  ///TODO: /p /s  {recipient product}
+  ///TODO: //p //s {own items}
 
   @override
   void dispose() {
@@ -712,6 +717,9 @@ class _ChatScreenState extends State<ChatScreen> {
             Expanded(
               child: textMessageField(),
             ),
+            // Expanded(
+            //   child: searchProductTextField(),
+            // ),
             sendMessageBtn(),
           ],
         ),
@@ -770,6 +778,66 @@ class _ChatScreenState extends State<ChatScreen> {
           },
         );
       },
+    );
+  }
+
+  Widget searchProductTextField() {
+    return TextFormField(
+      controller: searchProductController,
+      textInputAction: TextInputAction.send,
+      cursorColor: blackFont,
+      cursorWidth: 1,
+      cursorHeight: 20,
+      cursorRadius: Radius.circular(16),
+      onChanged: (value) {},
+      decoration: InputDecoration(
+        hintText: "search product",
+        hintStyle: TextStyle(
+          color: darkGrey.withOpacity(0.5),
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+        ),
+        prefix: Padding(
+          padding: EdgeInsets.only(left: 12),
+        ),
+        contentPadding: EdgeInsets.symmetric(vertical: 10),
+        isDense: true,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: greyBorderColor,
+            width: 1.0,
+          ),
+        ),
+        disabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: greyBorderColor,
+            width: 1.0,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: navyBlue,
+            width: 1.0,
+          ),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: greyBorderColor,
+            width: 1.0,
+          ),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: greyBorderColor,
+            width: 1.0,
+          ),
+        ),
+      ),
     );
   }
 
@@ -1192,7 +1260,7 @@ class _ChatScreenState extends State<ChatScreen> {
         children: [
           Padding(
             padding:
-                EdgeInsets.only(left: isSend ? 30 : 0, right: !isSend ? 30 : 0),
+                EdgeInsets.only(left: isSend ? 10 : 0, right: !isSend ? 10 : 0),
             child: Container(
                 constraints: BoxConstraints(
                   maxWidth: MediaQuery.of(context).size.width * 0.8,
@@ -1207,12 +1275,48 @@ class _ChatScreenState extends State<ChatScreen> {
                     topRight: Radius.circular(10),
                   ),
                 ),
-                child: Text(
-                  message['text'],
-                  style: TextStyle(
-                      color: isSend ? Colors.white : blackFont,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500),
+                child: Stack(
+                  overflow: Overflow.visible,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Flexible(
+                              child: Text(
+                                message['text'],
+                                style: TextStyle(
+                                    color: isSend ? Colors.white : blackFont,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 2,
+                          width: 45,
+                        )
+                      ],
+                    ),
+                    Positioned(
+                      right: -10,
+                      bottom: -10,
+                      child: Text(
+                        formatTime(message['created_at']),
+                        style: TextStyle(
+                            color: isSend ? Colors.white : Colors.black38,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                  ],
                 )),
           )
         ],
@@ -1299,18 +1403,43 @@ class _ChatScreenState extends State<ChatScreen> {
                 SizedBox(
                   height: isMessageEmpty ? 2 : 2,
                 ),
-                isMessageEmpty
-                    ? Container()
-                    : Padding(
-                        padding: EdgeInsets.only(left: 2.0),
-                        child: Text(
-                          messageText,
-                          style: TextStyle(
-                              color: isSend ? Colors.white : blackFont,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500),
+                Stack(
+                  overflow: Overflow.visible,
+                  children: [
+                   Column(
+                      children: [
+                        isMessageEmpty? Container():Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                messageText,
+                                style: TextStyle(
+                                    color: isSend ? Colors.white : blackFont,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500),
+                              ),
+                            ),
+                          ],
                         ),
+                        SizedBox(
+                          height: isMessageEmpty?8:2,
+                          width: 45,
+                        )
+                      ],
+                    ),
+                    Positioned(
+                      right: !isSend ? 0 : -2,
+                      bottom: isMessageEmpty?-2:-6,
+                      child: Text(
+                        formatTime(message['created_at']),
+                        style: TextStyle(
+                            color: isSend ? Colors.white : Colors.black38,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w500),
                       ),
+                    ),
+                  ],
+                ),
                 SizedBox(
                   height: isMessageEmpty ? 2 : 6,
                 )

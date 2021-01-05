@@ -302,4 +302,15 @@ class DatabaseHelper {
     debugPrint("ChatUsers MessageCount clear from db");
     return result;
   }
+
+  Future<int> getChatMessageCount() async {
+    var dbClient = await db;
+    List<Map<String, dynamic>> result = await dbClient
+        .rawQuery("SELECT SUM(messageCount) as Total FROM ChatUsers");
+    if (result != null) {
+      int count = result.first["Total"];
+      return count;
+    }
+    return 0;
+  }
 }

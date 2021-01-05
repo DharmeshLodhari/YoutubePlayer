@@ -271,7 +271,8 @@ class _ShoppingCartState extends State<ShoppingCart> {
     basketBloc.addItemToCart(item: basketBloc.items[index]["item"], type: type);
     var mapData;
     basketBloc.items.forEach((element) {
-      if (element["item"].conversationId == basketBloc.items[index]["item"].conversationId) {
+      if (element["item"].conversationId ==
+          basketBloc.items[index]["item"].conversationId) {
         mapData = element;
         return;
       }
@@ -291,7 +292,8 @@ class _ShoppingCartState extends State<ShoppingCart> {
 
     var mapData;
     basketBloc.items.forEach((element) {
-      if (element["item"].conversationId == basketBloc.items[index]["item"].conversationId) {
+      if (element["item"].conversationId ==
+          basketBloc.items[index]["item"].conversationId) {
         mapData = element;
         return;
       }
