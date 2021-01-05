@@ -1,34 +1,42 @@
+import 'dart:convert';
+
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:crypto/crypto.dart';
 
 class ChatUserModel {
   String conversationId;
-  int isRead;
-
-  /// isRead  0 = unread  1 = read
   int messageCount;
+  String hashedMessage;
 
-  ChatUserModel({this.conversationId, this.isRead = 0, this.messageCount = 0});
+  ChatUserModel(
+      {String conversationId, int messageCount, String hashedMessage}) {
+    this.conversationId = conversationId;
+    this.messageCount = messageCount;
+    this.hashedMessage = hashedMessage ?? generateHashedMessage(conversationId);
+  }
+
+  String generateHashedMessage(String input) {
+    return md5.convert(utf8.encode(input)).toString();
+  }
 
   factory ChatUserModel.fromJson(Map<String, dynamic> json) {
     return ChatUserModel(
-      conversationId: json['id'],
-      isRead: json['isRead'],
-      messageCount: json['messageCount'],
-    );
+        conversationId: json['id'],
+        messageCount: json['messageCount'],
+        hashedMessage: json['hashedMessage']);
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['conversationId'] = this.conversationId;
-    data['isRead'] = this.isRead;
     data['messageCount'] = this.messageCount;
+    data['hashedMessage'] = this.hashedMessage;
     return data;
   }
 
   factory ChatUserModel.fromCustomerProfile(CustomerProfile user) {
     return ChatUserModel(
       conversationId: user.conversationId,
-      isRead: 1,
       messageCount: 0,
     );
   }

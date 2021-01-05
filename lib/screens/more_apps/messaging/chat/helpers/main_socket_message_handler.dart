@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/MainSocketMessageModel.dart';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/cupertino.dart';
 
 class MainSocketMessageHandler {
@@ -18,17 +19,17 @@ class MainSocketMessageHandler {
       MainSocketMessageModel messageModel =
           MainSocketMessageModel.fromJson(jsonDecode(message));
 
-      var massegeHash = hashMessage(jsonDecode(message));
+      String hashedMessage = generateHashedMessage(message);
 
-      ChatUserManager().updateChatUser(messageModel.conversation);
+      // ChatUserManager().addUser();
+
+      ChatUserManager().updateChatUserMessageCount(
+          conversationId: messageModel.conversation,
+          hashedMessage: hashedMessage);
     }
   }
 }
 
-hashMessage(jsonDecode) {
-  var data = {};
-
-  data['conversationId'] = jsonDecode['conversationId'];
-  data['text'] = jsonDecode['text'];
-  data['check_id'] = jsonDecode['check_id'];
+String generateHashedMessage(String input) {
+  return md5.convert(utf8.encode(input)).toString();
 }

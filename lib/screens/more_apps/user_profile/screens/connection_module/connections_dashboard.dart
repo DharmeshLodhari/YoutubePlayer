@@ -31,7 +31,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
       mainSocketProvider.listen((event) {
         debugPrint("==================== $event");
         MainSocketMessageHandler(message: event);
-        setState(() {});
+        if (mounted) setState(() {});
       });
     });
   }

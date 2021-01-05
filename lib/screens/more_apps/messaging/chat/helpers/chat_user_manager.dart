@@ -1,6 +1,7 @@
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatUserModel.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:flutter/material.dart';
 
 class ChatUserManager {
   DatabaseHelper _db = DatabaseHelper();
@@ -16,6 +17,14 @@ class ChatUserManager {
     _db.saveChatUsers(dbUsers);
   }
 
+  void addUser(CustomerProfile user) {
+    /// Converting CustomerProfile in to Chat Users
+    ChatUserModel chatUserModel = ChatUserModel.fromCustomerProfile(user);
+
+    /// adding Chat User into DataBase
+    _db.saveChatUser(chatUserModel);
+  }
+
   Future<ChatUserModel> getUser(String conversationId) async {
     Map<String, dynamic> user = await _db.getChatUser(conversationId);
 
@@ -28,7 +37,15 @@ class ChatUserManager {
     await _db.deleteChatUsers();
   }
 
-  void updateChatUser(String conversationId) async {
-    await _db.updateChatUser(conversationId);
+  void updateChatUserMessageCount(
+      {String conversationId, String hashedMessage}) async {
+    await _db.updateChatUserMessageCount(
+        conversationId: conversationId, hashedMessage: hashedMessage);
+  }
+
+  void clearChatUserMessageCount({String conversationId}) async {
+    var result =
+        await _db.clearChatUserMessageCount(conversationId: conversationId);
+    debugPrint("Result:--------- $result");
   }
 }

@@ -320,21 +320,32 @@ class _ConnectionListState extends State<ConnectionList> {
   }
 }
 
-class VerticalListItem extends StatelessWidget {
+class VerticalListItem extends StatefulWidget {
   VerticalListItem(this.user);
 
   final CustomerProfile user;
 
   @override
+  _VerticalListItemState createState() => _VerticalListItemState();
+}
+
+class _VerticalListItemState extends State<VerticalListItem> {
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       // onTap: () => Navigator.pushNamed(context, '/profile',
       //     arguments: {"searchedUser": user}),
-      onTap: () => Navigator.pushNamed(context, '/chat-screen',
-          arguments: {"searchedUser": user}),
+      onTap: () async {
+        ChatUserManager().clearChatUserMessageCount(
+            conversationId: widget.user.conversationId);
+
+        var result = await Navigator.pushNamed(context, '/chat-screen',
+            arguments: {"searchedUser": widget.user});
+        setState(() {});
+      },
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 2),
-        child: UserTile(user: user),
+        child: UserTile(user: widget.user),
       ),
     );
   }

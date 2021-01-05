@@ -90,7 +90,7 @@ class DatabaseHelper {
     await db
         .execute('''CREATE TABLE "ChatUsers" ("conversationId" TEXT PRIMARY KEY,
                      "messageCount" INTEGER,
-                     "isRead" INTEGER     
+                     "hashedMessage" TEXT UNIQUE     
               );
     ''');
   }
@@ -250,9 +250,15 @@ class DatabaseHelper {
           conflictAlgorithm: ConflictAlgorithm.ignore);
     });
 
-    var results = await insertUserBatch.commit();
-    debugPrint("Save User Result:- $results");
-    // dbClient.batch().
+    await insertUserBatch.commit();
+  }
+
+  void saveChatUser(ChatUserModel user) async {
+    Database dbClient = await db;
+
+    int res = await dbClient.insert("ChatUsers", user.toJson(),
+        conflictAlgorithm: ConflictAlgorithm.ignore);
+    debugPrint("Save User Result:- $res");
   }
 
   // delete chatUsers
@@ -263,12 +269,33 @@ class DatabaseHelper {
     return res;
   }
 
-  Future<int> updateChatUser(String conversationId) async {
+  Future<void> updateChatUserMessageCount(
+      {String conversationId, String hashedMessage}) async {
     var dbClient = await db;
-    await dbClient.execute(
-        "UPDATE ChatUsers SET messageCount = messageCount + 1 where conversationId = ?",
-        [conversationId]);
-    debugPrint("ChatUsers updated from db");
-    return 0;
+    try {
+      await dbClient.execute(
+          "UPDATE ChatUsers SET messageCount = messageCount + 1 , hashedMessage = ? where conversationId = ?",
+          [hashedMessage, conversationId]);
+      debugPrint("Message added");
+    } catch (e) {
+      debugPrint("ERROR:- while updating the Chat Message count $e");
+    }
+    debugPrint("Chat message count updated from db");
+    return;
+  }
+
+  Future<int> clearChatUserMessageCount({String conversationId}) async {
+    var dbClient = await db;
+    int result;
+    try {
+      result = await dbClient.update("ChatUsers", {"messageCount": 0},
+          where: "conversationId = ?", whereArgs: [conversationId]);
+      // await dbClient.execute(
+      //     "UPDATE ChatUsers SET messageCount = 0 where conversationId = ?", [conversationId]);
+    } catch (e) {
+      debugPrint("ERROR:- while Clearing MessageCount $e");
+    }
+    debugPrint("ChatUsers MessageCount clear from db");
+    return result;
   }
 }
