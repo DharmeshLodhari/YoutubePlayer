@@ -19,6 +19,7 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -91,6 +92,20 @@ class _ChatScreenState extends State<ChatScreen> {
 
   /// User status
   String userStatus = "";
+
+  /// allowed message types
+  List<String> imageExtensions = ["jpg", "jpeg", "png", "gif", "webp"];
+  List<String> videoExtensions = [
+    "mp4",
+    "mov",
+    "wmv",
+    "flv",
+    "avi",
+    "webm",
+    "mkv"
+  ];
+
+  List<String> audioExtensions = ["m4a", "flac", "mp3", "wav", "wma", "aac"];
 
   @override
   void initState() {
@@ -605,36 +620,36 @@ class _ChatScreenState extends State<ChatScreen> {
     var data = await MessageAuth().getChatUserStatus(recipientUser.userName);
 
     print("userdata:$data");
-    setState(() {
-      if (data["status"] == "Online") {
-        userStatus = "Online";
-      } else {
-        DateTime now = new DateTime.now();
-        DateTime today = new DateTime(now.year, now.month, now.day);
-        DateTime yesterday = now.subtract(Duration(days: 1));
 
-        DateTime lastSeenDateTime = DateTime.parse(data["last_seen"]);
-        DateTime lastSeenDate = new DateTime(lastSeenDateTime.year,
-            lastSeenDateTime.month, lastSeenDateTime.day);
+    if (data["status"] == "Online") {
+      userStatus = "Online";
+    } else {
+      DateTime now = new DateTime.now();
+      DateTime today = new DateTime(now.year, now.month, now.day);
+      DateTime yesterday = now.subtract(Duration(days: 1));
 
-        String lastSeenDateString =
-            DateFormat("dd/MM/yyyy").format(lastSeenDateTime);
-        String lastSeenTime = DateFormat("hh:mm a").format(lastSeenDateTime);
+      DateTime lastSeenDateTime = DateTime.parse(data["last_seen"]);
+      DateTime lastSeenDate = new DateTime(
+          lastSeenDateTime.year, lastSeenDateTime.month, lastSeenDateTime.day);
 
-        if (today == lastSeenDate) {
-          userStatus = 'last seen today at ' + lastSeenTime;
-          return;
-        }
+      String lastSeenDateString =
+          DateFormat("dd/MM/yyyy").format(lastSeenDateTime);
+      String lastSeenTime = DateFormat("hh:mm a").format(lastSeenDateTime);
 
-        if (yesterday == lastSeenDate) {
-          userStatus = 'last seen yesterday at ' + lastSeenTime;
-          return;
-        }
-        //Todo: Add within last 7 day (last seen Monday at 1.30 AM)
-
-        userStatus = 'last seen ' + lastSeenDateString + ' at ' + lastSeenTime;
+      if (today == lastSeenDate) {
+        userStatus = 'last seen today at ' + lastSeenTime;
+        return;
       }
-    });
+
+      if (yesterday == lastSeenDate) {
+        userStatus = 'last seen yesterday at ' + lastSeenTime;
+        return;
+      }
+      //Todo: Add within last 7 day (last seen Monday at 1.30 AM)
+
+      userStatus = 'last seen ' + lastSeenDateString + ' at ' + lastSeenTime;
+    }
+    if (mounted) setState(() {});
   }
 
   Widget getUserIcon() => Container(
@@ -843,39 +858,77 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void addMediaToMessage() async {
-    ImageSource imageSource = await selectMediaSource();
-    if (imageSource == null) return;
+    // ImageSource imageSource = await selectMediaSource();
+    // if (imageSource == null) return;
 
-    // FilePickerResult pickedMedia = await FilePicker.platform
-    //     .pickFiles(allowMultiple: false, type: FileType.media);
+    List<String> allowedExtensions =
+        imageExtensions + videoExtensions + audioExtensions;
 
-    // if (pickedMedia != null) {
-    //   File file = File(pickedMedia.files.single.path);
+    FilePickerResult pickedMedia = await FilePicker.platform.pickFiles(
+        allowMultiple: false,
+        type: FileType.custom,
+        allowedExtensions: allowedExtensions);
 
-    // }
+    if (pickedMedia != null) {
+      File file = File(pickedMedia.files.single.path);
+      String mediaType = getFileType(pickedMedia);
 
-    PickedFile media = await ImagePicker().getImage(source: imageSource);
+      if (mediaType == "") {
+        return;
+      }
 
-    if (media == null) return;
-
-    var result = await Navigator.of(context).pushNamed(
-      "/send-media-to-chat-message",
-      arguments: {
-        "data": {
-          "conversation": recipientUser.conversationId,
-          "author": userBloc.user.userName,
+      var result = await Navigator.of(context).pushNamed(
+        "/send-media-to-chat-message",
+        arguments: {
+          "data": {
+            "conversation": recipientUser.conversationId,
+            "author": userBloc.user.userName,
+          },
+          "media": file,
+          "message": messageController.text.trim(),
+          "mediaType": mediaType
         },
-        "media": File(media.path),
-        "message": messageController.text.trim(),
-      },
-    ).catchError((error) {
-      debugPrint("Error: = = = = $error");
-    });
+      ).catchError((error) {
+        debugPrint("Error: = = = = $error");
+      });
 
-    if (result == null) return;
+      if (result == null) return;
 
-    messageController.text = "";
-    debugPrint("Result:- $result");
+      messageController.text = "";
+      debugPrint("Result:- $result");
+    }
+
+    // PickedFile media = await ImagePicker().getImage(source: imageSource);
+    //
+    // if (media == null) return;
+    //
+    // var result = await Navigator.of(context).pushNamed(
+    //   "/send-media-to-chat-message",
+    //   arguments: {
+    //     "data": {
+    //       "conversation": recipientUser.conversationId,
+    //       "author": userBloc.user.userName,
+    //     },
+    //     "media": File(media.path),
+    //     "message": messageController.text.trim(),
+    //   },
+    // ).catchError((error) {
+    //   debugPrint("Error: = = = = $error");
+    // });
+    //
+    // if (result == null) return;
+    //
+    // messageController.text = "";
+    // debugPrint("Result:- $result");
+  }
+
+  String getFileType(FilePickerResult pickedMedia) {
+    String extension = pickedMedia.files.single.extension;
+
+    if (imageExtensions.contains(extension)) return "image";
+    if (videoExtensions.contains(extension)) return "video";
+    if (audioExtensions.contains(extension)) return "audio";
+    return "";
   }
 
   Future<ImageSource> selectMediaSource() async {

@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
@@ -179,10 +177,6 @@ class _HomeState extends State<Home> {
                 return Container();
               }
               if (snapshot.hasData) {
-                debugPrint("Got Message:- ${snapshot.data}");
-
-                Map<String, dynamic> message = jsonDecode(snapshot.data);
-
                 return Positioned(
                   top: 8,
                   right: -2,
@@ -266,7 +260,6 @@ class _HomeState extends State<Home> {
                 return Container();
               }
               if (snapshot.hasData) {
-                Map<String, dynamic> message = jsonDecode(snapshot.data);
                 return Positioned(
                   top: 8,
                   right: -2,

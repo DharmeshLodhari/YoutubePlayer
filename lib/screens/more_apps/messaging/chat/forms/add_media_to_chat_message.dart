@@ -1,11 +1,17 @@
 import 'dart:io';
 
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
+import 'package:Slydo/screens/more_apps/music/music_detail_page.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/video_player_controller/chewie_player.dart';
+import 'package:Slydo/utils/video_player_controller/chewie_progress_colors.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:uuid/uuid.dart';
+import 'package:video_player/video_player.dart';
 
 // ignore: must_be_immutable
 class AddMediaToChatMessage extends StatefulWidget {
@@ -24,14 +30,79 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
 
   TextEditingController messageController;
 
+  bool isLoading = false;
+
+  VideoPlayerController _videoController;
+  ChewieController _chewieController;
+
+  /// Music Player
+  AssetsAudioPlayer _audioPlayer = AssetsAudioPlayer();
+  bool isAudioPlaying = false;
+
   @override
   void initState() {
     var message = widget.arguments["message"];
     messageController = TextEditingController(text: message);
     data = widget.arguments["data"];
     mediaFile = widget.arguments["media"];
+    mediaType = widget.arguments["mediaType"];
+
+    if (mediaType == "video") {
+      setUpVideoPlayer();
+    }
 
     super.initState();
+  }
+
+  void setUpVideoPlayer() {
+    isLoading = true;
+    if (mounted) setState(() {});
+
+    _videoController = VideoPlayerController.file(
+      mediaFile,
+    );
+    _chewieController = ChewieController(
+      videoPlayerController: _videoController,
+      aspectRatio: 16 / 9,
+      allowedScreenSleep: false, autoPlay: false,
+      allowFullScreen: true,
+      deviceOrientationsAfterFullScreen: [
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ],
+      systemOverlaysAfterFullScreen: SystemUiOverlay.values,
+      // showControls: false,
+      materialProgressColors: ChewieProgressColors(
+        playedColor: navyBlue,
+        handleColor: Colors.white,
+        backgroundColor: dividerColor,
+        bufferedColor: Colors.white30,
+      ),
+      autoInitialize: true,
+    );
+
+    isLoading = false;
+    if (mounted) setState(() {});
+  }
+
+  @override
+  void dispose() {
+    _videoController?.dispose();
+    _chewieController?.dispose();
+
+    _audioPlayer?.stop();
+    _audioPlayer?.dispose();
+
+    SystemChrome.setPreferredOrientations(
+      [
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ],
+    );
+
+    SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+
+    super.dispose();
   }
 
   @override
@@ -42,6 +113,7 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
           return Future.value(true);
         },
         child: Scaffold(
+          backgroundColor: Colors.black,
           body: scaffoldBody(),
         ),
       ),
@@ -55,10 +127,7 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
           Expanded(
               child: Stack(
             children: [
-              ClipRect(
-                  child: PhotoView(
-                imageProvider: FileImage(mediaFile),
-              )),
+              getMediaRenderer(),
               Positioned(
                 top: 4,
                 left: 4,
@@ -82,6 +151,7 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
             ],
           )),
           Container(
+            color: Colors.white,
             padding: EdgeInsets.symmetric(vertical: 8),
             child: Row(
               children: <Widget>[
@@ -183,7 +253,7 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
     Map<String, dynamic> _data = {};
     _data['text'] = messageController.text.trim();
     _data['check_id'] = Uuid().v4();
-    _data['kind'] = "image";
+    _data['kind'] = mediaType;
     _data['read_by_author'] = true;
     _data['created_at'] = DateTime.now().toUtc().toString();
     _data['type'] = "chatroom_message";
@@ -202,5 +272,132 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
       Navigator.pop(context);
       Navigator.pop(context, Future.error(error));
     });
+  }
+
+  Widget getMediaRenderer() {
+    if (mediaType == "image") {
+      return ClipRect(
+          child: PhotoView(
+        imageProvider: FileImage(mediaFile),
+      ));
+    } else if (mediaType == "video") {
+      return Chewie(
+        controller: _chewieController,
+        posterUrl: "",
+        titleName: "",
+      );
+    } else if (mediaType == "audio") {
+      return Container(
+        padding: EdgeInsets.symmetric(horizontal: 16),
+        child: Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                constraints: BoxConstraints(
+                    maxWidth: MediaQuery.of(context).size.width - 32,
+                    minWidth: MediaQuery.of(context).size.width - 32,
+                    minHeight: 50),
+                decoration: BoxDecoration(
+                  color: chatBackgroundColor,
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(6),
+                    bottomRight: Radius.circular(6),
+                    topLeft: Radius.circular(6),
+                    topRight: Radius.circular(6),
+                  ),
+                ),
+                padding: EdgeInsets.only(left: 4, right: 4, top: 4, bottom: 0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.only(top: 6, left: 4),
+                          child: _audioPlayer.builderRealtimePlayingInfos(
+                              builder: (context, info) {
+                            if (info == null || info.current == null) {
+                              return GestureDetector(
+                                child: Icon(
+                                  Icons.play_arrow_rounded,
+                                  color: navyBlue,
+                                  size: 32,
+                                ),
+                                onTap: () {
+                                  _audioPlayer.open(
+                                    Audio.file(mediaFile.path),
+                                    autoStart: false,
+                                  );
+                                  isAudioPlaying = !isAudioPlaying;
+                                  setState(() {});
+                                },
+                              );
+                            }
+                            return GestureDetector(
+                              child: Icon(
+                                _audioPlayer.isPlaying.value
+                                    ? Icons.pause_rounded
+                                    : Icons.play_arrow_rounded,
+                                color: navyBlue,
+                                size: 32,
+                              ),
+                              onTap: () {
+                                if (_audioPlayer.isPlaying.value) {
+                                  _audioPlayer.pause();
+                                } else {
+                                  _audioPlayer.play();
+                                }
+                                setState(() {});
+                              },
+                            );
+                          }),
+                        ),
+                        _audioPlayer.builderRealtimePlayingInfos(
+                            builder: (context, info) {
+                          if (info == null || info.current == null) {
+                            return Expanded(
+                              child: Column(
+                                children: [
+                                  PositionSeekWidget(
+                                    currentPosition: Duration.zero,
+                                    duration: Duration.zero,
+                                    seekTo: (to) {},
+                                  ),
+                                  SizedBox(
+                                    height: 6,
+                                  )
+                                ],
+                              ),
+                            );
+                          }
+                          return Expanded(
+                            child: Column(
+                              children: [
+                                PositionSeekWidget(
+                                  currentPosition: info.currentPosition,
+                                  duration: info.duration,
+                                  seekTo: (to) {
+                                    _audioPlayer.seek(to);
+                                  },
+                                ),
+                                SizedBox(
+                                  height: 6,
+                                )
+                              ],
+                            ),
+                          );
+                        }),
+                      ],
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
+        ),
+      );
+    }
   }
 }

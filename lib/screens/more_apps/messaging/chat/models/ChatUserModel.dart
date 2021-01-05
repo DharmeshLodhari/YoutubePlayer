@@ -40,4 +40,10 @@ class ChatUserModel {
       messageCount: 0,
     );
   }
+  factory ChatUserModel.fromConversationId(String conversationId) {
+    return ChatUserModel(
+      conversationId: conversationId,
+      messageCount: 0,
+    );
+  }
 }

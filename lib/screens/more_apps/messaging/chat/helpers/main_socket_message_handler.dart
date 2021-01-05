@@ -21,7 +21,7 @@ class MainSocketMessageHandler {
 
       String hashedMessage = generateHashedMessage(message);
 
-      // ChatUserManager().addUser();
+      ChatUserManager().addUser(conversationId: messageData["conversation"]);
 
       ChatUserManager().updateChatUserMessageCount(
           conversationId: messageModel.conversation,

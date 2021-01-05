@@ -22,18 +22,17 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
 
   @override
   void initState() {
-    super.initState();
-
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       MainSocketProvider mainSocketProvider =
           Provider.of<MainSocketProvider>(context, listen: false);
 
       mainSocketProvider.listen((event) {
-        debugPrint("==================== $event");
         MainSocketMessageHandler(message: event);
         if (mounted) setState(() {});
       });
     });
+
+    super.initState();
   }
 
   @override

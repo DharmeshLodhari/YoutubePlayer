@@ -258,7 +258,11 @@ class DatabaseHelper {
 
     int res = await dbClient.insert("ChatUsers", user.toJson(),
         conflictAlgorithm: ConflictAlgorithm.ignore);
-    debugPrint("Save User Result:- $res");
+    if (res != null) {
+      debugPrint("Save Chat User !!");
+    }
+
+    return;
   }
 
   // delete chatUsers
@@ -273,14 +277,14 @@ class DatabaseHelper {
       {String conversationId, String hashedMessage}) async {
     var dbClient = await db;
     try {
-      await dbClient.execute(
-          "UPDATE ChatUsers SET messageCount = messageCount + 1 , hashedMessage = ? where conversationId = ?",
-          [hashedMessage, conversationId]);
-      debugPrint("Message added");
+      var result = await dbClient.execute(
+          "UPDATE ChatUsers SET messageCount = messageCount + 1 , hashedMessage = ? where conversationId = ? AND hashedMessage != ?",
+          [hashedMessage, conversationId, hashedMessage]);
+      debugPrint("Chat message count updated from db");
     } catch (e) {
       debugPrint("ERROR:- while updating the Chat Message count $e");
     }
-    debugPrint("Chat message count updated from db");
+
     return;
   }
 

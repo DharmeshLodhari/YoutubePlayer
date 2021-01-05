@@ -1,5 +1,7 @@
+import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_message_handler.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/checkout_shopping_cart.dart';
 import 'package:Slydo/screens/search_module.dart';
 import 'package:Slydo/screens/user_dashboard.dart';
@@ -52,6 +54,16 @@ class _DashboardState extends State<Dashboard> {
         }
       });
     }
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      MainSocketProvider mainSocketProvider =
+          Provider.of<MainSocketProvider>(context, listen: false);
+
+      mainSocketProvider.listen((event) {
+        MainSocketMessageHandler(message: event);
+        if (mounted) setState(() {});
+      });
+    });
 
     super.initState();
   }

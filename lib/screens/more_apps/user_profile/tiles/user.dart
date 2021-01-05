@@ -73,22 +73,17 @@ class UserTile extends StatelessWidget {
         future: ChatUserManager().getUser(user.conversationId),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            debugPrint(
-                "Error:- while retrieving message count ${snapshot.error}");
             return Container(
               width: 1,
               height: 1,
             );
           } else if (snapshot.hasData) {
-            debugPrint("Data:- ${snapshot.data.messageCount}");
-
             if (snapshot.data.messageCount == 0) {
               return Container(
                 width: 1,
                 height: 1,
               );
             }
-
             return Badge(
               elevation: 0,
               badgeColor: naturalGreen,
