@@ -21,7 +21,7 @@ class MessageAuth extends AuthService {
     }
   }
 
-  Future<bool> sendSocketMessage(Map data, File media) async {
+  Future<bool> sendSocketMessage(Map data, File media, {File poster}) async {
     var url = secureBaseUrl + "/api/v1/chat/create/";
     debugPrint("URL:- $url");
     var headers = await getAuthHeaders();
@@ -36,10 +36,18 @@ class MessageAuth extends AuthService {
     request.fields["media"] = media.path;
 
     // Create multipart using filepath, string or bytes
-    var multipartFile = await http.MultipartFile.fromPath("media", media.path);
+    var multipartFile1 = await http.MultipartFile.fromPath("media", media.path);
 
     // Add multipart to request
-    request.files.add(multipartFile);
+    request.files.add(multipartFile1);
+
+    // adding poster
+    if (poster != null) {
+      request.fields["poster"] = poster.path;
+      var multipartFile2 =
+          await http.MultipartFile.fromPath("poster", poster.path);
+      request.files.add(multipartFile2);
+    }
 
     headers.forEach((k, v) => request.headers[k] = v);
 
@@ -216,6 +224,34 @@ class MessageAuth extends AuthService {
       return jsonData;
     } else {
       return {};
+    }
+  }
+
+  // List the  item with pagination
+  Future<Map<String, dynamic>> searchProductAndServiceOfUser(
+      String url, String next, String previous) async {
+    if (next == null) {
+      return null;
+    }
+    if (next != "") {
+      url = next;
+    }
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": jsonData["results"],
+      };
+      return result;
+    } else {
+      var jsonData = json.decode(response.body);
+      throw jsonData;
     }
   }
 }

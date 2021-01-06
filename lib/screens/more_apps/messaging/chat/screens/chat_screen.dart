@@ -4,12 +4,15 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/tiles/product_and_service_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/music/music_detail_page.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
+import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -46,6 +49,7 @@ class _ChatScreenState extends State<ChatScreen> {
   /// Text message controller
   TextEditingController messageController;
   TextEditingController searchProductController;
+  TextEditingController searchServiceController;
   FocusNode messageFocus;
 
   /// Current chat users
@@ -105,13 +109,20 @@ class _ChatScreenState extends State<ChatScreen> {
     "webm",
     "mkv"
   ];
-
   List<String> audioExtensions = ["m4a", "flac", "mp3", "wav", "wma", "aac"];
+
+  /// variables for product or service search
+  bool isProductSearch = false;
+  bool isServiceSearch = false;
+  bool isCurrentUsersProductOrService = false;
+  bool isProductAndServiceLoading = false;
+  List searchedProductAndService = [];
 
   @override
   void initState() {
     messageController = TextEditingController();
     searchProductController = TextEditingController();
+    searchServiceController = TextEditingController();
     messageFocus = FocusNode();
     recipientUser = widget.arguments["searchedUser"];
 
@@ -122,7 +133,10 @@ class _ChatScreenState extends State<ChatScreen> {
     pingServer();
 
     messageController.addListener(sendUserTypingState);
-    messageController.addListener(searchUserProduct);
+    messageController.addListener(changeSearchType);
+
+    searchProductController.addListener(searchProduct);
+    searchServiceController.addListener(searchService);
 
     fetchPreviousMessages();
 
@@ -130,9 +144,6 @@ class _ChatScreenState extends State<ChatScreen> {
 
     super.initState();
   }
-
-  ///TODO: /p /s  {recipient product}
-  ///TODO: //p //s {own items}
 
   @override
   void dispose() {
@@ -144,7 +155,10 @@ class _ChatScreenState extends State<ChatScreen> {
     _audioPlayer?.dispose();
 
     messageController.removeListener(sendUserTypingState);
-    messageController.removeListener(searchUserProduct);
+    messageController.removeListener(changeSearchType);
+
+    searchProductController.removeListener(searchProduct);
+    searchServiceController.removeListener(searchService);
 
     messageController.dispose();
 
@@ -307,10 +321,33 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  void searchUserProduct() {
+  ///TODO: /p /s  {recipient product}
+  ///TODO: //p //s {own items}
+  void changeSearchType() {
     if (messageController.text.isNotEmpty) {
-      if (messageController.text.toString().characters.first == '@') {
-        debugPrint("i am @");
+      if (messageController.text.toString() == "/p" ||
+          messageController.text.toString() == "/s") {
+        isCurrentUsersProductOrService = true;
+
+        if (messageController.text.toString() == "/p") {
+          isProductSearch = true;
+        }
+        if (messageController.text.toString() == "/s") {
+          isServiceSearch = true;
+        }
+        messageController.text = "";
+      }
+      if (messageController.text.toString() == "//p" ||
+          messageController.text.toString() == "//s") {
+        isCurrentUsersProductOrService = false;
+
+        if (messageController.text.toString() == "//p") {
+          isProductSearch = true;
+        }
+        if (messageController.text.toString() == "//s") {
+          isServiceSearch = true;
+        }
+        messageController.text = "";
       }
     }
   }
@@ -693,36 +730,118 @@ class _ChatScreenState extends State<ChatScreen> {
       elevation: 10,
       margin: EdgeInsets.zero,
       shadowColor: boxShadowTwo,
-      child: Container(
-        height: 58,
-        padding: EdgeInsets.only(
-          left: 16,
-        ),
-        child: Row(
-          children: <Widget>[
-            MediaQuery.of(context).viewInsets.bottom != 0
-                ? addMediaButton()
-                : Row(
-                    children: [
-                      requestMoneyBtn(),
-                      SizedBox(
-                        width: 8,
-                      ),
-                      sendMoneyBtn(),
-                      SizedBox(
-                        width: 8,
-                      ),
-                    ],
-                  ),
-            Expanded(
-              child: textMessageField(),
+      child: getSearchBarLayout(),
+    );
+  }
+
+  Widget getSearchBarLayout() {
+    if (isProductSearch || isServiceSearch) {
+      return Column(
+        children: [
+          Card(
+            elevation: 10,
+            margin: EdgeInsets.zero,
+            shadowColor: lightGrey,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(15),
+                    topRight: Radius.circular(15))),
+            child: ClipRRect(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(15),
+                topRight: Radius.circular(15),
+              ),
+              child: Container(
+                height: MediaQuery.of(context).size.height / 3,
+                width: MediaQuery.of(context).size.width,
+                color: Colors.white,
+                child: Column(
+                  children: [
+                    Container(
+                        padding: EdgeInsets.symmetric(vertical: 4),
+                        child: Text(
+                          isProductSearch ? "Products" : "Services",
+                          style: TextStyle(),
+                        )),
+                    searchedProductAndService.isEmpty
+                        ? Expanded(
+                            child: Center(
+                              child: isProductAndServiceLoading
+                                  ? CircularLoadingIndicator()
+                                  : Text(
+                                      "No Result",
+                                      style: TextStyle(
+                                          color: darkGrey, fontSize: 16),
+                                    ),
+                            ),
+                          )
+                        : Expanded(
+                            child: ListView(
+                              children: searchedProductAndService
+                                  .map((item) => InkWell(
+                                      onTap: () {
+                                        addProductOrServiceToChat(item);
+                                      },
+                                      child: getResultTile(item)))
+                                  .toList(),
+                            ),
+                          ),
+                  ],
+                ),
+              ),
             ),
-            // Expanded(
-            //   child: searchProductTextField(),
-            // ),
-            sendMessageBtn(),
-          ],
-        ),
+          ),
+          Card(
+            margin: EdgeInsets.zero,
+            child: Container(
+              height: 58,
+              width: MediaQuery.of(context).size.width,
+              padding: EdgeInsets.only(
+                left: 16,
+              ),
+              child: Row(
+                children: <Widget>[
+                  closeSearchModuleBtn(),
+                  Expanded(
+                    child: isProductSearch
+                        ? searchProductTextField()
+                        : searchServiceTextField(),
+                  ),
+                  searchProductOrServiceBtn(),
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    return Container(
+      height: 58,
+      padding: EdgeInsets.only(
+        left: 16,
+      ),
+      child: Row(
+        children: <Widget>[
+          MediaQuery.of(context).viewInsets.bottom != 0
+              ? addMediaButton()
+              : Row(
+                  children: [
+                    requestMoneyBtn(),
+                    SizedBox(
+                      width: 8,
+                    ),
+                    sendMoneyBtn(),
+                    SizedBox(
+                      width: 8,
+                    ),
+                  ],
+                ),
+          Expanded(
+            child: textMessageField(),
+          ),
+          sendMessageBtn(),
+        ],
       ),
     );
   }
@@ -788,10 +907,70 @@ class _ChatScreenState extends State<ChatScreen> {
       cursorColor: blackFont,
       cursorWidth: 1,
       cursorHeight: 20,
+      autofocus: true,
       cursorRadius: Radius.circular(16),
-      onChanged: (value) {},
       decoration: InputDecoration(
-        hintText: "search product",
+        hintText: "Search product",
+        hintStyle: TextStyle(
+          color: darkGrey.withOpacity(0.5),
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+        ),
+        prefix: Padding(
+          padding: EdgeInsets.only(left: 12),
+        ),
+        contentPadding: EdgeInsets.symmetric(vertical: 10),
+        isDense: true,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: greyBorderColor,
+            width: 1.0,
+          ),
+        ),
+        disabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: greyBorderColor,
+            width: 1.0,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: navyBlue,
+            width: 1.0,
+          ),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: greyBorderColor,
+            width: 1.0,
+          ),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: greyBorderColor,
+            width: 1.0,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget searchServiceTextField() {
+    return TextFormField(
+      controller: searchServiceController,
+      textInputAction: TextInputAction.search,
+      cursorColor: blackFont,
+      cursorWidth: 1,
+      cursorHeight: 20,
+      autofocus: true,
+      cursorRadius: Radius.circular(16),
+      decoration: InputDecoration(
+        hintText: "Search service",
         hintStyle: TextStyle(
           color: darkGrey.withOpacity(0.5),
           fontSize: 16,
@@ -847,7 +1026,7 @@ class _ChatScreenState extends State<ChatScreen> {
       textInputAction: TextInputAction.send,
       focusNode: messageFocus,
       onFieldSubmitted: (value) {
-        sendMessage();
+        sendTextMessage();
       },
       cursorColor: blackFont,
       cursorWidth: 1,
@@ -923,6 +1102,56 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
       ),
     );
+  }
+
+  Widget closeSearchModuleBtn() {
+    return InkWell(
+      onTap: closeSearchModule,
+      child: Container(
+        padding: EdgeInsets.all(2),
+        child: Row(
+          children: [
+            Icon(
+              Icons.close_rounded,
+              color: navyBlue,
+              size: 22,
+            ),
+            SizedBox(
+              width: 12,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void closeSearchModule() {
+    isProductSearch = false;
+    isServiceSearch = false;
+    searchProductController.text = "";
+    searchServiceController.text = "";
+    searchedProductAndService.clear();
+    setState(() {});
+  }
+
+  void addProductOrServiceToChat(var item) async {
+    debugPrint("Item:- $item");
+
+    Map<String, dynamic> data = {
+      "check_id": Uuid().v4(),
+      "conversation_id": recipientUser.conversationId,
+      "author": userBloc.user.userName,
+      item is Product ? "product_id" : "service_id": item.id,
+      "kind": item is Product ? "product" : "service",
+      "created_at": DateTime.now().toUtc().toString(),
+      "type": "chatroom_message",
+    };
+
+    bool result = await sendDataToSocket(data);
+    if (result) {
+      closeSearchModule();
+      setState(() {});
+    }
   }
 
   void addMediaToMessage() async {
@@ -1047,7 +1276,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget sendMessageBtn() {
     return InkWell(
-      onTap: sendMessage,
+      onTap: sendTextMessage,
       child: Container(
         padding: EdgeInsets.all(2),
         child: Row(
@@ -1069,10 +1298,149 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  Widget searchProductOrServiceBtn() {
+    return InkWell(
+      onTap: searchProductOrService,
+      child: Container(
+        padding: EdgeInsets.all(2),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 12,
+            ),
+            Icon(
+              SlydoAppIcon.search,
+              color: navyBlue,
+              size: 22,
+            ),
+            SizedBox(
+              width: 12,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void searchProductOrService() {
+    if (isProductSearch || isServiceSearch) {
+      if (isProductSearch) {
+        searchProduct();
+      }
+      if (isServiceSearch) {
+        searchService();
+      }
+    }
+  }
+
+  void searchProduct() async {
+    if (searchProductController.text.length > 3) {
+      String url = getSearchUrl() + searchProductController.text;
+
+      searchedProductAndService.clear();
+      isProductAndServiceLoading = true;
+      if (mounted) setState(() {});
+
+      Map<String, dynamic> result =
+          await MessageAuth().searchProductAndServiceOfUser(url, "", "");
+
+      List tempList = result['results'];
+
+      tempList.forEach((result) {
+        debugPrint("product:- $result");
+        searchedProductAndService.add(Product.fromJson(result));
+      });
+
+      isProductAndServiceLoading = false;
+      if (mounted) setState(() {});
+    }
+  }
+
+  void searchService() async {
+    if (searchServiceController.text.length > 3) {
+      String url = getSearchUrl() + searchServiceController.text;
+
+      searchedProductAndService.clear();
+      isProductAndServiceLoading = true;
+      if (mounted) setState(() {});
+
+      Map<String, dynamic> result =
+          await MessageAuth().searchProductAndServiceOfUser(url, "", "");
+
+      List tempList = result['results'];
+
+      tempList.forEach((result) {
+        searchedProductAndService.add(Service.fromJson(result));
+      });
+
+      isProductAndServiceLoading = false;
+      if (mounted) setState(() {});
+    }
+  }
+
+  String getSearchUrl() {
+    if (isProductSearch) {
+      return baseUrl + "/api/v1/search/products/?search=";
+    }
+    if (isServiceSearch) {
+      return baseUrl + "/api/v1/search/services/?search=";
+    }
+    return "";
+  }
+
+  // ignore: missing_return
+  Widget getResultTile(var result) {
+    if (isProductSearch) {
+      return SearchProductChatTile(result);
+    }
+    if (isServiceSearch) {
+      return SearchServiceChatTile(result);
+    }
+    return Container();
+  }
+
   Widget renderDataAccordingType(String message) {
     // int randomInt = Random().nextInt(5);
 
     Map<String, dynamic> messageData = jsonDecode(message);
+
+    // Map<String, dynamic> product = {
+    //   "id": "f0a6eed3-b8db-44b0-9b06-e20e02a01e0a",
+    //   "name":
+    //       " SPACE STATION PLAYGROUND SPACE STATION PLAYGROUND SPACE STATION PLAYGROUND",
+    //   "short_description":
+    //       "SPACE STATION FOR KIDS SPACE STATION FOR KIDS SPACE STATION FOR KIDS.SPACE STATION FOR KIDS SPACE STATION FOR KIDS SPACE STATION FOR KIDSSPACE STATION FOR KIDS SPACE STATION FOR KIDS SPACE STATION FOR KIDS",
+    //   "condition": "New",
+    //   "currency": "NGN",
+    //   "price": 1,
+    //   "available_from": "2020-05-18",
+    //   "is_available": true,
+    //   "qr_code":
+    //       "https://slydo-assets.s3.amazonaws.com/media/products/qr-code/21e070e4ce474b90adcd2e5071427e16.png",
+    //   // "seller": Random().nextBool() ? "black" : "abiola.rasheed.2",
+    //   "seller": "black",
+    //   "manufacturer": "ISRO",
+    //   "cover":
+    //       "https://slydo-assets.s3.amazonaws.com/media/image_picker3057891653535253370.jpg",
+    //   "seller_avatar":
+    //       "https://slydo-assets.s3.amazonaws.com/media/customer/avatar/a7269ba398324ee4920b44bd3ebca14b.jpg"
+    // };
+    // Map<String, dynamic> tempMessageData = {
+    //   "id": "40621ee2-97f7-46bc-a961-2c7cbdd0a812",
+    //   "conversation": "3fe1e3b6-5802-4ade-b4f3-8f21d7b8ebd7",
+    //   // "author": Random().nextBool() ? "black" : "abiola.rasheed.2",
+    //   "author": "abiola.rasheed.2",
+    //   "product": product,
+    //   "read_by_author": true,
+    //   "read_by_recipient": false,
+    //   "updated_at": "2021-01-06T00:54:12.338895+01:00",
+    //   "created_at": "2021-01-06T00:54:12.338914+01:00",
+    //   "kind": "product",
+    //   "deleted_for_recipient": false,
+    //   "deleted_for_author": false,
+    //   "delivered": false
+    // };
+    // messageData = tempMessageData;
 
     String messageType = messageData["kind"];
     switch (messageType) {
@@ -1105,12 +1473,12 @@ class _ChatScreenState extends State<ChatScreen> {
         Widget getPaymentUI = renderPaymentRequest(message: messageData);
         return getPaymentUI;
         break;
-      case "4":
-        Widget getProductUI = renderProduct(message: messageData);
+      case "product":
+        Widget getProductUI = renderProduct(item: messageData);
         return getProductUI;
         break;
-      case "5":
-        Widget getServiceUI = renderService(message: messageData);
+      case "service":
+        Widget getServiceUI = renderService(item: messageData);
         return getServiceUI;
         break;
 
@@ -1120,22 +1488,14 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  void sendMessage() async {
+  void sendTextMessage() async {
     String message = messageController.text.trim();
-
-    /// this is a second level of protection to ensure the connection
-    /// this code of bloc is replicated in userTyping()
-    if (!isConnected) {
-      numberOfRetry = 0;
-      isConnected = false;
-      await connectSocket();
-    }
 
     if (message.isEmpty) {
       return;
     }
 
-    var data = {
+    Map<String, dynamic> data = {
       "check_id": Uuid().v4(),
       "conversation_id": recipientUser.conversationId,
       "author": userBloc.user.userName,
@@ -1146,10 +1506,26 @@ class _ChatScreenState extends State<ChatScreen> {
       "type": "chatroom_message",
     };
 
+    bool result = await sendDataToSocket(data);
+    if (result) {
+      messageController.text = "";
+      setState(() {});
+    }
+  }
+
+  Future<bool> sendDataToSocket(Map<String, dynamic> data) async {
+    /// this is a second level of protection to ensure the connection
+    /// this code of bloc is replicated in userTyping()
+    if (!isConnected) {
+      numberOfRetry = 0;
+      isConnected = false;
+      await connectSocket();
+    }
+
     try {
       if (isConnected) {
         channel.sink.add(jsonEncode(data));
-        debugPrint("Data sent!!!");
+        debugPrint("Data added in webSocket :- $data");
         _lastSent = DateTime.now();
       } else {
         throw Exception("Not Connected");
@@ -1166,8 +1542,7 @@ class _ChatScreenState extends State<ChatScreen> {
       });
     }
 
-    messageController.text = "";
-    setState(() {});
+    return true;
   }
 
   Widget scaffoldBody() {
@@ -1406,30 +1781,33 @@ class _ChatScreenState extends State<ChatScreen> {
                 Stack(
                   overflow: Overflow.visible,
                   children: [
-                   Column(
+                    Column(
                       children: [
-                        isMessageEmpty? Container():Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                messageText,
-                                style: TextStyle(
-                                    color: isSend ? Colors.white : blackFont,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500),
+                        isMessageEmpty
+                            ? Container()
+                            : Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      messageText,
+                                      style: TextStyle(
+                                          color:
+                                              isSend ? Colors.white : blackFont,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ],
-                        ),
                         SizedBox(
-                          height: isMessageEmpty?8:2,
+                          height: isMessageEmpty ? 8 : 2,
                           width: 45,
                         )
                       ],
                     ),
                     Positioned(
                       right: !isSend ? 0 : -2,
-                      bottom: isMessageEmpty?-2:-6,
+                      bottom: isMessageEmpty ? -2 : -6,
                       child: Text(
                         formatTime(message['created_at']),
                         style: TextStyle(
@@ -1582,6 +1960,7 @@ class _ChatScreenState extends State<ChatScreen> {
     bool isSend = message["author"] == userBloc.user.userName;
     String messageText = message['text'] ?? "";
     bool isMessageEmpty = messageText == "";
+    debugPrint("$message");
 
     return GestureDetector(
       onTap: () {
@@ -1589,8 +1968,7 @@ class _ChatScreenState extends State<ChatScreen> {
           "/view-chat-media",
           arguments: {
             "type": "video",
-            "file":
-                "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/e4199d196b558eb45681c194e3ce2734486e38aa/dawn-of-thunder.mp4?raw=true",
+            "file": message["media"],
             "message": message['text']
           },
         );
@@ -1636,7 +2014,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         CachedNetworkImage(
                           height: MediaQuery.of(context).size.width / 1.35,
                           width: MediaQuery.of(context).size.width / 1.35,
-                          imageUrl:
+                          imageUrl: message["poster"] ??
                               "https://c1.iggcdn.com/indiegogo-media-prod-cld/image/upload/c_fill,f_auto,h_630,w_1200/v1506734779/wcsmythcukjuuglotjvb.jpg",
                           fit: BoxFit.cover,
                           progressIndicatorBuilder:
@@ -1963,67 +2341,18 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget renderProduct({Map<String, dynamic> message}) {
-    bool isSend = message["isSent"];
-    if (isSend) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Container(
-            decoration: BoxDecoration(
-                border: Border.all(color: dividerColor),
-                borderRadius: BorderRadius.circular(12)),
-            padding: EdgeInsets.all(8),
-            width: MediaQuery.of(context).size.width / 2,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CachedNetworkImage(
-                    imageUrl:
-                        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZHVjdHxlbnwwfHwwfA%3D%3D&ixlib=rb-1.2.1&w=1000&q=80"),
-                SizedBox(
-                  height: 12,
-                ),
-                Text("Sony HeadPhone",
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w600,
-                    )),
-                SizedBox(
-                  height: 8,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      SlydoAppIcon.naira,
-                      color: blackFont,
-                      size: 12,
-                    ),
-                    SizedBox(
-                      width: 6,
-                    ),
-                    Text(
-                      "500",
-                      style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w600,
-                          color: blackFont),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      );
-    }
+  Widget renderProduct({Map<String, dynamic> item}) {
+    Product product = Product.fromJson(item["product"]);
+
+    bool isSend = item["author"] == userBloc.user.userName;
 
     return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisAlignment:
+          isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
       children: [
         Container(
           decoration: BoxDecoration(
+              color: Colors.white,
               border: Border.all(color: dividerColor),
               borderRadius: BorderRadius.circular(12)),
           padding: EdgeInsets.all(8),
@@ -2031,17 +2360,19 @@ class _ChatScreenState extends State<ChatScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              CachedNetworkImage(
-                  imageUrl:
-                      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZHVjdHxlbnwwfHwwfA%3D%3D&ixlib=rb-1.2.1&w=1000&q=80"),
+              CachedNetworkImage(imageUrl: product.cover),
               SizedBox(
                 height: 12,
               ),
-              Text("Sony HeadPhone",
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w600,
-                  )),
+              Text(
+                product.name,
+                style: TextStyle(
+                  fontSize: 16,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.start,
+              ),
               SizedBox(
                 height: 8,
               ),
@@ -2057,7 +2388,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     width: 6,
                   ),
                   Text(
-                    "500",
+                    product.price.toString(),
                     style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.w600,
@@ -2065,16 +2396,57 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                 ],
               ),
-              SizedBox(
-                height: 8,
-              ),
-              CurvedButton(
-                height: 36,
-                textColor: Colors.white,
-                backgroundColor: navyBlue,
-                text: "Buy",
-                onPressed: () {},
-              ),
+              !isSend
+                  ? Column(
+                      children: [
+                        SizedBox(
+                          height: 8,
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: CurvedButton(
+                                height: 36,
+                                textColor: Colors.white,
+                                backgroundColor: navyBlue,
+                                text: "Buy",
+                                onPressed: () {},
+                              ),
+                            ),
+                            SizedBox(
+                              width: 8,
+                            ),
+                            addToCartWidget(),
+                          ],
+                        ),
+                      ],
+                    )
+                  : product.seller == userBloc.user.userName
+                      ? Container()
+                      : Column(
+                          children: [
+                            SizedBox(
+                              height: 8,
+                            ),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: CurvedButton(
+                                    height: 36,
+                                    textColor: Colors.white,
+                                    backgroundColor: navyBlue,
+                                    text: "Buy",
+                                    onPressed: () {},
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 8,
+                                ),
+                                addToCartWidget(),
+                              ],
+                            ),
+                          ],
+                        ),
             ],
           ),
         ),
@@ -2082,70 +2454,33 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget renderService({Map<String, dynamic> message}) {
-    bool isSend = message["isSent"];
-    if (isSend) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Container(
-            decoration: BoxDecoration(
-                border: Border.all(color: dividerColor),
-                borderRadius: BorderRadius.circular(12)),
-            padding: EdgeInsets.all(8),
-            width: MediaQuery.of(context).size.width / 2,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CachedNetworkImage(
-                    imageUrl:
-                        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZHVjdHxlbnwwfHwwfA%3D%3D&ixlib=rb-1.2.1&w=1000&q=80"),
-                SizedBox(
-                  height: 12,
-                ),
-                Text("HeadPhone on Rent",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    )),
-                SizedBox(
-                  height: 8,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      SlydoAppIcon.naira,
-                      color: blackFont,
-                      size: 12,
-                    ),
-                    SizedBox(
-                      width: 6,
-                    ),
-                    Text(
-                      "500",
-                      style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w600,
-                          color: blackFont),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 8,
-                ),
-              ],
-            ),
-          ),
-        ],
-      );
-    }
+  Widget addToCartWidget() {
+    return RoundedBackgroundIcon(
+      borderRadius: 16,
+      height: 38,
+      width: 38,
+      icon: Icon(
+        SlydoAppIcon.add_cart,
+        color: navyBlue,
+        size: 20,
+      ),
+      backgroundColor: navyBlue.withOpacity(0.08),
+      onTap: () async {},
+    );
+  }
+
+  Widget renderService({Map<String, dynamic> item}) {
+    Service service = Service.fromJson(item["service"]);
+
+    bool isSend = item["author"] == userBloc.user.userName;
 
     return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisAlignment:
+          isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
       children: [
         Container(
           decoration: BoxDecoration(
+              color: Colors.white,
               border: Border.all(color: dividerColor),
               borderRadius: BorderRadius.circular(12)),
           padding: EdgeInsets.all(8),
@@ -2153,17 +2488,19 @@ class _ChatScreenState extends State<ChatScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              CachedNetworkImage(
-                  imageUrl:
-                      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZHVjdHxlbnwwfHwwfA%3D%3D&ixlib=rb-1.2.1&w=1000&q=80"),
+              CachedNetworkImage(imageUrl: service.cover),
               SizedBox(
                 height: 12,
               ),
-              Text("HeadPhone on Rent",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  )),
+              Text(
+                service.name,
+                style: TextStyle(
+                  fontSize: 16,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.start,
+              ),
               SizedBox(
                 height: 8,
               ),
@@ -2179,7 +2516,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     width: 6,
                   ),
                   Text(
-                    "500",
+                    service.price.toString(),
                     style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.w600,
@@ -2187,18 +2524,57 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                 ],
               ),
-              SizedBox(
-                height: 8,
-              ),
-              CurvedButton(
-                textColor: Colors.white,
-                backgroundColor: navyBlue,
-                text: "Buy",
-                onPressed: () {},
-              ),
-              SizedBox(
-                height: 8,
-              ),
+              !isSend
+                  ? Column(
+                      children: [
+                        SizedBox(
+                          height: 8,
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: CurvedButton(
+                                height: 36,
+                                textColor: Colors.white,
+                                backgroundColor: navyBlue,
+                                text: "Buy",
+                                onPressed: () {},
+                              ),
+                            ),
+                            SizedBox(
+                              width: 8,
+                            ),
+                            addToCartWidget(),
+                          ],
+                        ),
+                      ],
+                    )
+                  : service.provider == userBloc.user.userName
+                      ? Container()
+                      : Column(
+                          children: [
+                            SizedBox(
+                              height: 8,
+                            ),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: CurvedButton(
+                                    height: 36,
+                                    textColor: Colors.white,
+                                    backgroundColor: navyBlue,
+                                    text: "Buy",
+                                    onPressed: () {},
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 8,
+                                ),
+                                addToCartWidget(),
+                              ],
+                            ),
+                          ],
+                        ),
             ],
           ),
         ),

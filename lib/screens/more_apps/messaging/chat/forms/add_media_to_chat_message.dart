@@ -12,6 +12,7 @@ import 'package:flutter/services.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:uuid/uuid.dart';
 import 'package:video_player/video_player.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 
 // ignore: must_be_immutable
 class AddMediaToChatMessage extends StatefulWidget {
@@ -247,6 +248,18 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
     );
   }
 
+  Future<String> getVideoThumbnail(File file) async {
+    String path = await VideoThumbnail.thumbnailFile(
+      video: file.path,
+      imageFormat: ImageFormat.JPEG,
+      maxWidth:
+          512, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
+      quality: 25,
+    );
+    debugPrint(" PATH:-  ===> $path");
+    return path;
+  }
+
   void sendMessage() async {
     // Navigator.pop(context, Future.error("error"));
 
@@ -265,7 +278,15 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
               child: CircularLoadingIndicator(),
             ));
 
-    MessageAuth().sendSocketMessage(_data, mediaFile).then((value) {
+    File poster;
+    if (mediaType == "video") {
+      String posterPath = await getVideoThumbnail(mediaFile);
+      poster = File(posterPath);
+    }
+
+    MessageAuth()
+        .sendSocketMessage(_data, mediaFile, poster: poster)
+        .then((value) {
       Navigator.pop(context);
       Navigator.pop(context, true);
     }).catchError((error) {
