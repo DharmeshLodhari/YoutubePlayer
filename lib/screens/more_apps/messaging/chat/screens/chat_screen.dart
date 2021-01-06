@@ -1960,7 +1960,6 @@ class _ChatScreenState extends State<ChatScreen> {
     bool isSend = message["author"] == userBloc.user.userName;
     String messageText = message['text'] ?? "";
     bool isMessageEmpty = messageText == "";
-    debugPrint("$message");
 
     return GestureDetector(
       onTap: () {
