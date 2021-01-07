@@ -270,6 +270,17 @@ class ShoppingAuthService extends AuthService {
     }
   }
 
+  Future<Map<String, dynamic>> getProductOrService(String url) async {
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
+    var jsonData = json.decode(response.body);
+    if (response.statusCode == 200) {
+      return jsonData;
+    } else {
+      throw jsonData;
+    }
+  }
+
   // delete single product
   Future<bool> deleteProduct(String id) async {
     var url = secureBaseUrl + "/api/v1/products/" + id + "/";

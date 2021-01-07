@@ -5,11 +5,12 @@ import 'dart:typed_data';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/product_and_service_tile_for_chat.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/widgets/chat_audio_player.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
-import 'package:Slydo/screens/more_apps/music/music_detail_page.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/services/auth.dart';
@@ -26,9 +27,11 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_sound/flutter_sound.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:keyboard_visibility/keyboard_visibility.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 import 'package:uuid/uuid.dart';
@@ -118,6 +121,16 @@ class _ChatScreenState extends State<ChatScreen> {
   bool isProductAndServiceLoading = false;
   List searchedProductAndService = [];
 
+  /// variables for  text message and audio message btn switcher
+  bool messageIsText = false;
+
+  /// variable for audioREcording
+  FlutterSoundRecorder audioRecorder = FlutterSoundRecorder();
+  bool isAudioRecorderInitialized = false;
+  String audioUuid;
+  String audioPath;
+  Duration audioRecordingDuration = Duration.zero;
+
   @override
   void initState() {
     messageController = TextEditingController();
@@ -134,6 +147,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
     messageController.addListener(sendUserTypingState);
     messageController.addListener(changeSearchType);
+    messageController.addListener(changeAudioOrTextMessageBtn);
 
     searchProductController.addListener(searchProduct);
     searchServiceController.addListener(searchService);
@@ -141,6 +155,17 @@ class _ChatScreenState extends State<ChatScreen> {
     fetchPreviousMessages();
 
     setupKeyboardFocusListener();
+
+    audioRecorder.openAudioSession().then((value) {
+      setState(() {
+        isAudioRecorderInitialized = true;
+      });
+    });
+
+    audioRecorder.onProgress.listen((RecordingDisposition event) {
+      audioRecordingDuration = event.duration;
+      setState(() {});
+    });
 
     super.initState();
   }
@@ -154,8 +179,12 @@ class _ChatScreenState extends State<ChatScreen> {
     _audioPlayer?.stop();
     _audioPlayer?.dispose();
 
+    audioRecorder?.closeAudioSession();
+    audioRecorder = null;
+
     messageController.removeListener(sendUserTypingState);
     messageController.removeListener(changeSearchType);
+    messageController.removeListener(changeAudioOrTextMessageBtn);
 
     searchProductController.removeListener(searchProduct);
     searchServiceController.removeListener(searchService);
@@ -349,6 +378,16 @@ class _ChatScreenState extends State<ChatScreen> {
         }
         messageController.text = "";
       }
+    }
+  }
+
+  void changeAudioOrTextMessageBtn() {
+    if (messageController.text.isNotEmpty) {
+      messageIsText = true;
+      if (mounted) setState(() {});
+    } else {
+      messageIsText = false;
+      if (mounted) setState(() {});
     }
   }
 
@@ -840,7 +879,7 @@ class _ChatScreenState extends State<ChatScreen> {
           Expanded(
             child: textMessageField(),
           ),
-          sendMessageBtn(),
+          sendAudioOrMessageBtn(),
         ],
       ),
     );
@@ -1135,13 +1174,19 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void addProductOrServiceToChat(var item) async {
-    debugPrint("Item:- $item");
+    String url = secureBaseUrl +
+        "/api/v1/${item is Product ? "products" : "services"}/" +
+        item.id +
+        "/";
+
+    var itemData = await ShoppingAuthService().getProductOrService(url);
 
     Map<String, dynamic> data = {
+      "meta_data": itemData,
       "check_id": Uuid().v4(),
       "conversation_id": recipientUser.conversationId,
       "author": userBloc.user.userName,
-      item is Product ? "product_id" : "service_id": item.id,
+      "message": url,
       "kind": item is Product ? "product" : "service",
       "created_at": DateTime.now().toUtc().toString(),
       "type": "chatroom_message",
@@ -1274,6 +1319,13 @@ class _ChatScreenState extends State<ChatScreen> {
     return source;
   }
 
+  Widget sendAudioOrMessageBtn() {
+    return AnimatedSwitcher(
+      duration: Duration(milliseconds: 100),
+      child: messageIsText ? sendMessageBtn() : recordAndSendAudioBtn(),
+    );
+  }
+
   Widget sendMessageBtn() {
     return InkWell(
       onTap: sendTextMessage,
@@ -1296,6 +1348,104 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
       ),
     );
+  }
+
+  Widget recordAndSendAudioBtn() {
+    return Material(
+      color: Colors.transparent,
+      child: Container(
+        width: 50,
+        height: 50,
+        child: InkWell(
+          onTapDown: (TapDownDetails details) async {
+            debugPrint("Starting Recording ");
+
+            await recordAudio();
+            setState(() {});
+          },
+          onTap: () async {
+            debugPrint("Recording Stop ");
+            await stopRecorder();
+            setState(() {});
+          },
+          splashColor: navyBlue.withOpacity(0.2),
+          borderRadius: BorderRadius.circular(50),
+          child: Icon(
+            Icons.mic,
+            color: navyBlue,
+            size: 30,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> recordAudio() async {
+    Directory tempDirectory = await getTemporaryDirectory();
+    audioUuid = Uuid().v4();
+    String filePath = '${tempDirectory.path}/$audioUuid.mp3';
+
+    audioPath = filePath;
+
+    Codec codec = Codec.defaultCodec;
+
+    if (await audioRecorder.isEncoderSupported(codec)) {
+      await audioRecorder
+          .startRecorder(
+        toFile: filePath,
+        codec: codec,
+      )
+          .catchError((error) {
+        debugPrint("Error:- while Recording Audio $error");
+      });
+      debugPrint("Audio Storing At $filePath");
+    } else {
+      Toast.show("Not Supported:- $codec", context);
+    }
+  }
+
+  // var path = await Navigator.of(context)
+  //     .pushNamed("/video-recorder", arguments: {"duration": videoDuration});
+  // if (path != null) {
+  // debugPrint("$path");
+  // }
+
+  Future<void> stopRecorder() async {
+    audioRecorder.stopRecorder().then((value) {
+      debugPrint("Audio Stored");
+      sendAudioToServer();
+    });
+  }
+
+  void sendAudioToServer() async {
+    File mediaFile = File(audioPath);
+    Map<String, dynamic> _data = {};
+    _data['text'] = "";
+    _data['check_id'] = audioUuid;
+    _data['kind'] = "audio";
+    _data['read_by_author'] = true;
+    _data['created_at'] = DateTime.now().toUtc().toString();
+    _data['type'] = "chatroom_message";
+    _data["conversation"] = recipientUser.conversationId;
+    _data["author"] = userBloc.user.userName;
+
+    showDialog(
+        context: context,
+        builder: (context) => Center(
+              child: CircularLoadingIndicator(),
+            ));
+
+    MessageAuth().sendSocketMessage(_data, mediaFile).then((value) {
+      Navigator.pop(context);
+      audioUuid = null;
+      audioPath = null;
+    }).catchError((error) {
+      Navigator.pop(context);
+      Toast.show("Error:- while uploading audio $error", context);
+      debugPrint("Error:- while uploading audio $error");
+      audioUuid = null;
+      audioPath = null;
+    });
   }
 
   Widget searchProductOrServiceBtn() {
@@ -1403,44 +1553,6 @@ class _ChatScreenState extends State<ChatScreen> {
     // int randomInt = Random().nextInt(5);
 
     Map<String, dynamic> messageData = jsonDecode(message);
-
-    // Map<String, dynamic> product = {
-    //   "id": "f0a6eed3-b8db-44b0-9b06-e20e02a01e0a",
-    //   "name":
-    //       " SPACE STATION PLAYGROUND SPACE STATION PLAYGROUND SPACE STATION PLAYGROUND",
-    //   "short_description":
-    //       "SPACE STATION FOR KIDS SPACE STATION FOR KIDS SPACE STATION FOR KIDS.SPACE STATION FOR KIDS SPACE STATION FOR KIDS SPACE STATION FOR KIDSSPACE STATION FOR KIDS SPACE STATION FOR KIDS SPACE STATION FOR KIDS",
-    //   "condition": "New",
-    //   "currency": "NGN",
-    //   "price": 1,
-    //   "available_from": "2020-05-18",
-    //   "is_available": true,
-    //   "qr_code":
-    //       "https://slydo-assets.s3.amazonaws.com/media/products/qr-code/21e070e4ce474b90adcd2e5071427e16.png",
-    //   // "seller": Random().nextBool() ? "black" : "abiola.rasheed.2",
-    //   "seller": "black",
-    //   "manufacturer": "ISRO",
-    //   "cover":
-    //       "https://slydo-assets.s3.amazonaws.com/media/image_picker3057891653535253370.jpg",
-    //   "seller_avatar":
-    //       "https://slydo-assets.s3.amazonaws.com/media/customer/avatar/a7269ba398324ee4920b44bd3ebca14b.jpg"
-    // };
-    // Map<String, dynamic> tempMessageData = {
-    //   "id": "40621ee2-97f7-46bc-a961-2c7cbdd0a812",
-    //   "conversation": "3fe1e3b6-5802-4ade-b4f3-8f21d7b8ebd7",
-    //   // "author": Random().nextBool() ? "black" : "abiola.rasheed.2",
-    //   "author": "abiola.rasheed.2",
-    //   "product": product,
-    //   "read_by_author": true,
-    //   "read_by_recipient": false,
-    //   "updated_at": "2021-01-06T00:54:12.338895+01:00",
-    //   "created_at": "2021-01-06T00:54:12.338914+01:00",
-    //   "kind": "product",
-    //   "deleted_for_recipient": false,
-    //   "deleted_for_author": false,
-    //   "delivered": false
-    // };
-    // messageData = tempMessageData;
 
     String messageType = messageData["kind"];
     switch (messageType) {
@@ -1830,118 +1942,120 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget renderAudioMedia({Map<String, dynamic> message}) {
-    bool isSend = message["author"] == userBloc.user.userName;
-    // String messageText = message['text'] ?? "";
-    // bool isMessageEmpty = messageText == "";
+    return ChatAudioPlayer(message: message);
 
-    return Row(
-      mainAxisAlignment:
-          isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
-      children: [
-        Container(
-          constraints: BoxConstraints(
-              maxWidth: MediaQuery.of(context).size.width / 1.35,
-              minWidth: MediaQuery.of(context).size.width / 1.35,
-              minHeight: 50),
-          decoration: BoxDecoration(
-            color: chatBackgroundColor,
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(!isSend ? 0 : 6),
-              bottomRight: Radius.circular(isSend ? 0 : 6),
-              topLeft: Radius.circular(6),
-              topRight: Radius.circular(6),
-            ),
-          ),
-          padding: EdgeInsets.only(left: 4, right: 4, top: 4, bottom: 0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    padding: EdgeInsets.only(top: 6, left: 4),
-                    child: _audioPlayer.builderRealtimePlayingInfos(
-                        builder: (context, info) {
-                      if (info == null || info.current == null) {
-                        return GestureDetector(
-                          child: Icon(
-                            Icons.play_arrow_rounded,
-                            color: navyBlue,
-                            size: 32,
-                          ),
-                          onTap: () {
-                            _audioPlayer.open(
-                              Audio.network(
-                                  "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/f133a23f344e2e96b275800d505011f54a4dc20f/Burna-Boy-Monsters-You-Made-ft-Chris-Martin.mp3"),
-                              autoStart: true,
-                            );
-                            isAudioPlaying = !isAudioPlaying;
-                            setState(() {});
-                          },
-                        );
-                      }
-                      return GestureDetector(
-                        child: Icon(
-                          _audioPlayer.isPlaying.value
-                              ? Icons.pause_rounded
-                              : Icons.play_arrow_rounded,
-                          color: navyBlue,
-                          size: 32,
-                        ),
-                        onTap: () {
-                          if (_audioPlayer.isPlaying.value) {
-                            _audioPlayer.pause();
-                          } else {
-                            _audioPlayer.play();
-                          }
-                          setState(() {});
-                        },
-                      );
-                    }),
-                  ),
-                  _audioPlayer.builderRealtimePlayingInfos(
-                      builder: (context, info) {
-                    if (info == null || info.current == null) {
-                      return Expanded(
-                        child: Column(
-                          children: [
-                            PositionSeekWidget(
-                              currentPosition: Duration.zero,
-                              duration: Duration.zero,
-                              seekTo: (to) {},
-                            ),
-                            SizedBox(
-                              height: 6,
-                            )
-                          ],
-                        ),
-                      );
-                    }
-                    return Expanded(
-                      child: Column(
-                        children: [
-                          PositionSeekWidget(
-                            currentPosition: info.currentPosition,
-                            duration: info.duration,
-                            seekTo: (to) {
-                              _audioPlayer.seek(to);
-                            },
-                          ),
-                          SizedBox(
-                            height: 6,
-                          )
-                        ],
-                      ),
-                    );
-                  }),
-                ],
-              )
-            ],
-          ),
-        )
-      ],
-    );
+    // bool isSend = message["author"] == userBloc.user.userName;
+    // // String messageText = message['text'] ?? "";
+    // // bool isMessageEmpty = messageText == "";
+    //
+    // return Row(
+    //   mainAxisAlignment:
+    //       isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
+    //   children: [
+    //     Container(
+    //       constraints: BoxConstraints(
+    //           maxWidth: MediaQuery.of(context).size.width / 1.35,
+    //           minWidth: MediaQuery.of(context).size.width / 1.35,
+    //           minHeight: 50),
+    //       decoration: BoxDecoration(
+    //         color: chatBackgroundColor,
+    //         borderRadius: BorderRadius.only(
+    //           bottomLeft: Radius.circular(!isSend ? 0 : 6),
+    //           bottomRight: Radius.circular(isSend ? 0 : 6),
+    //           topLeft: Radius.circular(6),
+    //           topRight: Radius.circular(6),
+    //         ),
+    //       ),
+    //       padding: EdgeInsets.only(left: 4, right: 4, top: 4, bottom: 0),
+    //       child: Column(
+    //         mainAxisSize: MainAxisSize.min,
+    //         crossAxisAlignment: CrossAxisAlignment.start,
+    //         children: [
+    //           Row(
+    //             children: [
+    //               Container(
+    //                 padding: EdgeInsets.only(top: 6, left: 4),
+    //                 child: _audioPlayer.builderRealtimePlayingInfos(
+    //                     builder: (context, info) {
+    //                   if (info == null || info.current == null) {
+    //                     return GestureDetector(
+    //                       child: Icon(
+    //                         Icons.play_arrow_rounded,
+    //                         color: navyBlue,
+    //                         size: 32,
+    //                       ),
+    //                       onTap: () {
+    //                         _audioPlayer.open(
+    //                           Audio.network(
+    //                               "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/f133a23f344e2e96b275800d505011f54a4dc20f/Burna-Boy-Monsters-You-Made-ft-Chris-Martin.mp3"),
+    //                           autoStart: true,
+    //                         );
+    //                         isAudioPlaying = !isAudioPlaying;
+    //                         setState(() {});
+    //                       },
+    //                     );
+    //                   }
+    //                   return GestureDetector(
+    //                     child: Icon(
+    //                       _audioPlayer.isPlaying.value
+    //                           ? Icons.pause_rounded
+    //                           : Icons.play_arrow_rounded,
+    //                       color: navyBlue,
+    //                       size: 32,
+    //                     ),
+    //                     onTap: () {
+    //                       if (_audioPlayer.isPlaying.value) {
+    //                         _audioPlayer.pause();
+    //                       } else {
+    //                         _audioPlayer.play();
+    //                       }
+    //                       setState(() {});
+    //                     },
+    //                   );
+    //                 }),
+    //               ),
+    //               _audioPlayer.builderRealtimePlayingInfos(
+    //                   builder: (context, info) {
+    //                 if (info == null || info.current == null) {
+    //                   return Expanded(
+    //                     child: Column(
+    //                       children: [
+    //                         PositionSeekWidget(
+    //                           currentPosition: Duration.zero,
+    //                           duration: Duration.zero,
+    //                           seekTo: (to) {},
+    //                         ),
+    //                         SizedBox(
+    //                           height: 6,
+    //                         )
+    //                       ],
+    //                     ),
+    //                   );
+    //                 }
+    //                 return Expanded(
+    //                   child: Column(
+    //                     children: [
+    //                       PositionSeekWidget(
+    //                         currentPosition: info.currentPosition,
+    //                         duration: info.duration,
+    //                         seekTo: (to) {
+    //                           _audioPlayer.seek(to);
+    //                         },
+    //                       ),
+    //                       SizedBox(
+    //                         height: 6,
+    //                       )
+    //                     ],
+    //                   ),
+    //                 );
+    //               }),
+    //             ],
+    //           )
+    //         ],
+    //       ),
+    //     )
+    //   ],
+    // );
   }
 
   Future<Uint8List> getVideoThumbnail(String url) async {
@@ -2341,7 +2455,13 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget renderProduct({Map<String, dynamic> item}) {
-    Product product = Product.fromJson(item["product"]);
+
+    Product product;
+    try {
+      product = Product.fromJson(jsonDecode(item["meta_data"]));
+    } catch (e) {
+      product = Product.fromJson(item["meta_data"]);
+    }
 
     bool isSend = item["author"] == userBloc.user.userName;
 
@@ -2469,7 +2589,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget renderService({Map<String, dynamic> item}) {
-    Service service = Service.fromJson(item["service"]);
+    Service service = Service.fromJson(item["meta_data"]);
 
     bool isSend = item["author"] == userBloc.user.userName;
 
