@@ -1640,7 +1640,7 @@ class _ChatScreenState extends State<ChatScreen> {
         break;
 
       case "transaction":
-        Widget getPaymentUI = renderSendPayment(item: messageData);
+        Widget getPaymentUI = renderSendPayment(message: messageData);
         return getPaymentUI;
 
         break;
@@ -2308,10 +2308,14 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget renderPaymentRequest({Map<String, dynamic> message}) {
     bool isSent = message["author"] == userBloc.user.userName;
+    // bool isSent = false;
 
     PaymentRequest paymentRequest = PaymentRequest.fromJson(
         jsonDecode(message['text']),
         currentUser: userBloc.user);
+
+    // PaymentRequest paymentRequest = PaymentRequest(
+    //     description: "Shopping", amount: 100, payee: "black", currency: "NGN");
 
     return GestureDetector(
       onLongPress: () {
@@ -2449,10 +2453,22 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget renderSendPayment({Map<String, dynamic> item}) {
-    bool isSent = item["author"] == userBloc.user.userName;
+  Widget renderSendPayment({Map<String, dynamic> message}) {
+    bool isSent = message["author"] == userBloc.user.userName;
 
-    Transaction transaction = Transaction.fromJson(jsonDecode(item['text']));
+    // bool isSent = false;
+
+    // PaymentRequest paymentRequest = PaymentRequest.fromJson(
+    //     jsonDecode(message['text']),
+    //     currentUser: userBloc.user);
+
+    Transaction transaction = Transaction.fromJson(jsonDecode(message['text']));
+    // Transaction transaction = Transaction(
+    //     description: "Shopping",
+    //     amount: 100,
+    //     payee: "black",
+    //     currency: "NGN",
+    //     status: "Paid");
 
     return GestureDetector(
       onLongPress: () {

@@ -451,21 +451,21 @@ packages:
       name: flutter_sound
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "7.4.15+5"
+    version: "7.4.16+3"
   flutter_sound_platform_interface:
     dependency: transitive
     description:
       name: flutter_sound_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "7.4.15+5"
+    version: "7.4.16+3"
   flutter_sound_web:
     dependency: transitive
     description:
       name: flutter_sound_web
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "7.4.15+5"
+    version: "7.4.16+3"
   flutter_spinkit:
     dependency: "direct main"
     description:
