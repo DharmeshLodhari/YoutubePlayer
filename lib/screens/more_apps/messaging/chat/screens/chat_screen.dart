@@ -24,6 +24,7 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -130,6 +131,7 @@ class _ChatScreenState extends State<ChatScreen> {
   String audioUuid;
   String audioPath;
   Duration audioRecordingDuration = Duration.zero;
+  bool isAudioRecording = false;
 
   @override
   void initState() {
@@ -1060,65 +1062,75 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget textMessageField() {
-    return TextFormField(
-      controller: messageController,
-      textInputAction: TextInputAction.send,
-      focusNode: messageFocus,
-      onFieldSubmitted: (value) {
-        sendTextMessage();
-      },
-      cursorColor: blackFont,
-      cursorWidth: 1,
-      cursorHeight: 20,
-      cursorRadius: Radius.circular(16),
-      decoration: InputDecoration(
-        hintText: "Type message",
-        hintStyle: TextStyle(
-          color: darkGrey.withOpacity(0.5),
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-        ),
-        prefix: Padding(
-          padding: EdgeInsets.only(left: 12),
-        ),
-        contentPadding: EdgeInsets.symmetric(vertical: 10),
-        isDense: true,
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: greyBorderColor,
-            width: 1.0,
+    return Stack(
+      alignment: Alignment.centerRight,
+      children: [
+        TextFormField(
+          controller: messageController,
+          textInputAction: TextInputAction.send,
+          focusNode: messageFocus,
+          onFieldSubmitted: (value) {
+            sendTextMessage();
+          },
+          cursorColor: blackFont,
+          cursorWidth: 1,
+          cursorHeight: 20,
+          cursorRadius: Radius.circular(16),
+          decoration: InputDecoration(
+            hintText: "Type message",
+            hintStyle: TextStyle(
+              color: darkGrey.withOpacity(0.5),
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+            prefix: Padding(
+              padding: EdgeInsets.only(left: 12),
+            ),
+            // suffixIcon: captureImageOrVideo(),
+            contentPadding: EdgeInsets.symmetric(vertical: 10),
+            isDense: true,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: greyBorderColor,
+                width: 1.0,
+              ),
+            ),
+            disabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: greyBorderColor,
+                width: 1.0,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: navyBlue,
+                width: 1.0,
+              ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: greyBorderColor,
+                width: 1.0,
+              ),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: greyBorderColor,
+                width: 1.0,
+              ),
+            ),
           ),
         ),
-        disabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: greyBorderColor,
-            width: 1.0,
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: navyBlue,
-            width: 1.0,
-          ),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: greyBorderColor,
-            width: 1.0,
-          ),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: greyBorderColor,
-            width: 1.0,
-          ),
-        ),
-      ),
+        Positioned(
+          child: captureImageOrVideoBtn(),
+          right: 8,
+        )
+      ],
     );
   }
 
@@ -1200,9 +1212,6 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void addMediaToMessage() async {
-    // ImageSource imageSource = await selectMediaSource();
-    // if (imageSource == null) return;
-
     List<String> allowedExtensions =
         imageExtensions + videoExtensions + audioExtensions;
 
@@ -1239,29 +1248,6 @@ class _ChatScreenState extends State<ChatScreen> {
       messageController.text = "";
       debugPrint("Result:- $result");
     }
-
-    // PickedFile media = await ImagePicker().getImage(source: imageSource);
-    //
-    // if (media == null) return;
-    //
-    // var result = await Navigator.of(context).pushNamed(
-    //   "/send-media-to-chat-message",
-    //   arguments: {
-    //     "data": {
-    //       "conversation": recipientUser.conversationId,
-    //       "author": userBloc.user.userName,
-    //     },
-    //     "media": File(media.path),
-    //     "message": messageController.text.trim(),
-    //   },
-    // ).catchError((error) {
-    //   debugPrint("Error: = = = = $error");
-    // });
-    //
-    // if (result == null) return;
-    //
-    // messageController.text = "";
-    // debugPrint("Result:- $result");
   }
 
   String getFileType(FilePickerResult pickedMedia) {
@@ -1273,12 +1259,12 @@ class _ChatScreenState extends State<ChatScreen> {
     return "";
   }
 
-  Future<ImageSource> selectMediaSource() async {
+  Future<String> selectMediaType() async {
     if (FocusScope.of(context).hasFocus) {
       FocusScope.of(context).unfocus();
     }
 
-    var source = await showModalBottomSheet<ImageSource>(
+    var source = await showModalBottomSheet<String>(
         backgroundColor: Colors.transparent,
         context: context,
         builder: (BuildContext context) {
@@ -1296,27 +1282,106 @@ class _ChatScreenState extends State<ChatScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     bottomSheetItem(
-                      title: "Camera",
-                      icon: Icons.camera_alt_rounded,
+                      title: "Image",
+                      icon: Icons.image_rounded,
                       iconSize: 18,
                       onTap: () {
-                        Navigator.pop(context, ImageSource.camera);
+                        Navigator.pop(context, "image");
                       },
                     ),
                     bottomSheetItem(
-                      title: "Gallery",
-                      icon: SlydoAppIcon.image,
+                      title: "Video",
+                      icon: Icons.video_call_rounded,
+                      iconSize: 20,
                       isLast: true,
                       onTap: () {
-                        Navigator.pop(context, ImageSource.gallery);
+                        Navigator.pop(context, "video");
                       },
                     ),
                   ],
                 ),
               ));
         });
-
     return source;
+  }
+
+  Widget captureImageOrVideoBtn() {
+    return AnimatedSwitcher(
+      duration: Duration(milliseconds: 100),
+      child: messageIsText
+          ? Container(
+              height: 0,
+              width: 0,
+            )
+          : cameraIconBtn(),
+    );
+  }
+
+  Widget cameraIconBtn() {
+    return InkWell(
+      child: ClipOval(
+          child: Container(
+        child: Icon(
+          Icons.camera_alt_outlined,
+          color: navyBlue,
+          size: 22,
+        ),
+      )),
+      onTap: captureImageOrVideo,
+    );
+  }
+
+  void captureImageOrVideo() async {
+    String mediaType = await selectMediaType();
+    if (mediaType == null) return;
+    debugPrint("$mediaType");
+
+    String capturedMediaPath;
+
+    if (mediaType == "image") {
+      capturedMediaPath = await captureImage();
+    } else if (mediaType == "video") {
+      capturedMediaPath = await captureVideo();
+    } else {
+      return;
+    }
+
+    var result = await Navigator.of(context).pushNamed(
+      "/send-media-to-chat-message",
+      arguments: {
+        "data": {
+          "conversation": recipientUser.conversationId,
+          "author": userBloc.user.userName,
+        },
+        "media": File(capturedMediaPath),
+        "message": messageController.text.trim(),
+        "mediaType": mediaType
+      },
+    ).catchError((error) {
+      debugPrint("Error: = = = = $error");
+    });
+
+    if (result == null) return;
+
+    messageController.text = "";
+    debugPrint("Result:- $result");
+  }
+
+  Future<String> captureImage() async {
+    PickedFile media = await ImagePicker().getImage(source: ImageSource.camera);
+
+    if (media == null) return null;
+
+    return media.path;
+  }
+
+  Future<String> captureVideo() async {
+    var path = await Navigator.of(context).pushNamed("/video-recorder",
+        arguments: {"duration": Duration(seconds: 5)});
+
+    if (path == null) return null;
+
+    return path;
   }
 
   Widget sendAudioOrMessageBtn() {
@@ -1359,12 +1424,16 @@ class _ChatScreenState extends State<ChatScreen> {
         child: InkWell(
           onTapDown: (TapDownDetails details) async {
             debugPrint("Starting Recording ");
+            isAudioRecording = true;
+            setState(() {});
 
             await recordAudio();
             setState(() {});
           },
           onTap: () async {
             debugPrint("Recording Stop ");
+            isAudioRecording = false;
+            setState(() {});
             await stopRecorder();
             setState(() {});
           },
@@ -1403,12 +1472,6 @@ class _ChatScreenState extends State<ChatScreen> {
       Toast.show("Not Supported:- $codec", context);
     }
   }
-
-  // var path = await Navigator.of(context)
-  //     .pushNamed("/video-recorder", arguments: {"duration": videoDuration});
-  // if (path != null) {
-  // debugPrint("$path");
-  // }
 
   Future<void> stopRecorder() async {
     audioRecorder.stopRecorder().then((value) {
@@ -1688,10 +1751,38 @@ class _ChatScreenState extends State<ChatScreen> {
                     child: messageListBuilder(),
                   ),
                 ),
+                isAudioRecording ? getAudioRecordingWidget() : Container(),
               ],
             ),
           ),
           messageActionBar()
+        ],
+      ),
+    );
+  }
+
+  Widget getAudioRecordingWidget() {
+    return Container(
+      color: Colors.black87,
+      width: MediaQuery.of(context).size.width,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 200,
+            height: 200,
+            child: FlareActor(
+              "assets/images/flare/voice_record_active.flr",
+              animation: "record",
+            ),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Text(
+            "${formatDurationInSeconds(duration: audioRecordingDuration)}",
+            style: TextStyle(color: Colors.white),
+          ),
         ],
       ),
     );
@@ -1730,11 +1821,17 @@ class _ChatScreenState extends State<ChatScreen> {
         : Container();
   }
 
+  String messageDecoderWithEmoji(String text) {
+    List<int> bytes = text.toString().codeUnits;
+    return utf8.decode(bytes);
+  }
+
   Widget renderMessage({Map<String, dynamic> message}) {
     bool isSend = message["author"] == userBloc.user.userName;
     return GestureDetector(
       onLongPress: () {
-        Clipboard.setData(new ClipboardData(text: message['text']));
+        Clipboard.setData(
+            new ClipboardData(text: messageDecoderWithEmoji(message['text'])));
         Toast.show("Text copied !!", context,
             gravity: Toast.BOTTOM,
             duration: Toast.LENGTH_LONG,
@@ -1774,7 +1871,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           children: [
                             Flexible(
                               child: Text(
-                                message['text'],
+                                messageDecoderWithEmoji(message['text']),
                                 style: TextStyle(
                                     color: isSend ? Colors.white : blackFont,
                                     fontSize: 16,
@@ -1830,7 +1927,8 @@ class _ChatScreenState extends State<ChatScreen> {
           arguments: {
             "type": "image",
             "file": message['media'],
-            "message": message['text']
+            "message": message['text'],
+            "poster": message["poster"] ?? null
           },
         );
 
@@ -2455,7 +2553,6 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget renderProduct({Map<String, dynamic> item}) {
-
     Product product;
     try {
       product = Product.fromJson(jsonDecode(item["meta_data"]));
@@ -2470,18 +2567,28 @@ class _ChatScreenState extends State<ChatScreen> {
           isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
       children: [
         Container(
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width / 1.35,
+            minWidth: MediaQuery.of(context).size.width / 1.35,
+            maxHeight: MediaQuery.of(context).size.width / 1.35,
+          ),
           decoration: BoxDecoration(
               color: Colors.white,
               border: Border.all(color: dividerColor),
               borderRadius: BorderRadius.circular(12)),
           padding: EdgeInsets.all(8),
-          width: MediaQuery.of(context).size.width / 2,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              CachedNetworkImage(imageUrl: product.cover),
+              Expanded(
+                child: CachedNetworkImage(
+                  width: MediaQuery.of(context).size.width / 1.35 - 16,
+                  imageUrl: product.cover,
+                  fit: BoxFit.cover,
+                ),
+              ),
               SizedBox(
-                height: 12,
+                height: 8,
               ),
               Text(
                 product.name,
@@ -2589,7 +2696,12 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget renderService({Map<String, dynamic> item}) {
-    Service service = Service.fromJson(item["meta_data"]);
+    Service service;
+    try {
+      service = Service.fromJson(jsonDecode(item["meta_data"]));
+    } catch (e) {
+      service = Service.fromJson(item["meta_data"]);
+    }
 
     bool isSend = item["author"] == userBloc.user.userName;
 
@@ -2598,18 +2710,28 @@ class _ChatScreenState extends State<ChatScreen> {
           isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
       children: [
         Container(
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width / 1.35,
+            minWidth: MediaQuery.of(context).size.width / 1.35,
+            maxHeight: MediaQuery.of(context).size.width / 1.35,
+          ),
           decoration: BoxDecoration(
               color: Colors.white,
               border: Border.all(color: dividerColor),
               borderRadius: BorderRadius.circular(12)),
           padding: EdgeInsets.all(8),
-          width: MediaQuery.of(context).size.width / 2,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              CachedNetworkImage(imageUrl: service.cover),
+              Expanded(
+                child: CachedNetworkImage(
+                  width: MediaQuery.of(context).size.width / 1.35 - 16,
+                  imageUrl: service.cover,
+                  fit: BoxFit.cover,
+                ),
+              ),
               SizedBox(
-                height: 12,
+                height: 8,
               ),
               Text(
                 service.name,

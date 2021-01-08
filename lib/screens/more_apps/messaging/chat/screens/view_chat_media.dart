@@ -19,6 +19,7 @@ class _ViewChatMediaState extends State<ViewChatMedia> {
   String type = "";
   String url = "";
   String message = "";
+  String poster;
 
   VideoPlayerController _videoController;
   ChewieController _chewieController;
@@ -30,6 +31,7 @@ class _ViewChatMediaState extends State<ViewChatMedia> {
     type = widget.arguments["type"];
     url = widget.arguments["file"];
     message = widget.arguments["message"];
+    poster = widget.arguments["poster"] ?? null;
 
     if (type == "video") {
       isLoading = true;
@@ -165,9 +167,8 @@ class _ViewChatMediaState extends State<ViewChatMedia> {
     if (type == "video") {
       return Chewie(
         controller: _chewieController,
-        posterUrl:
-            "https://c1.iggcdn.com/indiegogo-media-prod-cld/image/upload/c_fill,f_auto,h_630,w_1200/v1506734779/wcsmythcukjuuglotjvb.jpg",
-        titleName: "DAWN OF THUNDER",
+        posterUrl: poster ?? "",
+        titleName: "",
       );
     } else {
       return Container();
