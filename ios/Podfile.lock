@@ -8,10 +8,6 @@ PODS:
   - connectivity (0.0.1):
     - Flutter
     - Reachability
-  - connectivity_for_web (0.1.0):
-    - Flutter
-  - connectivity_macos (0.0.1):
-    - Flutter
   - Crashlytics (3.14.0):
     - Fabric (~> 1.10.2)
   - device_info (0.0.1):
@@ -64,8 +60,6 @@ PODS:
   - firebase_core (0.0.1):
     - Firebase/Core
     - Flutter
-  - firebase_core_web (0.1.0):
-    - Flutter
   - firebase_crashlytics (0.0.1):
     - Crashlytics
     - Fabric
@@ -116,19 +110,15 @@ PODS:
     - GoogleUtilities/UserDefaults (~> 6.5)
     - Protobuf (>= 3.9.2, ~> 3.9)
   - Flutter (1.0.0)
-  - flutter_keyboard_visibility (0.7.0):
+  - flutter_keyboard_visibility (0.0.1):
     - Flutter
   - flutter_money_formatter (0.0.1):
-    - Flutter
-  - flutter_plugin_android_lifecycle (0.0.1):
     - Flutter
   - "flutter_sound (7.4.16+3)":
     - Flutter
     - mobile-ffmpeg-audio (= 4.3.1.LTS)
     - "tau_sound_core (= 7.4.16+3)"
-  - "flutter_sound_web (7.4.16+3)":
-    - Flutter
-  - flutter_video_info (0.0.1):
+  - flutter_video_info (1.1.0):
     - Flutter
   - FMDB (2.7.5):
     - FMDB/standard (= 2.7.5)
@@ -163,11 +153,6 @@ PODS:
     - GoogleUtilities/Logger
   - image_picker (0.0.1):
     - Flutter
-  - import_js_library (1.0.0):
-    - Flutter
-  - keyboard_visibility (0.5.0):
-    - Flutter
-    - Reachability
   - libwebp (1.1.0):
     - libwebp/demux (= 1.1.0)
     - libwebp/mux (= 1.1.0)
@@ -192,12 +177,6 @@ PODS:
     - Flutter
   - path_provider (0.0.1):
     - Flutter
-  - path_provider_linux (0.0.1):
-    - Flutter
-  - path_provider_macos (0.0.1):
-    - Flutter
-  - path_provider_windows (0.0.1):
-    - Flutter
   - printing (0.0.1):
     - Flutter
   - PromisesObjC (1.2.8)
@@ -213,14 +192,6 @@ PODS:
     - Flutter
   - shared_preferences (0.0.1):
     - Flutter
-  - shared_preferences_linux (0.0.1):
-    - Flutter
-  - shared_preferences_macos (0.0.1):
-    - Flutter
-  - shared_preferences_web (0.0.1):
-    - Flutter
-  - shared_preferences_windows (0.0.1):
-    - Flutter
   - sms_otp_auto_verify (0.0.1):
     - Flutter
   - sqflite (0.0.2):
@@ -230,24 +201,12 @@ PODS:
   - "tau_sound_core (7.4.16+3)"
   - url_launcher (0.0.1):
     - Flutter
-  - url_launcher_linux (0.0.1):
-    - Flutter
-  - url_launcher_macos (0.0.1):
-    - Flutter
-  - url_launcher_web (0.0.1):
-    - Flutter
-  - url_launcher_windows (0.0.1):
-    - Flutter
   - video_player (0.0.1):
-    - Flutter
-  - video_player_web (0.0.1):
     - Flutter
   - video_thumbnail (0.0.1):
     - Flutter
     - libwebp
   - wakelock (0.0.1):
-    - Flutter
-  - wakelock_web (0.0.1):
     - Flutter
 
 DEPENDENCIES:
@@ -255,52 +214,32 @@ DEPENDENCIES:
   - assets_audio_player_web (from `.symlinks/plugins/assets_audio_player_web/ios`)
   - camera (from `.symlinks/plugins/camera/ios`)
   - connectivity (from `.symlinks/plugins/connectivity/ios`)
-  - connectivity_for_web (from `.symlinks/plugins/connectivity_for_web/ios`)
-  - connectivity_macos (from `.symlinks/plugins/connectivity_macos/ios`)
   - device_info (from `.symlinks/plugins/device_info/ios`)
   - devicelocale (from `.symlinks/plugins/devicelocale/ios`)
   - file_picker (from `.symlinks/plugins/file_picker/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
-  - firebase_core_web (from `.symlinks/plugins/firebase_core_web/ios`)
   - firebase_crashlytics (from `.symlinks/plugins/firebase_crashlytics/ios`)
   - firebase_messaging (from `.symlinks/plugins/firebase_messaging/ios`)
   - Flutter (from `Flutter`)
   - flutter_keyboard_visibility (from `.symlinks/plugins/flutter_keyboard_visibility/ios`)
   - flutter_money_formatter (from `.symlinks/plugins/flutter_money_formatter/ios`)
-  - flutter_plugin_android_lifecycle (from `.symlinks/plugins/flutter_plugin_android_lifecycle/ios`)
   - flutter_sound (from `.symlinks/plugins/flutter_sound/ios`)
-  - flutter_sound_web (from `.symlinks/plugins/flutter_sound_web/ios`)
   - flutter_video_info (from `.symlinks/plugins/flutter_video_info/ios`)
   - image_picker (from `.symlinks/plugins/image_picker/ios`)
-  - import_js_library (from `.symlinks/plugins/import_js_library/ios`)
-  - keyboard_visibility (from `.symlinks/plugins/keyboard_visibility/ios`)
   - location (from `.symlinks/plugins/location/ios`)
   - maps_launcher (from `.symlinks/plugins/maps_launcher/ios`)
   - package_info (from `.symlinks/plugins/package_info/ios`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
-  - path_provider_linux (from `.symlinks/plugins/path_provider_linux/ios`)
-  - path_provider_macos (from `.symlinks/plugins/path_provider_macos/ios`)
-  - path_provider_windows (from `.symlinks/plugins/path_provider_windows/ios`)
   - printing (from `.symlinks/plugins/printing/ios`)
   - qr_code_scanner (from `.symlinks/plugins/qr_code_scanner/ios`)
   - share (from `.symlinks/plugins/share/ios`)
   - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
-  - shared_preferences_linux (from `.symlinks/plugins/shared_preferences_linux/ios`)
-  - shared_preferences_macos (from `.symlinks/plugins/shared_preferences_macos/ios`)
-  - shared_preferences_web (from `.symlinks/plugins/shared_preferences_web/ios`)
-  - shared_preferences_windows (from `.symlinks/plugins/shared_preferences_windows/ios`)
   - sms_otp_auto_verify (from `.symlinks/plugins/sms_otp_auto_verify/ios`)
   - sqflite (from `.symlinks/plugins/sqflite/ios`)
   - url_launcher (from `.symlinks/plugins/url_launcher/ios`)
-  - url_launcher_linux (from `.symlinks/plugins/url_launcher_linux/ios`)
-  - url_launcher_macos (from `.symlinks/plugins/url_launcher_macos/ios`)
-  - url_launcher_web (from `.symlinks/plugins/url_launcher_web/ios`)
-  - url_launcher_windows (from `.symlinks/plugins/url_launcher_windows/ios`)
   - video_player (from `.symlinks/plugins/video_player/ios`)
-  - video_player_web (from `.symlinks/plugins/video_player_web/ios`)
   - video_thumbnail (from `.symlinks/plugins/video_thumbnail/ios`)
   - wakelock (from `.symlinks/plugins/wakelock/ios`)
-  - wakelock_web (from `.symlinks/plugins/wakelock_web/ios`)
 
 SPEC REPOS:
   trunk:
@@ -342,10 +281,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/camera/ios"
   connectivity:
     :path: ".symlinks/plugins/connectivity/ios"
-  connectivity_for_web:
-    :path: ".symlinks/plugins/connectivity_for_web/ios"
-  connectivity_macos:
-    :path: ".symlinks/plugins/connectivity_macos/ios"
   device_info:
     :path: ".symlinks/plugins/device_info/ios"
   devicelocale:
@@ -354,8 +289,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/file_picker/ios"
   firebase_core:
     :path: ".symlinks/plugins/firebase_core/ios"
-  firebase_core_web:
-    :path: ".symlinks/plugins/firebase_core_web/ios"
   firebase_crashlytics:
     :path: ".symlinks/plugins/firebase_crashlytics/ios"
   firebase_messaging:
@@ -366,20 +299,12 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_keyboard_visibility/ios"
   flutter_money_formatter:
     :path: ".symlinks/plugins/flutter_money_formatter/ios"
-  flutter_plugin_android_lifecycle:
-    :path: ".symlinks/plugins/flutter_plugin_android_lifecycle/ios"
   flutter_sound:
     :path: ".symlinks/plugins/flutter_sound/ios"
-  flutter_sound_web:
-    :path: ".symlinks/plugins/flutter_sound_web/ios"
   flutter_video_info:
     :path: ".symlinks/plugins/flutter_video_info/ios"
   image_picker:
     :path: ".symlinks/plugins/image_picker/ios"
-  import_js_library:
-    :path: ".symlinks/plugins/import_js_library/ios"
-  keyboard_visibility:
-    :path: ".symlinks/plugins/keyboard_visibility/ios"
   location:
     :path: ".symlinks/plugins/location/ios"
   maps_launcher:
@@ -388,12 +313,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/package_info/ios"
   path_provider:
     :path: ".symlinks/plugins/path_provider/ios"
-  path_provider_linux:
-    :path: ".symlinks/plugins/path_provider_linux/ios"
-  path_provider_macos:
-    :path: ".symlinks/plugins/path_provider_macos/ios"
-  path_provider_windows:
-    :path: ".symlinks/plugins/path_provider_windows/ios"
   printing:
     :path: ".symlinks/plugins/printing/ios"
   qr_code_scanner:
@@ -402,46 +321,24 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/share/ios"
   shared_preferences:
     :path: ".symlinks/plugins/shared_preferences/ios"
-  shared_preferences_linux:
-    :path: ".symlinks/plugins/shared_preferences_linux/ios"
-  shared_preferences_macos:
-    :path: ".symlinks/plugins/shared_preferences_macos/ios"
-  shared_preferences_web:
-    :path: ".symlinks/plugins/shared_preferences_web/ios"
-  shared_preferences_windows:
-    :path: ".symlinks/plugins/shared_preferences_windows/ios"
   sms_otp_auto_verify:
     :path: ".symlinks/plugins/sms_otp_auto_verify/ios"
   sqflite:
     :path: ".symlinks/plugins/sqflite/ios"
   url_launcher:
     :path: ".symlinks/plugins/url_launcher/ios"
-  url_launcher_linux:
-    :path: ".symlinks/plugins/url_launcher_linux/ios"
-  url_launcher_macos:
-    :path: ".symlinks/plugins/url_launcher_macos/ios"
-  url_launcher_web:
-    :path: ".symlinks/plugins/url_launcher_web/ios"
-  url_launcher_windows:
-    :path: ".symlinks/plugins/url_launcher_windows/ios"
   video_player:
     :path: ".symlinks/plugins/video_player/ios"
-  video_player_web:
-    :path: ".symlinks/plugins/video_player_web/ios"
   video_thumbnail:
     :path: ".symlinks/plugins/video_thumbnail/ios"
   wakelock:
     :path: ".symlinks/plugins/wakelock/ios"
-  wakelock_web:
-    :path: ".symlinks/plugins/wakelock_web/ios"
 
 SPEC CHECKSUMS:
   assets_audio_player: edee322b9cb625571b830b35872ead1a295fd917
   assets_audio_player_web: 19826380c44375761aa0b9053665c1e3fbc3b86b
   camera: a0ca5080336f7af47b88436e5e26da3dee5568f0
   connectivity: c4130b2985d4ef6fd26f9702e886bd5260681467
-  connectivity_for_web: 2b8584556930d4bd490d82b836bcf45067ce345b
-  connectivity_macos: e2e9731b6b22dda39eb1b128f6969d574460e191
   Crashlytics: 540b7e5f5da5a042647227a5e3ac51d85eed06df
   device_info: d7d233b645a32c40dfdc212de5cf646ca482f175
   devicelocale: feebbe5e7a30adb8c4f83185de1b50ff19b44f00
@@ -451,7 +348,6 @@ SPEC CHECKSUMS:
   file_picker: 3e6c3790de664ccf9b882732d9db5eaf6b8d4eb1
   Firebase: 0490eca762a72e4f1582319539153897f1508dee
   firebase_core: 335c02abd48672b7c83c683df833d0488a72e73e
-  firebase_core_web: d501d8b946b60c8af265428ce483b0fff5ad52d1
   firebase_crashlytics: cc468e94e5a637364aeeeec5c8a96d92ea75ec7b
   firebase_messaging: 21344b3b3a7d9d325d63a70e3750c0c798fe1e03
   FirebaseAnalytics: 058d71e714a1a6804d9e0f25e3bb18e377a51579
@@ -463,20 +359,16 @@ SPEC CHECKSUMS:
   FirebaseInstanceID: 7ee0d6777013bb952f377b41965bf132b6a075be
   FirebaseMessaging: 4ec33842d36b3319e062e51fb8b35a74f726950d
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
-  flutter_keyboard_visibility: 6195387fb6d8f46e5cd6dda4a4154e41f800f545
+  flutter_keyboard_visibility: 0339d06371254c3eb25eeb90ba8d17dca8f9c069
   flutter_money_formatter: d0d18ddc5be333fad8d09964d741b59fa11a91dc
-  flutter_plugin_android_lifecycle: dc0b544e129eebb77a6bfb1239d4d1c673a60a35
   flutter_sound: fd7f354591c5d28807e3ab58c369418586b915fc
-  flutter_sound_web: f191507b5400f7a3866b86a8066971e6588fc351
-  flutter_video_info: 39bcffd26afc7a7fcb31e87768961e3dc234db32
+  flutter_video_info: a932e1b0da369bba95c3a14b7f61d5f8b0d03280
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   GoogleAppMeasurement: 39ecba10918b21c83877d392246157f65db351cf
   GoogleDataTransport: 653963cf5be60fb59cf051e070f0836fdc305f81
   GoogleDataTransportCCTSupport: 84e4d4bbab642f2e9d83ee65d78aca2b5527d314
   GoogleUtilities: 06eb53bb579efe7099152735900dd04bf09e7275
   image_picker: 9c3312491f862b28d21ecd8fdf0ee14e601b3f09
-  import_js_library: 1e36c695286e1efded5c9c07583bf1d06ac44065
-  keyboard_visibility: 96a24de806fe6823c3ad956c01ba2ec6d056616f
   libwebp: 946cb3063cea9236285f7e9a8505d806d30e07f3
   location: 3a2eed4dd2fab25e7b7baf2a9efefe82b512d740
   maps_launcher: eae38ee13a9c3f210fa04e04bb4c073fa4c6ed92
@@ -485,9 +377,6 @@ SPEC CHECKSUMS:
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
   package_info: 873975fc26034f0b863a300ad47e7f1ac6c7ec62
   path_provider: abfe2b5c733d04e238b0d8691db0cfd63a27a93c
-  path_provider_linux: 4d630dc393e1f20364f3e3b4a2ff41d9674a84e4
-  path_provider_macos: f760a3c5b04357c380e2fddb6f9db6f3015897e0
-  path_provider_windows: a2b81600c677ac1959367280991971cb9a1edb3b
   printing: 5ec249946ebbd51cead5ed9b0b48113bb5141bcf
   PromisesObjC: c119f3cd559f50b7ae681fa59dc1acd19173b7e6
   Protobuf: 176220c526ad8bd09ab1fb40a978eac3fef665f7
@@ -496,25 +385,15 @@ SPEC CHECKSUMS:
   SDWebImage: b969dcfc02c40a5da71eac0b03b8f1a0c794a86f
   share: 0b2c3e82132f5888bccca3351c504d0003b3b410
   shared_preferences: af6bfa751691cdc24be3045c43ec037377ada40d
-  shared_preferences_linux: afefbfe8d921e207f01ede8b60373d9e3b566b78
-  shared_preferences_macos: f3f29b71ccbb56bf40c9dd6396c9acf15e214087
-  shared_preferences_web: 141cce0c3ed1a1c5bf2a0e44f52d31eeb66e5ea9
-  shared_preferences_windows: 36b76d6f54e76ead957e60b49e2f124b4cd3e6ae
   sms_otp_auto_verify: 201803ac25e13feedaae96eda8b70b10c55b3338
   sqflite: 6d358c025f5b867b29ed92fc697fd34924e11904
   SwiftyGif: e466e86c660d343357ab944a819a101c4127cb40
   tau_sound_core: a85987e793308478a4066deaf7bd1f0d176c43c8
   url_launcher: 6fef411d543ceb26efce54b05a0a40bfd74cbbef
-  url_launcher_linux: ac237cb7a8058736e4aae38bdbcc748a4b394cc0
-  url_launcher_macos: fd7894421cd39320dce5f292fc99ea9270b2a313
-  url_launcher_web: e5527357f037c87560776e36436bf2b0288b965c
-  url_launcher_windows: 683d7c283894db8d1914d3ab2223b20cc1ad95d5
   video_player: 9cc823b1d9da7e8427ee591e8438bfbcde500e6e
-  video_player_web: da8cadb8274ed4f8dbee8d7171b420dedd437ce7
   video_thumbnail: c4e2a3c539e247d4de13cd545344fd2d26ffafd1
   wakelock: bfc7955c418d0db797614075aabbc58a39ab5107
-  wakelock_web: 926054421610791ae9c8bdd36666798e67be5a4c
 
-PODFILE CHECKSUM: 9ea499adda6461ad93112f0a7cc631edb0620bc6
+PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c
 
 COCOAPODS: 1.9.3

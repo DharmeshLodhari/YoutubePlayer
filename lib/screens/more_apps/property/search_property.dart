@@ -11,7 +11,6 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:search_widget/search_widget.dart';
 import 'package:toast/toast.dart';
 
 import 'models/PropertyItem.dart';
@@ -320,31 +319,32 @@ class _SearchPropertyState extends State<SearchProperty> {
   }
 
   Widget searchBoxWithSuggestion() {
-    return SearchWidget<String>(
-      dataList: searchSuggestion,
-      hideSearchBoxWhenItemSelected: false,
-      listContainerHeight: MediaQuery.of(context).size.height / 4,
-      queryBuilder: (String query, List<String> list) {
-        return list;
-      },
-      onItemSelected: (item) {
-        selectedSearch = item;
-        setState(() {});
-        getResult(item);
-      },
-      popupListItemBuilder: (String item) {
-        return PopupListItemWidget(item);
-      },
-      selectedItemBuilder:
-          (String selectedItem, VoidCallback deleteSelectedItem) {
-        return Container();
-      },
-      // widget customization
-      noItemsFoundWidget: NoItemsFound(),
-      textFieldBuilder: (tempController, FocusNode focusNode) {
-        return MyTextField(tempController, focusNode);
-      },
-    );
+    // return SearchWidget<String>(
+    //   dataList: searchSuggestion,
+    //   hideSearchBoxWhenItemSelected: false,
+    //   listContainerHeight: MediaQuery.of(context).size.height / 4,
+    //   queryBuilder: (String query, List<String> list) {
+    //     return list;
+    //   },
+    //   onItemSelected: (item) {
+    //     selectedSearch = item;
+    //     setState(() {});
+    //     getResult(item);
+    //   },
+    //   popupListItemBuilder: (String item) {
+    //     return PopupListItemWidget(item);
+    //   },
+    //   selectedItemBuilder:
+    //       (String selectedItem, VoidCallback deleteSelectedItem) {
+    //     return Container();
+    //   },
+    //   // widget customization
+    //   noItemsFoundWidget: NoItemsFound(),
+    //   textFieldBuilder: (tempController, FocusNode focusNode) {
+    //     return MyTextField(tempController, focusNode);
+    //   },
+    // );
+    return Container();
   }
 
   Widget searchBox() {

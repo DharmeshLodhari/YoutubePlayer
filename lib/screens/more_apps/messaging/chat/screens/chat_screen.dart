@@ -28,10 +28,10 @@ import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:keyboard_visibility/keyboard_visibility.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
@@ -421,9 +421,9 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void setupKeyboardFocusListener() {
-    KeyboardVisibilityNotification().addNewListener(
-      onChange: (bool visible) {
-        if (visible) {
+    KeyboardVisibilityController().onChange.listen(
+      (event) {
+        if (event) {
           if (mounted) {
             Timer(
                 Duration(milliseconds: 100),
@@ -433,6 +433,19 @@ class _ChatScreenState extends State<ChatScreen> {
         }
       },
     );
+
+    // KeyboardVisibility().addNewListener(
+    //     onChange: (bool visible) {
+    //       if (visible) {
+    //         if (mounted) {
+    //           Timer(
+    //               Duration(milliseconds: 100),
+    //               () => messageScrollController.jumpTo(
+    //                   messageScrollController.position.maxScrollExtent));
+    //         }
+    //       }
+    //     },
+    //   );
   }
 
   void fetchPreviousMessages({bool showLoading = true}) async {
