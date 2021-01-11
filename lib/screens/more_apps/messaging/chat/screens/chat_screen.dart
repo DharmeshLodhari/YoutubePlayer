@@ -66,6 +66,7 @@ class _ChatScreenState extends State<ChatScreen> {
   int count = 0;
   String next = "";
   String previous = "";
+  bool isBigScreen = false;
 
   /// Socket variables
   IOWebSocketChannel channel;
@@ -154,7 +155,7 @@ class _ChatScreenState extends State<ChatScreen> {
     searchProductController.addListener(searchProduct);
     searchServiceController.addListener(searchService);
 
-    fetchPreviousMessages();
+    getPreviousMessages();
 
     setupKeyboardFocusListener();
 
@@ -404,7 +405,7 @@ class _ChatScreenState extends State<ChatScreen> {
       /// when scroll view is at last
       if (messageScrollController.position.pixels ==
           messageScrollController.position.minScrollExtent) {
-        fetchPreviousMessages();
+        getPreviousMessages();
       }
 
       /// for floating button to show scroll to bottom
@@ -448,7 +449,7 @@ class _ChatScreenState extends State<ChatScreen> {
     //   );
   }
 
-  void fetchPreviousMessages({bool showLoading = true}) async {
+  void getPreviousMessages({bool showLoading = true}) async {
     debugPrint("Fetching previous messages !!");
     if (!isLoading) {
       if (next != null && !isLoading) {
@@ -469,19 +470,34 @@ class _ChatScreenState extends State<ChatScreen> {
           setState(() {
             isLoading = false;
             bool isFirstTime;
+
             if (messageList.isEmpty) {
               isFirstTime = true;
             } else {
               isFirstTime = false;
             }
 
+            debugPrint("$isBigScreen  ${messageList.length} == 12");
+            if (isBigScreen && messageList.length == 12) {
+              isFirstTime = true;
+            }
+
             messageList.insertAll(0, tempList.reversed);
+
+            if (messageList.length == 12 &&
+                MediaQuery.of(context).size.height > 704) {
+              debugPrint(
+                  "height:- " + MediaQuery.of(context).size.height.toString());
+              isBigScreen = true;
+              getPreviousMessages(showLoading: false);
+              scrollToBottom();
+            }
 
             if (mounted) setState(() {});
             Future.delayed(Duration(milliseconds: 100)).then((value) {
-              if (isFirstTime)
+              if (isFirstTime) {
                 scrollToBottom();
-              else {
+              } else {
                 scrollToTopWithTopSpace();
               }
             });
@@ -1803,6 +1819,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget messageListBuilder() {
     return ListView.builder(
+      shrinkWrap: true,
       controller: messageScrollController,
       padding: EdgeInsets.symmetric(vertical: 4),
       //+1 for progressbar
@@ -1835,8 +1852,12 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   String messageDecoderWithEmoji(String text) {
-    List<int> bytes = text.toString().codeUnits;
-    return utf8.decode(bytes);
+    try {
+      List<int> bytes = text.toString().codeUnits;
+      return utf8.decode(bytes);
+    } catch (error) {
+      return text;
+    }
   }
 
   Widget renderMessage({Map<String, dynamic> message}) {
