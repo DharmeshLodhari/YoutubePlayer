@@ -484,13 +484,18 @@ class _ChatScreenState extends State<ChatScreen> {
 
             messageList.insertAll(0, tempList.reversed);
 
+            if (messageList.length > 12 &&
+                messageList.length < 24 &&
+                isBigScreen) {
+              scrollToBottom();
+            }
+
             if (messageList.length == 12 &&
                 MediaQuery.of(context).size.height > 704) {
               debugPrint(
                   "height:- " + MediaQuery.of(context).size.height.toString());
               isBigScreen = true;
               getPreviousMessages(showLoading: false);
-              scrollToBottom();
             }
 
             if (mounted) setState(() {});
