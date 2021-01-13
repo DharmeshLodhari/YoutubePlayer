@@ -12,6 +12,14 @@ class MainSocketProvider extends ChangeNotifier {
   User _currentUser;
   String _socketUrl = "wss://slydo.co/ws/main";
   var _headers;
+  String _currentConversationId;
+
+  String get currentConversationId => _currentConversationId;
+
+  set currentConversationId(String value) {
+    _currentConversationId = value;
+    notifyListeners();
+  }
 
   bool _isConnected = false;
   Timer _timerForRetryConnection;
@@ -127,7 +135,8 @@ class MainSocketProvider extends ChangeNotifier {
 
       _streamController.stream.listen((message) {
         /// listen every message from the socket
-        debugPrint("Got Message on main socket:- $message");
+        debugPrint(
+            "Got Message on main socket:- $message  LastReceive = $_lastReceive");
         _lastReceive = DateTime.now();
       })
         ..onError((error) {

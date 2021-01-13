@@ -172,6 +172,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
     messageController.dispose();
 
+    mainSocketProvider.currentConversationId = null;
+
     super.dispose();
   }
 
@@ -179,6 +181,15 @@ class _ChatScreenState extends State<ChatScreen> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       mainSocketProvider =
           Provider.of<MainSocketProvider>(context, listen: false);
+      try{
+        mainSocketProvider.currentConversationId = recipientUser.conversationId;
+      }
+      catch(e)
+
+      {
+        debugPrint("Hello eroor:- $e");
+      }
+
 
       mainSocketProvider.listen((event) {
         determineMessageType(event);
@@ -392,7 +403,6 @@ class _ChatScreenState extends State<ChatScreen> {
       debugPrint("Data not added");
       userTyping();
     }
-
   }
 
   void scrollToBottom() {
@@ -413,29 +423,36 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: appBar(),
-      body: scaffoldBody(),
-      floatingActionButton: Padding(
-        padding: EdgeInsets.only(bottom: 48),
-        child: AnimatedOpacity(
-          child: FloatingActionButton(
-            mini: true,
-            backgroundColor: dividerColor,
-            child: Icon(
-              Icons.keyboard_arrow_down_rounded,
-              size: 28,
-              color: blackFont,
+    return WillPopScope(
+      onWillPop: () async {
+        mainSocketProvider.currentConversationId = null;
+
+        return Future.value(true);
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: appBar(),
+        body: scaffoldBody(),
+        floatingActionButton: Padding(
+          padding: EdgeInsets.only(bottom: 48),
+          child: AnimatedOpacity(
+            child: FloatingActionButton(
+              mini: true,
+              backgroundColor: dividerColor,
+              child: Icon(
+                Icons.keyboard_arrow_down_rounded,
+                size: 28,
+                color: blackFont,
+              ),
+              tooltip: "Increment",
+              onPressed: scrollToBottom,
             ),
-            tooltip: "Increment",
-            onPressed: scrollToBottom,
+            duration: Duration(milliseconds: 100),
+            opacity: fabIsVisible ? 1 : 0,
           ),
-          duration: Duration(milliseconds: 100),
-          opacity: fabIsVisible ? 1 : 0,
         ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 
@@ -1498,11 +1515,10 @@ class _ChatScreenState extends State<ChatScreen> {
     /// this code of bloc is replicated in userTyping()
 
     bool isDataAdded = await mainSocketProvider.add(data);
-    if(!isDataAdded)
-      {
-        debugPrint("Error:- while adding Data");
-         return await sendDataToSocket(data);
-      }
+    if (!isDataAdded) {
+      debugPrint("Error:- while adding Data");
+      return await sendDataToSocket(data);
+    }
 
     return true;
   }
