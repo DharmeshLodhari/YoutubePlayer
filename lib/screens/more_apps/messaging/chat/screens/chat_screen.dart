@@ -181,15 +181,11 @@ class _ChatScreenState extends State<ChatScreen> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       mainSocketProvider =
           Provider.of<MainSocketProvider>(context, listen: false);
-      try{
+      try {
         mainSocketProvider.currentConversationId = recipientUser.conversationId;
-      }
-      catch(e)
-
-      {
+      } catch (e) {
         debugPrint("Hello eroor:- $e");
       }
-
 
       mainSocketProvider.listen((event) {
         debugPrint("event e:- $event");
@@ -424,6 +420,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+
     return WillPopScope(
       onWillPop: () async {
         mainSocketProvider.currentConversationId = null;
@@ -1310,6 +1307,8 @@ class _ChatScreenState extends State<ChatScreen> {
     _data['check_id'] = audioUuid;
     _data['kind'] = "audio";
     _data['read_by_author'] = true;
+    _data['read_by_recipient'] = false;
+    _data["delivered"] = false;
     _data['created_at'] = DateTime.now().toUtc().toString();
     _data['type'] = "chatroom_message";
     _data["conversation"] = recipientUser.conversationId;
@@ -1500,6 +1499,8 @@ class _ChatScreenState extends State<ChatScreen> {
       "message": message,
       "kind": "text",
       "read_by_author": true,
+      "read_by_recipient": false,
+      "delivered": false,
       "created_at": DateTime.now().toUtc().toString(),
       "type": "chatroom_message",
     };
@@ -1713,17 +1714,21 @@ class _ChatScreenState extends State<ChatScreen> {
                                 fontSize: 10,
                                 fontWeight: FontWeight.w500),
                           ),
-                          // isSend? Row(
-                          //   children: [
-                          //     SizedBox(
-                          //       width: 2,
-                          //     ),Icon(
-                          //       Icons.check_circle_rounded,
-                          //       color: dividerColor,
-                          //       size: 10,
-                          //     ),
-                          //   ],
-                          // ):Container()
+
+                          // isSend
+                          //     ? Row(
+                          //         children: [
+                          //           SizedBox(
+                          //             width: 2,
+                          //           ),
+                          //           Icon(
+                          //             Icons.check_circle_rounded,
+                          //             size: 10,
+                          //             color: dividerColor,
+                          //           )
+                          //         ],
+                          //       )
+                          //     : Container(),
                         ],
                       ),
                     ),
