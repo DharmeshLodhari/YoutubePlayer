@@ -38,6 +38,7 @@ class MainSocketProvider extends ChangeNotifier {
     _currentUser = value;
     connect();
     notifyListeners();
+    pingServer();
   }
 
   StreamController _streamController;
@@ -105,7 +106,10 @@ class MainSocketProvider extends ChangeNotifier {
 
     /// for connecting the socket
     try {
-      _channel = IOWebSocketChannel.connect(finalUrl, headers: _headers);
+      _channel = IOWebSocketChannel.connect(
+        finalUrl,
+        headers: _headers,
+      );
       _streamController = StreamController.broadcast();
       debugPrint(
           "WebSocket Connected to $finalUrl for user ${currentUser.userName}");
@@ -124,13 +128,19 @@ class MainSocketProvider extends ChangeNotifier {
       _streamController.stream.listen((message) {
         /// listen every message from the socket
         debugPrint("Got Message on main socket:- $message");
-      }).onError((error) {
-        /// if there is any error while listing the socket
+        _lastReceive = DateTime.now();
+      })
+        ..onError((error) {
+          /// if there is any error while listing the socket
 
-        _isConnected = false;
-        debugPrint("ERROR:- While listening the Socket $error");
-        reconnectSocket();
-      });
+          _isConnected = false;
+          debugPrint("ERROR:- While listening the Socket $error");
+          reconnectSocket();
+        })
+        ..onDone(() {
+          debugPrint("On Done called:-  Socket Closed !!!!");
+          _isConnected = false;
+        });
     }
 
     notifyListeners();
@@ -177,12 +187,21 @@ class MainSocketProvider extends ChangeNotifier {
   }
 
   /// for adding data into user socket
-  void add(Map<String, dynamic> data) {
+  Future<bool> add(Map<String, dynamic> data) async {
     String _data = jsonEncode(data);
+
+    if (!_isConnected) {
+      _numberOfRetry = 0;
+      _isConnected = false;
+      await connect();
+    }
+
     try {
       if (_isConnected) {
         _channel.sink.add(_data);
+        _lastSent = DateTime.now();
         debugPrint("Data added in webSocket :- $_data");
+        return true;
       } else {
         throw Exception("Not Connected");
       }
@@ -190,11 +209,17 @@ class MainSocketProvider extends ChangeNotifier {
       debugPrint(
           "ERROR:- While adding data in WebSocket for user ${currentUser.userName}");
 
-      reconnectSocket();
-      _channel.sink.add(_data);
-      debugPrint("Data added in webSocket :- $_data");
+      _numberOfRetry = 0;
+      _isConnected = false;
+      await connect().then((value) {
+        _channel.sink.add(jsonEncode(data));
+        _lastSent = DateTime.now();
+        debugPrint("Data added in webSocket :- $data");
+        return true;
+      });
     }
     notifyListeners();
+    return false;
   }
 
   void close() {
