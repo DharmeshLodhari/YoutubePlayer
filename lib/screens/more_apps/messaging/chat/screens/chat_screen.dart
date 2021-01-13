@@ -28,10 +28,10 @@ import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
@@ -156,8 +156,6 @@ class _ChatScreenState extends State<ChatScreen> {
     searchServiceController.addListener(searchService);
 
     getPreviousMessages();
-
-    setupKeyboardFocusListener();
 
     audioRecorder.openAudioSession().then((value) {
       setState(() {
@@ -398,22 +396,12 @@ class _ChatScreenState extends State<ChatScreen> {
     messageScrollController = ScrollController();
 
     messageScrollController.addListener(() {
-      /// when scroll view is at top
-      if (messageScrollController.position.pixels ==
-          messageScrollController.position.maxScrollExtent) {}
-
-      /// when scroll view is at last
-      if (messageScrollController.position.pixels ==
-          messageScrollController.position.minScrollExtent) {
-        getPreviousMessages();
-      }
-
       /// for floating button to show scroll to bottom
 
       fabIsVisible = messageScrollController.position.userScrollDirection ==
           ScrollDirection.reverse;
       if (messageScrollController.position.pixels ==
-          messageScrollController.position.maxScrollExtent) {
+          messageScrollController.position.minScrollExtent) {
         fabIsVisible = false;
       }
 
@@ -421,44 +409,24 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
-  void setupKeyboardFocusListener() {
-    KeyboardVisibilityController().onChange.listen(
-      (event) {
-        if (event) {
-          if (mounted) {
-            Timer(
-                Duration(milliseconds: 100),
-                () => messageScrollController
-                    .jumpTo(messageScrollController.position.maxScrollExtent));
-          }
-        }
-      },
-    );
-
-    // KeyboardVisibility().addNewListener(
-    //     onChange: (bool visible) {
-    //       if (visible) {
-    //         if (mounted) {
-    //           Timer(
-    //               Duration(milliseconds: 100),
-    //               () => messageScrollController.jumpTo(
-    //                   messageScrollController.position.maxScrollExtent));
-    //         }
-    //       }
-    //     },
-    //   );
-  }
-
   void getPreviousMessages({bool showLoading = true}) async {
     debugPrint("Fetching previous messages !!");
     if (!isLoading) {
       if (next != null && !isLoading) {
+        bool isFirstTime;
         if (mounted) {
           if (showLoading) {
             isLoading = true;
             setState(() {});
           }
         }
+
+        if (messageList.isEmpty) {
+          isFirstTime = true;
+        } else {
+          isFirstTime = false;
+        }
+
         Map<String, dynamic> result = await MessageAuth().getChatMessages(
             next, previous,
             conversionId: recipientUser.conversationId);
@@ -466,41 +434,21 @@ class _ChatScreenState extends State<ChatScreen> {
         next = result['next'];
         previous = result['previous'];
         List<String> tempList = result['results'];
+
         if (mounted) {
-          setState(() {
-            isLoading = false;
-            bool isFirstTime;
+          isLoading = false;
+          setState(() {});
 
-            if (messageList.isEmpty) {
-              isFirstTime = true;
-            } else {
-              isFirstTime = false;
-            }
+          messageList.addAll(tempList);
 
-            debugPrint("$isBigScreen  ${messageList.length} == 12");
-            if (isBigScreen && messageList.length == 12) {
-              isFirstTime = true;
-            }
+          if (mounted) setState(() {});
+        }
 
-            messageList.insertAll(0, tempList.reversed);
-
-            if (messageList.length == 12 &&
-                MediaQuery.of(context).size.height > 704) {
-              debugPrint(
-                  "height:- " + MediaQuery.of(context).size.height.toString());
-              isBigScreen = true;
-              getPreviousMessages(showLoading: false);
-            }
-
-            if (mounted) setState(() {});
-            Future.delayed(Duration(milliseconds: 100)).then((value) {
-              if (isFirstTime) {
-                scrollToBottom();
-              } else {
-                scrollToTopWithTopSpace();
-              }
-            });
-          });
+        if (isFirstTime &&
+            MediaQuery.of(context).size.height > 704) {
+          debugPrint(
+              "height:- " + MediaQuery.of(context).size.height.toString());
+          getPreviousMessages();
         }
       }
       if (messageList.isEmpty) {
@@ -511,83 +459,6 @@ class _ChatScreenState extends State<ChatScreen> {
       }
     }
   }
-
-  // void getPreviousMessages({bool showLoading = true}) async {
-  //   debugPrint("Fetching previous messages !!");
-  //   if (!isLoading) {
-  //     if (next != null && !isLoading) {
-  //       if (mounted) {
-  //         if (showLoading) {
-  //           isLoading = true;
-  //           setState(() {});
-  //         }
-  //       }
-  //       Map<String, dynamic> result = await MessageAuth().getChatMessages(
-  //           next, previous,
-  //           conversionId: recipientUser.conversationId);
-  //       count = result['count'];
-  //       next = result['next'];
-  //       previous = result['previous'];
-  //       List<String> tempList = result['results'];
-  //       if (mounted) {
-  //         isLoading = false;
-  //         if (isBigScreen) {
-  //           isLoading = true;
-  //         }
-  //
-  //         setState(() {});
-  //         bool isFirstTime;
-  //
-  //         if (messageList.isEmpty) {
-  //           isFirstTime = true;
-  //         } else {
-  //           isFirstTime = false;
-  //         }
-  //
-  //         debugPrint("$isBigScreen  ${messageList.length} == 12");
-  //         if (isBigScreen && messageList.length == 12) {
-  //           isFirstTime = true;
-  //         }
-  //
-  //         messageList.insertAll(0, tempList.reversed);
-  //
-  //         if (messageList.length == 12 &&
-  //             MediaQuery.of(context).size.height > 704) {
-  //           debugPrint(
-  //               "height:- " + MediaQuery.of(context).size.height.toString());
-  //           isBigScreen = true;
-  //           getPreviousMessages();
-  //         }
-  //
-  //         if (mounted) setState(() {});
-  //
-  //         // if (messageList.length > 12 &&
-  //         //     messageList.length <= 24 &&
-  //         //     isBigScreen) {
-  //         //   debugPrint("i am called!");
-  //         //   scrollToBottom();
-  //         // }
-  //
-  //         Future.delayed(Duration(milliseconds: 100)).then((value) {
-  //           if (isFirstTime) {
-  //             if (messageList.length <= 12) {
-  //               debugPrint("1 1");
-  //               scrollToBottom();
-  //             }
-  //           } else {
-  //             scrollToTopWithTopSpace();
-  //           }
-  //         });
-  //       }
-  //     }
-  //     if (messageList.isEmpty) {
-  //       if (mounted) {
-  //         /// set flag if chat is empty
-  //         setState(() {});
-  //       }
-  //     }
-  //   }
-  // }
 
   void determineMessageType(String message) async {
     Map<String, dynamic> messageData = jsonDecode(message);
@@ -649,23 +520,16 @@ class _ChatScreenState extends State<ChatScreen> {
         return;
       } else {
         addMessageToChat(message: message);
-        scrollToBottom();
       }
     } else {
       addMessageToChat(message: message);
-      scrollToBottom();
     }
   }
 
   void addMessageToChat({String message}) {
-    messageList.add(message);
+    messageList.insert(0, message);
 
     if (mounted) setState(() {});
-
-    Timer(
-        Duration(milliseconds: 100),
-        () => messageScrollController
-            .jumpTo(messageScrollController.position.maxScrollExtent));
   }
 
   void userTyping() async {
@@ -699,7 +563,7 @@ class _ChatScreenState extends State<ChatScreen> {
   void scrollToBottom() {
     debugPrint("Scrolling to Bottom");
     messageScrollController.animateTo(
-        messageScrollController.position.maxScrollExtent,
+        messageScrollController.position.minScrollExtent,
         duration: Duration(microseconds: 100),
         curve: Curves.easeOut);
   }
@@ -721,7 +585,7 @@ class _ChatScreenState extends State<ChatScreen> {
       floatingActionButton: Padding(
         padding: EdgeInsets.only(bottom: 48),
         child: AnimatedOpacity(
-          child: FloatingActionButton(
+          child: FloatingActionButton(mini: true,
             backgroundColor: dividerColor,
             child: Icon(
               Icons.keyboard_arrow_down_rounded,
@@ -1894,22 +1758,25 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget messageListBuilder() {
-    return ListView.builder(
-      shrinkWrap: true,
-      controller: messageScrollController,
-      padding: EdgeInsets.symmetric(vertical: 4),
-      //+1 for progressbar
-      itemCount: messageList.length + 1,
-      itemBuilder: (BuildContext context, int index) {
-        if (index == 0) {
-          return _buildIndicator();
-        } else {
+    return LazyLoadScrollView(
+      isLoading: isLoading,
+      onEndOfPage: getPreviousMessages,
+      child: ListView.builder(
+        reverse: true,
+        controller: messageScrollController,
+        padding: EdgeInsets.symmetric(vertical: 4),
+        //+1 for progressbar
+        itemCount: messageList.length + 1,
+        itemBuilder: (BuildContext context, int index) {
+          if (index == messageList.length) {
+            return _buildIndicator();
+          }
           return Container(
-            child: renderDataAccordingType(messageList[index - 1]),
+            child: renderDataAccordingType(messageList[index]),
             padding: EdgeInsets.only(left: 8, right: 8, bottom: 8),
           );
-        }
-      },
+        },
+      ),
     );
   }
 
@@ -2151,119 +2018,6 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget renderAudioMedia({Map<String, dynamic> message}) {
     return ChatAudioPlayer(message: message);
-
-    // bool isSend = message["author"] == userBloc.user.userName;
-    // // String messageText = message['text'] ?? "";
-    // // bool isMessageEmpty = messageText == "";
-    //
-    // return Row(
-    //   mainAxisAlignment:
-    //       isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
-    //   children: [
-    //     Container(
-    //       constraints: BoxConstraints(
-    //           maxWidth: MediaQuery.of(context).size.width / 1.35,
-    //           minWidth: MediaQuery.of(context).size.width / 1.35,
-    //           minHeight: 50),
-    //       decoration: BoxDecoration(
-    //         color: chatBackgroundColor,
-    //         borderRadius: BorderRadius.only(
-    //           bottomLeft: Radius.circular(!isSend ? 0 : 6),
-    //           bottomRight: Radius.circular(isSend ? 0 : 6),
-    //           topLeft: Radius.circular(6),
-    //           topRight: Radius.circular(6),
-    //         ),
-    //       ),
-    //       padding: EdgeInsets.only(left: 4, right: 4, top: 4, bottom: 0),
-    //       child: Column(
-    //         mainAxisSize: MainAxisSize.min,
-    //         crossAxisAlignment: CrossAxisAlignment.start,
-    //         children: [
-    //           Row(
-    //             children: [
-    //               Container(
-    //                 padding: EdgeInsets.only(top: 6, left: 4),
-    //                 child: _audioPlayer.builderRealtimePlayingInfos(
-    //                     builder: (context, info) {
-    //                   if (info == null || info.current == null) {
-    //                     return GestureDetector(
-    //                       child: Icon(
-    //                         Icons.play_arrow_rounded,
-    //                         color: navyBlue,
-    //                         size: 32,
-    //                       ),
-    //                       onTap: () {
-    //                         _audioPlayer.open(
-    //                           Audio.network(
-    //                               "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/f133a23f344e2e96b275800d505011f54a4dc20f/Burna-Boy-Monsters-You-Made-ft-Chris-Martin.mp3"),
-    //                           autoStart: true,
-    //                         );
-    //                         isAudioPlaying = !isAudioPlaying;
-    //                         setState(() {});
-    //                       },
-    //                     );
-    //                   }
-    //                   return GestureDetector(
-    //                     child: Icon(
-    //                       _audioPlayer.isPlaying.value
-    //                           ? Icons.pause_rounded
-    //                           : Icons.play_arrow_rounded,
-    //                       color: navyBlue,
-    //                       size: 32,
-    //                     ),
-    //                     onTap: () {
-    //                       if (_audioPlayer.isPlaying.value) {
-    //                         _audioPlayer.pause();
-    //                       } else {
-    //                         _audioPlayer.play();
-    //                       }
-    //                       setState(() {});
-    //                     },
-    //                   );
-    //                 }),
-    //               ),
-    //               _audioPlayer.builderRealtimePlayingInfos(
-    //                   builder: (context, info) {
-    //                 if (info == null || info.current == null) {
-    //                   return Expanded(
-    //                     child: Column(
-    //                       children: [
-    //                         PositionSeekWidget(
-    //                           currentPosition: Duration.zero,
-    //                           duration: Duration.zero,
-    //                           seekTo: (to) {},
-    //                         ),
-    //                         SizedBox(
-    //                           height: 6,
-    //                         )
-    //                       ],
-    //                     ),
-    //                   );
-    //                 }
-    //                 return Expanded(
-    //                   child: Column(
-    //                     children: [
-    //                       PositionSeekWidget(
-    //                         currentPosition: info.currentPosition,
-    //                         duration: info.duration,
-    //                         seekTo: (to) {
-    //                           _audioPlayer.seek(to);
-    //                         },
-    //                       ),
-    //                       SizedBox(
-    //                         height: 6,
-    //                       )
-    //                     ],
-    //                   ),
-    //                 );
-    //               }),
-    //             ],
-    //           )
-    //         ],
-    //       ),
-    //     )
-    //   ],
-    // );
   }
 
   Future<Uint8List> getVideoThumbnail(String url) async {

@@ -193,7 +193,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> getLoggedInUser() async {
-    await Future.delayed(Duration(seconds: 3));
+    await Future.delayed(Duration(milliseconds: 500));
     _sharedPreferences = await SharedPreferences.getInstance();
     final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
     final MainSocketProvider socketProvider =
