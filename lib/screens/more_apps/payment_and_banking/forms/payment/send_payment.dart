@@ -76,10 +76,16 @@ class _SendPaymentState extends State<SendPayment> {
 
   @override
   void initState() {
-    isFromProfile =
-        widget.arguments != null ? widget.arguments['isFromProfile'] : false;
-    isFromChat =
-        widget.arguments != null ? widget.arguments['isFromChat'] : false;
+    isFromProfile = widget.arguments != null
+        ? widget.arguments['isFromProfile'] != null
+            ? widget.arguments['isFromProfile']
+            : false
+        : false;
+    isFromChat = widget.arguments != null
+        ? widget.arguments['isFromChat'] != null
+            ? widget.arguments['isFromChat']
+            : false
+        : false;
     product = widget.arguments != null ? widget.arguments['product'] : null;
     service = widget.arguments != null ? widget.arguments['service'] : null;
     itemIndex = widget.arguments != null ? widget.arguments['itemIndex'] : null;
@@ -827,7 +833,7 @@ class _SendPaymentState extends State<SendPayment> {
               "longitude": userLocation.longitude,
               "deviceData": deviceData,
               "is_anonymous": sendMoneyAnonymous,
-              "made_from_chat": isFromChat,
+              "made_from_chat": isFromChat ?? false,
             };
             debugPrint("$data");
 
@@ -846,6 +852,9 @@ class _SendPaymentState extends State<SendPayment> {
                       Navigator.pop(context);
                       //Pop send payment page
                       Navigator.pop(context);
+
+                      debugPrint(" isFromChat:- $isFromChat");
+
                       if (!isFromChat) {
                         Navigator.of(context).pushNamed(
                           '/transactions',

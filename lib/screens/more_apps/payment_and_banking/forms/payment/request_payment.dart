@@ -77,8 +77,11 @@ class _RequestPaymentState extends State<RequestPayment> {
             ? arguments['isFromProfile']
             : false
         : false;
-    isFromChat =
-        widget.arguments != null ? widget.arguments['isFromChat'] : false;
+    isFromChat = widget.arguments != null
+        ? widget.arguments['isFromChat'] != null
+            ? widget.arguments['isFromChat']
+            : false
+        : false;
 
     /* adding listener on recipientFocus when user unFocus
     From Recipient Field then value of that field should be in lowerCase */
@@ -656,7 +659,7 @@ class _RequestPaymentState extends State<RequestPayment> {
               "description": reference.trim(),
               "latitude": userLocation.latitude,
               "longitude": userLocation.longitude,
-              "made_from_chat": isFromChat,
+              "made_from_chat": isFromChat ?? false,
             };
 
             BottomSheetPassCode(
