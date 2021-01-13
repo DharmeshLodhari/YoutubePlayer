@@ -192,6 +192,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
 
       mainSocketProvider.listen((event) {
+        debugPrint("event e:- $event");
         determineMessageType(event);
       });
     });

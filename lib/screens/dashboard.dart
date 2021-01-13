@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
@@ -60,8 +62,15 @@ class _DashboardState extends State<Dashboard> {
           Provider.of<MainSocketProvider>(context, listen: false);
 
       mainSocketProvider.listen((event) {
-        MainSocketMessageHandler(message: event);
-        if (mounted) setState(() {});
+        Map<String, dynamic> decodeMessage = jsonDecode(event);
+        if (mainSocketProvider.currentConversationId !=
+            decodeMessage["conversation"]) {
+          MainSocketMessageHandler(message: event);
+          if (mounted) setState(() {});
+        } else {
+          debugPrint(
+              "Got Message current conversation:-${mainSocketProvider.currentConversationId} message conversation:- ${decodeMessage["conversation"]}");
+        }
       });
     });
 
