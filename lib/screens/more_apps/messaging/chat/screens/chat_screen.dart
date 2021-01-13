@@ -444,8 +444,7 @@ class _ChatScreenState extends State<ChatScreen> {
           if (mounted) setState(() {});
         }
 
-        if (isFirstTime &&
-            MediaQuery.of(context).size.height > 704) {
+        if (isFirstTime && MediaQuery.of(context).size.height > 704) {
           debugPrint(
               "height:- " + MediaQuery.of(context).size.height.toString());
           getPreviousMessages();
@@ -585,7 +584,8 @@ class _ChatScreenState extends State<ChatScreen> {
       floatingActionButton: Padding(
         padding: EdgeInsets.only(bottom: 48),
         child: AnimatedOpacity(
-          child: FloatingActionButton(mini: true,
+          child: FloatingActionButton(
+            mini: true,
             backgroundColor: dividerColor,
             child: Icon(
               Icons.keyboard_arrow_down_rounded,
@@ -1456,6 +1456,8 @@ class _ChatScreenState extends State<ChatScreen> {
     _data['check_id'] = audioUuid;
     _data['kind'] = "audio";
     _data['read_by_author'] = true;
+    _data['read_by_recipient'] = false;
+    _data["delivered"] = false;
     _data['created_at'] = DateTime.now().toUtc().toString();
     _data['type'] = "chatroom_message";
     _data["conversation"] = recipientUser.conversationId;
@@ -1646,6 +1648,8 @@ class _ChatScreenState extends State<ChatScreen> {
       "message": message,
       "kind": "text",
       "read_by_author": true,
+      "read_by_recipient": false,
+      "delivered": false,
       "created_at": DateTime.now().toUtc().toString(),
       "type": "chatroom_message",
     };
@@ -1869,12 +1873,30 @@ class _ChatScreenState extends State<ChatScreen> {
                     Positioned(
                       right: -10,
                       bottom: -10,
-                      child: Text(
-                        formatTime(message['created_at']),
-                        style: TextStyle(
-                            color: isSend ? Colors.white : Colors.black38,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w500),
+                      child: Row(
+                        children: [
+                          Text(
+                            formatTime(message['created_at']),
+                            style: TextStyle(
+                                color: isSend ? Colors.white : Colors.black38,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w500),
+                          ),
+                          isSend
+                              ? Row(
+                                  children: [
+                                    SizedBox(
+                                      width: 2,
+                                    ),
+                                    Icon(
+                                      Icons.check_circle_rounded,
+                                      size: 10,
+                                      color: dividerColor,
+                                    )
+                                  ],
+                                )
+                              : Container(),
+                        ],
                       ),
                     ),
                   ],
