@@ -183,12 +183,13 @@ class _ChatScreenState extends State<ChatScreen> {
           Provider.of<MainSocketProvider>(context, listen: false);
       try {
         mainSocketProvider.currentConversationId = recipientUser.conversationId;
+        mainSocketProvider.isChatOnScreen = true;
       } catch (e) {
-        debugPrint("Hello eroor:- $e");
+        debugPrint("Hello error:- $e");
       }
 
       mainSocketProvider.listen((event) {
-        debugPrint("event e:- $event");
+        // debugPrint("event e:- $event");
         determineMessageType(event);
       });
     });
@@ -330,6 +331,10 @@ class _ChatScreenState extends State<ChatScreen> {
 
         break;
 
+      case "read_by_recipient":
+        updateMessageReadMark(message: message);
+        break;
+
       case "user_typing_message":
         if (messageData['username'] != userBloc.user.userName) {
           isRecipientTyping = true;
@@ -367,14 +372,22 @@ class _ChatScreenState extends State<ChatScreen> {
   void checkMessageToAdd({String message}) {
     if (messageList.length > 0) {
       Map<String, dynamic> newMessage = jsonDecode(message);
-      Map<String, dynamic> previousMessage = jsonDecode(messageList.last);
+      Map<String, dynamic> previousMessage = jsonDecode(messageList.first);
 
+      debugPrint("newMessageData:- $newMessage");
       debugPrint("new message :- ${newMessage['check_id']}");
       debugPrint("previousMessage message :- ${previousMessage['check_id']}");
+      debugPrint("previousMessageData:- $previousMessage");
 
       if (newMessage['check_id'] == previousMessage['check_id'] &&
           newMessage["text"] == previousMessage["text"]) {
-        return;
+        /// Update message when it came from the socket
+
+        newMessage["delivered"] = true;
+        messageList.first = jsonEncode(newMessage);
+        debugPrint("Message Updated !!!");
+
+        if (mounted) setState(() {});
       } else {
         addMessageToChat(message: message);
       }
@@ -387,18 +400,60 @@ class _ChatScreenState extends State<ChatScreen> {
     messageList.insert(0, message);
 
     if (mounted) setState(() {});
+
+    /// Update message to server when user have read the message
+    messageReadByRecipient(jsonDecode(message));
+  }
+
+  void updateMessageReadMark({String message}) {
+    Map<String, dynamic> messageData = jsonDecode(message);
+
+    for (int i = 0; i < messageList.length; i++) {
+      Map<String, dynamic> decodeListMessage = jsonDecode(messageList[i]);
+      if (decodeListMessage["check_id"] == messageData["check_id"]) {
+
+        decodeListMessage["read_by_recipient"] = true;
+        messageList[i] = jsonEncode(decodeListMessage);
+        return;
+      }
+    }
+    if (mounted) setState(() {});
   }
 
   void userTyping() async {
     var data = {
       "message": "typing",
       "type": "user_typing_message",
+      "conversation_id": recipientUser.conversationId,
     };
 
-    bool isDataAdded = await mainSocketProvider.add(data);
-    if (!isDataAdded) {
-      debugPrint("Data not added");
-      userTyping();
+    await mainSocketProvider.add(data);
+    // bool isDataAdded = await mainSocketProvider.add(data);
+    // if (!isDataAdded) {
+    //   debugPrint("Data not added");
+    //   userTyping();
+    // }
+  }
+
+  void messageReadByRecipient(Map<String, dynamic> message) async {
+    if (message["author"] != userBloc.user.userName) {
+      if (mainSocketProvider.isChatOnScreen) {
+        var data = {
+          "check_id": message["check_id"],
+          "type": "read_by_recipient",
+          "conversation_id": recipientUser.conversationId,
+        };
+
+        debugPrint("data:- $message");
+        debugPrint("MEssage REad By Recipient:- $data");
+
+        await mainSocketProvider.add(data);
+        // bool isDataAdded = await mainSocketProvider.add(data);
+        // if (!isDataAdded) {
+        //   debugPrint("Data not added");
+        //   messageReadByRecipient(message);
+        // }
+      }
     }
   }
 
@@ -424,6 +479,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return WillPopScope(
       onWillPop: () async {
         mainSocketProvider.currentConversationId = null;
+        mainSocketProvider.isChatOnScreen = false;
 
         return Future.value(true);
       },
@@ -1505,6 +1561,11 @@ class _ChatScreenState extends State<ChatScreen> {
       "type": "chatroom_message",
     };
 
+    String payload = convertServerPayload(data);
+
+    addMessageToChat(message: payload);
+    debugPrint("i am From local machine");
+
     bool result = await sendDataToSocket(data);
     if (result) {
       messageController.text = "";
@@ -1512,15 +1573,37 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  String convertServerPayload(Map<String, dynamic> data) {
+    Map<String, dynamic> newData = {};
+    newData["check_id"] = data["check_id"];
+    newData["conversation"] = data["conversation_id"];
+    newData["author"] = data["author"];
+    newData["text"] = data["message"];
+    newData["kind"] = data["kind"];
+    newData["read_by_author"] = data["read_by_author"];
+    newData["read_by_recipient"] = data["read_by_recipient"];
+    newData["delivered"] = data["delivered"];
+    newData["created_at"] = data["created_at"];
+    newData["updated_at"] = data["updated_at"];
+    newData["type"] = data["type"];
+    newData["was_edited"] = false;
+    newData["deleted_for_recipient"] = false;
+    newData["deleted_for_author"] = false;
+    newData["meta_data"] = {};
+
+    return jsonEncode(newData);
+  }
+
   Future<bool> sendDataToSocket(Map<String, dynamic> data) async {
     /// this is a second level of protection to ensure the connection
     /// this code of bloc is replicated in userTyping()
 
-    bool isDataAdded = await mainSocketProvider.add(data);
-    if (!isDataAdded) {
-      debugPrint("Error:- while adding Data");
-      return await sendDataToSocket(data);
-    }
+    await mainSocketProvider.add(data);
+    // bool isDataAdded = await mainSocketProvider.add(data);
+    // if (!isDataAdded) {
+    //   debugPrint("Error:- while adding Data");
+    //   return await sendDataToSocket(data);
+    // }
 
     return true;
   }
@@ -1714,21 +1797,21 @@ class _ChatScreenState extends State<ChatScreen> {
                                 fontSize: 10,
                                 fontWeight: FontWeight.w500),
                           ),
-
-                          // isSend
-                          //     ? Row(
-                          //         children: [
-                          //           SizedBox(
-                          //             width: 2,
-                          //           ),
-                          //           Icon(
-                          //             Icons.check_circle_rounded,
-                          //             size: 10,
-                          //             color: dividerColor,
-                          //           )
-                          //         ],
-                          //       )
-                          //     : Container(),
+                          isSend
+                              ? Row(
+                                  children: [
+                                    SizedBox(
+                                      width: 2,
+                                    ),
+                                    Icon(
+                                      Icons.check_circle_rounded,
+                                      size: 10,
+                                      color:
+                                          getMessageTickColor(message: message),
+                                    )
+                                  ],
+                                )
+                              : Container(),
                         ],
                       ),
                     ),
@@ -1738,6 +1821,14 @@ class _ChatScreenState extends State<ChatScreen> {
         ],
       ),
     );
+  }
+
+  Color getMessageTickColor({Map<String, dynamic> message}) {
+    return message['delivered']
+        ? message['read_by_recipient'] ?? false
+            ? naturalGreen
+            : Colors.white
+        : darkGrey;
   }
 
   String getDateTime(String dateAndTime) {

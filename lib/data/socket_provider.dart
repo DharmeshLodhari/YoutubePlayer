@@ -14,6 +14,15 @@ class MainSocketProvider extends ChangeNotifier {
   var _headers;
   String _currentConversationId;
 
+  bool _isChatOnScreen = false;
+
+  bool get isChatOnScreen => _isChatOnScreen;
+
+  set isChatOnScreen(bool value) {
+    _isChatOnScreen = value;
+    notifyListeners();
+  }
+
   String get currentConversationId => _currentConversationId;
 
   set currentConversationId(String value) {
@@ -21,6 +30,7 @@ class MainSocketProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Reconnect server variables
   bool _isConnected = false;
   Timer _timerForRetryConnection;
   int _numberOfRetry = 30;
@@ -28,12 +38,6 @@ class MainSocketProvider extends ChangeNotifier {
   Duration _connectionRetryDuration = Duration(seconds: 3);
 
   User get currentUser => _currentUser;
-
-  /// Reconnect server variables
-  bool isConnected = false;
-  int numberOfRetry = 30;
-  int countRetry = 0;
-  Duration connectionRetryDuration = Duration(seconds: 3);
 
   /// ping server variables
   Timer _timerForPingServer;
@@ -77,10 +81,10 @@ class MainSocketProvider extends ChangeNotifier {
       };
 
       try {
-        if (isConnected) {
-          channel.sink.add(jsonEncode(data));
+        if (_isConnected) {
+          _channel.sink.add(jsonEncode(data));
           _lastSent = DateTime.now();
-          isConnected = false;
+          _isConnected = false;
           print("ping sent!!");
         } else {
           throw Exception("Not Connected");
@@ -88,13 +92,13 @@ class MainSocketProvider extends ChangeNotifier {
       } catch (e) {
         print("ERROR:- $e");
 
-        numberOfRetry = 0;
-        isConnected = false;
+        _numberOfRetry = 0;
+        _isConnected = false;
 
         await connect().then((value) {
-          channel.sink.add(jsonEncode(data));
+          _channel.sink.add(jsonEncode(data));
           _lastSent = DateTime.now();
-          isConnected = false;
+          _isConnected = false;
           print("ping Done!!");
         });
       }
@@ -133,10 +137,33 @@ class MainSocketProvider extends ChangeNotifier {
       debugPrint("Listener called!!");
       _streamController.addStream(_channel.stream);
 
+      // _channel.stream.listen((message) {
+      //   /// listen every message from the socket
+      //   debugPrint(
+      //       "Got Message on main socket:- $message  LastReceive = $_lastReceive");
+      //   _lastReceive = DateTime.now();
+      // })
+      //   ..onError((error) {
+      //     /// if there is any error while listing the socket
+      //
+      //     _isConnected = false;
+      //     debugPrint("ERROR:- While listening the Socket $error");
+      //     reconnectSocket();
+      //   })
+      //   ..onDone(() {
+      //     debugPrint("On Done called:-  Socket Closed !!!!");
+      //     _isConnected = false;
+      //   });
+      //
+
       _streamController.stream.listen((message) {
         /// listen every message from the socket
-        debugPrint(
-            "Got Message on main socket:- $message  LastReceive = $_lastReceive");
+        Map<String, dynamic> data = jsonDecode(message);
+        if (data["type"] != "pong") {
+          debugPrint(
+              "Got Message on main socket:- $message  LastReceive = $_lastReceive");
+        }
+
         _lastReceive = DateTime.now();
       })
         ..onError((error) {
