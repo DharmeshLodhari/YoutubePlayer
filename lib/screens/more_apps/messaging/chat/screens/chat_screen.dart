@@ -26,6 +26,7 @@ import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flare_flutter/flare_actor.dart';
+import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -34,6 +35,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 import 'package:uuid/uuid.dart';
@@ -48,7 +50,7 @@ class ChatScreen extends StatefulWidget {
   _ChatScreenState createState() => _ChatScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   /// Text message controller
   TextEditingController messageController;
   TextEditingController searchProductController;
@@ -64,6 +66,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
   /// Messages list variables
   List<String> messageList = [];
+  // For storing messages when user is in background
+  List<String> temporaryMessages = [];
   bool isLoading = false;
   int count = 0;
   String next = "";
@@ -151,10 +155,16 @@ class _ChatScreenState extends State<ChatScreen> {
     });
 
     super.initState();
+
+    /// add the observer
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
+    /// remove the observer
+    WidgetsBinding.instance.removeObserver(this);
+
     _timerForUserTypingState?.cancel();
 
     _audioPlayer?.stop();
@@ -175,6 +185,46 @@ class _ChatScreenState extends State<ChatScreen> {
     mainSocketProvider.currentConversationId = null;
 
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    // These are the callbacks
+    switch (state) {
+      case AppLifecycleState.resumed:
+        debugPrint("Chat is resumed");
+        mainSocketProvider.isChatOnScreen = true;
+        acknowledgeThatMessageAreRead();
+        break;
+      case AppLifecycleState.inactive:
+        debugPrint("Chat is inactive");
+        mainSocketProvider.isChatOnScreen = false;
+        break;
+      case AppLifecycleState.paused:
+        debugPrint("Chat is paused");
+        break;
+      case AppLifecycleState.detached:
+        debugPrint("Chat is detached");
+        break;
+    }
+  }
+
+  void acknowledgeThatMessageAreRead() {
+    if (temporaryMessages.isNotEmpty) {
+      temporaryMessages.forEach((element) {
+        messageReadByRecipient(jsonDecode(element));
+      });
+
+      debugPrint("Clearing temporary Message");
+      temporaryMessages.clear();
+    }
+  }
+
+  void storeMessagesTemporary({String message}) {
+    temporaryMessages.add(message);
+    debugPrint("Storing temporary Message:- ${temporaryMessages.length}");
   }
 
   void initializeSocket() {
@@ -323,12 +373,11 @@ class _ChatScreenState extends State<ChatScreen> {
     Map<String, dynamic> messageData = jsonDecode(message);
 
     if (mounted) setState(() {});
-    getUserStatus();
+    // getUserStatus();
 
     switch (messageData['type']) {
       case "chatroom_message":
         checkMessageToAdd(message: message);
-
         break;
 
       case "read_by_recipient":
@@ -401,8 +450,13 @@ class _ChatScreenState extends State<ChatScreen> {
 
     if (mounted) setState(() {});
 
-    /// Update message to server when user have read the message
-    messageReadByRecipient(jsonDecode(message));
+    if (mainSocketProvider.isChatOnScreen) {
+      /// Update message to server when user have read the message
+      messageReadByRecipient(jsonDecode(message));
+    } else {
+      debugPrint("Got Message:- $message");
+      storeMessagesTemporary(message: message);
+    }
   }
 
   void updateMessageReadMark({String message}) {
@@ -411,7 +465,6 @@ class _ChatScreenState extends State<ChatScreen> {
     for (int i = 0; i < messageList.length; i++) {
       Map<String, dynamic> decodeListMessage = jsonDecode(messageList[i]);
       if (decodeListMessage["check_id"] == messageData["check_id"]) {
-
         decodeListMessage["read_by_recipient"] = true;
         messageList[i] = jsonEncode(decodeListMessage);
         return;
@@ -1298,31 +1351,63 @@ class _ChatScreenState extends State<ChatScreen> {
         width: 50,
         height: 50,
         child: InkWell(
-          onTapDown: (TapDownDetails details) async {
-            debugPrint("Starting Recording ");
-            isAudioRecording = true;
-            setState(() {});
-
-            await recordAudio();
-            setState(() {});
-          },
           onTap: () async {
-            debugPrint("Recording Stop ");
-            isAudioRecording = false;
-            setState(() {});
-            await stopRecorder();
-            setState(() {});
+            await getAudioPermission();
           },
           splashColor: navyBlue.withOpacity(0.2),
           borderRadius: BorderRadius.circular(50),
-          child: Icon(
-            Icons.mic,
-            color: navyBlue,
-            size: 30,
+          child: GestureDetector(
+            onLongPressStart: (event) async {
+              if (isAudioRecording) {
+                debugPrint("Recording Stop ");
+                isAudioRecording = false;
+                setState(() {});
+                await stopRecorder();
+                setState(() {});
+              } else {
+                if (await getAudioPermission()) {
+                  if (!isAudioRecording) {
+                    debugPrint("Starting Recording ");
+                    isAudioRecording = true;
+                    setState(() {});
+                    await recordAudio();
+                    setState(() {});
+                  }
+                }
+              }
+            },
+            onLongPressEnd: (event) async {
+              if (isAudioRecording) {
+                debugPrint("Recording Stop ");
+                isAudioRecording = false;
+                setState(() {});
+                await stopRecorder();
+                setState(() {});
+              }
+            },
+            child: Icon(
+              Icons.mic,
+              color: navyBlue,
+              size: 30,
+            ),
           ),
         ),
       ),
     );
+  }
+
+  Future<bool> getAudioPermission() async {
+    var status = await Permission.microphone.status;
+
+    if (!status.isGranted) {
+      var permission = await Permission.microphone.request();
+      if (permission.isGranted) {
+        return true;
+      }
+      return false;
+    }
+
+    return true;
   }
 
   Future<void> recordAudio() async {

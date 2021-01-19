@@ -67,9 +67,6 @@ class _DashboardState extends State<Dashboard> {
             decodeMessage["conversation"]) {
           MainSocketMessageHandler(message: event);
           if (mounted) setState(() {});
-        } else {
-          debugPrint(
-              "Got Message current conversation:-${mainSocketProvider.currentConversationId} message conversation:- ${decodeMessage["conversation"]}");
         }
       });
     });

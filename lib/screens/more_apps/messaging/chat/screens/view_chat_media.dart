@@ -69,8 +69,8 @@ class _ViewChatMediaState extends State<ViewChatMedia> {
 
   @override
   void dispose() {
-    _videoController.dispose();
-    _chewieController.dispose();
+    _videoController?.dispose();
+    _chewieController?.dispose();
 
     SystemChrome.setPreferredOrientations(
       [

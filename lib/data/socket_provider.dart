@@ -84,7 +84,6 @@ class MainSocketProvider extends ChangeNotifier {
         if (_isConnected) {
           _channel.sink.add(jsonEncode(data));
           _lastSent = DateTime.now();
-          _isConnected = false;
           print("ping sent!!");
         } else {
           throw Exception("Not Connected");
@@ -98,7 +97,6 @@ class MainSocketProvider extends ChangeNotifier {
         await connect().then((value) {
           _channel.sink.add(jsonEncode(data));
           _lastSent = DateTime.now();
-          _isConnected = false;
           print("ping Done!!");
         });
       }
@@ -137,32 +135,10 @@ class MainSocketProvider extends ChangeNotifier {
       debugPrint("Listener called!!");
       _streamController.addStream(_channel.stream);
 
-      // _channel.stream.listen((message) {
-      //   /// listen every message from the socket
-      //   debugPrint(
-      //       "Got Message on main socket:- $message  LastReceive = $_lastReceive");
-      //   _lastReceive = DateTime.now();
-      // })
-      //   ..onError((error) {
-      //     /// if there is any error while listing the socket
-      //
-      //     _isConnected = false;
-      //     debugPrint("ERROR:- While listening the Socket $error");
-      //     reconnectSocket();
-      //   })
-      //   ..onDone(() {
-      //     debugPrint("On Done called:-  Socket Closed !!!!");
-      //     _isConnected = false;
-      //   });
-      //
-
       _streamController.stream.listen((message) {
         /// listen every message from the socket
-        Map<String, dynamic> data = jsonDecode(message);
-        if (data["type"] != "pong") {
-          debugPrint(
-              "Got Message on main socket:- $message  LastReceive = $_lastReceive");
-        }
+        debugPrint(
+            "Got Message on main socket:- $message  LastReceive = $_lastReceive");
 
         _lastReceive = DateTime.now();
       })
@@ -212,13 +188,7 @@ class MainSocketProvider extends ChangeNotifier {
 
   /// for listening the user socket
   void listen(Function(dynamic event) listener) {
-    _streamController.stream.listen(listener).onError((error) {
-      /// if there is any error while listing the socket
-
-      _isConnected = false;
-      debugPrint("ERROR:- While listening the Socket $error");
-      reconnectSocket();
-    });
+    _streamController.stream.listen(listener);
     notifyListeners();
   }
 
@@ -226,11 +196,11 @@ class MainSocketProvider extends ChangeNotifier {
   Future<bool> add(Map<String, dynamic> data) async {
     String _data = jsonEncode(data);
 
-    if (!_isConnected) {
-      _numberOfRetry = 0;
-      _isConnected = false;
-      await connect();
-    }
+    // if (!_isConnected) {
+    //   _numberOfRetry = 0;
+    //   _isConnected = false;
+    //   await connect();
+    // }
 
     try {
       if (_isConnected) {
