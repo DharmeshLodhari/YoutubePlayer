@@ -6,7 +6,6 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/services/auth.dart';
-import 'package:Slydo/services/fcm_push_notification.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/country_picker/country.dart';
 import 'package:Slydo/utils/country_picker/country_picker_dialog.dart';
@@ -89,7 +88,6 @@ class _UserLoginState extends State<UserLogin> {
 
   @override
   Widget build(BuildContext context) {
-    notificationBloc = Provider.of<NotificationBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
     return WillPopScope(
       onWillPop: () {
@@ -504,11 +502,6 @@ class _UserLoginState extends State<UserLogin> {
           userBloc.user = _user;
 
           socketProvider.currentUser = _user;
-
-          //setting up notification
-          notificationBloc.pushNotificationService =
-              PushNotificationService(context: context);
-          await notificationBloc.pushNotificationService.login();
 
           // Get user's bank account if user is logged in
           if (_user != null) {

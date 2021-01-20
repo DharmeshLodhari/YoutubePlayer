@@ -7,6 +7,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_messa
 import 'package:Slydo/screens/more_apps/shopping/screens/checkout_shopping_cart.dart';
 import 'package:Slydo/screens/search_module.dart';
 import 'package:Slydo/screens/user_dashboard.dart';
+import 'package:Slydo/services/fcm_push_notification.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/dialog.dart';
@@ -38,6 +39,9 @@ class _DashboardState extends State<Dashboard> {
   var arguments;
   List<Widget> screens;
   BasketBloc basketBloc;
+
+  NotificationBloc notificationBloc;
+  MainSocketProvider mainSocketProvider;
 
   _DashboardState({this.arguments});
 
@@ -71,7 +75,13 @@ class _DashboardState extends State<Dashboard> {
       });
     });
 
+    registerPushNotification();
+
     super.initState();
+  }
+
+  void registerPushNotification() async {
+    await PushNotificationService().login();
   }
 
   Widget goToBasket() {

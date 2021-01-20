@@ -133,6 +133,7 @@ class MainSocketProvider extends ChangeNotifier {
     /// for listening message in the Socket
     if (_isConnected) {
       debugPrint("Listener called!!");
+
       _streamController.addStream(_channel.stream);
 
       _streamController.stream.listen((message) {

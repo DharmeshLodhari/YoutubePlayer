@@ -16,9 +16,6 @@ class PushNotificationService {
   static FirebaseMessaging _fcm = FirebaseMessaging();
   static AuthService _auth = AuthService();
   static DatabaseHelper _db = DatabaseHelper();
-  BuildContext context;
-
-  PushNotificationService({@required this.context});
 
   FirebaseMessaging get fcm => _fcm;
 
@@ -71,31 +68,9 @@ class PushNotificationService {
             ? getAndroidNotification(message)
             : getIosNotification(message);
 
-        debugPrint("Notification From onMessage:  $notification");
-        context = myGlobals.scaffoldKey.currentContext;
-        try {
-          // show the notification in the dialog
-          bool result = await showDialogBoxWithImage(
-            context: context,
-            actionOneBgColor: greyBorderColor,
-            actionOneTextColor: blackFont,
-            actionTwoBgColor: naturalGreen,
-            actionTwoTextColor: Colors.white,
-            firstActionPrimary: false,
-            title: notification['title'],
-            description: notification['body'],
-            image: notification['image'],
-            actionOne: AppLocalization.of(context).cancel,
-            actionTwo: AppLocalization.of(context).navigate,
-          );
-          if (result) {
-            _navigateToItemDetail(notification);
-          } else {
-            Navigator.pop(context);
-          }
-        } catch (error) {
-          debugPrint("Error:- " + error.toString());
-        }
+        showAlertMessage(
+            notification: notification,
+            context: myGlobals.scaffoldKey.currentContext);
       },
 
       // Called when the app has been closed comlpetely and it's opened
@@ -110,7 +85,8 @@ class PushNotificationService {
         debugPrint("Notification From onLaunch:  $notification");
 
         //navigate to the particular screen
-        _navigateToItemDetail(notification);
+        _navigateToItemDetail(
+            notification, myGlobals.scaffoldKey.currentContext);
       },
       // Called when the app is in the background and it's opened
       // from the push notification.
@@ -124,7 +100,8 @@ class PushNotificationService {
         debugPrint("Notification From OnResume:  $notification");
 
         //navigate to the particular screen
-        _navigateToItemDetail(notification);
+        _navigateToItemDetail(
+            notification, myGlobals.scaffoldKey.currentContext);
       },
     );
   }
@@ -161,7 +138,7 @@ class PushNotificationService {
   }
 
   // ignore: missing_return
-  void onSelectNotification(String payload) {
+  void onSelectNotification(String payload, BuildContext context) {
     // example of notification response
     // {body: abiola.rasheed.2 sent you a message,
     // title: You've Got Mail, vibrate: [200,100,200,100,200,100,400],
@@ -188,9 +165,10 @@ class PushNotificationService {
     }
   }
 
-  void _navigateToItemDetail(Map<String, dynamic> notification) async {
+  void _navigateToItemDetail(
+      Map<String, dynamic> notification, BuildContext context) async {
     debugPrint("navigate function is called");
-    onSelectNotification(notification['actions']);
+    onSelectNotification(notification['actions'], context);
   }
 
   Future<bool> logout() async {
@@ -202,6 +180,35 @@ class PushNotificationService {
       debugPrint("logout error:- $e");
     }
 
+    debugPrint("LOGOUT=====> $result");
     return result;
+  }
+
+  void showAlertMessage(
+      {Map<String, dynamic> notification, BuildContext context}) async {
+    debugPrint("Notification From onMessage:  $notification");
+    try {
+      // show the notification in the dialog
+      bool result = await showDialogBoxWithImage(
+        context: context,
+        actionOneBgColor: greyBorderColor,
+        actionOneTextColor: blackFont,
+        actionTwoBgColor: naturalGreen,
+        actionTwoTextColor: Colors.white,
+        firstActionPrimary: false,
+        title: notification['title'],
+        description: notification['body'],
+        image: notification['image'],
+        actionOne: AppLocalization.of(context).cancel,
+        actionTwo: AppLocalization.of(context).navigate,
+      );
+      if (result) {
+        _navigateToItemDetail(notification, context);
+      } else {
+        Navigator.pop(context);
+      }
+    } catch (error) {
+      debugPrint("Error:- " + error.toString());
+    }
   }
 }

@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/product_and_service_tile_for_chat.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/widgets/chat_audio_player.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
@@ -119,6 +120,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   String audioPath;
   Duration audioRecordingDuration = Duration.zero;
   bool isAudioRecording = false;
+  bool isAudioPermissionAccepted = false;
 
   @override
   void initState() {
@@ -182,8 +184,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
     messageController.dispose();
 
-    mainSocketProvider.currentConversationId = null;
-
     super.dispose();
   }
 
@@ -212,13 +212,15 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   void acknowledgeThatMessageAreRead() {
-    if (temporaryMessages.isNotEmpty) {
-      temporaryMessages.forEach((element) {
-        messageReadByRecipient(jsonDecode(element));
-      });
+    if (mainSocketProvider.isChatOnScreen) {
+      if (temporaryMessages.isNotEmpty) {
+        temporaryMessages.forEach((element) {
+          messageReadByRecipient(jsonDecode(element));
+        });
 
-      debugPrint("Clearing temporary Message");
-      temporaryMessages.clear();
+        debugPrint("Clearing temporary Message");
+        temporaryMessages.clear();
+      }
     }
   }
 
@@ -345,14 +347,14 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         previous = result['previous'];
         List<String> tempList = result['results'];
 
-        if (mounted) {
-          isLoading = false;
-          setState(() {});
+        isLoading = false;
+        if (mounted) setState(() {});
 
-          messageList.addAll(tempList);
+        messageList.addAll(tempList);
 
-          if (mounted) setState(() {});
-        }
+        if (mounted) setState(() {});
+
+        checkMessageForRead();
 
         if (isFirstTime && MediaQuery.of(context).size.height > 704) {
           debugPrint(
@@ -423,11 +425,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       Map<String, dynamic> newMessage = jsonDecode(message);
       Map<String, dynamic> previousMessage = jsonDecode(messageList.first);
 
-      debugPrint("newMessageData:- $newMessage");
-      debugPrint("new message :- ${newMessage['check_id']}");
-      debugPrint("previousMessage message :- ${previousMessage['check_id']}");
-      debugPrint("previousMessageData:- $previousMessage");
-
       if (newMessage['check_id'] == previousMessage['check_id'] &&
           newMessage["text"] == previousMessage["text"]) {
         /// Update message when it came from the socket
@@ -446,13 +443,32 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   void addMessageToChat({String message}) {
+    /// TODO: when we are adding audio at 0 position the other audio player are breaking up
+    /// it is working fine when we add audio at last
+
+    Map<String, dynamic> messageData = jsonDecode(message);
+
+    // if (messageData["kind"] == "audio") {
+    //
+    //   messageList.insert(0, message);
+    //   List<String> temporaryList = messageList;
+    //   AssetsAudioPlayer.allPlayers().forEach((key, value) async {
+    //     await value.dispose();
+    //   });
+    //   messageList = temporaryList;
+    //
+    //
+    //
+    // }
     messageList.insert(0, message);
 
     if (mounted) setState(() {});
 
+    debugPrint("NEw Message Addedd   !!!!!");
+
     if (mainSocketProvider.isChatOnScreen) {
       /// Update message to server when user have read the message
-      messageReadByRecipient(jsonDecode(message));
+      if (mounted) messageReadByRecipient(jsonDecode(message));
     } else {
       debugPrint("Got Message:- $message");
       storeMessagesTemporary(message: message);
@@ -490,6 +506,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   void messageReadByRecipient(Map<String, dynamic> message) async {
     if (message["author"] != userBloc.user.userName) {
+      debugPrint("is Chat on Screen :- ${mainSocketProvider.isChatOnScreen}");
       if (mainSocketProvider.isChatOnScreen) {
         var data = {
           "check_id": message["check_id"],
@@ -1263,7 +1280,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   void captureImageOrVideo() async {
     String mediaType = await selectMediaType();
     if (mediaType == null) return;
-    debugPrint("$mediaType");
 
     String capturedMediaPath;
 
@@ -1365,13 +1381,23 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                 await stopRecorder();
                 setState(() {});
               } else {
-                if (await getAudioPermission()) {
+                if (isAudioPermissionAccepted) {
                   if (!isAudioRecording) {
                     debugPrint("Starting Recording ");
                     isAudioRecording = true;
                     setState(() {});
                     await recordAudio();
                     setState(() {});
+                  }
+                } else {
+                  if (await getAudioPermission()) {
+                    if (!isAudioRecording) {
+                      debugPrint("Starting Recording ");
+                      isAudioRecording = true;
+                      setState(() {});
+                      await recordAudio();
+                      setState(() {});
+                    }
                   }
                 }
               }
@@ -1402,11 +1428,12 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     if (!status.isGranted) {
       var permission = await Permission.microphone.request();
       if (permission.isGranted) {
+        isAudioPermissionAccepted = true;
         return true;
       }
       return false;
     }
-
+    isAudioPermissionAccepted = true;
     return true;
   }
 
@@ -1437,6 +1464,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   Future<void> stopRecorder() async {
     audioRecorder.stopRecorder().then((value) {
       debugPrint("Audio Stored");
+      audioRecordingDuration = Duration.zero;
       sendAudioToServer();
     });
   }
@@ -1467,7 +1495,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       audioPath = null;
     }).catchError((error) {
       Navigator.pop(context);
-      Toast.show("Error:- while uploading audio $error", context);
       debugPrint("Error:- while uploading audio $error");
       audioUuid = null;
       audioPath = null;
@@ -1908,14 +1935,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     );
   }
 
-  Color getMessageTickColor({Map<String, dynamic> message}) {
-    return message['delivered']
-        ? message['read_by_recipient'] ?? false
-            ? naturalGreen
-            : Colors.white
-        : darkGrey;
-  }
-
   String getDateTime(String dateAndTime) {
     DateTime requestTime = DateTime.parse(dateAndTime);
     String date = DateFormat("dd/MM/yyyy").format(requestTime);
@@ -2026,12 +2045,31 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                     Positioned(
                       right: !isSend ? 0 : -2,
                       bottom: isMessageEmpty ? -2 : -6,
-                      child: Text(
-                        formatTime(message['created_at']),
-                        style: TextStyle(
-                            color: isSend ? Colors.white : Colors.black38,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w500),
+                      child: Row(
+                        children: [
+                          Text(
+                            formatTime(message['created_at']),
+                            style: TextStyle(
+                                color: isSend ? Colors.white : Colors.black38,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w500),
+                          ),
+                          isSend
+                              ? Row(
+                                  children: [
+                                    SizedBox(
+                                      width: 2,
+                                    ),
+                                    Icon(
+                                      Icons.check_circle_rounded,
+                                      size: 10,
+                                      color:
+                                          getMessageTickColor(message: message),
+                                    )
+                                  ],
+                                )
+                              : Container(),
+                        ],
                       ),
                     ),
                   ],
@@ -2048,7 +2086,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   Widget renderAudioMedia({Map<String, dynamic> message}) {
-    return ChatAudioPlayer(message: message);
+    return new ChatAudioPlayer(message: message);
   }
 
   Future<Uint8List> getVideoThumbnail(String url) async {
@@ -2162,18 +2200,65 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                 SizedBox(
                   height: isMessageEmpty ? 2 : 2,
                 ),
-                isMessageEmpty
-                    ? Container()
-                    : Padding(
-                        padding: EdgeInsets.only(left: 2.0),
-                        child: Text(
-                          messageText,
-                          style: TextStyle(
-                              color: isSend ? Colors.white : blackFont,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500),
-                        ),
+                Stack(
+                  overflow: Overflow.visible,
+                  children: [
+                    Column(
+                      children: [
+                        isMessageEmpty
+                            ? Container()
+                            : Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      messageText,
+                                      style: TextStyle(
+                                          color:
+                                              isSend ? Colors.white : blackFont,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                        SizedBox(
+                          height: isMessageEmpty ? 8 : 2,
+                          width: 45,
+                        )
+                      ],
+                    ),
+                    Positioned(
+                      right: !isSend ? 0 : -2,
+                      bottom: isMessageEmpty ? -2 : -6,
+                      child: Row(
+                        children: [
+                          Text(
+                            formatTime(message['created_at']),
+                            style: TextStyle(
+                                color: isSend ? Colors.white : Colors.black38,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w500),
+                          ),
+                          isSend
+                              ? Row(
+                                  children: [
+                                    SizedBox(
+                                      width: 2,
+                                    ),
+                                    Icon(
+                                      Icons.check_circle_rounded,
+                                      size: 10,
+                                      color:
+                                          getMessageTickColor(message: message),
+                                    )
+                                  ],
+                                )
+                              : Container(),
+                        ],
                       ),
+                    ),
+                  ],
+                ),
                 SizedBox(
                   height: isMessageEmpty ? 2 : 6,
                 )
@@ -2183,22 +2268,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         ],
       ),
     );
-  }
-
-  Widget getVideoImage() {
-    Widget test = Container();
-    getVideoThumbnail(
-            "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/e4199d196b558eb45681c194e3ce2734486e38aa/dawn-of-thunder.mp4?raw=true")
-        .then((value) {
-      return Image.memory(
-        value,
-        height: MediaQuery.of(context).size.width / 1.35,
-        width: MediaQuery.of(context).size.width / 1.35,
-        fit: BoxFit.cover,
-        frameBuilder: imageFrameBuilder,
-      );
-    });
-    return test;
   }
 
   Widget renderPaymentRequest({Map<String, dynamic> message}) {
@@ -2316,7 +2385,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                                   var response = await PaymentAndBankingAuth()
                                       .acceptPaymentRequests(paymentRequest,
                                           messageId: message["message_id"]);
-                                  debugPrint("${response.body}");
                                 },
                               ),
                             ),
@@ -2333,7 +2401,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                                   var result = await PaymentAndBankingAuth()
                                       .rejectPaymentRequests(paymentRequest,
                                           messageId: message["message_id"]);
-                                  debugPrint("$result");
                                 },
                               ),
                             ),
@@ -2739,5 +2806,32 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [Text("Typing...")],
     );
+  }
+
+  void checkMessageForRead() {
+    messageList.forEach((element) {
+      ///{id: e2230d61-c7e6-4825-a7c2-318a47671ff0,
+      /// check_id: 1eb55ef5-87c3-4d85-9bd5-6f277a52b4f8,
+      /// conversation: 3fe1e3b6-5802-4ade-b4f3-8f21d7b8ebd7,
+      /// author: black, text: 5, read_by_author: true,
+      /// read_by_recipient: true, was_edited: false,
+      /// media: null, poster: null,
+      /// updated_at: 2021-01-20T08:17:17.812159+01:00,
+      /// created_at: 2021-01-20T08:17:17.812186+01:00,
+      /// kind: text, deleted_for_recipient: false,
+      /// deleted_for_author: false, delivered: true,
+      /// meta_data: {}}
+      Map<String, dynamic> messageData = jsonDecode(element);
+
+      if (messageData["author"] != userBloc.user.userName) {
+        if (messageData["read_by_recipient"] == false) {
+          storeMessagesTemporary(message: element);
+        } else {
+          debugPrint("Not added in temporary list:- ${messageData["type"]}");
+        }
+      }
+    });
+
+    acknowledgeThatMessageAreRead();
   }
 }

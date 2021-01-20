@@ -8,6 +8,7 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_
 import 'package:Slydo/screens/more_apps/payment_and_banking/tiles/bank_account.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/device.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/services/fcm_push_notification.dart';
 import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -52,8 +53,6 @@ class _UserDashboardState extends State<UserDashboard> {
   DashboardBloc dashboardBloc;
   bool isBalanceHidden = true;
 
-  NotificationBloc notificationBloc;
-
   PackageInfo _packageInfo = PackageInfo(
     appName: 'Unknown',
     packageName: 'Unknown',
@@ -83,7 +82,6 @@ class _UserDashboardState extends State<UserDashboard> {
     bankAccountBloc = Provider.of<BankAccountBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
     dashboardBloc = Provider.of<DashboardBloc>(context);
-    notificationBloc = Provider.of<NotificationBloc>(context);
 
     if (userBloc.user.type != "User") {
       storeLocked = false;
@@ -444,6 +442,8 @@ class _UserDashboardState extends State<UserDashboard> {
     SharedPreferences _sharedPreferences;
 
     // await notificationBloc.pushNotificationService.logout();
+
+    await PushNotificationService().logout();
 
     await _auth.logOut();
 

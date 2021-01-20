@@ -1,6 +1,8 @@
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/screens/more_apps/music/music_detail_page.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -21,9 +23,23 @@ class _ChatAudioPlayerState extends State<ChatAudioPlayer> {
   UserBloc userBloc;
   @override
   void initState() {
-    debugPrint("${widget.message}");
+    debugPrint("New AudioPlayer:- ${widget.message}");
+
+    ///{id: 0d1fb784-db82-481a-9fd8-b775bba2a18e, check_id: 17769da5-1a06-457d-ae11-47c8475e62fc,
+    /// conversation: d60887a8-1dce-4e2d-8c54-432c3365abd3, author: black,
+    /// text: , read_by_author: true, read_by_recipient: false, was_edited: false,
+    /// media: https://slydo-assets.s3.amazonaws.com/media/1b434eab-edf3-450f-a9cc-b796a92edf5c.mp3,
+    /// poster: null, updated_at: 2021-01-20T13:38:59.276192+01:00, created_at: 2021-01-20T13:38:59.276228+01:00,
+    /// kind: audio, deleted_for_recipient: false, deleted_for_author: false, delivered: true, meta_data: {}}
+
     _audioPlayer = AssetsAudioPlayer.withId(widget.message["id"]);
-    _audioPlayer.open(Audio.network(widget.message["media"]), autoStart: false);
+    if (_audioPlayer.id == widget.message["id"]) {
+      _audioPlayer.open(
+        Audio.network(widget.message["media"]),
+        autoStart: false,
+      );
+    }
+
     super.initState();
   }
 
@@ -38,6 +54,8 @@ class _ChatAudioPlayerState extends State<ChatAudioPlayer> {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
     bool isSend = widget.message["author"] == userBloc.user.userName;
+    String messageText = widget.message['text'] ?? "";
+    bool isMessageEmpty = messageText == "";
 
     return Row(
       mainAxisAlignment:
@@ -133,6 +151,71 @@ class _ChatAudioPlayerState extends State<ChatAudioPlayer> {
                     );
                   }),
                 ],
+              ),
+              SizedBox(
+                height: isMessageEmpty ? 2 : 2,
+              ),
+              Stack(
+                overflow: Overflow.visible,
+                children: [
+                  Column(
+                    children: [
+                      isMessageEmpty
+                          ? Container()
+                          : Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    messageText,
+                                    style: TextStyle(
+                                        color:
+                                            isSend ? Colors.white : blackFont,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                ),
+                              ],
+                            ),
+                      SizedBox(
+                        height: isMessageEmpty ? 8 : 2,
+                        width: 45,
+                      )
+                    ],
+                  ),
+                  Positioned(
+                    right: !isSend ? 0 : -2,
+                    bottom: isMessageEmpty ? -2 : -6,
+                    child: Row(
+                      children: [
+                        Text(
+                          formatTime(widget.message['created_at']),
+                          style: TextStyle(
+                              color: navyBlue,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w500),
+                        ),
+                        isSend
+                            ? Row(
+                                children: [
+                                  SizedBox(
+                                    width: 2,
+                                  ),
+                                  Icon(
+                                    Icons.check_circle_rounded,
+                                    size: 10,
+                                    color: getMessageTickColor(
+                                        message: widget.message),
+                                  )
+                                ],
+                              )
+                            : Container(),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: isMessageEmpty ? 2 : 6,
               )
             ],
           ),

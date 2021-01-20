@@ -23,7 +23,7 @@ class MessageAuth extends AuthService {
 
   Future<bool> sendSocketMessage(Map data, File media, {File poster}) async {
     var url = secureBaseUrl + "/api/v1/chat/create/";
-    debugPrint("URL:- $url");
+    // debugPrint("URL:- $url");
     var headers = await getAuthHeaders();
 
     var request = http.MultipartRequest("POST", Uri.parse(url));
@@ -52,7 +52,7 @@ class MessageAuth extends AuthService {
     headers.forEach((k, v) => request.headers[k] = v);
 
     request.fields.forEach((key, value) {
-      debugPrint("$key :- $value");
+      // debugPrint("$key :- $value");
     });
 
     var response = await request.send();
