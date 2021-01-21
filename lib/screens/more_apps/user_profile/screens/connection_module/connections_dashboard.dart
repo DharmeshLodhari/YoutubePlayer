@@ -22,13 +22,13 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
   int currentIndex = 0;
 
   var filterValue = "Connections";
-
+  MainSocketProvider mainSocketProvider;
   StreamSubscription streamSubscription;
 
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      MainSocketProvider mainSocketProvider =
+      mainSocketProvider =
           Provider.of<MainSocketProvider>(context, listen: false);
 
       streamSubscription = mainSocketProvider.listen((event) {
@@ -47,7 +47,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
 
   @override
   void dispose() {
-    debugPrint("Subscription Removed ${streamSubscription?.toString()}");
+    mainSocketProvider.removeStreamSubscription(streamSubscription);
     streamSubscription?.cancel();
     super.dispose();
   }

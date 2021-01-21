@@ -18,6 +18,8 @@ class MainSocketProvider extends ChangeNotifier {
 
   bool get isChatOnScreen => _isChatOnScreen;
 
+  List<StreamSubscription> _streamSubscriptions = [];
+
   set isChatOnScreen(bool value) {
     _isChatOnScreen = value;
     notifyListeners();
@@ -85,7 +87,7 @@ class MainSocketProvider extends ChangeNotifier {
           _channel.sink.add(jsonEncode(data));
           _lastSent = DateTime.now();
           print("ping sent!!");
-          _isConnected = false;
+          // _isConnected = false;
         } else {
           throw Exception("Not Connected");
         }
@@ -135,10 +137,11 @@ class MainSocketProvider extends ChangeNotifier {
     if (_isConnected) {
       debugPrint("Listener called!!");
 
-      _streamController.addStream(_channel.stream);
+      await _streamController.addStream(_channel.stream);
 
-      _streamController.stream.listen((message) {
-        _isConnected = true;
+      StreamSubscription streamSubscription =
+          _streamController.stream.listen((message) {
+        // _isConnected = true;
 
         /// listen every message from the socket
         debugPrint(
@@ -146,17 +149,19 @@ class MainSocketProvider extends ChangeNotifier {
 
         _lastReceive = DateTime.now();
       })
-        ..onError((error) {
-          /// if there is any error while listing the socket
+            ..onError((error) {
+              /// if there is any error while listing the socket
 
-          _isConnected = false;
-          debugPrint("ERROR:- While listening the Socket $error");
-          reconnectSocket();
-        })
-        ..onDone(() {
-          debugPrint("On Done called:-  Socket Closed !!!!");
-          _isConnected = false;
-        });
+              _isConnected = false;
+              debugPrint("ERROR:- While listening the Socket $error");
+              reconnectSocket();
+            })
+            ..onDone(() {
+              debugPrint("On Done called:-  Socket Closed !!!!");
+              _isConnected = false;
+            });
+
+      _streamSubscriptions.add(streamSubscription);
     }
 
     notifyListeners();
@@ -194,8 +199,19 @@ class MainSocketProvider extends ChangeNotifier {
   StreamSubscription listen(Function(dynamic event) listener) {
     StreamSubscription newStreamSubscription =
         _streamController?.stream?.listen(listener);
+    _streamSubscriptions.add(newStreamSubscription);
     notifyListeners();
+
     return newStreamSubscription;
+  }
+
+  void removeStreamSubscription(StreamSubscription streamSubscription) {
+    _streamSubscriptions.forEach((element) {
+      if (element == streamSubscription) {
+        element.cancel();
+        // debugPrint("Stream Subscription removed successfully !");
+      }
+    });
   }
 
   /// for adding data into user socket
@@ -236,6 +252,10 @@ class MainSocketProvider extends ChangeNotifier {
 
   void close() {
     _timerForRetryConnection?.cancel();
+
+    _streamSubscriptions.forEach((element) {
+      element.cancel();
+    });
 
     _streamController = null;
 

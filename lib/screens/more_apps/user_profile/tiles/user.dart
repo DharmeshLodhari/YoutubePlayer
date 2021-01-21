@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:Slydo/data/socket_provider.dart';
@@ -22,6 +23,41 @@ class UserTile extends StatefulWidget {
 }
 
 class _UserTileState extends State<UserTile> {
+  bool isTyping = false;
+
+  MainSocketProvider mainSocketProvider;
+  StreamSubscription streamSubscription;
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      mainSocketProvider =
+          Provider.of<MainSocketProvider>(context, listen: false);
+
+      streamSubscription = mainSocketProvider.listen((message) {
+        Map<String, dynamic> messageData = jsonDecode(message);
+        if (messageData["type"] == "user_typing_message" &&
+            messageData["conversation_id"] == widget.user.conversationId) {
+          isTyping = true;
+          if (mounted) setState(() {});
+          Future.delayed(Duration(milliseconds: 500)).then((value) {
+            isTyping = false;
+            if (mounted) setState(() {});
+          });
+        }
+      });
+    });
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    mainSocketProvider.removeStreamSubscription(streamSubscription);
+    streamSubscription?.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget avatarImage = Container(
@@ -69,22 +105,14 @@ class _UserTileState extends State<UserTile> {
   }
 
   Widget getSubtitle(BuildContext context) {
-    return StreamBuilder<dynamic>(
-        stream: Provider.of<MainSocketProvider>(context).socketStream,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            Map<String, dynamic> messageData = jsonDecode(snapshot.data);
-            if (messageData["type"] == "user_typing_message" &&
-                messageData["conversation_id"] == widget.user.conversationId) {
-              return Text(
-                "Typing...",
-                style: TextStyle(
-                  color: naturalGreen,
-                ),
-              );
-            }
-          }
-          return Text(
+    return isTyping
+        ? Text(
+            "Typing...",
+            style: TextStyle(
+              color: naturalGreen,
+            ),
+          )
+        : Text(
             widget.user.userName,
             maxLines: 1,
             style: TextStyle(
@@ -94,7 +122,6 @@ class _UserTileState extends State<UserTile> {
             overflow: TextOverflow.fade,
             softWrap: false,
           );
-        });
   }
 
   Widget getTrailing() {

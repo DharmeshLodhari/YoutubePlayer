@@ -514,7 +514,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   void messageReadByRecipient(Map<String, dynamic> message) async {
     if (message["author"] != userBloc.user.userName) {
-      debugPrint("is Chat on Screen :- ${mainSocketProvider.isChatOnScreen}");
+      // debugPrint("is Chat on Screen :- ${mainSocketProvider.isChatOnScreen}");
       if (mainSocketProvider.isChatOnScreen) {
         var data = {
           "check_id": message["check_id"],
@@ -556,6 +556,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
     return WillPopScope(
       onWillPop: () async {
+        mainSocketProvider.removeStreamSubscription(streamSubscription);
         mainSocketProvider.currentConversationId = null;
         mainSocketProvider.isChatOnScreen = false;
         return Future.value(true);
@@ -600,6 +601,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
           size: 24,
         ),
         onPressed: () {
+          mainSocketProvider.removeStreamSubscription(streamSubscription);
           mainSocketProvider.currentConversationId = null;
           mainSocketProvider.isChatOnScreen = false;
           Navigator.pop(context);
