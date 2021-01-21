@@ -18,6 +18,7 @@ class ChatUserManager {
 
   void addUser({String conversationId}) {
     /// Converting CustomerProfile in to Chat Users
+
     ChatUserModel chatUserModel =
         ChatUserModel.fromConversationId(conversationId);
 

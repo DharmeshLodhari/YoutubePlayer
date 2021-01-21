@@ -85,6 +85,7 @@ class MainSocketProvider extends ChangeNotifier {
           _channel.sink.add(jsonEncode(data));
           _lastSent = DateTime.now();
           print("ping sent!!");
+          _isConnected = false;
         } else {
           throw Exception("Not Connected");
         }
@@ -137,6 +138,8 @@ class MainSocketProvider extends ChangeNotifier {
       _streamController.addStream(_channel.stream);
 
       _streamController.stream.listen((message) {
+        _isConnected = true;
+
         /// listen every message from the socket
         debugPrint(
             "Got Message on main socket:- $message  LastReceive = $_lastReceive");
@@ -188,9 +191,11 @@ class MainSocketProvider extends ChangeNotifier {
   }
 
   /// for listening the user socket
-  void listen(Function(dynamic event) listener) {
-    _streamController.stream.listen(listener);
+  StreamSubscription listen(Function(dynamic event) listener) {
+    StreamSubscription newStreamSubscription =
+        _streamController?.stream?.listen(listener);
     notifyListeners();
+    return newStreamSubscription;
   }
 
   /// for adding data into user socket

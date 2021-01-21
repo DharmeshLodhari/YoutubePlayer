@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatUserModel.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -6,13 +9,19 @@ import 'package:Slydo/utils/util.dart';
 import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
-class UserTile extends StatelessWidget {
+class UserTile extends StatefulWidget {
   CustomerProfile user;
 
   UserTile({this.user});
 
+  @override
+  _UserTileState createState() => _UserTileState();
+}
+
+class _UserTileState extends State<UserTile> {
   @override
   Widget build(BuildContext context) {
     Widget avatarImage = Container(
@@ -20,9 +29,9 @@ class UserTile extends StatelessWidget {
         width: 48,
         child: ClipOval(
           child: CachedNetworkImage(
-            imageUrl: user.avatar == ""
+            imageUrl: widget.user.avatar == ""
                 ? "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png"
-                : user.avatar,
+                : widget.user.avatar,
             colorBlendMode: BlendMode.darken,
             fit: BoxFit.fill,
             filterQuality: FilterQuality.high,
@@ -40,7 +49,7 @@ class UserTile extends StatelessWidget {
         child: ListTile(
           dense: true,
           title: Text(
-            user.fullName,
+            widget.user.fullName,
             maxLines: 1,
             style: TextStyle(
               color: blackFont,
@@ -50,16 +59,7 @@ class UserTile extends StatelessWidget {
             overflow: TextOverflow.fade,
             softWrap: false,
           ),
-          subtitle: Text(
-            user.userName,
-            maxLines: 1,
-            style: TextStyle(
-              color: darkGrey,
-              fontSize: 12,
-            ),
-            overflow: TextOverflow.fade,
-            softWrap: false,
-          ),
+          subtitle: getSubtitle(context),
           leading: avatarImage,
           trailing: getTrailing(),
         ),
@@ -68,9 +68,38 @@ class UserTile extends StatelessWidget {
     return tile;
   }
 
+  Widget getSubtitle(BuildContext context) {
+    return StreamBuilder<dynamic>(
+        stream: Provider.of<MainSocketProvider>(context).socketStream,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            Map<String, dynamic> messageData = jsonDecode(snapshot.data);
+            if (messageData["type"] == "user_typing_message" &&
+                messageData["conversation_id"] == widget.user.conversationId) {
+              return Text(
+                "Typing...",
+                style: TextStyle(
+                  color: naturalGreen,
+                ),
+              );
+            }
+          }
+          return Text(
+            widget.user.userName,
+            maxLines: 1,
+            style: TextStyle(
+              color: darkGrey,
+              fontSize: 12,
+            ),
+            overflow: TextOverflow.fade,
+            softWrap: false,
+          );
+        });
+  }
+
   Widget getTrailing() {
     return FutureBuilder<ChatUserModel>(
-        future: ChatUserManager().getUser(user.conversationId),
+        future: ChatUserManager().getUser(widget.user.conversationId),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Container(

@@ -33,12 +33,11 @@ class _ChatAudioPlayerState extends State<ChatAudioPlayer> {
     /// kind: audio, deleted_for_recipient: false, deleted_for_author: false, delivered: true, meta_data: {}}
 
     _audioPlayer = AssetsAudioPlayer.withId(widget.message["id"]);
-    if (_audioPlayer.id == widget.message["id"]) {
-      _audioPlayer.open(
-        Audio.network(widget.message["media"]),
-        autoStart: false,
-      );
-    }
+
+    _audioPlayer?.open(
+      Audio.network(widget.message["media"]),
+      autoStart: false,
+    );
 
     super.initState();
   }
@@ -86,7 +85,7 @@ class _ChatAudioPlayerState extends State<ChatAudioPlayer> {
                     padding: EdgeInsets.only(top: 6, left: 4),
                     child: _audioPlayer.builderRealtimePlayingInfos(
                         builder: (context, info) {
-                      if (info == null || info.current == null) {
+                      if (info == null) {
                         return GestureDetector(
                           child: Icon(
                             Icons.play_arrow_rounded,
@@ -98,26 +97,28 @@ class _ChatAudioPlayerState extends State<ChatAudioPlayer> {
                       }
                       return GestureDetector(
                         child: Icon(
-                          _audioPlayer.isPlaying.value
+                          // ignore: null_aware_in_condition
+                          _audioPlayer?.isPlaying?.value
                               ? Icons.pause_rounded
                               : Icons.play_arrow_rounded,
                           color: navyBlue,
                           size: 32,
                         ),
                         onTap: () {
-                          if (_audioPlayer.isPlaying.value) {
-                            _audioPlayer.pause();
+                          // ignore: null_aware_in_condition
+                          if (_audioPlayer?.isPlaying?.value) {
+                            _audioPlayer?.pause();
                           } else {
-                            _audioPlayer.play();
+                            _audioPlayer?.play();
                           }
                           setState(() {});
                         },
                       );
                     }),
                   ),
-                  _audioPlayer.builderRealtimePlayingInfos(
+                  _audioPlayer?.builderRealtimePlayingInfos(
                       builder: (context, info) {
-                    if (info == null || info.current == null) {
+                    if (info == null) {
                       return Expanded(
                         child: Column(
                           children: [
@@ -137,8 +138,8 @@ class _ChatAudioPlayerState extends State<ChatAudioPlayer> {
                       child: Column(
                         children: [
                           PositionSeekWidget(
-                            currentPosition: info.currentPosition,
-                            duration: info.duration,
+                            currentPosition: info?.currentPosition,
+                            duration: info?.duration,
                             seekTo: (to) {
                               _audioPlayer.seek(to);
                             },

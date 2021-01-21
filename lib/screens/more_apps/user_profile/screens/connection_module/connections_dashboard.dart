@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:Slydo/data/socket_provider.dart';
@@ -22,13 +23,15 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
 
   var filterValue = "Connections";
 
+  StreamSubscription streamSubscription;
+
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       MainSocketProvider mainSocketProvider =
           Provider.of<MainSocketProvider>(context, listen: false);
 
-      mainSocketProvider.listen((event) {
+      streamSubscription = mainSocketProvider.listen((event) {
         Map<String, dynamic> decodeMessage = jsonDecode(event);
 
         if (mainSocketProvider.currentConversationId !=
@@ -40,6 +43,13 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
     });
 
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    debugPrint("Subscription Removed ${streamSubscription?.toString()}");
+    streamSubscription?.cancel();
+    super.dispose();
   }
 
   @override
@@ -59,10 +69,6 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
         ),
       ),
     );
-  }
-
-  void listenSocket() async {
-    return Future.value();
   }
 
   Widget appBar() {

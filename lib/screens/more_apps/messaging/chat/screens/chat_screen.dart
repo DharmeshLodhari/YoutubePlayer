@@ -64,6 +64,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   /// Socket
   MainSocketProvider mainSocketProvider;
+  StreamSubscription streamSubscription;
 
   /// Messages list variables
   List<String> messageList = [];
@@ -172,6 +173,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     _audioPlayer?.stop();
     _audioPlayer?.dispose();
 
+    debugPrint("Subscription Removed ${streamSubscription?.toString()}");
+    streamSubscription?.cancel();
+
     audioRecorder?.closeAudioSession();
     audioRecorder = null;
 
@@ -240,7 +244,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         debugPrint("Hello error:- $e");
       }
 
-      mainSocketProvider.listen((event) {
+      streamSubscription = mainSocketProvider.listen((event) {
         // debugPrint("event e:- $event");
         determineMessageType(event);
       });
@@ -448,23 +452,27 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
     Map<String, dynamic> messageData = jsonDecode(message);
 
-    // if (messageData["kind"] == "audio") {
-    //
-    //   messageList.insert(0, message);
-    //   List<String> temporaryList = messageList;
-    //   AssetsAudioPlayer.allPlayers().forEach((key, value) async {
-    //     await value.dispose();
-    //   });
-    //   messageList = temporaryList;
-    //
-    //
-    //
-    // }
     messageList.insert(0, message);
 
-    if (mounted) setState(() {});
+    // List<String> temporaryList = [];
+    //
+    // temporaryList.addAll(messageList);
+    //
+    // debugPrint("temporaryList 1 $temporaryList");
+    // AssetsAudioPlayer.allPlayers().forEach((key, player) async {
+    //   debugPrint("ausio playter $key");
+    //   await player.dispose();
+    // });
+    // messageList.clear();
 
-    debugPrint("NEw Message Addedd   !!!!!");
+    // temporaryList.insert(0, message);
+    //
+    // debugPrint(" temporaryList 2 $temporaryList");
+    // messageList.clear();
+    // messageList = temporaryList;
+    // debugPrint(" messageList $messageList");
+
+    if (mounted) setState(() {});
 
     if (mainSocketProvider.isChatOnScreen) {
       /// Update message to server when user have read the message
@@ -514,8 +522,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
           "conversation_id": recipientUser.conversationId,
         };
 
-        debugPrint("data:- $message");
-        debugPrint("MEssage REad By Recipient:- $data");
+        // debugPrint("data:- $message");
+        // debugPrint("MEssage REad By Recipient:- $data");
 
         await mainSocketProvider.add(data);
         // bool isDataAdded = await mainSocketProvider.add(data);
@@ -550,7 +558,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       onWillPop: () async {
         mainSocketProvider.currentConversationId = null;
         mainSocketProvider.isChatOnScreen = false;
-
         return Future.value(true);
       },
       child: Scaffold(
@@ -593,6 +600,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
           size: 24,
         ),
         onPressed: () {
+          mainSocketProvider.currentConversationId = null;
+          mainSocketProvider.isChatOnScreen = false;
           Navigator.pop(context);
         },
       ),
@@ -1676,7 +1685,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     String payload = convertServerPayload(data);
 
     addMessageToChat(message: payload);
-    debugPrint("i am From local machine");
 
     bool result = await sendDataToSocket(data);
     if (result) {
@@ -2826,8 +2834,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       if (messageData["author"] != userBloc.user.userName) {
         if (messageData["read_by_recipient"] == false) {
           storeMessagesTemporary(message: element);
-        } else {
-          debugPrint("Not added in temporary list:- ${messageData["type"]}");
         }
       }
     });

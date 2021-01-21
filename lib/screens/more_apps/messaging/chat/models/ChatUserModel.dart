@@ -12,10 +12,11 @@ class ChatUserModel {
       {String conversationId, int messageCount, String hashedMessage}) {
     this.conversationId = conversationId;
     this.messageCount = messageCount;
-    this.hashedMessage = hashedMessage ?? generateHashedMessage(conversationId);
+    this.hashedMessage =
+        hashedMessage ?? generateHashedMessage(input: conversationId);
   }
 
-  String generateHashedMessage(String input) {
+  String generateHashedMessage({String input = ""}) {
     return md5.convert(utf8.encode(input)).toString();
   }
 

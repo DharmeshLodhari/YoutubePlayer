@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:Slydo/data/socket_provider.dart';
@@ -42,6 +43,7 @@ class _DashboardState extends State<Dashboard> {
 
   NotificationBloc notificationBloc;
   MainSocketProvider mainSocketProvider;
+  StreamSubscription streamSubscription;
 
   _DashboardState({this.arguments});
 
@@ -62,10 +64,10 @@ class _DashboardState extends State<Dashboard> {
     }
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      MainSocketProvider mainSocketProvider =
+      mainSocketProvider =
           Provider.of<MainSocketProvider>(context, listen: false);
 
-      mainSocketProvider.listen((event) {
+      streamSubscription = mainSocketProvider.listen((event) {
         Map<String, dynamic> decodeMessage = jsonDecode(event);
         if (mainSocketProvider.currentConversationId !=
             decodeMessage["conversation"]) {
@@ -276,5 +278,12 @@ class _DashboardState extends State<Dashboard> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    debugPrint("Subscription Removed ${streamSubscription?.toString()}");
+    streamSubscription?.cancel();
+    super.dispose();
   }
 }
