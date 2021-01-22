@@ -52,7 +52,6 @@ class MainSocketProvider extends ChangeNotifier {
     _currentUser = value;
     connect();
     notifyListeners();
-    pingServer();
   }
 
   StreamController _streamController;
@@ -87,7 +86,7 @@ class MainSocketProvider extends ChangeNotifier {
           _channel.sink.add(jsonEncode(data));
           _lastSent = DateTime.now();
           print("ping sent!!");
-          // _isConnected = false;
+          _isConnected = false;
         } else {
           throw Exception("Not Connected");
         }
@@ -101,6 +100,7 @@ class MainSocketProvider extends ChangeNotifier {
           _channel.sink.add(jsonEncode(data));
           _lastSent = DateTime.now();
           print("ping Done!!");
+          _isConnected = false;
         });
       }
     }
@@ -137,11 +137,11 @@ class MainSocketProvider extends ChangeNotifier {
     if (_isConnected) {
       debugPrint("Listener called!!");
 
-      await _streamController.addStream(_channel.stream);
+      _streamController.addStream(_channel.stream);
 
       StreamSubscription streamSubscription =
           _streamController.stream.listen((message) {
-        // _isConnected = true;
+        _isConnected = true;
 
         /// listen every message from the socket
         debugPrint(
@@ -160,8 +160,11 @@ class MainSocketProvider extends ChangeNotifier {
               debugPrint("On Done called:-  Socket Closed !!!!");
               _isConnected = false;
             });
-
       _streamSubscriptions.add(streamSubscription);
+    }
+
+    if (_isConnected) {
+      pingServer();
     }
 
     notifyListeners();
@@ -178,12 +181,12 @@ class MainSocketProvider extends ChangeNotifier {
     /// for reconnection the socket as define
 
     if (_countRetry < _numberOfRetry) {
-      _timerForRetryConnection = Timer(_connectionRetryDuration, () {
+      _timerForRetryConnection = Timer(_connectionRetryDuration, () async {
         if (!_isConnected) {
           _countRetry++;
           debugPrint("Trying to reconnect $_countRetry!! ");
 
-          connect();
+          await connect();
         } else {
           _timerForRetryConnection.cancel();
         }
@@ -205,6 +208,7 @@ class MainSocketProvider extends ChangeNotifier {
     return newStreamSubscription;
   }
 
+  /// from remove listening subscription from socket
   void removeStreamSubscription(StreamSubscription streamSubscription) {
     _streamSubscriptions.forEach((element) {
       if (element == streamSubscription) {
@@ -217,12 +221,6 @@ class MainSocketProvider extends ChangeNotifier {
   /// for adding data into user socket
   Future<bool> add(Map<String, dynamic> data) async {
     String _data = jsonEncode(data);
-
-    // if (!_isConnected) {
-    //   _numberOfRetry = 0;
-    //   _isConnected = false;
-    //   await connect();
-    // }
 
     try {
       if (_isConnected) {
@@ -239,6 +237,7 @@ class MainSocketProvider extends ChangeNotifier {
 
       _numberOfRetry = 0;
       _isConnected = false;
+
       await connect().then((value) {
         _channel.sink.add(jsonEncode(data));
         _lastSent = DateTime.now();

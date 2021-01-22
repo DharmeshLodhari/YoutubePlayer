@@ -5,6 +5,7 @@ import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
@@ -340,6 +341,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                                   imageUrl: getDisplayImage(index, productList),
                                   fit: BoxFit.fill,
                                   filterQuality: FilterQuality.high,
+                                  errorWidget: imageErrorWidget,
                                 ),
                                 onTap: () {
                                   Navigator.pushNamed(context, '/product',
@@ -574,6 +576,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
             height: 50,
             width: 50,
             colorBlendMode: BlendMode.darken,
+            errorWidget: imageErrorWidget,
             fit: BoxFit.cover,
             filterQuality: FilterQuality.high,
             placeholder: (context, url) => user.avatar == ""

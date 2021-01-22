@@ -157,10 +157,28 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       setState(() {});
     });
 
+    getAudioPermission();
+
     super.initState();
 
     /// add the observer
     WidgetsBinding.instance.addObserver(this);
+  }
+
+  void disposeAudioPlayers() {
+    // debugPrint(
+    //     "Audio Players count:- ${AssetsAudioPlayer.allPlayers().length}");
+
+    messageList.forEach((element) {
+      Map<String, dynamic> messageData = jsonDecode(element);
+
+      AssetsAudioPlayer.allPlayers().forEach((key, value) {
+        if (value.id == messageData["id"]) {
+          value.dispose();
+          // debugPrint("Audio Player dispose ${value.id}");
+        }
+      });
+    });
   }
 
   @override
@@ -425,9 +443,15 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   void checkMessageToAdd({String message}) {
+    Map<String, dynamic> newMessage = jsonDecode(message);
+
     if (messageList.length > 0) {
-      Map<String, dynamic> newMessage = jsonDecode(message);
       Map<String, dynamic> previousMessage = jsonDecode(messageList.first);
+
+      // debugPrint(
+      //     "New Message checkId = ${newMessage['check_id']}  text =  ${newMessage['text']}");
+      // debugPrint(
+      //     "Previous Message checkId = ${previousMessage['check_id']}  text =  ${previousMessage['text']}");
 
       if (newMessage['check_id'] == previousMessage['check_id'] &&
           newMessage["text"] == previousMessage["text"]) {
@@ -435,7 +459,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
         newMessage["delivered"] = true;
         messageList.first = jsonEncode(newMessage);
-        debugPrint("Message Updated !!!");
+        // debugPrint("Message Updated !!!");
 
         if (mounted) setState(() {});
       } else {
@@ -453,24 +477,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     Map<String, dynamic> messageData = jsonDecode(message);
 
     messageList.insert(0, message);
-
-    // List<String> temporaryList = [];
-    //
-    // temporaryList.addAll(messageList);
-    //
-    // debugPrint("temporaryList 1 $temporaryList");
-    // AssetsAudioPlayer.allPlayers().forEach((key, player) async {
-    //   debugPrint("ausio playter $key");
-    //   await player.dispose();
-    // });
-    // messageList.clear();
-
-    // temporaryList.insert(0, message);
-    //
-    // debugPrint(" temporaryList 2 $temporaryList");
-    // messageList.clear();
-    // messageList = temporaryList;
-    // debugPrint(" messageList $messageList");
 
     if (mounted) setState(() {});
 
@@ -556,9 +562,11 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
     return WillPopScope(
       onWillPop: () async {
+        disposeAudioPlayers();
         mainSocketProvider.removeStreamSubscription(streamSubscription);
         mainSocketProvider.currentConversationId = null;
         mainSocketProvider.isChatOnScreen = false;
+
         return Future.value(true);
       },
       child: Scaffold(
@@ -601,6 +609,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
           size: 24,
         ),
         onPressed: () {
+          disposeAudioPlayers();
           mainSocketProvider.removeStreamSubscription(streamSubscription);
           mainSocketProvider.currentConversationId = null;
           mainSocketProvider.isChatOnScreen = false;
@@ -635,7 +644,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                 Text(
                   isRecipientTyping ? "Typing.." : userStatus, //"Online",
                   style: TextStyle(
-                    color: darkGrey,
+                    color: isRecipientTyping ? naturalGreen : darkGrey,
                     fontSize: 12,
                   ),
                   overflow: TextOverflow.fade,
@@ -697,9 +706,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         width: 36,
         child: ClipOval(
           child: CachedNetworkImage(
-            imageUrl: recipientUser.avatar == ""
-                ? "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png"
-                : recipientUser.avatar,
+            imageUrl: recipientUser.avatar ??
+                "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png",
             colorBlendMode: BlendMode.darken,
             fit: BoxFit.fill,
             filterQuality: FilterQuality.high,
@@ -1380,53 +1388,29 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         child: InkWell(
           onTap: () async {
             await getAudioPermission();
+
+            if (isAudioRecording) {
+              debugPrint("Recording Stop ");
+              isAudioRecording = false;
+              setState(() {});
+              await stopRecorder();
+              setState(() {});
+            } else if (!isAudioRecording && isAudioPermissionAccepted) {
+              debugPrint("Starting Recording ");
+              isAudioRecording = true;
+              setState(() {});
+              await recordAudio();
+              setState(() {});
+            } else {
+              await getAudioPermission();
+            }
           },
           splashColor: navyBlue.withOpacity(0.2),
           borderRadius: BorderRadius.circular(50),
-          child: GestureDetector(
-            onLongPressStart: (event) async {
-              if (isAudioRecording) {
-                debugPrint("Recording Stop ");
-                isAudioRecording = false;
-                setState(() {});
-                await stopRecorder();
-                setState(() {});
-              } else {
-                if (isAudioPermissionAccepted) {
-                  if (!isAudioRecording) {
-                    debugPrint("Starting Recording ");
-                    isAudioRecording = true;
-                    setState(() {});
-                    await recordAudio();
-                    setState(() {});
-                  }
-                } else {
-                  if (await getAudioPermission()) {
-                    if (!isAudioRecording) {
-                      debugPrint("Starting Recording ");
-                      isAudioRecording = true;
-                      setState(() {});
-                      await recordAudio();
-                      setState(() {});
-                    }
-                  }
-                }
-              }
-            },
-            onLongPressEnd: (event) async {
-              if (isAudioRecording) {
-                debugPrint("Recording Stop ");
-                isAudioRecording = false;
-                setState(() {});
-                await stopRecorder();
-                setState(() {});
-              }
-            },
-            child: Icon(
-              Icons.mic,
-              color: navyBlue,
-              size: 30,
-            ),
+          child: Icon(
+            Icons.mic,
+            color: navyBlue,
+            size: 30,
           ),
         ),
       ),

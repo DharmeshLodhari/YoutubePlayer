@@ -23,8 +23,6 @@ class _ChatAudioPlayerState extends State<ChatAudioPlayer> {
   UserBloc userBloc;
   @override
   void initState() {
-    debugPrint("New AudioPlayer:- ${widget.message}");
-
     ///{id: 0d1fb784-db82-481a-9fd8-b775bba2a18e, check_id: 17769da5-1a06-457d-ae11-47c8475e62fc,
     /// conversation: d60887a8-1dce-4e2d-8c54-432c3365abd3, author: black,
     /// text: , read_by_author: true, read_by_recipient: false, was_edited: false,
@@ -32,20 +30,11 @@ class _ChatAudioPlayerState extends State<ChatAudioPlayer> {
     /// poster: null, updated_at: 2021-01-20T13:38:59.276192+01:00, created_at: 2021-01-20T13:38:59.276228+01:00,
     /// kind: audio, deleted_for_recipient: false, deleted_for_author: false, delivered: true, meta_data: {}}
 
-    _audioPlayer = AssetsAudioPlayer.withId(widget.message["id"]);
-
-    _audioPlayer?.open(
-      Audio.network(widget.message["media"]),
-      autoStart: false,
-    );
-
     super.initState();
   }
 
   @override
   void dispose() {
-    _audioPlayer?.stop();
-    _audioPlayer?.dispose();
     super.dispose();
   }
 
@@ -55,6 +44,15 @@ class _ChatAudioPlayerState extends State<ChatAudioPlayer> {
     bool isSend = widget.message["author"] == userBloc.user.userName;
     String messageText = widget.message['text'] ?? "";
     bool isMessageEmpty = messageText == "";
+
+    if (_audioPlayer == null || _audioPlayer?.id != widget.message["id"]) {
+      _audioPlayer = AssetsAudioPlayer.withId(widget.message["id"]);
+
+      _audioPlayer.open(
+        Audio.network(widget.message["media"]),
+        autoStart: false,
+      );
+    }
 
     return Row(
       mainAxisAlignment:

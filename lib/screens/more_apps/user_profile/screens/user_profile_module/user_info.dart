@@ -144,6 +144,7 @@ class _UserInfoState extends State<UserInfo> {
               child: CachedNetworkImage(
                 imageUrl: user.avatar,
                 fit: BoxFit.fill,
+                errorWidget: imageErrorWidget,
               ),
             ),
           ),
@@ -191,6 +192,7 @@ class _UserInfoState extends State<UserInfo> {
                   child: CachedNetworkImage(
                     imageUrl: user.avatar,
                     fit: BoxFit.fill,
+                    errorWidget: imageErrorWidget,
                   ),
                 ),
               ),
@@ -227,6 +229,7 @@ class _UserInfoState extends State<UserInfo> {
                 child: CachedNetworkImage(
                   imageUrl: user.qrCode,
                   colorBlendMode: BlendMode.darken,
+                  errorWidget: imageErrorWidget,
                   fit: BoxFit.fitWidth,
                   filterQuality: FilterQuality.high,
                   placeholder: (context, url) => CircularLoadingIndicator(),
@@ -670,6 +673,7 @@ class _UserInfoState extends State<UserInfo> {
             width: 40,
             colorBlendMode: BlendMode.darken,
             fit: BoxFit.cover,
+            errorWidget: imageErrorWidget,
             filterQuality: FilterQuality.high,
             placeholder: (context, url) => userBloc.user.avatar == ""
                 ? Icon(Icons.person)

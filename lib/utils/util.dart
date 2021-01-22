@@ -20,18 +20,14 @@ Widget imageFrameBuilder(BuildContext context, Widget child, int frame,
   );
 }
 
-Widget imageErrorWidget(
-  BuildContext context,
-  String url,
-  dynamic error,
-) =>
+Widget imageErrorWidget(BuildContext context, String url, dynamic error) =>
     CachedNetworkImage(
-      imageUrl:
-          "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png",
-      colorBlendMode: BlendMode.darken,
-      fit: BoxFit.fill,
-      filterQuality: FilterQuality.high,
-    );
+        imageUrl:
+            "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png",
+        colorBlendMode: BlendMode.darken,
+        fit: BoxFit.fill,
+        filterQuality: FilterQuality.high);
+
 Widget customThemeBuilder(BuildContext context, Widget child) {
   return Theme(
     data: ThemeData.light().copyWith(
@@ -157,3 +153,18 @@ List<PaymentDuration> paymentDurations = [
   PaymentDuration(name: "Monthly", value: "monthly"),
   PaymentDuration(name: "Yearly", value: "yearly"),
 ];
+
+List<String> errorImageList = [
+  "https://slydo-assets.s3.amazonaws.com/media/customer/avatar/me_uAxOKxt.jpeg",
+  "https://slydo-assets.s3.amazonaws.com/media/customer/avatar/me_DN78oka.jpeg",
+  "https://slydo-assets.s3.amazonaws.com/media/customer/avatar/me.jpeg"
+];
+
+String checkImageInErrorList(String url) {
+  errorImageList.forEach((element) {
+    if (element == url) {
+      return "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png";
+    }
+  });
+  return url;
+}

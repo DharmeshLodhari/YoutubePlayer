@@ -60,7 +60,9 @@ class _UserTileState extends State<UserTile> {
 
   @override
   Widget build(BuildContext context) {
-    Widget avatarImage = Container(
+    Widget avatarImage;
+
+    avatarImage = Container(
         height: 48,
         width: 48,
         child: ClipOval(
