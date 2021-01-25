@@ -63,23 +63,22 @@ class _DashboardState extends State<Dashboard> {
       });
     }
 
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      mainSocketProvider =
-          Provider.of<MainSocketProvider>(context, listen: false);
-
-      streamSubscription = mainSocketProvider.listen((event) {
-        Map<String, dynamic> decodeMessage = jsonDecode(event);
-        if (mainSocketProvider.currentConversationId !=
-            decodeMessage["conversation"]) {
-          MainSocketMessageHandler(message: event);
-          if (mounted) setState(() {});
-        }
-      });
-    });
-
     registerPushNotification();
 
     super.initState();
+  }
+
+  void initializeListener() {
+    streamSubscription?.cancel();
+    streamSubscription = mainSocketProvider.socketStream.listen((event) {
+      Map<String, dynamic> decodeMessage = jsonDecode(event);
+
+      if (mainSocketProvider.currentConversationId !=
+          decodeMessage["conversation"]) {
+        MainSocketMessageHandler(message: event);
+        if (mounted) setState(() {});
+      }
+    });
   }
 
   void registerPushNotification() async {
@@ -125,6 +124,9 @@ class _DashboardState extends State<Dashboard> {
   Widget build(BuildContext context) {
     basketBloc = Provider.of<BasketBloc>(context);
     _dashboardBloc = Provider.of<DashboardBloc>(context);
+    mainSocketProvider = Provider.of<MainSocketProvider>(context);
+    initializeListener();
+
     if (_currentIndex != 0) {
       _dashboardBloc.index = _currentIndex;
       _currentIndex = 0;

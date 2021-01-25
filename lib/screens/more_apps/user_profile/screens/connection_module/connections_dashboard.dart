@@ -27,22 +27,20 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      mainSocketProvider =
-          Provider.of<MainSocketProvider>(context, listen: false);
-
-      streamSubscription = mainSocketProvider.listen((event) {
-        Map<String, dynamic> decodeMessage = jsonDecode(event);
-
-        if (mainSocketProvider.currentConversationId !=
-            decodeMessage["conversation"]) {
-          MainSocketMessageHandler(message: event);
-          if (mounted) setState(() {});
-        }
-      });
-    });
-
     super.initState();
+  }
+
+  void initializeListener() {
+    streamSubscription?.cancel();
+    streamSubscription = mainSocketProvider.socketStream.listen((event) {
+      Map<String, dynamic> decodeMessage = jsonDecode(event);
+
+      if (mainSocketProvider.currentConversationId !=
+          decodeMessage["conversation"]) {
+        MainSocketMessageHandler(message: event);
+        if (mounted) setState(() {});
+      }
+    });
   }
 
   @override
@@ -55,6 +53,10 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
   @override
   Widget build(BuildContext context) {
     if (filterValue == 'Connections') filterValue = "Connections";
+
+    mainSocketProvider = Provider.of<MainSocketProvider>(context);
+
+    initializeListener();
 
     return WillPopScope(
       onWillPop: () async {

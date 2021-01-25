@@ -25,6 +25,7 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/animation.dart';
@@ -123,6 +124,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   bool isAudioRecording = false;
   bool isAudioPermissionAccepted = false;
 
+  BasketBloc basketBloc;
+
+  StreamSubscription<ConnectivityResult> networkConnectionSubscription;
+
   @override
   void initState() {
     messageController = TextEditingController();
@@ -193,6 +198,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
     debugPrint("Subscription Removed ${streamSubscription?.toString()}");
     streamSubscription?.cancel();
+    networkConnectionSubscription?.cancel();
 
     audioRecorder?.closeAudioSession();
     audioRecorder = null;
@@ -261,11 +267,13 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       } catch (e) {
         debugPrint("Hello error:- $e");
       }
+    });
+  }
 
-      streamSubscription = mainSocketProvider.listen((event) {
-        // debugPrint("event e:- $event");
-        determineMessageType(event);
-      });
+  void initializeListener() {
+    streamSubscription?.cancel();
+    streamSubscription = mainSocketProvider.socketStream.listen((event) {
+      determineMessageType(event);
     });
   }
 
@@ -446,25 +454,39 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     Map<String, dynamic> newMessage = jsonDecode(message);
 
     if (messageList.length > 0) {
-      Map<String, dynamic> previousMessage = jsonDecode(messageList.first);
+      bool isMatchFound = false;
+      for (int i = 0; i < messageList.length; i++) {
+        Map<String, dynamic> previousMessage = jsonDecode(messageList[i]);
+        if (newMessage['check_id'] == previousMessage['check_id'] &&
+            newMessage["text"] == previousMessage["text"]) {
+          newMessage["delivered"] = true;
+          messageList[i] = jsonEncode(newMessage);
+          if (mounted) setState(() {});
+          isMatchFound = true;
+        }
+      }
+
+      if (isMatchFound == false) {
+        addMessageToChat(message: message);
+      }
 
       // debugPrint(
       //     "New Message checkId = ${newMessage['check_id']}  text =  ${newMessage['text']}");
       // debugPrint(
       //     "Previous Message checkId = ${previousMessage['check_id']}  text =  ${previousMessage['text']}");
 
-      if (newMessage['check_id'] == previousMessage['check_id'] &&
-          newMessage["text"] == previousMessage["text"]) {
-        /// Update message when it came from the socket
-
-        newMessage["delivered"] = true;
-        messageList.first = jsonEncode(newMessage);
-        // debugPrint("Message Updated !!!");
-
-        if (mounted) setState(() {});
-      } else {
-        addMessageToChat(message: message);
-      }
+      // if (newMessage['check_id'] == previousMessage['check_id'] &&
+      //     newMessage["text"] == previousMessage["text"]) {
+      //   /// Update message when it came from the socket
+      //
+      //   newMessage["delivered"] = true;
+      //   messageList.first = jsonEncode(newMessage);
+      //   // debugPrint("Message Updated !!!");
+      //
+      //   if (mounted) setState(() {});
+      // } else {
+      //   addMessageToChat(message: message);
+      // }
     } else {
       addMessageToChat(message: message);
     }
@@ -559,6 +581,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+    basketBloc = Provider.of<BasketBloc>(context);
+    mainSocketProvider = Provider.of<MainSocketProvider>(context);
+
+    initializeListener();
 
     return WillPopScope(
       onWillPop: () async {
@@ -573,23 +599,28 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         backgroundColor: Colors.white,
         appBar: appBar(),
         body: scaffoldBody(),
-        floatingActionButton: Padding(
-          padding: EdgeInsets.only(bottom: 48),
-          child: AnimatedOpacity(
-            child: FloatingActionButton(
-              mini: true,
-              backgroundColor: dividerColor,
-              child: Icon(
-                Icons.keyboard_arrow_down_rounded,
-                size: 28,
-                color: blackFont,
-              ),
-              tooltip: "Increment",
-              onPressed: scrollToBottom,
-            ),
-            duration: Duration(milliseconds: 100),
-            opacity: fabIsVisible ? 1 : 0,
-          ),
+        floatingActionButton: AnimatedSwitcher(
+          duration: Duration(milliseconds: 100),
+          child: fabIsVisible
+              ? Padding(
+                  padding: EdgeInsets.only(bottom: 48),
+                  child: AnimatedOpacity(
+                    child: FloatingActionButton(
+                      mini: true,
+                      backgroundColor: dividerColor,
+                      child: Icon(
+                        Icons.keyboard_arrow_down_rounded,
+                        size: 28,
+                        color: blackFont,
+                      ),
+                      tooltip: "Increment",
+                      onPressed: scrollToBottom,
+                    ),
+                    duration: Duration(milliseconds: 100),
+                    opacity: fabIsVisible ? 1 : 0,
+                  ),
+                )
+              : Container(),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       ),
@@ -2534,125 +2565,122 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
     bool isSend = item["author"] == userBloc.user.userName;
 
-    return Row(
-      mainAxisAlignment:
-          isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
-      children: [
-        Container(
-          constraints: BoxConstraints(
-            maxWidth: MediaQuery.of(context).size.width / 1.35,
-            minWidth: MediaQuery.of(context).size.width / 1.35,
-            maxHeight: MediaQuery.of(context).size.width / 1.35,
-          ),
-          decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(color: dividerColor),
-              borderRadius: BorderRadius.circular(12)),
-          padding: EdgeInsets.all(8),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Expanded(
-                child: CachedNetworkImage(
-                  width: MediaQuery.of(context).size.width / 1.35 - 16,
-                  imageUrl: product.cover,
-                  fit: BoxFit.cover,
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context)
+            .pushNamed("/product", arguments: {"product": product});
+      },
+      child: Row(
+        mainAxisAlignment:
+            isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
+        children: [
+          Container(
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width / 1.35,
+              minWidth: MediaQuery.of(context).size.width / 1.35,
+              maxHeight: MediaQuery.of(context).size.width / 1.35,
+            ),
+            decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(color: dividerColor),
+                borderRadius: BorderRadius.circular(12)),
+            padding: EdgeInsets.all(8),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Expanded(
+                  child: CachedNetworkImage(
+                    width: MediaQuery.of(context).size.width / 1.35 - 16,
+                    imageUrl: product.cover,
+                    fit: BoxFit.cover,
+                  ),
                 ),
-              ),
-              SizedBox(
-                height: 8,
-              ),
-              Text(
-                product.name,
-                style: TextStyle(
-                  fontSize: 16,
+                SizedBox(
+                  height: 8,
                 ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.start,
-              ),
-              SizedBox(
-                height: 8,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    SlydoAppIcon.naira,
-                    color: blackFont,
-                    size: 12,
+                Text(
+                  product.name,
+                  style: TextStyle(
+                    fontSize: 16,
                   ),
-                  SizedBox(
-                    width: 6,
-                  ),
-                  Text(
-                    product.price.toString(),
-                    style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.w600,
-                        color: blackFont),
-                  ),
-                ],
-              ),
-              !isSend
-                  ? Column(
-                      children: [
-                        SizedBox(
-                          height: 8,
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: CurvedButton(
-                                height: 36,
-                                textColor: Colors.white,
-                                backgroundColor: navyBlue,
-                                text: "Buy",
-                                onPressed: () {},
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.start,
+                ),
+                SizedBox(
+                  height: 8,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      SlydoAppIcon.naira,
+                      color: blackFont,
+                      size: 12,
+                    ),
+                    SizedBox(
+                      width: 6,
+                    ),
+                    Text(
+                      product.price.toString(),
+                      style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.w600,
+                          color: blackFont),
+                    ),
+                  ],
+                ),
+                product.seller == userBloc.user.userName
+                    ? Container()
+                    : Column(
+                        children: [
+                          SizedBox(
+                            height: 8,
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: CurvedButton(
+                                  height: 36,
+                                  textColor: Colors.white,
+                                  backgroundColor: navyBlue,
+                                  text: "Buy",
+                                  onPressed: () async {
+                                    CustomerProfileBloc customerProfileBloc =
+                                        Provider.of<CustomerProfileBloc>(
+                                            context,
+                                            listen: false);
+                                    customerProfileBloc.customer =
+                                        await UserAuth().fetchCustomerProfile(
+                                            product.seller);
+
+                                    Navigator.of(context).pushNamed(
+                                      '/send-payment',
+                                      arguments: {
+                                        'isFromProfile': false,
+                                        'product': product
+                                      },
+                                    );
+                                  },
+                                ),
                               ),
-                            ),
-                            SizedBox(
-                              width: 8,
-                            ),
-                            addToCartWidget(),
-                          ],
-                        ),
-                      ],
-                    )
-                  : product.seller == userBloc.user.userName
-                      ? Container()
-                      : Column(
-                          children: [
-                            SizedBox(
-                              height: 8,
-                            ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: CurvedButton(
-                                    height: 36,
-                                    textColor: Colors.white,
-                                    backgroundColor: navyBlue,
-                                    text: "Buy",
-                                    onPressed: () {},
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 8,
-                                ),
-                                addToCartWidget(),
-                              ],
-                            ),
-                          ],
-                        ),
-            ],
+                              SizedBox(
+                                width: 8,
+                              ),
+                              addToCartWidget(item: product),
+                            ],
+                          ),
+                        ],
+                      )
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
-  Widget addToCartWidget() {
+  Widget addToCartWidget({var item}) {
     return RoundedBackgroundIcon(
       borderRadius: 16,
       height: 38,
@@ -2663,7 +2691,26 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         size: 20,
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
-      onTap: () async {},
+      onTap: () async {
+        String type = item is Product ? "product" : "service";
+        debugPrint("item $item type:- $type");
+        basketBloc.addItemToCart(item: item, type: type);
+        var mapData;
+        basketBloc.items.forEach((element) {
+          if (element["item"].id == item.id) {
+            mapData = element;
+            return;
+          }
+        });
+        Map data = {
+          "type": type,
+          "id": mapData["item"].id,
+          "qty": mapData["qty"],
+        };
+        debugPrint("Data From Product Page : $data");
+        Toast.show("Item added to the cart !!", context);
+        await ShoppingAuthService().addItemToShoppingCart(data);
+      },
     );
   }
 
@@ -2677,121 +2724,118 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
     bool isSend = item["author"] == userBloc.user.userName;
 
-    return Row(
-      mainAxisAlignment:
-          isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
-      children: [
-        Container(
-          constraints: BoxConstraints(
-            maxWidth: MediaQuery.of(context).size.width / 1.35,
-            minWidth: MediaQuery.of(context).size.width / 1.35,
-            maxHeight: MediaQuery.of(context).size.width / 1.35,
-          ),
-          decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(color: dividerColor),
-              borderRadius: BorderRadius.circular(12)),
-          padding: EdgeInsets.all(8),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Expanded(
-                child: CachedNetworkImage(
-                  width: MediaQuery.of(context).size.width / 1.35 - 16,
-                  imageUrl: service.cover,
-                  fit: BoxFit.cover,
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context)
+            .pushNamed("/service-detail", arguments: {"service": service});
+      },
+      child: Row(
+        mainAxisAlignment:
+            isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
+        children: [
+          Container(
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width / 1.35,
+              minWidth: MediaQuery.of(context).size.width / 1.35,
+              maxHeight: MediaQuery.of(context).size.width / 1.35,
+            ),
+            decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(color: dividerColor),
+                borderRadius: BorderRadius.circular(12)),
+            padding: EdgeInsets.all(8),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Expanded(
+                  child: CachedNetworkImage(
+                    width: MediaQuery.of(context).size.width / 1.35 - 16,
+                    imageUrl: service.cover,
+                    fit: BoxFit.cover,
+                  ),
                 ),
-              ),
-              SizedBox(
-                height: 8,
-              ),
-              Text(
-                service.name,
-                style: TextStyle(
-                  fontSize: 16,
+                SizedBox(
+                  height: 8,
                 ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.start,
-              ),
-              SizedBox(
-                height: 8,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    SlydoAppIcon.naira,
-                    color: blackFont,
-                    size: 12,
+                Text(
+                  service.name,
+                  style: TextStyle(
+                    fontSize: 16,
                   ),
-                  SizedBox(
-                    width: 6,
-                  ),
-                  Text(
-                    service.price.toString(),
-                    style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.w600,
-                        color: blackFont),
-                  ),
-                ],
-              ),
-              !isSend
-                  ? Column(
-                      children: [
-                        SizedBox(
-                          height: 8,
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: CurvedButton(
-                                height: 36,
-                                textColor: Colors.white,
-                                backgroundColor: navyBlue,
-                                text: "Buy",
-                                onPressed: () {},
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.start,
+                ),
+                SizedBox(
+                  height: 8,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      SlydoAppIcon.naira,
+                      color: blackFont,
+                      size: 12,
+                    ),
+                    SizedBox(
+                      width: 6,
+                    ),
+                    Text(
+                      service.price.toString(),
+                      style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.w600,
+                          color: blackFont),
+                    ),
+                  ],
+                ),
+                service.provider == userBloc.user.userName
+                    ? Container()
+                    : Column(
+                        children: [
+                          SizedBox(
+                            height: 8,
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: CurvedButton(
+                                  height: 36,
+                                  textColor: Colors.white,
+                                  backgroundColor: navyBlue,
+                                  text: "Buy",
+                                  onPressed: () async {
+                                    CustomerProfileBloc customerProfileBloc =
+                                        Provider.of<CustomerProfileBloc>(
+                                            context,
+                                            listen: false);
+                                    customerProfileBloc.customer =
+                                        await UserAuth().fetchCustomerProfile(
+                                            service.provider);
+
+                                    Navigator.of(context).pushNamed(
+                                      '/send-payment',
+                                      arguments: {
+                                        'isFromProfile': false,
+                                        'service': service
+                                      },
+                                    );
+                                  },
+                                ),
                               ),
-                            ),
-                            SizedBox(
-                              width: 8,
-                            ),
-                            addToCartWidget(),
-                          ],
-                        ),
-                      ],
-                    )
-                  : service.provider == userBloc.user.userName
-                      ? Container()
-                      : Column(
-                          children: [
-                            SizedBox(
-                              height: 8,
-                            ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: CurvedButton(
-                                    height: 36,
-                                    textColor: Colors.white,
-                                    backgroundColor: navyBlue,
-                                    text: "Buy",
-                                    onPressed: () {},
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 8,
-                                ),
-                                addToCartWidget(),
-                              ],
-                            ),
-                          ],
-                        ),
-            ],
+                              SizedBox(
+                                width: 8,
+                              ),
+                              addToCartWidget(item: service),
+                            ],
+                          ),
+                        ],
+                      ),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

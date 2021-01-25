@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/io.dart';
 
@@ -19,6 +20,14 @@ class MainSocketProvider extends ChangeNotifier {
   bool get isChatOnScreen => _isChatOnScreen;
 
   List<StreamSubscription> _streamSubscriptions = [];
+
+  List<String> _queueMessages = [];
+
+  bool _isNetworkConnectionIsOn;
+
+  bool get isNetworkOn => _isNetworkConnectionIsOn;
+  bool _isFirstTime = true;
+  StreamSubscription networkConnectionSubscription;
 
   set isChatOnScreen(bool value) {
     _isChatOnScreen = value;
@@ -52,11 +61,42 @@ class MainSocketProvider extends ChangeNotifier {
     _currentUser = value;
     connect();
     notifyListeners();
+    setupNetworkConnectionListener();
+  }
+
+  void setupNetworkConnectionListener() {
+    networkConnectionSubscription = Connectivity()
+        .onConnectivityChanged
+        .listen((ConnectivityResult result) async {
+      if (result == ConnectivityResult.none) {
+        _isNetworkConnectionIsOn = false;
+        notifyListeners();
+      } else {
+        _isNetworkConnectionIsOn = true;
+        if (_isFirstTime) {
+          _isFirstTime = false;
+        } else {
+          if (_queueMessages.isNotEmpty) {
+            debugPrint("Clearing Pending Messages !!");
+            // _streamSubscriptions.forEach((element) {
+            //   element?.cancel();
+            // });
+            await connect().then((value) async {
+              await addDataInTheCorrectOrder();
+              _queueMessages.clear();
+            });
+          }
+        }
+        notifyListeners();
+      }
+      debugPrint("_isNetworkConnectionIsOn:- $_isNetworkConnectionIsOn");
+    });
   }
 
   StreamController _streamController;
 
   Stream get socketStream => _streamController?.stream;
+  StreamSubscription streamSubscription;
 
   IOWebSocketChannel get channel => _channel;
 
@@ -96,7 +136,7 @@ class MainSocketProvider extends ChangeNotifier {
         _numberOfRetry = 0;
         _isConnected = false;
 
-        await connect().then((value) {
+        await connect().then((value) async {
           _channel.sink.add(jsonEncode(data));
           _lastSent = DateTime.now();
           print("ping Done!!");
@@ -124,6 +164,7 @@ class MainSocketProvider extends ChangeNotifier {
         headers: _headers,
       );
       _streamController = StreamController.broadcast();
+      notifyListeners();
       debugPrint(
           "WebSocket Connected to $finalUrl for user ${currentUser.userName}");
       _isConnected = true;
@@ -138,9 +179,10 @@ class MainSocketProvider extends ChangeNotifier {
       debugPrint("Listener called!!");
 
       _streamController.addStream(_channel.stream);
+      notifyListeners();
 
-      StreamSubscription streamSubscription =
-          _streamController.stream.listen((message) {
+      streamSubscription?.cancel();
+      streamSubscription = _streamController.stream.listen((message) {
         _isConnected = true;
 
         /// listen every message from the socket
@@ -149,17 +191,17 @@ class MainSocketProvider extends ChangeNotifier {
 
         _lastReceive = DateTime.now();
       })
-            ..onError((error) {
-              /// if there is any error while listing the socket
+        ..onError((error) {
+          /// if there is any error while listing the socket
 
-              _isConnected = false;
-              debugPrint("ERROR:- While listening the Socket $error");
-              reconnectSocket();
-            })
-            ..onDone(() {
-              debugPrint("On Done called:-  Socket Closed !!!!");
-              _isConnected = false;
-            });
+          _isConnected = false;
+          debugPrint("ERROR:- While listening the Socket $error");
+          reconnectSocket();
+        })
+        ..onDone(() {
+          debugPrint("On Done called:-  Socket Closed !!!!");
+          _isConnected = false;
+        });
       _streamSubscriptions.add(streamSubscription);
     }
 
@@ -222,11 +264,25 @@ class MainSocketProvider extends ChangeNotifier {
   Future<bool> add(Map<String, dynamic> data) async {
     String _data = jsonEncode(data);
 
+    _queueMessages.add(_data);
+
+    return await addDataInTheCorrectOrder();
+  }
+
+  Future<bool> addDataInTheCorrectOrder() async {
     try {
       if (_isConnected) {
-        _channel.sink.add(_data);
+        _queueMessages.forEach((message) {
+          _channel.sink.add(message);
+        });
+
         _lastSent = DateTime.now();
-        debugPrint("Data added in webSocket :- $_data");
+        debugPrint("Data added in webSocket :- $_queueMessages");
+
+        if (await checkConnection()) {
+          _queueMessages.clear();
+        }
+
         return true;
       } else {
         throw Exception("Not Connected");
@@ -238,10 +294,17 @@ class MainSocketProvider extends ChangeNotifier {
       _numberOfRetry = 0;
       _isConnected = false;
 
-      await connect().then((value) {
-        _channel.sink.add(jsonEncode(data));
+      await connect().then((value) async {
+        _queueMessages.forEach((message) {
+          _channel.sink.add(message);
+        });
+
         _lastSent = DateTime.now();
-        debugPrint("Data added in webSocket :- $data");
+        debugPrint("Data added in webSocket :- $_queueMessages");
+        if (await checkConnection()) {
+          _queueMessages.clear();
+        }
+
         return true;
       });
     }
@@ -249,13 +312,23 @@ class MainSocketProvider extends ChangeNotifier {
     return false;
   }
 
+  Future<bool> checkConnection() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+
+    if (connectivityResult == ConnectivityResult.none) {
+      return false;
+    }
+    return true;
+  }
+
   void close() {
     _timerForRetryConnection?.cancel();
 
     _streamSubscriptions.forEach((element) {
-      element.cancel();
+      element?.cancel();
     });
 
+    networkConnectionSubscription?.cancel();
     _streamController = null;
 
     _channel = null;

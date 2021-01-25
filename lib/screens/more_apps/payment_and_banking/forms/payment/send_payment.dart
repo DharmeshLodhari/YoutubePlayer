@@ -459,7 +459,7 @@ class _SendPaymentState extends State<SendPayment> {
   Widget displayAmountField() {
     return CustomizedTextFormField(
       labelText: "Amount",
-      isAmount: true,
+      isAmount: true,enabled:   product == null && service == null,
       keyboardType: TextInputType.number,
       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       controller: _amountController,
