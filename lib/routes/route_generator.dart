@@ -40,6 +40,7 @@ import 'package:Slydo/screens/more_apps/music/search_music.dart';
 import 'package:Slydo/screens/more_apps/music/specific_category_music_list.dart';
 import 'package:Slydo/screens/more_apps/news/news_dashboard.dart';
 import 'package:Slydo/screens/more_apps/news/news_detail_page.dart';
+import 'package:Slydo/screens/more_apps/nfc/nfc_reader.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/add_bank_account.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/add_money_to_slydo_one.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/add_money_to_slydo_two.dart';
@@ -930,6 +931,14 @@ class RouteGenerator {
       case "/mix-cart-item":
         return PageTransition(
           child: MixCartItem(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case "/nfc-reader":
+        return PageTransition(
+          child: NfcWriter(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

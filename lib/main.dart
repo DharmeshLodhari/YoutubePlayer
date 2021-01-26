@@ -20,6 +20,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 
 import 'locale/app_localization.dart';
@@ -31,10 +32,13 @@ void main() async {
   // development.
   //Crashlytics.instance.enableInDevMode = true;
 
-  // Pass all uncaught errors to Crashlytics.
-  FlutterError.onError = Crashlytics.instance.recordFlutterError;
-
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp();
+
+  // Pass all uncaught errors to Crashlytics.
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+
   // to set orientation only vertical
   SystemChrome.setPreferredOrientations(
     [
@@ -120,7 +124,7 @@ void main() async {
         ], child: MyApp()),
       );
     }, onError: (exception, stack) {
-      Crashlytics.instance.recordError(exception, stack);
+      FirebaseCrashlytics.instance.recordError(exception, stack);
 //    final _auth = AuthService();
 //    _auth.logOut();
 //    exit(0);

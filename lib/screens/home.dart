@@ -350,7 +350,11 @@ class _HomeState extends State<Home> {
         ),
       ),
       onTap: () async {
-        ChatUserManager().clearChatUsers();
+        // ChatUserManager().clearChatUsers();
+        Navigator.pushNamed(
+          context,
+          '/nfc-reader',
+        );
 
         // showSwipeHintCard(context: context);
         // showHoldHintCard(context: context);
