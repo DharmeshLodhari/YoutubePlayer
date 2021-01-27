@@ -270,7 +270,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     });
   }
 
-
   void initializeListener() {
     streamSubscription?.cancel();
     streamSubscription = mainSocketProvider.socketStream.listen((event) {
@@ -600,28 +599,27 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         backgroundColor: Colors.white,
         appBar: appBar(),
         body: scaffoldBody(),
-        floatingActionButton: AnimatedSwitcher(
-          duration: Duration(milliseconds: 100),
-          child: fabIsVisible
-              ? Padding(
-                  padding: EdgeInsets.only(bottom: 48),
-                  child: AnimatedOpacity(
-                    child: FloatingActionButton(
-                      mini: true,
-                      backgroundColor: dividerColor,
-                      child: Icon(
-                        Icons.keyboard_arrow_down_rounded,
-                        size: 28,
-                        color: blackFont,
-                      ),
-                      tooltip: "Increment",
-                      onPressed: scrollToBottom,
+        floatingActionButton: Padding(
+          padding: EdgeInsets.only(bottom: 48),
+          child: AnimatedSwitcher(
+            duration: Duration(milliseconds: 100),
+            child: fabIsVisible
+                ? FloatingActionButton(
+                    mini: true,
+                    backgroundColor: dividerColor,
+                    child: Icon(
+                      Icons.keyboard_arrow_down_rounded,
+                      size: 28,
+                      color: blackFont,
                     ),
-                    duration: Duration(milliseconds: 100),
-                    opacity: fabIsVisible ? 1 : 0,
+                    tooltip: "Increment",
+                    onPressed: scrollToBottom,
+                  )
+                : Container(
+                    height: 0,
+                    width: 0,
                   ),
-                )
-              : Container(),
+          ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       ),
@@ -1747,38 +1745,18 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   Widget scaffoldBody() {
-    // if (MediaQuery.of(context).viewInsets.bottom != 0) {
-    //   scrollToBottom();
-    // }
     return Container(
       child: Column(
         children: [
           Expanded(
-            child: Stack(
-              children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Flexible(
-                      child: Image.asset(
-                        "assets/images/index_screen.png",
-                        width: MediaQuery.of(context).size.width,
-                        fit: BoxFit.fitWidth,
-                      ),
-                    ),
-                  ],
-                ),
-                Theme(
-                  data: ThemeData(highlightColor: navyBlue),
-                  child: Scrollbar(
-                    controller: messageScrollController,
-                    radius: Radius.circular(10),
-                    thickness: 3,
-                    child: messageListBuilder(),
-                  ),
-                ),
-                isAudioRecording ? getAudioRecordingWidget() : Container(),
-              ],
+            child: Theme(
+              data: ThemeData(highlightColor: navyBlue),
+              child: Scrollbar(
+                controller: messageScrollController,
+                radius: Radius.circular(10),
+                thickness: 3,
+                child: messageListBuilder(),
+              ),
             ),
           ),
           messageActionBar()
@@ -1786,6 +1764,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       ),
     );
   }
+
+  // isAudioRecording ? getAudioRecordingWidget() : Container(),
 
   Widget getAudioRecordingWidget() {
     return Container(
@@ -1830,7 +1810,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
           }
           return Container(
             child: renderDataAccordingType(messageList[index]),
-            padding: EdgeInsets.only(left: 8, right: 8, bottom: 8),
+            padding: EdgeInsets.only(bottom: 4),
           );
         },
       ),
@@ -1876,88 +1856,99 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         mainAxisAlignment:
             isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
-          Padding(
-            padding:
-                EdgeInsets.only(left: isSend ? 10 : 0, right: !isSend ? 10 : 0),
-            child: Container(
-                constraints: BoxConstraints(
-                  maxWidth: MediaQuery.of(context).size.width * 0.8,
-                ),
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                decoration: BoxDecoration(
-                  color: isSend ? navyBlue : chatBackgroundColor,
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(!isSend ? 0 : 10),
-                    bottomRight: Radius.circular(isSend ? 0 : 10),
-                    topLeft: Radius.circular(10),
-                    topRight: Radius.circular(10),
-                  ),
-                ),
-                child: Stack(
-                  overflow: Overflow.visible,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Flexible(
-                              child: Text(
-                                messageDecoderWithEmoji(message['text']),
-                                style: TextStyle(
-                                    color: isSend ? Colors.white : blackFont,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500),
+          Column(
+            crossAxisAlignment:
+                isSend ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  isSend
+                      ? Container()
+                      : Container(
+                          width: 20,
+                        ),
+                  Container(
+                      constraints: BoxConstraints(
+                        maxWidth: MediaQuery.of(context).size.width * 0.8,
+                      ),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: isSend ? navyBlue : chatBackgroundColor,
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(!isSend ? 0 : 10),
+                          bottomRight: Radius.circular(isSend ? 0 : 10),
+                          topLeft: Radius.circular(10),
+                          topRight: Radius.circular(10),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Flexible(
+                            child: Text(
+                              messageDecoderWithEmoji(message['text']),
+                              style: TextStyle(
+                                color: isSend ? Colors.white : blackFont,
+                                fontSize: 16,
                               ),
                             ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 2,
-                          width: 45,
-                        )
-                      ],
-                    ),
-                    Positioned(
-                      right: -10,
-                      bottom: -10,
-                      child: Row(
-                        children: [
-                          Text(
-                            formatTime(message['created_at']),
-                            style: TextStyle(
-                                color: isSend ? Colors.white : Colors.black38,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w500),
                           ),
-                          isSend
-                              ? Row(
-                                  children: [
-                                    SizedBox(
-                                      width: 2,
-                                    ),
-                                    Icon(
-                                      Icons.check_circle_rounded,
-                                      size: 10,
-                                      color:
-                                          getMessageTickColor(message: message),
-                                    )
-                                  ],
+                        ],
+                      )),
+                  isSend
+                      ? Container(
+                          width: 20,
+                          child: isSend
+                              ? Center(
+                                  child: getMessageTick(message: message),
                                 )
                               : Container(),
-                        ],
-                      ),
-                    ),
-                  ],
-                )),
+                        )
+                      : Container(),
+                ],
+              ),
+              SizedBox(
+                height: 1,
+              ),
+              Row(
+                children: [
+                  isSend
+                      ? Container()
+                      : SizedBox(
+                          width: 20,
+                        ),
+                  Text(
+                    formatTime(message['created_at']),
+                    style: TextStyle(
+                        color: darkGrey,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w500),
+                  ),
+                  isSend
+                      ? SizedBox(
+                          width: 20,
+                        )
+                      : Container(),
+                ],
+              )
+            ],
           )
         ],
       ),
+    );
+  }
+
+  Widget getMessageTick({Map<String, dynamic> message}) {
+    return Icon(
+      message['delivered']
+          ? Icons.check_circle_rounded
+          : Icons.check_circle_outline_outlined,
+      size: 12,
+      color: getMessageTickColor(message: message),
     );
   }
 
@@ -1973,140 +1964,143 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     String messageText = message['text'] ?? "";
     bool isMessageEmpty = messageText == "";
 
-    return GestureDetector(
-      onTap: () {
-        var result = Navigator.of(context).pushNamed(
-          "/view-chat-media",
-          arguments: {
-            "type": "image",
-            "file": message['media'],
-            "message": message['text'],
-            "poster": message["poster"] ?? null
-          },
-        );
+    return Padding(
+      padding: EdgeInsets.only(right: isSend ? 20 : 0, left: isSend ? 0 : 20),
+      child: GestureDetector(
+        onTap: () {
+          var result = Navigator.of(context).pushNamed(
+            "/view-chat-media",
+            arguments: {
+              "type": "image",
+              "file": message['media'],
+              "message": message['text'],
+              "poster": message["poster"] ?? null
+            },
+          );
 
-        debugPrint("Result:- $result");
-      },
-      onLongPress: () {
-        Clipboard.setData(
-            new ClipboardData(text: message['text'] ?? message['media']));
-        Toast.show("Text copied !!", context,
-            gravity: Toast.BOTTOM,
-            duration: Toast.LENGTH_LONG,
-            backgroundColor: navyBlue,
-            textColor: Colors.white);
-      },
-      child: Row(
-        mainAxisAlignment:
-            isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
-        children: [
-          Container(
-            constraints: BoxConstraints(
-              maxWidth: MediaQuery.of(context).size.width / 1.35,
-              minWidth: MediaQuery.of(context).size.width / 1.35,
-            ),
-            decoration: BoxDecoration(
-              color: isSend ? navyBlue : chatBackgroundColor,
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(!isSend ? 0 : 6),
-                bottomRight: Radius.circular(isSend ? 0 : 6),
-                topLeft: Radius.circular(6),
-                topRight: Radius.circular(6),
+          debugPrint("Result:- $result");
+        },
+        onLongPress: () {
+          Clipboard.setData(
+              new ClipboardData(text: message['text'] ?? message['media']));
+          Toast.show("Text copied !!", context,
+              gravity: Toast.BOTTOM,
+              duration: Toast.LENGTH_LONG,
+              backgroundColor: navyBlue,
+              textColor: Colors.white);
+        },
+        child: Row(
+          mainAxisAlignment:
+              isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
+          children: [
+            Container(
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width / 1.35,
+                minWidth: MediaQuery.of(context).size.width / 1.35,
               ),
-            ),
-            padding: EdgeInsets.only(left: 4, right: 4, top: 4, bottom: 0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ClipRRect(
-                  child: CachedNetworkImage(
-                    height: MediaQuery.of(context).size.width / 1.35,
-                    width: MediaQuery.of(context).size.width / 1.35,
-                    imageUrl: message['media'],
-                    fit: BoxFit.cover,
-                    progressIndicatorBuilder:
-                        (context, url, downloadProgress) => Center(
-                      child: CircularProgressIndicator(
-                        value: downloadProgress.progress,
-                        strokeWidth: 2.5,
-                        valueColor: AlwaysStoppedAnimation(navyBlue),
-                        backgroundColor: Colors.transparent,
+              decoration: BoxDecoration(
+                color: isSend ? navyBlue : chatBackgroundColor,
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(!isSend ? 0 : 6),
+                  bottomRight: Radius.circular(isSend ? 0 : 6),
+                  topLeft: Radius.circular(6),
+                  topRight: Radius.circular(6),
+                ),
+              ),
+              padding: EdgeInsets.only(left: 4, right: 4, top: 4, bottom: 0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    child: CachedNetworkImage(
+                      height: MediaQuery.of(context).size.width / 1.35,
+                      width: MediaQuery.of(context).size.width / 1.35,
+                      imageUrl: message['media'],
+                      fit: BoxFit.cover,
+                      progressIndicatorBuilder:
+                          (context, url, downloadProgress) => Center(
+                        child: CircularProgressIndicator(
+                          value: downloadProgress.progress,
+                          strokeWidth: 2.5,
+                          valueColor: AlwaysStoppedAnimation(navyBlue),
+                          backgroundColor: Colors.transparent,
+                        ),
                       ),
+                      errorWidget: imageErrorWidget,
                     ),
-                    errorWidget: imageErrorWidget,
+                    borderRadius: BorderRadius.circular(4),
                   ),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                SizedBox(
-                  height: isMessageEmpty ? 2 : 2,
-                ),
-                Stack(
-                  overflow: Overflow.visible,
-                  children: [
-                    Column(
-                      children: [
-                        isMessageEmpty
-                            ? Container()
-                            : Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      messageText,
-                                      style: TextStyle(
+                  SizedBox(
+                    height: isMessageEmpty ? 2 : 2,
+                  ),
+                  Stack(
+                    overflow: Overflow.visible,
+                    children: [
+                      Column(
+                        children: [
+                          isMessageEmpty
+                              ? Container()
+                              : Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        messageText,
+                                        style: TextStyle(
                                           color:
                                               isSend ? Colors.white : blackFont,
                                           fontSize: 16,
-                                          fontWeight: FontWeight.w500),
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                        SizedBox(
-                          height: isMessageEmpty ? 8 : 2,
-                          width: 45,
-                        )
-                      ],
-                    ),
-                    Positioned(
-                      right: !isSend ? 0 : -2,
-                      bottom: isMessageEmpty ? -2 : -6,
-                      child: Row(
-                        children: [
-                          Text(
-                            formatTime(message['created_at']),
-                            style: TextStyle(
-                                color: isSend ? Colors.white : Colors.black38,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w500),
-                          ),
-                          isSend
-                              ? Row(
-                                  children: [
-                                    SizedBox(
-                                      width: 2,
-                                    ),
-                                    Icon(
-                                      Icons.check_circle_rounded,
-                                      size: 10,
-                                      color:
-                                          getMessageTickColor(message: message),
-                                    )
                                   ],
-                                )
-                              : Container(),
+                                ),
+                          SizedBox(
+                            height: isMessageEmpty ? 8 : 2,
+                            width: 45,
+                          )
                         ],
                       ),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: isMessageEmpty ? 2 : 6,
-                )
-              ],
-            ),
-          )
-        ],
+                      Positioned(
+                        right: !isSend ? 0 : -2,
+                        bottom: isMessageEmpty ? -2 : -6,
+                        child: Row(
+                          children: [
+                            Text(
+                              formatTime(message['created_at']),
+                              style: TextStyle(
+                                  color: isSend ? Colors.white : Colors.black38,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w500),
+                            ),
+                            isSend
+                                ? Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 2,
+                                      ),
+                                      Icon(
+                                        Icons.check_circle_rounded,
+                                        size: 10,
+                                        color: getMessageTickColor(
+                                            message: message),
+                                      )
+                                    ],
+                                  )
+                                : Container(),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: isMessageEmpty ? 2 : 6,
+                  )
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

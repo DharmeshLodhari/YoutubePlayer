@@ -91,30 +91,8 @@ class _DashboardState extends State<Dashboard> {
   }
 
   void registerNFCReader() async {
-    // NFC.isNDEFSupported.then((bool isSupported) async {
-    //   debugPrint("===========> NFC SUPPORTED => $isSupported");
-    //   if (isSupported) {
-    // if (await getNFCPermission()) {
     NFCReaderService().initialize();
-    // }
-    // }
-    // });
   }
-
-  // Future<bool> getNFCPermission() async {
-  //   var status = await Permission.sensors.status;
-  //
-  //   if (!status.isGranted) {
-  //     var permission = await Permission.sensors.request();
-  //     if (permission.isGranted) {
-  //       isNFCPermissionAccepted = true;
-  //       return true;
-  //     }
-  //     return false;
-  //   }
-  //   isNFCPermissionAccepted = true;
-  //   return true;
-  // }
 
   Widget goToBasket() {
     return Badge(
