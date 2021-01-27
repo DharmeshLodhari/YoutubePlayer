@@ -270,6 +270,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     });
   }
 
+
   void initializeListener() {
     streamSubscription?.cancel();
     streamSubscription = mainSocketProvider.socketStream.listen((event) {
