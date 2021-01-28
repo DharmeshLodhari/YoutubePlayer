@@ -82,7 +82,7 @@ class _NfcWriterState extends State<NfcWriter> {
   }
 
   Widget scaffoldBody() {
-    return !_supportsNFC
+    return _supportsNFC
         ? Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
