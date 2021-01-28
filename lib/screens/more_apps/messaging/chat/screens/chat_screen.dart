@@ -22,6 +22,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -112,6 +113,12 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   bool isProductAndServiceLoading = false;
   List searchedProductAndService = [];
 
+  GlobalKey _key = LabeledGlobalKey("itemSearchTypeSelectionKey");
+  CustomizedPopUpMenu itemSearchTypeSelectionMenu;
+  int selectedMenuItemIndex = 0;
+  bool isPopMenuOpen = false;
+  GlobalKey searchItemTextFormField = GlobalKey();
+
   /// variables for  text message and audio message btn switcher
   bool messageIsText = false;
 
@@ -127,6 +134,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   BasketBloc basketBloc;
 
   StreamSubscription<ConnectivityResult> networkConnectionSubscription;
+
+  ///variable for message actions
+  bool showMoreAction = false;
 
   @override
   void initState() {
@@ -144,7 +154,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
     messageController.addListener(sendUserTypingState);
     messageController.addListener(changeSearchType);
-    messageController.addListener(changeAudioOrTextMessageBtn);
+    // messageController.addListener(changeAudioOrTextMessageBtn);
 
     searchProductController.addListener(searchProduct);
     searchServiceController.addListener(searchService);
@@ -205,7 +215,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
     messageController.removeListener(sendUserTypingState);
     messageController.removeListener(changeSearchType);
-    messageController.removeListener(changeAudioOrTextMessageBtn);
+    // messageController.removeListener(changeAudioOrTextMessageBtn);
 
     searchProductController.removeListener(searchProduct);
     searchServiceController.removeListener(searchService);
@@ -324,15 +334,15 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     }
   }
 
-  void changeAudioOrTextMessageBtn() {
-    if (messageController.text.isNotEmpty) {
-      messageIsText = true;
-      if (mounted) setState(() {});
-    } else {
-      messageIsText = false;
-      if (mounted) setState(() {});
-    }
-  }
+  // void changeAudioOrTextMessageBtn() {
+  //   if (messageController.text.isNotEmpty) {
+  //     messageIsText = true;
+  //     if (mounted) setState(() {});
+  //   } else {
+  //     messageIsText = false;
+  //     if (mounted) setState(() {});
+  //   }
+  // }
 
   void setupScrollController() {
     messageScrollController = ScrollController();
@@ -493,11 +503,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   void addMessageToChat({String message}) {
-    /// TODO: when we are adding audio at 0 position the other audio player are breaking up
-    /// it is working fine when we add audio at last
-
-    Map<String, dynamic> messageData = jsonDecode(message);
-
     messageList.insert(0, message);
 
     if (mounted) setState(() {});
@@ -578,13 +583,51 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         curve: Curves.easeOut);
   }
 
+  void menuItemSelectionChange(String value, int index) {
+    selectedMenuItemIndex = index;
+
+    if (value == "Products")
+      isProductSearch = true;
+    else if (value == "Services") isServiceSearch = true;
+
+    if (mounted) setState(() {});
+  }
+
+  void menuStateChange(bool isOpen) {
+    isPopMenuOpen = isOpen;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
+    itemSearchTypeSelectionMenu = CustomizedPopUpMenu(
+        buttonKey: _key,
+        context: context,
+        hasIcon: true,
+        children: [
+          CustomizedPopUpMenuItemWithIcon(
+              title: "Product", value: "Products", icon: SlydoAppIcon.product),
+          CustomizedPopUpMenuItemWithIcon(
+              title: "Service", value: "Services", icon: SlydoAppIcon.note_2),
+        ],
+        selectedIndex: selectedMenuItemIndex,
+        left: 16,
+        arrowPosition: Alignment.topLeft,
+        arrowLeftPadding: 16,
+        top: 14);
+    itemSearchTypeSelectionMenu.onChange = menuItemSelectionChange;
+    itemSearchTypeSelectionMenu.menuState = menuStateChange;
+
     userBloc = Provider.of<UserBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
     mainSocketProvider = Provider.of<MainSocketProvider>(context);
 
     initializeListener();
+
+    if (MediaQuery.of(context).viewInsets.bottom != 0) {
+      showMoreAction = false;
+      if (mounted) setState(() {});
+    }
 
     return WillPopScope(
       onWillPop: () async {
@@ -636,7 +679,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         icon: Icon(
           Icons.keyboard_arrow_left,
           color: navyBlue,
-          size: 24,
+          size: 28,
         ),
         onPressed: () {
           disposeAudioPlayers();
@@ -646,6 +689,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
           Navigator.pop(context);
         },
       ),
+      leadingWidth: 40,
+
       title: GestureDetector(
         onTap: () {
           Navigator.pushNamed(context, '/profile',
@@ -655,7 +700,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
           children: [
             getUserIcon(),
             SizedBox(
-              width: 8,
+              width: 12,
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -665,7 +710,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                   style: TextStyle(
                     color: blackFont,
                     fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w700,
                   ),
                   overflow: TextOverflow.fade,
                   softWrap: false,
@@ -674,9 +719,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                 Text(
                   isRecipientTyping ? "Typing.." : userStatus, //"Online",
                   style: TextStyle(
-                    color: isRecipientTyping ? naturalGreen : darkGrey,
-                    fontSize: 12,
-                  ),
+                      color: isRecipientTyping ? naturalGreen : darkGrey,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w400),
                   overflow: TextOverflow.fade,
                   softWrap: false,
                   maxLines: 1,
@@ -771,112 +816,285 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   Widget getSearchBarLayout() {
-    if (isProductSearch || isServiceSearch) {
-      return Column(
-        children: [
-          Card(
-            elevation: 10,
-            margin: EdgeInsets.zero,
-            shadowColor: lightGrey,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(15),
-                    topRight: Radius.circular(15))),
-            child: ClipRRect(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(15),
-                topRight: Radius.circular(15),
+    // if (isProductSearch || isServiceSearch) {
+    //   return Column(
+    //     children: [
+    //       Card(
+    //         elevation: 10,
+    //         margin: EdgeInsets.zero,
+    //         shadowColor: lightGrey,
+    //         shape: RoundedRectangleBorder(
+    //             borderRadius: BorderRadius.only(
+    //                 topLeft: Radius.circular(15),
+    //                 topRight: Radius.circular(15))),
+    //         child: ClipRRect(
+    //           borderRadius: BorderRadius.only(
+    //             topLeft: Radius.circular(15),
+    //             topRight: Radius.circular(15),
+    //           ),
+    //           child: Container(
+    //             height: MediaQuery.of(context).size.height / 3,
+    //             width: MediaQuery.of(context).size.width,
+    //             color: Colors.white,
+    //             child: Column(
+    //               children: [
+    //                 Container(
+    //                     padding: EdgeInsets.symmetric(vertical: 4),
+    //                     child: Text(
+    //                       isProductSearch ? "Products" : "Services",
+    //                       style: TextStyle(),
+    //                     )),
+    //                 searchedProductAndService.isEmpty
+    //                     ? Expanded(
+    //                         child: Center(
+    //                           child: isProductAndServiceLoading
+    //                               ? CircularLoadingIndicator()
+    //                               : Text(
+    //                                   "No Result",
+    //                                   style: TextStyle(
+    //                                       color: darkGrey, fontSize: 16),
+    //                                 ),
+    //                         ),
+    //                       )
+    //                     : Expanded(
+    //                         child: ListView(
+    //                           children: searchedProductAndService
+    //                               .map((item) => InkWell(
+    //                                   onTap: () {
+    //                                     addProductOrServiceToChat(item);
+    //                                   },
+    //                                   child: getResultTile(item)))
+    //                               .toList(),
+    //                         ),
+    //                       ),
+    //               ],
+    //             ),
+    //           ),
+    //         ),
+    //       ),
+    //       Card(
+    //         margin: EdgeInsets.zero,
+    //         child: Container(
+    //           height: 58,
+    //           width: MediaQuery.of(context).size.width,
+    //           padding: EdgeInsets.only(
+    //             left: 16,
+    //           ),
+    //           child: Row(
+    //             children: <Widget>[
+    //               closeSearchModuleBtn(),
+    //               Expanded(
+    //                 child: isProductSearch
+    //                     ? searchProductTextField()
+    //                     : searchServiceTextField(),
+    //               ),
+    //               searchProductOrServiceBtn(),
+    //             ],
+    //           ),
+    //         ),
+    //       ),
+    //     ],
+    //   );
+    // }
+
+    return Column(
+      children: [
+        Container(
+          height: 54,
+          child: Row(
+            children: <Widget>[
+              moreActionBtn(),
+              Expanded(
+                child: textMessageField(),
               ),
-              child: Container(
-                height: MediaQuery.of(context).size.height / 3,
-                width: MediaQuery.of(context).size.width,
-                color: Colors.white,
-                child: Column(
-                  children: [
-                    Container(
-                        padding: EdgeInsets.symmetric(vertical: 4),
-                        child: Text(
-                          isProductSearch ? "Products" : "Services",
-                          style: TextStyle(),
-                        )),
-                    searchedProductAndService.isEmpty
-                        ? Expanded(
-                            child: Center(
-                              child: isProductAndServiceLoading
-                                  ? CircularLoadingIndicator()
-                                  : Text(
-                                      "No Result",
-                                      style: TextStyle(
-                                          color: darkGrey, fontSize: 16),
-                                    ),
-                            ),
-                          )
-                        : Expanded(
-                            child: ListView(
-                              children: searchedProductAndService
-                                  .map((item) => InkWell(
-                                      onTap: () {
-                                        addProductOrServiceToChat(item);
-                                      },
-                                      child: getResultTile(item)))
-                                  .toList(),
-                            ),
-                          ),
-                  ],
-                ),
-              ),
-            ),
+              sendMessageBtn(),
+            ],
           ),
-          Card(
-            margin: EdgeInsets.zero,
-            child: Container(
-              height: 58,
-              width: MediaQuery.of(context).size.width,
-              padding: EdgeInsets.only(
-                left: 16,
-              ),
-              child: Row(
-                children: <Widget>[
-                  closeSearchModuleBtn(),
-                  Expanded(
-                    child: isProductSearch
-                        ? searchProductTextField()
-                        : searchServiceTextField(),
-                  ),
-                  searchProductOrServiceBtn(),
-                ],
-              ),
-            ),
+        ),
+        showMoreAction ? moreActionsBtn() : Container()
+      ],
+    );
+  }
+
+  Widget moreActionBtn() {
+    return IconButton(
+        icon: Icon(
+          showMoreAction ? SlydoAppIcon.close_2 : SlydoAppIcon.add,
+          color: navyBlue,
+          size: showMoreAction ? 22 : 20,
+        ),
+        onPressed: () async {
+          if (FocusScope.of(context).hasFocus) {
+            FocusScope.of(context).unfocus();
+            Future.delayed(Duration(milliseconds: 100)).then((value) {
+              showMoreAction = !showMoreAction;
+              if (mounted) setState(() {});
+            });
+          } else {
+            showMoreAction = !showMoreAction;
+            if (mounted) setState(() {});
+          }
+        });
+  }
+
+  Widget moreActionsBtn() {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 28),
+      child: Column(
+        children: [
+          Row(
+            children: <Widget>[
+              assignTitleToAction(text: "Request", child: requestMoneyBtn()),
+              flexibleSpace(),
+              assignTitleToAction(text: "Send", child: sendMoneyBtn()),
+              flexibleSpace(),
+              assignTitleToAction(text: "Image", child: addMediaButton()),
+              flexibleSpace(),
+              assignTitleToAction(text: "Voice", child: addVoiceBtn()),
+            ],
+          ),
+          SizedBox(
+            height: 16,
+          ),
+          Row(
+            children: <Widget>[
+              assignTitleToAction(
+                  text: "Product/ Service",
+                  child: searchProductAndServiceBtn()),
+              flexibleSpace(),
+            ],
           ),
         ],
-      );
-    }
-
-    return Container(
-      height: 58,
-      padding: EdgeInsets.only(
-        left: 16,
       ),
-      child: Row(
-        children: <Widget>[
-          MediaQuery.of(context).viewInsets.bottom != 0
-              ? addMediaButton()
-              : Row(
-                  children: [
-                    requestMoneyBtn(),
-                    SizedBox(
-                      width: 8,
-                    ),
-                    sendMoneyBtn(),
-                    SizedBox(
-                      width: 8,
-                    ),
-                  ],
-                ),
-          Expanded(
-            child: textMessageField(),
-          ),
-          sendAudioOrMessageBtn(),
+    );
+  }
+
+  // Widget getSearchBarLayout() {
+  //   if (isProductSearch || isServiceSearch) {
+  //     return Column(
+  //       children: [
+  //         Card(
+  //           elevation: 10,
+  //           margin: EdgeInsets.zero,
+  //           shadowColor: lightGrey,
+  //           shape: RoundedRectangleBorder(
+  //               borderRadius: BorderRadius.only(
+  //                   topLeft: Radius.circular(15),
+  //                   topRight: Radius.circular(15))),
+  //           child: ClipRRect(
+  //             borderRadius: BorderRadius.only(
+  //               topLeft: Radius.circular(15),
+  //               topRight: Radius.circular(15),
+  //             ),
+  //             child: Container(
+  //               height: MediaQuery.of(context).size.height / 3,
+  //               width: MediaQuery.of(context).size.width,
+  //               color: Colors.white,
+  //               child: Column(
+  //                 children: [
+  //                   Container(
+  //                       padding: EdgeInsets.symmetric(vertical: 4),
+  //                       child: Text(
+  //                         isProductSearch ? "Products" : "Services",
+  //                         style: TextStyle(),
+  //                       )),
+  //                   searchedProductAndService.isEmpty
+  //                       ? Expanded(
+  //                           child: Center(
+  //                             child: isProductAndServiceLoading
+  //                                 ? CircularLoadingIndicator()
+  //                                 : Text(
+  //                                     "No Result",
+  //                                     style: TextStyle(
+  //                                         color: darkGrey, fontSize: 16),
+  //                                   ),
+  //                           ),
+  //                         )
+  //                       : Expanded(
+  //                           child: ListView(
+  //                             children: searchedProductAndService
+  //                                 .map((item) => InkWell(
+  //                                     onTap: () {
+  //                                       addProductOrServiceToChat(item);
+  //                                     },
+  //                                     child: getResultTile(item)))
+  //                                 .toList(),
+  //                           ),
+  //                         ),
+  //                 ],
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+  //         Card(
+  //           margin: EdgeInsets.zero,
+  //           child: Container(
+  //             height: 58,
+  //             width: MediaQuery.of(context).size.width,
+  //             padding: EdgeInsets.only(
+  //               left: 16,
+  //             ),
+  //             child: Row(
+  //               children: <Widget>[
+  //                 closeSearchModuleBtn(),
+  //                 Expanded(
+  //                   child: isProductSearch
+  //                       ? searchProductTextField()
+  //                       : searchServiceTextField(),
+  //                 ),
+  //                 searchProductOrServiceBtn(),
+  //               ],
+  //             ),
+  //           ),
+  //         ),
+  //       ],
+  //     );
+  //   }
+  //
+  //   return Container(
+  //     height: 58,
+  //     padding: EdgeInsets.only(
+  //       left: 16,
+  //     ),
+  //     child: Row(
+  //       children: <Widget>[
+  //         MediaQuery.of(context).viewInsets.bottom != 0
+  //             ? addMediaButton()
+  //             : Row(
+  //                 children: [
+  //                   requestMoneyBtn(),
+  //                   SizedBox(
+  //                     width: 8,
+  //                   ),
+  //                   sendMoneyBtn(),
+  //                   SizedBox(
+  //                     width: 8,
+  //                   ),
+  //                 ],
+  //               ),
+  //         Expanded(
+  //           child: textMessageField(),
+  //         ),
+  //         sendAudioOrMessageBtn(),
+  //       ],
+  //     ),
+  //   );
+  // }
+
+  Widget assignTitleToAction({String text, Widget child}) {
+    return Container(
+      constraints: BoxConstraints(maxWidth: 60),
+      child: Column(
+        children: [
+          child,
+          SizedBox(height: 10),
+          Center(
+            child: Text(text,
+                style: TextStyle(
+                    color: blackFont,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600)),
+          )
         ],
       ),
     );
@@ -884,9 +1102,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   Widget requestMoneyBtn() {
     return RoundedBackgroundIcon(
-      borderRadius: 16,
-      height: 44,
-      width: 44,
+      borderRadius: 20,
+      height: 50,
+      width: 50,
       icon: Icon(
         SlydoAppIcon.receive,
         color: navyBlue,
@@ -894,6 +1112,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
       onTap: () async {
+        showMoreAction = false;
+        if (mounted) setState(() {});
+
         var customerProfileBloc =
             Provider.of<CustomerProfileBloc>(context, listen: false);
         customerProfileBloc.customer =
@@ -911,9 +1132,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   Widget sendMoneyBtn() {
     return RoundedBackgroundIcon(
-      borderRadius: 16,
-      height: 44,
-      width: 44,
+      borderRadius: 20,
+      height: 50,
+      width: 50,
       icon: Icon(
         SlydoAppIcon.send,
         color: naturalGreen,
@@ -921,6 +1142,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
       onTap: () async {
+        showMoreAction = false;
+        if (mounted) setState(() {});
         var customerProfileBloc =
             Provider.of<CustomerProfileBloc>(context, listen: false);
         customerProfileBloc.customer =
@@ -936,214 +1159,219 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     );
   }
 
-  Widget searchProductTextField() {
-    return TextFormField(
-      controller: searchProductController,
-      textInputAction: TextInputAction.send,
-      cursorColor: blackFont,
-      cursorWidth: 1,
-      cursorHeight: 20,
-      autofocus: true,
-      cursorRadius: Radius.circular(16),
-      decoration: InputDecoration(
-        hintText: "Search product",
-        hintStyle: TextStyle(
-          color: darkGrey.withOpacity(0.5),
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-        ),
-        prefix: Padding(
-          padding: EdgeInsets.only(left: 12),
-        ),
-        contentPadding: EdgeInsets.symmetric(vertical: 10),
-        isDense: true,
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: greyBorderColor,
-            width: 1.0,
-          ),
-        ),
-        disabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: greyBorderColor,
-            width: 1.0,
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: navyBlue,
-            width: 1.0,
-          ),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: greyBorderColor,
-            width: 1.0,
-          ),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: greyBorderColor,
-            width: 1.0,
-          ),
-        ),
+  Widget addMediaButton() {
+    return RoundedBackgroundIcon(
+      borderRadius: 20,
+      height: 50,
+      width: 50,
+      icon: Icon(
+        SlydoAppIcon.image,
+        color: blackFont,
+        size: 18,
       ),
+      backgroundColor: navyBlue.withOpacity(0.08),
+      onTap: addMediaToMessage,
     );
   }
 
-  Widget searchServiceTextField() {
-    return TextFormField(
-      controller: searchServiceController,
-      textInputAction: TextInputAction.search,
-      cursorColor: blackFont,
-      cursorWidth: 1,
-      cursorHeight: 20,
-      autofocus: true,
-      cursorRadius: Radius.circular(16),
-      decoration: InputDecoration(
-        hintText: "Search service",
-        hintStyle: TextStyle(
-          color: darkGrey.withOpacity(0.5),
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-        ),
-        prefix: Padding(
-          padding: EdgeInsets.only(left: 12),
-        ),
-        contentPadding: EdgeInsets.symmetric(vertical: 10),
-        isDense: true,
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: greyBorderColor,
-            width: 1.0,
-          ),
-        ),
-        disabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: greyBorderColor,
-            width: 1.0,
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: navyBlue,
-            width: 1.0,
-          ),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: greyBorderColor,
-            width: 1.0,
-          ),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: greyBorderColor,
-            width: 1.0,
-          ),
-        ),
+  Widget addVoiceBtn() {
+    return RoundedBackgroundIcon(
+      borderRadius: 20,
+      height: 50,
+      width: 50,
+      icon: Icon(
+        SlydoAppIcon.mic,
+        color: blackFont,
+        size: 18,
       ),
+      backgroundColor: navyBlue.withOpacity(0.08),
+      onTap: () async {
+        await getAudioPermission();
+
+        if (isAudioRecording) {
+          debugPrint("Recording Stop ");
+          isAudioRecording = false;
+          setState(() {});
+          await stopRecorder();
+          setState(() {});
+        } else if (!isAudioRecording && isAudioPermissionAccepted) {
+          debugPrint("Starting Recording ");
+          isAudioRecording = true;
+          setState(() {});
+          await recordAudio();
+          setState(() {});
+        } else {
+          await getAudioPermission();
+        }
+      },
     );
   }
+
+  Widget searchProductAndServiceBtn() {
+    return RoundedBackgroundIcon(
+      borderRadius: 20,
+      height: 50,
+      width: 50,
+      icon: Icon(
+        SlydoAppIcon.search,
+        color: blackFont,
+        size: 18,
+      ),
+      backgroundColor: navyBlue.withOpacity(0.08),
+      onTap: () {
+        showMoreAction = false;
+        if (mounted) setState(() {});
+        showSearchProductAndServiceBottomSheet();
+      },
+    );
+  }
+
+  // Widget textMessageField() {
+  //   return Stack(
+  //     alignment: Alignment.centerRight,
+  //     children: [
+  //       TextFormField(
+  //         controller: messageController,
+  //         textInputAction: TextInputAction.send,
+  //         focusNode: messageFocus,
+  //         onFieldSubmitted: (value) {
+  //           sendTextMessage();
+  //         },
+  //         cursorColor: blackFont,
+  //         cursorWidth: 1,
+  //         cursorHeight: 20,
+  //         cursorRadius: Radius.circular(16),
+  //         decoration: InputDecoration(
+  //           hintText: "Type message",
+  //           hintStyle: TextStyle(
+  //             color: darkGrey.withOpacity(0.5),
+  //             fontSize: 16,
+  //             fontWeight: FontWeight.w500,
+  //           ),
+  //           prefix: Padding(
+  //             padding: EdgeInsets.only(left: 12),
+  //           ),
+  //           // suffixIcon: captureImageOrVideo(),
+  //           contentPadding: EdgeInsets.symmetric(vertical: 10),
+  //           isDense: true,
+  //           enabledBorder: OutlineInputBorder(
+  //             borderRadius: BorderRadius.circular(10),
+  //             borderSide: BorderSide(
+  //               color: greyBorderColor,
+  //               width: 1.0,
+  //             ),
+  //           ),
+  //           disabledBorder: OutlineInputBorder(
+  //             borderRadius: BorderRadius.circular(10),
+  //             borderSide: BorderSide(
+  //               color: greyBorderColor,
+  //               width: 1.0,
+  //             ),
+  //           ),
+  //           focusedBorder: OutlineInputBorder(
+  //             borderRadius: BorderRadius.circular(10),
+  //             borderSide: BorderSide(
+  //               color: navyBlue,
+  //               width: 1.0,
+  //             ),
+  //           ),
+  //           errorBorder: OutlineInputBorder(
+  //             borderRadius: BorderRadius.circular(10),
+  //             borderSide: BorderSide(
+  //               color: greyBorderColor,
+  //               width: 1.0,
+  //             ),
+  //           ),
+  //           focusedErrorBorder: OutlineInputBorder(
+  //             borderRadius: BorderRadius.circular(10),
+  //             borderSide: BorderSide(
+  //               color: greyBorderColor,
+  //               width: 1.0,
+  //             ),
+  //           ),
+  //         ),
+  //       ),
+  //       Positioned(
+  //         child: captureImageOrVideoBtn(),
+  //         right: 8,
+  //       )
+  //     ],
+  //   );
+  // }
 
   Widget textMessageField() {
-    return Stack(
-      alignment: Alignment.centerRight,
-      children: [
-        TextFormField(
-          controller: messageController,
-          textInputAction: TextInputAction.send,
-          focusNode: messageFocus,
-          onFieldSubmitted: (value) {
-            sendTextMessage();
-          },
-          cursorColor: blackFont,
-          cursorWidth: 1,
-          cursorHeight: 20,
-          cursorRadius: Radius.circular(16),
-          decoration: InputDecoration(
-            hintText: "Type message",
-            hintStyle: TextStyle(
-              color: darkGrey.withOpacity(0.5),
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-            ),
-            prefix: Padding(
-              padding: EdgeInsets.only(left: 12),
-            ),
-            // suffixIcon: captureImageOrVideo(),
-            contentPadding: EdgeInsets.symmetric(vertical: 10),
-            isDense: true,
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: greyBorderColor,
-                width: 1.0,
-              ),
-            ),
-            disabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: greyBorderColor,
-                width: 1.0,
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: navyBlue,
-                width: 1.0,
-              ),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: greyBorderColor,
-                width: 1.0,
-              ),
-            ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: greyBorderColor,
-                width: 1.0,
-              ),
-            ),
-          ),
-        ),
-        Positioned(
-          child: captureImageOrVideoBtn(),
-          right: 8,
-        )
-      ],
-    );
-  }
-
-  Widget addMediaButton() {
-    return InkWell(
-      onTap: addMediaToMessage,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(3),
       child: Container(
-        padding: EdgeInsets.all(2),
-        child: Row(
+        color: chatBackgroundColor,
+        child: Stack(
+          alignment: Alignment.centerRight,
           children: [
-            Icon(
-              SlydoAppIcon.add_image,
-              color: navyBlue,
-              size: 22,
+            TextFormField(
+              controller: messageController,
+              textInputAction: TextInputAction.send,
+              focusNode: messageFocus,
+              onFieldSubmitted: (value) {
+                sendTextMessage();
+              },
+              cursorColor: blackFont,
+              cursorWidth: 1,
+              cursorHeight: 20,
+              cursorRadius: Radius.circular(16),
+              decoration: InputDecoration(
+                hintText: "Type a message",
+                hintStyle: TextStyle(
+                  color: darkGrey,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                ),
+                prefix: Padding(
+                  padding: EdgeInsets.only(left: 16),
+                ),
+                // suffixIcon: captureImageOrVideo(),
+                contentPadding: EdgeInsets.symmetric(vertical: 10),
+                isDense: true,
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(3),
+                  borderSide: BorderSide(
+                    color: chatBackgroundColor,
+                    width: 1.0,
+                  ),
+                ),
+                disabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(3),
+                  borderSide: BorderSide(
+                    color: chatBackgroundColor,
+                    width: 1.0,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(3),
+                  borderSide: BorderSide(
+                    color: chatBackgroundColor,
+                    width: 1.0,
+                  ),
+                ),
+                errorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(3),
+                  borderSide: BorderSide(
+                    color: chatBackgroundColor,
+                    width: 1.0,
+                  ),
+                ),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(3),
+                  borderSide: BorderSide(
+                    color: chatBackgroundColor,
+                    width: 1.0,
+                  ),
+                ),
+              ),
             ),
-            SizedBox(
-              width: 12,
-            ),
+            Positioned(
+              child: captureImageOrVideoBtn(),
+              right: 8,
+            )
           ],
         ),
       ),
@@ -1207,6 +1435,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   void addMediaToMessage() async {
+    showMoreAction = false;
+    if (mounted) setState(() {});
+
     List<String> allowedExtensions =
         imageExtensions + videoExtensions + audioExtensions;
 
@@ -1340,25 +1571,27 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       return;
     }
 
-    var result = await Navigator.of(context).pushNamed(
-      "/send-media-to-chat-message",
-      arguments: {
-        "data": {
-          "conversation": recipientUser.conversationId,
-          "author": userBloc.user.userName,
+    if (capturedMediaPath != null) {
+      var result = await Navigator.of(context).pushNamed(
+        "/send-media-to-chat-message",
+        arguments: {
+          "data": {
+            "conversation": recipientUser.conversationId,
+            "author": userBloc.user.userName,
+          },
+          "media": File(capturedMediaPath),
+          "message": messageController.text.trim(),
+          "mediaType": mediaType
         },
-        "media": File(capturedMediaPath),
-        "message": messageController.text.trim(),
-        "mediaType": mediaType
-      },
-    ).catchError((error) {
-      debugPrint("Error: = = = = $error");
-    });
+      ).catchError((error) {
+        debugPrint("Error: = = = = $error");
+      });
 
-    if (result == null) return;
+      if (result == null) return;
 
-    messageController.text = "";
-    debugPrint("Result:- $result");
+      messageController.text = "";
+      debugPrint("Result:- $result");
+    }
   }
 
   Future<String> captureImage() async {
@@ -1378,12 +1611,12 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     return path;
   }
 
-  Widget sendAudioOrMessageBtn() {
-    return AnimatedSwitcher(
-      duration: Duration(milliseconds: 100),
-      child: messageIsText ? sendMessageBtn() : recordAndSendAudioBtn(),
-    );
-  }
+  // Widget sendAudioOrMessageBtn() {
+  //   return AnimatedSwitcher(
+  //     duration: Duration(milliseconds: 100),
+  //     child: messageIsText ? sendMessageBtn() : recordAndSendAudioBtn(),
+  //   );
+  // }
 
   Widget sendMessageBtn() {
     return InkWell(
@@ -1393,10 +1626,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         child: Row(
           children: [
             SizedBox(
-              width: 12,
+              width: 10,
             ),
             Icon(
-              SlydoAppIcon.send_message,
+              SlydoAppIcon.send_message_2,
               color: navyBlue,
               size: 22,
             ),
@@ -1685,6 +1918,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       return;
     }
 
+    showMoreAction = false;
+    if (mounted) setState(() {});
+
     Map<String, dynamic> data = {
       "check_id": Uuid().v4(),
       "conversation_id": recipientUser.conversationId,
@@ -1749,14 +1985,19 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       child: Column(
         children: [
           Expanded(
-            child: Theme(
-              data: ThemeData(highlightColor: navyBlue),
-              child: Scrollbar(
-                controller: messageScrollController,
-                radius: Radius.circular(10),
-                thickness: 3,
-                child: messageListBuilder(),
-              ),
+            child: Stack(
+              children: [
+                Theme(
+                  data: ThemeData(highlightColor: navyBlue),
+                  child: Scrollbar(
+                    controller: messageScrollController,
+                    radius: Radius.circular(10),
+                    thickness: 3,
+                    child: messageListBuilder(),
+                  ),
+                ),
+                isAudioRecording ? getAudioRecordingWidget() : Container(),
+              ],
             ),
           ),
           messageActionBar()
@@ -1942,16 +2183,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     );
   }
 
-  Widget getMessageTick({Map<String, dynamic> message}) {
-    return Icon(
-      message['delivered']
-          ? Icons.check_circle_rounded
-          : Icons.check_circle_outline_outlined,
-      size: 12,
-      color: getMessageTickColor(message: message),
-    );
-  }
-
   String getDateTime(String dateAndTime) {
     DateTime requestTime = DateTime.parse(dateAndTime);
     String date = DateFormat("dd/MM/yyyy").format(requestTime);
@@ -1964,144 +2195,155 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     String messageText = message['text'] ?? "";
     bool isMessageEmpty = messageText == "";
 
-    return Padding(
-      padding: EdgeInsets.only(right: isSend ? 20 : 0, left: isSend ? 0 : 20),
-      child: GestureDetector(
-        onTap: () {
-          var result = Navigator.of(context).pushNamed(
-            "/view-chat-media",
-            arguments: {
-              "type": "image",
-              "file": message['media'],
-              "message": message['text'],
-              "poster": message["poster"] ?? null
-            },
-          );
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment:
+              isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            isSend
+                ? Container()
+                : Container(
+                    width: 20,
+                  ),
+            GestureDetector(
+              onTap: () {
+                var result = Navigator.of(context).pushNamed(
+                  "/view-chat-media",
+                  arguments: {
+                    "type": "image",
+                    "file": message['media'],
+                    "message": message['text'],
+                    "poster": message["poster"] ?? null
+                  },
+                );
 
-          debugPrint("Result:- $result");
-        },
-        onLongPress: () {
-          Clipboard.setData(
-              new ClipboardData(text: message['text'] ?? message['media']));
-          Toast.show("Text copied !!", context,
-              gravity: Toast.BOTTOM,
-              duration: Toast.LENGTH_LONG,
-              backgroundColor: navyBlue,
-              textColor: Colors.white);
-        },
-        child: Row(
+                debugPrint("Result:- $result");
+              },
+              onLongPress: () {
+                Clipboard.setData(new ClipboardData(
+                    text: message['text'] ?? message['media']));
+                Toast.show("Text copied !!", context,
+                    gravity: Toast.BOTTOM,
+                    duration: Toast.LENGTH_LONG,
+                    backgroundColor: navyBlue,
+                    textColor: Colors.white);
+              },
+              child: Container(
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width / 1.30,
+                  minWidth: MediaQuery.of(context).size.width / 1.30,
+                ),
+                decoration: BoxDecoration(
+                  color: isMessageEmpty
+                      ? Colors.transparent
+                      : isSend
+                          ? navyBlue
+                          : chatBackgroundColor,
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(!isSend ? 0 : 10),
+                    bottomRight: Radius.circular(isSend ? 0 : 10),
+                    topLeft: Radius.circular(10),
+                    topRight: Radius.circular(10),
+                  ),
+                ),
+                padding: EdgeInsets.only(
+                    top: isMessageEmpty ? 0 : 8,
+                    bottom: isMessageEmpty ? 0 : 8),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    isMessageEmpty
+                        ? Container()
+                        : Container(
+                            padding: EdgeInsets.symmetric(horizontal: 8),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    messageText,
+                                    style: TextStyle(
+                                        color:
+                                            isSend ? Colors.white : blackFont,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w400),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                    isMessageEmpty
+                        ? Container()
+                        : SizedBox(
+                            height: 8,
+                          ),
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: isMessageEmpty ? 0 : 8),
+                      child: ClipRRect(
+                        child: CachedNetworkImage(
+                          height: MediaQuery.of(context).size.width / 2.2,
+                          width: MediaQuery.of(context).size.width / 1.30,
+                          imageUrl: message['media'],
+                          fit: BoxFit.cover,
+                          progressIndicatorBuilder:
+                              (context, url, downloadProgress) => Center(
+                            child: CircularProgressIndicator(
+                              value: downloadProgress.progress,
+                              strokeWidth: 2.5,
+                              valueColor: AlwaysStoppedAnimation(
+                                  isSend ? Colors.white : navyBlue),
+                              backgroundColor: Colors.transparent,
+                            ),
+                          ),
+                          errorWidget: imageErrorWidget,
+                        ),
+                        borderRadius: BorderRadius.circular(3),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            isSend
+                ? Container(
+                    width: 20,
+                    child: isSend
+                        ? Center(
+                            child: getMessageTick(message: message),
+                          )
+                        : Container(),
+                  )
+                : Container(),
+          ],
+        ),
+        SizedBox(
+          height: 1,
+        ),
+        Row(
           mainAxisAlignment:
               isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
           children: [
-            Container(
-              constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width / 1.35,
-                minWidth: MediaQuery.of(context).size.width / 1.35,
-              ),
-              decoration: BoxDecoration(
-                color: isSend ? navyBlue : chatBackgroundColor,
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(!isSend ? 0 : 6),
-                  bottomRight: Radius.circular(isSend ? 0 : 6),
-                  topLeft: Radius.circular(6),
-                  topRight: Radius.circular(6),
-                ),
-              ),
-              padding: EdgeInsets.only(left: 4, right: 4, top: 4, bottom: 0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ClipRRect(
-                    child: CachedNetworkImage(
-                      height: MediaQuery.of(context).size.width / 1.35,
-                      width: MediaQuery.of(context).size.width / 1.35,
-                      imageUrl: message['media'],
-                      fit: BoxFit.cover,
-                      progressIndicatorBuilder:
-                          (context, url, downloadProgress) => Center(
-                        child: CircularProgressIndicator(
-                          value: downloadProgress.progress,
-                          strokeWidth: 2.5,
-                          valueColor: AlwaysStoppedAnimation(navyBlue),
-                          backgroundColor: Colors.transparent,
-                        ),
-                      ),
-                      errorWidget: imageErrorWidget,
-                    ),
-                    borderRadius: BorderRadius.circular(4),
+            isSend
+                ? Container()
+                : SizedBox(
+                    width: 20,
                   ),
-                  SizedBox(
-                    height: isMessageEmpty ? 2 : 2,
-                  ),
-                  Stack(
-                    overflow: Overflow.visible,
-                    children: [
-                      Column(
-                        children: [
-                          isMessageEmpty
-                              ? Container()
-                              : Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        messageText,
-                                        style: TextStyle(
-                                          color:
-                                              isSend ? Colors.white : blackFont,
-                                          fontSize: 16,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                          SizedBox(
-                            height: isMessageEmpty ? 8 : 2,
-                            width: 45,
-                          )
-                        ],
-                      ),
-                      Positioned(
-                        right: !isSend ? 0 : -2,
-                        bottom: isMessageEmpty ? -2 : -6,
-                        child: Row(
-                          children: [
-                            Text(
-                              formatTime(message['created_at']),
-                              style: TextStyle(
-                                  color: isSend ? Colors.white : Colors.black38,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w500),
-                            ),
-                            isSend
-                                ? Row(
-                                    children: [
-                                      SizedBox(
-                                        width: 2,
-                                      ),
-                                      Icon(
-                                        Icons.check_circle_rounded,
-                                        size: 10,
-                                        color: getMessageTickColor(
-                                            message: message),
-                                      )
-                                    ],
-                                  )
-                                : Container(),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: isMessageEmpty ? 2 : 6,
+            Text(
+              formatTime(message['created_at']),
+              style: TextStyle(
+                  color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
+            ),
+            isSend
+                ? SizedBox(
+                    width: 20,
                   )
-                ],
-              ),
-            )
+                : Container(),
           ],
-        ),
-      ),
+        )
+      ],
     );
   }
 
@@ -2126,167 +2368,180 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     String messageText = message['text'] ?? "";
     bool isMessageEmpty = messageText == "";
 
-    return GestureDetector(
-      onTap: () {
-        var result = Navigator.of(context).pushNamed(
-          "/view-chat-media",
-          arguments: {
-            "type": "video",
-            "file": message["media"],
-            "message": message['text']
-          },
-        );
-
-        debugPrint("Result:- $result");
-      },
-      onLongPress: () {
-        Clipboard.setData(
-            new ClipboardData(text: message['text'] ?? message['media']));
-        Toast.show("Text copied !!", context,
-            gravity: Toast.BOTTOM,
-            duration: Toast.LENGTH_LONG,
-            backgroundColor: navyBlue,
-            textColor: Colors.white);
-      },
-      child: Row(
-        mainAxisAlignment:
-            isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
-        children: [
-          Container(
-            constraints: BoxConstraints(
-              maxWidth: MediaQuery.of(context).size.width / 1.35,
-              minWidth: MediaQuery.of(context).size.width / 1.35,
-            ),
-            decoration: BoxDecoration(
-              color: isSend ? navyBlue : chatBackgroundColor,
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(!isSend ? 0 : 6),
-                bottomRight: Radius.circular(isSend ? 0 : 6),
-                topLeft: Radius.circular(6),
-                topRight: Radius.circular(6),
-              ),
-            ),
-            padding: EdgeInsets.only(left: 4, right: 4, top: 4, bottom: 0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  child: ClipRRect(
-                    child: Stack(
-                      children: [
-                        CachedNetworkImage(
-                          height: MediaQuery.of(context).size.width / 1.35,
-                          width: MediaQuery.of(context).size.width / 1.35,
-                          imageUrl: message["poster"] ??
-                              "https://c1.iggcdn.com/indiegogo-media-prod-cld/image/upload/c_fill,f_auto,h_630,w_1200/v1506734779/wcsmythcukjuuglotjvb.jpg",
-                          fit: BoxFit.cover,
-                          progressIndicatorBuilder:
-                              (context, url, downloadProgress) => Center(
-                            child: CircularProgressIndicator(
-                              value: downloadProgress.progress,
-                              strokeWidth: 2.5,
-                              valueColor: AlwaysStoppedAnimation(navyBlue),
-                              backgroundColor: Colors.transparent,
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment:
+              isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            isSend
+                ? Container()
+                : Container(
+                    width: 20,
+                  ),
+            GestureDetector(
+              onTap: () {
+                var result = Navigator.of(context).pushNamed(
+                  "/view-chat-media",
+                  arguments: {
+                    "type": "video",
+                    "file": message["media"],
+                    "message": message['text']
+                  },
+                );
+                debugPrint("Result:- $result");
+              },
+              onLongPress: () {
+                Clipboard.setData(new ClipboardData(
+                    text: message['text'] ?? message['media']));
+                Toast.show("Text copied !!", context,
+                    gravity: Toast.BOTTOM,
+                    duration: Toast.LENGTH_LONG,
+                    backgroundColor: navyBlue,
+                    textColor: Colors.white);
+              },
+              child: Container(
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width / 1.30,
+                  minWidth: MediaQuery.of(context).size.width / 1.30,
+                ),
+                decoration: BoxDecoration(
+                  color: isMessageEmpty
+                      ? Colors.transparent
+                      : isSend
+                          ? navyBlue
+                          : chatBackgroundColor,
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(!isSend ? 0 : 10),
+                    bottomRight: Radius.circular(isSend ? 0 : 10),
+                    topLeft: Radius.circular(10),
+                    topRight: Radius.circular(10),
+                  ),
+                ),
+                padding: EdgeInsets.only(
+                    top: isMessageEmpty ? 0 : 8,
+                    bottom: isMessageEmpty ? 0 : 8),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    isMessageEmpty
+                        ? Container()
+                        : Container(
+                            padding: EdgeInsets.symmetric(horizontal: 8),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    messageText,
+                                    style: TextStyle(
+                                        color:
+                                            isSend ? Colors.white : blackFont,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w400),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          errorWidget: imageErrorWidget,
-                        ),
-                        Container(
-                          width: MediaQuery.of(context).size.width / 1.35,
-                          height: MediaQuery.of(context).size.width / 1.35,
-                          child: Center(
-                            child: ClipOval(
-                              child: Container(
-                                height: 55,
-                                width: 55,
-                                color: Colors.white60,
-                                child: Center(
-                                  child: Icon(
-                                    Icons.play_arrow_rounded,
-                                    color: blackFont,
-                                    size: 28,
+                    isMessageEmpty
+                        ? Container()
+                        : SizedBox(
+                            height: 8,
+                          ),
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: isMessageEmpty ? 0 : 8),
+                      child: Stack(
+                        children: [
+                          ClipRRect(
+                            child: CachedNetworkImage(
+                              height: MediaQuery.of(context).size.width / 2.2,
+                              width: MediaQuery.of(context).size.width / 1.30,
+                              imageUrl: message["poster"] ??
+                                  "https://c1.iggcdn.com/indiegogo-media-prod-cld/image/upload/c_fill,f_auto,h_630,w_1200/v1506734779/wcsmythcukjuuglotjvb.jpg",
+                              fit: BoxFit.cover,
+                              color: Colors.black38,
+                              colorBlendMode: BlendMode.darken,
+                              progressIndicatorBuilder:
+                                  (context, url, downloadProgress) => Center(
+                                child: CircularProgressIndicator(
+                                  value: downloadProgress.progress,
+                                  strokeWidth: 2.5,
+                                  valueColor: AlwaysStoppedAnimation(
+                                      isSend ? Colors.white : navyBlue),
+                                  backgroundColor: Colors.transparent,
+                                ),
+                              ),
+                              errorWidget: imageErrorWidget,
+                            ),
+                            borderRadius: BorderRadius.circular(3),
+                          ),
+                          Container(
+                            height: MediaQuery.of(context).size.width / 2.2,
+                            width: MediaQuery.of(context).size.width / 1.30,
+                            child: Center(
+                              child: ClipOval(
+                                child: Container(
+                                  height: 60,
+                                  width: 60,
+                                  color: Colors.white.withOpacity(0.2),
+                                  child: Center(
+                                    child: Icon(
+                                      Icons.play_arrow_rounded,
+                                      color: Colors.white,
+                                      size: 32,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                        )
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-                SizedBox(
-                  height: isMessageEmpty ? 2 : 2,
-                ),
-                Stack(
-                  overflow: Overflow.visible,
-                  children: [
-                    Column(
-                      children: [
-                        isMessageEmpty
-                            ? Container()
-                            : Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      messageText,
-                                      style: TextStyle(
-                                          color:
-                                              isSend ? Colors.white : blackFont,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w500),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                        SizedBox(
-                          height: isMessageEmpty ? 8 : 2,
-                          width: 45,
-                        )
-                      ],
-                    ),
-                    Positioned(
-                      right: !isSend ? 0 : -2,
-                      bottom: isMessageEmpty ? -2 : -6,
-                      child: Row(
-                        children: [
-                          Text(
-                            formatTime(message['created_at']),
-                            style: TextStyle(
-                                color: isSend ? Colors.white : Colors.black38,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w500),
-                          ),
-                          isSend
-                              ? Row(
-                                  children: [
-                                    SizedBox(
-                                      width: 2,
-                                    ),
-                                    Icon(
-                                      Icons.check_circle_rounded,
-                                      size: 10,
-                                      color:
-                                          getMessageTickColor(message: message),
-                                    )
-                                  ],
-                                )
-                              : Container(),
+                          )
                         ],
                       ),
                     ),
                   ],
                 ),
-                SizedBox(
-                  height: isMessageEmpty ? 2 : 6,
-                )
-              ],
+              ),
             ),
-          )
-        ],
-      ),
+            isSend
+                ? Container(
+                    width: 20,
+                    child: isSend
+                        ? Center(
+                            child: getMessageTick(message: message),
+                          )
+                        : Container(),
+                  )
+                : Container(),
+          ],
+        ),
+        SizedBox(
+          height: 1,
+        ),
+        Row(
+          mainAxisAlignment:
+              isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
+          children: [
+            isSend
+                ? Container()
+                : SizedBox(
+                    width: 20,
+                  ),
+            Text(
+              formatTime(message['created_at']),
+              style: TextStyle(
+                  color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
+            ),
+            isSend
+                ? SizedBox(
+                    width: 20,
+                  )
+                : Container(),
+          ],
+        )
+      ],
     );
   }
 
@@ -2864,5 +3119,272 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     });
 
     acknowledgeThatMessageAreRead();
+  }
+
+  void showSearchProductAndServiceBottomSheet() async {
+    var result = await showModalBottomSheet<String>(
+        backgroundColor: Colors.transparent,
+        context: context,
+        builder: (BuildContext context) {
+          return StatefulBuilder(
+              builder: (context, StateSetter bottomSheetStateSetter) {
+            return Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20)),
+                ),
+                color: Colors.white,
+                margin: EdgeInsets.zero,
+                child: Container(
+                  height: MediaQuery.of(context).size.height,
+                  padding: EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                  child: Column(
+                    children: [searchBox()],
+                  ),
+                ));
+          });
+        });
+    if (result == null) {
+      debugPrint("result $result");
+      debugPrint("menu ${itemSearchTypeSelectionMenu.isMenuOpen}");
+
+      /// TODO: CLOSE selectionMenu
+      itemSearchTypeSelectionMenu.closeMenu();
+    }
+  }
+
+  Widget searchBox() {
+    return Container(
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          textSelectionHandleColor: navyBlue,
+        ),
+        child: TextFormField(
+          key: searchItemTextFormField,
+          // controller: searchItemTextController,
+          style: TextStyle(
+            fontSize: 16,
+            color: blackFont,
+            fontWeight: FontWeight.w600,
+          ),
+          cursorWidth: 1.5,
+          cursorColor: navyBlue,
+          decoration: InputDecoration(
+            hintText: "Search here",
+            fillColor: Colors.white,
+            filled: true,
+            contentPadding: EdgeInsets.symmetric(vertical: 10),
+            prefixIcon: searchTypeSelection(),
+            prefix: Padding(
+              padding: EdgeInsets.only(left: 12),
+            ),
+            suffixIcon: searchIcon(),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: dividerColor,
+                width: 1.0,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: navyBlue,
+                width: 1.0,
+              ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: dividerColor,
+                width: 1.0,
+              ),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: dividerColor,
+                width: 1.0,
+              ),
+            ),
+          ),
+          onFieldSubmitted: (val) {
+            if (mounted) {
+              FocusScope.of(context).unfocus();
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget searchProductTextField() {
+    return TextFormField(
+      controller: searchProductController,
+      textInputAction: TextInputAction.send,
+      cursorColor: blackFont,
+      cursorWidth: 1,
+      cursorHeight: 20,
+      autofocus: true,
+      cursorRadius: Radius.circular(16),
+      decoration: InputDecoration(
+        hintText: "Search product",
+        hintStyle: TextStyle(
+          color: darkGrey.withOpacity(0.5),
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+        ),
+        prefix: Padding(
+          padding: EdgeInsets.only(left: 12),
+        ),
+        contentPadding: EdgeInsets.symmetric(vertical: 10),
+        isDense: true,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: greyBorderColor,
+            width: 1.0,
+          ),
+        ),
+        disabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: greyBorderColor,
+            width: 1.0,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: navyBlue,
+            width: 1.0,
+          ),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: greyBorderColor,
+            width: 1.0,
+          ),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: greyBorderColor,
+            width: 1.0,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget searchServiceTextField() {
+    return TextFormField(
+      controller: searchServiceController,
+      textInputAction: TextInputAction.search,
+      cursorColor: blackFont,
+      cursorWidth: 1,
+      cursorHeight: 20,
+      autofocus: true,
+      cursorRadius: Radius.circular(16),
+      decoration: InputDecoration(
+        hintText: "Search service",
+        hintStyle: TextStyle(
+          color: darkGrey.withOpacity(0.5),
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+        ),
+        prefix: Padding(
+          padding: EdgeInsets.only(left: 12),
+        ),
+        contentPadding: EdgeInsets.symmetric(vertical: 10),
+        isDense: true,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: greyBorderColor,
+            width: 1.0,
+          ),
+        ),
+        disabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: greyBorderColor,
+            width: 1.0,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: navyBlue,
+            width: 1.0,
+          ),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: greyBorderColor,
+            width: 1.0,
+          ),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: greyBorderColor,
+            width: 1.0,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget searchTypeSelection() {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(10), bottomLeft: Radius.circular(10)),
+        color: navyBlue,
+      ),
+      child: IconButton(
+        key: _key,
+        icon: Icon(
+          getSearchTypeIcon(),
+          color: Colors.white,
+          size: 16,
+        ),
+        onPressed: () {
+          if (itemSearchTypeSelectionMenu.isMenuOpen) {
+            itemSearchTypeSelectionMenu.closeMenu();
+          } else {
+            itemSearchTypeSelectionMenu.openMenu();
+          }
+        },
+      ),
+    );
+  }
+
+  IconData getSearchTypeIcon() {
+    if (selectedMenuItemIndex == 1) {
+      return SlydoAppIcon.note_2;
+    } else if (selectedMenuItemIndex == 0) {
+      return SlydoAppIcon.product;
+    }
+  }
+
+  Widget searchIcon() {
+    return IconButton(
+      icon: Icon(
+        SlydoAppIcon.search,
+        color: darkGrey,
+        size: 16,
+      ),
+      onPressed: () {
+        if (mounted) {
+          setState(() {});
+          FocusScope.of(context).unfocus();
+        }
+      },
+    );
   }
 }

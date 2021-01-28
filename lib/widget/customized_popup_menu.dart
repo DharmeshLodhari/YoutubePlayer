@@ -41,7 +41,7 @@ class CustomizedPopUpMenu {
     this.arrowRightPadding = 6,
   });
 
-  findButton() {
+  void findButton() {
     RenderBox renderBox = buttonKey.currentContext.findRenderObject();
     buttonSize = renderBox.size;
     buttonPosition = renderBox.localToGlobal(Offset.zero);

@@ -8,3 +8,13 @@ Color getMessageTickColor({Map<String, dynamic> message}) {
           : darkGrey
       : darkGrey;
 }
+
+Widget getMessageTick({Map<String, dynamic> message}) {
+  return Icon(
+    message['delivered']
+        ? Icons.check_circle_rounded
+        : Icons.check_circle_outline_outlined,
+    size: 12,
+    color: getMessageTickColor(message: message),
+  );
+}

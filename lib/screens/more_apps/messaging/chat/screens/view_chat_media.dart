@@ -43,7 +43,7 @@ class _ViewChatMediaState extends State<ViewChatMedia> {
       _chewieController = ChewieController(
         videoPlayerController: _videoController,
         aspectRatio: 16 / 9,
-        allowedScreenSleep: false,
+        allowedScreenSleep: false, autoPlay: true,
         allowFullScreen: true,
         deviceOrientationsAfterFullScreen: [
           DeviceOrientation.portraitUp,
