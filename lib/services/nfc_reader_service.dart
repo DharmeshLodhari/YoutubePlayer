@@ -27,7 +27,8 @@ class NFCReaderService {
         _streamSubscription = _stream?.listen((NDEFMessage message) {
           nfcMessageHandler(message: message);
 
-          print("records: ${message.records.length}");
+          print("message DATA FROM NFC: ${message.data}");
+          print("message PAYLOAD FROM NFC: ${message.payload}");
         });
       }
     });

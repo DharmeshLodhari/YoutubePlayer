@@ -82,7 +82,7 @@ class _NfcWriterState extends State<NfcWriter> {
   }
 
   Widget scaffoldBody() {
-    return _supportsNFC
+    return !_supportsNFC
         ? Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -157,7 +157,25 @@ class _NfcWriterState extends State<NfcWriter> {
                     }
                   }),
             ],
-          )
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              RaisedButton(
+                  child: Text("Start Reading"),
+                  onPressed: () async {
+                    await NFCReaderService().initialize();
+                  }),
+              RaisedButton(
+                  child: Text("Stop Reading"),
+                  onPressed: () async {
+                    await NFCReaderService().closeReadingSubSubscription();
+                  }),
+            ],
+          ),
         ],
       ),
     );
