@@ -4,7 +4,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/tiles/product_and_service_tile_for_chat.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/tiles/product_and_service_tile_for_search.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/widgets/chat_audio_player.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
@@ -1709,10 +1709,10 @@ class _ChatScreenState extends State<ChatScreen> {
   // ignore: missing_return
   Widget getResultTile(var result) {
     if (isProductSearch) {
-      return SearchProductChatTile(result);
+      return SearchProductTile(product: result);
     }
     if (isServiceSearch) {
-      return SearchServiceChatTile(result);
+      return SearchServiceTile(service: result);
     }
     return Container();
   }

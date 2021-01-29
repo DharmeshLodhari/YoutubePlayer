@@ -5,12 +5,13 @@ import 'dart:typed_data';
 
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/product_and_service_tile_for_chat.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/tiles/product_and_service_tile_for_search.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/tiles/transaction_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/widgets/chat_audio_player.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -21,8 +22,8 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
-import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
+import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -56,8 +57,6 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   /// Text message controller
   TextEditingController messageController;
-  TextEditingController searchProductController;
-  TextEditingController searchServiceController;
   FocusNode messageFocus;
 
   /// Current chat users
@@ -107,17 +106,22 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   List<String> audioExtensions = ["m4a", "flac", "mp3", "wav", "wma", "aac"];
 
   /// variables for product or service search
-  bool isProductSearch = false;
+  bool isProductSearch = true;
   bool isServiceSearch = false;
   bool isCurrentUsersProductOrService = false;
   bool isProductAndServiceLoading = false;
   List searchedProductAndService = [];
+  StateSetter bottomSheetStateSetterGlobal;
+  bool bottomSheetMounted = false;
 
+  TextEditingController searchItemTextController;
   GlobalKey _key = LabeledGlobalKey("itemSearchTypeSelectionKey");
   CustomizedPopUpMenu itemSearchTypeSelectionMenu;
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
   GlobalKey searchItemTextFormField = GlobalKey();
+  int bottomSheetSearchIndex = 0;
+  bool noSearchedItem;
 
   /// variables for  text message and audio message btn switcher
   bool messageIsText = false;
@@ -141,8 +145,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   @override
   void initState() {
     messageController = TextEditingController();
-    searchProductController = TextEditingController();
-    searchServiceController = TextEditingController();
+    searchItemTextController = TextEditingController();
     messageFocus = FocusNode();
     recipientUser = widget.arguments["searchedUser"];
 
@@ -156,8 +159,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     messageController.addListener(changeSearchType);
     // messageController.addListener(changeAudioOrTextMessageBtn);
 
-    searchProductController.addListener(searchProduct);
-    searchServiceController.addListener(searchService);
+    // searchItemTextController.addListener(searchProductOrService);
 
     getPreviousMessages();
 
@@ -217,8 +219,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     messageController.removeListener(changeSearchType);
     // messageController.removeListener(changeAudioOrTextMessageBtn);
 
-    searchProductController.removeListener(searchProduct);
-    searchServiceController.removeListener(searchService);
+    // searchItemTextController.removeListener(searchProductOrService);
 
     messageController.dispose();
 
@@ -586,10 +587,15 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   void menuItemSelectionChange(String value, int index) {
     selectedMenuItemIndex = index;
 
-    if (value == "Products")
+    if (value == "Products") {
       isProductSearch = true;
-    else if (value == "Services") isServiceSearch = true;
+      isServiceSearch = false;
+    } else if (value == "Services") {
+      isServiceSearch = true;
+      isProductSearch = false;
+    }
 
+    clearSearchedListItems();
     if (mounted) setState(() {});
   }
 
@@ -600,23 +606,27 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    itemSearchTypeSelectionMenu = CustomizedPopUpMenu(
-        buttonKey: _key,
-        context: context,
-        hasIcon: true,
-        children: [
-          CustomizedPopUpMenuItemWithIcon(
-              title: "Product", value: "Products", icon: SlydoAppIcon.product),
-          CustomizedPopUpMenuItemWithIcon(
-              title: "Service", value: "Services", icon: SlydoAppIcon.note_2),
-        ],
-        selectedIndex: selectedMenuItemIndex,
-        left: 16,
-        arrowPosition: Alignment.topLeft,
-        arrowLeftPadding: 16,
-        top: 14);
-    itemSearchTypeSelectionMenu.onChange = menuItemSelectionChange;
-    itemSearchTypeSelectionMenu.menuState = menuStateChange;
+    if (itemSearchTypeSelectionMenu == null) {
+      itemSearchTypeSelectionMenu = CustomizedPopUpMenu(
+          buttonKey: _key,
+          context: context,
+          hasIcon: true,
+          children: [
+            CustomizedPopUpMenuItemWithIcon(
+                title: "Product",
+                value: "Products",
+                icon: SlydoAppIcon.product),
+            CustomizedPopUpMenuItemWithIcon(
+                title: "Service", value: "Services", icon: SlydoAppIcon.note_2),
+          ],
+          selectedIndex: selectedMenuItemIndex,
+          left: 16,
+          arrowPosition: Alignment.topLeft,
+          arrowLeftPadding: 16,
+          top: 14);
+      itemSearchTypeSelectionMenu.onChange = menuItemSelectionChange;
+      itemSearchTypeSelectionMenu.menuState = menuStateChange;
+    }
 
     userBloc = Provider.of<UserBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
@@ -1378,34 +1388,11 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     );
   }
 
-  Widget closeSearchModuleBtn() {
-    return InkWell(
-      onTap: closeSearchModule,
-      child: Container(
-        padding: EdgeInsets.all(2),
-        child: Row(
-          children: [
-            Icon(
-              Icons.close_rounded,
-              color: navyBlue,
-              size: 22,
-            ),
-            SizedBox(
-              width: 12,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void closeSearchModule() {
-    isProductSearch = false;
-    isServiceSearch = false;
-    searchProductController.text = "";
-    searchServiceController.text = "";
+  void clearSearchedListItems() {
+    searchItemTextController.text = "";
     searchedProductAndService.clear();
-    setState(() {});
+    if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+      bottomSheetStateSetterGlobal(() {});
   }
 
   void addProductOrServiceToChat(var item) async {
@@ -1429,7 +1416,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
     bool result = await sendDataToSocket(data);
     if (result) {
-      closeSearchModule();
+      clearSearchedListItems();
       setState(() {});
     }
   }
@@ -1757,107 +1744,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       audioUuid = null;
       audioPath = null;
     });
-  }
-
-  Widget searchProductOrServiceBtn() {
-    return InkWell(
-      onTap: searchProductOrService,
-      child: Container(
-        padding: EdgeInsets.all(2),
-        child: Row(
-          children: [
-            SizedBox(
-              width: 12,
-            ),
-            Icon(
-              SlydoAppIcon.search,
-              color: navyBlue,
-              size: 22,
-            ),
-            SizedBox(
-              width: 12,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void searchProductOrService() {
-    if (isProductSearch || isServiceSearch) {
-      if (isProductSearch) {
-        searchProduct();
-      }
-      if (isServiceSearch) {
-        searchService();
-      }
-    }
-  }
-
-  void searchProduct() async {
-    if (searchProductController.text.length > 3) {
-      String url = getSearchUrl() + searchProductController.text;
-
-      searchedProductAndService.clear();
-      isProductAndServiceLoading = true;
-      if (mounted) setState(() {});
-
-      Map<String, dynamic> result =
-          await MessageAuth().searchProductAndServiceOfUser(url, "", "");
-
-      List tempList = result['results'];
-
-      tempList.forEach((result) {
-        debugPrint("product:- $result");
-        searchedProductAndService.add(Product.fromJson(result));
-      });
-
-      isProductAndServiceLoading = false;
-      if (mounted) setState(() {});
-    }
-  }
-
-  void searchService() async {
-    if (searchServiceController.text.length > 3) {
-      String url = getSearchUrl() + searchServiceController.text;
-
-      searchedProductAndService.clear();
-      isProductAndServiceLoading = true;
-      if (mounted) setState(() {});
-
-      Map<String, dynamic> result =
-          await MessageAuth().searchProductAndServiceOfUser(url, "", "");
-
-      List tempList = result['results'];
-
-      tempList.forEach((result) {
-        searchedProductAndService.add(Service.fromJson(result));
-      });
-
-      isProductAndServiceLoading = false;
-      if (mounted) setState(() {});
-    }
-  }
-
-  String getSearchUrl() {
-    if (isProductSearch) {
-      return baseUrl + "/api/v1/search/products/?search=";
-    }
-    if (isServiceSearch) {
-      return baseUrl + "/api/v1/search/services/?search=";
-    }
-    return "";
-  }
-
-  // ignore: missing_return
-  Widget getResultTile(var result) {
-    if (isProductSearch) {
-      return SearchProductChatTile(result);
-    }
-    if (isServiceSearch) {
-      return SearchServiceChatTile(result);
-    }
-    return Container();
   }
 
   Widget renderDataAccordingType(String message) {
@@ -2546,148 +2432,159 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   Widget renderPaymentRequest({Map<String, dynamic> message}) {
-    bool isSent = message["author"] == userBloc.user.userName;
+    // bool isSent = message["author"] == userBloc.user.userName;
     // bool isSent = false;
 
-    PaymentRequest paymentRequest = PaymentRequest.fromJson(
-        jsonDecode(message['text']),
-        currentUser: userBloc.user);
+    // PaymentRequest paymentRequest = PaymentRequest.fromJson(
+    //     jsonDecode(message['text']),
+    //     currentUser: userBloc.user);
 
     // PaymentRequest paymentRequest = PaymentRequest(
     //     description: "Shopping", amount: 100, payee: "black", currency: "NGN");
 
-    return GestureDetector(
-      onLongPress: () {
-        if (paymentRequest.description.isNotEmpty) {
-          Clipboard.setData(
-              new ClipboardData(text: paymentRequest.description));
-          Toast.show("Text copied !!", context,
-              gravity: Toast.BOTTOM,
-              duration: Toast.LENGTH_LONG,
-              backgroundColor: navyBlue,
-              textColor: Colors.white);
-        }
-      },
-      child: Row(
-        mainAxisAlignment:
-            isSent ? MainAxisAlignment.end : MainAxisAlignment.start,
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              color: chatBackgroundColor,
-              border: Border.all(color: chatBackgroundColor),
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(!isSent ? 0 : 10),
-                bottomRight: Radius.circular(isSent ? 0 : 10),
-                topLeft: Radius.circular(10),
-                topRight: Radius.circular(10),
-              ),
-            ),
-            padding: EdgeInsets.all(8),
-            width: MediaQuery.of(context).size.width / 1.8,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4.0),
-                      child: Icon(
-                        SlydoAppIcon.naira,
-                        color: blackFont,
-                        size: 16,
-                      ),
-                    ),
-                    SizedBox(
-                      width: 2,
-                    ),
-                    Text(
-                      paymentRequest.amount.toString(),
-                      style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.w600,
-                          color: blackFont),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 4,
-                ),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    paymentRequest.description,
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                        color: blackFont),
-                  ),
-                ),
-                SizedBox(
-                  height: 6,
-                ),
-                Container(
-                  child: isSent
-                      ? Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: Container(),
-                            ),
-                            SizedBox(
-                              width: 8,
-                            ),
-                            Expanded(
-                              child: CurvedButton(
-                                text: "Cancel",
-                                height: 36,
-                                backgroundColor: navyBlue,
-                                textColor: Colors.white,
-                                onPressed: () {},
-                              ),
-                            ),
-                          ],
-                        )
-                      : Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: CurvedButton(
-                                text: "Pay",
-                                height: 36,
-                                backgroundColor: navyBlue,
-                                textColor: Colors.white,
-                                onPressed: () async {
-                                  var response = await PaymentAndBankingAuth()
-                                      .acceptPaymentRequests(paymentRequest,
-                                          messageId: message["message_id"]);
-                                },
-                              ),
-                            ),
-                            SizedBox(
-                              width: 8,
-                            ),
-                            Expanded(
-                              child: CurvedButton(
-                                height: 36,
-                                text: "Reject",
-                                backgroundColor: navyBlue,
-                                textColor: Colors.white,
-                                onPressed: () async {
-                                  var result = await PaymentAndBankingAuth()
-                                      .rejectPaymentRequests(paymentRequest,
-                                          messageId: message["message_id"]);
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
+    // message["text"] = message['text'] = jsonEncode({
+    //   "description": "Shopping",
+    //   "amount": 100,
+    //   "payee": "black",
+    //   "currency": "NGN",
+    //   "status": "Paid",
+    //   "is_credit": true
+    // });
+
+    return PaymentRequestTileForChat(message: message, userBloc: userBloc);
+
+    // return GestureDetector(
+    //   onLongPress: () {
+    //     if (paymentRequest.description.isNotEmpty) {
+    //       Clipboard.setData(
+    //           new ClipboardData(text: paymentRequest.description));
+    //       Toast.show("Text copied !!", context,
+    //           gravity: Toast.BOTTOM,
+    //           duration: Toast.LENGTH_LONG,
+    //           backgroundColor: navyBlue,
+    //           textColor: Colors.white);
+    //     }
+    //   },
+    //   child: Row(
+    //     mainAxisAlignment:
+    //         isSent ? MainAxisAlignment.end : MainAxisAlignment.start,
+    //     children: [
+    //       Container(
+    //         decoration: BoxDecoration(
+    //           color: chatBackgroundColor,
+    //           border: Border.all(color: chatBackgroundColor),
+    //           borderRadius: BorderRadius.only(
+    //             bottomLeft: Radius.circular(!isSent ? 0 : 10),
+    //             bottomRight: Radius.circular(isSent ? 0 : 10),
+    //             topLeft: Radius.circular(10),
+    //             topRight: Radius.circular(10),
+    //           ),
+    //         ),
+    //         padding: EdgeInsets.all(8),
+    //         width: MediaQuery.of(context).size.width / 1.8,
+    //         child: Column(
+    //           crossAxisAlignment: CrossAxisAlignment.center,
+    //           mainAxisSize: MainAxisSize.min,
+    //           children: [
+    //             Row(
+    //               children: [
+    //                 Padding(
+    //                   padding: const EdgeInsets.only(top: 4.0),
+    //                   child: Icon(
+    //                     SlydoAppIcon.naira,
+    //                     color: blackFont,
+    //                     size: 16,
+    //                   ),
+    //                 ),
+    //                 SizedBox(
+    //                   width: 2,
+    //                 ),
+    //                 Text(
+    //                   paymentRequest.amount.toString(),
+    //                   style: TextStyle(
+    //                       fontSize: 32,
+    //                       fontWeight: FontWeight.w600,
+    //                       color: blackFont),
+    //                 ),
+    //               ],
+    //             ),
+    //             SizedBox(
+    //               height: 4,
+    //             ),
+    //             Align(
+    //               alignment: Alignment.centerLeft,
+    //               child: Text(
+    //                 paymentRequest.description,
+    //                 style: TextStyle(
+    //                     fontSize: 14,
+    //                     fontWeight: FontWeight.w400,
+    //                     color: blackFont),
+    //               ),
+    //             ),
+    //             SizedBox(
+    //               height: 6,
+    //             ),
+    //             Container(
+    //               child: isSent
+    //                   ? Row(
+    //                       children: <Widget>[
+    //                         Expanded(
+    //                           child: Container(),
+    //                         ),
+    //                         SizedBox(
+    //                           width: 8,
+    //                         ),
+    //                         Expanded(
+    //                           child: CurvedButton(
+    //                             text: "Cancel",
+    //                             height: 36,
+    //                             backgroundColor: navyBlue,
+    //                             textColor: Colors.white,
+    //                             onPressed: () {},
+    //                           ),
+    //                         ),
+    //                       ],
+    //                     )
+    //                   : Row(
+    //                       children: <Widget>[
+    //                         Expanded(
+    //                           child: CurvedButton(
+    //                             text: "Pay",
+    //                             height: 36,
+    //                             backgroundColor: navyBlue,
+    //                             textColor: Colors.white,
+    //                             onPressed: () async {
+    //                               var response = await PaymentAndBankingAuth()
+    //                                   .acceptPaymentRequests(paymentRequest,
+    //                                       messageId: message["message_id"]);
+    //                             },
+    //                           ),
+    //                         ),
+    //                         SizedBox(
+    //                           width: 8,
+    //                         ),
+    //                         Expanded(
+    //                           child: CurvedButton(
+    //                             height: 36,
+    //                             text: "Reject",
+    //                             backgroundColor: navyBlue,
+    //                             textColor: Colors.white,
+    //                             onPressed: () async {
+    //                               var result = await PaymentAndBankingAuth()
+    //                                   .rejectPaymentRequests(paymentRequest,
+    //                                       messageId: message["message_id"]);
+    //                             },
+    //                           ),
+    //                         ),
+    //                       ],
+    //                     ),
+    //             ),
+    //           ],
+    //         ),
+    //       ),
+    //     ],
+    //   ),
+    // );
   }
 
   Widget renderSendPayment({Map<String, dynamic> message}) {
@@ -2699,7 +2596,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     //     jsonDecode(message['text']),
     //     currentUser: userBloc.user);
 
-    Transaction transaction = Transaction.fromJson(jsonDecode(message['text']));
+    // Transaction transaction = Transaction.fromJson(jsonDecode(message['text']));
     // Transaction transaction = Transaction(
     //     description: "Shopping",
     //     amount: 100,
@@ -2707,227 +2604,238 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     //     currency: "NGN",
     //     status: "Paid");
 
-    return GestureDetector(
-      onLongPress: () {
-        if (transaction.description.isNotEmpty) {
-          Clipboard.setData(new ClipboardData(text: transaction.description));
-          Toast.show("Text copied !!", context,
-              gravity: Toast.BOTTOM,
-              duration: Toast.LENGTH_LONG,
-              backgroundColor: navyBlue,
-              textColor: Colors.white);
-        }
-      },
-      child: Row(
-        mainAxisAlignment:
-            isSent ? MainAxisAlignment.end : MainAxisAlignment.start,
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              color: chatBackgroundColor,
-              border: Border.all(color: chatBackgroundColor),
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(!isSent ? 0 : 10),
-                bottomRight: Radius.circular(isSent ? 0 : 10),
-                topLeft: Radius.circular(10),
-                topRight: Radius.circular(10),
-              ),
-            ),
-            padding: EdgeInsets.all(8),
-            width: MediaQuery.of(context).size.width / 1.8,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4.0),
-                      child: Icon(
-                        SlydoAppIcon.naira,
-                        color: blackFont,
-                        size: 14,
-                      ),
-                    ),
-                    SizedBox(
-                      width: 2,
-                    ),
-                    Text(
-                      transaction.amount.toString(),
-                      style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.w600,
-                          color: blackFont),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 4,
-                ),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    transaction.description,
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                        color: blackFont),
-                  ),
-                ),
-                SizedBox(
-                  height: 6,
-                ),
-                Container(
-                  child: Row(
-                    children: [
-                      Icon(
-                        SlydoAppIcon.true_icon,
-                        size: 12,
-                        color: naturalGreen,
-                      ),
-                      SizedBox(
-                        width: 4,
-                      ),
-                      Text(
-                        isSent
-                            ? "You paid • ${getDateTime(transaction.createdAt)}"
-                            : "You were paid • 10:13 AM",
-                        style: TextStyle(color: blackFont, fontSize: 12),
-                      )
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
+    // message['text'] = jsonEncode({
+    //   "description": "Shopping",
+    //   "amount": 100,
+    //   "payee": "black",
+    //   "currency": "NGN",
+    //   "status": "Paid",
+    //   "is_credit": true
+    // });
+    return TransactionTileForChat(message: message);
+
+    // return GestureDetector(
+    //   onLongPress: () {
+    //     if (transaction.description.isNotEmpty) {
+    //       Clipboard.setData(new ClipboardData(text: transaction.description));
+    //       Toast.show("Text copied !!", context,
+    //           gravity: Toast.BOTTOM,
+    //           duration: Toast.LENGTH_LONG,
+    //           backgroundColor: navyBlue,
+    //           textColor: Colors.white);
+    //     }
+    //   },
+    //   child: Row(
+    //     mainAxisAlignment:
+    //         isSent ? MainAxisAlignment.end : MainAxisAlignment.start,
+    //     children: [
+    //       Container(
+    //         decoration: BoxDecoration(
+    //           color: chatBackgroundColor,
+    //           border: Border.all(color: chatBackgroundColor),
+    //           borderRadius: BorderRadius.only(
+    //             bottomLeft: Radius.circular(!isSent ? 0 : 10),
+    //             bottomRight: Radius.circular(isSent ? 0 : 10),
+    //             topLeft: Radius.circular(10),
+    //             topRight: Radius.circular(10),
+    //           ),
+    //         ),
+    //         padding: EdgeInsets.all(8),
+    //         width: MediaQuery.of(context).size.width / 1.8,
+    //         child: Column(
+    //           crossAxisAlignment: CrossAxisAlignment.center,
+    //           mainAxisSize: MainAxisSize.min,
+    //           children: [
+    //             Row(
+    //               children: [
+    //                 Padding(
+    //                   padding: const EdgeInsets.only(top: 4.0),
+    //                   child: Icon(
+    //                     SlydoAppIcon.naira,
+    //                     color: blackFont,
+    //                     size: 14,
+    //                   ),
+    //                 ),
+    //                 SizedBox(
+    //                   width: 2,
+    //                 ),
+    //                 Text(
+    //                   transaction.amount.toString(),
+    //                   style: TextStyle(
+    //                       fontSize: 32,
+    //                       fontWeight: FontWeight.w600,
+    //                       color: blackFont),
+    //                 ),
+    //               ],
+    //             ),
+    //             SizedBox(
+    //               height: 4,
+    //             ),
+    //             Align(
+    //               alignment: Alignment.centerLeft,
+    //               child: Text(
+    //                 transaction.description,
+    //                 style: TextStyle(
+    //                     fontSize: 14,
+    //                     fontWeight: FontWeight.w400,
+    //                     color: blackFont),
+    //               ),
+    //             ),
+    //             SizedBox(
+    //               height: 6,
+    //             ),
+    //             Container(
+    //               child: Row(
+    //                 children: [
+    //                   Icon(
+    //                     SlydoAppIcon.true_icon,
+    //                     size: 12,
+    //                     color: naturalGreen,
+    //                   ),
+    //                   SizedBox(
+    //                     width: 4,
+    //                   ),
+    //                   Text(
+    //                     isSent
+    //                         ? "You paid • ${getDateTime(transaction.createdAt)}"
+    //                         : "You were paid • 10:13 AM",
+    //                     style: TextStyle(color: blackFont, fontSize: 12),
+    //                   )
+    //                 ],
+    //               ),
+    //             ),
+    //           ],
+    //         ),
+    //       ),
+    //     ],
+    //   ),
+    // );
   }
 
   Widget renderProduct({Map<String, dynamic> item}) {
-    Product product;
-    try {
-      product = Product.fromJson(jsonDecode(item["meta_data"]));
-    } catch (e) {
-      product = Product.fromJson(item["meta_data"]);
-    }
+    return ProductTileForChatMessage(item: item);
 
-    bool isSend = item["author"] == userBloc.user.userName;
-
-    return GestureDetector(
-      onTap: () {
-        Navigator.of(context)
-            .pushNamed("/product", arguments: {"product": product});
-      },
-      child: Row(
-        mainAxisAlignment:
-            isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
-        children: [
-          Container(
-            constraints: BoxConstraints(
-              maxWidth: MediaQuery.of(context).size.width / 1.35,
-              minWidth: MediaQuery.of(context).size.width / 1.35,
-              maxHeight: MediaQuery.of(context).size.width / 1.35,
-            ),
-            decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(color: dividerColor),
-                borderRadius: BorderRadius.circular(12)),
-            padding: EdgeInsets.all(8),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Expanded(
-                  child: CachedNetworkImage(
-                    width: MediaQuery.of(context).size.width / 1.35 - 16,
-                    imageUrl: product.cover,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                SizedBox(
-                  height: 8,
-                ),
-                Text(
-                  product.name,
-                  style: TextStyle(
-                    fontSize: 16,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.start,
-                ),
-                SizedBox(
-                  height: 8,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      SlydoAppIcon.naira,
-                      color: blackFont,
-                      size: 12,
-                    ),
-                    SizedBox(
-                      width: 6,
-                    ),
-                    Text(
-                      product.price.toString(),
-                      style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w600,
-                          color: blackFont),
-                    ),
-                  ],
-                ),
-                product.seller == userBloc.user.userName
-                    ? Container()
-                    : Column(
-                        children: [
-                          SizedBox(
-                            height: 8,
-                          ),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: CurvedButton(
-                                  height: 36,
-                                  textColor: Colors.white,
-                                  backgroundColor: navyBlue,
-                                  text: "Buy",
-                                  onPressed: () async {
-                                    CustomerProfileBloc customerProfileBloc =
-                                        Provider.of<CustomerProfileBloc>(
-                                            context,
-                                            listen: false);
-                                    customerProfileBloc.customer =
-                                        await UserAuth().fetchCustomerProfile(
-                                            product.seller);
-
-                                    Navigator.of(context).pushNamed(
-                                      '/send-payment',
-                                      arguments: {
-                                        'isFromProfile': false,
-                                        'product': product
-                                      },
-                                    );
-                                  },
-                                ),
-                              ),
-                              SizedBox(
-                                width: 8,
-                              ),
-                              addToCartWidget(item: product),
-                            ],
-                          ),
-                        ],
-                      )
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
+    // Product product;
+    // try {
+    //   product = Product.fromJson(jsonDecode(item["meta_data"]));
+    // } catch (e) {
+    //   product = Product.fromJson(item["meta_data"]);
+    // }
+    //
+    // bool isSend = item["author"] == userBloc.user.userName;
+    // return GestureDetector(
+    //   onTap: () {
+    //     Navigator.of(context)
+    //         .pushNamed("/product", arguments: {"product": product});
+    //   },
+    //   child: Row(
+    //     mainAxisAlignment:
+    //         isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
+    //     children: [
+    //       Container(
+    //         constraints: BoxConstraints(
+    //           maxWidth: MediaQuery.of(context).size.width / 1.35,
+    //           minWidth: MediaQuery.of(context).size.width / 1.35,
+    //           maxHeight: MediaQuery.of(context).size.width / 1.35,
+    //         ),
+    //         decoration: BoxDecoration(
+    //             color: Colors.white,
+    //             border: Border.all(color: dividerColor),
+    //             borderRadius: BorderRadius.circular(12)),
+    //         padding: EdgeInsets.all(8),
+    //         child: Column(
+    //           mainAxisSize: MainAxisSize.min,
+    //           children: [
+    //             Expanded(
+    //               child: CachedNetworkImage(
+    //                 width: MediaQuery.of(context).size.width / 1.35 - 16,
+    //                 imageUrl: product.cover,
+    //                 fit: BoxFit.cover,
+    //               ),
+    //             ),
+    //             SizedBox(
+    //               height: 8,
+    //             ),
+    //             Text(
+    //               product.name,
+    //               style: TextStyle(
+    //                 fontSize: 16,
+    //               ),
+    //               maxLines: 2,
+    //               overflow: TextOverflow.ellipsis,
+    //               textAlign: TextAlign.start,
+    //             ),
+    //             SizedBox(
+    //               height: 8,
+    //             ),
+    //             Row(
+    //               mainAxisAlignment: MainAxisAlignment.center,
+    //               children: [
+    //                 Icon(
+    //                   SlydoAppIcon.naira,
+    //                   color: blackFont,
+    //                   size: 12,
+    //                 ),
+    //                 SizedBox(
+    //                   width: 6,
+    //                 ),
+    //                 Text(
+    //                   product.price.toString(),
+    //                   style: TextStyle(
+    //                       fontSize: 28,
+    //                       fontWeight: FontWeight.w600,
+    //                       color: blackFont),
+    //                 ),
+    //               ],
+    //             ),
+    //             product.seller == userBloc.user.userName
+    //                 ? Container()
+    //                 : Column(
+    //                     children: [
+    //                       SizedBox(
+    //                         height: 8,
+    //                       ),
+    //                       Row(
+    //                         children: [
+    //                           Expanded(
+    //                             child: CurvedButton(
+    //                               height: 36,
+    //                               textColor: Colors.white,
+    //                               backgroundColor: navyBlue,
+    //                               text: "Buy",
+    //                               onPressed: () async {
+    //                                 CustomerProfileBloc customerProfileBloc =
+    //                                     Provider.of<CustomerProfileBloc>(
+    //                                         context,
+    //                                         listen: false);
+    //                                 customerProfileBloc.customer =
+    //                                     await UserAuth().fetchCustomerProfile(
+    //                                         product.seller);
+    //
+    //                                 Navigator.of(context).pushNamed(
+    //                                   '/send-payment',
+    //                                   arguments: {
+    //                                     'isFromProfile': false,
+    //                                     'product': product
+    //                                   },
+    //                                 );
+    //                               },
+    //                             ),
+    //                           ),
+    //                           SizedBox(
+    //                             width: 8,
+    //                           ),
+    //                           addToCartWidget(item: product),
+    //                         ],
+    //                       ),
+    //                     ],
+    //                   )
+    //           ],
+    //         ),
+    //       ),
+    //     ],
+    //   ),
+    // );
   }
 
   Widget addToCartWidget({var item}) {
@@ -2965,128 +2873,129 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   Widget renderService({Map<String, dynamic> item}) {
-    Service service;
-    try {
-      service = Service.fromJson(jsonDecode(item["meta_data"]));
-    } catch (e) {
-      service = Service.fromJson(item["meta_data"]);
-    }
+    return ServiceTileChatMessage(item: item);
 
-    bool isSend = item["author"] == userBloc.user.userName;
+    // Service service;
+    // try {
+    //   service = Service.fromJson(jsonDecode(item["meta_data"]));
+    // } catch (e) {
+    //   service = Service.fromJson(item["meta_data"]);
+    // }
+    // bool isSend = widget.item["author"] == userBloc.user.userName;
 
-    return GestureDetector(
-      onTap: () {
-        Navigator.of(context)
-            .pushNamed("/service-detail", arguments: {"service": service});
-      },
-      child: Row(
-        mainAxisAlignment:
-            isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
-        children: [
-          Container(
-            constraints: BoxConstraints(
-              maxWidth: MediaQuery.of(context).size.width / 1.35,
-              minWidth: MediaQuery.of(context).size.width / 1.35,
-              maxHeight: MediaQuery.of(context).size.width / 1.35,
-            ),
-            decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(color: dividerColor),
-                borderRadius: BorderRadius.circular(12)),
-            padding: EdgeInsets.all(8),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Expanded(
-                  child: CachedNetworkImage(
-                    width: MediaQuery.of(context).size.width / 1.35 - 16,
-                    imageUrl: service.cover,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                SizedBox(
-                  height: 8,
-                ),
-                Text(
-                  service.name,
-                  style: TextStyle(
-                    fontSize: 16,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.start,
-                ),
-                SizedBox(
-                  height: 8,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      SlydoAppIcon.naira,
-                      color: blackFont,
-                      size: 12,
-                    ),
-                    SizedBox(
-                      width: 6,
-                    ),
-                    Text(
-                      service.price.toString(),
-                      style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w600,
-                          color: blackFont),
-                    ),
-                  ],
-                ),
-                service.provider == userBloc.user.userName
-                    ? Container()
-                    : Column(
-                        children: [
-                          SizedBox(
-                            height: 8,
-                          ),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: CurvedButton(
-                                  height: 36,
-                                  textColor: Colors.white,
-                                  backgroundColor: navyBlue,
-                                  text: "Buy",
-                                  onPressed: () async {
-                                    CustomerProfileBloc customerProfileBloc =
-                                        Provider.of<CustomerProfileBloc>(
-                                            context,
-                                            listen: false);
-                                    customerProfileBloc.customer =
-                                        await UserAuth().fetchCustomerProfile(
-                                            service.provider);
-
-                                    Navigator.of(context).pushNamed(
-                                      '/send-payment',
-                                      arguments: {
-                                        'isFromProfile': false,
-                                        'service': service
-                                      },
-                                    );
-                                  },
-                                ),
-                              ),
-                              SizedBox(
-                                width: 8,
-                              ),
-                              addToCartWidget(item: service),
-                            ],
-                          ),
-                        ],
-                      ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
+    // return GestureDetector(
+    //   onTap: () {
+    //     Navigator.of(context)
+    //         .pushNamed("/service-detail", arguments: {"service": service});
+    //   },
+    //   child: Row(
+    //     mainAxisAlignment:
+    //         isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
+    //     children: [
+    //       Container(
+    //         constraints: BoxConstraints(
+    //           maxWidth: MediaQuery.of(context).size.width / 1.35,
+    //           minWidth: MediaQuery.of(context).size.width / 1.35,
+    //           maxHeight: MediaQuery.of(context).size.width / 1.35,
+    //         ),
+    //         decoration: BoxDecoration(
+    //             color: Colors.white,
+    //             border: Border.all(color: dividerColor),
+    //             borderRadius: BorderRadius.circular(12)),
+    //         padding: EdgeInsets.all(8),
+    //         child: Column(
+    //           mainAxisSize: MainAxisSize.min,
+    //           children: [
+    //             Expanded(
+    //               child: CachedNetworkImage(
+    //                 width: MediaQuery.of(context).size.width / 1.35 - 16,
+    //                 imageUrl: service.cover,
+    //                 fit: BoxFit.cover,
+    //               ),
+    //             ),
+    //             SizedBox(
+    //               height: 8,
+    //             ),
+    //             Text(
+    //               service.name,
+    //               style: TextStyle(
+    //                 fontSize: 16,
+    //               ),
+    //               maxLines: 2,
+    //               overflow: TextOverflow.ellipsis,
+    //               textAlign: TextAlign.start,
+    //             ),
+    //             SizedBox(
+    //               height: 8,
+    //             ),
+    //             Row(
+    //               mainAxisAlignment: MainAxisAlignment.center,
+    //               children: [
+    //                 Icon(
+    //                   SlydoAppIcon.naira,
+    //                   color: blackFont,
+    //                   size: 12,
+    //                 ),
+    //                 SizedBox(
+    //                   width: 6,
+    //                 ),
+    //                 Text(
+    //                   service.price.toString(),
+    //                   style: TextStyle(
+    //                       fontSize: 28,
+    //                       fontWeight: FontWeight.w600,
+    //                       color: blackFont),
+    //                 ),
+    //               ],
+    //             ),
+    //             service.provider == userBloc.user.userName
+    //                 ? Container()
+    //                 : Column(
+    //                     children: [
+    //                       SizedBox(
+    //                         height: 8,
+    //                       ),
+    //                       Row(
+    //                         children: [
+    //                           Expanded(
+    //                             child: CurvedButton(
+    //                               height: 36,
+    //                               textColor: Colors.white,
+    //                               backgroundColor: navyBlue,
+    //                               text: "Buy",
+    //                               onPressed: () async {
+    //                                 CustomerProfileBloc customerProfileBloc =
+    //                                     Provider.of<CustomerProfileBloc>(
+    //                                         context,
+    //                                         listen: false);
+    //                                 customerProfileBloc.customer =
+    //                                     await UserAuth().fetchCustomerProfile(
+    //                                         service.provider);
+    //
+    //                                 Navigator.of(context).pushNamed(
+    //                                   '/send-payment',
+    //                                   arguments: {
+    //                                     'isFromProfile': false,
+    //                                     'service': service
+    //                                   },
+    //                                 );
+    //                               },
+    //                             ),
+    //                           ),
+    //                           SizedBox(
+    //                             width: 8,
+    //                           ),
+    //                           addToCartWidget(item: service),
+    //                         ],
+    //                       ),
+    //                     ],
+    //                   ),
+    //           ],
+    //         ),
+    //       ),
+    //     ],
+    //   ),
+    // );
   }
 
   Widget renderTypingMsg() {
@@ -3125,9 +3034,14 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     var result = await showModalBottomSheet<String>(
         backgroundColor: Colors.transparent,
         context: context,
+        useRootNavigator: true,
+        barrierColor: Colors.black54,
+        isScrollControlled: true,
         builder: (BuildContext context) {
           return StatefulBuilder(
               builder: (context, StateSetter bottomSheetStateSetter) {
+            bottomSheetStateSetterGlobal = bottomSheetStateSetter;
+            bottomSheetMounted = true;
             return Card(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
@@ -3137,20 +3051,28 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                 color: Colors.white,
                 margin: EdgeInsets.zero,
                 child: Container(
-                  height: MediaQuery.of(context).size.height,
-                  padding: EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                  height: MediaQuery.of(context).size.height * 0.88,
+                  padding: EdgeInsets.symmetric(vertical: 16),
                   child: Column(
-                    children: [searchBox()],
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: searchBox()),
+                      SizedBox(
+                        height: 8,
+                      ),
+                      Expanded(child: bottomSheetTabBar())
+                    ],
                   ),
                 ));
           });
         });
+    bottomSheetMounted = false;
     if (result == null) {
-      debugPrint("result $result");
-      debugPrint("menu ${itemSearchTypeSelectionMenu.isMenuOpen}");
-
-      /// TODO: CLOSE selectionMenu
-      itemSearchTypeSelectionMenu.closeMenu();
+      if (itemSearchTypeSelectionMenu.isMenuOpen) {
+        itemSearchTypeSelectionMenu.closeMenu();
+      }
     }
   }
 
@@ -3162,7 +3084,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         ),
         child: TextFormField(
           key: searchItemTextFormField,
-          // controller: searchItemTextController,
+          controller: searchItemTextController,
           style: TextStyle(
             fontSize: 16,
             color: blackFont,
@@ -3212,6 +3134,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
           onFieldSubmitted: (val) {
             if (mounted) {
               FocusScope.of(context).unfocus();
+              searchProductOrService();
             }
           },
         ),
@@ -3219,124 +3142,115 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     );
   }
 
-  Widget searchProductTextField() {
-    return TextFormField(
-      controller: searchProductController,
-      textInputAction: TextInputAction.send,
-      cursorColor: blackFont,
-      cursorWidth: 1,
-      cursorHeight: 20,
-      autofocus: true,
-      cursorRadius: Radius.circular(16),
-      decoration: InputDecoration(
-        hintText: "Search product",
-        hintStyle: TextStyle(
-          color: darkGrey.withOpacity(0.5),
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-        ),
-        prefix: Padding(
-          padding: EdgeInsets.only(left: 12),
-        ),
-        contentPadding: EdgeInsets.symmetric(vertical: 10),
-        isDense: true,
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: greyBorderColor,
-            width: 1.0,
-          ),
-        ),
-        disabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: greyBorderColor,
-            width: 1.0,
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: navyBlue,
-            width: 1.0,
-          ),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: greyBorderColor,
-            width: 1.0,
-          ),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: greyBorderColor,
-            width: 1.0,
-          ),
-        ),
+  Widget searchIcon() {
+    return IconButton(
+      icon: Icon(
+        SlydoAppIcon.search,
+        color: darkGrey,
+        size: 16,
       ),
+      onPressed: () {
+        FocusScope.of(context).unfocus();
+        searchProductOrService();
+      },
     );
   }
 
-  Widget searchServiceTextField() {
-    return TextFormField(
-      controller: searchServiceController,
-      textInputAction: TextInputAction.search,
-      cursorColor: blackFont,
-      cursorWidth: 1,
-      cursorHeight: 20,
-      autofocus: true,
-      cursorRadius: Radius.circular(16),
-      decoration: InputDecoration(
-        hintText: "Search service",
-        hintStyle: TextStyle(
-          color: darkGrey.withOpacity(0.5),
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-        ),
-        prefix: Padding(
-          padding: EdgeInsets.only(left: 12),
-        ),
-        contentPadding: EdgeInsets.symmetric(vertical: 10),
-        isDense: true,
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: greyBorderColor,
-            width: 1.0,
-          ),
-        ),
-        disabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: greyBorderColor,
-            width: 1.0,
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: navyBlue,
-            width: 1.0,
-          ),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: greyBorderColor,
-            width: 1.0,
-          ),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: greyBorderColor,
-            width: 1.0,
-          ),
-        ),
-      ),
-    );
+  void searchProductOrService() {
+    if (isProductSearch) {
+      searchProduct();
+    } else if (isServiceSearch) {
+      searchService();
+    }
+  }
+
+  void searchProduct() async {
+    if (searchItemTextController.text.length > 3) {
+      String url = getSearchUrl() + searchItemTextController.text;
+
+      searchedProductAndService.clear();
+      isProductAndServiceLoading = true;
+      noSearchedItem = false;
+      if (mounted) setState(() {});
+      if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+        bottomSheetStateSetterGlobal(() {});
+
+      Map<String, dynamic> result =
+          await MessageAuth().searchProductAndServiceOfUser(url, "", "");
+
+      List tempList = result['results'];
+
+      tempList.forEach((result) {
+        debugPrint("product:- $result");
+        searchedProductAndService.add(Product.fromJson(result));
+      });
+
+      isProductAndServiceLoading = false;
+      if (searchedProductAndService.length == 0) noSearchedItem = true;
+      if (mounted) setState(() {});
+      if (bottomSheetStateSetterGlobal != null) {
+        if (bottomSheetMounted) bottomSheetStateSetterGlobal(() {});
+      }
+    }
+  }
+
+  void searchService() async {
+    if (searchItemTextController.text.length > 3) {
+      String url = getSearchUrl() + searchItemTextController.text;
+
+      searchedProductAndService.clear();
+      isProductAndServiceLoading = true;
+      noSearchedItem = false;
+      if (mounted) setState(() {});
+      if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+        bottomSheetStateSetterGlobal(() {});
+
+      Map<String, dynamic> result =
+          await MessageAuth().searchProductAndServiceOfUser(url, "", "");
+
+      List tempList = result['results'];
+
+      tempList.forEach((result) {
+        searchedProductAndService.add(Service.fromJson(result));
+      });
+
+      isProductAndServiceLoading = false;
+      if (searchedProductAndService.length == 0) noSearchedItem = true;
+      if (mounted) setState(() {});
+      if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+        bottomSheetStateSetterGlobal(() {});
+    }
+  }
+
+  String getSearchUrl() {
+    if (isProductSearch) {
+      return baseUrl + "/api/v1/search/products/?search=";
+    }
+    if (isServiceSearch) {
+      return baseUrl + "/api/v1/search/services/?search=";
+    }
+    return "";
+  }
+
+  // ignore: missing_return
+  Widget getResultTile(var result) {
+    if (isProductSearch) {
+      if (result is Product) {
+        return SearchProductTile(
+          product: result,
+        );
+      }
+      return Container();
+    }
+    if (isServiceSearch) {
+      if (result is Service) {
+        return SearchServiceTile(
+          service: result,
+        );
+      }
+      return Container();
+    }
+    return Container();
   }
 
   Widget searchTypeSelection() {
@@ -3372,19 +3286,114 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     }
   }
 
-  Widget searchIcon() {
-    return IconButton(
-      icon: Icon(
-        SlydoAppIcon.search,
-        color: darkGrey,
-        size: 16,
+  Widget bottomSheetTabBar() {
+    return DefaultTabController(
+      length: 2,
+      child: Column(
+        children: [
+          Container(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: bottomSheetTabBars()),
+          SizedBox(
+            height: 8,
+          ),
+          Expanded(child: bottomSheetTabViews())
+        ],
       ),
-      onPressed: () {
-        if (mounted) {
-          setState(() {});
-          FocusScope.of(context).unfocus();
-        }
-      },
     );
+  }
+
+  Widget bottomSheetTabBars() {
+    return PreferredSize(
+      preferredSize: Size.fromHeight(50.0),
+      child: TabBar(
+        labelPadding: EdgeInsets.zero,
+        indicator: BoxDecoration(),
+        onTap: (int index) {
+          bottomSheetSearchIndex = index;
+          setState(() {});
+          if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+            bottomSheetStateSetterGlobal(() {});
+          searchProductOrService();
+        },
+        tabs: [
+          Tab(
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                shape: BoxShape.rectangle,
+                color: bottomSheetSearchIndex == 0
+                    ? navyBlue.withOpacity(0.1)
+                    : Colors.white,
+              ),
+              child: Text(
+                "From partner",
+                style: TextStyle(
+                  color: bottomSheetSearchIndex == 0 ? navyBlue : blackFont,
+                  fontSize: 14,
+                  fontWeight: bottomSheetSearchIndex == 0
+                      ? FontWeight.w600
+                      : FontWeight.w400,
+                ),
+              ),
+            ),
+          ),
+          Tab(
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                shape: BoxShape.rectangle,
+                color: bottomSheetSearchIndex == 1
+                    ? navyBlue.withOpacity(0.1)
+                    : Colors.white,
+              ),
+              child: Text(
+                "From Mine",
+                style: TextStyle(
+                  color: bottomSheetSearchIndex == 1 ? navyBlue : blackFont,
+                  fontSize: 14,
+                  fontWeight: bottomSheetSearchIndex == 1
+                      ? FontWeight.w600
+                      : FontWeight.w400,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget bottomSheetTabViews() {
+    return searchedItemsListView();
+  }
+
+  Widget searchedItemsListView() {
+    return isProductAndServiceLoading
+        ? Center(
+            child: CircularLoadingIndicator(),
+          )
+        : searchItemTextController.text.isEmpty
+            ? NoItemInList(
+                msg: AppLocalization.of(context).pleaseTypeSomethingToGetResult,
+                isResult: false,
+              )
+            : noSearchedItem
+                ? NoItemInList(
+                    msg: AppLocalization.of(context).noResultFound,
+                  )
+                : ListView(
+                    scrollDirection: Axis.vertical,
+                    children: searchedProductAndService
+                        .map((item) => GestureDetector(
+                            onTap: () {
+                              addProductOrServiceToChat(item);
+                              Navigator.pop(context);
+                            },
+                            child: getResultTile(item)))
+                        .toList(),
+                  );
   }
 }

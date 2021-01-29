@@ -8,13 +8,14 @@ class CurvedButton extends StatelessWidget {
   Color textColor = Colors.white;
   Function onPressed = () {};
   double height;
+  double borderRadius;
 
   CurvedButton(
       {this.text,
       this.textColor,
       this.backgroundColor,
       this.onPressed,
-      this.height = 42});
+      this.height = 42,this.borderRadius = 7});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +24,7 @@ class CurvedButton extends StatelessWidget {
       height: height,
       child: FlatButton(
         shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(7))),
+            borderRadius: BorderRadius.all(Radius.circular(borderRadius))),
         child: Text(
           text,
           style: TextStyle(

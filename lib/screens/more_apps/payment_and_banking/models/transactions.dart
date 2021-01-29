@@ -100,8 +100,8 @@ class PaymentRequest {
 
   factory PaymentRequest.fromJson(Map<String, dynamic> json,
       {User currentUser}) {
-    bool isCredit = (json["from_customer"] != currentUser.userName &&
-            json["to_customer"] == currentUser.userName)
+    bool isCredit = (json["from_customer"] != currentUser?.userName &&
+            json["to_customer"] == currentUser?.userName)
         ? true
         : false;
 

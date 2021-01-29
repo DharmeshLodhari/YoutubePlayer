@@ -1,276 +1,520 @@
+import 'dart:convert';
+
 import 'package:Slydo/data/currency.dart';
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
+import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/CustomBoxShadow.dart';
+import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:toast/toast.dart';
+
+import '../utils.dart';
 
 // ignore: must_be_immutable
-class SearchProductChatTile extends StatefulWidget {
+class ProductTileForChatMessage extends StatefulWidget {
+  Map<String, dynamic> item;
+
+  ProductTileForChatMessage({@required this.item});
+
+  @override
+  _ProductTileForChatMessageState createState() =>
+      _ProductTileForChatMessageState();
+}
+
+class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
   Product product;
 
-  SearchProductChatTile(this.product);
+  BasketBloc basketBloc;
+
+  UserBloc userBloc;
+  CustomerProfileBloc customerProfileBloc;
 
   @override
-  _SearchProductChatTileState createState() => _SearchProductChatTileState();
-}
+  void initState() {
+    try {
+      product = Product.fromJson(jsonDecode(widget.item["meta_data"]));
+    } catch (e) {
+      product = Product.fromJson(widget.item["meta_data"]);
+    }
 
-class _SearchProductChatTileState extends State<SearchProductChatTile> {
-  @override
-  Widget build(BuildContext context) {
-    return productCard(widget.product);
+    super.initState();
   }
 
-  Widget productCard(Product product) {
-    return Container(
-      padding: EdgeInsets.only(
-        bottom: 2,
-      ),
+  @override
+  Widget build(BuildContext context) {
+    basketBloc = Provider.of<BasketBloc>(context);
+    userBloc = Provider.of<UserBloc>(context);
+    bool isSend = widget.item["author"] == userBloc.user.userName;
+    customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context)
+            .pushNamed("/product", arguments: {"product": product});
+      },
       child: Column(
-        children: <Widget>[
-          ListTile(
-            dense: true,
-            leading: getLeading(product),
-            title: getTitle(product),
-            trailing: product.price.toString().length > 6
-                ? null
-                : getTrailingProduct(product),
-            subtitle: getSubtitleProduct(product),
+        children: [
+          Row(
+            mainAxisAlignment:
+                isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              isSend ? Container() : Container(width: 20),
+              Container(
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width / 1.30,
+                  minWidth: MediaQuery.of(context).size.width / 1.30,
+                  maxHeight: product.seller == userBloc.user.userName
+                      ? MediaQuery.of(context).size.width / 2
+                      : MediaQuery.of(context).size.width / 1.65,
+                ),
+                child: CustomBoxShadow(
+                  child: Card(
+                      elevation: 3,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      margin: EdgeInsets.zero,
+                      shadowColor: boxShadowTwo,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Container(
+                          child: Column(
+                            children: <Widget>[
+                              Expanded(
+                                child: CachedNetworkImage(
+                                  width: double.infinity,
+                                  imageUrl: product.cover,
+                                  fit: BoxFit.fill,
+                                  filterQuality: FilterQuality.high,
+                                ),
+                              ),
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 16),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            product.name,
+                                            maxLines: 1,
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w700,
+                                                fontSize: 14,
+                                                color: blackFont),
+                                            softWrap: false,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                        RichText(
+                                          text: TextSpan(children: [
+                                            TextSpan(
+                                                text: worldCurrencies[
+                                                    product.currency],
+                                                style: TextStyle(
+                                                    fontFamily: "Roboto",
+                                                    color: navyBlue,
+                                                    fontWeight: FontWeight.w700,
+                                                    fontSize: 14)),
+                                            TextSpan(
+                                                // text: widget.product.price.toString(),
+                                                text: product.price.toString(),
+                                                style: TextStyle(
+                                                  color: navyBlue,
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w700,
+                                                ))
+                                          ]),
+                                        )
+                                      ],
+                                    ),
+                                    product.seller == userBloc.user.userName
+                                        ? Container()
+                                        : Container(
+                                            child: Column(
+                                              children: [
+                                                SizedBox(
+                                                  height: 8,
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    addToCartWidget(
+                                                        item: product),
+                                                    SizedBox(
+                                                      width: 8,
+                                                    ),
+                                                    Expanded(
+                                                      child: CurvedButton(
+                                                        height: 36,
+                                                        textColor: Colors.white,
+                                                        backgroundColor:
+                                                            navyBlue,
+                                                        text: "BUY NOW",
+                                                        borderRadius: 10,
+                                                        onPressed: () async {
+                                                          customerProfileBloc
+                                                                  .customer =
+                                                              await UserAuth()
+                                                                  .fetchCustomerProfile(
+                                                                      product
+                                                                          .seller);
+
+                                                          Navigator.of(context)
+                                                              .pushNamed(
+                                                            '/send-payment',
+                                                            arguments: {
+                                                              'isFromProfile':
+                                                                  false,
+                                                              'product': product
+                                                            },
+                                                          );
+                                                        },
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          )
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )),
+                ),
+              ),
+              isSend
+                  ? Container(
+                      width: 20,
+                      child: isSend
+                          ? Center(
+                              child: getMessageTick(message: widget.item),
+                            )
+                          : Container(),
+                    )
+                  : Container(),
+            ],
           ),
           SizedBox(
             height: 2,
           ),
-          Divider(
-            color: dividerColor,
-            height: 0,
-            thickness: 1,
+          Row(
+            mainAxisAlignment:
+                isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
+            children: [
+              isSend
+                  ? Container()
+                  : SizedBox(
+                      width: 20,
+                    ),
+              Text(
+                formatTime(widget.item['created_at']),
+                style: TextStyle(
+                    color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
+              ),
+              isSend
+                  ? SizedBox(
+                      width: 20,
+                    )
+                  : Container(),
+            ],
           )
         ],
       ),
     );
   }
 
-  Widget getLeading(Product product) {
-    var imageUrl = "";
-    try {
-      imageUrl = product.cover ??
-          "https://homepages.cae.wisc.edu/~ece533/images/peppers.png";
-    } catch (e) {
-      imageUrl = "";
-    }
-    if (imageUrl == "") {
-      imageUrl = "https://homepages.cae.wisc.edu/~ece533/images/peppers.png";
-    }
-    return ClipOval(
-      child: CachedNetworkImage(
-        imageUrl: imageUrl,
-        height: 48,
-        width: 48,
-        colorBlendMode: BlendMode.darken,
-        fit: BoxFit.fill,
-        filterQuality: FilterQuality.high,
-        errorWidget: imageErrorWidget,
-        placeholder: (context, url) =>
-            imageUrl == "" ? Icon(Icons.person) : CircularLoadingIndicator(),
+  Widget addToCartWidget({var item}) {
+    return RoundedBackgroundIcon(
+      borderRadius: 16,
+      height: 38,
+      width: 38,
+      icon: Icon(
+        SlydoAppIcon.add_cart,
+        color: navyBlue,
+        size: 20,
       ),
-    );
-  }
-
-  Widget getTitle(Product product) {
-    return Text(
-      "${product.name}",
-      maxLines: 1,
-      style: TextStyle(
-          color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),
-    );
-  }
-
-  Widget getTrailingProduct(Product product) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        Text(
-          worldCurrencies[product.currency],
-          style: TextStyle(
-              fontFamily: "Roboto",
-              color: blackFont,
-              fontWeight: FontWeight.bold,
-              fontSize: 14),
-        ),
-        Text(
-          product.price.toString(),
-          style: TextStyle(
-              color: blackFont, fontWeight: FontWeight.bold, fontSize: 14),
-        ),
-      ],
-    );
-  }
-
-  Widget getSubtitleProduct(Product product) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        SizedBox(
-          height: 2,
-        ),
-        Text(
-          "${product.shortDescription}",
-          maxLines: 1,
-          style: TextStyle(color: darkGrey, fontSize: 12),
-        ),
-        SizedBox(
-          height: 2,
-        ),
-        product.price.toString().length > 6
-            ? getTrailingProduct(product)
-            : Container(),
-        getSellerNameProduct(product)
-      ],
-    );
-  }
-
-  Widget getSellerNameProduct(Product product) {
-    return Row(
-      children: <Widget>[
-        Text(
-          product.seller,
-          maxLines: 1,
-          style: TextStyle(color: darkGrey, fontSize: 10),
-        ),
-      ],
+      backgroundColor: navyBlue.withOpacity(0.08),
+      onTap: () async {
+        String type = item is Product ? "product" : "service";
+        debugPrint("item $item type:- $type");
+        basketBloc.addItemToCart(item: item, type: type);
+        var mapData;
+        basketBloc.items.forEach((element) {
+          if (element["item"].id == item.id) {
+            mapData = element;
+            return;
+          }
+        });
+        Map data = {
+          "type": type,
+          "id": mapData["item"].id,
+          "qty": mapData["qty"],
+        };
+        debugPrint("Data From Product Page : $data");
+        Toast.show("Item added to the cart !!", context);
+        await ShoppingAuthService().addItemToShoppingCart(data);
+      },
     );
   }
 }
 
 // ignore: must_be_immutable
-class SearchServiceChatTile extends StatefulWidget {
-  Service service;
+class ServiceTileChatMessage extends StatefulWidget {
+  Map<String, dynamic> item;
 
-  SearchServiceChatTile(this.service);
+  ServiceTileChatMessage({@required this.item});
 
   @override
-  _SearchServiceChatTileState createState() => _SearchServiceChatTileState();
+  _ServiceTileChatMessageState createState() => _ServiceTileChatMessageState();
 }
 
-class _SearchServiceChatTileState extends State<SearchServiceChatTile> {
+class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
+  Service service;
+
+  BasketBloc basketBloc;
+
+  UserBloc userBloc;
+  CustomerProfileBloc customerProfileBloc;
+
   @override
-  Widget build(BuildContext context) {
-    return getServiceCard(widget.service);
+  void initState() {
+    try {
+      service = Service.fromJson(jsonDecode(widget.item["meta_data"]));
+    } catch (e) {
+      service = Service.fromJson(widget.item["meta_data"]);
+    }
+    super.initState();
   }
 
-  Widget getServiceCard(Service service) {
-    return Container(
-      padding: EdgeInsets.only(
-        bottom: 2,
-      ),
+  @override
+  Widget build(BuildContext context) {
+    basketBloc = Provider.of<BasketBloc>(context);
+    userBloc = Provider.of<UserBloc>(context);
+    bool isSend = widget.item["author"] == userBloc.user.userName;
+    customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context)
+            .pushNamed("/service-detail", arguments: {"service": service});
+      },
       child: Column(
-        children: <Widget>[
-          ListTile(
-            dense: true,
-            leading: getLeadingService(service),
-            title: Text(
-              service.name,
-              maxLines: 1,
-              style: TextStyle(
-                  color: blackFont, fontSize: 14, fontWeight: FontWeight.w600),
-            ),
-            subtitle: getSubtitleService(service),
-            trailing: service.price.toString().length > 6
-                ? null
-                : getTrailingService(service),
+        children: [
+          Row(
+            mainAxisAlignment:
+                isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              isSend ? Container() : Container(width: 20),
+              Container(
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width / 1.30,
+                  minWidth: MediaQuery.of(context).size.width / 1.30,
+                  maxHeight: service.provider == userBloc.user.userName
+                      ? MediaQuery.of(context).size.width / 2
+                      : MediaQuery.of(context).size.width / 1.65,
+                ),
+                child: CustomBoxShadow(
+                  child: Card(
+                      elevation: 3,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      margin: EdgeInsets.zero,
+                      shadowColor: boxShadowTwo,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Container(
+                          child: Column(
+                            children: <Widget>[
+                              Expanded(
+                                child: CachedNetworkImage(
+                                  width: double.infinity,
+                                  imageUrl: service.cover,
+                                  fit: BoxFit.fill,
+                                  filterQuality: FilterQuality.high,
+                                ),
+                              ),
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 16),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            service.name,
+                                            maxLines: 1,
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w700,
+                                                fontSize: 14,
+                                                color: blackFont),
+                                            softWrap: false,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                        RichText(
+                                          text: TextSpan(children: [
+                                            TextSpan(
+                                                text: worldCurrencies[
+                                                    service.currency],
+                                                style: TextStyle(
+                                                    fontFamily: "Roboto",
+                                                    color: navyBlue,
+                                                    fontWeight: FontWeight.w700,
+                                                    fontSize: 14)),
+                                            TextSpan(
+                                                // text: widget.product.price.toString(),
+                                                text: service.price.toString(),
+                                                style: TextStyle(
+                                                  color: navyBlue,
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w700,
+                                                ))
+                                          ]),
+                                        )
+                                      ],
+                                    ),
+                                    service.provider == userBloc.user.userName
+                                        ? Container()
+                                        : Container(
+                                            child: Column(
+                                              children: [
+                                                SizedBox(
+                                                  height: 8,
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    addToCartWidget(
+                                                        item: service),
+                                                    SizedBox(
+                                                      width: 8,
+                                                    ),
+                                                    Expanded(
+                                                      child: CurvedButton(
+                                                        height: 36,
+                                                        textColor: Colors.white,
+                                                        backgroundColor:
+                                                            navyBlue,
+                                                        text: "BUY NOW",
+                                                        borderRadius: 10,
+                                                        onPressed: () async {
+                                                          customerProfileBloc
+                                                                  .customer =
+                                                              await UserAuth()
+                                                                  .fetchCustomerProfile(
+                                                                      service
+                                                                          .provider);
+
+                                                          Navigator.of(context)
+                                                              .pushNamed(
+                                                            '/send-payment',
+                                                            arguments: {
+                                                              'isFromProfile':
+                                                                  false,
+                                                              'service': service
+                                                            },
+                                                          );
+                                                        },
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          )
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )),
+                ),
+              ),
+              isSend
+                  ? Container(
+                      width: 20,
+                      child: isSend
+                          ? Center(
+                              child: getMessageTick(message: widget.item),
+                            )
+                          : Container(),
+                    )
+                  : Container(),
+            ],
           ),
           SizedBox(
             height: 2,
           ),
-          Divider(
-            color: dividerColor,
-            thickness: 1,
-            height: 0,
+          Row(
+            mainAxisAlignment:
+                isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
+            children: [
+              isSend
+                  ? Container()
+                  : SizedBox(
+                      width: 20,
+                    ),
+              Text(
+                formatTime(widget.item['created_at']),
+                style: TextStyle(
+                    color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
+              ),
+              isSend
+                  ? SizedBox(
+                      width: 20,
+                    )
+                  : Container(),
+            ],
           )
         ],
       ),
     );
   }
 
-  Widget getLeadingService(Service service) {
-    var imageUrl = "";
-    try {
-      imageUrl = service.cover ??
-          "https://homepages.cae.wisc.edu/~ece533/images/peppers.png";
-    } catch (e) {
-      imageUrl = "";
-    }
-    if (imageUrl == "") {
-      imageUrl = "https://homepages.cae.wisc.edu/~ece533/images/peppers.png";
-    }
-    return ClipOval(
-      child: CachedNetworkImage(
-          imageUrl: imageUrl,
-          height: 48,
-          width: 48,
-          colorBlendMode: BlendMode.darken,
-          fit: BoxFit.fill,
-          filterQuality: FilterQuality.high,
-          errorWidget: imageErrorWidget,
-          placeholder: (context, url) =>
-              imageUrl == "" ? Icon(Icons.person) : CircularLoadingIndicator()),
-    );
-  }
-
-  Widget getSubtitleService(Service service) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        SizedBox(
-          height: 2,
-        ),
-        Text(
-          "${service.shortDescription}",
-          maxLines: 1,
-          style: TextStyle(color: darkGrey, fontSize: 12),
-        ),
-        SizedBox(
-          height: 2,
-        ),
-        service.price.toString().length > 6
-            ? getTrailingService(service)
-            : Container(),
-        getProviderNameService(service)
-      ],
-    );
-  }
-
-  Widget getProviderNameService(Service service) {
-    return Row(
-      children: <Widget>[
-        Text(
-          service.provider,
-          maxLines: 1,
-          style: TextStyle(color: darkGrey, fontSize: 10),
-        ),
-      ],
-    );
-  }
-
-  Widget getTrailingService(Service service) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        Text(
-          worldCurrencies[service.currency],
-          style: TextStyle(
-              fontFamily: "Roboto",
-              color: blackFont,
-              fontWeight: FontWeight.bold,
-              fontSize: 14),
-        ),
-        Text(
-          service.price.toString(),
-          style: TextStyle(
-              color: blackFont, fontWeight: FontWeight.bold, fontSize: 14),
-        ),
-      ],
+  Widget addToCartWidget({var item}) {
+    return RoundedBackgroundIcon(
+      borderRadius: 16,
+      height: 38,
+      width: 38,
+      icon: Icon(
+        SlydoAppIcon.add_cart,
+        color: navyBlue,
+        size: 20,
+      ),
+      backgroundColor: navyBlue.withOpacity(0.08),
+      onTap: () async {
+        String type = item is Product ? "product" : "service";
+        debugPrint("item $item type:- $type");
+        basketBloc.addItemToCart(item: item, type: type);
+        var mapData;
+        basketBloc.items.forEach((element) {
+          if (element["item"].id == item.id) {
+            mapData = element;
+            return;
+          }
+        });
+        Map data = {
+          "type": type,
+          "id": mapData["item"].id,
+          "qty": mapData["qty"],
+        };
+        debugPrint("Data From Product Page : $data");
+        Toast.show("Item added to the cart !!", context);
+        await ShoppingAuthService().addItemToShoppingCart(data);
+      },
     );
   }
 }
