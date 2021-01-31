@@ -25,9 +25,21 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
   Transaction transaction;
   @override
   void initState() {
+    debugPrint("Text type ${widget.message['text'] is String}");
+    debugPrint("MESSAGE PAYLOAD :- ${widget.message}");
     debugPrint("MESSAGE:- ${widget.message['text']}");
 
-    Map<String, dynamic> data = widget.message['text'];
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Map<String, dynamic> data;
+    if (widget.message['text'] is String) {
+      data = jsonDecode(widget.message['text']);
+    } else {
+      data = widget.message['text'];
+    }
 
     bool isCredit = widget.userBloc.user.userName == data['to_customer'];
 
@@ -37,11 +49,7 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
     // isCredit ? data["from_customer_avatar"] : data['to_customer_avatar'];
 
     transaction = Transaction.fromJson(data);
-    super.initState();
-  }
 
-  @override
-  Widget build(BuildContext context) {
     bool isSend = widget.message["author"] == widget.userBloc.user.userName;
 
     return GestureDetector(
