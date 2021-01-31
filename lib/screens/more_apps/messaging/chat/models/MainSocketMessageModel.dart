@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class MainSocketMessageModel {
   String author;
   String conversation;
@@ -42,7 +44,7 @@ class MainSocketMessageModel {
       kind: json['kind'],
       readByAuthor: json['read_by_author'],
       readByRecipient: json['read_by_recipient'],
-      text: json['text'],
+      text: json['text'] is String ? json['text'] : jsonEncode(json['text']),
       type: json['type'],
       updatedAt: json['updated_at'],
       wasEdited: json['was_edited'],
