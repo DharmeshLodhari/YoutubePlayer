@@ -10,31 +10,39 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
 class TransactionTileForChat extends StatefulWidget {
   final Map<String, dynamic> message;
+  final UserBloc userBloc;
 
-  TransactionTileForChat({this.message});
+  TransactionTileForChat({this.message, this.userBloc});
   @override
   _TransactionTileForChatState createState() => _TransactionTileForChatState();
 }
 
 class _TransactionTileForChatState extends State<TransactionTileForChat> {
-  UserBloc userBloc;
-
   Transaction transaction;
   @override
   void initState() {
-    transaction = Transaction.fromJson(jsonDecode(widget.message['text']));
+    debugPrint("MESSAGE:- ${widget.message['text']}");
+
+    Map<String, dynamic> data = widget.message['text'];
+
+    bool isCredit = widget.userBloc.user.userName == data['to_customer'];
+
+    data['is_credit'] = isCredit;
+    // var payee = isCredit ? data["from_customer"] : data['to_customer'];
+    // var avatar =
+    // isCredit ? data["from_customer_avatar"] : data['to_customer_avatar'];
+
+    transaction = Transaction.fromJson(data);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    userBloc = Provider.of<UserBloc>(context);
-    bool isSend = widget.message["author"] == userBloc.user.userName;
+    bool isSend = widget.message["author"] == widget.userBloc.user.userName;
 
     return GestureDetector(
       onLongPress: () {
@@ -139,16 +147,19 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
                           ),
                           Row(
                             children: [
-                              Text("You paid",
+                              Text(isSend ? "You paid" : "You were paid",
                                   style: TextStyle(
                                       color: blackFont,
                                       fontWeight: FontWeight.w600,
                                       fontSize: 14)),
                               Text(
                                   "${getDateTime(dateAndTime: DateTime.now().toString())}",
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  softWrap: false,
                                   style: TextStyle(
                                     color: darkGrey,
-                                    fontSize: 14,
+                                    fontSize: 12,
                                     fontWeight: FontWeight.w400,
                                   ))
                             ],

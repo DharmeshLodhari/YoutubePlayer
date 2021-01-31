@@ -2612,7 +2612,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     //   "status": "Paid",
     //   "is_credit": true
     // });
-    return TransactionTileForChat(message: message);
+    return TransactionTileForChat(message: message,userBloc:userBloc);
 
     // return GestureDetector(
     //   onLongPress: () {
