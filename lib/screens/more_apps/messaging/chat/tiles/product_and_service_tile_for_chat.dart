@@ -38,17 +38,19 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
 
   @override
   void initState() {
-    try {
-      product = Product.fromJson(jsonDecode(widget.item["meta_data"]));
-    } catch (e) {
-      product = Product.fromJson(widget.item["meta_data"]);
-    }
+
 
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+
+    try {
+      product = Product.fromJson(jsonDecode(widget.item["meta_data"]));
+    } catch (e) {
+      product = Product.fromJson(widget.item["meta_data"]);
+    }
     basketBloc = Provider.of<BasketBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
     bool isSend = widget.item["author"] == userBloc.user.userName;
@@ -93,6 +95,18 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
                                   imageUrl: product.cover,
                                   fit: BoxFit.fill,
                                   filterQuality: FilterQuality.high,
+                                  progressIndicatorBuilder:
+                                      (context, url, downloadProgress) =>
+                                          Center(
+                                    child: CircularProgressIndicator(
+                                      value: downloadProgress.progress,
+                                      strokeWidth: 2.5,
+                                      valueColor:
+                                          AlwaysStoppedAnimation(navyBlue),
+                                      backgroundColor: Colors.transparent,
+                                    ),
+                                  ),
+                                  errorWidget: imageErrorWidget,
                                 ),
                               ),
                               Container(
@@ -289,16 +303,18 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
 
   @override
   void initState() {
-    try {
-      service = Service.fromJson(jsonDecode(widget.item["meta_data"]));
-    } catch (e) {
-      service = Service.fromJson(widget.item["meta_data"]);
-    }
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+
+    try {
+      service = Service.fromJson(jsonDecode(widget.item["meta_data"]));
+    } catch (e) {
+      service = Service.fromJson(widget.item["meta_data"]);
+    }
     basketBloc = Provider.of<BasketBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
     bool isSend = widget.item["author"] == userBloc.user.userName;
@@ -343,6 +359,18 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
                                   imageUrl: service.cover,
                                   fit: BoxFit.fill,
                                   filterQuality: FilterQuality.high,
+                                  progressIndicatorBuilder:
+                                      (context, url, downloadProgress) =>
+                                          Center(
+                                    child: CircularProgressIndicator(
+                                      value: downloadProgress.progress,
+                                      strokeWidth: 2.5,
+                                      valueColor:
+                                          AlwaysStoppedAnimation(navyBlue),
+                                      backgroundColor: Colors.transparent,
+                                    ),
+                                  ),
+                                  errorWidget: imageErrorWidget,
                                 ),
                               ),
                               Container(

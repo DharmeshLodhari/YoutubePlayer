@@ -211,7 +211,7 @@ class _UserProfileState extends State<UserProfile> {
               height: 34,
               width: 34,
               icon: Icon(
-                SlydoAppIcon.text_message,
+                SlydoAppIcon.message,
                 size: 16,
                 color: blackFont,
               ),

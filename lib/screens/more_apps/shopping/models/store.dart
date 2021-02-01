@@ -58,7 +58,7 @@ class Product {
   }
 
   Product.fromJson(object) {
-    this.id = object["id"];
+    this.id = object["id"].toString();
     this.name = object["name"] ?? "";
     this.description = object["description"] ?? "";
     this.shortDescription = object["short_description"] ?? "";

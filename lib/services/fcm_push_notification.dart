@@ -62,7 +62,7 @@ class PushNotificationService {
     _fcm.configure(
       // Called when the app is in the foreground and we receive a push notification
       onMessage: (Map<String, dynamic> message) async {
-        debugPrint("onMessage: $message");
+        print("onMessage: $message");
         // creating notification from server payload
         var notification = Platform.isAndroid
             ? getAndroidNotification(message)
@@ -76,13 +76,13 @@ class PushNotificationService {
       // Called when the app has been closed comlpetely and it's opened
       // from the push notification.
       onLaunch: (Map<String, dynamic> message) async {
-        debugPrint("onLaunch: $message");
+        print("onLaunch: $message");
         // creating notification from server payload
         var notification = Platform.isAndroid
             ? getAndroidNotification(message)
             : getIosNotification(message);
 
-        debugPrint("Notification From onLaunch:  $notification");
+        print("Notification From onLaunch:  $notification");
 
         //navigate to the particular screen
         _navigateToItemDetail(
@@ -91,13 +91,13 @@ class PushNotificationService {
       // Called when the app is in the background and it's opened
       // from the push notification.
       onResume: (Map<String, dynamic> message) async {
-        debugPrint("onResume: $message");
+        print("onResume: $message");
         // creating notification from server payload
         var notification = Platform.isAndroid
             ? getAndroidNotification(message)
             : getIosNotification(message);
 
-        debugPrint("Notification From OnResume:  $notification");
+        print("Notification From OnResume:  $notification");
 
         //navigate to the particular screen
         _navigateToItemDetail(
@@ -119,7 +119,7 @@ class PushNotificationService {
     notification["dir"] = message['data']['dir'];
     notification["actions"] = message['data']['actions'];
     notification['image'] = message['data']['image'];
-    debugPrint("notification from android getnotification $notification");
+    print("notification from android getnotification $notification");
     return notification;
   }
 
@@ -138,7 +138,7 @@ class PushNotificationService {
   }
 
   // ignore: missing_return
-  void onSelectNotification(String payload, BuildContext context) {
+  void onSelectNotification(String payload, BuildContext context) async {
     // example of notification response
     // {body: abiola.rasheed.2 sent you a message,
     // title: You've Got Mail, vibrate: [200,100,200,100,200,100,400],
@@ -159,15 +159,30 @@ class PushNotificationService {
         Navigator.of(context).pushNamed('/detail_message', arguments: {
           'id': idOfMessage,
         });
+      } else if (payload.length > 13 &&
+          payload.substring(0, 13) == "/chat-screen/") {
+        //this variable will fetch the username of the recipient
+        String recipientUsername = payload.replaceAll("/chat-screen/", "");
+        print("Recipient user name = $recipientUsername");
+
+        Navigator.pushNamed(context, '/chat-screen',
+            arguments: {"recipientUserName": recipientUsername});
+        // UserAuth().fetchCustomerProfile(recipientUsername).then((value) {
+        //   if (value is CustomerProfile) {
+        //
+        //   } else {
+        //     print("ERROR:- while fetching customer $value");
+        //   }
+        // });
       }
     } catch (error) {
-      debugPrint("new error:- $error");
+      print("new error:- $error");
     }
   }
 
   void _navigateToItemDetail(
       Map<String, dynamic> notification, BuildContext context) async {
-    debugPrint("navigate function is called");
+    print("navigate function is called");
     onSelectNotification(notification['actions'], context);
   }
 
@@ -186,7 +201,7 @@ class PushNotificationService {
 
   void showAlertMessage(
       {Map<String, dynamic> notification, BuildContext context}) async {
-    debugPrint("Notification From onMessage:  $notification");
+    print("Notification From onMessage:  $notification");
     try {
       // show the notification in the dialog
       bool result = await showDialogBoxWithImage(
@@ -208,7 +223,7 @@ class PushNotificationService {
         Navigator.pop(context);
       }
     } catch (error) {
-      debugPrint("Error:- " + error.toString());
+      print("Error:- " + error.toString());
     }
   }
 }

@@ -4,6 +4,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/item_display_card.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
@@ -42,7 +43,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   CustomerProfileBloc customerProfileBloc;
   UserBloc userBloc;
   BasketBloc basketBloc;
-  static List<String> imgList = [];
+  List<String> imgList = [];
 
   final _auth = ShoppingAuthService();
 
@@ -459,64 +460,75 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   Widget _buildServiceImagesWidgets() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 4.0),
-      child: Column(
-        children: <Widget>[
-          Stack(
-            children: <Widget>[
-              CarouselSlider(
-                options: CarouselOptions(
-                    viewportFraction: 1.0,
-                    enlargeCenterPage: true,
-                    autoPlay: false,
-                    aspectRatio: 1.7,
-                    onPageChanged: (index, _) {
-                      if (mounted) {
-                        setState(() {
-                          _current = index;
-                        });
-                      }
-                    }),
-                items: imgList
-                    .map((item) => Container(
-                          child: Center(
-                              child: ClipRRect(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                            child: CachedNetworkImage(
-                              imageUrl: item,
-                              fit: BoxFit.fill,
-                              height: double.infinity,
-                              width: double.infinity,
-                            ),
-                          )),
-                        ))
-                    .toList(),
+      child: imgList.length == 0
+          ? AspectRatio(
+              aspectRatio: 1.7,
+              child: Center(
+                child: CircularLoadingIndicator(),
               ),
-              Positioned(
-                bottom: 0,
-                left: MediaQuery.of(context).size.width / 2 -
-                    (5 * imgList.length),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: imgList.map((url) {
-                    int index = imgList.indexOf(url);
-                    return Container(
-                      width: 5.0,
-                      height: 5.0,
-                      margin:
-                          EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: _current == index ? navyBlue : navyBlueLight,
+            )
+          : Column(
+              children: <Widget>[
+                Stack(
+                  children: <Widget>[
+                    CarouselSlider(
+                      options: CarouselOptions(
+                          viewportFraction: 1.0,
+                          enlargeCenterPage: true,
+                          autoPlay: false,
+                          aspectRatio: 1.7,
+                          onPageChanged: (index, _) {
+                            if (mounted) {
+                              setState(() {
+                                _current = index;
+                              });
+                            }
+                          }),
+                      items: imgList
+                          .map((item) => Container(
+                                child: Center(
+                                    child: ClipRRect(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10)),
+                                  child: CachedNetworkImage(
+                                    placeholder: (context, url) => Center(
+                                        child: CircularLoadingIndicator()),
+                                    imageUrl: item,
+                                    fit: BoxFit.fill,
+                                    height: double.infinity,
+                                    width: double.infinity,
+                                  ),
+                                )),
+                              ))
+                          .toList(),
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      left: MediaQuery.of(context).size.width / 2 -
+                          (5 * imgList.length),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: imgList.map((url) {
+                          int index = imgList.indexOf(url);
+                          return Container(
+                            width: 5.0,
+                            height: 5.0,
+                            margin: EdgeInsets.symmetric(
+                                vertical: 10.0, horizontal: 2.0),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color:
+                                  _current == index ? navyBlue : navyBlueLight,
+                            ),
+                          );
+                        }).toList(),
                       ),
-                    );
-                  }).toList(),
+                    )
+                  ],
                 ),
-              )
-            ],
-          ),
-        ],
-      ),
+              ],
+            ),
     );
   }
 
@@ -580,13 +592,17 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
             border: Border.all(color: dividerColor)),
         padding: EdgeInsets.all(10),
         child: InkWell(
-          child: CachedNetworkImage(
-            imageUrl: service.qrCode,
-            height: 40,
-            width: 40,
-            filterQuality: FilterQuality.high,
-            fit: BoxFit.fill,
-          ),
+          child: service.qrCode == ""
+              ? Center(child: CircularLoadingIndicator())
+              : CachedNetworkImage(
+                  imageUrl: service.qrCode,
+                  height: 40,
+                  width: 40,
+                  filterQuality: FilterQuality.high,
+                  fit: BoxFit.fill,
+                  placeholder: (context, url) =>
+                      Center(child: CircularLoadingIndicator()),
+                ),
           onTap: () {
             Clipboard.setData(new ClipboardData(text: service.qrCode));
             Toast.show(AppLocalization.of(context).copied, context,
@@ -766,6 +782,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
 
   @override
   void dispose() {
+    imgList.clear();
     _scrollController.dispose();
     super.dispose();
   }

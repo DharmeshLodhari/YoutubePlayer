@@ -20,6 +20,11 @@ class _SearchProductTileState extends State<SearchProductTile> {
 
   @override
   void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     try {
       itemCover = widget.product.cover ??
           "https://homepages.cae.wisc.edu/~ece533/images/peppers.png";
@@ -30,11 +35,6 @@ class _SearchProductTileState extends State<SearchProductTile> {
       itemCover = "https://homepages.cae.wisc.edu/~ece533/images/peppers.png";
     }
 
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: CustomBoxShadow(
@@ -120,6 +120,11 @@ class _SearchServiceTileState extends State<SearchServiceTile> {
 
   @override
   void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     try {
       itemCover = widget.service.cover ??
           "https://homepages.cae.wisc.edu/~ece533/images/peppers.png";
@@ -130,11 +135,6 @@ class _SearchServiceTileState extends State<SearchServiceTile> {
       itemCover = "https://homepages.cae.wisc.edu/~ece533/images/peppers.png";
     }
 
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: CustomBoxShadow(

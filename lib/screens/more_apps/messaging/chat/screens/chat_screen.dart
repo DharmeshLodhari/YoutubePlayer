@@ -62,6 +62,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   /// Current chat users
   UserBloc userBloc;
   CustomerProfile recipientUser;
+  String recipientUserName;
 
   /// Socket
   MainSocketProvider mainSocketProvider;
@@ -121,7 +122,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   bool isPopMenuOpen = false;
   GlobalKey searchItemTextFormField = GlobalKey();
   int bottomSheetSearchIndex = 0;
-  bool noSearchedItem;
+  bool noSearchedItem = false;
 
   /// variables for  text message and audio message btn switcher
   bool messageIsText = false;
@@ -161,7 +162,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
     // searchItemTextController.addListener(searchProductOrService);
 
-    getPreviousMessages();
+    fetchRecipientUserIfNotAvailable();
 
     audioRecorder.openAudioSession().then((value) {
       setState(() {
@@ -180,6 +181,21 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
     /// add the observer
     WidgetsBinding.instance.addObserver(this);
+  }
+
+  void fetchRecipientUserIfNotAvailable() async {
+    debugPrint(
+        "recipinet user conversation Id:- ${recipientUser.conversationId}");
+    if (widget.arguments["recipientUserName"] != null) {
+      UserAuth()
+          .fetchCustomerProfile(widget.arguments["recipientUserName"])
+          .then((value) {
+        recipientUser = value;
+        getPreviousMessages();
+      });
+    } else {
+      getPreviousMessages();
+    }
   }
 
   void disposeAudioPlayers() {
@@ -2612,7 +2628,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     //   "status": "Paid",
     //   "is_credit": true
     // });
-    return TransactionTileForChat(message: message,userBloc:userBloc);
+    return TransactionTileForChat(message: message, userBloc: userBloc);
 
     // return GestureDetector(
     //   onLongPress: () {
@@ -3383,6 +3399,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
             : noSearchedItem
                 ? NoItemInList(
                     msg: AppLocalization.of(context).noResultFound,
+                    isResult: true,
                   )
                 : ListView(
                     scrollDirection: Axis.vertical,

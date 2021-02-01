@@ -25,9 +25,9 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
   Transaction transaction;
   @override
   void initState() {
-    debugPrint("Text type ${widget.message['text'] is String}");
-    debugPrint("MESSAGE PAYLOAD :- ${widget.message}");
-    debugPrint("MESSAGE:- ${widget.message['text']}");
+    // debugPrint("Text type ${widget.message['text'] is String}");
+    // debugPrint("MESSAGE PAYLOAD :- ${widget.message}");
+    // debugPrint("MESSAGE:- ${widget.message['text']}");
 
     super.initState();
   }
@@ -242,13 +242,13 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
   PaymentRequest paymentRequest;
   @override
   void initState() {
-    paymentRequest = PaymentRequest.fromJson(jsonDecode(widget.message['text']),
-        currentUser: widget.userBloc.user);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    paymentRequest = PaymentRequest.fromJson(jsonDecode(widget.message['text']),
+        currentUser: widget.userBloc.user);
     bool isSend = widget.message["author"] == widget.userBloc.user.userName;
 
     return GestureDetector(

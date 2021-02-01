@@ -64,6 +64,11 @@ class MainSocketProvider extends ChangeNotifier {
     setupNetworkConnectionListener();
   }
 
+  /// This is a network connection listener which is continuously listening
+  /// internet connection when user login in the app it will check a internet connection
+  /// and set _isFirstTime to false so now whenever user disconnected from the internet and
+  /// connect is back it will reconnect the socket and send all the messages of queue
+  /// to the socket.
   void setupNetworkConnectionListener() {
     networkConnectionSubscription = Connectivity()
         .onConnectivityChanged
@@ -90,7 +95,10 @@ class MainSocketProvider extends ChangeNotifier {
         notifyListeners();
       }
       debugPrint("_isNetworkConnectionIsOn:- $_isNetworkConnectionIsOn");
-    });
+    })
+          ..onError((error) {
+            debugPrint("ERROR:- while closing network status stream $error");
+          });
   }
 
   StreamController _streamController;
@@ -109,6 +117,12 @@ class MainSocketProvider extends ChangeNotifier {
     _timerForPingServer = Timer.periodic(_timePeriodForSecond, (time) {
       ping();
     });
+  }
+
+  bool checkSocketConnection() {
+    if (_isConnected) {
+      return true;
+    } else {}
   }
 
   void ping() async {
@@ -321,14 +335,14 @@ class MainSocketProvider extends ChangeNotifier {
     return true;
   }
 
-  void close() {
+  Future<void> close() async {
     _timerForRetryConnection?.cancel();
 
-    _streamSubscriptions.forEach((element) {
-      element?.cancel();
+    _streamSubscriptions.forEach((element) async {
+      await element?.cancel();
     });
 
-    networkConnectionSubscription?.cancel();
+    await networkConnectionSubscription?.cancel();
     _streamController = null;
 
     _channel = null;
