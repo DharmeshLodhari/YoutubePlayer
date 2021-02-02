@@ -41,6 +41,7 @@ import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:toast/toast.dart';
 import 'package:uuid/uuid.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
@@ -114,6 +115,14 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   StateSetter bottomSheetStateSetterGlobal;
   bool bottomSheetMounted = false;
 
+  bool isProductOrServiceLoading = false;
+  int productOrServiceCount = 0;
+  String productOrServiceNext = "";
+  String productOrServicePrevious = "";
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
+  ScrollController _scrollController = new ScrollController();
+
   TextEditingController searchItemTextController;
   GlobalKey _key = LabeledGlobalKey("itemSearchTypeSelectionKey");
   CustomizedPopUpMenu itemSearchTypeSelectionMenu;
@@ -142,6 +151,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   ///variable for message actions
   bool showMoreAction = false;
 
+  /// variables for listening socket connection
+  bool _isNetworkConnectionIsOn;
+
   @override
   void initState() {
     messageController = TextEditingController();
@@ -152,14 +164,20 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     setupScrollController();
 
     messageController.addListener(sendUserTypingState);
-    messageController.addListener(changeSearchType);
-    // messageController.addListener(changeAudioOrTextMessageBtn);
 
     // searchItemTextController.addListener(searchProductOrService);
 
     WidgetsFlutterBinding.ensureInitialized();
 
     fetchRecipientUserIfNotAvailable();
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+              _scrollController.position.maxScrollExtent &&
+          _scrollController.position.pixels != 0) {
+        getProductOrServiceList();
+      }
+    });
 
     super.initState();
 
@@ -174,8 +192,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     debugPrint("RecipientUserName:-   $recipientUserName ");
     if (recipientUserName != "") {
       debugPrint("if executed");
+
       recipientUser = await UserAuth()
-          .fetchCustomerProfile(widget.arguments["recipientUserName"]);
+          .fetchContactProfile(widget.arguments["recipientUserName"]);
       if (mounted) setState(() {});
 
       debugPrint("recipientUser = ${recipientUser?.conversationId}");
@@ -188,6 +207,33 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     getUserStatus();
     initializeSocket();
     setUpAudioRecorder();
+    setupNetworkConnectionListener();
+  }
+
+  void setupNetworkConnectionListener() {
+    networkConnectionSubscription = Connectivity()
+        .onConnectivityChanged
+        .listen((ConnectivityResult result) async {
+      if (result == ConnectivityResult.none) {
+        _isNetworkConnectionIsOn = false;
+      } else {
+        _isNetworkConnectionIsOn = true;
+        // if (_isFirstTime) {
+        //   _isFirstTime = false;
+        // } else {
+        messageList.clear();
+        next = "";
+        previous = "";
+        count = 0;
+        getPreviousMessages();
+        // }
+      }
+      debugPrint(
+          "_isNetworkConnectionIsOn FROM CHAT SCREEN:- $_isNetworkConnectionIsOn");
+    })
+          ..onError((error) {
+            debugPrint("ERROR:- while closing network status stream $error");
+          });
   }
 
   void setUpAudioRecorder() {
@@ -239,8 +285,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     audioRecorder = null;
 
     messageController.removeListener(sendUserTypingState);
-    messageController.removeListener(changeSearchType);
-    // messageController.removeListener(changeAudioOrTextMessageBtn);
 
     // searchItemTextController.removeListener(searchProductOrService);
 
@@ -326,47 +370,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       });
     }
   }
-
-  /// /p /s  {recipient product}
-  /// //p //s {own items}
-  void changeSearchType() {
-    if (messageController.text.isNotEmpty) {
-      if (messageController.text.toString() == "/p" ||
-          messageController.text.toString() == "/s") {
-        isCurrentUsersProductOrService = true;
-
-        if (messageController.text.toString() == "/p") {
-          isProductSearch = true;
-        }
-        if (messageController.text.toString() == "/s") {
-          isServiceSearch = true;
-        }
-        messageController.text = "";
-      }
-      if (messageController.text.toString() == "//p" ||
-          messageController.text.toString() == "//s") {
-        isCurrentUsersProductOrService = false;
-
-        if (messageController.text.toString() == "//p") {
-          isProductSearch = true;
-        }
-        if (messageController.text.toString() == "//s") {
-          isServiceSearch = true;
-        }
-        messageController.text = "";
-      }
-    }
-  }
-
-  // void changeAudioOrTextMessageBtn() {
-  //   if (messageController.text.isNotEmpty) {
-  //     messageIsText = true;
-  //     if (mounted) setState(() {});
-  //   } else {
-  //     messageIsText = false;
-  //     if (mounted) setState(() {});
-  //   }
-  // }
 
   void setupScrollController() {
     messageScrollController = ScrollController();
@@ -504,24 +507,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       if (isMatchFound == false) {
         addMessageToChat(message: message);
       }
-
-      // debugPrint(
-      //     "New Message checkId = ${newMessage['check_id']}  text =  ${newMessage['text']}");
-      // debugPrint(
-      //     "Previous Message checkId = ${previousMessage['check_id']}  text =  ${previousMessage['text']}");
-
-      // if (newMessage['check_id'] == previousMessage['check_id'] &&
-      //     newMessage["text"] == previousMessage["text"]) {
-      //   /// Update message when it came from the socket
-      //
-      //   newMessage["delivered"] = true;
-      //   messageList.first = jsonEncode(newMessage);
-      //   // debugPrint("Message Updated !!!");
-      //
-      //   if (mounted) setState(() {});
-      // } else {
-      //   addMessageToChat(message: message);
-      // }
     } else {
       addMessageToChat(message: message);
     }
@@ -563,11 +548,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     };
 
     await mainSocketProvider.add(data);
-    // bool isDataAdded = await mainSocketProvider.add(data);
-    // if (!isDataAdded) {
-    //   debugPrint("Data not added");
-    //   userTyping();
-    // }
   }
 
   void messageReadByRecipient(Map<String, dynamic> message) async {
@@ -584,11 +564,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         // debugPrint("MEssage REad By Recipient:- $data");
 
         await mainSocketProvider.add(data);
-        // bool isDataAdded = await mainSocketProvider.add(data);
-        // if (!isDataAdded) {
-        //   debugPrint("Data not added");
-        //   messageReadByRecipient(message);
-        // }
       }
     }
   }
@@ -1416,13 +1391,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         ),
       ),
     );
-  }
-
-  void clearSearchedListItems() {
-    searchItemTextController.text = "";
-    searchedProductAndService.clear();
-    if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
-      bottomSheetStateSetterGlobal(() {});
   }
 
   void addProductOrServiceToChat(var item) async {
@@ -3194,6 +3162,16 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     }
   }
 
+  void clearSearchedListItems() {
+    searchItemTextController.text = "";
+    searchedProductAndService.clear();
+    productOrServiceCount = 0;
+    productOrServiceNext = "";
+    productOrServicePrevious = "";
+    if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+      bottomSheetStateSetterGlobal(() {});
+  }
+
   void searchProduct() async {
     if (searchItemTextController.text.length > 3) {
       String url = getSearchUrl() + searchItemTextController.text;
@@ -3249,6 +3227,44 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       if (mounted) setState(() {});
       if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
         bottomSheetStateSetterGlobal(() {});
+    }
+  }
+
+  void getProductOrServiceList() async {
+    String url = getSearchUrl() + searchItemTextController.text;
+
+    if (!isProductOrServiceLoading) {
+      if (productOrServiceNext != null && !isProductOrServiceLoading) {
+        isProductOrServiceLoading = true;
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+          bottomSheetStateSetterGlobal(() {});
+
+        Map<String, dynamic> result = await MessageAuth()
+            .searchProductAndServiceOfUser(
+                url, productOrServiceNext, productOrServicePrevious);
+        productOrServiceCount = result['count'];
+        productOrServiceNext = result['next'];
+        productOrServicePrevious = result['previous'];
+        List tempList = result['results'];
+
+        isProductOrServiceLoading = false;
+
+        tempList.forEach((item) {
+          if (isProductSearch) {
+            searchedProductAndService.add(Product.fromJson(item));
+          } else if (isServiceSearch) {
+            searchedProductAndService.add(Service.fromJson(item));
+          }
+        });
+
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+          bottomSheetStateSetterGlobal(() {});
+      }
+      if (searchedProductAndService.isEmpty) {
+        noSearchedItem = true;
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+          bottomSheetStateSetterGlobal(() {});
+      }
     }
   }
 
@@ -3426,5 +3442,79 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                             child: getResultTile(item)))
                         .toList(),
                   );
+  }
+
+  void _onRefresh() async {
+    Connectivity().checkConnectivity().then((value) {
+      var connectionResult = value;
+      if (connectionResult == ConnectivityResult.wifi ||
+          connectionResult == ConnectivityResult.mobile) {
+        productOrServiceCount = 0;
+        productOrServiceNext = "";
+        productOrServicePrevious = "";
+        searchedProductAndService = [];
+        noSearchedItem = false;
+        getProductOrServiceList();
+        _refreshController.refreshCompleted();
+      } else {
+        Toast.show(
+            AppLocalization.of(context).internetConnectionNotAvailable, context,
+            gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+        _refreshController.refreshCompleted();
+      }
+    });
+  }
+
+  Widget pullToRefresh() {
+    return SmartRefresher(
+      enablePullDown: true,
+      header: WaterDropHeader(
+        complete: Container(),
+        waterDropColor: navyBlue,
+      ),
+      controller: _refreshController,
+      onRefresh: _onRefresh,
+      child: buildProductOrServiceList(),
+    );
+  }
+
+  Widget buildProductOrServiceList() {
+    return noSearchedItem
+        ? NoItemInList(
+            msg: AppLocalization.of(context).noResultFound,
+          )
+        : ListView.builder(
+            padding: EdgeInsets.symmetric(vertical: 4),
+            //+1 for progressbar
+            itemCount: searchedProductAndService.length + 1,
+            itemBuilder: (BuildContext context, int index) {
+              if (index == searchedProductAndService.length) {
+                return _buildIndicatorForProductAndService();
+              } else {
+                return GestureDetector(
+                    onTap: () {
+                      addProductOrServiceToChat(
+                          searchedProductAndService[index]);
+                      Navigator.pop(context);
+                    },
+                    child: getResultTile(searchedProductAndService[index]));
+              }
+            },
+            controller: _scrollController,
+          );
+  }
+
+  Widget _buildIndicatorForProductAndService() {
+    return isLoading
+        ? Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: new Center(
+              child: new Opacity(
+                opacity: isLoading ? 1.0 : 00,
+                child: CircularLoadingIndicator(),
+              ),
+            ),
+          )
+        : Container();
   }
 }

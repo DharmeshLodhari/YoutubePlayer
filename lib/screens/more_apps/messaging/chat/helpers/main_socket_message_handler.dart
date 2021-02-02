@@ -13,9 +13,12 @@ class MainSocketMessageHandler {
   }
 
   void handleMessageAccordingToType() {
+    // print("handler called!!! $message");
     Map<String, dynamic> messageData = jsonDecode(message);
+    // print("MEssageData 1:- ${messageData["type"]}");
 
     if (messageData["type"] == "chatroom_message") {
+      // print("MEssageData 2 in if:- ${messageData["type"]}");
       MainSocketMessageModel messageModel =
           MainSocketMessageModel.fromJson(jsonDecode(message));
 

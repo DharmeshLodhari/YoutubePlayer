@@ -68,8 +68,8 @@ Future<bool> showDialogBoxWithImage({
     desc: description,
     image: image,
     style: AlertStyle(
-      isOverlayTapDismiss: false,
-      isCloseButton: false,
+      isOverlayTapDismiss: true,
+      isCloseButton: true,
     ),
     buttons: [
       DialogButton(

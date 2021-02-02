@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_message_handler.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/device_info.dart';
 import 'package:Slydo/utils/colors.dart';
@@ -68,6 +69,14 @@ class PushNotificationService {
             ? getAndroidNotification(message)
             : getIosNotification(message);
 
+        print("Notification From onMessage:  $notification");
+
+        if (notification["data"] != null) {
+          print("notification data = ${notification["data"]}");
+          print("notification data type = ${notification["data"] is String}");
+          MainSocketMessageHandler(message: notification["data"]);
+        }
+
         showAlertMessage(
             notification: notification,
             context: myGlobals.scaffoldKey.currentContext);
@@ -84,6 +93,10 @@ class PushNotificationService {
 
         print("Notification From onLaunch:  $notification");
 
+        // if (notification["data"] != null) {
+        //   MainSocketMessageHandler(message: notification["data"]);
+        // }
+
         //navigate to the particular screen
         _navigateToItemDetail(
             notification, myGlobals.scaffoldKey.currentContext);
@@ -98,6 +111,10 @@ class PushNotificationService {
             : getIosNotification(message);
 
         print("Notification From OnResume:  $notification");
+
+        // if (notification["data"] != null) {
+        //   MainSocketMessageHandler(message: notification["data"]);
+        // }
 
         //navigate to the particular screen
         _navigateToItemDetail(
@@ -119,6 +136,9 @@ class PushNotificationService {
     notification["dir"] = message['data']['dir'];
     notification["actions"] = message['data']['actions'];
     notification['image'] = message['data']['image'];
+
+    notification["data"] = message['data']['data'];
+
     print("notification from android getnotification $notification");
     return notification;
   }
@@ -167,13 +187,6 @@ class PushNotificationService {
 
         Navigator.pushNamed(context, '/chat-screen',
             arguments: {"recipientUserName": recipientUsername});
-        // UserAuth().fetchCustomerProfile(recipientUsername).then((value) {
-        //   if (value is CustomerProfile) {
-        //
-        //   } else {
-        //     print("ERROR:- while fetching customer $value");
-        //   }
-        // });
       }
     } catch (error) {
       print("new error:- $error");
@@ -202,28 +215,22 @@ class PushNotificationService {
   void showAlertMessage(
       {Map<String, dynamic> notification, BuildContext context}) async {
     print("Notification From onMessage:  $notification");
-    try {
-      // show the notification in the dialog
-      bool result = await showDialogBoxWithImage(
-        context: context,
-        actionOneBgColor: greyBorderColor,
-        actionOneTextColor: blackFont,
-        actionTwoBgColor: naturalGreen,
-        actionTwoTextColor: Colors.white,
-        firstActionPrimary: false,
-        title: notification['title'],
-        description: notification['body'],
-        image: notification['image'],
-        actionOne: AppLocalization.of(context).cancel,
-        actionTwo: AppLocalization.of(context).navigate,
-      );
-      if (result) {
-        _navigateToItemDetail(notification, context);
-      } else {
-        Navigator.pop(context);
-      }
-    } catch (error) {
-      print("Error:- " + error.toString());
+    // show the notification in the dialog
+    bool result = await showDialogBoxWithImage(
+      context: context,
+      actionOneBgColor: greyBorderColor,
+      actionOneTextColor: blackFont,
+      actionTwoBgColor: naturalGreen,
+      actionTwoTextColor: Colors.white,
+      firstActionPrimary: false,
+      title: notification['title'],
+      description: notification['body'],
+      image: notification['image'],
+      actionOne: AppLocalization.of(context).cancel,
+      actionTwo: AppLocalization.of(context).navigate,
+    );
+    if (result) {
+      _navigateToItemDetail(notification, context);
     }
   }
 }

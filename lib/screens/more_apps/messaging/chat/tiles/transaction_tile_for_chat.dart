@@ -3,10 +3,12 @@ import 'dart:convert';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -353,7 +355,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                                     backgroundColor: mateRed,
                                     textColor: Colors.white,
                                     borderRadius: 10,
-                                    onPressed: () {},
+                                    onPressed: rejectOrCancelPaymentRequest,
                                   ),
                                 ),
                                 SizedBox(
@@ -373,12 +375,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                                     backgroundColor: mateRed,
                                     borderRadius: 10,
                                     textColor: Colors.white,
-                                    onPressed: () async {
-                                      // var result = await PaymentAndBankingAuth()
-                                      //     .rejectPaymentRequests(paymentRequest,
-                                      //         messageId:
-                                      //             widget.message["message_id"]);
-                                    },
+                                    onPressed: rejectOrCancelPaymentRequest,
                                   ),
                                 ),
                                 SizedBox(
@@ -391,14 +388,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                                     backgroundColor: navyBlue,
                                     textColor: Colors.white,
                                     borderRadius: 10,
-                                    onPressed: () async {
-                                      // var response =
-                                      //     await PaymentAndBankingAuth()
-                                      //         .acceptPaymentRequests(
-                                      //             paymentRequest,
-                                      //             messageId: widget
-                                      //                 .message["message_id"]);
-                                    },
+                                    onPressed: acceptPaymentRequest,
                                   ),
                                 ),
                               ],
@@ -446,6 +436,37 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
         ],
       ),
     );
+  }
+
+  void acceptPaymentRequest() {
+    BottomSheetPassCode(
+        context: context,
+        isValidCallback: () async {
+          var response = await PaymentAndBankingAuth().acceptPaymentRequests(
+              paymentRequest,
+              messageId: widget.message["message_id"]);
+
+          if (response.statusCode == 200) {
+            Toast.show("Payment request fulfilled !!", context,
+                gravity: Toast.TOP, textColor: Colors.white);
+          } else {
+            debugPrint(
+                "RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+          }
+        },
+        cancelCallBack: () {
+          Navigator.pop(context);
+        });
+  }
+
+  void rejectOrCancelPaymentRequest() async {
+    var result = await PaymentAndBankingAuth().rejectPaymentRequests(
+        paymentRequest,
+        messageId: widget.message["message_id"]);
+    if (result) {
+      Toast.show("Payment status updated successfully !!", context,
+          gravity: Toast.TOP, textColor: Colors.white);
+    }
   }
 
   String getDateTime({String dateAndTime}) {

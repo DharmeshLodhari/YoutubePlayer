@@ -259,7 +259,7 @@ class DatabaseHelper {
     int res = await dbClient.insert("ChatUsers", user.toJson(),
         conflictAlgorithm: ConflictAlgorithm.ignore);
     if (res != null) {
-      debugPrint("Save Chat User !!");
+      print("Save Chat User !!");
     }
 
     return;

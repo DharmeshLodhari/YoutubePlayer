@@ -200,6 +200,10 @@ class PaymentAndBankingAuth extends AuthService {
     var data = {};
     var _data = jsonEncode(data);
     var response = await http.patch(url, headers: headers, body: _data);
+
+    debugPrint(
+        "RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+
     if (response.statusCode == 200) {
       return true;
     } else {
@@ -214,6 +218,8 @@ class PaymentAndBankingAuth extends AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.post(url, headers: headers, body: _data);
+    debugPrint(
+        "RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
     return response;
   }
 

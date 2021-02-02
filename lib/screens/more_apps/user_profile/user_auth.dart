@@ -258,6 +258,29 @@ class UserAuth extends AuthService {
     }
   }
 
+  // Fetch user profile
+  Future<CustomerProfile> fetchContactProfile(String userName) async {
+    var url = secureBaseUrl + "/api/v1/user/contacts/" + userName.trim();
+    print("URL:- $url");
+
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
+
+    debugPrint("STATUS CODE:- ${response.statusCode}");
+    debugPrint("RESPONCE BODY:- ${response.body}");
+    var jsonData = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      CustomerProfile customerProfile = CustomerProfile.fromJson(jsonData);
+      return customerProfile;
+    } else {
+      debugPrint("STATUS CODE:- ${response.statusCode}");
+      debugPrint("response from fetchCustomer = $jsonData");
+      debugPrint(jsonData.toString());
+      return null;
+    }
+  }
+
   Future<bool> removeFromContactList(CustomerProfile user) async {
     var url = secureBaseUrl + "/api/v1/user/contacts/remove-from-contact/";
     var data = {"user": user.userName};

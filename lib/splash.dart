@@ -165,22 +165,27 @@ class _SplashScreenState extends State<SplashScreen> {
         //   )
         ? splashLogo
         : Scaffold(
-            backgroundColor: navyBlue,
+            backgroundColor: Colors.white,
             appBar: AppBar(
-              title: Text('Slydo'),
-              backgroundColor: darkBlue(),
+              title: Text(
+                'Slydo',
+                style: TextStyle(color: navyBlue),
+              ),
+              backgroundColor: Colors.white,
               elevation: 0.0,
               automaticallyImplyLeading: false,
             ),
             body: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                NoItemInList(
-                  msg: AppLocalization.of(context)
-                      .internetConnectionNotAvailable,
+                Expanded(
+                  child: NoItemInList(
+                    msg: AppLocalization.of(context)
+                        .internetConnectionNotAvailable,
+                  ),
                 ),
                 MaterialButton(
-                  color: darkBlue(),
+                  color: navyBlue,
                   child: Text(
                     AppLocalization.of(context).retry,
                     style: TextStyle(color: Colors.white),
