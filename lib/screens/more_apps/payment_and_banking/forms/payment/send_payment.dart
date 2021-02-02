@@ -297,7 +297,9 @@ class _SendPaymentState extends State<SendPayment> {
                                         flexibleSpace(),
                                         getReferenceField(),
                                         flexibleSpace(),
-                                        sendMoneyAnonymouslySwitch(),
+                                        isFromChat
+                                            ? Container()
+                                            : sendMoneyAnonymouslySwitch(),
                                         errorMessage == ""
                                             ? Container()
                                             : Text(

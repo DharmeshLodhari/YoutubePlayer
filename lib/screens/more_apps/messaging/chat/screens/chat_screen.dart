@@ -62,7 +62,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   /// Current chat users
   UserBloc userBloc;
   CustomerProfile recipientUser;
-  String recipientUserName;
 
   /// Socket
   MainSocketProvider mainSocketProvider;
@@ -152,18 +151,46 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
     setupScrollController();
 
-    initializeSocket();
-
-    getUserStatus();
-
     messageController.addListener(sendUserTypingState);
     messageController.addListener(changeSearchType);
     // messageController.addListener(changeAudioOrTextMessageBtn);
 
     // searchItemTextController.addListener(searchProductOrService);
 
+    WidgetsFlutterBinding.ensureInitialized();
+
     fetchRecipientUserIfNotAvailable();
 
+    super.initState();
+
+    /// add the observer
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  void fetchRecipientUserIfNotAvailable() async {
+    // debugPrint(
+    //     "recipinet user conversation Id:- ${recipientUser.conversationId}");
+    String recipientUserName = widget.arguments["recipientUserName"] ?? "";
+    debugPrint("RecipientUserName:-   $recipientUserName ");
+    if (recipientUserName != "") {
+      debugPrint("if executed");
+      recipientUser = await UserAuth()
+          .fetchCustomerProfile(widget.arguments["recipientUserName"]);
+      if (mounted) setState(() {});
+
+      debugPrint("recipientUser = ${recipientUser?.conversationId}");
+      debugPrint("recipientUser = ${recipientUser?.avatar}");
+      debugPrint("recipientUser = ${recipientUser?.fullName}");
+      debugPrint("recipientUser = ${recipientUser?.userName}");
+    }
+
+    getPreviousMessages();
+    getUserStatus();
+    initializeSocket();
+    setUpAudioRecorder();
+  }
+
+  void setUpAudioRecorder() {
     audioRecorder.openAudioSession().then((value) {
       setState(() {
         isAudioRecorderInitialized = true;
@@ -176,26 +203,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     });
 
     getAudioPermission();
-
-    super.initState();
-
-    /// add the observer
-    WidgetsBinding.instance.addObserver(this);
-  }
-
-  void fetchRecipientUserIfNotAvailable() async {
-    debugPrint(
-        "recipinet user conversation Id:- ${recipientUser.conversationId}");
-    if (widget.arguments["recipientUserName"] != null) {
-      UserAuth()
-          .fetchCustomerProfile(widget.arguments["recipientUserName"])
-          .then((value) {
-        recipientUser = value;
-        getPreviousMessages();
-      });
-    } else {
-      getPreviousMessages();
-    }
   }
 
   void disposeAudioPlayers() {
@@ -395,7 +402,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         } else {
           isFirstTime = false;
         }
-
+        debugPrint(
+            "recipient conversationID:- ${recipientUser.conversationId}");
         Map<String, dynamic> result = await MessageAuth().getChatMessages(
             next, previous,
             conversionId: recipientUser.conversationId);
@@ -732,7 +740,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  recipientUser.fullName,
+                  recipientUser != null ? recipientUser.fullName : "",
                   style: TextStyle(
                     color: blackFont,
                     fontSize: 18,
@@ -743,7 +751,11 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                   maxLines: 1,
                 ),
                 Text(
-                  isRecipientTyping ? "Typing.." : userStatus, //"Online",
+                  recipientUser != null
+                      ? isRecipientTyping
+                          ? "Typing.."
+                          : userStatus
+                      : "", //"Online",
                   style: TextStyle(
                       color: isRecipientTyping ? naturalGreen : darkGrey,
                       fontSize: 10,
@@ -778,7 +790,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       DateTime today = new DateTime(now.year, now.month, now.day);
       DateTime yesterday = now.subtract(Duration(days: 1));
 
-      DateTime lastSeenDateTime = DateTime.parse(data["last_seen"]);
+      DateTime lastSeenDateTime = DateTime.parse(data["last_seen"]).toLocal();
       DateTime lastSeenDate = new DateTime(
           lastSeenDateTime.year, lastSeenDateTime.month, lastSeenDateTime.day);
 
@@ -807,8 +819,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         width: 36,
         child: ClipOval(
           child: CachedNetworkImage(
-            imageUrl: recipientUser.avatar ??
-                "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png",
+            imageUrl: recipientUser != null
+                ? recipientUser.avatar ??
+                    "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png"
+                : "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png",
             colorBlendMode: BlendMode.darken,
             fit: BoxFit.fill,
             filterQuality: FilterQuality.high,

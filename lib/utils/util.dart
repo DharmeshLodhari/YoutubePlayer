@@ -89,7 +89,7 @@ List monthName = [
 ];
 
 String formatTime(String date) {
-  DateTime dateTime = DateTime.parse(date);
+  DateTime dateTime = DateTime.parse(date).toLocal();
 
   String time = DateFormat("hh:mm a").format(dateTime);
 

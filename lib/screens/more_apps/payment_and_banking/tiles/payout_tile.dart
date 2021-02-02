@@ -93,7 +93,7 @@ class PayoutTile extends StatelessWidget {
   }
 
   Widget getDateTime(BuildContext context) {
-    DateTime dateTime = DateTime.parse(payout.timeStamp);
+    DateTime dateTime = DateTime.parse(payout.timeStamp).toLocal();
     String date = DateFormat("dd/MM/yyyy").format(dateTime);
     String time = DateFormat("hh:mm a").format(dateTime);
     return Text(

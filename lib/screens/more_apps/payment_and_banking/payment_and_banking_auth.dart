@@ -174,12 +174,10 @@ class PaymentAndBankingAuth extends AuthService {
   // Accept Payment with POST method with empty data  post
   Future<http.Response> acceptPaymentRequests(PaymentRequest paymentRequest,
       {String messageId}) async {
-    var url = secureBaseUrl +
-                "/api/v1/transactions/request-payment/accept/" +
-                messageId !=
-            null
-        ? "?messageId=$messageId"
-        : "";
+    var url = secureBaseUrl + "/api/v1/transactions/request-payment/accept/";
+    if (messageId != null) {
+      url += "?messageId=$messageId";
+    }
     var data = {"id": paymentRequest.id};
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
@@ -191,13 +189,13 @@ class PaymentAndBankingAuth extends AuthService {
   Future<bool> rejectPaymentRequests(PaymentRequest paymentRequest,
       {String messageId}) async {
     var url = secureBaseUrl +
-                "/api/v1/transactions/request-payment/update/" +
-                paymentRequest.id +
-                "/" +
-                messageId !=
-            null
-        ? "?messageId=$messageId"
-        : "";
+        "/api/v1/transactions/request-payment/update/" +
+        paymentRequest.id +
+        "/";
+
+    if (messageId != null) {
+      url += "?messageId=$messageId";
+    }
     var headers = await getAuthHeaders();
     var data = {};
     var _data = jsonEncode(data);

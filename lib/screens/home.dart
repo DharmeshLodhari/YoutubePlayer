@@ -98,6 +98,23 @@ class _HomeState extends State<Home> {
     );
   }
 
+  String getGreetingMessage() {
+    TimeOfDay currentTime = TimeOfDay.now();
+
+    if (currentTime.hour >= 6 &&
+        (currentTime.hour <= 11 && currentTime.minute <= 59)) {
+      return "Good morning,";
+    } else if (currentTime.hour >= 12 &&
+        (currentTime.hour <= 16 && currentTime.minute <= 59)) {
+      return "Good afternoon,";
+    } else if (currentTime.hour >= 17 &&
+        (currentTime.hour <= 19 && currentTime.minute <= 59)) {
+      return "Good evening,";
+    } else {
+      return "Good evening,";
+    }
+  }
+
   Widget appBar() {
     return AppBar(
       backgroundColor: Colors.transparent,
@@ -109,7 +126,7 @@ class _HomeState extends State<Home> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            "Good morning,",
+            getGreetingMessage(),
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
           ),
           Text(

@@ -23,12 +23,7 @@ class UserAuth extends AuthService {
     var jsonData = json.decode(response.body);
     debugPrint("response from fetchCustomer = $jsonData");
     if (response.statusCode == 200) {
-      CustomerProfile customerProfile = CustomerProfile(
-        fullName: jsonData["full_name"],
-        userName: jsonData["username"],
-        avatar: jsonData["avatar"],
-        qrCode: jsonData["qr_code"],
-      );
+      CustomerProfile customerProfile = CustomerProfile.fromJson(jsonData);
       return customerProfile;
     } else {
       debugPrint(jsonData.toString());

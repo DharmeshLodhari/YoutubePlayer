@@ -126,7 +126,8 @@ class _PaymentRequestTileState extends State<PaymentRequestTile> {
   }
 
   Widget getDateTime(BuildContext context) {
-    DateTime requestTime = DateTime.parse(widget.paymentRequest.createdAt);
+    DateTime requestTime =
+        DateTime.parse(widget.paymentRequest.createdAt).toLocal();
     String date = DateFormat("dd/MM/yyyy").format(requestTime);
     String time = DateFormat("hh:mm a").format(requestTime);
     return Text(
@@ -268,7 +269,8 @@ class _TransactionTileState extends State<TransactionTile> {
   }
 
   Widget getDateTime(BuildContext context) {
-    DateTime transactionTime = DateTime.parse(widget.transaction.createdAt);
+    DateTime transactionTime =
+        DateTime.parse(widget.transaction.createdAt).toLocal();
     String date = DateFormat("dd/MM/yyyy").format(transactionTime);
     String time = DateFormat("hh:mm a").format(transactionTime);
     return Text(
