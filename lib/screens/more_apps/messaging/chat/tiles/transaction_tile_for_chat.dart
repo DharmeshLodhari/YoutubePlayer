@@ -25,6 +25,7 @@ class TransactionTileForChat extends StatefulWidget {
 
 class _TransactionTileForChatState extends State<TransactionTileForChat> {
   Transaction transaction;
+
   @override
   void initState() {
     // debugPrint("Text type ${widget.message['text'] is String}");
@@ -39,7 +40,7 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
     Map<String, dynamic> data;
     if (widget.message['text'] is String) {
       data = jsonDecode(widget.message['text']);
-    } else {
+    } else if (widget.message['text'] is Map) {
       data = widget.message['text'];
     }
 
@@ -163,7 +164,7 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
                                       fontWeight: FontWeight.w600,
                                       fontSize: 14)),
                               Text(
-                                  "${getDateTime(dateAndTime: DateTime.now().toString())}",
+                                  "${getDateTime(dateAndTime: widget.message['created_at'])}",
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   softWrap: false,
@@ -222,8 +223,8 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
   }
 
   String getDateTime({String dateAndTime}) {
-    DateTime requestTime = DateTime.parse(dateAndTime);
-    String date = DateFormat("dd/MM/yyyy").format(requestTime);
+    DateTime requestTime = DateTime.parse(dateAndTime).toLocal();
+    String date = DateFormat("dd/MM/yy").format(requestTime);
     String time = DateFormat("hh:mm a").format(requestTime);
     return " • $date • $time";
   }
@@ -242,6 +243,8 @@ class PaymentRequestTileForChat extends StatefulWidget {
 
 class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
   PaymentRequest paymentRequest;
+  String paymentActionStatus;
+  String paymentActionTime;
   @override
   void initState() {
     super.initState();
@@ -249,8 +252,30 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
 
   @override
   Widget build(BuildContext context) {
-    paymentRequest = PaymentRequest.fromJson(jsonDecode(widget.message['text']),
-        currentUser: widget.userBloc.user);
+    /// payment actions
+    /// Rejected
+    /// Accepted
+    /// Canceled
+    /// None
+
+    paymentActionStatus = "None";
+    paymentActionTime = DateTime.now().toString();
+    //  widget.message['meta_data']['payment_action_status']
+    //  widget.message['meta_data']['updated_at']
+
+    // debugPrint("paymentRequest - ${widget.message}");
+
+    if(widget.message['text'] is String)
+      {
+        paymentRequest = PaymentRequest.fromJson(jsonDecode(widget.message['text']),
+            currentUser: widget.userBloc.user);
+      }
+    else if (widget.message['text'] is Map)
+      {
+        paymentRequest = PaymentRequest.fromJson(widget.message['text'],
+            currentUser: widget.userBloc.user);
+      }
+
     bool isSend = widget.message["author"] == widget.userBloc.user.userName;
 
     return GestureDetector(
@@ -341,59 +366,105 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                         ),
                       ),
                     ),
-                    SizedBox(
-                      height: 12,
-                    ),
-                    Container(
-                      child: isSend
-                          ? Row(
-                              children: <Widget>[
-                                Expanded(
-                                  child: CurvedButton(
-                                    text: "CANCEL",
-                                    height: 36,
-                                    backgroundColor: mateRed,
-                                    textColor: Colors.white,
-                                    borderRadius: 10,
-                                    onPressed: rejectOrCancelPaymentRequest,
+                    paymentActionStatus == "None"
+                        ? SizedBox(
+                            height: 12,
+                          )
+                        : Container(),
+                    paymentActionStatus == "None"
+                        ? Container(
+                            child: isSend
+                                ? Row(
+                                    children: <Widget>[
+                                      Expanded(
+                                        child: CurvedButton(
+                                          text: "CANCEL",
+                                          height: 36,
+                                          backgroundColor: mateRed,
+                                          textColor: Colors.white,
+                                          borderRadius: 10,
+                                          onPressed:
+                                              rejectOrCancelPaymentRequest,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 16,
+                                      ),
+                                      Expanded(
+                                        child: Container(),
+                                      ),
+                                    ],
+                                  )
+                                : Row(
+                                    children: <Widget>[
+                                      Expanded(
+                                        child: CurvedButton(
+                                          height: 36,
+                                          text: "REJECT",
+                                          backgroundColor: mateRed,
+                                          borderRadius: 10,
+                                          textColor: Colors.white,
+                                          onPressed:
+                                              rejectOrCancelPaymentRequest,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 16,
+                                      ),
+                                      Expanded(
+                                        child: CurvedButton(
+                                          text: "PAY",
+                                          height: 36,
+                                          backgroundColor: navyBlue,
+                                          textColor: Colors.white,
+                                          borderRadius: 10,
+                                          onPressed: acceptPaymentRequest,
+                                        ),
+                                      ),
+                                    ],
                                   ),
+                          )
+                        : Container(),
+                    paymentActionStatus != "None"
+                        ? SizedBox(
+                            height: 12,
+                          )
+                        : Container(),
+                    paymentActionStatus != "None"
+                        ? Container(
+                            child: Row(
+                              children: [
+                                Icon(
+                                  SlydoAppIcon.true_icon,
+                                  size: 12,
+                                  color: getStatusOfPaymentColor(),
                                 ),
                                 SizedBox(
-                                  width: 16,
+                                  width: 4,
                                 ),
-                                Expanded(
-                                  child: Container(),
-                                ),
-                              ],
-                            )
-                          : Row(
-                              children: <Widget>[
-                                Expanded(
-                                  child: CurvedButton(
-                                    height: 36,
-                                    text: "REJECT",
-                                    backgroundColor: mateRed,
-                                    borderRadius: 10,
-                                    textColor: Colors.white,
-                                    onPressed: rejectOrCancelPaymentRequest,
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 16,
-                                ),
-                                Expanded(
-                                  child: CurvedButton(
-                                    text: "PAY",
-                                    height: 36,
-                                    backgroundColor: navyBlue,
-                                    textColor: Colors.white,
-                                    borderRadius: 10,
-                                    onPressed: acceptPaymentRequest,
-                                  ),
+                                Row(
+                                  children: [
+                                    Text(getStatusOfThePayment(isSend),
+                                        style: TextStyle(
+                                            color: blackFont,
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 14)),
+                                    Text(
+                                        "${getDateTime(dateAndTime: DateTime.now().toString())}",
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        softWrap: false,
+                                        style: TextStyle(
+                                          color: darkGrey,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w400,
+                                        ))
+                                  ],
                                 ),
                               ],
                             ),
-                    )
+                          )
+                        : Container(),
                   ],
                 ),
               ),
@@ -422,7 +493,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                       width: 20,
                     ),
               Text(
-                formatTime(widget.message['created_at']),
+                formatTime(paymentActionTime),
                 style: TextStyle(
                     color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
               ),
@@ -470,9 +541,33 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
   }
 
   String getDateTime({String dateAndTime}) {
-    DateTime requestTime = DateTime.parse(dateAndTime);
-    String date = DateFormat("dd/MM/yyyy").format(requestTime);
+    DateTime requestTime = DateTime.parse(dateAndTime).toLocal();
+    String date = DateFormat("dd/MM/yy").format(requestTime);
     String time = DateFormat("hh:mm a").format(requestTime);
     return " • $date • $time";
+  }
+
+  String getStatusOfThePayment(bool isSend) {
+    if (paymentActionStatus == "Rejected") {
+      return "Request Rejected";
+    } else if (paymentActionStatus == "Accepted") {
+      return isSend ? "You were paid" : "You have paid";
+    } else if (paymentActionStatus == "Canceled") {
+      return "Request Canceled";
+    } else {
+      return "";
+    }
+  }
+
+  Color getStatusOfPaymentColor() {
+    if (paymentActionStatus == "Rejected") {
+      return mateRed;
+    } else if (paymentActionStatus == "Accepted") {
+      return naturalGreen;
+    } else if (paymentActionStatus == "Canceled") {
+      return mateRed;
+    } else {
+      return Colors.transparent;
+    }
   }
 }

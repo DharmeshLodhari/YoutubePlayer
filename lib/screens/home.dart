@@ -368,10 +368,10 @@ class _HomeState extends State<Home> {
       ),
       onTap: () async {
         // ChatUserManager().clearChatUsers();
-        Navigator.pushNamed(
-          context,
-          '/nfc-reader',
-        );
+        // Navigator.pushNamed(
+        //   context,
+        //   '/nfc-reader',
+        // );
 
         // showSwipeHintCard(context: context);
         // showHoldHintCard(context: context);

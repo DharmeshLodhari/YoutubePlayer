@@ -353,25 +353,18 @@ class _UserDashboardState extends State<UserDashboard> {
         SizedBox(
           width: 12,
         ),
-        Expanded(
-            child: UserDashboardItemTile(
-          icon: Icons.business_center_rounded,
-          title: "Business",
-          isLocked: storeLocked,
-          onTap: () {
-            if (!storeLocked) {
-              Navigator.of(context).pushNamed("/contracts");
-            }
-          },
-          iconColor: HexColor("#5218E9"),
-        )),
-      ],
-    );
-  }
-
-  Widget thirdRowOfUserDashboardItem() {
-    return Row(
-      children: [
+        // Expanded(
+        //     child: UserDashboardItemTile(
+        //   icon: Icons.business_center_rounded,
+        //   title: "Business",
+        //   isLocked: storeLocked,
+        //   onTap: () {
+        //     if (!storeLocked) {
+        //       Navigator.of(context).pushNamed("/contracts");
+        //     }
+        //   },
+        //   iconColor: HexColor("#5218E9"),
+        // )),
         Expanded(
             child: UserDashboardItemTile(
           icon: SlydoAppIcon.naira,
@@ -381,9 +374,13 @@ class _UserDashboardState extends State<UserDashboard> {
           },
           iconColor: HexColor("#46CE7C"),
         )),
-        SizedBox(
-          width: 12,
-        ),
+      ],
+    );
+  }
+
+  Widget thirdRowOfUserDashboardItem() {
+    return Row(
+      children: [
         Expanded(
             child: UserDashboardItemTile(
           icon: SlydoAppIcon.translation,
@@ -406,6 +403,10 @@ class _UserDashboardState extends State<UserDashboard> {
         //   },
         //   iconColor: HexColor("#374677"),
         // )),
+        Expanded(child: Container()),
+        SizedBox(
+          width: 12,
+        ),
         Expanded(child: Container()),
       ],
     );

@@ -322,7 +322,7 @@ class _SendPaymentState extends State<SendPayment> {
                     ),
                   ),
                   Expanded(
-                      flex: 3,
+                      flex: MediaQuery.of(context).size.height < 600 ? 2 : 3,
                       child: Container(
                         child: Column(
                           children: [
@@ -410,10 +410,14 @@ class _SendPaymentState extends State<SendPayment> {
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
                         fontSize: 16),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
                   subtitle: Text(
                     _payee.userName,
                     style: TextStyle(fontSize: 14, color: darkGrey),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
                   leading: avatarImage,
                   trailing: qrCodeImage,

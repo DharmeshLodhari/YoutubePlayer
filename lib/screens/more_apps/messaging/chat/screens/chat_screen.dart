@@ -824,7 +824,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     return Column(
       children: [
         Container(
-          height: 54,
+          constraints: BoxConstraints(minHeight: 54, maxHeight: 100),
+          // height: 54,
           child: Row(
             children: <Widget>[
               moreActionBtn(),
@@ -1046,70 +1047,78 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         child: Stack(
           alignment: Alignment.centerRight,
           children: [
-            TextFormField(
-              controller: messageController,
-              textInputAction: TextInputAction.send,
-              focusNode: messageFocus,
-              onFieldSubmitted: (value) {
-                sendTextMessage();
-              },
-              cursorColor: blackFont,
-              cursorWidth: 1,
-              cursorHeight: 20,
-              cursorRadius: Radius.circular(16),
-              decoration: InputDecoration(
-                hintText: "Type a message",
-                hintStyle: TextStyle(
-                  color: darkGrey,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                ),
-                prefix: Padding(
-                  padding: EdgeInsets.only(left: 16),
-                ),
-                suffix: Padding(
-                  padding: EdgeInsets.only(right: 36),
-                ),
-                // suffixIcon: captureImageOrVideo(),
-                contentPadding: EdgeInsets.symmetric(vertical: 10),
-                isDense: true,
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(3),
-                  borderSide: BorderSide(
-                    color: chatBackgroundColor,
-                    width: 1.0,
+            Theme(
+                data: ThemeData(highlightColor: navyBlue.withOpacity(0.3)),
+                child: Scrollbar(
+                  radius: Radius.circular(12),
+                  thickness: 2.5,
+                  child: TextFormField(
+                    controller: messageController,
+                    textInputAction: TextInputAction.send,
+                    keyboardType: TextInputType.multiline,
+                    focusNode: messageFocus,
+                    onFieldSubmitted: (value) {
+                      sendTextMessage();
+                    },
+                    cursorColor: blackFont,
+                    cursorWidth: 1,
+                    cursorHeight: 20,
+                    maxLines: null,
+                    cursorRadius: Radius.circular(16),
+                    decoration: InputDecoration(
+                      hintText: "Type a message",
+                      hintStyle: TextStyle(
+                        color: darkGrey,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                      ),
+                      prefix: Padding(
+                        padding: EdgeInsets.only(left: 16),
+                      ),
+                      suffix: Padding(
+                        padding: EdgeInsets.only(right: 36),
+                      ),
+                      // suffixIcon: captureImageOrVideo(),
+                      contentPadding: EdgeInsets.symmetric(vertical: 10),
+                      isDense: true,
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(3),
+                        borderSide: BorderSide(
+                          color: chatBackgroundColor,
+                          width: 1.0,
+                        ),
+                      ),
+                      disabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(3),
+                        borderSide: BorderSide(
+                          color: chatBackgroundColor,
+                          width: 1.0,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(3),
+                        borderSide: BorderSide(
+                          color: chatBackgroundColor,
+                          width: 1.0,
+                        ),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(3),
+                        borderSide: BorderSide(
+                          color: chatBackgroundColor,
+                          width: 1.0,
+                        ),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(3),
+                        borderSide: BorderSide(
+                          color: chatBackgroundColor,
+                          width: 1.0,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-                disabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(3),
-                  borderSide: BorderSide(
-                    color: chatBackgroundColor,
-                    width: 1.0,
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(3),
-                  borderSide: BorderSide(
-                    color: chatBackgroundColor,
-                    width: 1.0,
-                  ),
-                ),
-                errorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(3),
-                  borderSide: BorderSide(
-                    color: chatBackgroundColor,
-                    width: 1.0,
-                  ),
-                ),
-                focusedErrorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(3),
-                  borderSide: BorderSide(
-                    color: chatBackgroundColor,
-                    width: 1.0,
-                  ),
-                ),
-              ),
-            ),
+                )),
             Positioned(
               child: captureImageOrVideoBtn(),
               right: 8,

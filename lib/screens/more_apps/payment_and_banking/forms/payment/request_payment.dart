@@ -254,13 +254,15 @@ class _RequestPaymentState extends State<RequestPayment> {
                                         flexibleSpace(),
                                         getReferenceField(),
                                         flexibleSpace(),
-                                        Text(
-                                          errorMessage,
-                                          style: TextStyle(
-                                              color: mateRed,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16),
-                                        ),
+                                        errorMessage == ""
+                                            ? Container()
+                                            : Text(
+                                                errorMessage,
+                                                style: TextStyle(
+                                                    color: mateRed,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 16),
+                                              ),
                                         flexibleSpace(),
                                       ],
                                     ),
@@ -274,7 +276,7 @@ class _RequestPaymentState extends State<RequestPayment> {
                     ),
                   ),
                   Expanded(
-                      flex: 3,
+                      flex: MediaQuery.of(context).size.height<600  ?2:3,
                       child: Container(
                         child: Column(
                           children: [
@@ -332,10 +334,14 @@ class _RequestPaymentState extends State<RequestPayment> {
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
                         fontSize: 16),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
                   subtitle: Text(
                     _payee.userName,
                     style: TextStyle(fontSize: 14, color: darkGrey),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
                   leading: avatarImage,
                   trailing: qrCodeImage,

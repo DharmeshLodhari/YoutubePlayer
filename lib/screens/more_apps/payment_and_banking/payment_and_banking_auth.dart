@@ -176,8 +176,9 @@ class PaymentAndBankingAuth extends AuthService {
       {String messageId}) async {
     var url = secureBaseUrl + "/api/v1/transactions/request-payment/accept/";
     if (messageId != null) {
-      url += "?messageId=$messageId";
+      url += "?message-id=$messageId";
     }
+    debugPrint("URL:- $url");
     var data = {"id": paymentRequest.id};
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
@@ -194,8 +195,9 @@ class PaymentAndBankingAuth extends AuthService {
         "/";
 
     if (messageId != null) {
-      url += "?messageId=$messageId";
+      url += "?message-id=$messageId";
     }
+    debugPrint("URL:- $url");
     var headers = await getAuthHeaders();
     var data = {};
     var _data = jsonEncode(data);
