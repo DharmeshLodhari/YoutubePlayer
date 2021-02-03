@@ -112,12 +112,11 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   bool isProductSearch = true;
   bool isServiceSearch = false;
   bool isCurrentUsersProductOrService = false;
-  bool isProductAndServiceLoading = false;
   List searchedProductAndService = [];
   StateSetter bottomSheetStateSetterGlobal;
   bool bottomSheetMounted = false;
 
-  bool isProductOrServiceLoading = false;
+  bool isItemLoading = false;
   int productOrServiceCount = 0;
   String productOrServiceNext = "";
   String productOrServicePrevious = "";
@@ -557,9 +556,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
           "conversation_id": recipientUser.conversationId,
         };
 
-        // debugPrint("data:- $message");
-        // debugPrint("MEssage REad By Recipient:- $data");
-
         await mainSocketProvider.add(data);
       }
     }
@@ -597,7 +593,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   void menuStateChange(bool isOpen) {
     isPopMenuOpen = isOpen;
-    setState(() {});
+    if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+      bottomSheetStateSetterGlobal(() {});
+    if (mounted) setState(() {});
   }
 
   @override
@@ -696,7 +694,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         },
       ),
       leadingWidth: 40,
-
       title: GestureDetector(
         onTap: () {
           Navigator.pushNamed(context, '/profile',
@@ -741,12 +738,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
           ],
         ),
       ),
-      // actions: [
-      //   userProfileIcon(),
-      //   SizedBox(
-      //     width: 16,
-      //   )
-      // ],
     );
   }
 
@@ -830,87 +821,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   Widget getSearchBarLayout() {
-    // if (isProductSearch || isServiceSearch) {
-    //   return Column(
-    //     children: [
-    //       Card(
-    //         elevation: 10,
-    //         margin: EdgeInsets.zero,
-    //         shadowColor: lightGrey,
-    //         shape: RoundedRectangleBorder(
-    //             borderRadius: BorderRadius.only(
-    //                 topLeft: Radius.circular(15),
-    //                 topRight: Radius.circular(15))),
-    //         child: ClipRRect(
-    //           borderRadius: BorderRadius.only(
-    //             topLeft: Radius.circular(15),
-    //             topRight: Radius.circular(15),
-    //           ),
-    //           child: Container(
-    //             height: MediaQuery.of(context).size.height / 3,
-    //             width: MediaQuery.of(context).size.width,
-    //             color: Colors.white,
-    //             child: Column(
-    //               children: [
-    //                 Container(
-    //                     padding: EdgeInsets.symmetric(vertical: 4),
-    //                     child: Text(
-    //                       isProductSearch ? "Products" : "Services",
-    //                       style: TextStyle(),
-    //                     )),
-    //                 searchedProductAndService.isEmpty
-    //                     ? Expanded(
-    //                         child: Center(
-    //                           child: isProductAndServiceLoading
-    //                               ? CircularLoadingIndicator()
-    //                               : Text(
-    //                                   "No Result",
-    //                                   style: TextStyle(
-    //                                       color: darkGrey, fontSize: 16),
-    //                                 ),
-    //                         ),
-    //                       )
-    //                     : Expanded(
-    //                         child: ListView(
-    //                           children: searchedProductAndService
-    //                               .map((item) => InkWell(
-    //                                   onTap: () {
-    //                                     addProductOrServiceToChat(item);
-    //                                   },
-    //                                   child: getResultTile(item)))
-    //                               .toList(),
-    //                         ),
-    //                       ),
-    //               ],
-    //             ),
-    //           ),
-    //         ),
-    //       ),
-    //       Card(
-    //         margin: EdgeInsets.zero,
-    //         child: Container(
-    //           height: 58,
-    //           width: MediaQuery.of(context).size.width,
-    //           padding: EdgeInsets.only(
-    //             left: 16,
-    //           ),
-    //           child: Row(
-    //             children: <Widget>[
-    //               closeSearchModuleBtn(),
-    //               Expanded(
-    //                 child: isProductSearch
-    //                     ? searchProductTextField()
-    //                     : searchServiceTextField(),
-    //               ),
-    //               searchProductOrServiceBtn(),
-    //             ],
-    //           ),
-    //         ),
-    //       ),
-    //     ],
-    //   );
-    // }
-
     return Column(
       children: [
         Container(
@@ -982,118 +892,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       ),
     );
   }
-
-  // Widget getSearchBarLayout() {
-  //   if (isProductSearch || isServiceSearch) {
-  //     return Column(
-  //       children: [
-  //         Card(
-  //           elevation: 10,
-  //           margin: EdgeInsets.zero,
-  //           shadowColor: lightGrey,
-  //           shape: RoundedRectangleBorder(
-  //               borderRadius: BorderRadius.only(
-  //                   topLeft: Radius.circular(15),
-  //                   topRight: Radius.circular(15))),
-  //           child: ClipRRect(
-  //             borderRadius: BorderRadius.only(
-  //               topLeft: Radius.circular(15),
-  //               topRight: Radius.circular(15),
-  //             ),
-  //             child: Container(
-  //               height: MediaQuery.of(context).size.height / 3,
-  //               width: MediaQuery.of(context).size.width,
-  //               color: Colors.white,
-  //               child: Column(
-  //                 children: [
-  //                   Container(
-  //                       padding: EdgeInsets.symmetric(vertical: 4),
-  //                       child: Text(
-  //                         isProductSearch ? "Products" : "Services",
-  //                         style: TextStyle(),
-  //                       )),
-  //                   searchedProductAndService.isEmpty
-  //                       ? Expanded(
-  //                           child: Center(
-  //                             child: isProductAndServiceLoading
-  //                                 ? CircularLoadingIndicator()
-  //                                 : Text(
-  //                                     "No Result",
-  //                                     style: TextStyle(
-  //                                         color: darkGrey, fontSize: 16),
-  //                                   ),
-  //                           ),
-  //                         )
-  //                       : Expanded(
-  //                           child: ListView(
-  //                             children: searchedProductAndService
-  //                                 .map((item) => InkWell(
-  //                                     onTap: () {
-  //                                       addProductOrServiceToChat(item);
-  //                                     },
-  //                                     child: getResultTile(item)))
-  //                                 .toList(),
-  //                           ),
-  //                         ),
-  //                 ],
-  //               ),
-  //             ),
-  //           ),
-  //         ),
-  //         Card(
-  //           margin: EdgeInsets.zero,
-  //           child: Container(
-  //             height: 58,
-  //             width: MediaQuery.of(context).size.width,
-  //             padding: EdgeInsets.only(
-  //               left: 16,
-  //             ),
-  //             child: Row(
-  //               children: <Widget>[
-  //                 closeSearchModuleBtn(),
-  //                 Expanded(
-  //                   child: isProductSearch
-  //                       ? searchProductTextField()
-  //                       : searchServiceTextField(),
-  //                 ),
-  //                 searchProductOrServiceBtn(),
-  //               ],
-  //             ),
-  //           ),
-  //         ),
-  //       ],
-  //     );
-  //   }
-  //
-  //   return Container(
-  //     height: 58,
-  //     padding: EdgeInsets.only(
-  //       left: 16,
-  //     ),
-  //     child: Row(
-  //       children: <Widget>[
-  //         MediaQuery.of(context).viewInsets.bottom != 0
-  //             ? addMediaButton()
-  //             : Row(
-  //                 children: [
-  //                   requestMoneyBtn(),
-  //                   SizedBox(
-  //                     width: 8,
-  //                   ),
-  //                   sendMoneyBtn(),
-  //                   SizedBox(
-  //                     width: 8,
-  //                   ),
-  //                 ],
-  //               ),
-  //         Expanded(
-  //           child: textMessageField(),
-  //         ),
-  //         sendAudioOrMessageBtn(),
-  //       ],
-  //     ),
-  //   );
-  // }
 
   Widget assignTitleToAction({String text, Widget child}) {
     return Container(
@@ -1239,79 +1037,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       },
     );
   }
-
-  // Widget textMessageField() {
-  //   return Stack(
-  //     alignment: Alignment.centerRight,
-  //     children: [
-  //       TextFormField(
-  //         controller: messageController,
-  //         textInputAction: TextInputAction.send,
-  //         focusNode: messageFocus,
-  //         onFieldSubmitted: (value) {
-  //           sendTextMessage();
-  //         },
-  //         cursorColor: blackFont,
-  //         cursorWidth: 1,
-  //         cursorHeight: 20,
-  //         cursorRadius: Radius.circular(16),
-  //         decoration: InputDecoration(
-  //           hintText: "Type message",
-  //           hintStyle: TextStyle(
-  //             color: darkGrey.withOpacity(0.5),
-  //             fontSize: 16,
-  //             fontWeight: FontWeight.w500,
-  //           ),
-  //           prefix: Padding(
-  //             padding: EdgeInsets.only(left: 12),
-  //           ),
-  //           // suffixIcon: captureImageOrVideo(),
-  //           contentPadding: EdgeInsets.symmetric(vertical: 10),
-  //           isDense: true,
-  //           enabledBorder: OutlineInputBorder(
-  //             borderRadius: BorderRadius.circular(10),
-  //             borderSide: BorderSide(
-  //               color: greyBorderColor,
-  //               width: 1.0,
-  //             ),
-  //           ),
-  //           disabledBorder: OutlineInputBorder(
-  //             borderRadius: BorderRadius.circular(10),
-  //             borderSide: BorderSide(
-  //               color: greyBorderColor,
-  //               width: 1.0,
-  //             ),
-  //           ),
-  //           focusedBorder: OutlineInputBorder(
-  //             borderRadius: BorderRadius.circular(10),
-  //             borderSide: BorderSide(
-  //               color: navyBlue,
-  //               width: 1.0,
-  //             ),
-  //           ),
-  //           errorBorder: OutlineInputBorder(
-  //             borderRadius: BorderRadius.circular(10),
-  //             borderSide: BorderSide(
-  //               color: greyBorderColor,
-  //               width: 1.0,
-  //             ),
-  //           ),
-  //           focusedErrorBorder: OutlineInputBorder(
-  //             borderRadius: BorderRadius.circular(10),
-  //             borderSide: BorderSide(
-  //               color: greyBorderColor,
-  //               width: 1.0,
-  //             ),
-  //           ),
-  //         ),
-  //       ),
-  //       Positioned(
-  //         child: captureImageOrVideoBtn(),
-  //         right: 8,
-  //       )
-  //     ],
-  //   );
-  // }
 
   Widget textMessageField() {
     return ClipRRect(
@@ -1599,13 +1324,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     return path;
   }
 
-  // Widget sendAudioOrMessageBtn() {
-  //   return AnimatedSwitcher(
-  //     duration: Duration(milliseconds: 100),
-  //     child: messageIsText ? sendMessageBtn() : recordAndSendAudioBtn(),
-  //   );
-  // }
-
   Widget sendMessageBtn() {
     return InkWell(
       onTap: sendTextMessage,
@@ -1858,11 +1576,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     /// this code of bloc is replicated in userTyping()
 
     await mainSocketProvider.add(data);
-    // bool isDataAdded = await mainSocketProvider.add(data);
-    // if (!isDataAdded) {
-    //   debugPrint("Error:- while adding Data");
-    //   return await sendDataToSocket(data);
-    // }
 
     return true;
   }
@@ -2435,410 +2148,15 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   Widget renderPaymentRequest({Map<String, dynamic> message}) {
-    // bool isSent = message["author"] == userBloc.user.userName;
-    // bool isSent = false;
-
-    // PaymentRequest paymentRequest = PaymentRequest.fromJson(
-    //     jsonDecode(message['text']),
-    //     currentUser: userBloc.user);
-
-    // PaymentRequest paymentRequest = PaymentRequest(
-    //     description: "Shopping", amount: 100, payee: "black", currency: "NGN");
-
-    // message["text"] = message['text'] = jsonEncode({
-    //   "description": "Shopping",
-    //   "amount": 100,
-    //   "payee": "black",
-    //   "currency": "NGN",
-    //   "status": "Paid",
-    //   "is_credit": true
-    // });
-
     return PaymentRequestTileForChat(message: message, userBloc: userBloc);
-
-    // return GestureDetector(
-    //   onLongPress: () {
-    //     if (paymentRequest.description.isNotEmpty) {
-    //       Clipboard.setData(
-    //           new ClipboardData(text: paymentRequest.description));
-    //       Toast.show("Text copied !!", context,
-    //           gravity: Toast.BOTTOM,
-    //           duration: Toast.LENGTH_LONG,
-    //           backgroundColor: navyBlue,
-    //           textColor: Colors.white);
-    //     }
-    //   },
-    //   child: Row(
-    //     mainAxisAlignment:
-    //         isSent ? MainAxisAlignment.end : MainAxisAlignment.start,
-    //     children: [
-    //       Container(
-    //         decoration: BoxDecoration(
-    //           color: chatBackgroundColor,
-    //           border: Border.all(color: chatBackgroundColor),
-    //           borderRadius: BorderRadius.only(
-    //             bottomLeft: Radius.circular(!isSent ? 0 : 10),
-    //             bottomRight: Radius.circular(isSent ? 0 : 10),
-    //             topLeft: Radius.circular(10),
-    //             topRight: Radius.circular(10),
-    //           ),
-    //         ),
-    //         padding: EdgeInsets.all(8),
-    //         width: MediaQuery.of(context).size.width / 1.8,
-    //         child: Column(
-    //           crossAxisAlignment: CrossAxisAlignment.center,
-    //           mainAxisSize: MainAxisSize.min,
-    //           children: [
-    //             Row(
-    //               children: [
-    //                 Padding(
-    //                   padding: const EdgeInsets.only(top: 4.0),
-    //                   child: Icon(
-    //                     SlydoAppIcon.naira,
-    //                     color: blackFont,
-    //                     size: 16,
-    //                   ),
-    //                 ),
-    //                 SizedBox(
-    //                   width: 2,
-    //                 ),
-    //                 Text(
-    //                   paymentRequest.amount.toString(),
-    //                   style: TextStyle(
-    //                       fontSize: 32,
-    //                       fontWeight: FontWeight.w600,
-    //                       color: blackFont),
-    //                 ),
-    //               ],
-    //             ),
-    //             SizedBox(
-    //               height: 4,
-    //             ),
-    //             Align(
-    //               alignment: Alignment.centerLeft,
-    //               child: Text(
-    //                 paymentRequest.description,
-    //                 style: TextStyle(
-    //                     fontSize: 14,
-    //                     fontWeight: FontWeight.w400,
-    //                     color: blackFont),
-    //               ),
-    //             ),
-    //             SizedBox(
-    //               height: 6,
-    //             ),
-    //             Container(
-    //               child: isSent
-    //                   ? Row(
-    //                       children: <Widget>[
-    //                         Expanded(
-    //                           child: Container(),
-    //                         ),
-    //                         SizedBox(
-    //                           width: 8,
-    //                         ),
-    //                         Expanded(
-    //                           child: CurvedButton(
-    //                             text: "Cancel",
-    //                             height: 36,
-    //                             backgroundColor: navyBlue,
-    //                             textColor: Colors.white,
-    //                             onPressed: () {},
-    //                           ),
-    //                         ),
-    //                       ],
-    //                     )
-    //                   : Row(
-    //                       children: <Widget>[
-    //                         Expanded(
-    //                           child: CurvedButton(
-    //                             text: "Pay",
-    //                             height: 36,
-    //                             backgroundColor: navyBlue,
-    //                             textColor: Colors.white,
-    //                             onPressed: () async {
-    //                               var response = await PaymentAndBankingAuth()
-    //                                   .acceptPaymentRequests(paymentRequest,
-    //                                       messageId: message["message_id"]);
-    //                             },
-    //                           ),
-    //                         ),
-    //                         SizedBox(
-    //                           width: 8,
-    //                         ),
-    //                         Expanded(
-    //                           child: CurvedButton(
-    //                             height: 36,
-    //                             text: "Reject",
-    //                             backgroundColor: navyBlue,
-    //                             textColor: Colors.white,
-    //                             onPressed: () async {
-    //                               var result = await PaymentAndBankingAuth()
-    //                                   .rejectPaymentRequests(paymentRequest,
-    //                                       messageId: message["message_id"]);
-    //                             },
-    //                           ),
-    //                         ),
-    //                       ],
-    //                     ),
-    //             ),
-    //           ],
-    //         ),
-    //       ),
-    //     ],
-    //   ),
-    // );
   }
 
   Widget renderSendPayment({Map<String, dynamic> message}) {
-    bool isSent = message["author"] == userBloc.user.userName;
-
-    // bool isSent = false;
-
-    // PaymentRequest paymentRequest = PaymentRequest.fromJson(
-    //     jsonDecode(message['text']),
-    //     currentUser: userBloc.user);
-
-    // Transaction transaction = Transaction.fromJson(jsonDecode(message['text']));
-    // Transaction transaction = Transaction(
-    //     description: "Shopping",
-    //     amount: 100,
-    //     payee: "black",
-    //     currency: "NGN",
-    //     status: "Paid");
-
-    // message['text'] = jsonEncode({
-    //   "description": "Shopping",
-    //   "amount": 100,
-    //   "payee": "black",
-    //   "currency": "NGN",
-    //   "status": "Paid",
-    //   "is_credit": true
-    // });
     return TransactionTileForChat(message: message, userBloc: userBloc);
-
-    // return GestureDetector(
-    //   onLongPress: () {
-    //     if (transaction.description.isNotEmpty) {
-    //       Clipboard.setData(new ClipboardData(text: transaction.description));
-    //       Toast.show("Text copied !!", context,
-    //           gravity: Toast.BOTTOM,
-    //           duration: Toast.LENGTH_LONG,
-    //           backgroundColor: navyBlue,
-    //           textColor: Colors.white);
-    //     }
-    //   },
-    //   child: Row(
-    //     mainAxisAlignment:
-    //         isSent ? MainAxisAlignment.end : MainAxisAlignment.start,
-    //     children: [
-    //       Container(
-    //         decoration: BoxDecoration(
-    //           color: chatBackgroundColor,
-    //           border: Border.all(color: chatBackgroundColor),
-    //           borderRadius: BorderRadius.only(
-    //             bottomLeft: Radius.circular(!isSent ? 0 : 10),
-    //             bottomRight: Radius.circular(isSent ? 0 : 10),
-    //             topLeft: Radius.circular(10),
-    //             topRight: Radius.circular(10),
-    //           ),
-    //         ),
-    //         padding: EdgeInsets.all(8),
-    //         width: MediaQuery.of(context).size.width / 1.8,
-    //         child: Column(
-    //           crossAxisAlignment: CrossAxisAlignment.center,
-    //           mainAxisSize: MainAxisSize.min,
-    //           children: [
-    //             Row(
-    //               children: [
-    //                 Padding(
-    //                   padding: const EdgeInsets.only(top: 4.0),
-    //                   child: Icon(
-    //                     SlydoAppIcon.naira,
-    //                     color: blackFont,
-    //                     size: 14,
-    //                   ),
-    //                 ),
-    //                 SizedBox(
-    //                   width: 2,
-    //                 ),
-    //                 Text(
-    //                   transaction.amount.toString(),
-    //                   style: TextStyle(
-    //                       fontSize: 32,
-    //                       fontWeight: FontWeight.w600,
-    //                       color: blackFont),
-    //                 ),
-    //               ],
-    //             ),
-    //             SizedBox(
-    //               height: 4,
-    //             ),
-    //             Align(
-    //               alignment: Alignment.centerLeft,
-    //               child: Text(
-    //                 transaction.description,
-    //                 style: TextStyle(
-    //                     fontSize: 14,
-    //                     fontWeight: FontWeight.w400,
-    //                     color: blackFont),
-    //               ),
-    //             ),
-    //             SizedBox(
-    //               height: 6,
-    //             ),
-    //             Container(
-    //               child: Row(
-    //                 children: [
-    //                   Icon(
-    //                     SlydoAppIcon.true_icon,
-    //                     size: 12,
-    //                     color: naturalGreen,
-    //                   ),
-    //                   SizedBox(
-    //                     width: 4,
-    //                   ),
-    //                   Text(
-    //                     isSent
-    //                         ? "You paid • ${getDateTime(transaction.createdAt)}"
-    //                         : "You were paid • 10:13 AM",
-    //                     style: TextStyle(color: blackFont, fontSize: 12),
-    //                   )
-    //                 ],
-    //               ),
-    //             ),
-    //           ],
-    //         ),
-    //       ),
-    //     ],
-    //   ),
-    // );
   }
 
   Widget renderProduct({Map<String, dynamic> item}) {
     return ProductTileForChatMessage(item: item);
-
-    // Product product;
-    // try {
-    //   product = Product.fromJson(jsonDecode(item["meta_data"]));
-    // } catch (e) {
-    //   product = Product.fromJson(item["meta_data"]);
-    // }
-    //
-    // bool isSend = item["author"] == userBloc.user.userName;
-    // return GestureDetector(
-    //   onTap: () {
-    //     Navigator.of(context)
-    //         .pushNamed("/product", arguments: {"product": product});
-    //   },
-    //   child: Row(
-    //     mainAxisAlignment:
-    //         isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
-    //     children: [
-    //       Container(
-    //         constraints: BoxConstraints(
-    //           maxWidth: MediaQuery.of(context).size.width / 1.35,
-    //           minWidth: MediaQuery.of(context).size.width / 1.35,
-    //           maxHeight: MediaQuery.of(context).size.width / 1.35,
-    //         ),
-    //         decoration: BoxDecoration(
-    //             color: Colors.white,
-    //             border: Border.all(color: dividerColor),
-    //             borderRadius: BorderRadius.circular(12)),
-    //         padding: EdgeInsets.all(8),
-    //         child: Column(
-    //           mainAxisSize: MainAxisSize.min,
-    //           children: [
-    //             Expanded(
-    //               child: CachedNetworkImage(
-    //                 width: MediaQuery.of(context).size.width / 1.35 - 16,
-    //                 imageUrl: product.cover,
-    //                 fit: BoxFit.cover,
-    //               ),
-    //             ),
-    //             SizedBox(
-    //               height: 8,
-    //             ),
-    //             Text(
-    //               product.name,
-    //               style: TextStyle(
-    //                 fontSize: 16,
-    //               ),
-    //               maxLines: 2,
-    //               overflow: TextOverflow.ellipsis,
-    //               textAlign: TextAlign.start,
-    //             ),
-    //             SizedBox(
-    //               height: 8,
-    //             ),
-    //             Row(
-    //               mainAxisAlignment: MainAxisAlignment.center,
-    //               children: [
-    //                 Icon(
-    //                   SlydoAppIcon.naira,
-    //                   color: blackFont,
-    //                   size: 12,
-    //                 ),
-    //                 SizedBox(
-    //                   width: 6,
-    //                 ),
-    //                 Text(
-    //                   product.price.toString(),
-    //                   style: TextStyle(
-    //                       fontSize: 28,
-    //                       fontWeight: FontWeight.w600,
-    //                       color: blackFont),
-    //                 ),
-    //               ],
-    //             ),
-    //             product.seller == userBloc.user.userName
-    //                 ? Container()
-    //                 : Column(
-    //                     children: [
-    //                       SizedBox(
-    //                         height: 8,
-    //                       ),
-    //                       Row(
-    //                         children: [
-    //                           Expanded(
-    //                             child: CurvedButton(
-    //                               height: 36,
-    //                               textColor: Colors.white,
-    //                               backgroundColor: navyBlue,
-    //                               text: "Buy",
-    //                               onPressed: () async {
-    //                                 CustomerProfileBloc customerProfileBloc =
-    //                                     Provider.of<CustomerProfileBloc>(
-    //                                         context,
-    //                                         listen: false);
-    //                                 customerProfileBloc.customer =
-    //                                     await UserAuth().fetchCustomerProfile(
-    //                                         product.seller);
-    //
-    //                                 Navigator.of(context).pushNamed(
-    //                                   '/send-payment',
-    //                                   arguments: {
-    //                                     'isFromProfile': false,
-    //                                     'product': product
-    //                                   },
-    //                                 );
-    //                               },
-    //                             ),
-    //                           ),
-    //                           SizedBox(
-    //                             width: 8,
-    //                           ),
-    //                           addToCartWidget(item: product),
-    //                         ],
-    //                       ),
-    //                     ],
-    //                   )
-    //           ],
-    //         ),
-    //       ),
-    //     ],
-    //   ),
-    // );
   }
 
   Widget addToCartWidget({var item}) {
@@ -2877,128 +2195,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   Widget renderService({Map<String, dynamic> item}) {
     return ServiceTileChatMessage(item: item);
-
-    // Service service;
-    // try {
-    //   service = Service.fromJson(jsonDecode(item["meta_data"]));
-    // } catch (e) {
-    //   service = Service.fromJson(item["meta_data"]);
-    // }
-    // bool isSend = widget.item["author"] == userBloc.user.userName;
-
-    // return GestureDetector(
-    //   onTap: () {
-    //     Navigator.of(context)
-    //         .pushNamed("/service-detail", arguments: {"service": service});
-    //   },
-    //   child: Row(
-    //     mainAxisAlignment:
-    //         isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
-    //     children: [
-    //       Container(
-    //         constraints: BoxConstraints(
-    //           maxWidth: MediaQuery.of(context).size.width / 1.35,
-    //           minWidth: MediaQuery.of(context).size.width / 1.35,
-    //           maxHeight: MediaQuery.of(context).size.width / 1.35,
-    //         ),
-    //         decoration: BoxDecoration(
-    //             color: Colors.white,
-    //             border: Border.all(color: dividerColor),
-    //             borderRadius: BorderRadius.circular(12)),
-    //         padding: EdgeInsets.all(8),
-    //         child: Column(
-    //           mainAxisSize: MainAxisSize.min,
-    //           children: [
-    //             Expanded(
-    //               child: CachedNetworkImage(
-    //                 width: MediaQuery.of(context).size.width / 1.35 - 16,
-    //                 imageUrl: service.cover,
-    //                 fit: BoxFit.cover,
-    //               ),
-    //             ),
-    //             SizedBox(
-    //               height: 8,
-    //             ),
-    //             Text(
-    //               service.name,
-    //               style: TextStyle(
-    //                 fontSize: 16,
-    //               ),
-    //               maxLines: 2,
-    //               overflow: TextOverflow.ellipsis,
-    //               textAlign: TextAlign.start,
-    //             ),
-    //             SizedBox(
-    //               height: 8,
-    //             ),
-    //             Row(
-    //               mainAxisAlignment: MainAxisAlignment.center,
-    //               children: [
-    //                 Icon(
-    //                   SlydoAppIcon.naira,
-    //                   color: blackFont,
-    //                   size: 12,
-    //                 ),
-    //                 SizedBox(
-    //                   width: 6,
-    //                 ),
-    //                 Text(
-    //                   service.price.toString(),
-    //                   style: TextStyle(
-    //                       fontSize: 28,
-    //                       fontWeight: FontWeight.w600,
-    //                       color: blackFont),
-    //                 ),
-    //               ],
-    //             ),
-    //             service.provider == userBloc.user.userName
-    //                 ? Container()
-    //                 : Column(
-    //                     children: [
-    //                       SizedBox(
-    //                         height: 8,
-    //                       ),
-    //                       Row(
-    //                         children: [
-    //                           Expanded(
-    //                             child: CurvedButton(
-    //                               height: 36,
-    //                               textColor: Colors.white,
-    //                               backgroundColor: navyBlue,
-    //                               text: "Buy",
-    //                               onPressed: () async {
-    //                                 CustomerProfileBloc customerProfileBloc =
-    //                                     Provider.of<CustomerProfileBloc>(
-    //                                         context,
-    //                                         listen: false);
-    //                                 customerProfileBloc.customer =
-    //                                     await UserAuth().fetchCustomerProfile(
-    //                                         service.provider);
-    //
-    //                                 Navigator.of(context).pushNamed(
-    //                                   '/send-payment',
-    //                                   arguments: {
-    //                                     'isFromProfile': false,
-    //                                     'service': service
-    //                                   },
-    //                                 );
-    //                               },
-    //                             ),
-    //                           ),
-    //                           SizedBox(
-    //                             width: 8,
-    //                           ),
-    //                           addToCartWidget(item: service),
-    //                         ],
-    //                       ),
-    //                     ],
-    //                   ),
-    //           ],
-    //         ),
-    //       ),
-    //     ],
-    //   ),
-    // );
   }
 
   Widget renderTypingMsg() {
@@ -3045,6 +2241,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
               builder: (context, StateSetter bottomSheetStateSetter) {
             bottomSheetStateSetterGlobal = bottomSheetStateSetter;
             bottomSheetMounted = true;
+
             return Card(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
@@ -3162,89 +2359,28 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   void searchProductOrService() {
     clearSearchedListItems();
     getProductOrServiceList();
-    // if (isProductSearch) {
-    //   searchProduct();
-    // } else if (isServiceSearch) {
-    //   searchService();
-    // }
   }
 
   void clearSearchedListItems() {
-    // searchItemTextController.text = "";
     searchedProductAndService.clear();
     productOrServiceCount = 0;
     productOrServiceNext = "";
     productOrServicePrevious = "";
     if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
       bottomSheetStateSetterGlobal(() {});
-  }
-
-  void searchProduct() async {
-    if (searchItemTextController.text.length > 3) {
-      String url = getSearchUrl() + searchItemTextController.text;
-
-      searchedProductAndService.clear();
-      isProductAndServiceLoading = true;
-      noSearchedItem = false;
-      if (mounted) setState(() {});
-      if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
-        bottomSheetStateSetterGlobal(() {});
-
-      Map<String, dynamic> result =
-          await MessageAuth().searchProductAndServiceOfUser(url, "", "");
-
-      List tempList = result['results'];
-
-      tempList.forEach((result) {
-        debugPrint("product:- $result");
-        searchedProductAndService.add(Product.fromJson(result));
-      });
-
-      isProductAndServiceLoading = false;
-      if (searchedProductAndService.length == 0) noSearchedItem = true;
-      if (mounted) setState(() {});
-      if (bottomSheetStateSetterGlobal != null) {
-        if (bottomSheetMounted) bottomSheetStateSetterGlobal(() {});
-      }
-    }
-  }
-
-  void searchService() async {
-    if (searchItemTextController.text.length > 3) {
-      String url = getSearchUrl() + searchItemTextController.text;
-
-      searchedProductAndService.clear();
-      isProductAndServiceLoading = true;
-      noSearchedItem = false;
-      if (mounted) setState(() {});
-      if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
-        bottomSheetStateSetterGlobal(() {});
-
-      Map<String, dynamic> result =
-          await MessageAuth().searchProductAndServiceOfUser(url, "", "");
-
-      List tempList = result['results'];
-
-      tempList.forEach((result) {
-        searchedProductAndService.add(Service.fromJson(result));
-      });
-
-      isProductAndServiceLoading = false;
-      if (searchedProductAndService.length == 0) noSearchedItem = true;
-      if (mounted) setState(() {});
-      if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
-        bottomSheetStateSetterGlobal(() {});
-    }
+    if (mounted) setState(() {});
   }
 
   void getProductOrServiceList() async {
     String url = getSearchUrl() + searchItemTextController.text;
 
-    if (!isProductOrServiceLoading) {
-      if (productOrServiceNext != null && !isProductOrServiceLoading) {
-        isProductOrServiceLoading = true;
+    if (!isItemLoading) {
+      if (productOrServiceNext != null && !isItemLoading) {
+        isItemLoading = true;
+
         if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
           bottomSheetStateSetterGlobal(() {});
+        if (mounted) setState(() {});
 
         Map<String, dynamic> result = await MessageAuth()
             .searchProductAndServiceOfUser(
@@ -3254,7 +2390,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         productOrServicePrevious = result['previous'];
         List tempList = result['results'];
 
-        isProductOrServiceLoading = false;
+        isItemLoading = false;
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+          bottomSheetStateSetterGlobal(() {});
+        if (mounted) setState(() {});
 
         tempList.forEach((item) {
           if (isProductSearch) {
@@ -3266,11 +2405,13 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
         if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
           bottomSheetStateSetterGlobal(() {});
+        if (mounted) setState(() {});
       }
       if (searchedProductAndService.isEmpty) {
         noSearchedItem = true;
         if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
           bottomSheetStateSetterGlobal(() {});
+        if (mounted) setState(() {});
       }
     }
   }
@@ -3340,120 +2481,89 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   Widget bottomSheetTabBar() {
-    return DefaultTabController(
-      length: 2,
-      child: Column(
-        children: [
-          Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: bottomSheetTabBars()),
-          SizedBox(
-            height: 8,
-          ),
-          Expanded(child: bottomSheetTabViews())
-        ],
-      ),
+    return Column(
+      children: [
+        Container(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: bottomSheetTabBars()),
+        SizedBox(
+          height: 8,
+        ),
+        Expanded(child: bottomSheetTabViews())
+      ],
     );
   }
 
   Widget bottomSheetTabBars() {
     return PreferredSize(
-      preferredSize: Size.fromHeight(50.0),
-      child: TabBar(
-        labelPadding: EdgeInsets.zero,
-        indicator: BoxDecoration(),
-        onTap: (int index) {
-          bottomSheetSearchIndex = index;
-          setState(() {});
-          clearSearchedListItems();
-          if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
-            bottomSheetStateSetterGlobal(() {});
-          searchProductOrService();
-        },
-        tabs: [
-          Tab(
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 8),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                shape: BoxShape.rectangle,
-                color: bottomSheetSearchIndex == 0
-                    ? navyBlue.withOpacity(0.1)
-                    : Colors.white,
-              ),
-              child: Text(
-                "From partner",
-                style: TextStyle(
-                  color: bottomSheetSearchIndex == 0 ? navyBlue : blackFont,
-                  fontSize: 14,
-                  fontWeight: bottomSheetSearchIndex == 0
-                      ? FontWeight.w600
-                      : FontWeight.w400,
+        preferredSize: Size.fromHeight(50.0),
+        child: Row(
+          children: [
+            GestureDetector(
+              onTap: () {
+                bottomSheetSearchIndex = 0;
+                clearSearchedListItems();
+                bottomSheetStateSetterGlobal(() {});
+                setState(() {});
+                searchProductOrService();
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  shape: BoxShape.rectangle,
+                  color: bottomSheetSearchIndex == 0
+                      ? navyBlue.withOpacity(0.1)
+                      : Colors.white,
+                ),
+                child: Text(
+                  "From partner",
+                  style: TextStyle(
+                    color: bottomSheetSearchIndex == 0 ? navyBlue : blackFont,
+                    fontSize: 14,
+                    fontWeight: bottomSheetSearchIndex == 0
+                        ? FontWeight.w600
+                        : FontWeight.w400,
+                  ),
                 ),
               ),
             ),
-          ),
-          Tab(
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 8),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                shape: BoxShape.rectangle,
-                color: bottomSheetSearchIndex == 1
-                    ? navyBlue.withOpacity(0.1)
-                    : Colors.white,
-              ),
-              child: Text(
-                "From Mine",
-                style: TextStyle(
-                  color: bottomSheetSearchIndex == 1 ? navyBlue : blackFont,
-                  fontSize: 14,
-                  fontWeight: bottomSheetSearchIndex == 1
-                      ? FontWeight.w600
-                      : FontWeight.w400,
+            GestureDetector(
+              onTap: () {
+                bottomSheetSearchIndex = 1;
+                clearSearchedListItems();
+                bottomSheetStateSetterGlobal(() {});
+                setState(() {});
+                searchProductOrService();
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  shape: BoxShape.rectangle,
+                  color: bottomSheetSearchIndex == 1
+                      ? navyBlue.withOpacity(0.1)
+                      : Colors.white,
+                ),
+                child: Text(
+                  "From Mine",
+                  style: TextStyle(
+                    color: bottomSheetSearchIndex == 1 ? navyBlue : blackFont,
+                    fontSize: 14,
+                    fontWeight: bottomSheetSearchIndex == 1
+                        ? FontWeight.w600
+                        : FontWeight.w400,
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ));
   }
 
   Widget bottomSheetTabViews() {
-    return searchedItemsListView();
-  }
-
-  Widget searchedItemsListView() {
     return pullToRefresh();
   }
-  // Widget searchedItemsListView() {
-  //   return isProductAndServiceLoading
-  //       ? Center(
-  //           child: CircularLoadingIndicator(),
-  //         )
-  //       : searchItemTextController.text.isEmpty
-  //           ? NoItemInList(
-  //               msg: AppLocalization.of(context).pleaseTypeSomethingToGetResult,
-  //               isResult: false,
-  //             )
-  //           : noSearchedItem
-  //               ? NoItemInList(
-  //                   msg: AppLocalization.of(context).noResultFound,
-  //                   isResult: true,
-  //                 )
-  //               : ListView(
-  //                   scrollDirection: Axis.vertical,
-  //                   children: searchedProductAndService
-  //                       .map((item) => GestureDetector(
-  //                           onTap: () {
-  //                             addProductOrServiceToChat(item);
-  //                             Navigator.pop(context);
-  //                           },
-  //                           child: getResultTile(item)))
-  //                       .toList(),
-  //                 );
-  // }
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
@@ -3477,24 +2587,28 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   Widget pullToRefresh() {
-    return SmartRefresher(
-      enablePullDown: true,
-      header: WaterDropHeader(
-        complete: Container(),
-        waterDropColor: navyBlue,
-      ),
-      controller: _refreshController,
-      onRefresh: _onRefresh,
-      child: isProductAndServiceLoading
-          ? _buildIndicatorForProductAndService()
-          : buildProductOrServiceList(),
-    );
+    return searchItemTextController.text.isEmpty
+        ? NoItemInList(
+            msg: AppLocalization.of(context).pleaseTypeSomethingToGetResult,
+            isResult: false,
+          )
+        : SmartRefresher(
+            enablePullDown: true,
+            header: WaterDropHeader(
+              complete: Container(),
+              waterDropColor: navyBlue,
+            ),
+            controller: _refreshController,
+            onRefresh: _onRefresh,
+            child: buildProductOrServiceList(),
+          );
   }
 
   Widget buildProductOrServiceList() {
     return noSearchedItem
         ? NoItemInList(
             msg: AppLocalization.of(context).noResultFound,
+            isResult: true,
           )
         : ListView.builder(
             padding: EdgeInsets.symmetric(vertical: 4),
@@ -3518,8 +2632,14 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   Widget _buildIndicatorForProductAndService() {
-    return isProductAndServiceLoading
-        ? Center(child: CircularLoadingIndicator())
-        : Container();
+    return Center(
+      child: isItemLoading
+          ? CircularProgressIndicator(
+              strokeWidth: 2.5,
+              valueColor: AlwaysStoppedAnimation(navyBlue),
+              backgroundColor: Colors.transparent,
+            )
+          : Container(),
+    );
   }
 }

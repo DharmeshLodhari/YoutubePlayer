@@ -249,10 +249,15 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
       onTap: () {
-        Navigator.of(context).pushNamed('/compose_message', arguments: {
-          'recipient': product.seller,
-          'subject': product.name,
-        });
+        if (isValidCustomer) {
+          Navigator.of(context).pushNamed('/compose_message', arguments: {
+            'recipient': product.seller,
+            'subject': product.name,
+          });
+        } else {
+          Toast.show("You can not message yourself !!", context,
+              textColor: Colors.white, duration: Toast.LENGTH_LONG);
+        }
       },
     );
   }
@@ -289,9 +294,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         } else {
           Toast.show(
               AppLocalization.of(context).youCanNotPurchaseThisItem, context,
-              textColor: Colors.white,
-              backgroundColor: darkBlue(),
-              duration: Toast.LENGTH_LONG);
+              textColor: Colors.white, duration: Toast.LENGTH_LONG);
         }
       },
     );
@@ -760,9 +763,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           } else {
             Toast.show(
                 AppLocalization.of(context).youCanNotPurchaseThisItem, context,
-                textColor: Colors.white,
-                backgroundColor: darkBlue(),
-                duration: Toast.LENGTH_LONG);
+                textColor: Colors.white, duration: Toast.LENGTH_LONG);
           }
         },
       ),
