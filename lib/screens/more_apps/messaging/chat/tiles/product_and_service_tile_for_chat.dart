@@ -38,19 +38,17 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
 
   @override
   void initState() {
-
-
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-
-    try {
+    if (widget.item["meta_data"] is String) {
       product = Product.fromJson(jsonDecode(widget.item["meta_data"]));
-    } catch (e) {
+    } else if (widget.item["meta_data"] is Map) {
       product = Product.fromJson(widget.item["meta_data"]);
     }
+
     basketBloc = Provider.of<BasketBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
     bool isSend = widget.item["author"] == userBloc.user.userName;
@@ -303,13 +301,11 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
 
   @override
   void initState() {
-
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-
     try {
       service = Service.fromJson(jsonDecode(widget.item["meta_data"]));
     } catch (e) {

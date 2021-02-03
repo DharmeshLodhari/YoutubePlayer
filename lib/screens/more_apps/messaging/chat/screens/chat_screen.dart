@@ -209,7 +209,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
     ChatUserManager().clearChatUserMessageCount(
         conversationId: recipientUser.conversationId);
-
   }
 
   void setupNetworkConnectionListener() {
@@ -1402,10 +1401,11 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         item.id +
         "/";
 
-    var itemData = await ShoppingAuthService().getProductOrService(url);
+    Map<String, dynamic> itemData =
+        await ShoppingAuthService().getProductOrService(url);
 
     Map<String, dynamic> data = {
-      "meta_data": itemData,
+      "meta_data": jsonEncode(itemData),
       "check_id": Uuid().v4(),
       "conversation_id": recipientUser.conversationId,
       "author": userBloc.user.userName,
@@ -3160,15 +3160,17 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   void searchProductOrService() {
-    if (isProductSearch) {
-      searchProduct();
-    } else if (isServiceSearch) {
-      searchService();
-    }
+    clearSearchedListItems();
+    getProductOrServiceList();
+    // if (isProductSearch) {
+    //   searchProduct();
+    // } else if (isServiceSearch) {
+    //   searchService();
+    // }
   }
 
   void clearSearchedListItems() {
-    searchItemTextController.text = "";
+    // searchItemTextController.text = "";
     searchedProductAndService.clear();
     productOrServiceCount = 0;
     productOrServiceNext = "";
@@ -3363,6 +3365,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         onTap: (int index) {
           bottomSheetSearchIndex = index;
           setState(() {});
+          clearSearchedListItems();
           if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
             bottomSheetStateSetterGlobal(() {});
           searchProductOrService();
@@ -3422,32 +3425,35 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   Widget searchedItemsListView() {
-    return isProductAndServiceLoading
-        ? Center(
-            child: CircularLoadingIndicator(),
-          )
-        : searchItemTextController.text.isEmpty
-            ? NoItemInList(
-                msg: AppLocalization.of(context).pleaseTypeSomethingToGetResult,
-                isResult: false,
-              )
-            : noSearchedItem
-                ? NoItemInList(
-                    msg: AppLocalization.of(context).noResultFound,
-                    isResult: true,
-                  )
-                : ListView(
-                    scrollDirection: Axis.vertical,
-                    children: searchedProductAndService
-                        .map((item) => GestureDetector(
-                            onTap: () {
-                              addProductOrServiceToChat(item);
-                              Navigator.pop(context);
-                            },
-                            child: getResultTile(item)))
-                        .toList(),
-                  );
+    return pullToRefresh();
   }
+  // Widget searchedItemsListView() {
+  //   return isProductAndServiceLoading
+  //       ? Center(
+  //           child: CircularLoadingIndicator(),
+  //         )
+  //       : searchItemTextController.text.isEmpty
+  //           ? NoItemInList(
+  //               msg: AppLocalization.of(context).pleaseTypeSomethingToGetResult,
+  //               isResult: false,
+  //             )
+  //           : noSearchedItem
+  //               ? NoItemInList(
+  //                   msg: AppLocalization.of(context).noResultFound,
+  //                   isResult: true,
+  //                 )
+  //               : ListView(
+  //                   scrollDirection: Axis.vertical,
+  //                   children: searchedProductAndService
+  //                       .map((item) => GestureDetector(
+  //                           onTap: () {
+  //                             addProductOrServiceToChat(item);
+  //                             Navigator.pop(context);
+  //                           },
+  //                           child: getResultTile(item)))
+  //                       .toList(),
+  //                 );
+  // }
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
@@ -3479,7 +3485,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       ),
       controller: _refreshController,
       onRefresh: _onRefresh,
-      child: buildProductOrServiceList(),
+      child: isProductAndServiceLoading
+          ? _buildIndicatorForProductAndService()
+          : buildProductOrServiceList(),
     );
   }
 
@@ -3510,16 +3518,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   Widget _buildIndicatorForProductAndService() {
-    return isLoading
-        ? Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: new Center(
-              child: new Opacity(
-                opacity: isLoading ? 1.0 : 00,
-                child: CircularLoadingIndicator(),
-              ),
-            ),
-          )
+    return isProductAndServiceLoading
+        ? Center(child: CircularLoadingIndicator())
         : Container();
   }
 }
