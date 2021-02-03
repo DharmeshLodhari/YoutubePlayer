@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/product_and_service_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/product_and_service_tile_for_search.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/transaction_tile_for_chat.dart';
@@ -63,6 +64,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   /// Current chat users
   UserBloc userBloc;
   CustomerProfile recipientUser;
+  bool isRecipientLoading = false;
 
   /// Socket
   MainSocketProvider mainSocketProvider;
@@ -186,21 +188,17 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   void fetchRecipientUserIfNotAvailable() async {
-    // debugPrint(
-    //     "recipinet user conversation Id:- ${recipientUser.conversationId}");
     String recipientUserName = widget.arguments["recipientUserName"] ?? "";
-    debugPrint("RecipientUserName:-   $recipientUserName ");
+
     if (recipientUserName != "") {
-      debugPrint("if executed");
+      isRecipientLoading = true;
+      if (mounted) setState(() {});
 
       recipientUser = await UserAuth()
           .fetchContactProfile(widget.arguments["recipientUserName"]);
-      if (mounted) setState(() {});
 
-      debugPrint("recipientUser = ${recipientUser?.conversationId}");
-      debugPrint("recipientUser = ${recipientUser?.avatar}");
-      debugPrint("recipientUser = ${recipientUser?.fullName}");
-      debugPrint("recipientUser = ${recipientUser?.userName}");
+      isRecipientLoading = false;
+      if (mounted) setState(() {});
     }
 
     getPreviousMessages();
@@ -208,6 +206,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     initializeSocket();
     setUpAudioRecorder();
     setupNetworkConnectionListener();
+
+    ChatUserManager().clearChatUserMessageCount(
+        conversationId: recipientUser.conversationId);
+
   }
 
   void setupNetworkConnectionListener() {
@@ -252,16 +254,12 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   void disposeAudioPlayers() {
-    // debugPrint(
-    //     "Audio Players count:- ${AssetsAudioPlayer.allPlayers().length}");
-
     messageList.forEach((element) {
       Map<String, dynamic> messageData = jsonDecode(element);
 
       AssetsAudioPlayer.allPlayers().forEach((key, value) {
         if (value.id == messageData["id"]) {
           value.dispose();
-          // debugPrint("Audio Player dispose ${value.id}");
         }
       });
     });
@@ -792,18 +790,20 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   Widget getUserIcon() => Container(
         height: 36,
         width: 36,
-        child: ClipOval(
-          child: CachedNetworkImage(
-            imageUrl: recipientUser != null
-                ? recipientUser.avatar ??
-                    "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png"
-                : "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png",
-            colorBlendMode: BlendMode.darken,
-            fit: BoxFit.fill,
-            filterQuality: FilterQuality.high,
-            errorWidget: imageErrorWidget,
-          ),
-        ),
+        child: isRecipientLoading
+            ? CircularLoadingIndicator()
+            : ClipOval(
+                child: CachedNetworkImage(
+                  imageUrl: recipientUser != null
+                      ? recipientUser.avatar ??
+                          "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png"
+                      : "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png",
+                  colorBlendMode: BlendMode.darken,
+                  fit: BoxFit.fill,
+                  filterQuality: FilterQuality.high,
+                  errorWidget: imageErrorWidget,
+                ),
+              ),
       );
 
   Widget userProfileIcon() {
@@ -1343,6 +1343,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                 prefix: Padding(
                   padding: EdgeInsets.only(left: 16),
                 ),
+                suffix: Padding(
+                  padding: EdgeInsets.only(right: 36),
+                ),
                 // suffixIcon: captureImageOrVideo(),
                 contentPadding: EdgeInsets.symmetric(vertical: 10),
                 isDense: true,
@@ -1871,15 +1874,17 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
           Expanded(
             child: Stack(
               children: [
-                Theme(
-                  data: ThemeData(highlightColor: navyBlue),
-                  child: Scrollbar(
-                    controller: messageScrollController,
-                    radius: Radius.circular(10),
-                    thickness: 3,
-                    child: messageListBuilder(),
-                  ),
-                ),
+                isRecipientLoading
+                    ? Center(child: CircularLoadingIndicator())
+                    : Theme(
+                        data: ThemeData(highlightColor: navyBlue),
+                        child: Scrollbar(
+                          controller: messageScrollController,
+                          radius: Radius.circular(10),
+                          thickness: 3,
+                          child: messageListBuilder(),
+                        ),
+                      ),
                 isAudioRecording ? getAudioRecordingWidget() : Container(),
               ],
             ),
