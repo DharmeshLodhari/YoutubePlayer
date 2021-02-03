@@ -258,23 +258,36 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
     /// Canceled
     /// None
 
-    paymentActionStatus = "None";
-    paymentActionTime = DateTime.now().toString();
-    //  widget.message['meta_data']['payment_action_status']
-    //  widget.message['meta_data']['updated_at']
-
+    if (jsonDecode(widget.message['meta_data']) != {}) {
+      Map<String, dynamic> details = jsonDecode(widget.message['meta_data']);
+      try {
+        if (details['payment_action_status'] != null) {
+          paymentActionStatus =
+              details['payment_action_status'].toString() ?? "None";
+        }
+        if (details['updated_at'] != null) {
+          paymentActionTime =
+              details['updated_at'].toString() ?? DateTime.now().toString();
+        }
+      } catch (e) {
+        paymentActionStatus = "None";
+        paymentActionTime = DateTime.now().toString();
+        debugPrint("ERROROR:- $e");
+      }
+    } else {
+      paymentActionStatus = "None";
+      paymentActionTime = DateTime.now().toString();
+    }
     // debugPrint("paymentRequest - ${widget.message}");
 
-    if(widget.message['text'] is String)
-      {
-        paymentRequest = PaymentRequest.fromJson(jsonDecode(widget.message['text']),
-            currentUser: widget.userBloc.user);
-      }
-    else if (widget.message['text'] is Map)
-      {
-        paymentRequest = PaymentRequest.fromJson(widget.message['text'],
-            currentUser: widget.userBloc.user);
-      }
+    if (widget.message['text'] is String) {
+      paymentRequest = PaymentRequest.fromJson(
+          jsonDecode(widget.message['text']),
+          currentUser: widget.userBloc.user);
+    } else if (widget.message['text'] is Map) {
+      paymentRequest = PaymentRequest.fromJson(widget.message['text'],
+          currentUser: widget.userBloc.user);
+    }
 
     bool isSend = widget.message["author"] == widget.userBloc.user.userName;
 
@@ -515,7 +528,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
         isValidCallback: () async {
           var response = await PaymentAndBankingAuth().acceptPaymentRequests(
               paymentRequest,
-              messageId: widget.message["message_id"]);
+              messageId: widget.message["id"]);
 
           if (response.statusCode == 200) {
             Toast.show("Payment request fulfilled !!", context,
@@ -531,9 +544,8 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
   }
 
   void rejectOrCancelPaymentRequest() async {
-    var result = await PaymentAndBankingAuth().rejectPaymentRequests(
-        paymentRequest,
-        messageId: widget.message["message_id"]);
+    var result = await PaymentAndBankingAuth()
+        .rejectPaymentRequests(paymentRequest, messageId: widget.message["id"]);
     if (result) {
       Toast.show("Payment status updated successfully !!", context,
           gravity: Toast.TOP, textColor: Colors.white);

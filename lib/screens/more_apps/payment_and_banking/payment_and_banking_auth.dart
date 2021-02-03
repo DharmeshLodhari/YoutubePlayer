@@ -175,6 +175,8 @@ class PaymentAndBankingAuth extends AuthService {
   Future<http.Response> acceptPaymentRequests(PaymentRequest paymentRequest,
       {String messageId}) async {
     var url = secureBaseUrl + "/api/v1/transactions/request-payment/accept/";
+    debugPrint("messageId:- $messageId");
+
     if (messageId != null) {
       url += "?message-id=$messageId";
     }
