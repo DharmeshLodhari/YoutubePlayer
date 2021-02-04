@@ -276,7 +276,7 @@ class _RequestPaymentState extends State<RequestPayment> {
                     ),
                   ),
                   Expanded(
-                      flex: MediaQuery.of(context).size.height<600  ?2:3,
+                      flex: MediaQuery.of(context).size.height < 600 ? 2 : 3,
                       child: Container(
                         child: Column(
                           children: [
@@ -753,11 +753,8 @@ class _RequestPaymentState extends State<RequestPayment> {
     if (selectedCategory != null) {
       return true;
     } else {
-      Toast.show(AppLocalization.of(context).selectCategory, context,
-          backgroundColor: darkBlue(),
-          textColor: Colors.white,
-          gravity: Toast.CENTER);
-      return false;
+      selectedCategory = "General";
+      return true;
     }
   }
 

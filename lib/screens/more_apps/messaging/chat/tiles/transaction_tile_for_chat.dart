@@ -244,7 +244,7 @@ class PaymentRequestTileForChat extends StatefulWidget {
 class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
   PaymentRequest paymentRequest;
   String paymentActionStatus;
-  String paymentActionTime;
+  String paymentActionTime = DateTime.now().toString();
   @override
   void initState() {
     super.initState();
@@ -258,8 +258,9 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
     /// Canceled
     /// None
 
-    if (jsonDecode(widget.message['meta_data']) != {}) {
-      Map<String, dynamic> details = jsonDecode(widget.message['meta_data']);
+    Map<String, dynamic> details = jsonDecode(widget.message['meta_data']);
+    if (details.isNotEmpty) {
+      debugPrint("Meta_data $details");
       try {
         if (details['payment_action_status'] != null) {
           paymentActionStatus =

@@ -627,6 +627,7 @@ class _SendPaymentState extends State<SendPayment> {
             ));
     if (pressedCategory != null) {
       selectedCategory = pressedCategory;
+      debugPrint("selected category $selectedCategory");
       setState(() {});
     }
   }
@@ -938,11 +939,8 @@ class _SendPaymentState extends State<SendPayment> {
     if (selectedCategory != null) {
       return true;
     } else {
-      Toast.show(AppLocalization.of(context).selectCategory, context,
-          backgroundColor: darkBlue(),
-          textColor: Colors.white,
-          gravity: Toast.CENTER);
-      return false;
+      selectedCategory = "General";
+      return true;
     }
   }
 
