@@ -44,7 +44,7 @@ class _EventTicketDetailState extends State<EventTicketDetail> {
           size: 24,
         ),
         onPressed: () {
-          // _busDashboardBloc.index = 0;
+          _eventDashboardBloc.index = 0;
           Navigator.pop(context);
         },
       ),

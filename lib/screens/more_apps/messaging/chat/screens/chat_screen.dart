@@ -182,7 +182,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
     super.initState();
 
-    /// add the observer
+    /// by adding observer in this screen we can listen the app life cycle state
+    /// on this screen by this method
+    // lib/screens/more_apps/messaging/chat/screens/chat_screen.dart:294
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -2481,6 +2483,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     );
   }
 
+  // ignore: missing_return
   IconData getSearchTypeIcon() {
     if (selectedMenuItemIndex == 1) {
       return SlydoAppIcon.note_2;

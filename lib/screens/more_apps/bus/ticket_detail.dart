@@ -62,7 +62,7 @@ class _TicketDetailState extends State<TicketDetail> {
           size: 24,
         ),
         onPressed: () {
-          // _busDashboardBloc.index = 0;
+          _busDashboardBloc.index = 0;
           Navigator.pop(context);
         },
       ),

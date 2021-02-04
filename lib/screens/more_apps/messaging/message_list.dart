@@ -3,7 +3,6 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/models/message.dart';
 import 'package:Slydo/screens/more_apps/messaging/tiles/message.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
-import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -460,7 +459,6 @@ class VerticalListItem extends StatefulWidget {
 }
 
 class _VerticalListItemState extends State<VerticalListItem> {
-  final _auth = AuthService();
   bool isExpanded = false;
 
   @override

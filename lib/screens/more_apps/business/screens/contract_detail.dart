@@ -2,7 +2,6 @@ import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/business/models/Contract.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
-import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -31,8 +30,6 @@ class _ContractDetailState extends State<ContractDetail> {
   bool isLoading = false;
 
   _ContractDetailState({this.arguments});
-
-  final _auth = AuthService();
 
   @override
   void initState() {

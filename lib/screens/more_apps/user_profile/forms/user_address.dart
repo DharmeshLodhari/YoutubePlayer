@@ -1,5 +1,4 @@
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/country_picker/country.dart';
 import 'package:Slydo/utils/country_picker/country_picker_dialog.dart';
@@ -20,7 +19,6 @@ class UserAddress extends StatefulWidget {
 }
 
 class _UserAddressState extends State<UserAddress> {
-  final _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
   String errorMessage = "";
 

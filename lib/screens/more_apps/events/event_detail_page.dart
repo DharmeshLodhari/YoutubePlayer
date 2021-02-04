@@ -55,6 +55,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
     _eventDashboardBloc = Provider.of<EventDashboardBloc>(context);
     return WillPopScope(
       onWillPop: () {
+        _eventDashboardBloc.index = 0;
         return Future.value(true);
       },
       child: Scaffold(

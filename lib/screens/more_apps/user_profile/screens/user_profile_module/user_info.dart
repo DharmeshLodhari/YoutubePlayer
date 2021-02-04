@@ -92,7 +92,6 @@ class _UserInfoState extends State<UserInfo> {
   final GlobalKey<ScaffoldState> _scaffoldUserInfoKey =
       new GlobalKey<ScaffoldState>();
 
-  final _auth = AuthService();
   CustomerProfileBloc customerProfileBloc;
 
   @override

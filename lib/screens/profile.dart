@@ -3,7 +3,6 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/noItemInList.dart';
@@ -47,8 +46,6 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
       new GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldState> _serviceScaffoldKey =
       new GlobalKey<ScaffoldState>();
-
-  final _auth = AuthService();
 
   // this variable responsible for product pagination
   int productCount = 0;

@@ -6,7 +6,6 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/property/models/PropertyType.dart';
 import 'package:Slydo/screens/more_apps/property/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -32,7 +31,6 @@ class AddProperty extends StatefulWidget {
 }
 
 class _AddPropertyState extends State<AddProperty> {
-  final _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
 
   UserBloc userBloc;
@@ -165,26 +163,26 @@ class _AddPropertyState extends State<AddProperty> {
   VideoPlayerController _controller;
   VideoPlayerController _toBeDisposed;
 
-  Text _getRetrieveErrorWidget() {
-    return null;
-  }
+  // Text _getRetrieveErrorWidget() {
+  //   return null;
+  // }
 
-  Widget _previewVideo() {
-    final Text retrieveError = _getRetrieveErrorWidget();
-    if (retrieveError != null) {
-      return retrieveError;
-    }
-    if (_controller == null) {
-      return const Text(
-        'You have not yet picked a video',
-        textAlign: TextAlign.center,
-      );
-    }
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: AspectRatioVideo(_controller),
-    );
-  }
+  // Widget _previewVideo() {
+  //   final Text retrieveError = _getRetrieveErrorWidget();
+  //   if (retrieveError != null) {
+  //     return retrieveError;
+  //   }
+  //   if (_controller == null) {
+  //     return const Text(
+  //       'You have not yet picked a video',
+  //       textAlign: TextAlign.center,
+  //     );
+  //   }
+  //   return Padding(
+  //     padding: const EdgeInsets.all(10.0),
+  //     child: AspectRatioVideo(_controller),
+  //   );
+  // }
 
   Widget scaffoldBody() {
     return SingleChildScrollView(

@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/business/models/Contract.dart';
@@ -60,7 +58,6 @@ class _ContractTileState extends State<ContractTile> {
   }
 
   Widget getPaymentDuration() {
-    bool isPaid = Random().nextBool();
     return Container(
       padding: EdgeInsets.symmetric(vertical: 2, horizontal: 4),
       decoration: BoxDecoration(

@@ -59,8 +59,14 @@ class _EventTicketDetailState extends State<EventTicketDetail> {
 
   Widget scaffoldBody() {
     _hotelDashboardBloc = Provider.of<HotelDashboardBloc>(context);
-    return SingleChildScrollView(
-      child: ticketWithImage(),
+    return WillPopScope(
+      onWillPop: () async {
+        _hotelDashboardBloc.index = 0;
+        return Future.value(true);
+      },
+      child: SingleChildScrollView(
+        child: ticketWithImage(),
+      ),
     );
   }
 

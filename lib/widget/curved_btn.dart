@@ -15,7 +15,8 @@ class CurvedButton extends StatelessWidget {
       this.textColor,
       this.backgroundColor,
       this.onPressed,
-      this.height = 42,this.borderRadius = 7});
+      this.height = 42,
+      this.borderRadius = 7});
 
   @override
   Widget build(BuildContext context) {

@@ -3,10 +3,7 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/tiles/transaction.da
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/noItemInList.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:toast/toast.dart';
 
 import '../business_auth.dart';
 
@@ -25,8 +22,8 @@ class _ContractTransactionHistoryState
   String previous = "";
   List transactionList = [];
   ScrollController _scrollController = new ScrollController();
-  RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
+  // RefreshController _refreshController =
+  //     RefreshController(initialRefresh: false);
   bool isLoading = false;
   bool noItemInList = false;
 
@@ -80,27 +77,27 @@ class _ContractTransactionHistoryState
     }
   }
 
-  void _onRefresh() async {
-    //check network connectivity and if true then refresh the list
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        count = 0;
-        next = "";
-        previous = "";
-        transactionList = [];
-        noItemInList = false;
-        getList();
-        _refreshController.refreshCompleted();
-      } else {
-        Toast.show(
-            AppLocalization.of(context).internetConnectionNotAvailable, context,
-            gravity: Toast.BOTTOM, backgroundColor: darkBlue());
-        _refreshController.refreshCompleted();
-      }
-    });
-  }
+  // void _onRefresh() async {
+  //   //check network connectivity and if true then refresh the list
+  //   Connectivity().checkConnectivity().then((value) {
+  //     var connectionResult = value;
+  //     if (connectionResult == ConnectivityResult.wifi ||
+  //         connectionResult == ConnectivityResult.mobile) {
+  //       count = 0;
+  //       next = "";
+  //       previous = "";
+  //       transactionList = [];
+  //       noItemInList = false;
+  //       getList();
+  //       _refreshController.refreshCompleted();
+  //     } else {
+  //       Toast.show(
+  //           AppLocalization.of(context).internetConnectionNotAvailable, context,
+  //           gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+  //       _refreshController.refreshCompleted();
+  //     }
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {

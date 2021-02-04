@@ -28,7 +28,6 @@ class ShoppingExploreScreen extends StatefulWidget {
 class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
   CarouselController _carouselController = CarouselController();
 
-  DashboardBloc _dashboardBloc;
   ShoppingDashboardBloc shoppingDashboardBloc;
 
   BasketBloc basketBloc;
@@ -123,7 +122,6 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
 
   @override
   Widget build(BuildContext context) {
-    _dashboardBloc = Provider.of<DashboardBloc>(context);
     shoppingDashboardBloc = Provider.of<ShoppingDashboardBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
     return Scaffold(

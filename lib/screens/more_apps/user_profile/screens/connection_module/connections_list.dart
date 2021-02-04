@@ -2,7 +2,6 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/tiles/user.dart';
-import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -27,7 +26,6 @@ class ConnectionList extends StatefulWidget {
 class _ConnectionListState extends State<ConnectionList> {
   final GlobalKey<ScaffoldState> _scaffoldContactsListKey =
       new GlobalKey<ScaffoldState>();
-  final _auth = AuthService();
   SlidableController _slideController;
   int count = 0;
   String next = "";
@@ -339,7 +337,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
         ChatUserManager().clearChatUserMessageCount(
             conversationId: widget.user.conversationId);
 
-        var result = await Navigator.pushNamed(context, '/chat-screen',
+        await Navigator.pushNamed(context, '/chat-screen',
             arguments: {"searchedUser": widget.user});
         setState(() {});
       },

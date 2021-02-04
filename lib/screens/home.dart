@@ -1,7 +1,6 @@
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -24,7 +23,6 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final GlobalKey<ScaffoldState> _scaffoldHomeKey =
       new GlobalKey<ScaffoldState>();
-  AuthService _auth = AuthService();
   UserBloc userBloc;
 
   MainSocketProvider socketProvider;
@@ -178,8 +176,7 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                   onTap: () async {
-                    var result = await Navigator.of(context)
-                        .pushNamed('/friends-dashboard');
+                    await Navigator.of(context).pushNamed('/friends-dashboard');
                     setState(() {});
                   },
                 ),

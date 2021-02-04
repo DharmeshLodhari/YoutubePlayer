@@ -7,10 +7,7 @@ import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:toast/toast.dart';
 
 import 'event_auth.dart';
 import 'models/PartialEventItem.dart';
@@ -40,8 +37,8 @@ class _SearchEventState extends State<SearchEvent> {
   List<PartialEventItem> eventList = [];
 
   bool isLoading = false;
-  RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
+  // RefreshController _refreshController =
+  //     RefreshController(initialRefresh: false);
 
   void getResult() async {
     isLoading = true;
@@ -59,21 +56,21 @@ class _SearchEventState extends State<SearchEvent> {
     super.initState();
   }
 
-  void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        getResult();
-        _refreshController.refreshCompleted();
-      } else {
-        Toast.show(
-            AppLocalization.of(context).internetConnectionNotAvailable, context,
-            gravity: Toast.BOTTOM, backgroundColor: navyBlue);
-        _refreshController.refreshCompleted();
-      }
-    });
-  }
+  // void _onRefresh() async {
+  //   Connectivity().checkConnectivity().then((value) {
+  //     var connectionResult = value;
+  //     if (connectionResult == ConnectivityResult.wifi ||
+  //         connectionResult == ConnectivityResult.mobile) {
+  //       getResult();
+  //       _refreshController.refreshCompleted();
+  //     } else {
+  //       Toast.show(
+  //           AppLocalization.of(context).internetConnectionNotAvailable, context,
+  //           gravity: Toast.BOTTOM, backgroundColor: navyBlue);
+  //       _refreshController.refreshCompleted();
+  //     }
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {

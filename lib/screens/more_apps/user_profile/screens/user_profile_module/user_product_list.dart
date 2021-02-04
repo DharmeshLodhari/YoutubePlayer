@@ -3,7 +3,6 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -30,8 +29,6 @@ class UserProductList extends StatefulWidget {
 }
 
 class _UserProductListState extends State<UserProductList> {
-  final _auth = AuthService();
-
   // this variable responsible for product pagination
   int productCount = 0;
   String productNext = "";

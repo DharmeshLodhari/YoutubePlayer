@@ -1,6 +1,5 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
-import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_credit_card/credit_card_widget.dart';
 import 'package:toast/toast.dart';
@@ -33,8 +32,6 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
 
   FocusNode cvvFocusNode = FocusNode();
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
-
-  final _auth = AuthService();
 
   Widget build(BuildContext context) {
     return WillPopScope(

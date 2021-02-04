@@ -64,7 +64,7 @@ class BusinessAuth extends AuthService {
     if (response.statusCode == 200) {
       List<Transaction> transactions = [];
       // This variable will hold list of transactions we got from server
-      var user = await getUser();
+      // var user = await getUser();
       var jsonData = json.decode(response.body);
 
       for (var item in jsonData["results"]) {

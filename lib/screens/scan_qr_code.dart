@@ -28,7 +28,6 @@ class _QRCodeViewState extends State<QRCodeView> {
   CustomerProfileBloc customerProfileBloc;
   UserBloc userBloc;
 
-  final _auth = AuthService();
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   var qrText = "";
   QRViewController controller;

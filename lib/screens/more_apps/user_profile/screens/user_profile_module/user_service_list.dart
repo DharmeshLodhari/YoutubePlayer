@@ -3,7 +3,6 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
@@ -29,7 +28,6 @@ class UserServiceList extends StatefulWidget {
 }
 
 class _UserServiceListState extends State<UserServiceList> {
-  final _auth = AuthService();
   final GlobalKey<ScaffoldState> _serviceScaffoldKey =
       new GlobalKey<ScaffoldState>();
 

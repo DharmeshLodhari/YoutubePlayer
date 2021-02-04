@@ -108,6 +108,9 @@ class MainSocketProvider extends ChangeNotifier {
 
   IOWebSocketChannel get channel => _channel;
 
+  /// this function will continually call periodically ping method to send
+  /// ping to the server we need to call it when socket connection established
+  /// in order to keep socket connection alive
   void pingServer() {
     if (_timerForPingServer?.isActive ?? false) {
       _timerForPingServer.cancel();
@@ -119,12 +122,7 @@ class MainSocketProvider extends ChangeNotifier {
     });
   }
 
-  bool checkSocketConnection() {
-    if (_isConnected) {
-      return true;
-    } else {}
-  }
-
+  /// this method will ping the server
   void ping() async {
     var currentTime = DateTime.now();
 
@@ -226,6 +224,7 @@ class MainSocketProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// for reconnection the socket connection
   void reconnectSocket() {
     if (_isConnected) {
       _timerForRetryConnection?.cancel();
@@ -283,6 +282,9 @@ class MainSocketProvider extends ChangeNotifier {
     return await addDataInTheCorrectOrder();
   }
 
+  /// adding all the queue data to the socket when socket connection is alive
+  /// if socket connection is not alive then it will reconnect the socket and send
+  /// all the data in correct order
   Future<bool> addDataInTheCorrectOrder() async {
     try {
       if (_isConnected) {
@@ -326,6 +328,7 @@ class MainSocketProvider extends ChangeNotifier {
     return false;
   }
 
+  /// checking internet connectivity
   Future<bool> checkConnection() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
 
@@ -335,6 +338,7 @@ class MainSocketProvider extends ChangeNotifier {
     return true;
   }
 
+  /// for closing all the subscription which are alive
   Future<void> close() async {
     _timerForRetryConnection?.cancel();
 

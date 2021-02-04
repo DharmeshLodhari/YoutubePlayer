@@ -26,7 +26,7 @@ class MaterialControls extends StatefulWidget {
 
 class _MaterialControlsState extends State<MaterialControls> {
   VideoPlayerValue _latestValue;
-  double _latestVolume;
+  // double _latestVolume;
   bool _hideStuff = true;
   Timer _hideTimer;
   Timer _initTimer;
@@ -468,77 +468,77 @@ class _MaterialControlsState extends State<MaterialControls> {
     }
   }
 
-  GestureDetector _buildMuteButton(
-    VideoPlayerController controller,
-  ) {
-    return GestureDetector(
-      onTap: () {
-        _cancelAndRestartTimer();
+  // GestureDetector _buildMuteButton(
+  //   VideoPlayerController controller,
+  // ) {
+  //   return GestureDetector(
+  //     onTap: () {
+  //       _cancelAndRestartTimer();
+  //
+  //       if (_latestValue.volume == 0) {
+  //         controller.setVolume(_latestVolume ?? 0.5);
+  //       } else {
+  //         _latestVolume = controller.value.volume;
+  //         controller.setVolume(0.0);
+  //       }
+  //     },
+  //     child: AnimatedOpacity(
+  //       opacity: _hideStuff ? 0.0 : 1.0,
+  //       duration: Duration(milliseconds: 300),
+  //       child: ClipRect(
+  //         child: Container(
+  //           child: Container(
+  //             height: barHeight,
+  //             padding: EdgeInsets.only(
+  //               left: 8.0,
+  //               right: 8.0,
+  //             ),
+  //             child: Icon(
+  //               (_latestValue != null && _latestValue.volume > 0)
+  //                   ? Icons.volume_up
+  //                   : Icons.volume_off,
+  //             ),
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
-        if (_latestValue.volume == 0) {
-          controller.setVolume(_latestVolume ?? 0.5);
-        } else {
-          _latestVolume = controller.value.volume;
-          controller.setVolume(0.0);
-        }
-      },
-      child: AnimatedOpacity(
-        opacity: _hideStuff ? 0.0 : 1.0,
-        duration: Duration(milliseconds: 300),
-        child: ClipRect(
-          child: Container(
-            child: Container(
-              height: barHeight,
-              padding: EdgeInsets.only(
-                left: 8.0,
-                right: 8.0,
-              ),
-              child: Icon(
-                (_latestValue != null && _latestValue.volume > 0)
-                    ? Icons.volume_up
-                    : Icons.volume_off,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  // GestureDetector _buildPlayPause(VideoPlayerController controller) {
+  //   return GestureDetector(
+  //     onTap: _playPause,
+  //     child: Container(
+  //       height: barHeight,
+  //       color: Colors.transparent,
+  //       margin: EdgeInsets.only(left: 8.0, right: 4.0),
+  //       padding: EdgeInsets.only(
+  //         left: 12.0,
+  //         right: 12.0,
+  //       ),
+  //       child: Icon(
+  //         controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
+  //       ),
+  //     ),
+  //   );
+  // }
 
-  GestureDetector _buildPlayPause(VideoPlayerController controller) {
-    return GestureDetector(
-      onTap: _playPause,
-      child: Container(
-        height: barHeight,
-        color: Colors.transparent,
-        margin: EdgeInsets.only(left: 8.0, right: 4.0),
-        padding: EdgeInsets.only(
-          left: 12.0,
-          right: 12.0,
-        ),
-        child: Icon(
-          controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPosition(Color iconColor) {
-    final position = _latestValue != null && _latestValue.position != null
-        ? _latestValue.position
-        : Duration.zero;
-    final duration = _latestValue != null && _latestValue.duration != null
-        ? _latestValue.duration
-        : Duration.zero;
-
-    return Padding(
-      padding: EdgeInsets.only(right: 24.0),
-      child: Text(
-        '${formatDuration(position)} / ${formatDuration(duration)}',
-        style: TextStyle(fontSize: 14.0, color: Colors.white),
-      ),
-    );
-  }
+  // Widget _buildPosition(Color iconColor) {
+  //   final position = _latestValue != null && _latestValue.position != null
+  //       ? _latestValue.position
+  //       : Duration.zero;
+  //   final duration = _latestValue != null && _latestValue.duration != null
+  //       ? _latestValue.duration
+  //       : Duration.zero;
+  //
+  //   return Padding(
+  //     padding: EdgeInsets.only(right: 24.0),
+  //     child: Text(
+  //       '${formatDuration(position)} / ${formatDuration(duration)}',
+  //       style: TextStyle(fontSize: 14.0, color: Colors.white),
+  //     ),
+  //   );
+  // }
 
   Widget _buildRemainingDuration(Color iconColor) {
     final position = _latestValue != null && _latestValue.position != null

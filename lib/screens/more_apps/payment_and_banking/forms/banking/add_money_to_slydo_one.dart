@@ -1,6 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -21,7 +20,6 @@ class AddMoneyToSlydoOne extends StatefulWidget {
 }
 
 class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
-  final _auth = AuthService();
   final _formKeyTwo = GlobalKey<FormState>();
 
   UserBloc userBloc;

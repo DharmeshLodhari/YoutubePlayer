@@ -4,7 +4,6 @@ import 'package:Slydo/screens/more_apps/business/models/Invoice.dart';
 import 'package:Slydo/screens/more_apps/business/models/Item.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
-import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -40,7 +39,6 @@ class _AddInvoiceState extends State<AddInvoice> {
   FocusNode _recipientFocus = FocusNode();
   http.Response response;
 
-  final _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
   final _addInvoiceScaffoldKey = GlobalKey<ScaffoldState>();
   CustomerProfile _payee;

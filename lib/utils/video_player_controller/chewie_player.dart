@@ -201,7 +201,7 @@ class ChewieController extends ChangeNotifier {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ],
-    this.routePageBuilder = null,
+    this.routePageBuilder,
   }) : assert(videoPlayerController != null,
             'You must provide a controller to play a video') {
     _initialize();
@@ -283,6 +283,7 @@ class ChewieController extends ChangeNotifier {
 
   static ChewieController of(BuildContext context) {
     final chewieControllerProvider =
+        // ignore: deprecated_member_use
         context.inheritFromWidgetOfExactType(_ChewieControllerProvider)
             as _ChewieControllerProvider;
 

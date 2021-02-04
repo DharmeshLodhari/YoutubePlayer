@@ -420,5 +420,6 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
         ),
       );
     }
+    return Container();
   }
 }

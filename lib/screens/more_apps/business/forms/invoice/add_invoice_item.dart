@@ -1,8 +1,6 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/business/models/Item.dart';
-import 'package:Slydo/services/auth.dart';
-import 'package:Slydo/services/device_info.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -29,7 +27,6 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
 
   InvoiceItem _invoiceItem;
 
-  final _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
   final _addItemScaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -293,13 +290,12 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
 
     if (_formKey.currentState.validate()) {
       if (userBloc.user.userName != recipient) {
-        var userLocation;
-        Map deviceData;
         try {
-          deviceData = await getDeviceInfo();
           var data = {
             "amount": amount.toString().trim(),
           };
+
+          debugPrint(data.toString());
 
           _invoiceItem.name = _descriptionController.text.trim();
           _invoiceItem.amount = int.parse(_amountController.text.trim());

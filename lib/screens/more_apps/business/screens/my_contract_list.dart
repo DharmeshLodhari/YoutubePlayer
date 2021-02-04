@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/business/models/Contract.dart';
 import 'package:Slydo/screens/more_apps/business/tiles/contract_tile.dart';
@@ -126,8 +124,6 @@ class _MyContractListState extends State<MyContractList> {
   }
 
   List<Widget> listSecondaryActions(int index) {
-    bool isPause = Random().nextBool();
-
     // STOPPED = ("Stopped", _("Stopped"))
     // ENDED = ("Ended", _("Ended"))
     // ACTIVE = ("Active", _("Active"))

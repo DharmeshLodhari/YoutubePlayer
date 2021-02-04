@@ -45,8 +45,7 @@ class ChatUserManager {
   }
 
   void clearChatUserMessageCount({String conversationId}) async {
-    var result =
-        await _db.clearChatUserMessageCount(conversationId: conversationId);
+    await _db.clearChatUserMessageCount(conversationId: conversationId);
     return;
   }
 

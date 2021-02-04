@@ -1,5 +1,4 @@
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/country_picker/country.dart';
 import 'package:Slydo/utils/country_picker/country_picker_dialog.dart';
 import 'package:Slydo/utils/country_picker/utils.dart';
@@ -21,7 +20,6 @@ class _RegistrationState extends State<Registration> {
   final _registrationFormKey = GlobalKey<FormState>();
 
   String phoneNumberWithCountryCode = "";
-  final _auth = AuthService();
 
   Country _selectedDialogCountry = CountryPickerUtils.getCountryByIsoCode('NG');
 

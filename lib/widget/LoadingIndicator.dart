@@ -36,8 +36,8 @@ class CircularLoadingIndicator extends StatelessWidget {
 }
 
 class CircularLoadingIndicatorWithPercentage extends StatefulWidget {
-  double value;
-  Color color;
+  final double value;
+  final Color color;
 
   CircularLoadingIndicatorWithPercentage({this.value, this.color});
 

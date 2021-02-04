@@ -243,7 +243,7 @@ class PaymentRequestTileForChat extends StatefulWidget {
 
 class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
   PaymentRequest paymentRequest;
-  String paymentActionStatus;
+  String paymentActionStatus = "None";
   String paymentActionTime = DateTime.now().toString();
   @override
   void initState() {

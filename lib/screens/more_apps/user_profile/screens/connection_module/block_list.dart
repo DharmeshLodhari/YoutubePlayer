@@ -1,7 +1,6 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/tiles/user.dart';
-import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -26,7 +25,6 @@ class BlockList extends StatefulWidget {
 class _BlockListState extends State<BlockList> {
   final GlobalKey<ScaffoldState> _scaffoldBlockListKey =
       new GlobalKey<ScaffoldState>();
-  final _auth = AuthService();
   SlidableController _slideController;
   int count = 0;
   String next = "";

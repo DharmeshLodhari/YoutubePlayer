@@ -115,7 +115,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
     _propertyDashboardBloc = Provider.of<PropertyDashboardBloc>(context);
     return WillPopScope(
       onWillPop: () {
-        // _propertyDashboardBloc.index = 0;
+        _propertyDashboardBloc.index = 0;
         return Future.value(true);
       },
       child: Scaffold(

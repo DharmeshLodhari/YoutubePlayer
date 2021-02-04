@@ -1,5 +1,4 @@
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +22,6 @@ class _ResetPasswordState extends State<ResetPassword> {
 
   _ResetPasswordState({@required this.arguments});
 
-  final _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
   String newPassword = "";
   String confirmPassword = "";

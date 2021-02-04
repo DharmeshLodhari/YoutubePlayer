@@ -277,7 +277,7 @@ class DatabaseHelper {
       {String conversationId, String hashedMessage}) async {
     var dbClient = await db;
     try {
-      var result = await dbClient.execute(
+      await dbClient.execute(
           "UPDATE ChatUsers SET messageCount = messageCount + 1 , hashedMessage = ? where conversationId = ? AND hashedMessage != ?",
           [hashedMessage, conversationId, hashedMessage]);
       debugPrint("Chat message count updated from db");

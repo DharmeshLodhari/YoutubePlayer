@@ -1,4 +1,3 @@
-import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +22,6 @@ class _VerifyResetPasswordOTPScreenState
   TextEditingController otpController;
   String phoneNumber = '';
   FocusNode _pinPutFocusNode;
-  final _auth = AuthService();
 
   final _verifyOtpFormKey = GlobalKey<FormState>();
 
