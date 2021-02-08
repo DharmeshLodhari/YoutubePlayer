@@ -5,6 +5,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:toast/toast.dart';
 
 // ignore: must_be_immutable
@@ -255,21 +256,30 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
             SizedBox(
               height: 16,
             ),
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.symmetric(vertical: 14),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: blackFont.withOpacity(0.05),
+            GestureDetector(
+              child: Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(vertical: 14),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: blackFont.withOpacity(0.05),
+                ),
+                child: Text(
+                  "abcdefgr7512",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: blackFont,
+                      fontWeight: FontWeight.w700),
+                ),
               ),
-              child: Text(
-                "abcdefgr7512",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: 18,
-                    color: blackFont,
-                    fontWeight: FontWeight.w700),
-              ),
+              onTap: () {
+                Clipboard.setData(new ClipboardData(text: "abcdefgr7512"));
+                Toast.show("Reference number copied !!", context,
+                    gravity: Toast.BOTTOM,
+                    duration: Toast.LENGTH_LONG,
+                    textColor: Colors.white);
+              },
             ),
           ],
         ),

@@ -168,14 +168,17 @@ class PushNotificationService {
       debugPrint("payload : $payload");
       if (payload == "/request-payment") {
         Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
-        DashboardBloc _dashboardBloc = Provider.of<DashboardBloc>(context);
+        DashboardBloc _dashboardBloc =
+            Provider.of<DashboardBloc>(context, listen: false);
         _dashboardBloc.index = 1;
       } else if (payload == "/transaction") {
+        Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
         Navigator.of(context).pushNamed('/transactions');
       } else if (payload.length > 15 &&
           payload.substring(0, 16) == "/detail_message/") {
         //this variable will fetch the id of message from the response
         String idOfMessage = payload.replaceAll("/detail_message/", "");
+        Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
         Navigator.of(context).pushNamed('/detail_message', arguments: {
           'id': idOfMessage,
         });
@@ -185,6 +188,7 @@ class PushNotificationService {
         String recipientUsername = payload.replaceAll("/chat-screen/", "");
         print("Recipient user name = $recipientUsername");
 
+        Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
         Navigator.pushNamed(context, '/chat-screen',
             arguments: {"recipientUserName": recipientUsername});
       }
