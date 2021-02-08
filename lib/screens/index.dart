@@ -257,7 +257,7 @@ class _IndexState extends State<Index> {
     return Scaffold(
       backgroundColor: whiteBackground,
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Expanded(
             flex: 1,
@@ -275,6 +275,7 @@ class _IndexState extends State<Index> {
               child: Container(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     Expanded(
                       flex: 1,
@@ -318,7 +319,7 @@ class _IndexState extends State<Index> {
     return Scaffold(
       backgroundColor: whiteBackground,
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Expanded(
             flex: 1,
@@ -379,7 +380,7 @@ class _IndexState extends State<Index> {
     return Scaffold(
       backgroundColor: whiteBackground,
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Expanded(
             flex: 1,
@@ -440,7 +441,7 @@ class _IndexState extends State<Index> {
     return Scaffold(
       backgroundColor: whiteBackground,
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Expanded(
             flex: 1,
