@@ -185,6 +185,8 @@ class PaymentAndBankingAuth extends AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.patch(url, headers: headers, body: _data);
+    debugPrint("RESPONSE STATUS CODE:- ${response.statusCode}");
+    debugPrint("RESPONSE BODY:- ${response.body}");
     return response;
   }
 
@@ -205,8 +207,8 @@ class PaymentAndBankingAuth extends AuthService {
     var _data = jsonEncode(data);
     var response = await http.patch(url, headers: headers, body: _data);
 
-    debugPrint(
-        "RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+    debugPrint("RESPONSE STATUS CODE:- ${response.statusCode}");
+    debugPrint("RESPONSE BODY:- ${response.body}");
 
     if (response.statusCode == 200) {
       return true;
@@ -450,12 +452,15 @@ class PaymentAndBankingAuth extends AuthService {
 
   Future<Map<String, dynamic>> topUpAccountByBank(
       Map<String, dynamic> data) async {
-    var amount =
-        (double.parse(data["amount"]) - (double.parse(data["amount"]) * 0.03))
-            .toString();
-    await Future.delayed(Duration(seconds: 2));
-    // return Future.error("Something wrong please try later!");
-    return {"token": "123456789012", "amount": amount, "currency": "NGN"};
+    var url = secureBaseUrl + "/api/v1/transactions/get-payment-reference/";
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await http.post(url, headers: headers, body: _data);
+    if (response.statusCode == 201) {
+      return jsonDecode(response.body);
+    } else {
+      return Future.error("${response.body}");
+    }
   }
 
   Future<bool> confirmTopUpWithReferenceNumber(

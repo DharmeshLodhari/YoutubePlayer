@@ -58,7 +58,8 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
     return GestureDetector(
       onLongPress: () {
         if (transaction.description.isNotEmpty) {
-          Clipboard.setData(new ClipboardData(text: transaction.description));
+          Clipboard.setData(new ClipboardData(
+              text: messageDecoderWithEmoji(transaction.description)));
           Toast.show("Text copied !!", context,
               gravity: Toast.BOTTOM,
               duration: Toast.LENGTH_LONG,
@@ -110,7 +111,8 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
                               children: [
                                 Expanded(
                                   child: Text(
-                                    transaction.description,
+                                    messageDecoderWithEmoji(
+                                        transaction.description),
                                     maxLines: 1,
                                     style: TextStyle(
                                         fontWeight: FontWeight.w400,
@@ -259,8 +261,9 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
     /// None
 
     Map<String, dynamic> details = jsonDecode(widget.message['meta_data']);
+    debugPrint("details:- $details");
     if (details.isNotEmpty) {
-      debugPrint("Meta_data $details");
+      debugPrint("METADATA:- $details");
       try {
         if (details['payment_action_status'] != null) {
           paymentActionStatus =
@@ -295,8 +298,8 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
     return GestureDetector(
       onLongPress: () {
         if (paymentRequest.description.isNotEmpty) {
-          Clipboard.setData(
-              new ClipboardData(text: paymentRequest.description));
+          Clipboard.setData(new ClipboardData(
+              text: messageDecoderWithEmoji(paymentRequest.description)));
           Toast.show("Text copied !!", context,
               gravity: Toast.BOTTOM,
               duration: Toast.LENGTH_LONG,
@@ -348,7 +351,8 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                               children: [
                                 Expanded(
                                   child: Text(
-                                    paymentRequest.description,
+                                    messageDecoderWithEmoji(
+                                        paymentRequest.description),
                                     maxLines: 1,
                                     style: TextStyle(
                                         fontWeight: FontWeight.w400,

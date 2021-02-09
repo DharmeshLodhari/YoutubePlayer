@@ -137,10 +137,10 @@ class CustomerProfile {
 
   // Pass in as named parameter in constructor
   CustomerProfile({
-    this.fullName,
-    this.userName,
-    this.avatar,
-    this.qrCode,
+    this.fullName = "",
+    this.userName = "",
+    this.avatar = "",
+    this.qrCode = "",
     this.type = "user",
     this.conversationId = "",
     this.status = UserStatus.UNKNOWN,

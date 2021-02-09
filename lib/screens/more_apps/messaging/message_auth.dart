@@ -230,6 +230,7 @@ class MessageAuth extends AuthService {
   // List the  item with pagination
   Future<Map<String, dynamic>> searchProductAndServiceOfUser(
       String url, String next, String previous) async {
+    debugPrint("URl:- $url");
     if (next == null) {
       return null;
     }

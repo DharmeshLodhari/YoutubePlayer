@@ -116,6 +116,16 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
         child: Scaffold(
           backgroundColor: Colors.black,
           body: scaffoldBody(),
+          floatingActionButton: mediaType == "audio"
+              ? FloatingActionButton(
+                  backgroundColor: navyBlue,
+                  onPressed: sendMessage,
+                  child: Icon(
+                    Icons.send,
+                    color: Colors.white,
+                  ),
+                )
+              : null,
         ),
       ),
     );
@@ -151,102 +161,187 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
               )
             ],
           )),
-          Container(
-            color: Colors.white,
-            padding: EdgeInsets.symmetric(vertical: 8),
-            child: Row(
-              children: <Widget>[
-                SizedBox(
-                  width: 8,
-                ),
-                Expanded(child: getMessageTextFormField()),
-                InkWell(
-                  onTap: sendMessage,
+          mediaType != "audio"
+              ? Container(
+                  color: Colors.white,
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  constraints: BoxConstraints(
+                    maxHeight: 100,
+                  ),
                   child: Row(
-                    children: [
+                    children: <Widget>[
                       SizedBox(
                         width: 8,
                       ),
-                      Icon(
-                        Icons.send,
-                        color: navyBlue,
-                      ),
-                      SizedBox(
-                        width: 8,
+                      Expanded(child: getMessageTextFormField()),
+                      InkWell(
+                        onTap: sendMessage,
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              width: 8,
+                            ),
+                            Icon(
+                              Icons.send,
+                              color: navyBlue,
+                            ),
+                            SizedBox(
+                              width: 8,
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
-                ),
-              ],
-            ),
-          ),
+                )
+              : Container(),
         ],
       ),
     );
   }
 
   Widget getMessageTextFormField() {
-    return TextFormField(
-      controller: messageController,
-      autofocus: true,
-      textInputAction: TextInputAction.send,
-      onFieldSubmitted: (value) {
-        sendMessage();
-      },
-      cursorColor: blackFont,
-      cursorWidth: 1,
-      cursorHeight: 20,
-      cursorRadius: Radius.circular(16),
-      decoration: InputDecoration(
-        hintText: "Type message",
-        hintStyle: TextStyle(
-          color: darkGrey.withOpacity(0.5),
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-        ),
-        prefix: Padding(
-          padding: EdgeInsets.only(left: 12),
-        ),
-        contentPadding: EdgeInsets.symmetric(vertical: 10),
-        isDense: true,
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: greyBorderColor,
-            width: 1.0,
-          ),
-        ),
-        disabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: greyBorderColor,
-            width: 1.0,
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: navyBlue,
-            width: 1.0,
-          ),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: greyBorderColor,
-            width: 1.0,
-          ),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: greyBorderColor,
-            width: 1.0,
-          ),
-        ),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(3),
+      child: Container(
+        color: chatBackgroundColor,
+        child: Theme(
+            data: ThemeData(highlightColor: navyBlue.withOpacity(0.3)),
+            child: Scrollbar(
+              radius: Radius.circular(12),
+              thickness: 2.5,
+              child: TextFormField(
+                controller: messageController,
+                textInputAction: TextInputAction.send,
+                keyboardType: TextInputType.multiline,
+                autofocus: true,
+                onFieldSubmitted: (value) {
+                  sendMessage();
+                },
+                cursorColor: blackFont,
+                cursorWidth: 1,
+                cursorHeight: 20,
+                maxLines: null,
+                cursorRadius: Radius.circular(16),
+                decoration: InputDecoration(
+                  hintText: "Type a message",
+                  hintStyle: TextStyle(
+                    color: darkGrey,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  prefix: Padding(
+                    padding: EdgeInsets.only(left: 16),
+                  ),
+                  suffix: Padding(
+                    padding: EdgeInsets.only(right: 16),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(vertical: 10),
+                  isDense: true,
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(3),
+                    borderSide: BorderSide(
+                      color: chatBackgroundColor,
+                      width: 1.0,
+                    ),
+                  ),
+                  disabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(3),
+                    borderSide: BorderSide(
+                      color: chatBackgroundColor,
+                      width: 1.0,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(3),
+                    borderSide: BorderSide(
+                      color: chatBackgroundColor,
+                      width: 1.0,
+                    ),
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(3),
+                    borderSide: BorderSide(
+                      color: chatBackgroundColor,
+                      width: 1.0,
+                    ),
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(3),
+                    borderSide: BorderSide(
+                      color: chatBackgroundColor,
+                      width: 1.0,
+                    ),
+                  ),
+                ),
+              ),
+            )),
       ),
     );
   }
+
+  // Widget getMessageTextFormField() {
+  //   return TextFormField(
+  //     controller: messageController,
+  //     autofocus: true,
+  //     textInputAction: TextInputAction.send,
+  //     onFieldSubmitted: (value) {
+  //       sendMessage();
+  //     },
+  //     cursorColor: blackFont,
+  //     cursorWidth: 1,
+  //     cursorHeight: 20,
+  //     cursorRadius: Radius.circular(16),
+  //     decoration: InputDecoration(
+  //       hintText: "Type message",
+  //       hintStyle: TextStyle(
+  //         color: darkGrey.withOpacity(0.5),
+  //         fontSize: 16,
+  //         fontWeight: FontWeight.w500,
+  //       ),
+  //       prefix: Padding(
+  //         padding: EdgeInsets.only(left: 12),
+  //       ),
+  //       contentPadding: EdgeInsets.symmetric(vertical: 10),
+  //       isDense: true,
+  //       enabledBorder: OutlineInputBorder(
+  //         borderRadius: BorderRadius.circular(10),
+  //         borderSide: BorderSide(
+  //           color: greyBorderColor,
+  //           width: 1.0,
+  //         ),
+  //       ),
+  //       disabledBorder: OutlineInputBorder(
+  //         borderRadius: BorderRadius.circular(10),
+  //         borderSide: BorderSide(
+  //           color: greyBorderColor,
+  //           width: 1.0,
+  //         ),
+  //       ),
+  //       focusedBorder: OutlineInputBorder(
+  //         borderRadius: BorderRadius.circular(10),
+  //         borderSide: BorderSide(
+  //           color: navyBlue,
+  //           width: 1.0,
+  //         ),
+  //       ),
+  //       errorBorder: OutlineInputBorder(
+  //         borderRadius: BorderRadius.circular(10),
+  //         borderSide: BorderSide(
+  //           color: greyBorderColor,
+  //           width: 1.0,
+  //         ),
+  //       ),
+  //       focusedErrorBorder: OutlineInputBorder(
+  //         borderRadius: BorderRadius.circular(10),
+  //         borderSide: BorderSide(
+  //           color: greyBorderColor,
+  //           width: 1.0,
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Future<String> getVideoThumbnail(File file) async {
     String path = await VideoThumbnail.thumbnailFile(

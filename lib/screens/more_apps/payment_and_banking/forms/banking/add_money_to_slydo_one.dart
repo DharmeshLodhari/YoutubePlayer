@@ -273,8 +273,11 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
 
   String getFinalAmount() {
     if (amount != "") {
-      return (double.parse(amount) - (double.parse(amount) * 0.03)).toString();
+      return amount;
     }
+    // if (amount != "") {
+    //   return (double.parse(amount) - (double.parse(amount) * 0.03)).toString();
+    // }
     return "0.0";
   }
 }

@@ -26,13 +26,16 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
   String amount = "0";
 
   String referenceNumber = "";
+  String currency = "NGN";
 
   bool isChecked = false;
 
   @override
   void initState() {
-    amount = widget.arguments["amount"];
-    referenceNumber = widget.arguments["token"];
+    debugPrint("response ${widget.arguments}");
+    amount = widget.arguments["amount"].toString();
+    referenceNumber = widget.arguments["reference"].toString();
+    currency = widget.arguments["currency"].toString();
     super.initState();
   }
 
@@ -265,7 +268,7 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
                   color: blackFont.withOpacity(0.05),
                 ),
                 child: Text(
-                  "abcdefgr7512",
+                  referenceNumber,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                       fontSize: 18,
@@ -274,7 +277,7 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
                 ),
               ),
               onTap: () {
-                Clipboard.setData(new ClipboardData(text: "abcdefgr7512"));
+                Clipboard.setData(new ClipboardData(text: referenceNumber));
                 Toast.show("Reference number copied !!", context,
                     gravity: Toast.BOTTOM,
                     duration: Toast.LENGTH_LONG,
@@ -312,10 +315,8 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
                   child: Checkbox(
                     value: isChecked,
                     onChanged: (value) {
-                      if (mounted) {
-                        isChecked = value;
-                        setState(() {});
-                      }
+                      isChecked = !isChecked;
+                      if (mounted) setState(() {});
                     },
                     activeColor: navyBlue,
                     checkColor: Colors.white,
@@ -335,14 +336,8 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
         ],
       ),
       onTap: () {
-        if (mounted) {
-          if (isChecked) {
-            isChecked = false;
-          } else {
-            isChecked = true;
-          }
-          setState(() {});
-        }
+        isChecked = !isChecked;
+        if (mounted) setState(() {});
       },
     );
   }
@@ -365,7 +360,7 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
         builder: (context) => Center(child: CircularLoadingIndicator()));
 
     if (_formKeyTwo.currentState.validate()) {
-      var data = {"token": referenceNumber};
+      var data = {"reference": referenceNumber};
       PaymentAndBankingAuth()
           .confirmTopUpWithReferenceNumber(data)
           .then((value) {

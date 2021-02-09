@@ -10,6 +10,9 @@ import 'package:uuid/uuid.dart';
 class UserAuth extends AuthService {
   // Fetch user profile
   Future<CustomerProfile> fetchCustomerProfile(String userName) async {
+    if (userName == null) {
+      return CustomerProfile();
+    }
     var url = secureBaseUrl + "/api/v1/user/customer/" + userName.trim();
     var uuid = Uuid();
     var transactionId = uuid.v4();

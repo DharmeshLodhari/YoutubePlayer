@@ -133,19 +133,26 @@ class _ViewChatMediaState extends State<ViewChatMedia> {
                       child: Container(
                         width: MediaQuery.of(context).size.width,
                         color: Colors.black38,
+                        constraints: BoxConstraints(
+                            maxHeight: MediaQuery.of(context).size.height / 5),
                         padding: EdgeInsets.symmetric(vertical: 16),
-                        child: Row(
-                          children: [
-                            Expanded(
-                                child: Center(
-                              child: Text(
-                                message,
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 18),
-                                textAlign: TextAlign.justify,
-                              ),
-                            )),
-                          ],
+                        child: SingleChildScrollView(
+                          child: Row(
+                            children: [
+                              Expanded(
+                                  child: Center(
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 16),
+                                  child: Text(
+                                    message,
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 16),
+                                    textAlign: TextAlign.justify,
+                                  ),
+                                ),
+                              )),
+                            ],
+                          ),
                         ),
                       ),
                     )

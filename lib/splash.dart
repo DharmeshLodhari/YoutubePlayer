@@ -153,48 +153,42 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     precacheImage(AssetImage("assets/images/app_logo.png"), context);
     basketBloc = Provider.of<BasketBloc>(context);
-    return hasConnection
-        // ? Container(
-        //     color: navyBlue,
-        //     child: Center(
-        //         child: SpinKitChasingDots(
-        //       color: Colors.white,
-        //       size: 100.0,
-        //       duration: Duration(milliseconds: 4000),
-        //     )),
-        //   )
-        ? splashLogo
-        : Scaffold(
-            backgroundColor: Colors.white,
-            appBar: AppBar(
-              title: Text(
-                'Slydo',
-                style: TextStyle(color: navyBlue),
-              ),
+    return WillPopScope(
+      onWillPop: () async => Future.value(false),
+      child: hasConnection
+          ? splashLogo
+          : Scaffold(
               backgroundColor: Colors.white,
-              elevation: 0.0,
-              automaticallyImplyLeading: false,
-            ),
-            body: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Expanded(
-                  child: NoItemInList(
-                    msg: AppLocalization.of(context)
-                        .internetConnectionNotAvailable,
-                  ),
+              appBar: AppBar(
+                title: Text(
+                  'Slydo',
+                  style: TextStyle(color: navyBlue),
                 ),
-                MaterialButton(
-                  color: navyBlue,
-                  child: Text(
-                    AppLocalization.of(context).retry,
-                    style: TextStyle(color: Colors.white),
+                backgroundColor: Colors.white,
+                elevation: 0.0,
+                automaticallyImplyLeading: false,
+              ),
+              body: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Expanded(
+                    child: NoItemInList(
+                      msg: AppLocalization.of(context)
+                          .internetConnectionNotAvailable,
+                    ),
                   ),
-                  onPressed: checkConnection,
-                )
-              ],
+                  MaterialButton(
+                    color: navyBlue,
+                    child: Text(
+                      AppLocalization.of(context).retry,
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    onPressed: checkConnection,
+                  )
+                ],
+              ),
             ),
-          );
+    );
   }
 
   Future<void> getLoggedInUser() async {

@@ -106,7 +106,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     "webm",
     "mkv"
   ];
-  List<String> audioExtensions = ["m4a", "flac", "mp3", "wav", "wma", "aac"];
+  List<String> audioExtensions = ["m4a", "mp3", "ogg", "aac"];
 
   /// variables for product or service search
   bool isProductSearch = true;
@@ -238,7 +238,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
           });
   }
 
-  void setUpAudioRecorder() {
+  void setUpAudioRecorder() async {
     audioRecorder.openAudioSession().then((value) {
       setState(() {
         isAudioRecorderInitialized = true;
@@ -250,7 +250,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       setState(() {});
     });
 
-    getAudioPermission();
+    await getAudioPermission();
   }
 
   void disposeAudioPlayers() {
@@ -363,7 +363,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       }
 
       _timerForUserTypingState = Timer(userMessageTypingStateUpdateTime, () {
-        // userTyping();
         sendUserTypingState();
       });
     }
@@ -441,7 +440,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     Map<String, dynamic> messageData = jsonDecode(message);
 
     if (mounted) setState(() {});
-    // getUserStatus();
 
     switch (messageData['type']) {
       case "chatroom_message":
@@ -550,7 +548,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   void messageReadByRecipient(Map<String, dynamic> message) async {
     if (message["author"] != userBloc.user.userName) {
-      // debugPrint("is Chat on Screen :- ${mainSocketProvider.isChatOnScreen}");
       if (mainSocketProvider.isChatOnScreen) {
         var data = {
           "check_id": message["check_id"],
@@ -783,7 +780,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         height: 36,
         width: 36,
         child: isRecipientLoading
-            ? CircularLoadingIndicator()
+            ? Container()
             : ClipOval(
                 child: CachedNetworkImage(
                   imageUrl: recipientUser != null
@@ -827,7 +824,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       children: [
         Container(
           constraints: BoxConstraints(minHeight: 54, maxHeight: 100),
-          // height: 54,
           child: Row(
             children: <Widget>[
               moreActionBtn(),
@@ -1080,7 +1076,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                       suffix: Padding(
                         padding: EdgeInsets.only(right: 36),
                       ),
-                      // suffixIcon: captureImageOrVideo(),
                       contentPadding: EdgeInsets.symmetric(vertical: 10),
                       isDense: true,
                       enabledBorder: OutlineInputBorder(
@@ -1170,10 +1165,14 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         type: FileType.custom,
         allowedExtensions: allowedExtensions);
 
+    // FilePickerResult pickedMedia = await FilePicker.platform.pickFiles(
+    //   allowMultiple: false,
+    //   type: FileType.audio,
+    // );
+
     if (pickedMedia != null) {
       File file = File(pickedMedia.files.single.path);
       String mediaType = getFileType(pickedMedia);
-
       if (mediaType == "") {
         return;
       }
@@ -1201,6 +1200,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   String getFileType(FilePickerResult pickedMedia) {
+    debugPrint("File path :- ${pickedMedia.files.single.path}");
+    debugPrint("File name :- ${pickedMedia.files.single.name}");
+    debugPrint("File extension :- ${pickedMedia.files.single.extension}");
     String extension = pickedMedia.files.single.extension;
 
     if (imageExtensions.contains(extension)) return "image";
@@ -1477,8 +1479,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   Widget renderDataAccordingType(String message) {
-    // int randomInt = Random().nextInt(5);
-
     Map<String, dynamic> messageData = jsonDecode(message);
 
     String messageType = messageData["kind"];
@@ -1619,8 +1619,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     );
   }
 
-  // isAudioRecording ? getAudioRecordingWidget() : Container(),
-
   Widget getAudioRecordingWidget() {
     return Container(
       color: Colors.black87,
@@ -1683,15 +1681,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
             ),
           )
         : Container();
-  }
-
-  String messageDecoderWithEmoji(String text) {
-    try {
-      List<int> bytes = text.toString().codeUnits;
-      return utf8.decode(bytes);
-    } catch (error) {
-      return text;
-    }
   }
 
   Widget renderMessage({Map<String, dynamic> message}) {
@@ -1807,6 +1796,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     bool isSend = message["author"] == userBloc.user.userName;
     String messageText = message['text'] ?? "";
     bool isMessageEmpty = messageText == "";
+
+    messageText = messageDecoderWithEmoji(messageText);
 
     return Column(
       children: [
@@ -1980,6 +1971,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     bool isSend = message["author"] == userBloc.user.userName;
     String messageText = message['text'] ?? "";
     bool isMessageEmpty = messageText == "";
+    messageText = messageDecoderWithEmoji(messageText);
 
     return Column(
       children: [
@@ -2383,7 +2375,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   void getProductOrServiceList() async {
-    String url = getSearchUrl() + searchItemTextController.text;
+    String url = getFinalUrlWithUser();
 
     if (!isItemLoading) {
       if (productOrServiceNext != null && !isItemLoading) {
@@ -2429,12 +2421,35 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   String getSearchUrl() {
     if (isProductSearch) {
-      return baseUrl + "/api/v1/search/products/?search=";
+      return baseUrl +
+          "/api/v1/search/products/?search=name|" +
+          searchItemTextController.text;
     }
     if (isServiceSearch) {
-      return baseUrl + "/api/v1/search/services/?search=";
+      return baseUrl +
+          "/api/v1/search/services/?search=name|" +
+          searchItemTextController.text;
     }
     return "";
+  }
+
+  String getFinalUrlWithUser() {
+    String url = getSearchUrl();
+
+    if (bottomSheetSearchIndex == 0 && isProductSearch) {
+      url += "&search=seller|" + recipientUser.userName;
+      return url;
+    } else if (bottomSheetSearchIndex == 1 && isProductSearch) {
+      url += "&search=seller|" + userBloc.user.userName;
+      return url;
+    } else if (bottomSheetSearchIndex == 0 && isServiceSearch) {
+      url += "&search=provider|" + recipientUser.userName;
+      return url;
+    } else if (bottomSheetSearchIndex == 1 && isServiceSearch) {
+      url += "&search=provider|" + userBloc.user.userName;
+      return url;
+    }
+    return url;
   }
 
   // ignore: missing_return

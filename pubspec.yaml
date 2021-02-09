@@ -62,7 +62,7 @@ dependencies:
   photo_view: ^0.10.3
   flutter_keyboard_visibility: ^4.0.2
   crypto: ^2.1.5
-  file_picker: ^2.1.5
+  file_picker: ^2.1.6
   flutter_sound: ^7.4.16+3
   flare_flutter: ^2.0.6
   lazy_load_scrollview: ^1.2.0
