@@ -262,6 +262,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
 
     Map<String, dynamic> details = jsonDecode(widget.message['meta_data']);
     debugPrint("details:- $details");
+    debugPrint("details:- ${widget.message}");
     if (details.isNotEmpty) {
       debugPrint("METADATA:- $details");
       try {

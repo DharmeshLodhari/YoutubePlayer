@@ -280,69 +280,6 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
     );
   }
 
-  // Widget getMessageTextFormField() {
-  //   return TextFormField(
-  //     controller: messageController,
-  //     autofocus: true,
-  //     textInputAction: TextInputAction.send,
-  //     onFieldSubmitted: (value) {
-  //       sendMessage();
-  //     },
-  //     cursorColor: blackFont,
-  //     cursorWidth: 1,
-  //     cursorHeight: 20,
-  //     cursorRadius: Radius.circular(16),
-  //     decoration: InputDecoration(
-  //       hintText: "Type message",
-  //       hintStyle: TextStyle(
-  //         color: darkGrey.withOpacity(0.5),
-  //         fontSize: 16,
-  //         fontWeight: FontWeight.w500,
-  //       ),
-  //       prefix: Padding(
-  //         padding: EdgeInsets.only(left: 12),
-  //       ),
-  //       contentPadding: EdgeInsets.symmetric(vertical: 10),
-  //       isDense: true,
-  //       enabledBorder: OutlineInputBorder(
-  //         borderRadius: BorderRadius.circular(10),
-  //         borderSide: BorderSide(
-  //           color: greyBorderColor,
-  //           width: 1.0,
-  //         ),
-  //       ),
-  //       disabledBorder: OutlineInputBorder(
-  //         borderRadius: BorderRadius.circular(10),
-  //         borderSide: BorderSide(
-  //           color: greyBorderColor,
-  //           width: 1.0,
-  //         ),
-  //       ),
-  //       focusedBorder: OutlineInputBorder(
-  //         borderRadius: BorderRadius.circular(10),
-  //         borderSide: BorderSide(
-  //           color: navyBlue,
-  //           width: 1.0,
-  //         ),
-  //       ),
-  //       errorBorder: OutlineInputBorder(
-  //         borderRadius: BorderRadius.circular(10),
-  //         borderSide: BorderSide(
-  //           color: greyBorderColor,
-  //           width: 1.0,
-  //         ),
-  //       ),
-  //       focusedErrorBorder: OutlineInputBorder(
-  //         borderRadius: BorderRadius.circular(10),
-  //         borderSide: BorderSide(
-  //           color: greyBorderColor,
-  //           width: 1.0,
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
-
   Future<String> getVideoThumbnail(File file) async {
     String path = await VideoThumbnail.thumbnailFile(
       video: file.path,

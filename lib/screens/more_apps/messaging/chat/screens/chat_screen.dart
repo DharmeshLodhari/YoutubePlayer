@@ -7,6 +7,7 @@ import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/message_sound_player.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/product_and_service_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/product_and_service_tile_for_search.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/transaction_tile_for_chat.dart';
@@ -43,6 +44,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:shake/shake.dart';
 import 'package:toast/toast.dart';
 import 'package:uuid/uuid.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
@@ -155,6 +157,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   /// variables for listening socket connection
   bool _isNetworkConnectionIsOn;
 
+  /// variables for shaking detection
+  ShakeDetector detector;
+  bool showShakingAlert = false;
+
   @override
   void initState() {
     messageController = TextEditingController();
@@ -207,9 +213,63 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     initializeSocket();
     setUpAudioRecorder();
     setupNetworkConnectionListener();
+    setupShakeDetector();
 
     ChatUserManager().clearChatUserMessageCount(
         conversationId: recipientUser.conversationId);
+  }
+
+  void setupShakeDetector() {
+    detector = ShakeDetector.autoStart(
+      onPhoneShake: () {
+        // debugPrint("Shake Detected:- ${detector.mShakeCount}");
+        if (detector.mShakeCount >= 5) {
+          showShakingDialog();
+        }
+      },
+      shakeSlopTimeMS: Platform.isIOS ? 500 : 150,
+      shakeCountResetTime: 1000,
+      shakeThresholdGravity: Platform.isIOS ? 2 : 1.5,
+    );
+  }
+
+  void showShakingDialog() async {
+    if (showShakingAlert) {
+      showShakingAlert = false;
+      if (mounted) setState(() {});
+    } else {
+      showShakingAlert = true;
+      // debugPrint("showShake $showShakingAlert");
+      detector.stopListening();
+      if (mounted) setState(() {});
+      String result = await showDialog<String>(
+          context: context,
+          barrierColor: Colors.black38,
+          builder: (context) => Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Center(
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(24),
+                        child: Image.asset(
+                          "assets/images/tenor.gif",
+                          color: navyBlueLight,
+                          fit: BoxFit.cover,
+                          colorBlendMode: BlendMode.color,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ));
+      // debugPrint("result $result");
+      showShakingAlert = false;
+      if (mounted) setState(() {});
+      setupShakeDetector();
+    }
   }
 
   void setupNetworkConnectionListener() {
@@ -281,6 +341,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
     audioRecorder?.closeAudioSession();
     audioRecorder = null;
+
+    detector?.stopListening();
 
     messageController.removeListener(sendUserTypingState);
 
@@ -510,6 +572,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   void addMessageToChat({String message}) {
     messageList.insert(0, message);
+
+    ///PlaySoundAccordingToMessageType
+    MessageSoundPlayer(message: message, userBloc: userBloc).playSound();
 
     if (mounted) setState(() {});
 
