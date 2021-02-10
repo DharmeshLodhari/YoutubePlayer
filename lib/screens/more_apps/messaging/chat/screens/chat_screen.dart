@@ -2375,7 +2375,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   void getProductOrServiceList() async {
-    String url = getFinalUrlWithUser();
+    // String url = getFinalUrlWithUser();
+    String url = getSearchUrl();
 
     if (!isItemLoading) {
       if (productOrServiceNext != null && !isItemLoading) {
@@ -2422,13 +2423,15 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   String getSearchUrl() {
     if (isProductSearch) {
       return baseUrl +
-          "/api/v1/search/products/?search=name|" +
-          searchItemTextController.text;
+          "/api/v1/search/products/?search=name__wildcard|*" +
+          searchItemTextController.text +
+          "*";
     }
     if (isServiceSearch) {
       return baseUrl +
-          "/api/v1/search/services/?search=name|" +
-          searchItemTextController.text;
+          "/api/v1/search/services/?search=name__wildcard|*" +
+          searchItemTextController.text +
+          "*";
     }
     return "";
   }
@@ -2437,16 +2440,16 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     String url = getSearchUrl();
 
     if (bottomSheetSearchIndex == 0 && isProductSearch) {
-      url += "&search=seller|" + recipientUser.userName;
+      url += "&search=seller:" + recipientUser.userName;
       return url;
     } else if (bottomSheetSearchIndex == 1 && isProductSearch) {
-      url += "&search=seller|" + userBloc.user.userName;
+      url += "&search=seller:" + userBloc.user.userName;
       return url;
     } else if (bottomSheetSearchIndex == 0 && isServiceSearch) {
-      url += "&search=provider|" + recipientUser.userName;
+      url += "&search=provider:" + recipientUser.userName;
       return url;
     } else if (bottomSheetSearchIndex == 1 && isServiceSearch) {
-      url += "&search=provider|" + userBloc.user.userName;
+      url += "&search=provider:" + userBloc.user.userName;
       return url;
     }
     return url;
@@ -2510,9 +2513,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   Widget bottomSheetTabBar() {
     return Column(
       children: [
-        Container(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: bottomSheetTabBars()),
+        // Container(
+        //     padding: EdgeInsets.symmetric(horizontal: 20),
+        //     child: bottomSheetTabBars()),
         SizedBox(
           height: 8,
         ),
