@@ -329,17 +329,19 @@ class _DetailedMessageState extends State<DetailedMessage> {
   }
 
   displayReplyButton() {
-    return CurvedButton(
-      backgroundColor: navyBlue,
-      textColor: Colors.white,
-      text: AppLocalization.of(context).reply,
-      onPressed: () {
-        Navigator.of(context).pushNamed('/compose_message', arguments: {
-          'isReply': 1,
-          'recipient': message.sender,
-          'subject': message.subject,
-        });
-      },
-    );
+    return message.sender != userBloc.user.userName
+        ? CurvedButton(
+            backgroundColor: navyBlue,
+            textColor: Colors.white,
+            text: AppLocalization.of(context).reply,
+            onPressed: () {
+              Navigator.of(context).pushNamed('/compose_message', arguments: {
+                'isReply': 1,
+                'recipient': message.sender,
+                'subject': message.subject,
+              });
+            },
+          )
+        : Container();
   }
 }

@@ -160,7 +160,7 @@ class AuthService {
       "DeviceType": Platform.isAndroid ? "Android" : "IOS",
       "User-Agent": "Slydo-Mobile",
     };
-    debugPrint("headres :- $headers");
+    // debugPrint("headres :- $headers");
     return headers;
   }
 

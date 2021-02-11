@@ -98,6 +98,16 @@ class _UserDashboardState extends State<UserDashboard> {
             children: <Widget>[
               backgroundScreen(),
               foregroundScreen(),
+              isLoading
+                  ? Container(
+                      color: Colors.black45,
+                      height: double.infinity,
+                      width: double.infinity,
+                      child: Center(
+                        child: CircularLoadingIndicator(),
+                      ),
+                    )
+                  : Container()
             ],
           ),
         ));
@@ -531,7 +541,7 @@ class _UserDashboardState extends State<UserDashboard> {
     );
   }
 
-  void pickImage(userBloc) async {
+  void pickImage() async {
     final imageSource = await showDialog<ImageSource>(
         context: context,
         builder: (context) => AlertDialog(
@@ -551,7 +561,7 @@ class _UserDashboardState extends State<UserDashboard> {
                 ),
                 MaterialButton(
                   child: Text(
-                    AppLocalization.of(context).gallary,
+                    "Gallery",
                     style: TextStyle(fontSize: 16, color: blackFont),
                   ),
                   onPressed: () => Navigator.pop(context, ImageSource.gallery),
@@ -564,9 +574,8 @@ class _UserDashboardState extends State<UserDashboard> {
           await ImagePicker().getImage(source: imageSource, imageQuality: 70);
       if (file != null) {
         try {
-          setState(() {
-            isLoading = true;
-          });
+          isLoading = true;
+          if (mounted) setState(() {});
           // Get user current login info so we can reuse it to login
           var dbUser = await _auth.getUser();
           var phoneNumber = dbUser.phoneNumber;
@@ -578,14 +587,16 @@ class _UserDashboardState extends State<UserDashboard> {
           // Get New updated user data and set new user data to userBloc
           await _auth.authenticate(phoneNumber, password).then((value) {
             userBloc.user = value;
-            setState(() {
-              isLoading = false;
-            });
+            isLoading = false;
+            if (mounted) setState(() {});
+            dashboardBloc.index = 0;
           });
         } catch (err) {
+          isLoading = false;
+          if (mounted) setState(() {});
           Toast.show(err.toString(), context,
               backgroundColor: blackFont, textColor: Colors.white);
-          debugPrint("update avatar : " + err.toString());
+          debugPrint("Cannot Update Avatar : " + err.toString());
         }
       }
     }
@@ -702,7 +713,7 @@ class _UserDashboardState extends State<UserDashboard> {
                       icon: SlydoAppIcon.image,
                       onTap: () {
                         Navigator.pop(context);
-                        pickImage(userBloc);
+                        pickImage();
                       },
                     ),
                     bottomSheetItem(
@@ -874,7 +885,7 @@ class _UserDashboardState extends State<UserDashboard> {
                 arguments: {"searchedUser": user});
           });
         } else if (value == "Update My Avatar") {
-          pickImage(userBloc);
+          pickImage();
         } else if (value == "My Address") {
           Navigator.pushNamed(
             context,

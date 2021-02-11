@@ -8,24 +8,15 @@ class MessageSoundPlayer {
   String message;
   UserBloc userBloc;
 
-  String textIncomingSound = "assets/sounds/whatsapp_incoming.mp3";
-  String textOutgoingSound = "assets/sounds/whatsapp_web.mp3";
-  String audioIncomingSound = "assets/sounds/whatsapp_incoming.mp3";
-  String audioOutgoingSound = "assets/sounds/whatsapp_web.mp3";
-  String videoIncomingSound = "assets/sounds/whatsapp_incoming.mp3";
-  String videoOutgoingSound = "assets/sounds/whatsapp_web.mp3";
-  String imageIncomingSound = "assets/sounds/whatsapp_incoming.mp3";
-  String imageOutgoingSound = "assets/sounds/whatsapp_web.mp3";
-  String paymentRequestIncomingSound = "assets/sounds/whatsapp_incoming.mp3";
-  String paymentRequestOutgoingSound = "assets/sounds/whatsapp_web.mp3";
-  String transactionIncomingSound = "assets/sounds/whatsapp_incoming.mp3";
-  String transactionOutgoingSound = "assets/sounds/whatsapp_web.mp3";
+  String messageIncomingSound = "assets/sounds/message_incoming.mp3";
+  String messageOutgoingSound = "assets/sounds/message_delivered.mp3";
 
   MessageSoundPlayer({@required this.message, @required this.userBloc});
 
   void playSound() {
     String sound = determineSoundType();
     if (sound != null) {
+      debugPrint("sound :- $sound");
       AssetsAudioPlayer.playAndForget(Audio(sound), respectSilentMode: true);
     }
   }
@@ -34,42 +25,14 @@ class MessageSoundPlayer {
     Map<String, dynamic> messageData = jsonDecode(message);
 
     if (messageData["type"] == "chatroom_message") {
-      if (messageData["kind"] == "text") {
-        if (messageData["author"] == userBloc.user.userName) {
-          return textOutgoingSound;
-        } else {
-          return textIncomingSound;
+      if (messageData["author"] == userBloc.user.userName) {
+        debugPrint("messageData['delivered']  ${messageData["delivered"]} ");
+        if (messageData["delivered"] == true) {
+          return messageOutgoingSound;
         }
-      } else if (messageData["kind"] == "image") {
-        if (messageData["author"] == userBloc.user.userName) {
-          return imageOutgoingSound;
-        } else {
-          return imageIncomingSound;
-        }
-      } else if (messageData["kind"] == "audio") {
-        if (messageData["author"] == userBloc.user.userName) {
-          return audioOutgoingSound;
-        } else {
-          return audioIncomingSound;
-        }
-      } else if (messageData["kind"] == "video") {
-        if (messageData["author"] == userBloc.user.userName) {
-          return videoOutgoingSound;
-        } else {
-          return videoIncomingSound;
-        }
-      } else if (messageData["kind"] == "payment-request") {
-        if (messageData["author"] == userBloc.user.userName) {
-          return paymentRequestOutgoingSound;
-        } else {
-          return paymentRequestIncomingSound;
-        }
-      } else if (messageData["kind"] == "transaction") {
-        if (messageData["author"] == userBloc.user.userName) {
-          return transactionOutgoingSound;
-        } else {
-          return transactionIncomingSound;
-        }
+        return null;
+      } else {
+        return messageIncomingSound;
       }
     }
 

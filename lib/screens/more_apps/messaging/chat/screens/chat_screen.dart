@@ -242,6 +242,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       // debugPrint("showShake $showShakingAlert");
       detector.stopListening();
       if (mounted) setState(() {});
+
+      ///send Nudge to Recipient
+      nudgeRecipient();
+
       String result = await showDialog<String>(
           context: context,
           barrierColor: Colors.black38,
@@ -270,6 +274,21 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       if (mounted) setState(() {});
       setupShakeDetector();
     }
+  }
+
+  void nudgeRecipient() {
+    if (recipientUser == null) return null;
+
+    Map<String, dynamic> data = {
+      "check_id": Uuid().v4(),
+      "conversation_id": recipientUser.conversationId,
+      "author": userBloc.user.userName,
+      "recipient": recipientUser.userName,
+      "created_at": DateTime.now().toUtc().toString(),
+      "type": "nudge_user",
+    };
+
+    sendDataToSocket(data);
   }
 
   void setupNetworkConnectionListener() {
@@ -498,6 +517,16 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     }
   }
 
+  bool checkIsMessageIsForCurrentChat(Map<String, dynamic> messageData) {
+    if (messageData["conversation_id"] == recipientUser.conversationId ||
+        messageData["conversation"] == recipientUser.conversationId) {
+      return true;
+    } else {
+      debugPrint("Message For Someone else >>>>>> $messageData");
+      return false;
+    }
+  }
+
   void determineMessageType(String message) async {
     Map<String, dynamic> messageData = jsonDecode(message);
 
@@ -505,40 +534,33 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
     switch (messageData['type']) {
       case "chatroom_message":
-        checkMessageToAdd(message: message);
+        if (checkIsMessageIsForCurrentChat(messageData)) {
+          checkMessageToAdd(message: message);
+        }
+
         break;
 
       case "read_by_recipient":
-        updateMessageReadMark(message: message);
+        if (checkIsMessageIsForCurrentChat(messageData)) {
+          updateMessageReadMark(message: message);
+        }
         break;
 
       case "user_typing_message":
-        if (messageData['username'] != userBloc.user.userName) {
-          isRecipientTyping = true;
-          if (mounted) setState(() {});
-
-          Future.delayed(Duration(seconds: 1)).then((value) {
-            isRecipientTyping = false;
+        if (checkIsMessageIsForCurrentChat(messageData)) {
+          if (messageData['username'] != userBloc.user.userName) {
+            isRecipientTyping = true;
             if (mounted) setState(() {});
-          });
+
+            Future.delayed(Duration(seconds: 1)).then((value) {
+              isRecipientTyping = false;
+              if (mounted) setState(() {});
+            });
+          }
         }
+
         break;
       case "pong":
-        break;
-
-      case "image":
-        Future.delayed(Duration(microseconds: 300))
-            .then((value) => scrollToBottom());
-        break;
-
-      case "transaction":
-        Future.delayed(Duration(microseconds: 300))
-            .then((value) => scrollToBottom());
-        break;
-
-      case "payment-request":
-        Future.delayed(Duration(microseconds: 300))
-            .then((value) => scrollToBottom());
         break;
 
       default:
@@ -559,6 +581,11 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
           messageList[i] = jsonEncode(newMessage);
           if (mounted) setState(() {});
           isMatchFound = true;
+
+          ///PlaySoundAccordingToMessageType
+          MessageSoundPlayer(
+                  message: jsonEncode(newMessage), userBloc: userBloc)
+              .playSound();
         }
       }
 
@@ -1619,11 +1646,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
     addMessageToChat(message: payload);
 
-    bool result = await sendDataToSocket(data);
-    if (result) {
-      messageController.text = "";
-      setState(() {});
-    }
+    messageController.text = "";
+    if (mounted) setState(() {});
+
+    await sendDataToSocket(data);
   }
 
   String convertServerPayload(Map<String, dynamic> data) {
@@ -1799,7 +1825,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                         children: [
                           Flexible(
                             child: Text(
-                              messageDecoderWithEmoji(message['text'].toString()),
+                              messageDecoderWithEmoji(
+                                  message['text'].toString()),
                               style: TextStyle(
                                 color: isSend ? Colors.white : blackFont,
                                 fontSize: 16,

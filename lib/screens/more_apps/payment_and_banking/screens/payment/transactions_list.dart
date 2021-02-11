@@ -345,6 +345,7 @@ class _TransactionListState extends State<TransactionList> {
   void handleSlideIsOpenChanged(bool value) {}
 
   List<Widget> listSecondaryActions(Transaction transaction) {
+    if (transaction.isAnonymous) return [];
     return [
       SlideActionButton(
           backgroundColor: naturalGreen,
@@ -363,6 +364,8 @@ class _TransactionListState extends State<TransactionList> {
   }
 
   List<Widget> listActionSlideActions(Transaction transaction) {
+    if (transaction.isAnonymous) return [];
+
     return [
       SlideActionButton(
           backgroundColor: navyBlue,

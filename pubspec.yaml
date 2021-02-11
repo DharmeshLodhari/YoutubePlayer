@@ -119,8 +119,6 @@ flutter:
     - assets/fonts/
     - assets/images/appIcon/
     - assets/images/no_result_found_2.png
-    - assets/sounds/whatsapp_web.mp3
-    - assets/sounds/whatsapp_incoming.mp3
     - assets/sounds/
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -481,7 +481,11 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
           backgroundColor: mateRed,
           icon: SlydoAppIcon.remove,
           onTap: () {
-            rejectPaymentRequestAlert(paymentRequest, index);
+            if (!paymentRequest.isCredit) {
+              cancelPaymentRequestAlert(paymentRequest, index);
+            } else {
+              rejectPaymentRequestAlert(paymentRequest, index);
+            }
           },
           title: caption,
           slideController: _slideController),
@@ -575,6 +579,50 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
           AppLocalization.of(context).areYouSureWantToRejectThisPayment,
       actionOne: AppLocalization.of(context).reject,
       actionTwo: AppLocalization.of(context).cancel,
+    );
+    if (result) {
+      bool done = await _auth.rejectPaymentRequests(paymentRequest);
+      if (done) {
+        _showSnackBar(
+            context, AppLocalization.of(context).paymentRequestRejected);
+        if (mounted) {
+          setState(() {
+            requestPaymentList.removeAt(index);
+            if (requestPaymentList.length <= 9) {
+              getList();
+            }
+          });
+        }
+      } else {
+        _showSnackBar(context, AppLocalization.of(context).error);
+      }
+    }
+  }
+
+  Future<void> cancelPaymentRequestAlert(
+      PaymentRequest paymentRequest, int index) async {
+    bool result = await showDialogBox(
+      context: context,
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        backgroundColor: mateRed.withOpacity(0.08),
+        borderRadius: 20,
+        width: 48,
+        height: 48,
+        icon: Icon(
+          SlydoAppIcon.false_icon,
+          color: mateRed,
+          size: 16,
+        ),
+        enableMargin: false,
+      ),
+      actionOneBgColor: mateRed,
+      actionOneTextColor: Colors.white,
+      actionTwoBgColor: greyBorderColor,
+      actionTwoTextColor: blackFont,
+      title: AppLocalization.of(context).cancel,
+      description: "Are you sure want to cancel this request?",
+      actionOne: AppLocalization.of(context).cancel,
+      actionTwo: "Close",
     );
     if (result) {
       bool done = await _auth.rejectPaymentRequests(paymentRequest);

@@ -182,7 +182,9 @@ class _TransactionTileState extends State<TransactionTile> {
                 },
               ),
             ),
-            widget.expandedWidget,
+            widget.transaction.isAnonymous
+                ? Container()
+                : widget.expandedWidget,
           ],
         ),
       ),
