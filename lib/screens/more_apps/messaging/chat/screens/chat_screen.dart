@@ -1750,10 +1750,11 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   Widget renderMessage({Map<String, dynamic> message}) {
     bool isSend = message["author"] == userBloc.user.userName;
+
     return GestureDetector(
       onLongPress: () {
-        Clipboard.setData(
-            new ClipboardData(text: messageDecoderWithEmoji(message['text'])));
+        Clipboard.setData(new ClipboardData(
+            text: messageDecoderWithEmoji(message['text'].toString())));
         Toast.show("Text copied !!", context,
             gravity: Toast.BOTTOM,
             duration: Toast.LENGTH_LONG,
@@ -1798,7 +1799,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                         children: [
                           Flexible(
                             child: Text(
-                              messageDecoderWithEmoji(message['text']),
+                              messageDecoderWithEmoji(message['text'].toString()),
                               style: TextStyle(
                                 color: isSend ? Colors.white : blackFont,
                                 fontSize: 16,

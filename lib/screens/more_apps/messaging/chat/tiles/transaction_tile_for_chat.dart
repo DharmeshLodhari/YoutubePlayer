@@ -38,6 +38,8 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
   @override
   Widget build(BuildContext context) {
     Map<String, dynamic> data;
+
+    debugPrint("MESSAGE >>>>>> ${widget.message}");
     if (widget.message['text'] is String) {
       data = jsonDecode(widget.message['text']);
     } else if (widget.message['text'] is Map) {
@@ -260,11 +262,19 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
     /// Canceled
     /// None
 
-    Map<String, dynamic> details = jsonDecode(widget.message['meta_data']);
-    debugPrint("details:- $details");
-    debugPrint("details:- ${widget.message}");
+    Map<String, dynamic> details;
+
+    if (widget.message['meta_data'] is Map) {
+      details = widget.message['meta_data'];
+    } else if (widget.message['meta_data'] is String) {
+      details = jsonDecode(widget.message['meta_data']);
+    }
+
+    // debugPrint("details:- $details");
+    debugPrint("MESSAGE FROM PAYMENT REQUEST  >>>>>>> ${widget.message}");
+
     if (details.isNotEmpty) {
-      debugPrint("METADATA:- $details");
+      // debugPrint("METADATA:- $details");
       try {
         if (details['payment_action_status'] != null) {
           paymentActionStatus =
