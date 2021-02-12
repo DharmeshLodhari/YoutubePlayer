@@ -67,6 +67,8 @@ class MainSocketMessageHandler {
     debugPrint("MessageData >>>>>>>>> $messageData");
 
     String hashTheMessage = generateHashedMessage(message);
+
+    /// if This message is already in the list we will return
     if (_hashedNudgingMessages.contains(hashTheMessage)) {
       return;
     }
