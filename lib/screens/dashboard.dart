@@ -51,6 +51,7 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   void initState() {
+    if (mounted) MainSocketMessageHandler().dispose();
     if (mounted) {
       setState(() {
         if (arguments != null) {
@@ -71,9 +72,6 @@ class _DashboardState extends State<Dashboard> {
   }
 
   void initializeListener() {
-
-    MainSocketMessageHandler().dispose();
-
     streamSubscription?.cancel();
     streamSubscription = mainSocketProvider?.socketStream?.listen((event) {
       Map<String, dynamic> decodeMessage = jsonDecode(event);
