@@ -271,7 +271,49 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
     }
 
     // debugPrint("details:- $details");
-    debugPrint("MESSAGE FROM PAYMENT REQUEST  >>>>>>> ${widget.message}");
+    // debugPrint("MESSAGE FROM PAYMENT REQUEST  >>>>>>> ${widget.message}");
+
+    //message From server
+    ///{id: e7679714-3188-4046-b5aa-00dc005dfb38,
+    /// check_id: 84e109dc-c258-434b-a973-071c2611dfde,
+    /// conversation: 3fe1e3b6-5802-4ade-b4f3-8f21d7b8ebd7,
+    /// author: black,
+    /// text: {
+    /// id: 607,
+    /// from_customer: black,
+    /// to_customer: abiola.rasheed.2,
+    /// currency: NGN,
+    /// amount: 500,
+    /// notes: Dinner,
+    /// description: Dinner,
+    /// created_at: 2021-02-12T07:27:34.795209+01:00,
+    /// status: Pending,
+    /// from_customer_avatar: https://slydo-assets.s3.amazonaws.com/media/customer/avatar/b045d0a8bebe45ba993253f2512b6254.jpg,
+    /// to_customer_avatar: https://slydo-assets.s3.amazonaws.com/media/customer/avatar/42cfa1076d64401790101f08769317cf.jpg,
+    /// made_from_chat: true},
+    /// read_by_author: true, read_by_recipient: false, was_edited: false, updated_at: 2021-02-12T07:27:34.824589+01:00,
+    /// created_at: 2021-02-12T07:27:34.824616+01:00, kind: payment-request, deleted_for_recipient: false,
+    /// deleted_for_author: false, delivered: true, meta_data: {}, type: chatroom_message}
+
+    //Message from socket
+    /// {"id": "e7679714-3188-4046-b5aa-00dc005dfb38",
+    /// "check_id": "84e109dc-c258-434b-a973-071c2611dfde",
+    /// "conversation": "3fe1e3b6-5802-4ade-b4f3-8f21d7b8ebd7",
+    /// "author": "black",
+    /// "text": {
+    /// "id": 607,
+    /// "from_customer": "black",
+    /// "to_customer": "abiola.rasheed.2",
+    /// "currency": "NGN",
+    /// "amount": 500,
+    /// "notes": "Dinner",
+    /// "description": "Dinner",
+    /// "created_at": "2021-02-12T07:27:34.795209+01:00",
+    /// "status": "Pending",
+    /// "from_customer_avatar": "https://slydo-assets.s3.amazonaws.com/media/customer/avatar/b045d0a8bebe45ba993253f2512b6254.jpg",
+    /// "to_customer_avatar": "https://slydo-assets.s3.amazonaws.com/media/customer/avatar/42cfa1076d64401790101f08769317cf.jpg",
+    /// "made_from_chat": true
+    /// }, "read_by_author": true, "read_by_recipient": false, "was_edited": false, "updated_at": "2021-02-12T07:31:34.929192+01:00", "created_at": "2021-02-12T07:27:34.824616+01:00", "kind": "payment-request", "deleted_for_recipient": false, "deleted_for_author": false, "delivered": true, "meta_data": {"payment_action_status":
 
     if (details.isNotEmpty) {
       // debugPrint("METADATA:- $details");
@@ -548,7 +590,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
 
           if (response.statusCode == 200) {
             Toast.show("Payment request fulfilled !!", context,
-                gravity: Toast.TOP, textColor: Colors.white);
+                textColor: Colors.white);
           } else {
             debugPrint(
                 "RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
@@ -564,7 +606,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
         .rejectPaymentRequests(paymentRequest, messageId: widget.message["id"]);
     if (result) {
       Toast.show("Payment status updated successfully !!", context,
-          gravity: Toast.TOP, textColor: Colors.white);
+          textColor: Colors.white);
     }
   }
 

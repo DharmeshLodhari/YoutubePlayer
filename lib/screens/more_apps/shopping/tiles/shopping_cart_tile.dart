@@ -87,7 +87,7 @@ class _ShoppingCartTileForProductState
             ? product.serverImages.first
             : "https://homepages.cae.wisc.edu/~ece533/images/peppers.png",
         colorBlendMode: BlendMode.darken,
-        fit: BoxFit.fitWidth,
+        fit: BoxFit.cover,
         filterQuality: FilterQuality.high,
         placeholder: (context, url) => product.serverImages.isNotEmpty
             ? Icon(Icons.widgets)
@@ -287,7 +287,7 @@ class _ShoppingCartTileForServiceState
             ? service.serverImages.first
             : "https://homepages.cae.wisc.edu/~ece533/images/peppers.png",
         colorBlendMode: BlendMode.darken,
-        fit: BoxFit.fill,
+        fit: BoxFit.cover,
         filterQuality: FilterQuality.high,
         placeholder: (context, url) => service.serverImages.isNotEmpty
             ? Icon(Icons.widgets)

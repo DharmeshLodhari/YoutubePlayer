@@ -1,13 +1,7 @@
-import 'dart:async';
-import 'dart:convert';
-
-import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_message_handler.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import 'block_list.dart';
 import 'connection_request_list.dart';
@@ -22,31 +16,31 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
   int currentIndex = 0;
 
   var filterValue = "Connections";
-  MainSocketProvider mainSocketProvider;
-  StreamSubscription streamSubscription;
+  // MainSocketProvider mainSocketProvider;
+  // StreamSubscription streamSubscription;
 
   @override
   void initState() {
     super.initState();
   }
 
-  void initializeListener() {
-    streamSubscription?.cancel();
-    streamSubscription = mainSocketProvider.socketStream.listen((event) {
-      Map<String, dynamic> decodeMessage = jsonDecode(event);
-
-      if (mainSocketProvider.currentConversationId !=
-          decodeMessage["conversation"]) {
-        MainSocketMessageHandler(message: event);
-        if (mounted) setState(() {});
-      }
-    });
-  }
+  // void initializeListener() {
+  //   streamSubscription?.cancel();
+  //   streamSubscription = mainSocketProvider.socketStream.listen((event) {
+  //     Map<String, dynamic> decodeMessage = jsonDecode(event);
+  //
+  //     if (mainSocketProvider.currentConversationId !=
+  //         decodeMessage["conversation"]) {
+  //       MainSocketMessageHandler(message: event);
+  //       if (mounted) setState(() {});
+  //     }
+  //   });
+  // }
 
   @override
   void dispose() {
-    mainSocketProvider.removeStreamSubscription(streamSubscription);
-    streamSubscription?.cancel();
+    // mainSocketProvider.removeStreamSubscription(streamSubscription);
+    // streamSubscription?.cancel();
     super.dispose();
   }
 
@@ -54,9 +48,9 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
   Widget build(BuildContext context) {
     if (filterValue == 'Connections') filterValue = "Connections";
 
-    mainSocketProvider = Provider.of<MainSocketProvider>(context);
+    // mainSocketProvider = Provider.of<MainSocketProvider>(context);
 
-    initializeListener();
+    // initializeListener();
 
     return WillPopScope(
       onWillPop: () async {

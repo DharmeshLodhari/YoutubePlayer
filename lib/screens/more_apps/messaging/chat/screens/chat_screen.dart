@@ -287,7 +287,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       "created_at": DateTime.now().toUtc().toString(),
       "type": "nudge_user",
     };
-
+    debugPrint("Data:- $data");
     sendDataToSocket(data);
   }
 
@@ -575,17 +575,23 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       bool isMatchFound = false;
       for (int i = 0; i < messageList.length; i++) {
         Map<String, dynamic> previousMessage = jsonDecode(messageList[i]);
+
+        String newMessageText = newMessage["text"] is String
+            ? newMessage["text"]
+            : jsonEncode(newMessage["text"]);
+        String previousMessageText = previousMessage["text"] is String
+            ? previousMessage["text"]
+            : jsonEncode(previousMessage["text"]);
+
         if (newMessage['check_id'] == previousMessage['check_id'] &&
-            newMessage["text"] == previousMessage["text"]) {
+            newMessageText == previousMessageText) {
           newMessage["delivered"] = true;
           messageList[i] = jsonEncode(newMessage);
           if (mounted) setState(() {});
           isMatchFound = true;
 
           ///PlaySoundAccordingToMessageType
-          MessageSoundPlayer(
-                  message: jsonEncode(newMessage), userBloc: userBloc)
-              .playSound();
+          MessageSoundPlayer(message: jsonEncode(newMessage)).playSound();
         }
       }
 
@@ -601,7 +607,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     messageList.insert(0, message);
 
     ///PlaySoundAccordingToMessageType
-    MessageSoundPlayer(message: message, userBloc: userBloc).playSound();
+    MessageSoundPlayer(message: message).playSound();
 
     if (mounted) setState(() {});
 

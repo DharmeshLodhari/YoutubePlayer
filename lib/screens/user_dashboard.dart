@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_message_handler.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/tiles/bank_account.dart';
@@ -453,6 +454,13 @@ class _UserDashboardState extends State<UserDashboard> {
     SharedPreferences _sharedPreferences;
 
     // await notificationBloc.pushNotificationService.logout();
+
+    MainSocketMessageHandler().dispose();
+
+    // AssetsAudioPlayer.allPlayers().forEach((key, value) {
+    //   debugPrint("Key:- $key");
+    //   value.dispose();
+    // });
 
     CacheManager().deleteCache(clearAll: true);
     await socketProvider?.close();

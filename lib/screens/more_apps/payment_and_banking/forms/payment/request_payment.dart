@@ -402,9 +402,15 @@ class _RequestPaymentState extends State<RequestPayment> {
       validator: (val) {
         if (val.isNotEmpty) {
           try {
-            int.parse(val);
-            return null;
-          } catch (e) {}
+            int amount = int.parse(val);
+            if (amount > 0) {
+              return null;
+            } else {
+              throw Exception("Invalid amount");
+            }
+          } catch (e) {
+            return AppLocalization.of(context).invalidAmount;
+          }
         }
         return AppLocalization.of(context).invalidAmount;
       },

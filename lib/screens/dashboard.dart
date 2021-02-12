@@ -71,12 +71,17 @@ class _DashboardState extends State<Dashboard> {
   }
 
   void initializeListener() {
+
+    MainSocketMessageHandler().dispose();
+
     streamSubscription?.cancel();
     streamSubscription = mainSocketProvider?.socketStream?.listen((event) {
       Map<String, dynamic> decodeMessage = jsonDecode(event);
 
       if (mainSocketProvider.currentConversationId !=
-          decodeMessage["conversation"]) {
+              decodeMessage["conversation"] ||
+          mainSocketProvider.currentConversationId !=
+              decodeMessage["conversation_id"]) {
         MainSocketMessageHandler(message: event);
         if (mounted) setState(() {});
       }
