@@ -218,7 +218,7 @@ class _AddProductState extends State<AddProduct> {
                   onPressed: () => Navigator.pop(context, ImageSource.camera),
                 ),
                 MaterialButton(
-                  child: Text(AppLocalization.of(context).gallary),
+                  child: Text(AppLocalization.of(context).gallery),
                   onPressed: () => Navigator.pop(context, ImageSource.gallery),
                 )
               ],

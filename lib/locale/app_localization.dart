@@ -1118,10 +1118,10 @@ class AppLocalization {
     );
   }
 
-  String get gallary {
+  String get gallery {
     return Intl.message(
-      "Gallary",
-      name: "gallary",
+      "Gallery",
+      name: "gallery",
     );
   }
 

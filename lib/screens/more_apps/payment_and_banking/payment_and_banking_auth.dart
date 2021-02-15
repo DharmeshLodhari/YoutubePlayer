@@ -456,7 +456,7 @@ class PaymentAndBankingAuth extends AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.post(url, headers: headers, body: _data);
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return jsonDecode(response.body);
     } else {
       return Future.error("${response.body}");
@@ -465,17 +465,17 @@ class PaymentAndBankingAuth extends AuthService {
 
   Future<bool> confirmTopUpWithReferenceNumber(
       Map<String, dynamic> data) async {
-    // await Future.delayed(Duration(seconds: 2));
-    // return Future.error("Something wrong please try later!");
-
     var url = secureBaseUrl + "/api/v1/transactions/topup-by-reference/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.post(url, headers: headers, body: _data);
-    if (response.statusCode == 201) {
+    debugPrint("Response ${response.statusCode}");
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
+    } else if (response.statusCode == 400) {
+      return Future.error(jsonDecode(response.body)["error"]);
     } else {
-      return Future.error("${jsonDecode(response.body)}");
+      return Future.error(jsonDecode(response.body));
     }
   }
 }

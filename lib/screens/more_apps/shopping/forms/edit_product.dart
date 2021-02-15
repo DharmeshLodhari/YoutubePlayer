@@ -321,7 +321,7 @@ class _EditProductState extends State<EditProduct> {
                   onPressed: () => Navigator.pop(context, ImageSource.camera),
                 ),
                 MaterialButton(
-                  child: Text(AppLocalization.of(context).gallary),
+                  child: Text(AppLocalization.of(context).gallery),
                   onPressed: () => Navigator.pop(context, ImageSource.gallery),
                 )
               ],

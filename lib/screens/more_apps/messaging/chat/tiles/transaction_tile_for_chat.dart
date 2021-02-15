@@ -28,10 +28,6 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
 
   @override
   void initState() {
-    // debugPrint("Text type ${widget.message['text'] is String}");
-    // debugPrint("MESSAGE PAYLOAD :- ${widget.message}");
-    // debugPrint("MESSAGE:- ${widget.message['text']}");
-
     super.initState();
   }
 
@@ -39,7 +35,6 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
   Widget build(BuildContext context) {
     Map<String, dynamic> data;
 
-    debugPrint("MESSAGE >>>>>> ${widget.message}");
     if (widget.message['text'] is String) {
       data = jsonDecode(widget.message['text']);
     } else if (widget.message['text'] is Map) {
@@ -49,13 +44,12 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
     bool isCredit = widget.userBloc.user.userName == data['to_customer'];
 
     data['is_credit'] = isCredit;
-    // var payee = isCredit ? data["from_customer"] : data['to_customer'];
-    // var avatar =
-    // isCredit ? data["from_customer_avatar"] : data['to_customer_avatar'];
 
     transaction = Transaction.fromJson(data);
 
     bool isSend = widget.message["author"] == widget.userBloc.user.userName;
+
+    bool isScreenSmall = MediaQuery.of(context).size.width <= 400;
 
     return GestureDetector(
       onLongPress: () {
@@ -165,8 +159,10 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
                               Text(isSend ? "You paid" : "You were paid",
                                   style: TextStyle(
                                       color: blackFont,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 14)),
+                                      fontWeight: isScreenSmall
+                                          ? FontWeight.w500
+                                          : FontWeight.w600,
+                                      fontSize: isScreenSmall ? 12 : 14)),
                               Text(
                                   "${getDateTime(dateAndTime: widget.message['created_at'])}",
                                   maxLines: 1,
@@ -174,7 +170,7 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
                                   softWrap: false,
                                   style: TextStyle(
                                     color: darkGrey,
-                                    fontSize: 12,
+                                    fontSize: isScreenSmall ? 10 : 12,
                                     fontWeight: FontWeight.w400,
                                   ))
                             ],
@@ -270,53 +266,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
       details = jsonDecode(widget.message['meta_data']);
     }
 
-    // debugPrint("details:- $details");
-    // debugPrint("MESSAGE FROM PAYMENT REQUEST  >>>>>>> ${widget.message}");
-
-    //message From server
-    ///{id: e7679714-3188-4046-b5aa-00dc005dfb38,
-    /// check_id: 84e109dc-c258-434b-a973-071c2611dfde,
-    /// conversation: 3fe1e3b6-5802-4ade-b4f3-8f21d7b8ebd7,
-    /// author: black,
-    /// text: {
-    /// id: 607,
-    /// from_customer: black,
-    /// to_customer: abiola.rasheed.2,
-    /// currency: NGN,
-    /// amount: 500,
-    /// notes: Dinner,
-    /// description: Dinner,
-    /// created_at: 2021-02-12T07:27:34.795209+01:00,
-    /// status: Pending,
-    /// from_customer_avatar: https://slydo-assets.s3.amazonaws.com/media/customer/avatar/b045d0a8bebe45ba993253f2512b6254.jpg,
-    /// to_customer_avatar: https://slydo-assets.s3.amazonaws.com/media/customer/avatar/42cfa1076d64401790101f08769317cf.jpg,
-    /// made_from_chat: true},
-    /// read_by_author: true, read_by_recipient: false, was_edited: false, updated_at: 2021-02-12T07:27:34.824589+01:00,
-    /// created_at: 2021-02-12T07:27:34.824616+01:00, kind: payment-request, deleted_for_recipient: false,
-    /// deleted_for_author: false, delivered: true, meta_data: {}, type: chatroom_message}
-
-    //Message from socket
-    /// {"id": "e7679714-3188-4046-b5aa-00dc005dfb38",
-    /// "check_id": "84e109dc-c258-434b-a973-071c2611dfde",
-    /// "conversation": "3fe1e3b6-5802-4ade-b4f3-8f21d7b8ebd7",
-    /// "author": "black",
-    /// "text": {
-    /// "id": 607,
-    /// "from_customer": "black",
-    /// "to_customer": "abiola.rasheed.2",
-    /// "currency": "NGN",
-    /// "amount": 500,
-    /// "notes": "Dinner",
-    /// "description": "Dinner",
-    /// "created_at": "2021-02-12T07:27:34.795209+01:00",
-    /// "status": "Pending",
-    /// "from_customer_avatar": "https://slydo-assets.s3.amazonaws.com/media/customer/avatar/b045d0a8bebe45ba993253f2512b6254.jpg",
-    /// "to_customer_avatar": "https://slydo-assets.s3.amazonaws.com/media/customer/avatar/42cfa1076d64401790101f08769317cf.jpg",
-    /// "made_from_chat": true
-    /// }, "read_by_author": true, "read_by_recipient": false, "was_edited": false, "updated_at": "2021-02-12T07:31:34.929192+01:00", "created_at": "2021-02-12T07:27:34.824616+01:00", "kind": "payment-request", "deleted_for_recipient": false, "deleted_for_author": false, "delivered": true, "meta_data": {"payment_action_status":
-
     if (details.isNotEmpty) {
-      // debugPrint("METADATA:- $details");
       try {
         if (details['payment_action_status'] != null) {
           paymentActionStatus =
@@ -335,7 +285,6 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
       paymentActionStatus = "None";
       paymentActionTime = DateTime.now().toString();
     }
-    // debugPrint("paymentRequest - ${widget.message}");
 
     if (widget.message['text'] is String) {
       paymentRequest = PaymentRequest.fromJson(
@@ -347,6 +296,11 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
     }
 
     bool isSend = widget.message["author"] == widget.userBloc.user.userName;
+
+    // debugPrint(
+    //     "Display width:- ${MediaQuery.of(context).size.width.toString()}");
+
+    bool isScreenSmall = MediaQuery.of(context).size.width <= 400;
 
     return GestureDetector(
       onLongPress: () {
@@ -518,8 +472,10 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                                     Text(getStatusOfThePayment(isSend),
                                         style: TextStyle(
                                             color: blackFont,
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 14)),
+                                            fontWeight: isScreenSmall
+                                                ? FontWeight.w500
+                                                : FontWeight.w600,
+                                            fontSize: isScreenSmall ? 12 : 14)),
                                     Text(
                                         "${getDateTime(dateAndTime: paymentActionTime)}",
                                         maxLines: 1,
@@ -527,7 +483,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                                         softWrap: false,
                                         style: TextStyle(
                                           color: darkGrey,
-                                          fontSize: 12,
+                                          fontSize: isScreenSmall ? 10 : 12,
                                           fontWeight: FontWeight.w400,
                                         ))
                                   ],

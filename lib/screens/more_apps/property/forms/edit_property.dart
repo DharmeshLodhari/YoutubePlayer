@@ -410,7 +410,7 @@ class _EditPropertyState extends State<EditProperty> {
                   onPressed: () => Navigator.pop(context, ImageSource.camera),
                 ),
                 MaterialButton(
-                  child: Text(AppLocalization.of(context).gallary),
+                  child: Text(AppLocalization.of(context).gallery),
                   onPressed: () => Navigator.pop(context, ImageSource.gallery),
                 )
               ],
@@ -549,7 +549,7 @@ class _EditPropertyState extends State<EditProperty> {
                   onPressed: () => Navigator.pop(context, ImageSource.camera),
                 ),
                 MaterialButton(
-                  child: Text(AppLocalization.of(context).gallary),
+                  child: Text(AppLocalization.of(context).gallery),
                   onPressed: () => Navigator.pop(context, ImageSource.gallery),
                 )
               ],

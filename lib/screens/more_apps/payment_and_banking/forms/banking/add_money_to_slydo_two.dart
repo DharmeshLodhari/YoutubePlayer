@@ -370,7 +370,7 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
         }
       }).catchError((e) {
         Navigator.pop(context);
-        debugPrint(e);
+        debugPrint(e.toString());
         Toast.show(e, context, gravity: Toast.BOTTOM, textColor: Colors.white);
       });
     } else {

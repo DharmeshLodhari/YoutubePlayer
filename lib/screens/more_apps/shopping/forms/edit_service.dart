@@ -299,7 +299,7 @@ class _EditServiceState extends State<EditService> {
                   onPressed: () => Navigator.pop(context, ImageSource.camera),
                 ),
                 MaterialButton(
-                  child: Text(AppLocalization.of(context).gallary),
+                  child: Text(AppLocalization.of(context).gallery),
                   onPressed: () => Navigator.pop(context, ImageSource.gallery),
                 )
               ],
