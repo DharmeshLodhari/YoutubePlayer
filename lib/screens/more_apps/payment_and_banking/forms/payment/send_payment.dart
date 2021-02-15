@@ -833,31 +833,31 @@ class _SendPaymentState extends State<SendPayment> {
           var userLocation;
           Map deviceData;
           try {
-            userLocation = await locationService.getLocation();
-            deviceData = await getDeviceInfo();
-            var data = {
-              "from_customer": userBloc.user.userName,
-              "to_customer": recipient.trim(),
-              "currency": userBloc.user.currency,
-              "amount": amount.toString().trim(),
-              "category": selectedCategory.trim(),
-              "notes": reference.trim(),
-              "description": reference.trim(),
-              "latitude": userLocation.latitude,
-              "longitude": userLocation.longitude,
-              "deviceData": deviceData,
-              "is_anonymous": sendMoneyAnonymous,
-              "made_from_chat": isFromChat ?? false,
-            };
-            debugPrint("$data");
-
             BottomSheetPassCode(
                 context: context,
-                isValidCallback: () {
+                isValidCallback: () async {
                   showDialog(
                       context: context,
                       builder: (context) =>
                           Center(child: CircularLoadingIndicator()));
+
+                  userLocation = await locationService.getLocation();
+                  deviceData = await getDeviceInfo();
+                  var data = {
+                    "from_customer": userBloc.user.userName,
+                    "to_customer": recipient.trim(),
+                    "currency": userBloc.user.currency,
+                    "amount": amount.toString().trim(),
+                    "category": selectedCategory.trim(),
+                    "notes": reference.trim(),
+                    "description": reference.trim(),
+                    "latitude": userLocation.latitude,
+                    "longitude": userLocation.longitude,
+                    "deviceData": deviceData,
+                    "is_anonymous": sendMoneyAnonymous,
+                    "made_from_chat": isFromChat ?? false,
+                  };
+
                   _auth.makePayment(data).then((value) {
                     response = value;
                     if (response.statusCode == 200) {

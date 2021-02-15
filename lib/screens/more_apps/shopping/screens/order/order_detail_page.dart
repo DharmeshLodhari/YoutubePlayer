@@ -338,7 +338,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         SizedBox(
           height: 30,
         ),
-        getNoteAddTextField(),
+        Expanded(child: getNoteAddTextField()),
         SizedBox(
           height: 20,
         ),

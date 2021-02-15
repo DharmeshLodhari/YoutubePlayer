@@ -366,7 +366,7 @@ class PaymentAndBankingAuth extends AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.post(url, headers: headers, body: _data);
-    debugPrint("response body:- ${response.body}");
+
     return response;
   }
 

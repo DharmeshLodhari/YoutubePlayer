@@ -659,28 +659,29 @@ class _RequestPaymentState extends State<RequestPayment> {
         if (userBloc.user.userName != recipient) {
           var userLocation;
           try {
-            userLocation = await locationService.getLocation();
-
-            var data = {
-              "from_customer": userBloc.user.userName.trim(),
-              "to_customer": recipient.trim(),
-              "currency": userBloc.user.currency,
-              "amount": amount.toString().trim(),
-              "category": selectedCategory.trim(),
-              "notes": reference.trim(),
-              "description": reference.trim(),
-              "latitude": userLocation.latitude,
-              "longitude": userLocation.longitude,
-              "made_from_chat": isFromChat ?? false,
-            };
-
             BottomSheetPassCode(
                 context: context,
-                isValidCallback: () {
+                isValidCallback: () async {
                   showDialog(
                       context: context,
                       builder: (context) =>
                           Center(child: CircularLoadingIndicator()));
+
+                  userLocation = await locationService.getLocation();
+
+                  var data = {
+                    "from_customer": userBloc.user.userName.trim(),
+                    "to_customer": recipient.trim(),
+                    "currency": userBloc.user.currency,
+                    "amount": amount.toString().trim(),
+                    "category": selectedCategory.trim(),
+                    "notes": reference.trim(),
+                    "description": reference.trim(),
+                    "latitude": userLocation.latitude,
+                    "longitude": userLocation.longitude,
+                    "made_from_chat": isFromChat ?? false,
+                  };
+
                   _auth.createPaymentRequests(data).then((value) {
                     response = value;
                     if (response.statusCode == 201) {
