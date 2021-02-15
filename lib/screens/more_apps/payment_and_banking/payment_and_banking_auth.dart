@@ -465,8 +465,17 @@ class PaymentAndBankingAuth extends AuthService {
 
   Future<bool> confirmTopUpWithReferenceNumber(
       Map<String, dynamic> data) async {
-    await Future.delayed(Duration(seconds: 2));
+    // await Future.delayed(Duration(seconds: 2));
     // return Future.error("Something wrong please try later!");
-    return true;
+
+    var url = secureBaseUrl + "/api/v1/transactions/topup-by-reference/";
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await http.post(url, headers: headers, body: _data);
+    if (response.statusCode == 201) {
+      return true;
+    } else {
+      return Future.error("${jsonDecode(response.body)}");
+    }
   }
 }

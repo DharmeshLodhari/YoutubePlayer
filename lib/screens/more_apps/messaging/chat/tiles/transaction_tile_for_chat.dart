@@ -521,7 +521,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                                             fontWeight: FontWeight.w600,
                                             fontSize: 14)),
                                     Text(
-                                        "${getDateTime(dateAndTime: DateTime.now().toString())}",
+                                        "${getDateTime(dateAndTime: paymentActionTime)}",
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                         softWrap: false,

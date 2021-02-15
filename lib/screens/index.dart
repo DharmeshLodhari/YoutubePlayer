@@ -497,6 +497,17 @@ class _IndexState extends State<Index> {
     );
   }
 
+  // put this when you don't want to go direct in home page on skip btn
+  ///() {
+  ///         if (_currentPageNotifier.value != 3) {
+  ///           _pageController.animateToPage(3,
+  ///               duration: Duration(seconds: 1), curve: Curves.easeIn);
+  ///         } else {
+  ///           isIntroDone = true;
+  ///           if (mounted) setState(() {});
+  ///         }
+  ///       },
+
   Widget skipButton() {
     return GestureDetector(
       child: Text(
@@ -504,13 +515,8 @@ class _IndexState extends State<Index> {
         style: TextStyle(fontSize: 14, color: darkGrey),
       ),
       onTap: () {
-        if (_currentPageNotifier.value != 3) {
-          _pageController.animateToPage(3,
-              duration: Duration(seconds: 1), curve: Curves.easeIn);
-        } else {
-          isIntroDone = true;
-          setState(() {});
-        }
+        isIntroDone = true;
+        if (mounted) setState(() {});
       },
     );
   }
