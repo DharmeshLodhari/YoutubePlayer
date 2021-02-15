@@ -263,7 +263,7 @@ class UserAuth extends AuthService {
 
   // Fetch user profile
   Future<CustomerProfile> fetchContactProfile(String userName) async {
-    var url = secureBaseUrl + "/api/v1/user/contacts/" + userName.trim();
+    var url = secureBaseUrl + "/api/v1/user/connections/" + userName.trim();
     print("URL:- $url");
 
     var headers = await getAuthHeaders();

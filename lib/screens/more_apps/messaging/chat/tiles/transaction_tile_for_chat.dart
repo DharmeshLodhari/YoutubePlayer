@@ -360,14 +360,16 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                                   child: Text(
                                     messageDecoderWithEmoji(
                                         paymentRequest.description),
-                                    maxLines: 1,
                                     style: TextStyle(
                                         fontWeight: FontWeight.w400,
                                         fontSize: 14,
                                         color: blackFont),
-                                    softWrap: false,
-                                    overflow: TextOverflow.ellipsis,
+                                    textAlign: TextAlign.justify,
+
                                   ),
+                                ),
+                                SizedBox(
+                                  width: 6,
                                 ),
                                 Row(
                                   children: [
