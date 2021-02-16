@@ -4,10 +4,13 @@ import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_message_handler.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/device_info.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/global_key.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -93,10 +96,6 @@ class PushNotificationService {
 
         print("Notification From onLaunch:  $notification");
 
-        // if (notification["data"] != null) {
-        //   MainSocketMessageHandler(message: notification["data"]);
-        // }
-
         //navigate to the particular screen
         _navigateToItemDetail(
             notification, myGlobals.scaffoldKey.currentContext);
@@ -111,10 +110,6 @@ class PushNotificationService {
             : getIosNotification(message);
 
         print("Notification From OnResume:  $notification");
-
-        // if (notification["data"] != null) {
-        //   MainSocketMessageHandler(message: notification["data"]);
-        // }
 
         //navigate to the particular screen
         _navigateToItemDetail(
@@ -188,9 +183,22 @@ class PushNotificationService {
         String recipientUsername = payload.replaceAll("/chat-screen/", "");
         print("Recipient user name = $recipientUsername");
 
-        Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
-        Navigator.pushNamed(context, '/chat-screen',
-            arguments: {"recipientUserName": recipientUsername});
+        if (recipientUsername != null) {
+          showDialog(
+              context: context,
+              builder: (context) => Center(child: CircularLoadingIndicator()));
+
+          CustomerProfile customerProfile =
+              await UserAuth().fetchContactProfile(recipientUsername);
+
+          if (customerProfile == null) {
+            Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
+            return;
+          }
+          Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
+          Navigator.pushNamed(context, '/chat-screen',
+              arguments: {"searchedUser": customerProfile});
+        }
       }
     } catch (error) {
       print("new error:- $error");

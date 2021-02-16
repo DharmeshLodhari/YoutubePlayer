@@ -1,18 +1,4 @@
-// Future<String> captureVideo(BuildContext context, Duration duration) async {
-//   String result = await showDialog<String>(
-//       context: context,
-//       barrierDismissible: false,
-//       builder: (context) => Container(
-//             child: MaterialButton(
-//               onPressed: () {
-//                 Navigator.pop(context, "ok");
-//               },
-//               child: Text("ok"),
-//             ),
-//           ));
-//
-//   return Future.value(result);
-// }
+
 import 'dart:async';
 import 'dart:io';
 

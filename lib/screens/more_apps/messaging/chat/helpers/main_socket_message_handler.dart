@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:Slydo/data/socket_provider.dart';
@@ -25,6 +26,9 @@ class MainSocketMessageHandler {
   static List<String> _audioPlayers = [];
 
   static List<String> _hashedNudgingMessages = [];
+
+  static Timer _nudgeAlertTimer;
+  static Duration nudgeAlertDuration = Duration(seconds: 30);
 
   MainSocketMessageHandler({this.message}) {
     if (message != null) {
@@ -97,7 +101,7 @@ class MainSocketMessageHandler {
           messageData["conversation_id"]) {
         debugPrint("author ${messageData["author"]}");
 
-        /// is nudge alert is Already open then we will not open second nudge alert
+        /// if nudge alert is Already open then we will not open second nudge alert
         debugPrint(
             "nudgingUsers.contains(messageData['author'])  ${_nudgingUsers.contains(messageData["author"])}");
         if (!_nudgingUsers.contains(messageData["author"])) {
@@ -112,6 +116,20 @@ class MainSocketMessageHandler {
           String audioPlayerId =
               MessageSoundPlayer(message: message).playSound();
           _audioPlayers.add(audioPlayerId);
+
+          if (_nudgeAlertTimer?.isActive ?? false) {
+            _nudgeAlertTimer.cancel();
+          }
+
+          /// dispose the audio player if user not press anything
+          _nudgeAlertTimer = Timer(nudgeAlertDuration, () {
+            _nudgingUsers.remove(messageData["author"]);
+
+            Navigator.of(myGlobals.scaffoldKey.currentContext).pop();
+
+            /// dispose the audio player
+            AssetsAudioPlayer.withId(audioPlayerId)?.dispose();
+          });
 
           bool result = await showDialogBoxWithImage(
             context: myGlobals.scaffoldKey.currentContext,
@@ -132,13 +150,20 @@ class MainSocketMessageHandler {
           /// dispose the audio player
           AssetsAudioPlayer.withId(audioPlayerId)?.dispose();
 
-          if (result) {
-            Navigator.of(myGlobals.scaffoldKey.currentContext)
-                .popUntil(ModalRoute.withName('/dashboard'));
+          /// stop timer when get any action from the user
+          if (_nudgeAlertTimer?.isActive ?? false) {
+            _nudgeAlertTimer.cancel();
+          }
 
-            Navigator.pushNamed(
-                myGlobals.scaffoldKey.currentContext, '/chat-screen',
-                arguments: {"searchedUser": customerProfile});
+          if (result != null) {
+            if (result) {
+              Navigator.of(myGlobals.scaffoldKey.currentContext)
+                  .popUntil(ModalRoute.withName('/dashboard'));
+
+              Navigator.pushNamed(
+                  myGlobals.scaffoldKey.currentContext, '/chat-screen',
+                  arguments: {"searchedUser": customerProfile});
+            }
           }
         }
       }

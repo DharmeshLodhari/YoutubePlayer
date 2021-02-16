@@ -579,12 +579,14 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         String newMessageText = newMessage["text"] is String
             ? newMessage["text"]
             : jsonEncode(newMessage["text"]);
+
         String previousMessageText = previousMessage["text"] is String
             ? previousMessage["text"]
             : jsonEncode(previousMessage["text"]);
 
         if (newMessage['check_id'] == previousMessage['check_id'] &&
-            newMessageText == previousMessageText) {
+            newMessageText.replaceAll(RegExp(r"\s+"), "") ==
+                previousMessageText.replaceAll(RegExp(r"\s+"), "")) {
           newMessage["delivered"] = true;
           messageList[i] = jsonEncode(newMessage);
           if (mounted) setState(() {});
@@ -840,8 +842,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   void getUserStatus() async {
     var data = await MessageAuth().getChatUserStatus(recipientUser.userName);
-
-    print("userdata:$data");
 
     if (data["status"] == "Online") {
       userStatus = "Online";
@@ -1262,11 +1262,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         allowMultiple: false,
         type: FileType.custom,
         allowedExtensions: allowedExtensions);
-
-    // FilePickerResult pickedMedia = await FilePicker.platform.pickFiles(
-    //   allowMultiple: false,
-    //   type: FileType.audio,
-    // );
 
     if (pickedMedia != null) {
       File file = File(pickedMedia.files.single.path);

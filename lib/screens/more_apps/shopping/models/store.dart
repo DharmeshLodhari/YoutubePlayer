@@ -391,23 +391,23 @@ class ProductCondition {
 List<ProductCondition> conditions = <ProductCondition>[
   const ProductCondition(
     'Fair',
-    'Orignal packaging or with tag',
+    'Original packaging or with tag',
   ),
   const ProductCondition(
     'Good',
-    'Orignal packaging or with tag',
+    'Original packaging or with tag',
   ),
   const ProductCondition(
     'Like New',
-    'Orignal packaging or with tag',
+    'Original packaging or with tag',
   ),
   const ProductCondition(
     'New',
-    'Orignal packaging or with tag',
+    'Original packaging or with tag',
   ),
   const ProductCondition(
     'Poor',
-    'Orignal packaging or with tag',
+    'Original packaging or with tag',
   ),
 ];
 

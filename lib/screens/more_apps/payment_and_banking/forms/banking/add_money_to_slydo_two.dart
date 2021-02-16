@@ -390,7 +390,7 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
     return Align(
       alignment: Alignment.centerLeft,
       child: Text(
-        "Please check the box below only after you transferred",
+        "Please tick the box below after you have transferred payment.",
         style: TextStyle(
             fontSize: 12, color: mateRed, fontWeight: FontWeight.w600),
       ),
