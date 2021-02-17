@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:page_view_indicators/page_view_indicators.dart';
+import 'package:sizer/sizer.dart';
 
 import '../utils/colors.dart';
 
@@ -264,7 +265,7 @@ class _IndexState extends State<Index> {
             child: Container(),
           ),
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 30),
+            padding: EdgeInsets.symmetric(horizontal: 10.0.w),
             child: Image.asset(
               "assets/images/intro_images/screen_one.png",
               frameBuilder: imageFrameBuilder,
@@ -286,19 +287,19 @@ class _IndexState extends State<Index> {
                     Text(
                       "SCAN QR CODE",
                       textAlign: TextAlign.center,
-                      style:
-                          TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+                      style: TextStyle(
+                          fontSize: 22.0.sp, fontWeight: FontWeight.w700),
                     ),
                     SizedBox(
                       height: 20,
                     ),
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 40),
+                      padding: EdgeInsets.symmetric(horizontal: 4.0.w),
                       child: Text(
                         "Scan QR Code to make payment. Easy and secure.",
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            fontSize: 14, color: darkGrey, height: 1.5),
+                            fontSize: 14.0.sp, color: darkGrey, height: 1.5),
                       ),
                     ),
                     Expanded(
@@ -512,7 +513,7 @@ class _IndexState extends State<Index> {
     return GestureDetector(
       child: Text(
         _currentPageNotifier.value == 3 ? "Done" : "Skip",
-        style: TextStyle(fontSize: 14, color: darkGrey),
+        style: TextStyle(fontSize: 14.0.sp, color: darkGrey),
       ),
       onTap: () {
         isIntroDone = true;

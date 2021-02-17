@@ -126,7 +126,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: appBar(),
-        floatingActionButton: floatingActionBar(),
+        floatingActionButton: isValidCustomer ? floatingActionBar() : null,
         body: _buildProductDetailsPage(context),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       ),
@@ -156,10 +156,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       ),
       actions: <Widget>[
         shareItemBtn(),
-        SizedBox(
+        isValidCustomer?SizedBox(
           width: 8,
-        ),
-        goToCartWidget(),
+        ):Container(),
+        isValidCustomer?goToCartWidget():Container(),
         SizedBox(
           width: 16,
         ),
@@ -432,7 +432,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               height: 16,
             ),
             isOtherItemIsEmpty ? Container() : _buildSellersOtherProducts(),
-            SizedBox(height: 60.0),
+            SizedBox(height: isValidCustomer ? 60.0 : 20),
           ],
         ),
       ],

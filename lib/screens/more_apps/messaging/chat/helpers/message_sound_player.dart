@@ -26,13 +26,13 @@ class MessageSoundPlayer {
         AssetsAudioPlayer.playAndForget(Audio(sound), respectSilentMode: true);
       } else if (messageData["type"] == "nudge_user") {
         AssetsAudioPlayer _audioPlayer =
-            AssetsAudioPlayer.withId(messageData["check_id"]);
+            AssetsAudioPlayer.withId(messageData["author"]);
 
         _audioPlayer.open(Audio(sound),
             autoStart: true,
             respectSilentMode: true,
             loopMode: LoopMode.single);
-        return messageData["check_id"];
+        return messageData["author"];
       }
     }
   }

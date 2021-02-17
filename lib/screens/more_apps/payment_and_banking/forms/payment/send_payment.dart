@@ -250,6 +250,9 @@ class _SendPaymentState extends State<SendPayment> {
   }
 
   Widget scaffoldBody() {
+    bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
+
+    debugPrint("Height:- ${MediaQuery.of(context).size.height}");
     return isLoading
         ? Center(
             child: CircularLoadingIndicator(),
@@ -260,11 +263,12 @@ class _SendPaymentState extends State<SendPayment> {
                   (AppBar().preferredSize.height +
                       MediaQuery.of(context).padding.top),
               width: MediaQuery.of(context).size.width,
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              padding: EdgeInsets.symmetric(
+                  horizontal: 16, vertical: isScreenIsSmall ? 8 : 16),
               child: Column(
                 children: [
                   Expanded(
-                    flex: 8,
+                    flex: isScreenIsSmall ? 15 : 8,
                     child: Card(
                       elevation: 2,
                       margin: EdgeInsets.zero,
@@ -322,7 +326,7 @@ class _SendPaymentState extends State<SendPayment> {
                     ),
                   ),
                   Expanded(
-                      flex: MediaQuery.of(context).size.height < 600 ? 2 : 3,
+                      flex: isScreenIsSmall ? 2 : 3,
                       child: Container(
                         child: Column(
                           children: [

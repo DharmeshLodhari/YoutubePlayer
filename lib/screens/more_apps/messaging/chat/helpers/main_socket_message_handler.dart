@@ -28,7 +28,7 @@ class MainSocketMessageHandler {
   static List<String> _hashedNudgingMessages = [];
 
   static Timer _nudgeAlertTimer;
-  static Duration nudgeAlertDuration = Duration(seconds: 30);
+  static Duration nudgeAlertDuration = Duration(seconds: 6);
 
   MainSocketMessageHandler({this.message}) {
     if (message != null) {
@@ -49,6 +49,8 @@ class MainSocketMessageHandler {
       saveAndUpdateUserMessageCount(messageData: messageData);
     } else if (messageData["type"] == "nudge_user") {
       showNudgeAlertToUser(messageData: messageData);
+    } else if (messageData["type"] == "stop_nudging") {
+      stopNudgeAlertToUser(messageData: messageData);
     }
   }
 
@@ -166,6 +168,41 @@ class MainSocketMessageHandler {
             }
           }
         }
+      }
+    }
+  }
+
+  void stopNudgeAlertToUser({Map<String, dynamic> messageData}) {
+    debugPrint("MessageData >>>>>>>>> $messageData");
+
+    String hashTheMessage = generateHashedMessage(message);
+
+    /// if This message is already in the list we will return
+    if (_hashedNudgingMessages.contains(hashTheMessage)) {
+      return;
+    }
+    _hashedNudgingMessages.add(hashTheMessage);
+
+    UserBloc userBloc = Provider.of<UserBloc>(
+        myGlobals.scaffoldKey.currentContext,
+        listen: false);
+
+    /// if current user is not author of the nudge then we play nudge sound
+    if (userBloc.user.userName != messageData["author"]) {
+      MainSocketProvider mainSocketProvider = Provider.of<MainSocketProvider>(
+          myGlobals.scaffoldKey.currentContext,
+          listen: false);
+
+      /// if nudge alert is Already open then we will not open second nudge alert
+      debugPrint(
+          "nudgingUsers.contains(messageData['author'])  ${_nudgingUsers.contains(messageData["author"])}");
+      if (_nudgingUsers.contains(messageData["author"])) {
+        _nudgingUsers.remove(messageData["author"]);
+
+        Navigator.of(myGlobals.scaffoldKey.currentContext).pop();
+
+        /// dispose the audio player
+        AssetsAudioPlayer.withId(messageData["author"])?.dispose();
       }
     }
   }

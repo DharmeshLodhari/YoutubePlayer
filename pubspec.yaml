@@ -68,6 +68,7 @@ dependencies:
   lazy_load_scrollview: ^1.2.0
   permission_handler: ^5.0.1+1
   shake: ^0.1.0
+  sizer: ^1.1.8
 
 
 

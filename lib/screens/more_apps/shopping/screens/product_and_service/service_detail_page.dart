@@ -124,7 +124,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: appBar(),
-        floatingActionButton: floatingActionBar(),
+        floatingActionButton: isValidCustomer ? floatingActionBar() : null,
         body: _buildServiceDetailsPage(context),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       ),
@@ -154,10 +154,12 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       ),
       actions: <Widget>[
         shareItemBtn(),
-        SizedBox(
-          width: 8,
-        ),
-        goToCartWidget(),
+        isValidCustomer
+            ? SizedBox(
+                width: 8,
+              )
+            : Container(),
+        isValidCustomer ? goToCartWidget() : Container(),
         SizedBox(
           width: 16,
         ),
@@ -429,7 +431,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
               height: 16,
             ),
             isOtherItemIsEmpty ? Container() : _buildProviderOtherServices(),
-            SizedBox(height: 60.0),
+            SizedBox(height: isValidCustomer ? 60.0 : 20),
           ],
         ),
       ],

@@ -45,6 +45,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shake/shake.dart';
+import 'package:sizer/sizer.dart';
 import 'package:toast/toast.dart';
 import 'package:uuid/uuid.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
@@ -157,9 +158,11 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   /// variables for listening socket connection
   bool _isNetworkConnectionIsOn;
 
-  /// variables for shaking detection
+  /// variables for shaking detection and nudge
   ShakeDetector detector;
   bool showShakingAlert = false;
+  Timer _nudgeAlertTimer;
+  Duration nudgeAlertDuration = Duration(seconds: 8);
 
   @override
   void initState() {
@@ -246,6 +249,18 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       ///send Nudge to Recipient
       nudgeRecipient();
 
+      /// if nudge timer is already in action we stop it
+      if (_nudgeAlertTimer?.isActive ?? false) {
+        _nudgeAlertTimer.cancel();
+      }
+
+      _nudgeAlertTimer = Timer(nudgeAlertDuration, () {
+        Navigator.of(context).pop();
+        showShakingAlert = false;
+        if (mounted) setState(() {});
+        setupShakeDetector();
+      });
+
       String result = await showDialog<String>(
           context: context,
           barrierColor: Colors.black38,
@@ -253,26 +268,86 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Center(
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(24),
-                        child: Image.asset(
-                          "assets/images/tenor.gif",
-                          color: navyBlueLight,
-                          fit: BoxFit.cover,
-                          colorBlendMode: BlendMode.color,
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 10.0.w),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(24),
+                      child: Card(
+                        margin: EdgeInsets.zero,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 5.0.w),
+                          height: 30.0.h,
+                          width: double.infinity,
+                          color: Colors.white,
+                          child: Column(
+                            children: [
+                              Expanded(
+                                flex: 1,
+                                child: SizedBox(
+                                  height: 8.0,
+                                ),
+                              ),
+                              CircularLoadingIndicator(),
+                              Expanded(
+                                child: SizedBox(
+                                  height: 8.0,
+                                ),
+                              ),
+                              Text("Nudging...",
+                                  style: TextStyle(
+                                    inherit: false,
+                                    fontSize: 18.0.sp,
+                                    color: blackFont,
+                                    fontWeight: FontWeight.w500,
+                                  )),
+                              Expanded(
+                                flex: 1,
+                                child: SizedBox(
+                                  height: 8.0,
+                                ),
+                              ),
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(50),
+                                child: Container(
+                                  color: mateRed,
+                                  child: IconButton(
+                                    icon: Icon(
+                                      SlydoAppIcon.remove,
+                                      color: Colors.white,
+                                    ),
+                                    onPressed: () {
+                                      Navigator.of(context).pop("STOP");
+                                    },
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 1,
+                                child: SizedBox(
+                                  height: 8.0,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ],
               ));
+
+      if (_nudgeAlertTimer?.isActive ?? false) {
+        _nudgeAlertTimer.cancel();
+      }
       // debugPrint("result $result");
-      showShakingAlert = false;
-      if (mounted) setState(() {});
-      setupShakeDetector();
+      if (result != null) {
+        if (result == "STOP") {
+          stopNudge();
+          showShakingAlert = false;
+          if (mounted) setState(() {});
+          setupShakeDetector();
+        }
+      }
     }
   }
 
@@ -286,6 +361,21 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       "recipient": recipientUser.userName,
       "created_at": DateTime.now().toUtc().toString(),
       "type": "nudge_user",
+    };
+    debugPrint("Data:- $data");
+    sendDataToSocket(data);
+  }
+
+  void stopNudge() {
+    if (recipientUser == null) return null;
+
+    Map<String, dynamic> data = {
+      "check_id": Uuid().v4(),
+      "conversation_id": recipientUser.conversationId,
+      "author": userBloc.user.userName,
+      "recipient": recipientUser.userName,
+      "created_at": DateTime.now().toUtc().toString(),
+      "type": "stop_nudging",
     };
     debugPrint("Data:- $data");
     sendDataToSocket(data);

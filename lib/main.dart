@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:sizer/sizer.dart';
 
 import 'locale/app_localization.dart';
 
@@ -132,35 +133,40 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppLifeCycle(
-      child: MaterialApp(
-        localizationsDelegates: [
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          _localeOverrideDelegate
-        ],
-        supportedLocales: [
-          const Locale('en', 'US'),
-          const Locale('fr', 'FR'),
-          const Locale('es', 'ES'),
-          const Locale('pt', 'PT'),
-          const Locale('am', 'ET'),
-          const Locale('ar', 'AE'),
-          const Locale('ha', 'KE'),
-          const Locale('sw', 'KE'),
-          const Locale('yo', 'NG'),
-          const Locale('zu', 'ZA'),
-        ],
-        initialRoute: '/splash',
-        onGenerateRoute: RouteGenerator.generateRoute,
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-            primaryColor: navyBlue,
-            fontFamily: "OpenSans",
-            textSelectionHandleColor: navyBlue,
-            splashColor: Colors.transparent,
-            highlightColor: Colors.transparent,
-            backgroundColor: navyBlue),
-      ),
+      child: LayoutBuilder(builder: (context, constraints) {
+        return OrientationBuilder(builder: (context, orientation) {
+          SizerUtil().init(constraints, orientation);
+          return MaterialApp(
+            localizationsDelegates: [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              _localeOverrideDelegate
+            ],
+            supportedLocales: [
+              const Locale('en', 'US'),
+              const Locale('fr', 'FR'),
+              const Locale('es', 'ES'),
+              const Locale('pt', 'PT'),
+              const Locale('am', 'ET'),
+              const Locale('ar', 'AE'),
+              const Locale('ha', 'KE'),
+              const Locale('sw', 'KE'),
+              const Locale('yo', 'NG'),
+              const Locale('zu', 'ZA'),
+            ],
+            initialRoute: '/splash',
+            onGenerateRoute: RouteGenerator.generateRoute,
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+                primaryColor: navyBlue,
+                fontFamily: "OpenSans",
+                textSelectionHandleColor: navyBlue,
+                splashColor: Colors.transparent,
+                highlightColor: Colors.transparent,
+                backgroundColor: navyBlue),
+          );
+        });
+      }),
     );
   }
 }
