@@ -70,8 +70,6 @@ class MainSocketMessageHandler {
   }
 
   void showNudgeAlertToUser({Map<String, dynamic> messageData}) async {
-    debugPrint("MessageData >>>>>>>>> $messageData");
-
     String hashTheMessage = generateHashedMessage(message);
 
     /// if This message is already in the list we will return
@@ -173,8 +171,6 @@ class MainSocketMessageHandler {
   }
 
   void stopNudgeAlertToUser({Map<String, dynamic> messageData}) {
-    debugPrint("MessageData >>>>>>>>> $messageData");
-
     String hashTheMessage = generateHashedMessage(message);
 
     /// if This message is already in the list we will return
@@ -189,10 +185,6 @@ class MainSocketMessageHandler {
 
     /// if current user is not author of the nudge then we play nudge sound
     if (userBloc.user.userName != messageData["author"]) {
-      MainSocketProvider mainSocketProvider = Provider.of<MainSocketProvider>(
-          myGlobals.scaffoldKey.currentContext,
-          listen: false);
-
       /// if nudge alert is Already open then we will not open second nudge alert
       debugPrint(
           "nudgingUsers.contains(messageData['author'])  ${_nudgingUsers.contains(messageData["author"])}");

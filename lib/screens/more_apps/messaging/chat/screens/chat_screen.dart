@@ -362,7 +362,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       "created_at": DateTime.now().toUtc().toString(),
       "type": "nudge_user",
     };
-    debugPrint("Data:- $data");
     sendDataToSocket(data);
   }
 
@@ -377,7 +376,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       "created_at": DateTime.now().toUtc().toString(),
       "type": "stop_nudging",
     };
-    debugPrint("Data:- $data");
     sendDataToSocket(data);
   }
 

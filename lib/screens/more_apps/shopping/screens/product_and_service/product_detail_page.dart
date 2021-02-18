@@ -156,10 +156,12 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       ),
       actions: <Widget>[
         shareItemBtn(),
-        isValidCustomer?SizedBox(
-          width: 8,
-        ):Container(),
-        isValidCustomer?goToCartWidget():Container(),
+        isValidCustomer
+            ? SizedBox(
+                width: 8,
+              )
+            : Container(),
+        isValidCustomer ? goToCartWidget() : Container(),
         SizedBox(
           width: 16,
         ),
@@ -279,14 +281,14 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           basketBloc.addItemToCart(item: product, type: type);
           var mapData;
           basketBloc.items.forEach((element) {
-            if (element["item"].conversationId == product.id) {
+            if (element["item"].id == product.id) {
               mapData = element;
               return;
             }
           });
           Map data = {
             "type": type,
-            "id": mapData["item"].conversationId,
+            "id": mapData["item"].id,
             "qty": mapData["qty"],
           };
           debugPrint("Data From Product Page : $data");

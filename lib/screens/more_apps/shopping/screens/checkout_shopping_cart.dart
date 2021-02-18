@@ -223,8 +223,22 @@ class _ShoppingCartState extends State<ShoppingCart> {
   }
 
   Widget getItemTileUI(int index) {
-    if (basketBloc.items[index]["item"] is Product) {
-      return ShoppingCartTileForProduct(
+    basketBloc = Provider.of<BasketBloc>(context);
+
+    if (index < basketBloc.items.length) {
+      if (basketBloc.items[index]["item"] is Product) {
+        return ShoppingCartTileForProduct(
+          basketBloc.items[index],
+          index: index,
+          onDecreaseQty: () {
+            removeItem(index);
+          },
+          onIncreaseQty: () {
+            addItem(index);
+          },
+        );
+      }
+      return ShoppingCartTileForService(
         basketBloc.items[index],
         index: index,
         onDecreaseQty: () {
@@ -234,17 +248,9 @@ class _ShoppingCartState extends State<ShoppingCart> {
           addItem(index);
         },
       );
+    } else {
+      return Container();
     }
-    return ShoppingCartTileForService(
-      basketBloc.items[index],
-      index: index,
-      onDecreaseQty: () {
-        removeItem(index);
-      },
-      onIncreaseQty: () {
-        addItem(index);
-      },
-    );
   }
 
   Widget addItemToBasket() {

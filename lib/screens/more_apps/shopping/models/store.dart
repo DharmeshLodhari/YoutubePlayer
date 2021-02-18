@@ -68,7 +68,7 @@ class Product {
     this.cover = object["cover"] ?? "";
     this.seller = object["seller"] ?? "";
     this.sellerAvatar = object["seller_avatar"] ?? "";
-    this.qrCode = object["qrCode"] ?? "";
+    this.qrCode = object["qr_code"] ?? "";
     this.condition = object["condition"] ?? "";
     this.category = object["category"] ?? "";
     this.manufacturer = object["manufacturer"] ?? "";
@@ -205,7 +205,7 @@ class Service {
     this.cover = object["cover"] ?? "";
     this.provider = object["provider"] ?? "";
     this.providerAvatar = object["provider_avatar"] ?? "";
-    this.qrCode = object["qrCode"] ?? "";
+    this.qrCode = object["qr_code"] ?? "";
     this.category = object["category"] ?? "";
     this.isAvailable = object["is_available"] ?? false;
     this.availableFrom =

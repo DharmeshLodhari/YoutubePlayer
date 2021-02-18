@@ -172,21 +172,31 @@ class BasketBloc extends ChangeNotifier {
   }
 
   void removeItemInBasketWithQty(var item) {
+    var foundItem;
     try {
-      _items.forEach((element) {
-        if (element["item"].id == item.id) {
-          if (element["qty"] > 1) {
-            element["qty"] = element["qty"] - 1;
-            _total = _total - int.parse(item.price);
-          } else if (element["qty"] == 1) {
-            _items.remove(element);
-            _total = _total - int.parse(item.price);
-          }
-          return;
+      for (int i = 0; i < _items.length; i++) {
+        if (_items[i]["item"].id == item.id) {
+          foundItem = _items[i];
+          break;
         }
-      });
+      }
+
+      if (foundItem != null) {
+        if (foundItem["qty"] > 1) {
+          foundItem["qty"] = foundItem["qty"] - 1;
+          _total = _total - int.parse(item.price);
+        } else if (foundItem["qty"] == 1) {
+          _items.remove(foundItem);
+          _total = _total - int.parse(item.price);
+        } else {
+          debugPrint("ERROR while removing element");
+        }
+      }
+
       notifyListeners();
-    } catch (e) {}
+    } catch (e) {
+      debugPrint("Error 1:- $e");
+    }
   }
 }
 

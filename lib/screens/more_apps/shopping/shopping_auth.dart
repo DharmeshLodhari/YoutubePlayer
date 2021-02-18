@@ -263,7 +263,7 @@ class ShoppingAuthService extends AuthService {
     var response = await http.get(url, headers: headers);
     var jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
-      Product product = createProduct(jsonData);
+      Product product = Product.fromJson(jsonData);
       return product;
     } else {
       throw jsonData;
@@ -464,7 +464,7 @@ class ShoppingAuthService extends AuthService {
     var response = await http.get(url, headers: headers);
     var jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
-      Service service = createService(jsonData);
+      Service service = Service.fromJson(jsonData);
       return service;
     } else {
       throw jsonData;
