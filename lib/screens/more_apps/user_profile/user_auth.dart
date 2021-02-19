@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
 
+import 'models/UserAbout.dart';
+
 class UserAuth extends AuthService {
   // Fetch user profile
   Future<CustomerProfile> fetchCustomerProfile(String userName) async {
@@ -26,6 +28,7 @@ class UserAuth extends AuthService {
     var jsonData = json.decode(response.body);
     debugPrint("response from fetchCustomer = $jsonData");
     if (response.statusCode == 200) {
+      debugPrint("customerProfile type $jsonData");
       CustomerProfile customerProfile = CustomerProfile.fromJson(jsonData);
       return customerProfile;
     } else {
@@ -219,6 +222,37 @@ class UserAuth extends AuthService {
         countryIsoCode: "NG");
   }
 
+  Future<UserAbout> fetchUserAboutInfo() async {
+    var url = secureBaseUrl + "/api/v1/user/about/";
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
+    debugPrint("${response.statusCode}   ${response.body}");
+
+    if (response.statusCode == 200) {
+      var jsonData = jsonDecode(response.body);
+      return UserAbout.fromJson(jsonData);
+    }
+
+    var data = {
+      "address":
+          "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+      "bio":
+          "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.",
+      "contact": "+00000000000",
+      "opening_hours": [
+        {"day": "Mon", "time": "10am - 1pm"},
+        {"day": "Tue", "time": "10am - 1pm"},
+        {"day": "Wed", "time": "10am - 1pm"},
+        {"day": "Thu", "time": "10am - 1pm"},
+        {"day": "Fri", "time": "10am - 1pm"},
+        {"day": "Sat", "time": "Closed"},
+        {"day": "Sun", "time": "Closed"}
+      ]
+    };
+
+    return UserAbout.fromJson(data);
+  }
+
   Future<bool> addUserAddress(Map data) async {
     var url = secureBaseUrl + "/api/v1/user/address/";
     var headers = await getAuthHeaders();
@@ -245,6 +279,7 @@ class UserAuth extends AuthService {
     var response = await http.get(url, headers: headers);
 
     if (response.statusCode == 200) {
+      debugPrint("response ${response.body}");
       var jsonData = json.decode(response.body) ?? {};
 
       Map<String, dynamic> result = {
@@ -410,9 +445,10 @@ class UserAuth extends AuthService {
         "previous": jsonData["previous"],
         "results": jsonData["results"],
       };
+      debugPrint("requests :--  $result");
       return result;
     } else {
-      var jsonData = json.decode(response.body);
+      var jsonData = response.body;
       throw jsonData;
     }
   }

@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -7,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'colors.dart';
 
 export 'colors.dart';
+export 'common.dart';
 
 // this function will build image frame by frame and load image from opacity 0 to 1 use this function in every image
 Widget imageFrameBuilder(BuildContext context, Widget child, int frame,
@@ -169,13 +168,4 @@ String checkImageInErrorList(String url) {
     }
   });
   return url;
-}
-
-String messageDecoderWithEmoji(String text) {
-  try {
-    List<int> bytes = text.toString().codeUnits;
-    return utf8.decode(bytes);
-  } catch (error) {
-    return text;
-  }
 }

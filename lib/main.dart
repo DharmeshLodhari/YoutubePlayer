@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_generator.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_shake_detection.dart';
 import 'package:Slydo/services/app_life_cycle.dart';
 import 'package:Slydo/services/timer_service.dart';
 import 'package:Slydo/utils/colors.dart';
@@ -113,6 +114,9 @@ void main() async {
           ),
           ChangeNotifierProvider<MainSocketProvider>.value(
             value: MainSocketProvider(),
+          ),
+          ChangeNotifierProvider<ChatShakeDetection>.value(
+            value: ChatShakeDetection(),
           ),
         ], child: MyApp()),
       );

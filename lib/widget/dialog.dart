@@ -4,6 +4,8 @@ import 'package:Slydo/widget/cutomized_alert/dialog_button.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 
+import 'cutomized_alert/customized_alert_for_nudge.dart';
+
 // import 'package:flutter/cupertino.dart';
 // import 'package:flutter/material.dart';
 // import 'package:flutter/painting.dart';
@@ -86,6 +88,57 @@ Future<bool> showDialogBoxWithImage({
         text: actionTwo,
         backgroundColor: actionTwoBgColor,
       )
+    ],
+  ).show();
+}
+
+Future<bool> showDialogBoxWithImageForNudge({
+  BuildContext context,
+  String title,
+  String description,
+  IconData actionOneIcon,
+  bool firstActionPrimary = true,
+  String image,
+  Color iconBgColor,
+  Color iconColor,
+  Color iconTwoBgColor,
+  Color iconTwoColor,
+  IconData actionTwoIcon,
+}) {
+  return CustomizedAlertForNudge(
+    context: context,
+    title: title,
+    desc: description,
+    image: image,
+    style: AlertStyle(
+      isOverlayTapDismiss: true,
+      isCloseButton: true,
+    ),
+    buttons: [
+      RoundedBackgroundIcon(
+        backgroundColor: iconBgColor.withOpacity(0.1),
+        height: 50,
+        width: 50,
+        borderRadius: 50,
+        icon: Icon(
+          actionOneIcon,
+          color: iconBgColor,
+          size: 18,
+        ),
+        onTap: () => Navigator.pop(context, firstActionPrimary ? true : false),
+      ),
+      RoundedBackgroundIcon(
+        backgroundColor: iconTwoBgColor.withOpacity(0.1),
+        borderRadius: 50,
+        height: 50,
+        width: 50,
+        icon: Icon(
+          actionTwoIcon,
+          color: iconTwoBgColor,
+          size: 18,
+        ),
+        onTap: () => Navigator.pop(context, firstActionPrimary ? false : true),
+      ),
     ],
   ).show();
 }

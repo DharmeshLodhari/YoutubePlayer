@@ -239,7 +239,8 @@ class PushNotificationService {
       description: notification['body'],
       image: notification['image'],
       actionOne: AppLocalization.of(context).cancel,
-      actionTwo: AppLocalization.of(context).navigate,
+      // actionTwo: AppLocalization.of(context).navigate,
+      actionTwo: "View",
     );
     if (result) {
       _navigateToItemDetail(notification, context);

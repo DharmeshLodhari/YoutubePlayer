@@ -488,9 +488,16 @@ class _SearchModuleState extends State<SearchModule> {
   }
 
   Widget getUserLeading(CustomerProfile user) {
+    Color borderColor = getUserTypeColor(user: user);
+
     return Container(
         height: 48,
         width: 48,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(
+              25,
+            ),
+            border: Border.all(color: borderColor, width: 2)),
         child: ClipOval(
           child: CachedNetworkImage(
             imageUrl: user.avatar == ""

@@ -62,9 +62,15 @@ class _UserTileState extends State<UserTile> {
   Widget build(BuildContext context) {
     Widget avatarImage;
 
+    Color borderColor = getUserTypeColor(user: widget.user);
     avatarImage = Container(
         height: 48,
         width: 48,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(
+              25,
+            ),
+            border: Border.all(color: borderColor, width: 2)),
         child: ClipOval(
           child: CachedNetworkImage(
             imageUrl: widget.user.avatar == ""

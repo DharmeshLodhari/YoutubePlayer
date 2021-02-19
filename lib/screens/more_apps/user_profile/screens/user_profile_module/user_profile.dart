@@ -1,5 +1,6 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module/user_about_screen.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
@@ -58,12 +59,13 @@ class _UserProfileState extends State<UserProfile> {
       isOwner = true;
     }
 
+    debugPrint("searchedUser.type ${searchedUser.type}");
     return WillPopScope(
       onWillPop: () async {
         return true;
       },
       child: DefaultTabController(
-        length: 3,
+        length: searchedUser.type.toLowerCase() != "user" ? 4 : 1,
         child: Scaffold(
           backgroundColor: Colors.white,
           appBar: appBar(),
@@ -113,75 +115,123 @@ class _UserProfileState extends State<UserProfile> {
           currentIndex = index;
           setState(() {});
           pageController.animateToPage(currentIndex,
-              duration: Duration(milliseconds: 500), curve: Curves.linear);
+              duration: Duration(milliseconds: 100), curve: Curves.linear);
         },
-        tabs: [
-          Tab(
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                shape: BoxShape.rectangle,
-                color: currentIndex == 0
-                    ? navyBlue.withOpacity(0.1)
-                    : Colors.white,
-              ),
-              child: Text(
-                "Information",
-                style: TextStyle(
-                  color: currentIndex == 0 ? navyBlue : blackFont,
-                  fontSize: 14,
-                  fontWeight:
-                      currentIndex == 0 ? FontWeight.w600 : FontWeight.w400,
-                ),
-              ),
-            ),
-          ),
-          Tab(
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                shape: BoxShape.rectangle,
-                color: currentIndex == 1
-                    ? navyBlue.withOpacity(0.1)
-                    : Colors.white,
-              ),
-              child: Text(
-                "Products",
-                style: TextStyle(
-                  color: currentIndex == 1 ? navyBlue : blackFont,
-                  fontSize: 14,
-                  fontWeight:
-                      currentIndex == 1 ? FontWeight.w600 : FontWeight.w400,
-                ),
-              ),
-            ),
-          ),
-          Tab(
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                shape: BoxShape.rectangle,
-                color: currentIndex == 2
-                    ? navyBlue.withOpacity(0.1)
-                    : Colors.white,
-              ),
-              child: Text(
-                "Services",
-                style: TextStyle(
-                  color: currentIndex == 2 ? navyBlue : blackFont,
-                  fontSize: 14,
-                  fontWeight:
-                      currentIndex == 2 ? FontWeight.w600 : FontWeight.w400,
-                ),
-              ),
-            ),
-          ),
-        ],
+        tabs: getTabs(),
       ),
     );
+  }
+
+  List<Widget> getTabs() {
+    List<Widget> tabs = [];
+    if (searchedUser.type.toLowerCase() != "user") {
+      tabs = [
+        Tab(
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              shape: BoxShape.rectangle,
+              color:
+                  currentIndex == 0 ? navyBlue.withOpacity(0.1) : Colors.white,
+            ),
+            child: Text(
+              "Info",
+              style: TextStyle(
+                color: currentIndex == 0 ? navyBlue : blackFont,
+                fontSize: 14,
+                fontWeight:
+                    currentIndex == 0 ? FontWeight.w600 : FontWeight.w400,
+              ),
+            ),
+          ),
+        ),
+        Tab(
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              shape: BoxShape.rectangle,
+              color:
+                  currentIndex == 1 ? navyBlue.withOpacity(0.1) : Colors.white,
+            ),
+            child: Text(
+              "About",
+              style: TextStyle(
+                color: currentIndex == 1 ? navyBlue : blackFont,
+                fontSize: 14,
+                fontWeight:
+                    currentIndex == 1 ? FontWeight.w600 : FontWeight.w400,
+              ),
+            ),
+          ),
+        ),
+        Tab(
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              shape: BoxShape.rectangle,
+              color:
+                  currentIndex == 2 ? navyBlue.withOpacity(0.1) : Colors.white,
+            ),
+            child: Text(
+              "Products",
+              style: TextStyle(
+                color: currentIndex == 2 ? navyBlue : blackFont,
+                fontSize: 14,
+                fontWeight:
+                    currentIndex == 2 ? FontWeight.w600 : FontWeight.w400,
+              ),
+            ),
+          ),
+        ),
+        Tab(
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              shape: BoxShape.rectangle,
+              color:
+                  currentIndex == 3 ? navyBlue.withOpacity(0.1) : Colors.white,
+            ),
+            child: Text(
+              "Services",
+              style: TextStyle(
+                color: currentIndex == 3 ? navyBlue : blackFont,
+                fontSize: 14,
+                fontWeight:
+                    currentIndex == 3 ? FontWeight.w600 : FontWeight.w400,
+              ),
+            ),
+          ),
+        )
+      ];
+    } else {
+      tabs = [
+        Tab(
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              shape: BoxShape.rectangle,
+              color:
+                  currentIndex == 0 ? navyBlue.withOpacity(0.1) : Colors.white,
+            ),
+            child: Text(
+              "Info",
+              style: TextStyle(
+                color: currentIndex == 0 ? navyBlue : blackFont,
+                fontSize: 14,
+                fontWeight:
+                    currentIndex == 0 ? FontWeight.w600 : FontWeight.w400,
+              ),
+            ),
+          ),
+        ),
+      ];
+    }
+    return tabs;
   }
 
   Widget shareProfileIcon() {
@@ -242,6 +292,7 @@ class _UserProfileState extends State<UserProfile> {
       controller: pageController,
       children: [
         UserInfo(user: searchedUser),
+        UserAboutScreen(user: searchedUser),
         UserProductList(
           user: searchedUser,
           isOwner: isOwner,

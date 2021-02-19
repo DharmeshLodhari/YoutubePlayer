@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
@@ -74,15 +73,17 @@ class _DashboardState extends State<Dashboard> {
   void initializeListener() {
     streamSubscription?.cancel();
     streamSubscription = mainSocketProvider?.socketStream?.listen((event) {
-      Map<String, dynamic> decodeMessage = jsonDecode(event);
+      MainSocketMessageHandler(message: event);
+      if (mounted) setState(() {});
 
-      if (mainSocketProvider.currentConversationId !=
-              decodeMessage["conversation"] ||
-          mainSocketProvider.currentConversationId !=
-              decodeMessage["conversation_id"]) {
-        MainSocketMessageHandler(message: event);
-        if (mounted) setState(() {});
-      }
+      /// For count issue keep this code if count issue is not solved
+      // if (mainSocketProvider.currentConversationId !=
+      //         decodeMessage["conversation"] ||
+      //     mainSocketProvider.currentConversationId !=
+      //         decodeMessage["conversation_id"]) {
+      //   MainSocketMessageHandler(message: event);
+      //   if (mounted) setState(() {});
+      // }
     });
   }
 

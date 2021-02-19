@@ -3,11 +3,13 @@ import 'dart:convert';
 
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_shake_detection.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/MainSocketMessageModel.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/global_key.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
@@ -15,6 +17,8 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:toast/toast.dart';
+import 'package:uuid/uuid.dart';
 
 import 'message_sound_player.dart';
 
@@ -28,6 +32,7 @@ class MainSocketMessageHandler {
   static List<String> _hashedNudgingMessages = [];
 
   static Timer _nudgeAlertTimer;
+  // static Duration nudgeAlertDuration = Duration(seconds: 15);
   static Duration nudgeAlertDuration = Duration(seconds: 6);
 
   MainSocketMessageHandler({this.message}) {
@@ -46,7 +51,19 @@ class MainSocketMessageHandler {
     Map<String, dynamic> messageData = jsonDecode(message);
 
     if (messageData["type"] == "chatroom_message") {
-      saveAndUpdateUserMessageCount(messageData: messageData);
+      /// checking if the recipient is in the current chat screen then we will not update message count
+      if (messageData.containsKey("conversation") ||
+          messageData.containsKey("conversation_id")) {
+        MainSocketProvider mainSocketProvider = Provider.of<MainSocketProvider>(
+            myGlobals.scaffoldKey.currentContext,
+            listen: false);
+        if (mainSocketProvider.currentConversationId !=
+            (messageData.containsKey("conversation")
+                ? messageData["conversation"]
+                : messageData.containsKey("conversation_id"))) {
+          saveAndUpdateUserMessageCount(messageData: messageData);
+        }
+      }
     } else if (messageData["type"] == "nudge_user") {
       showNudgeAlertToUser(messageData: messageData);
     } else if (messageData["type"] == "stop_nudging") {
@@ -59,6 +76,7 @@ class MainSocketMessageHandler {
         MainSocketMessageModel.fromJson(jsonDecode(message));
 
     String hashedMessage = generateHashedMessage(message);
+    debugPrint("Message>>>>> $message");
 
     ChatUserManager().addUser(
         conversationId:
@@ -131,18 +149,18 @@ class MainSocketMessageHandler {
             AssetsAudioPlayer.withId(audioPlayerId)?.dispose();
           });
 
-          bool result = await showDialogBoxWithImage(
+          bool result = await showDialogBoxWithImageForNudge(
             context: myGlobals.scaffoldKey.currentContext,
-            actionOneBgColor: greyBorderColor,
-            actionOneTextColor: blackFont,
-            actionTwoBgColor: naturalGreen,
-            actionTwoTextColor: Colors.white,
+            iconBgColor: mateRed,
+            iconColor: Colors.white,
+            iconTwoBgColor: navyBlue,
+            iconTwoColor: Colors.white,
             firstActionPrimary: false,
             title: "${customerProfile.fullName}",
             description: "${customerProfile.userName} is nudging you",
             image: customerProfile.avatar,
-            actionOne: "Cancel",
-            actionTwo: "Navigate",
+            actionOneIcon: SlydoAppIcon.remove,
+            actionTwoIcon: SlydoAppIcon.text_message,
           );
 
           _nudgingUsers.remove(messageData["author"]);
@@ -156,13 +174,28 @@ class MainSocketMessageHandler {
           }
 
           if (result != null) {
+            debugPrint("result>>>>> $result");
             if (result) {
+              /// send Nudge acknowledgement to author that recipient have accepted that nudge and online now
+              sendNudgeAcknowledgement(
+                  currentUser: userBloc,
+                  author: customerProfile,
+                  type: "Accepted");
+
               Navigator.of(myGlobals.scaffoldKey.currentContext)
                   .popUntil(ModalRoute.withName('/dashboard'));
 
               Navigator.pushNamed(
                   myGlobals.scaffoldKey.currentContext, '/chat-screen',
                   arguments: {"searchedUser": customerProfile});
+            } else {
+              debugPrint("else executed");
+
+              /// send Nudge acknowledgement to author that recipient have canceled that nudge and he is busy
+              sendNudgeAcknowledgement(
+                  currentUser: userBloc,
+                  author: customerProfile,
+                  type: "Canceled");
             }
           }
         }
@@ -170,8 +203,34 @@ class MainSocketMessageHandler {
     }
   }
 
+  void sendNudgeAcknowledgement(
+      {CustomerProfile author, UserBloc currentUser, String type}) {
+    Map<String, dynamic> data = {
+      "check_id": Uuid().v4(),
+      "conversation_id": author.conversationId,
+      "author": currentUser.user.userName,
+      "recipient": author.userName,
+      "created_at": DateTime.now().toUtc().toString(),
+      "acknowledgement_type": type,
+      "type": "stop_nudging",
+    };
+    sendDataToSocket(data);
+  }
+
+  Future<bool> sendDataToSocket(Map<String, dynamic> data) async {
+    MainSocketProvider mainSocketProvider = Provider.of<MainSocketProvider>(
+        myGlobals.scaffoldKey.currentContext,
+        listen: false);
+
+    await mainSocketProvider.add(data);
+
+    return true;
+  }
+
   void stopNudgeAlertToUser({Map<String, dynamic> messageData}) {
     String hashTheMessage = generateHashedMessage(message);
+
+    debugPrint("Message dat c>>>>> $messageData");
 
     /// if This message is already in the list we will return
     if (_hashedNudgingMessages.contains(hashTheMessage)) {
@@ -188,6 +247,9 @@ class MainSocketMessageHandler {
       /// if nudge alert is Already open then we will not open second nudge alert
       debugPrint(
           "nudgingUsers.contains(messageData['author'])  ${_nudgingUsers.contains(messageData["author"])}");
+
+      debugPrint(
+          "nudgingUsers.contains(messageData['recipient'])  ${_nudgingUsers.contains(messageData["recipient"])}");
       if (_nudgingUsers.contains(messageData["author"])) {
         _nudgingUsers.remove(messageData["author"]);
 
@@ -195,6 +257,17 @@ class MainSocketMessageHandler {
 
         /// dispose the audio player
         AssetsAudioPlayer.withId(messageData["author"])?.dispose();
+      } else if (messageData.containsKey("acknowledgement_type")) {
+        ChatShakeDetection chatShakeDetection = Provider.of<ChatShakeDetection>(
+            myGlobals.scaffoldKey.currentContext,
+            listen: false);
+        chatShakeDetection.stopAlertDialog();
+
+        Toast.show(
+            "${messageData["author"]} has ${messageData["acknowledgement_type"]} your Nudge !!",
+            myGlobals.scaffoldKey.currentContext,
+            textColor: Colors.white,
+            duration: 3);
       }
     }
   }
