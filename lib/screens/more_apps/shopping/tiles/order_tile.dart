@@ -59,17 +59,35 @@ class OrderTile extends StatelessWidget {
         : order.customerAvatar;
   }
 
+  String getAvatarType() {
+    return order.customer == userBloc.user.userName
+        ? order.merchantType
+        : order.customerType;
+  }
+
   Widget getLeading() {
-    return ClipOval(
-      child: CachedNetworkImage(
-        imageUrl: getAvatar(),
-        height: 48,
-        width: 48,
-        colorBlendMode: BlendMode.darken,
-        fit: BoxFit.cover,
-        filterQuality: FilterQuality.high,
-        placeholder: (context, url) =>
-            getAvatar() == "" ? Icon(Icons.person) : CircularLoadingIndicator(),
+    Color borderColor = getUserTypeColorByType(type: getAvatarType());
+
+    return Container(
+      height: 48,
+      width: 48,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(
+            25,
+          ),
+          border: Border.all(color: borderColor, width: 2)),
+      child: ClipOval(
+        child: CachedNetworkImage(
+          imageUrl: getAvatar(),
+          height: 48,
+          width: 48,
+          colorBlendMode: BlendMode.darken,
+          fit: BoxFit.cover,
+          filterQuality: FilterQuality.high,
+          placeholder: (context, url) => getAvatar() == ""
+              ? Icon(Icons.person)
+              : CircularLoadingIndicator(),
+        ),
       ),
     );
   }

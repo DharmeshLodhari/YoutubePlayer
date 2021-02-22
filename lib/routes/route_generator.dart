@@ -75,6 +75,7 @@ import 'package:Slydo/screens/more_apps/shopping/screens/shopping/specific_categ
 import 'package:Slydo/screens/more_apps/train/search_train.dart';
 import 'package:Slydo/screens/more_apps/train/train_dashboard.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/add_document.dart';
+import 'package:Slydo/screens/more_apps/user_profile/forms/add_or_edit_user_bio.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/bvn_verification_page.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/forgot_password.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/login.dart';
@@ -930,6 +931,13 @@ class RouteGenerator {
       case "/mix-cart-item":
         return PageTransition(
           child: MixCartItem(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case "/add-edit-user-bio":
+        return PageTransition(
+          child: AddOrEditUserBioScreen(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

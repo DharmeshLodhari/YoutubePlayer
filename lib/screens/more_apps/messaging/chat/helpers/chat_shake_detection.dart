@@ -18,7 +18,7 @@ class ChatShakeDetection extends ChangeNotifier {
   ShakeDetector _detector;
   bool _showShakingAlert = false;
   Timer _nudgeAlertTimer;
-  Duration _nudgeAlertDuration = Duration(seconds: 8);
+  Duration _nudgeAlertDuration = Duration(seconds: 12);
   CustomerProfile _recipientUser;
   UserBloc _userBloc;
 

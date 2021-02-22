@@ -386,9 +386,16 @@ class _ComposeMessageState extends State<ComposeMessage> {
     var avatarImage;
     var qrCodeImage;
     if (messageReceiver != null) {
+      Color borderColor = getUserTypeColor(user: messageReceiver);
+
       avatarImage = Container(
         height: 48,
         width: 48,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(
+              25,
+            ),
+            border: Border.all(color: borderColor, width: 2)),
         child: ClipOval(
           child: CachedNetworkImage(
             imageUrl: messageReceiver.avatar,

@@ -102,6 +102,7 @@ class Product {
 
   // ignore: missing_return
   String getImageId(String imageUrl) {
+    debugPrint("${this.serverImages}");
     for (var data in this.pictureMap) {
       if (data['file'] == imageUrl) {
         return data['id'].toString();
@@ -801,7 +802,9 @@ class Order {
   String customer;
   String merchant;
   String customerAvatar;
+  String customerType;
   String merchantAvatar;
+  String merchantType;
   bool isPaid;
   String transactionId;
   String note;
@@ -815,7 +818,9 @@ class Order {
     this.customer,
     this.merchant,
     this.customerAvatar,
+    this.customerType = "User",
     this.merchantAvatar,
+    this.merchantType = "Business",
     this.isPaid,
     this.transactionId,
     this.note,
@@ -830,6 +835,8 @@ class Order {
     this.customer = object["customer"];
     this.merchant = object["merchant"];
     this.customerAvatar = object["customer_avatar"];
+    this.customerType = object["customer_type"] ?? "User";
+    this.merchantType = object["merchant_type"] ?? "Business";
     this.merchantAvatar = object["merchant_avatar"];
     this.isPaid = object["is_paid"];
     this.transactionId = object["transaction_id"];

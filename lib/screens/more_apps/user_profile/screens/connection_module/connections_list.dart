@@ -331,8 +331,6 @@ class _VerticalListItemState extends State<VerticalListItem> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      // onTap: () => Navigator.pushNamed(context, '/profile',
-      //     arguments: {"searchedUser": user}),
       onTap: () async {
         ChatUserManager().clearChatUserMessageCount(
             conversationId: widget.user.conversationId);

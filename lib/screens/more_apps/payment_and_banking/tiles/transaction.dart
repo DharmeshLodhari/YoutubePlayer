@@ -53,17 +53,29 @@ class _PaymentRequestTileState extends State<PaymentRequestTile> {
   }
 
   Widget getLeading() {
-    return ClipOval(
-      child: CachedNetworkImage(
-        imageUrl: widget.paymentRequest.avatar,
-        height: 48,
-        width: 48,
-        colorBlendMode: BlendMode.darken,
-        fit: BoxFit.cover,
-        filterQuality: FilterQuality.high,
-        placeholder: (context, url) => widget.paymentRequest.avatar == ""
-            ? Icon(Icons.person)
-            : CircularLoadingIndicator(),
+    Color borderColor =
+        getUserTypeColorByType(type: widget.paymentRequest.userType);
+
+    return Container(
+      height: 48,
+      width: 48,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(
+            25,
+          ),
+          border: Border.all(color: borderColor, width: 2)),
+      child: ClipOval(
+        child: CachedNetworkImage(
+          imageUrl: widget.paymentRequest.avatar,
+          height: 48,
+          width: 48,
+          colorBlendMode: BlendMode.darken,
+          fit: BoxFit.cover,
+          filterQuality: FilterQuality.high,
+          placeholder: (context, url) => widget.paymentRequest.avatar == ""
+              ? Icon(Icons.person)
+              : CircularLoadingIndicator(),
+        ),
       ),
     );
   }
@@ -204,30 +216,42 @@ class _TransactionTileState extends State<TransactionTile> {
   }
 
   Widget getLeading() {
-    return ClipOval(
-      child: widget.transaction.isAnonymous
-          ? Container(
-              padding: EdgeInsets.only(top: 4.0, bottom: 4.0),
-              child: Image.asset(
-                "assets/images/anonymous.png",
-                height: 48,
-                width: 48,
-                colorBlendMode: BlendMode.darken,
-                fit: BoxFit.fitHeight,
-              ),
-            )
-          : CachedNetworkImage(
-              imageUrl: widget.transaction.avatar,
+    Color borderColor =
+        getUserTypeColorByType(type: widget.transaction.userType);
+
+    return widget.transaction.isAnonymous
+        ? Container(
+            padding: EdgeInsets.only(top: 4.0, bottom: 4.0),
+            child: Image.asset(
+              "assets/images/anonymous.png",
               height: 48,
               width: 48,
               colorBlendMode: BlendMode.darken,
-              fit: BoxFit.cover,
-              filterQuality: FilterQuality.high,
-              placeholder: (context, url) => widget.transaction.avatar == ""
-                  ? Icon(Icons.person)
-                  : CircularLoadingIndicator(),
+              fit: BoxFit.fitHeight,
             ),
-    );
+          )
+        : Container(
+            height: 48,
+            width: 48,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(
+                  25,
+                ),
+                border: Border.all(color: borderColor, width: 2)),
+            child: ClipOval(
+              child: CachedNetworkImage(
+                imageUrl: widget.transaction.avatar,
+                height: 48,
+                width: 48,
+                colorBlendMode: BlendMode.darken,
+                fit: BoxFit.cover,
+                filterQuality: FilterQuality.high,
+                placeholder: (context, url) => widget.transaction.avatar == ""
+                    ? Icon(Icons.person)
+                    : CircularLoadingIndicator(),
+              ),
+            ),
+          );
   }
 
   Widget getAmount() {

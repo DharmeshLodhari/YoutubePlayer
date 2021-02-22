@@ -34,3 +34,11 @@ Color getUserTypeColor({CustomerProfile user}) {
           : naturalGreen
       : navyBlue;
 }
+
+Color getUserTypeColorByType({String type}) {
+  return type.toLowerCase() != "user"
+      ? type.toLowerCase() != "business"
+          ? starYellow
+          : naturalGreen
+      : navyBlue;
+}

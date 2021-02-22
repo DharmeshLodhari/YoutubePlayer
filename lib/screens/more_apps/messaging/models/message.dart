@@ -4,8 +4,10 @@ class PartialMessage {
   String subject;
   String sender;
   String senderAvatar;
+  String senderType;
   String recipient;
   String recipientAvatar;
+  String recipientType;
   String timeStamp;
   bool isRead;
   bool isArchivedByRecipient;
@@ -20,8 +22,10 @@ class PartialMessage {
     this.subject,
     this.sender,
     this.senderAvatar,
+    this.senderType = "User",
     this.recipient,
     this.recipientAvatar,
+    this.recipientType = "User",
     this.timeStamp,
     this.isRead,
     this.isArchivedByRecipient,
@@ -37,8 +41,11 @@ class Message {
   String subject;
   String sender;
   String senderAvatar;
+  String senderType;
+
   String recipient;
   String recipientAvatar;
+  String recipientType;
   String timeStamp;
   bool isRead;
   bool isStarred;
@@ -56,6 +63,8 @@ class Message {
     this.senderAvatar,
     this.recipient,
     this.recipientAvatar,
+    this.senderType = "User",
+    this.recipientType = "User",
     this.timeStamp,
     this.isRead,
     this.isStarred,

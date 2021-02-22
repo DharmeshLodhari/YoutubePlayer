@@ -2,6 +2,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/models/message.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/common.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -177,17 +178,28 @@ class _DetailedMessageState extends State<DetailedMessage> {
   }
 
   getLeading() {
-    return ClipOval(
-      child: CachedNetworkImage(
-        imageUrl: message.senderAvatar,
-        height: 48,
-        width: 48,
-        colorBlendMode: BlendMode.darken,
-        fit: BoxFit.cover,
-        filterQuality: FilterQuality.high,
-        placeholder: (context, url) => message.senderAvatar == ""
-            ? Icon(Icons.person)
-            : CircularLoadingIndicator(),
+    Color borderColor = getUserTypeColorByType(type: message.senderType);
+
+    return Container(
+      height: 48,
+      width: 48,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(
+            25,
+          ),
+          border: Border.all(color: borderColor, width: 2)),
+      child: ClipOval(
+        child: CachedNetworkImage(
+          imageUrl: message.senderAvatar,
+          height: 48,
+          width: 48,
+          colorBlendMode: BlendMode.darken,
+          fit: BoxFit.cover,
+          filterQuality: FilterQuality.high,
+          placeholder: (context, url) => message.senderAvatar == ""
+              ? Icon(Icons.person)
+              : CircularLoadingIndicator(),
+        ),
       ),
     );
   }

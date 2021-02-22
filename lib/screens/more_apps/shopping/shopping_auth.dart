@@ -84,11 +84,10 @@ class ShoppingAuthService extends AuthService {
 
   Future<bool> deleteProductOrServiceImage(String imageId) async {
     var url = secureBaseUrl + "/api/v1/images/" + imageId + "/";
+    debugPrint("URL:- $url");
     var headers = await getAuthHeaders();
-    var response = await http.delete(
-      url,
-      headers: headers,
-    );
+    var response = await http.delete(url, headers: headers);
+    debugPrint("response:- ${response.body}");
     if (response.statusCode == 204) {
       return true;
     } else {
@@ -101,6 +100,7 @@ class ShoppingAuthService extends AuthService {
   Product createProduct(Map<String, dynamic> item) {
     Product product = Product();
     product.id = item['id'];
+    product.cover = item['cover'];
     product.localImages = item['localImages'];
     product.serverImages = product.imageDataToList(item['pictures']);
     product.pictureMap = item['pictures'];
@@ -263,7 +263,7 @@ class ShoppingAuthService extends AuthService {
     var response = await http.get(url, headers: headers);
     var jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
-      Product product = Product.fromJson(jsonData);
+      Product product = createProduct(jsonData);
       return product;
     } else {
       throw jsonData;
@@ -302,6 +302,7 @@ class ShoppingAuthService extends AuthService {
   Service createService(Map<String, dynamic> item) {
     Service service = Service();
     service.id = item['id'];
+    service.cover = item['cover'];
     service.localImages = item['localImages'];
     service.serverImages = service.imageDataToList(item['pictures']);
     service.pictureMap = item['pictures'];
@@ -464,7 +465,7 @@ class ShoppingAuthService extends AuthService {
     var response = await http.get(url, headers: headers);
     var jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
-      Service service = Service.fromJson(jsonData);
+      Service service = createService(jsonData);
       return service;
     } else {
       throw jsonData;

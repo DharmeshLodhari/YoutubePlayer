@@ -440,6 +440,7 @@ class _EditProductState extends State<EditProduct> {
               onPressed: () {
                 var imageId =
                     currentProduct.getImageId(productImagesFromServer[index]);
+                debugPrint("imageId:- $imageId");
                 _auth.deleteProductOrServiceImage(imageId).then((value) {
                   if (value) {
                     if (mounted) {
@@ -449,7 +450,7 @@ class _EditProductState extends State<EditProduct> {
                     }
                   }
                 }).catchError((error) {
-                  debugPrint("ERROR" + error.toString());
+                  debugPrint("ERROR " + error.toString());
                 });
               },
             ),

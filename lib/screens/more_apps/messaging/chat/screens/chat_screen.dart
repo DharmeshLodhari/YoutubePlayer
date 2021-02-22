@@ -971,24 +971,38 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     if (mounted) setState(() {});
   }
 
-  Widget getUserIcon() => Container(
+  Widget getUserIcon() {
+    if (isRecipientLoading) {
+      return Container();
+    }
+    Color borderColor = getUserTypeColor(user: recipientUser);
+
+    return Container(
+      height: 36,
+      width: 36,
+      child: Container(
         height: 36,
         width: 36,
-        child: isRecipientLoading
-            ? Container()
-            : ClipOval(
-                child: CachedNetworkImage(
-                  imageUrl: recipientUser != null
-                      ? recipientUser.avatar ??
-                          "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png"
-                      : "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png",
-                  colorBlendMode: BlendMode.darken,
-                  fit: BoxFit.fill,
-                  filterQuality: FilterQuality.high,
-                  errorWidget: imageErrorWidget,
-                ),
-              ),
-      );
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(
+              25,
+            ),
+            border: Border.all(color: borderColor, width: 2)),
+        child: ClipOval(
+          child: CachedNetworkImage(
+            imageUrl: recipientUser != null
+                ? recipientUser.avatar ??
+                    "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png"
+                : "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png",
+            colorBlendMode: BlendMode.darken,
+            fit: BoxFit.fill,
+            filterQuality: FilterQuality.high,
+            errorWidget: imageErrorWidget,
+          ),
+        ),
+      ),
+    );
+  }
 
   Widget userProfileIcon() {
     return RoundedBackgroundIcon(

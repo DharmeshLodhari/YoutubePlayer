@@ -28,7 +28,6 @@ class UserAuth extends AuthService {
     var jsonData = json.decode(response.body);
     debugPrint("response from fetchCustomer = $jsonData");
     if (response.statusCode == 200) {
-      debugPrint("customerProfile type $jsonData");
       CustomerProfile customerProfile = CustomerProfile.fromJson(jsonData);
       return customerProfile;
     } else {
@@ -338,7 +337,10 @@ class UserAuth extends AuthService {
     var data = {"checker": checker, "user": user};
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
+
     var response = await http.patch(url, headers: headers, body: _data);
+    // debugPrint("data $_data");
+    // debugPrint("response ${response.statusCode} ${response.body}");
     if (response.statusCode == 200) {
       return true;
     }
@@ -361,9 +363,12 @@ class UserAuth extends AuthService {
   Future<bool> makeContactRequest(CustomerProfile user) async {
     var url = secureBaseUrl + "/api/v1/user/contact-request/";
     var data = {"to_user": user.userName};
+
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.post(url, headers: headers, body: _data);
+    debugPrint("Data :- $data");
+    debugPrint("response :- ${response.body}");
     if (response.statusCode == 201) {
       return true;
     }

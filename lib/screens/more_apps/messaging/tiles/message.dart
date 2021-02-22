@@ -59,21 +59,32 @@ class _MessageTileState extends State<MessageTile> {
   }
 
   Widget getLeading() {
-    return ClipOval(
-      child: CachedNetworkImage(
-        imageUrl: partialMessage.senderAvatar,
-        height: 48,
-        width: 48,
-        colorBlendMode: BlendMode.darken,
-        fit: BoxFit.cover,
-        filterQuality: FilterQuality.high,
-        placeholder: (context, url) => partialMessage.senderAvatar == ""
-            ? Icon(Icons.person)
-            : CircularProgressIndicator(
-                strokeWidth: 2.5,
-                valueColor: AlwaysStoppedAnimation(Colors.white),
-                backgroundColor: lightBlue(),
-              ),
+    Color borderColor = getUserTypeColorByType(type: partialMessage.senderType);
+
+    return Container(
+      height: 48,
+      width: 48,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(
+            25,
+          ),
+          border: Border.all(color: borderColor, width: 2)),
+      child: ClipOval(
+        child: CachedNetworkImage(
+          imageUrl: partialMessage.senderAvatar,
+          height: 48,
+          width: 48,
+          colorBlendMode: BlendMode.darken,
+          fit: BoxFit.cover,
+          filterQuality: FilterQuality.high,
+          placeholder: (context, url) => partialMessage.senderAvatar == ""
+              ? Icon(Icons.person)
+              : CircularProgressIndicator(
+                  strokeWidth: 2.5,
+                  valueColor: AlwaysStoppedAnimation(Colors.white),
+                  backgroundColor: lightBlue(),
+                ),
+        ),
       ),
     );
   }

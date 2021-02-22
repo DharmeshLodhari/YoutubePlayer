@@ -174,6 +174,8 @@ class _UserInfoState extends State<UserInfo> {
   }
 
   Widget displayUserInfo() {
+    Color borderColor = getUserTypeColor(user: user);
+
     return CustomBoxShadow(
       child: Card(
         elevation: 4,
@@ -184,10 +186,15 @@ class _UserInfoState extends State<UserInfo> {
         child: Column(
           children: <Widget>[
             ListTile(
-              leading: ClipOval(
-                child: Container(
-                  height: 48,
-                  width: 48,
+              leading: Container(
+                height: 48,
+                width: 48,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(
+                      25,
+                    ),
+                    border: Border.all(color: borderColor, width: 2)),
+                child: ClipOval(
                   child: CachedNetworkImage(
                     imageUrl: user.avatar,
                     fit: BoxFit.fill,
@@ -480,6 +487,7 @@ class _UserInfoState extends State<UserInfo> {
         });
       };
     }
+
     return () {
       UserAuth().makeContactRequest(user).then((value) {
         if (value) {

@@ -33,7 +33,7 @@ class MainSocketMessageHandler {
 
   static Timer _nudgeAlertTimer;
   // static Duration nudgeAlertDuration = Duration(seconds: 15);
-  static Duration nudgeAlertDuration = Duration(seconds: 6);
+  static Duration nudgeAlertDuration = Duration(seconds: 10);
 
   MainSocketMessageHandler({this.message}) {
     if (message != null) {

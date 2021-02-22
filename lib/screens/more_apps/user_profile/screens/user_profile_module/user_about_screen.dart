@@ -2,10 +2,11 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -69,7 +70,7 @@ class _UserAboutScreenState extends State<UserAboutScreen> {
                   padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
                   child: Column(
                     children: <Widget>[
-                      displayUserInfo(),
+                      displayUserBio(),
                     ],
                   ),
                 ),
@@ -78,48 +79,7 @@ class _UserAboutScreenState extends State<UserAboutScreen> {
     );
   }
 
-  Widget displayUserNameAndContect() {
-    return Card(
-      margin: EdgeInsets.symmetric(vertical: 0, horizontal: 8),
-      child: ListTile(
-          leading: ClipOval(
-            child: Container(
-              height: 45,
-              width: 45,
-              child: CachedNetworkImage(
-                imageUrl: user.avatar,
-                fit: BoxFit.fill,
-                errorWidget: imageErrorWidget,
-              ),
-            ),
-          ),
-          title: Text(user.fullName),
-          subtitle: Text(user.userName),
-          trailing: getTrailing()),
-    );
-  }
-
-  Widget getTrailing() {
-    if (_userBloc.user.userName == user.userName) {
-      return null;
-    }
-    return IconButton(
-      icon: Icon(
-        Icons.message,
-        color: darkBlue(),
-      ),
-      onPressed: () {
-        UserAuth().fetchCustomerProfile(user.userName).then((fetchedUser) {
-          Navigator.of(context).pushNamed('/compose_message', arguments: {
-            'recipient': fetchedUser.userName,
-            'subject': "",
-          });
-        });
-      },
-    );
-  }
-
-  Widget displayUserInfo() {
+  Widget displayUserBio() {
     return CustomBoxShadow(
       child: Card(
         elevation: 4,
@@ -127,28 +87,48 @@ class _UserAboutScreenState extends State<UserAboutScreen> {
         margin: EdgeInsets.zero,
         shadowColor: boxShadowTwo,
         borderOnForeground: true,
-        child: Column(
-          children: <Widget>[
-            SizedBox(
-              height: 16,
-            ),
-            Text(
-              "Bio",
-              style: TextStyle(
-                  fontSize: 20, fontWeight: FontWeight.w600, color: blackFont),
-            ),
-            SizedBox(
-              height: 8,
-            ),
-            Container(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: Text(userAbout.bio)),
-            SizedBox(
-              height: 16,
-            ),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              SizedBox(
+                height: 16,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Bio",
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                        color: blackFont),
+                  ),
+                  RoundedBackgroundIcon(
+                      height: 28,
+                      width: 28,
+                      backgroundColor: iconBtnGrey,
+                      icon: Icon(
+                        SlydoAppIcon.edit,
+                        color: blackFont,
+                        size: 12,
+                      ),
+                      onTap: () {
+                        Navigator.of(context).pushNamed(
+                          '/add-edit-user-bio',
+                        );
+                      })
+                ],
+              ),
+              SizedBox(
+                height: 8,
+              ),
+              Text(userAbout.bio),
+              SizedBox(
+                height: 16,
+              ),
+              Column(
                 children: [
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -186,18 +166,20 @@ class _UserAboutScreenState extends State<UserAboutScreen> {
                   ),
                 ],
               ),
-            ),
-            SizedBox(
-              height: 16,
-            ),
-            Text(
-              "Opening hour",
-              style: TextStyle(
-                  fontSize: 20, fontWeight: FontWeight.w600, color: blackFont),
-            ),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
+              SizedBox(
+                height: 16,
+              ),
+              Text(
+                "Opening hour",
+                style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    color: blackFont),
+              ),
+              SizedBox(
+                height: 8,
+              ),
+              Column(
                 children: userAbout.openingHours
                     .map((e) => Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -205,11 +187,11 @@ class _UserAboutScreenState extends State<UserAboutScreen> {
                         ))
                     .toList(),
               ),
-            ),
-            SizedBox(
-              height: 16,
-            ),
-          ],
+              SizedBox(
+                height: 16,
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -30,6 +30,7 @@ class Transaction {
   String note;
   String latitude;
   String longitude;
+  String userType;
   int amount;
   bool isCredit;
   bool isAnonymous;
@@ -43,6 +44,7 @@ class Transaction {
       this.avatar,
       this.currency,
       this.createdAt,
+      this.userType = "User",
       this.category,
       this.note,
       this.latitude,
@@ -67,6 +69,7 @@ class Transaction {
         createdAt: json['created_at'],
         category: json['category'],
         note: json['notes'],
+        userType: json["user_type"] ?? "User",
         latitude: json['latitude'] ?? "",
         longitude: json['longitude'] ?? "",
         amount: json['amount'],
@@ -85,6 +88,7 @@ class PaymentRequest {
   String createdAt;
   int amount;
   bool isCredit;
+  String userType;
 
   // Pass in as named parameter in constructor
   PaymentRequest(
@@ -95,6 +99,7 @@ class PaymentRequest {
       this.avatar,
       this.createdAt,
       this.currency,
+      this.userType = "User",
       this.amount,
       this.isCredit});
 
@@ -115,6 +120,7 @@ class PaymentRequest {
         description: json['description'],
         payee: payee,
         avatar: avatar,
+        userType: json["user_type"] ?? "User",
         currency: json['currency'],
         createdAt: json['created_at'],
         amount: json['amount'],
