@@ -191,7 +191,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
                         backgroundColor: mateRed,
                         icon: Icon(
                           SlydoAppIcon.delete,
-                          color: blackFont,
+                          color: Colors.white,
                           size: 12,
                         ),
                         onTap: () {
