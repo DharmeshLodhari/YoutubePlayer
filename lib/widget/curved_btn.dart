@@ -1,5 +1,6 @@
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
+import 'package:sizer/sizer.dart';
 
 // ignore: must_be_immutable
 class CurvedButton extends StatelessWidget {
@@ -20,8 +21,9 @@ class CurvedButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint("height:- ${MediaQuery.of(context).size.height}");
     return Container(
-      width: double.infinity,
+      width: 100.0.w,
       height: height,
       child: FlatButton(
         shape: RoundedRectangleBorder(
@@ -29,7 +31,7 @@ class CurvedButton extends StatelessWidget {
         child: Text(
           text,
           style: TextStyle(
-              color: textColor, fontSize: 16, fontWeight: FontWeight.w600),
+              color: textColor, fontSize: 16.0.sp, fontWeight: FontWeight.w600),
         ),
         color: backgroundColor,
         onPressed: onPressed,

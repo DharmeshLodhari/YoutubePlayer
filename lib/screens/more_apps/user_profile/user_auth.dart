@@ -252,6 +252,18 @@ class UserAuth extends AuthService {
     return UserAbout.fromJson(data);
   }
 
+  Future<bool> addOrUpdateUserBio(UserAbout userAbout) async {
+    var url = secureBaseUrl + "/api/v1/user/about/";
+    Map<String, dynamic> data = userAbout.toJson();
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await http.patch(url, headers: headers, body: _data);
+    if (response.statusCode != 200) {
+      return true;
+    }
+    return false;
+  }
+
   Future<bool> addUserAddress(Map data) async {
     var url = secureBaseUrl + "/api/v1/user/address/";
     var headers = await getAuthHeaders();

@@ -72,10 +72,12 @@ class OrderTile extends StatelessWidget {
       height: 48,
       width: 48,
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(
-            25,
-          ),
-          border: Border.all(color: borderColor, width: 2)),
+        borderRadius: BorderRadius.circular(
+          25,
+        ),
+        // border: Border.all(color: borderColor, width: 2),
+        border: Border.all(color: Colors.transparent, width: 0),
+      ),
       child: ClipOval(
         child: CachedNetworkImage(
           imageUrl: getAvatar(),

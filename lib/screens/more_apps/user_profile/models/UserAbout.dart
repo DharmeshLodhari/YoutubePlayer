@@ -6,7 +6,8 @@ class UserAbout {
   String contact;
   List<OpeningHour> openingHours;
 
-  UserAbout({this.address, this.bio, this.contact, this.openingHours});
+  UserAbout(
+      {this.address, this.bio, this.contact, this.openingHours});
 
   factory UserAbout.fromJson(Map<String, dynamic> json) {
     return UserAbout(

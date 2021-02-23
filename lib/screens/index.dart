@@ -231,12 +231,12 @@ class _IndexState extends State<Index> {
     return Positioned(
       left: 0.0,
       right: 0.0,
-      bottom: 20.0,
+      bottom: 2.0.h,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: CirclePageIndicator(
-          size: 6,
-          selectedSize: 6,
+          size: 1.5.w,
+          selectedSize: 1.6.w,
           dotColor: HexColor('#BEC2F4'),
           selectedDotColor: navyBlue,
           itemCount: introScreenCount,
@@ -327,7 +327,7 @@ class _IndexState extends State<Index> {
             child: Container(),
           ),
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 30),
+            padding: EdgeInsets.symmetric(horizontal: 10.0.w),
             child: Image.asset(
               "assets/images/intro_images/screen_two.png",
               frameBuilder: imageFrameBuilder,
@@ -338,6 +338,7 @@ class _IndexState extends State<Index> {
               child: Container(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     Expanded(
                       flex: 1,
@@ -348,19 +349,19 @@ class _IndexState extends State<Index> {
                     Text(
                       "SEND PAYMENT",
                       textAlign: TextAlign.center,
-                      style:
-                          TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+                      style: TextStyle(
+                          fontSize: 22.0.sp, fontWeight: FontWeight.w700),
                     ),
                     SizedBox(
                       height: 20,
                     ),
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 40),
+                      padding: EdgeInsets.symmetric(horizontal: 4.0.w),
                       child: Text(
                         "Send money fast to anyone, anywhere in Africa.",
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            fontSize: 14, color: darkGrey, height: 1.5),
+                            fontSize: 14.0.sp, color: darkGrey, height: 1.5),
                       ),
                     ),
                     Expanded(
@@ -388,7 +389,7 @@ class _IndexState extends State<Index> {
             child: Container(),
           ),
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 30),
+            padding: EdgeInsets.symmetric(horizontal: 10.0.w),
             child: Image.asset(
               "assets/images/intro_images/screen_four.png",
               frameBuilder: imageFrameBuilder,
@@ -399,6 +400,7 @@ class _IndexState extends State<Index> {
               child: Container(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     Expanded(
                       flex: 1,
@@ -409,19 +411,19 @@ class _IndexState extends State<Index> {
                     Text(
                       "RECEIVE PAYMENT",
                       textAlign: TextAlign.center,
-                      style:
-                          TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+                      style: TextStyle(
+                          fontSize: 22.0.sp, fontWeight: FontWeight.w700),
                     ),
                     SizedBox(
                       height: 20,
                     ),
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 40),
+                      padding: EdgeInsets.symmetric(horizontal: 4.0.w),
                       child: Text(
                         "Receive instant payment from your customers.",
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            fontSize: 14, color: darkGrey, height: 1.5),
+                            fontSize: 14.0.sp, color: darkGrey, height: 1.5),
                       ),
                     ),
                     Expanded(
@@ -449,6 +451,7 @@ class _IndexState extends State<Index> {
             child: Container(),
           ),
           Container(
+            padding: EdgeInsets.symmetric(horizontal: 10.0.w),
             child: Image.asset(
               "assets/images/intro_images/screen_three.png",
               frameBuilder: imageFrameBuilder,
@@ -459,6 +462,7 @@ class _IndexState extends State<Index> {
               child: Container(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     Expanded(
                       flex: 1,
@@ -469,19 +473,19 @@ class _IndexState extends State<Index> {
                     Text(
                       "VIEW TRANSACTIONS",
                       textAlign: TextAlign.center,
-                      style:
-                          TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+                      style: TextStyle(
+                          fontSize: 22.0.sp, fontWeight: FontWeight.w700),
                     ),
                     SizedBox(
                       height: 20,
                     ),
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 40),
+                      padding: EdgeInsets.symmetric(horizontal: 4.0.w),
                       child: Text(
                         "See how much you receive and spend daily, weekly and monthly.",
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            fontSize: 14, color: darkGrey, height: 1.5),
+                            fontSize: 14.0.sp, color: darkGrey, height: 1.5),
                       ),
                     ),
                     Expanded(
