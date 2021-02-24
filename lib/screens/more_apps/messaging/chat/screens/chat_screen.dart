@@ -8,7 +8,9 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_shake_detection.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/db_socket_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/message_sound_player.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatTextMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/product_and_service_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/product_and_service_tile_for_search.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/transaction_tile_for_chat.dart';
@@ -159,11 +161,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   bool _isNetworkConnectionIsOn;
 
   /// variables for shaking detection and nudge
-  // ShakeDetector detector;
-  // bool showShakingAlert = false;
-  // Timer _nudgeAlertTimer;
-  // Duration nudgeAlertDuration = Duration(seconds: 17);
-  // Duration nudgeAlertDuration = Duration(seconds: 8);
   ChatShakeDetection chatShakeDetection;
 
   @override
@@ -217,8 +214,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     getUserStatus();
     initializeSocket();
     setUpAudioRecorder();
-    setupNetworkConnectionListener();
     setupShakeDetector();
+    await setupNetworkConnectionListener();
 
     ChatUserManager().clearChatUserMessageCount(
         conversationId: recipientUser.conversationId);
@@ -230,169 +227,26 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     chatShakeDetection.setupShakeDetector(recipientUser: recipientUser);
   }
 
-  // void setupShakeDetector() {
-  //   detector = ShakeDetector.autoStart(
-  //     onPhoneShake: () {
-  //       // debugPrint("Shake Detected:- ${detector.mShakeCount}");
-  //       if (detector.mShakeCount >= 5) {
-  //         showShakingDialog();
-  //       }
-  //     },
-  //     shakeSlopTimeMS: Platform.isIOS ? 500 : 150,
-  //     shakeCountResetTime: 1000,
-  //     shakeThresholdGravity: Platform.isIOS ? 2 : 1.5,
-  //   );
-  // }
-  //
-  // void showShakingDialog() async {
-  //   if (showShakingAlert) {
-  //     showShakingAlert = false;
-  //     if (mounted) setState(() {});
-  //   } else {
-  //     showShakingAlert = true;
-  //     // debugPrint("showShake $showShakingAlert");
-  //     detector.stopListening();
-  //     if (mounted) setState(() {});
-  //
-  //     ///send Nudge to Recipient
-  //     nudgeRecipient();
-  //
-  //     /// if nudge timer is already in action we stop it
-  //     if (_nudgeAlertTimer?.isActive ?? false) {
-  //       _nudgeAlertTimer.cancel();
-  //     }
-  //
-  //     _nudgeAlertTimer = Timer(nudgeAlertDuration, () {
-  //       Navigator.of(context).pop();
-  //       showShakingAlert = false;
-  //       if (mounted) setState(() {});
-  //       setupShakeDetector();
-  //     });
-  //
-  //     String result = await showDialog<String>(
-  //         context: context,
-  //         barrierColor: Colors.black38,
-  //         builder: (context) => Column(
-  //               mainAxisAlignment: MainAxisAlignment.center,
-  //               mainAxisSize: MainAxisSize.min,
-  //               children: [
-  //                 Container(
-  //                   padding: EdgeInsets.symmetric(horizontal: 10.0.w),
-  //                   child: ClipRRect(
-  //                     borderRadius: BorderRadius.circular(24),
-  //                     child: Card(
-  //                       margin: EdgeInsets.zero,
-  //                       child: Container(
-  //                         padding: EdgeInsets.symmetric(horizontal: 5.0.w),
-  //                         height: 30.0.h,
-  //                         width: double.infinity,
-  //                         color: Colors.white,
-  //                         child: Column(
-  //                           children: [
-  //                             Expanded(
-  //                               flex: 1,
-  //                               child: SizedBox(
-  //                                 height: 8.0,
-  //                               ),
-  //                             ),
-  //                             CircularLoadingIndicator(),
-  //                             Expanded(
-  //                               child: SizedBox(
-  //                                 height: 8.0,
-  //                               ),
-  //                             ),
-  //                             Text("Nudging...",
-  //                                 style: TextStyle(
-  //                                   inherit: false,
-  //                                   fontSize: 18.0.sp,
-  //                                   color: blackFont,
-  //                                   fontWeight: FontWeight.w500,
-  //                                 )),
-  //                             Expanded(
-  //                               flex: 1,
-  //                               child: SizedBox(
-  //                                 height: 8.0,
-  //                               ),
-  //                             ),
-  //                             ClipRRect(
-  //                               borderRadius: BorderRadius.circular(50),
-  //                               child: Container(
-  //                                 color: mateRed,
-  //                                 child: IconButton(
-  //                                   icon: Icon(
-  //                                     SlydoAppIcon.remove,
-  //                                     color: Colors.white,
-  //                                   ),
-  //                                   onPressed: () {
-  //                                     Navigator.of(context).pop("STOP");
-  //                                   },
-  //                                 ),
-  //                               ),
-  //                             ),
-  //                             Expanded(
-  //                               flex: 1,
-  //                               child: SizedBox(
-  //                                 height: 8.0,
-  //                               ),
-  //                             ),
-  //                           ],
-  //                         ),
-  //                       ),
-  //                     ),
-  //                   ),
-  //                 ),
-  //               ],
-  //             ));
-  //
-  //     if (_nudgeAlertTimer?.isActive ?? false) {
-  //       _nudgeAlertTimer.cancel();
-  //     }
-  //     // debugPrint("result $result");
-  //     if (result != null) {
-  //       if (result == "STOP") {
-  //         stopNudge();
-  //         showShakingAlert = false;
-  //         if (mounted) setState(() {});
-  //         setupShakeDetector();
-  //       }
-  //     }
-  //   }
-  // }
-  //
-  // void nudgeRecipient() {
-  //   if (recipientUser == null) return null;
-  //
-  //   Map<String, dynamic> data = {
-  //     "check_id": Uuid().v4(),
-  //     "conversation_id": recipientUser.conversationId,
-  //     "author": userBloc.user.userName,
-  //     "recipient": recipientUser.userName,
-  //     "created_at": DateTime.now().toUtc().toString(),
-  //     "type": "nudge_user",
-  //   };
-  //   sendDataToSocket(data);
-  // }
-  //
-  // void stopNudge() {
-  //   if (recipientUser == null) return null;
-  //
-  //   Map<String, dynamic> data = {
-  //     "check_id": Uuid().v4(),
-  //     "conversation_id": recipientUser.conversationId,
-  //     "author": userBloc.user.userName,
-  //     "recipient": recipientUser.userName,
-  //     "created_at": DateTime.now().toUtc().toString(),
-  //     "type": "stop_nudging",
-  //   };
-  //   sendDataToSocket(data);
-  // }
+  Future<void> setupNetworkConnectionListener() async {
+    Connectivity().checkConnectivity().then((value) {
+      if (value == ConnectivityResult.none) {
+        _isNetworkConnectionIsOn = false;
+        debugPrint(
+            "_isNetworkConnectionIsOn FROM CHAT SCREEN:- $_isNetworkConnectionIsOn");
+      } else {
+        _isNetworkConnectionIsOn = true;
+        debugPrint(
+            "_isNetworkConnectionIsOn FROM CHAT SCREEN:- $_isNetworkConnectionIsOn");
+      }
+    });
 
-  void setupNetworkConnectionListener() {
     networkConnectionSubscription = Connectivity()
         .onConnectivityChanged
         .listen((ConnectivityResult result) async {
       if (result == ConnectivityResult.none) {
         _isNetworkConnectionIsOn = false;
+        debugPrint(
+            "_isNetworkConnectionIsOn FROM CHAT SCREEN:- $_isNetworkConnectionIsOn");
       } else {
         _isNetworkConnectionIsOn = true;
         // if (_isFirstTime) {
@@ -404,9 +258,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         count = 0;
         getPreviousMessages();
         // }
+        debugPrint(
+            "_isNetworkConnectionIsOn FROM CHAT SCREEN:- $_isNetworkConnectionIsOn");
       }
-      debugPrint(
-          "_isNetworkConnectionIsOn FROM CHAT SCREEN:- $_isNetworkConnectionIsOn");
     })
           ..onError((error) {
             debugPrint("ERROR:- while closing network status stream $error");
@@ -1753,6 +1607,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       "created_at": DateTime.now().toUtc().toString(),
       "type": "chatroom_message",
     };
+
+
+    DBSocketMessageHandler().saveMessageToDb(message: ChatTextMessage.fromJson(data));
 
     String payload = convertServerPayload(data);
 

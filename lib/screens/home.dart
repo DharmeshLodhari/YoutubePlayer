@@ -13,7 +13,6 @@ import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
 import 'more_apps/messaging/chat/helpers/chat_user_manager.dart';
-import 'more_apps/user_profile/user_auth.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -339,11 +338,8 @@ class _HomeState extends State<Home> {
                     style: TextStyle(fontSize: 14),
                   ),
                   onTap: () {
-                    UserAuth()
-                        .fetchCustomerProfile(userBloc.user.userName)
-                        .then((user) {
-                      Navigator.pushNamed(context, '/profile',
-                          arguments: {"searchedUser": user});
+                    Navigator.pushNamed(context, '/profile', arguments: {
+                      "searchedUserName": userBloc.user.userName
                     });
                   },
                 ),

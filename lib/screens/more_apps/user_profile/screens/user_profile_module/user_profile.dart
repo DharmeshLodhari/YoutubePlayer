@@ -3,11 +3,13 @@ import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module/user_about_screen.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 
+import '../../user_auth.dart';
 import 'user_info.dart';
 import 'user_product_list.dart';
 import 'user_service_list.dart';
@@ -25,10 +27,13 @@ class UserProfile extends StatefulWidget {
 class _UserProfileState extends State<UserProfile> {
   var arguments;
 
+  bool isLoading = false;
+
   _UserProfileState({this.arguments});
 
   int currentIndex = 0;
   CustomerProfile searchedUser;
+  String searchedUserName;
 
   // this variable will responsible for is the user is owner of the products and add
   // edit button on the product if user is owner
@@ -41,7 +46,17 @@ class _UserProfileState extends State<UserProfile> {
 
   @override
   void initState() {
-    searchedUser = arguments['searchedUser'];
+    searchedUser = arguments['searchedUser'] ?? null;
+    if (searchedUser == null) {
+      searchedUserName = arguments['searchedUserName'];
+      isLoading = true;
+      if (mounted) setState(() {});
+      UserAuth().fetchCustomerProfile(searchedUserName).then((user) {
+        searchedUser = user;
+        isLoading = false;
+        if (mounted) setState(() {});
+      });
+    }
 
     currentIndex = arguments['index'] ?? 0;
     pageController = PageController(initialPage: currentIndex);
@@ -54,6 +69,15 @@ class _UserProfileState extends State<UserProfile> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+
+    if (isLoading) {
+      return Scaffold(
+        appBar: appBar(),
+        body: Center(
+          child: CircularLoadingIndicator(),
+        ),
+      );
+    }
 
     if (userBloc.user.userName == searchedUser.userName) {
       isOwner = true;
@@ -93,14 +117,14 @@ class _UserProfileState extends State<UserProfile> {
         },
       ),
       title: Text(
-        searchedUser.fullName,
+        isLoading ? "" : searchedUser.fullName,
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
         overflow: TextOverflow.fade,
         softWrap: false,
         maxLines: 1,
       ),
-      bottom: tabBar(),
+      bottom: isLoading ? null : tabBar(),
       actions: actionButtons(),
     );
   }

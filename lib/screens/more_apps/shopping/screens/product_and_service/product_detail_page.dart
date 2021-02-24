@@ -231,10 +231,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         ),
       ),
       onTap: () async {
-        UserAuth().fetchCustomerProfile(product.seller).then((user) {
-          Navigator.pushNamed(context, '/profile',
-              arguments: {"searchedUser": user});
-        });
+        Navigator.pushNamed(context, '/profile',
+            arguments: {"searchedUser": product.seller});
       },
     );
   }
@@ -722,11 +720,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                         color: navyBlue),
                   ),
                   onTap: () {
-                    UserAuth()
-                        .fetchCustomerProfile(product.seller)
-                        .then((user) {
-                      Navigator.pushNamed(context, '/profile',
-                          arguments: {"searchedUser": user, "index": 1});
+                    Navigator.pushNamed(context, '/profile', arguments: {
+                      "searchedUserName": product.seller,
+                      "index": 1
                     });
                   },
                 ),

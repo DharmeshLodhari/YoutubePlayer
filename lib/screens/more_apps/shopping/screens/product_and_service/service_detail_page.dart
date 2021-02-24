@@ -229,10 +229,8 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         ),
       ),
       onTap: () async {
-        UserAuth().fetchCustomerProfile(service.provider).then((user) {
-          Navigator.pushNamed(context, '/profile',
-              arguments: {"searchedUser": user});
-        });
+        Navigator.pushNamed(context, '/profile',
+            arguments: {"searchedUserName": service.provider});
       },
     );
   }
@@ -720,11 +718,9 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                     ),
                   ),
                   onTap: () {
-                    UserAuth()
-                        .fetchCustomerProfile(service.provider)
-                        .then((user) {
-                      Navigator.pushNamed(context, '/profile',
-                          arguments: {"searchedUser": user, "index": 2});
+                    Navigator.pushNamed(context, '/profile', arguments: {
+                      "searchedUserName": service.provider,
+                      "index": 2
                     });
                   },
                 ),

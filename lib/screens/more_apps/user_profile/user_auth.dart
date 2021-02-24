@@ -290,7 +290,6 @@ class UserAuth extends AuthService {
     var response = await http.get(url, headers: headers);
 
     if (response.statusCode == 200) {
-      debugPrint("response ${response.body}");
       var jsonData = json.decode(response.body) ?? {};
 
       Map<String, dynamic> result = {
@@ -462,7 +461,6 @@ class UserAuth extends AuthService {
         "previous": jsonData["previous"],
         "results": jsonData["results"],
       };
-      debugPrint("requests :--  $result");
       return result;
     } else {
       var jsonData = response.body;

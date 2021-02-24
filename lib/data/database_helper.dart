@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io' as io;
 
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatUserModel.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatTextMessage.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
@@ -30,7 +31,7 @@ class DatabaseHelper {
 
   initDb() async {
     io.Directory documentsDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentsDirectory.path, "main1.db");
+    String path = join(documentsDirectory.path, "main.db");
     var theDb = await openDatabase(path,
         version: 1, onCreate: _onCreate, onUpgrade: _onUpgrade);
     return theDb;
@@ -86,19 +87,33 @@ class DatabaseHelper {
              );
       ''');
 
-    // Create the ChatUsers table
+    // Create the ChatUser table
     await db
-        .execute('''CREATE TABLE "ChatUsers" ("conversationId" TEXT PRIMARY KEY,
+        .execute('''CREATE TABLE "ChatUser" ("conversationId" TEXT PRIMARY KEY,
                      "messageCount" INTEGER,
                      "hashedMessage" TEXT UNIQUE     
               );
+    ''');
+
+    // Create the ChatTextMessage table
+    await db.execute('''CREATE TABLE "ChatTextMessage" (
+      "check_id" TEXT PRIMARY KEY,
+      "conversation_id" TEXT,
+      "author" TEXT,
+      "message" TEXT,
+      "kind" TEXT,
+      "read_by_author" INTEGER,
+      "read_by_recipient" INTEGER,
+      "delivered" INTEGER,
+      "created_at" TEXT,
+      "type" TEXT);
     ''');
   }
 
   // Close connect to the db
   Future close() async => _db.close();
 
-  // User operations
+  /// User operations
 
   // Save user to the db
   Future<int> saveUser(User user) async {
@@ -159,7 +174,7 @@ class DatabaseHelper {
     return user;
   }
 
-  // Jwt operations
+  /// Jwt operations
 
   // save user's jwt to the db
   Future<int> saveJwt(Map<String, String> data) async {
@@ -190,7 +205,7 @@ class DatabaseHelper {
     return _jwt;
   }
 
-  // Device operation
+  /// Device operation
 
   // get device information
   Future<Map<String, dynamic>> getDevice() async {
@@ -232,13 +247,13 @@ class DatabaseHelper {
   Future<Map<String, dynamic>> getChatUser(String conversationId) async {
     Database dbClient = await db;
 
-    List<Map<String, dynamic>> result = await dbClient.query("ChatUsers",
+    List<Map<String, dynamic>> result = await dbClient.query("ChatUser",
         where: "conversationId = ?", whereArgs: [conversationId]);
 
     return result.first;
   }
 
-  // save chatUsers to the database
+  /// ChatUsers Operation
 
   void saveChatUsers(List<ChatUserModel> users) async {
     Database dbClient = await db;
@@ -246,7 +261,7 @@ class DatabaseHelper {
     Batch insertUserBatch = dbClient.batch();
 
     users.forEach((user) {
-      insertUserBatch.insert("ChatUsers", user.toJson(),
+      insertUserBatch.insert("ChatUser", user.toJson(),
           conflictAlgorithm: ConflictAlgorithm.ignore);
     });
 
@@ -256,7 +271,7 @@ class DatabaseHelper {
   void saveChatUser(ChatUserModel user) async {
     Database dbClient = await db;
 
-    int res = await dbClient.insert("ChatUsers", user.toJson(),
+    int res = await dbClient.insert("ChatUser", user.toJson(),
         conflictAlgorithm: ConflictAlgorithm.ignore);
     if (res != null) {
       debugPrint("Save Chat User !!");
@@ -268,7 +283,7 @@ class DatabaseHelper {
   // delete chatUsers
   Future<int> deleteChatUsers() async {
     var dbClient = await db;
-    int res = await dbClient.delete("ChatUsers");
+    int res = await dbClient.delete("ChatUser");
     debugPrint("ChatUsers deleted from db");
     return res;
   }
@@ -278,7 +293,7 @@ class DatabaseHelper {
     var dbClient = await db;
     try {
       await dbClient.execute(
-          "UPDATE ChatUsers SET messageCount = messageCount + 1 , hashedMessage = ? where conversationId = ? AND hashedMessage != ?",
+          "UPDATE ChatUser SET messageCount = messageCount + 1 , hashedMessage = ? where conversationId = ? AND hashedMessage != ?",
           [hashedMessage, conversationId, hashedMessage]);
       debugPrint("Chat message count updated from db");
     } catch (e) {
@@ -292,10 +307,10 @@ class DatabaseHelper {
     var dbClient = await db;
     int result;
     try {
-      result = await dbClient.update("ChatUsers", {"messageCount": 0},
+      result = await dbClient.update("ChatUser", {"messageCount": 0},
           where: "conversationId = ?", whereArgs: [conversationId]);
       // await dbClient.execute(
-      //     "UPDATE ChatUsers SET messageCount = 0 where conversationId = ?", [conversationId]);
+      //     "UPDATE ChatUser SET messageCount = 0 where conversationId = ?", [conversationId]);
     } catch (e) {
       debugPrint("ERROR:- while Clearing MessageCount $e");
     }
@@ -306,11 +321,45 @@ class DatabaseHelper {
   Future<int> getChatMessageCount() async {
     var dbClient = await db;
     List<Map<String, dynamic>> result = await dbClient
-        .rawQuery("SELECT SUM(messageCount) as Total FROM ChatUsers");
+        .rawQuery("SELECT SUM(messageCount) as Total FROM ChatUser");
     if (result != null) {
       int count = result.first["Total"];
       return count;
     }
     return 0;
+  }
+
+  /// ChatTextMessage
+
+  Future<List<ChatTextMessage>> getChatTextMessages() async {
+    var dbClient = await db;
+    List<Map<String, dynamic>> res = await dbClient.query("ChatTextMessage");
+
+    if (res != null && res.length > 0) {
+      List<ChatTextMessage> chatTextMessages =
+          res.map((element) => ChatTextMessage.fromJson(element)).toList();
+      return chatTextMessages;
+    }
+    return [];
+  }
+
+  void saveChatTextMessage({ChatTextMessage message}) async {
+    Database dbClient = await db;
+
+    int res = await dbClient.insert("ChatTextMessage", message.toJson(),
+        conflictAlgorithm: ConflictAlgorithm.ignore);
+    if (res != null) {
+      debugPrint("ChatTextMessage Added !!");
+    }
+
+    return;
+  }
+
+  Future<int> deleteChatTextMessage({ChatTextMessage message}) async {
+    var dbClient = await db;
+    int res = await dbClient.delete("ChatTextMessage",
+        where: "check_id = ?", whereArgs: [message.checkId]);
+    debugPrint("ChatTextMessage deleted !!");
+    return res;
   }
 }

@@ -888,10 +888,8 @@ class _UserDashboardState extends State<UserDashboard> {
     ).then((String value) {
       if (value != null) {
         if (value == "My Profile") {
-          UserAuth().fetchCustomerProfile(userBloc.user.userName).then((user) {
-            Navigator.pushNamed(context, '/profile',
-                arguments: {"searchedUser": user});
-          });
+          Navigator.pushNamed(context, '/profile',
+              arguments: {"searchedUserName": userBloc.user.userName});
         } else if (value == "Update My Avatar") {
           pickImage();
         } else if (value == "My Address") {
