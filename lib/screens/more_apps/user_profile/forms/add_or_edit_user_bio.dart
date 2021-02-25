@@ -3,6 +3,7 @@ import 'package:Slydo/screens/more_apps/user_profile/models/OpeningHour.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
@@ -14,7 +15,14 @@ import 'package:toast/toast.dart';
 import '../../../../utils/colors.dart';
 import '../user_auth.dart';
 
+// ignore: must_be_immutable
 class AddOrEditUserBioScreen extends StatefulWidget {
+  UserAbout userAbout;
+
+  AddOrEditUserBioScreen({var arguments}) {
+    userAbout = arguments["userAbout"];
+  }
+
   @override
   _AddOrEditUserBioScreenState createState() => _AddOrEditUserBioScreenState();
 }
@@ -22,14 +30,18 @@ class AddOrEditUserBioScreen extends StatefulWidget {
 class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  List<Map<String, String>> openingHoursDays = [
-    {"name": "Monday", "value": "mon"},
-    {"name": "Tuesday", "value": "tue"},
-    {"name": "Wednesday", "value": "wed"},
-    {"name": "Thursday", "value": "thurs"},
-    {"name": "Friday", "value": "fri"},
-    {"name": "Saturday", "value": "sat"},
-    {"name": "Sunday", "value": "sun"},
+  TextEditingController bioController;
+  TextEditingController addressController;
+  TextEditingController contactNumberController;
+
+  List<String> openingHoursDays = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
   ];
 
   /// {"day": {"name": "Monday", "value": "mon"},"starting_hour":"10:00 AM","closing_hour":"12:00 PM"}
@@ -40,9 +52,35 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
   UserAbout userBioDetail;
   @override
   void initState() {
-    userBioDetail = UserAbout();
-    clearUserAddedOpeningHour();
+    bioController = TextEditingController();
+    addressController = TextEditingController();
+    contactNumberController = TextEditingController();
+
+    userBioDetail = widget.userAbout;
+
+    bioController.text = userBioDetail.bio;
+    addressController.text = userBioDetail.address;
+    contactNumberController.text = userBioDetail.contact;
+    if (userBioDetail.openingHours.isEmpty) {
+      clearUserAddedOpeningHour();
+    } else {
+      addUserAddedOpeningHour();
+    }
+
     super.initState();
+  }
+
+  void addUserAddedOpeningHour() {
+    userBioDetail.openingHours.forEach((element) {
+      String time = element.time.trim();
+      List<String> openingAndClosingTime = time.split("-");
+      userAddedOpeningHours.add({
+        "day": element.day,
+        "starting_hour": openingAndClosingTime[0].trim(),
+        "closing_hour": openingAndClosingTime[1].trim()
+      });
+    });
+    setState(() {});
   }
 
   @override
@@ -131,6 +169,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
 
   Widget addAddressField() {
     return CustomizedTextFormField(
+      controller: addressController,
       labelText: "Address",
       maxLines: 3,
       validator: (val) {
@@ -139,25 +178,21 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
         }
         return "Invalid Address";
       },
-      onChanged: (val) {
-        userBioDetail.address = val;
-      },
     );
   }
 
   Widget addBioField() {
     return CustomizedTextFormField(
+      controller: bioController,
       maxLines: 5,
       textCapitalization: TextCapitalization.sentences,
       labelText: "Bio",
-      onChanged: (val) {
-        userBioDetail.bio = val;
-      },
     );
   }
 
   Widget addContactNumberField() {
     return CustomizedTextFormField(
+      controller: contactNumberController,
       labelText: "Contact number",
       keyboardType: TextInputType.number,
       validator: (val) {
@@ -165,9 +200,6 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
           return null;
         }
         return "Invalid Contact number";
-      },
-      onChanged: (val) {
-        userBioDetail.contact = val;
       },
     );
   }
@@ -190,12 +222,12 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
                         width: 28,
                         backgroundColor: mateRed,
                         icon: Icon(
-                          SlydoAppIcon.delete,
+                          Icons.remove,
                           color: Colors.white,
-                          size: 12,
+                          size: 22,
                         ),
                         onTap: () {
-                          clearUserAddedOpeningHour();
+                          removeLastUserAddedOpeningHour();
                         })
                     : Container(),
                 SizedBox(
@@ -204,10 +236,10 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
                 RoundedBackgroundIcon(
                     height: 28,
                     width: 28,
-                    backgroundColor: iconBtnGrey,
+                    backgroundColor: naturalGreen,
                     icon: Icon(
                       SlydoAppIcon.add,
-                      color: blackFont,
+                      color: Colors.white,
                       size: 12,
                     ),
                     onTap: () {
@@ -239,12 +271,20 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
 
   void clearUserAddedOpeningHour() {
     userAddedOpeningHours.clear();
+
     userAddedOpeningHours.add({
-      "day": {"name": "Monday", "value": "mon"},
+      "day": "Monday",
       "starting_hour": "10:00 AM",
       "closing_hour": "6:00 PM"
     });
-    setState(() {});
+    if (mounted) setState(() {});
+  }
+
+  void removeLastUserAddedOpeningHour() {
+    if (userAddedOpeningHours.length > 1) {
+      userAddedOpeningHours.removeLast();
+      if (mounted) setState(() {});
+    }
   }
 
   Widget getOpeningHoursList() {
@@ -292,7 +332,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
             child: ListTile(
               dense: true,
               title: Text(
-                element["day"]["name"],
+                element["day"],
                 style: TextStyle(
                     color: blackFont,
                     fontSize: 16,
@@ -353,7 +393,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
   }
 
   void selectDay({Map<String, dynamic> element}) async {
-    final selectedDay = await showDialog<Map<String, String>>(
+    final selectedDay = await showDialog<String>(
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
@@ -375,7 +415,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
                         children: openingHoursDays.map<Widget>((day) {
                           return ListTile(
                             title: Text(
-                              day["name"],
+                              day,
                               style: TextStyle(
                                   color: blackFont,
                                   fontSize: 16,
@@ -394,10 +434,9 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
               ),
             ));
     if (selectedDay != null) {
-      Map<String, String> result = selectedDay;
       for (int i = 0; i < userAddedOpeningHours.length; i++) {
         if (element == userAddedOpeningHours[i]) {
-          userAddedOpeningHours[i]["day"] = result;
+          userAddedOpeningHours[i]["day"] = selectedDay;
           break;
         }
       }
@@ -465,10 +504,18 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
 
   void updateBio() {
     if (_formKey.currentState.validate()) {
-      addOpeningHourToUserAboutObject();
+      addDataToUserAboutObject();
+
+      showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => Center(
+                child: CircularLoadingIndicator(),
+              ));
 
       UserAuth().addOrUpdateUserBio(userBioDetail).then((value) {
         Navigator.pop(context);
+        Navigator.pop(context, value);
         Toast.show(
           "Bio updated successfully!!",
           context,
@@ -476,17 +523,28 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
           duration: 3,
         );
       }).catchError((error) {
+        Navigator.pop(context);
         debugPrint(error.toString());
         Toast.show(error.toString(), context, textColor: Colors.white);
       });
     }
   }
 
-  void addOpeningHourToUserAboutObject() {
+  void addDataToUserAboutObject() {
+    userBioDetail.bio = bioController.text.trim();
+    userBioDetail.address = addressController.text.trim();
+    userBioDetail.contact = contactNumberController.text.trim();
+
+    addOpeningHoursToUserAboutObject();
+  }
+
+  void addOpeningHoursToUserAboutObject() {
+    userBioDetail.openingHours = [];
+
     userAddedOpeningHours.forEach((element) {
       OpeningHour openingHour = OpeningHour();
 
-      openingHour.day = element["day"]["value"];
+      openingHour.day = element["day"];
       openingHour.time =
           "${element["starting_hour"]} - ${element["closing_hour"]}";
       if (userBioDetail.openingHours == null) {

@@ -935,9 +935,12 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
+
       case "/add-edit-user-bio":
         return PageTransition(
-          child: AddOrEditUserBioScreen(),
+          child: AddOrEditUserBioScreen(
+            arguments: settings.arguments
+          ),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

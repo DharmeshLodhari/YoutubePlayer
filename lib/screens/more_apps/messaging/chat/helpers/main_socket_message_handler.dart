@@ -5,7 +5,9 @@ import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_shake_detection.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/db_socket_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/MainSocketMessageModel.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatTextMessage.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/global_key.dart';
@@ -62,6 +64,13 @@ class MainSocketMessageHandler {
                 ? messageData["conversation"]
                 : messageData.containsKey("conversation_id"))) {
           saveAndUpdateUserMessageCount(messageData: messageData);
+        }
+
+        ///delete message from ChatTextMessage table in db if message came back from socket
+
+        if (messageData['kind'] == "text") {
+          DBSocketMessageHandler().deleteChatTextMessage(
+              message: ChatTextMessage.fromJson(messageData));
         }
       }
     } else if (messageData["type"] == "nudge_user") {

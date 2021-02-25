@@ -6,19 +6,18 @@ class UserAbout {
   String contact;
   List<OpeningHour> openingHours;
 
-  UserAbout(
-      {this.address, this.bio, this.contact, this.openingHours});
+  UserAbout({this.address, this.bio, this.contact, this.openingHours});
 
   factory UserAbout.fromJson(Map<String, dynamic> json) {
     return UserAbout(
-      address: json['address'],
-      bio: json['bio'],
-      contact: json['contact'],
+      address: json['address'] ?? "-",
+      bio: json['bio'] ?? "-",
+      contact: json['contact'] ?? "-",
       openingHours: json['opening_hours'] != null
           ? (json['opening_hours'] as List)
               .map((i) => OpeningHour.fromJson(i))
               .toList()
-          : null,
+          : [],
     );
   }
 

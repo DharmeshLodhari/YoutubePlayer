@@ -11,6 +11,16 @@ class DBSocketMessageHandler {
   }
 
   void getChatTextMessage() async {
-    debugPrint(" ===> ${await _db.getChatTextMessages()}");
+    await _db.getChatTextMessages().then((value) {
+      debugPrint(" length ${value.length}");
+      value.forEach((element) {
+        debugPrint(
+            " ===> ${element.checkId} ${element.kind} ${element.message}");
+      });
+    });
+  }
+
+  void deleteChatTextMessage({ChatTextMessage message}) {
+    debugPrint("<===> ${message.checkId} ${message.kind} ${message.message}");
   }
 }

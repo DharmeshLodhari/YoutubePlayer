@@ -1,4 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/OpeningHour.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/colors.dart';
@@ -8,7 +9,6 @@ import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../../user_auth.dart';
 
@@ -24,7 +24,6 @@ class UserAboutScreen extends StatefulWidget {
 
 class _UserAboutScreenState extends State<UserAboutScreen> {
   CustomerProfile user;
-  UserBloc _userBloc;
 
   UserAbout userAbout;
 
@@ -37,20 +36,52 @@ class _UserAboutScreenState extends State<UserAboutScreen> {
 
   CustomerProfileBloc customerProfileBloc;
 
+  List<OpeningHour> showOpeningHours = [
+    OpeningHour(day: "Monday", time: "Closed"),
+    OpeningHour(day: "Tuesday", time: "Closed"),
+    OpeningHour(day: "Wednesday", time: "Closed"),
+    OpeningHour(day: "Thursday", time: "Closed"),
+    OpeningHour(day: "Friday", time: "Closed"),
+    OpeningHour(day: "Saturday", time: "Closed"),
+    OpeningHour(day: "Sunday", time: "Closed"),
+  ];
+
   @override
   void initState() {
+    fetchUserAboutDetail();
+    super.initState();
+  }
+
+  void fetchUserAboutDetail() {
     UserAuth().fetchUserAboutInfo().then((value) {
       userAbout = value;
       isLoading = false;
       if (mounted) setState(() {});
+      formatOpeningHour();
     });
-    super.initState();
+  }
+
+  void formatOpeningHour() {
+    List<int> updatedIndex = [];
+
+    for (int i = 0; i < showOpeningHours.length; i++) {
+      for (int j = 0; j < userAbout.openingHours.length; j++) {
+        if (showOpeningHours[i].day == userAbout.openingHours[j].day) {
+          showOpeningHours[i].time = userAbout.openingHours[j].time;
+          updatedIndex.add(i);
+        }
+      }
+    }
+
+    for (int i = 0; i < showOpeningHours.length; i++) {
+      if (!updatedIndex.contains(i)) showOpeningHours[i].time = "Closed";
+    }
+
+    if (mounted) setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    _userBloc = Provider.of<UserBloc>(context);
-
     return WillPopScope(
       onWillPop: () async {
         customerProfileBloc.customer = null;
@@ -88,13 +119,10 @@ class _UserAboutScreenState extends State<UserAboutScreen> {
         shadowColor: boxShadowTwo,
         borderOnForeground: true,
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
+          padding: EdgeInsets.symmetric(horizontal: 20,vertical: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              SizedBox(
-                height: 16,
-              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -114,10 +142,19 @@ class _UserAboutScreenState extends State<UserAboutScreen> {
                         color: blackFont,
                         size: 12,
                       ),
-                      onTap: () {
-                        Navigator.of(context).pushNamed(
-                          '/add-edit-user-bio',
-                        );
+                      onTap: () async {
+                        var result = await Navigator.of(context).pushNamed(
+                            '/add-edit-user-bio',
+                            arguments: {"userAbout": userAbout});
+
+                        if (result != null) {
+                          if (result is UserAbout) {
+                            userAbout = result;
+
+                            if (mounted) setState(() {});
+                            formatOpeningHour();
+                          }
+                        }
                       })
                 ],
               ),
@@ -166,30 +203,43 @@ class _UserAboutScreenState extends State<UserAboutScreen> {
                   ),
                 ],
               ),
-              SizedBox(
-                height: 16,
-              ),
-              Text(
-                "Opening hour",
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: blackFont),
-              ),
-              SizedBox(
-                height: 8,
-              ),
-              Column(
-                children: userAbout.openingHours
-                    .map((e) => Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [Text(e.day), Text(e.time)],
-                        ))
-                    .toList(),
-              ),
-              SizedBox(
-                height: 16,
-              ),
+              userAbout.openingHours.isEmpty
+                  ? Container()
+                  : Column(
+                      children: [
+                        SizedBox(
+                          height: 16,
+                        ),
+                        Text(
+                          "Opening hour",
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                              color: blackFont),
+                        ),
+                        SizedBox(
+                          height: 8,
+                        ),
+                        Column(
+                          children: showOpeningHours
+                              .map((e) => Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(e.day),
+                                      Text(
+                                        e.time,
+                                        style: TextStyle(
+                                            fontWeight: e.time == "Closed"
+                                                ? FontWeight.w600
+                                                : FontWeight.w500),
+                                      )
+                                    ],
+                                  ))
+                              .toList(),
+                        ),
+                      ],
+                    ),
             ],
           ),
         ),
