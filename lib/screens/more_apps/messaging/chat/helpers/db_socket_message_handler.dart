@@ -1,26 +1,34 @@
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatTextMessage.dart';
-import 'package:flutter/material.dart';
+import 'package:Slydo/utils/common.dart';
 
 class DBSocketMessageHandler {
   DatabaseHelper _db = DatabaseHelper();
 
-  void saveMessageToDb({ChatTextMessage message}) {
+  void saveMessageToDb({ChatTextMessage message}) async {
     _db.saveChatTextMessage(message: message);
-    getChatTextMessage();
+    await getChatTextMessage();
   }
 
-  void getChatTextMessage() async {
-    await _db.getChatTextMessages().then((value) {
-      debugPrint(" length ${value.length}");
-      value.forEach((element) {
-        debugPrint(
-            " ===> ${element.checkId} ${element.kind} ${element.message}");
-      });
+  void sendPendingQueueMessages() async {
+    List<ChatTextMessage> pendingMessages = await getChatTextMessage();
+
+    pendingMessages.forEach((element) {
+      sendDataToSocket(element.toJson(isForSendingToSocket: true));
     });
   }
 
+  Future<List<ChatTextMessage>> getChatTextMessage() async {
+    return await _db.getChatTextMessages();
+  }
+
   void deleteChatTextMessage({ChatTextMessage message}) {
-    debugPrint("<===> ${message.checkId} ${message.kind} ${message.message}");
+    sendPendingQueueMessages();
+    // _db.deleteChatTextMessage(message: message);
+  }
+
+  void clearChatTextMessage() {
+    _db.clearChatTextMessage();
+    getChatTextMessage();
   }
 }

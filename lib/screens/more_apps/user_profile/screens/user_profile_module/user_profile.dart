@@ -124,7 +124,11 @@ class _UserProfileState extends State<UserProfile> {
         softWrap: false,
         maxLines: 1,
       ),
-      bottom: isLoading ? null : tabBar(),
+      bottom: isLoading
+          ? null
+          : searchedUser.type.toLowerCase() == "user"
+              ? null
+              : tabBar(),
       actions: actionButtons(),
     );
   }
@@ -312,24 +316,26 @@ class _UserProfileState extends State<UserProfile> {
   }
 
   Widget tabViews() {
-    return PageView(
-      controller: pageController,
-      children: [
-        UserInfo(user: searchedUser),
-        UserAboutScreen(user: searchedUser),
-        UserProductList(
-          user: searchedUser,
-          isOwner: isOwner,
-        ),
-        UserServiceList(
-          user: searchedUser,
-          isOwner: isOwner,
-        ),
-      ],
-      onPageChanged: (int index) {
-        currentIndex = index;
-        setState(() {});
-      },
-    );
+    return searchedUser.type.toLowerCase() == "user"
+        ? UserInfo(user: searchedUser)
+        : PageView(
+            controller: pageController,
+            children: [
+              UserInfo(user: searchedUser),
+              UserAboutScreen(user: searchedUser),
+              UserProductList(
+                user: searchedUser,
+                isOwner: isOwner,
+              ),
+              UserServiceList(
+                user: searchedUser,
+                isOwner: isOwner,
+              ),
+            ],
+            onPageChanged: (int index) {
+              currentIndex = index;
+              setState(() {});
+            },
+          );
   }
 }

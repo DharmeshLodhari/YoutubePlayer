@@ -119,7 +119,7 @@ class _UserAboutScreenState extends State<UserAboutScreen> {
         shadowColor: boxShadowTwo,
         borderOnForeground: true,
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20,vertical: 16),
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -180,7 +180,7 @@ class _UserAboutScreenState extends State<UserAboutScreen> {
                       Expanded(
                         child: Text(
                           userAbout.address,
-                          textAlign: TextAlign.justify,
+                          // textAlign: TextAlign.justify,
                         ),
                       )
                     ],

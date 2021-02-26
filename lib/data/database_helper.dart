@@ -362,4 +362,11 @@ class DatabaseHelper {
     debugPrint("ChatTextMessage deleted !!");
     return res;
   }
+
+  Future<int> clearChatTextMessage() async {
+    var dbClient = await db;
+    int res = await dbClient.delete("ChatTextMessage");
+    debugPrint("ChatTextMessage Cleared !!");
+    return res;
+  }
 }
