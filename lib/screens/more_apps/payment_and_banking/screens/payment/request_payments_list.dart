@@ -663,6 +663,8 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
     _scrollController.dispose();
     super.dispose();
   }
+
+
 }
 
 class VerticalListItem extends StatefulWidget {

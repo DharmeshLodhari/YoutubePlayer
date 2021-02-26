@@ -21,7 +21,6 @@ class CurvedButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint("height:- ${MediaQuery.of(context).size.height}");
     return Container(
       width: 100.0.w,
       height: height,

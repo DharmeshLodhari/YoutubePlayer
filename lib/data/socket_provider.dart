@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/db_socket_message_handler.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatTextMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:connectivity/connectivity.dart';
@@ -219,6 +221,7 @@ class MainSocketProvider extends ChangeNotifier {
 
     if (_isConnected) {
       pingServer();
+      sendPendingQueueMessages();
     }
 
     notifyListeners();
@@ -326,6 +329,19 @@ class MainSocketProvider extends ChangeNotifier {
     }
     notifyListeners();
     return false;
+  }
+
+  void sendPendingQueueMessages() async {
+    List<ChatTextMessage> pendingMessages =
+        await DBSocketMessageHandler().getChatTextMessage();
+
+    int count = 0;
+    pendingMessages.forEach((element) async {
+      count++;
+      await add(element.toJson(isForSendingToSocket: true));
+    });
+
+    debugPrint("Sending $count Pending Text Message !!");
   }
 
   /// checking internet connectivity

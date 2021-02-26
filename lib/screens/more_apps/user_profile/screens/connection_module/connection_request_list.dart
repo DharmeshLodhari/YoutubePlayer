@@ -131,13 +131,18 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
     );
   }
 
-  Map<String, dynamic> cleanDisplayData(var data) {
-    if (data["from_user"]["username"] == userBloc.user.userName) {
-      return data["to_user"];
-    } else {
-      return data["from_user"];
-    }
-  }
+  /// Respose
+  /// {id: 95,
+  /// from_user: {full_name: Black Striker Enterprise,
+  /// username: black,
+  /// avatar: https://slydo-assets.s3.amazonaws.com/media/customer/avatar/60c6a5761e6b403e8c7745241844ab4b.jpg,
+  /// qr_code: https://slydo-assets.s3.amazonaws.com/media/customer/qr-code/eae6ec308ace4edca0ff4a16889be3dd.png,
+  /// type: Developer},
+  /// to_user: {full_name: Tamara entertains,
+  /// username: abiola.rasheed.2,
+  /// avatar: https://slydo-assets.s3.amazonaws.com/media/customer/avatar/42cfa1076d64401790101f08769317cf.jpg,
+  /// qr_code: https://slydo-assets.s3.amazonaws.com/media/customer/qr-code/e4c0e4414add41f59a3c676defb4c9d3.png,
+  /// type: Business}}
 
   void getList() async {
     if (!isLoading) {
@@ -153,15 +158,9 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
         next = result['next'];
         previous = result['previous'];
         List tempList = result['results'];
-        List<CustomerProfile> users = List<CustomerProfile>();
-
-        tempList.forEach((element) {
-          Map<String, dynamic> data = cleanDisplayData(element);
-          users.add(CustomerProfile.fromJson(data));
-        });
 
         isLoading = false;
-        connectionRequestList.addAll(users);
+        connectionRequestList.addAll(tempList);
 
         if (mounted) setState(() {});
       }
@@ -190,35 +189,50 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
         .showSnackBar(SnackBar(content: Text(text)));
   }
 
-  List<Widget> listSecondaryActions(CustomerProfile user, int index) {
-    return [
-      SlideActionButton(
-        backgroundColor: navyBlue,
-        icon: SlydoAppIcon.send_connection_request,
-        onTap: () {
-          acceptFriendRequestAlert(user, index);
-        },
-        title: AppLocalization.of(context).accept,
-        slideController: _slideController,
-      ),
-    ];
+  List<Widget> listSecondaryActions(Map data, int index) {
+    CustomerProfile fromUser = CustomerProfile.fromJson(data["from_user"]);
+    CustomerProfile toUser = CustomerProfile.fromJson(data["to_user"]);
+
+    bool isRequestSent = fromUser.userName == userBloc.user.userName;
+    return isRequestSent
+        ? []
+        : [
+            SlideActionButton(
+              backgroundColor: navyBlue,
+              icon: SlydoAppIcon.send_connection_request,
+              onTap: () {
+                acceptFriendRequestAlert(toUser, index);
+              },
+              title: AppLocalization.of(context).accept,
+              slideController: _slideController,
+            ),
+          ];
   }
 
-  List<Widget> listActionSlideActions(CustomerProfile user, int index) {
+  List<Widget> listActionSlideActions(Map data, int index) {
+    CustomerProfile fromUser = CustomerProfile.fromJson(data["from_user"]);
+    CustomerProfile toUser = CustomerProfile.fromJson(data["to_user"]);
+
+    bool isRequestSent = fromUser.userName == userBloc.user.userName;
+
     return [
       SlideActionButton(
         backgroundColor: mateRed,
         icon: SlydoAppIcon.cancel_connection_request,
         onTap: () {
-          rejectRequestAlert(user, index);
+          rejectRequestAlert(isRequestSent ? toUser : fromUser, index,
+              isRequestSent: isRequestSent);
         },
-        title: AppLocalization.of(context).reject,
+        title: isRequestSent
+            ? AppLocalization.of(context).cancel
+            : AppLocalization.of(context).reject,
         slideController: _slideController,
       ),
     ];
   }
 
-  void rejectRequestAlert(CustomerProfile user, int index) async {
+  void rejectRequestAlert(CustomerProfile user, int index,
+      {bool isRequestSent}) async {
     bool result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
@@ -238,10 +252,13 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
       actionTwoBgColor: greyBorderColor,
       actionTwoTextColor: blackFont,
       title: AppLocalization.of(context).reject,
-      description:
-          AppLocalization.of(context).areYouSureWantToRejectRequestFrom +
+      description: isRequestSent
+          ? "Are you sure want to cancel the request?"
+          : AppLocalization.of(context).areYouSureWantToRejectRequestFrom +
               " ${user.fullName}",
-      actionOne: AppLocalization.of(context).reject,
+      actionOne: isRequestSent
+          ? AppLocalization.of(context).yes
+          : AppLocalization.of(context).reject,
       actionTwo: AppLocalization.of(context).cancel,
     );
     if (result) {
@@ -250,9 +267,11 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
       if (done) {
         _showSnackBar(
             context,
-            AppLocalization.of(context).requestFrom +
-                " ${user.fullName} " +
-                AppLocalization.of(context).isRejectedSuccessfully);
+            isRequestSent
+                ? "Request canceled successfully !!"
+                : AppLocalization.of(context).requestFrom +
+                    " ${user.fullName} " +
+                    AppLocalization.of(context).isRejectedSuccessfully);
         setState(() {
           connectionRequestList.removeAt(index);
           if (connectionRequestList.length <= 9) {
@@ -311,17 +330,16 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
     }
   }
 
-  Widget _getSlidableWithLists(
-      BuildContext context, CustomerProfile user, int index) {
+  Widget _getSlidableWithLists(BuildContext context, Map data, int index) {
     return Slidable(
-      key: Key(user.userName),
+      key: Key(data["id"].toString()),
       controller: _slideController,
       direction: Axis.horizontal,
       actionPane: SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
-      child: VerticalListItem(user),
-      actions: listActionSlideActions(user, index),
-      secondaryActions: listSecondaryActions(user, index),
+      child: VerticalListItem(data),
+      actions: listActionSlideActions(data, index),
+      secondaryActions: listSecondaryActions(data, index),
     );
   }
 
@@ -333,13 +351,28 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
   }
 }
 
+// ignore: must_be_immutable
 class VerticalListItem extends StatelessWidget {
-  VerticalListItem(this.user);
+  VerticalListItem(this.data);
 
-  final CustomerProfile user;
+  final Map data;
+
+  UserBloc userBloc;
+
+  Map<String, dynamic> cleanDisplayData(var data) {
+    if (data["from_user"]["username"] == userBloc.user.userName) {
+      return data["to_user"];
+    } else {
+      return data["from_user"];
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
+
+    CustomerProfile user = CustomerProfile.fromJson(cleanDisplayData(data));
+
     return GestureDetector(
       onTap: () =>
           Slidable.of(context)?.renderingMode == SlidableRenderingMode.none

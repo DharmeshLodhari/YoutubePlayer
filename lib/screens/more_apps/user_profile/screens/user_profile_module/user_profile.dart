@@ -4,10 +4,12 @@ import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/keep_alive_page.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
+import 'package:sizer/sizer.dart';
 
 import '../../user_auth.dart';
 import 'user_info.dart';
@@ -119,7 +121,7 @@ class _UserProfileState extends State<UserProfile> {
       title: Text(
         isLoading ? "" : searchedUser.fullName,
         style: TextStyle(
-            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+            color: blackFont, fontSize: 16.0.sp, fontWeight: FontWeight.bold),
         overflow: TextOverflow.fade,
         softWrap: false,
         maxLines: 1,
@@ -156,7 +158,8 @@ class _UserProfileState extends State<UserProfile> {
       tabs = [
         Tab(
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: EdgeInsets.symmetric(
+                horizontal: currentIndex == 0 ? 14 : 16, vertical: 8),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               shape: BoxShape.rectangle,
@@ -165,9 +168,11 @@ class _UserProfileState extends State<UserProfile> {
             ),
             child: Text(
               "Info",
+              maxLines: 1,
+              overflow: TextOverflow.visible,
               style: TextStyle(
                 color: currentIndex == 0 ? navyBlue : blackFont,
-                fontSize: 14,
+                fontSize: 12.0.sp,
                 fontWeight:
                     currentIndex == 0 ? FontWeight.w600 : FontWeight.w400,
               ),
@@ -176,7 +181,8 @@ class _UserProfileState extends State<UserProfile> {
         ),
         Tab(
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: EdgeInsets.symmetric(
+                horizontal: currentIndex == 1 ? 14 : 16, vertical: 8),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               shape: BoxShape.rectangle,
@@ -185,9 +191,11 @@ class _UserProfileState extends State<UserProfile> {
             ),
             child: Text(
               "About",
+              maxLines: 1,
+              overflow: TextOverflow.visible,
               style: TextStyle(
                 color: currentIndex == 1 ? navyBlue : blackFont,
-                fontSize: 14,
+                fontSize: 12.0.sp,
                 fontWeight:
                     currentIndex == 1 ? FontWeight.w600 : FontWeight.w400,
               ),
@@ -196,7 +204,8 @@ class _UserProfileState extends State<UserProfile> {
         ),
         Tab(
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: EdgeInsets.symmetric(
+                horizontal: currentIndex == 2 ? 14 : 16, vertical: 8),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               shape: BoxShape.rectangle,
@@ -205,9 +214,11 @@ class _UserProfileState extends State<UserProfile> {
             ),
             child: Text(
               "Products",
+              maxLines: 1,
+              overflow: TextOverflow.visible,
               style: TextStyle(
                 color: currentIndex == 2 ? navyBlue : blackFont,
-                fontSize: 14,
+                fontSize: 12.0.sp,
                 fontWeight:
                     currentIndex == 2 ? FontWeight.w600 : FontWeight.w400,
               ),
@@ -216,7 +227,8 @@ class _UserProfileState extends State<UserProfile> {
         ),
         Tab(
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: EdgeInsets.symmetric(
+                horizontal: currentIndex == 3 ? 14 : 16, vertical: 8),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               shape: BoxShape.rectangle,
@@ -225,9 +237,11 @@ class _UserProfileState extends State<UserProfile> {
             ),
             child: Text(
               "Services",
+              maxLines: 1,
+              overflow: TextOverflow.visible,
               style: TextStyle(
                 color: currentIndex == 3 ? navyBlue : blackFont,
-                fontSize: 14,
+                fontSize: 12.0.sp,
                 fontWeight:
                     currentIndex == 3 ? FontWeight.w600 : FontWeight.w400,
               ),
@@ -317,19 +331,23 @@ class _UserProfileState extends State<UserProfile> {
 
   Widget tabViews() {
     return searchedUser.type.toLowerCase() == "user"
-        ? UserInfo(user: searchedUser)
+        ? KeepAlivePage(child: UserInfo(user: searchedUser))
         : PageView(
             controller: pageController,
             children: [
-              UserInfo(user: searchedUser),
-              UserAboutScreen(user: searchedUser),
-              UserProductList(
-                user: searchedUser,
-                isOwner: isOwner,
+              KeepAlivePage(child: UserInfo(user: searchedUser)),
+              KeepAlivePage(child: UserAboutScreen(user: searchedUser)),
+              KeepAlivePage(
+                child: UserProductList(
+                  user: searchedUser,
+                  isOwner: isOwner,
+                ),
               ),
-              UserServiceList(
-                user: searchedUser,
-                isOwner: isOwner,
+              KeepAlivePage(
+                child: UserServiceList(
+                  user: searchedUser,
+                  isOwner: isOwner,
+                ),
               ),
             ],
             onPageChanged: (int index) {

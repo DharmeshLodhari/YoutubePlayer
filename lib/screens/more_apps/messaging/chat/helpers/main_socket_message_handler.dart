@@ -85,7 +85,6 @@ class MainSocketMessageHandler {
         MainSocketMessageModel.fromJson(jsonDecode(message));
 
     String hashedMessage = generateHashedMessage(message);
-    debugPrint("Message>>>>> $message");
 
     ChatUserManager().addUser(
         conversationId:

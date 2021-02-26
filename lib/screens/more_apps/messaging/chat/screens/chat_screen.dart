@@ -158,7 +158,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   bool showMoreAction = false;
 
   /// variables for listening socket connection
-  bool _isNetworkConnectionIsOn;
+  bool _isNetworkConnectionIsOn = false;
 
   /// variables for shaking detection and nudge
   ChatShakeDetection chatShakeDetection;
@@ -178,6 +178,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
     WidgetsFlutterBinding.ensureInitialized();
 
+    checkNetworkConnectivity();
+
     fetchRecipientUserIfNotAvailable();
 
     _scrollController.addListener(() {
@@ -194,6 +196,21 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     /// on this screen by this method
     // lib/screens/more_apps/messaging/chat/screens/chat_screen.dart:294
     WidgetsBinding.instance.addObserver(this);
+  }
+
+  void checkNetworkConnectivity() async {
+    debugPrint("Network Connectivty called !!");
+    await Connectivity().checkConnectivity().then((value) {
+      if (value == ConnectivityResult.none) {
+        _isNetworkConnectionIsOn = false;
+        debugPrint(
+            "_isNetworkConnectionIsOn FROM CHAT SCREEN:- $_isNetworkConnectionIsOn");
+      } else {
+        _isNetworkConnectionIsOn = true;
+        debugPrint(
+            "_isNetworkConnectionIsOn FROM CHAT SCREEN:- $_isNetworkConnectionIsOn");
+      }
+    });
   }
 
   void fetchRecipientUserIfNotAvailable() async {
@@ -228,18 +245,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   Future<void> setupNetworkConnectionListener() async {
-    Connectivity().checkConnectivity().then((value) {
-      if (value == ConnectivityResult.none) {
-        _isNetworkConnectionIsOn = false;
-        debugPrint(
-            "_isNetworkConnectionIsOn FROM CHAT SCREEN:- $_isNetworkConnectionIsOn");
-      } else {
-        _isNetworkConnectionIsOn = true;
-        debugPrint(
-            "_isNetworkConnectionIsOn FROM CHAT SCREEN:- $_isNetworkConnectionIsOn");
-      }
-    });
-
     networkConnectionSubscription = Connectivity()
         .onConnectivityChanged
         .listen((ConnectivityResult result) async {
@@ -247,7 +252,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         _isNetworkConnectionIsOn = false;
         debugPrint(
             "_isNetworkConnectionIsOn FROM CHAT SCREEN:- $_isNetworkConnectionIsOn");
-      } else {
+      } else if ((result == ConnectivityResult.mobile ||
+              result == ConnectivityResult.wifi) &&
+          _isNetworkConnectionIsOn == false) {
         _isNetworkConnectionIsOn = true;
         // if (_isFirstTime) {
         //   _isFirstTime = false;
@@ -1608,17 +1615,24 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       "type": "chatroom_message",
     };
 
+    debugPrint(
+        "recipeintUser = ${recipientUser}  recipientUser.conversationId = ${recipientUser.conversationId}");
+    if (recipientUser != null && recipientUser.conversationId != null) {
+      DBSocketMessageHandler()
+          .saveMessageToDb(message: ChatTextMessage.fromJson(data));
 
-    DBSocketMessageHandler().saveMessageToDb(message: ChatTextMessage.fromJson(data));
+      String payload = convertServerPayload(data);
 
-    String payload = convertServerPayload(data);
+      addMessageToChat(message: payload);
 
-    addMessageToChat(message: payload);
+      messageController.text = "";
+      if (mounted) setState(() {});
 
-    messageController.text = "";
-    if (mounted) setState(() {});
-
-    await sendDataToSocket(data);
+      await sendDataToSocket(data);
+    } else {
+      Toast.show("Please check your connection !!", context,
+          textColor: Colors.white);
+    }
   }
 
   String convertServerPayload(Map<String, dynamic> data) {

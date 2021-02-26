@@ -349,7 +349,7 @@ class DatabaseHelper {
     int res = await dbClient.insert("ChatTextMessage", message.toJson(),
         conflictAlgorithm: ConflictAlgorithm.ignore);
     if (res != null) {
-      debugPrint("ChatTextMessage Added !!");
+      debugPrint("<<<<< ChatTextMessage Added !!");
     }
 
     return;
@@ -359,7 +359,7 @@ class DatabaseHelper {
     var dbClient = await db;
     int res = await dbClient.delete("ChatTextMessage",
         where: "check_id = ?", whereArgs: [message.checkId]);
-    debugPrint("ChatTextMessage deleted !!");
+    debugPrint(">>>> ChatTextMessage deleted !!");
     return res;
   }
 

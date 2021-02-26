@@ -11,6 +11,7 @@ import 'package:Slydo/services/fcm_push_notification.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/dialog.dart';
+import 'package:Slydo/widget/keep_alive_page.dart';
 import 'package:badges/badges.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -175,11 +176,11 @@ class _DashboardState extends State<Dashboard> {
             _dashboardBloc.index = index;
           },
           children: <Widget>[
-            Home(),
-            PaymentRequestList(),
-            SearchModule(),
-            ShoppingCart(),
-            UserDashboard(),
+            KeepAlivePage(child: Home()),
+            KeepAlivePage(child: PaymentRequestList()),
+            KeepAlivePage(child: SearchModule()),
+            KeepAlivePage(child: ShoppingCart()),
+            KeepAlivePage(child: UserDashboard()),
           ],
         ),
         bottomNavigationBar: bottomNavigationBar(),
