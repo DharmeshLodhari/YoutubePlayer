@@ -174,6 +174,7 @@ class _DashboardState extends State<Dashboard> {
           controller: _dashboardBloc.pageController,
           onPageChanged: (index) {
             _dashboardBloc.index = index;
+            FocusScope.of(context).unfocus();
           },
           children: <Widget>[
             KeepAlivePage(child: Home()),
@@ -205,6 +206,7 @@ class _DashboardState extends State<Dashboard> {
         currentIndex: _dashboardBloc.index,
         onTap: (index) {
           _dashboardBloc.index = index;
+          FocusScope.of(context).unfocus();
         },
         items: [
           bottomNavigationBarItem(

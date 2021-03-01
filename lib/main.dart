@@ -5,6 +5,8 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_generator.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_shake_detection.dart';
 import 'package:Slydo/services/app_life_cycle.dart';
+import 'package:Slydo/services/route_observer.dart';
+import 'package:Slydo/services/route_provider.dart';
 import 'package:Slydo/services/timer_service.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -118,6 +120,9 @@ void main() async {
           ChangeNotifierProvider<ChatShakeDetection>.value(
             value: ChatShakeDetection(),
           ),
+          ChangeNotifierProvider<RouteProvider>.value(
+            value: RouteProvider(),
+          ),
         ], child: MyApp()),
       );
     }, onError: (exception, stack) {
@@ -146,6 +151,7 @@ class MyApp extends StatelessWidget {
               GlobalWidgetsLocalizations.delegate,
               _localeOverrideDelegate
             ],
+            navigatorObservers: [MyRouteObserver()],
             supportedLocales: [
               const Locale('en', 'US'),
               const Locale('fr', 'FR'),

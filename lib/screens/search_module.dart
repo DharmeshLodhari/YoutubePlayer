@@ -1066,6 +1066,7 @@ class VerticalListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        FocusScope.of(context).unfocus();
         Navigator.pushNamed(context, '/profile',
             arguments: {"searchedUser": user});
       },
@@ -1088,6 +1089,7 @@ class VerticalListItem1 extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        FocusScope.of(context).unfocus();
         Navigator.pushNamed(context, '/product',
             arguments: {"product": product});
       },
@@ -1110,6 +1112,7 @@ class VerticalListItem2 extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        FocusScope.of(context).unfocus();
         Navigator.pushNamed(context, '/service-detail',
             arguments: {"service": service});
       },

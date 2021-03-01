@@ -203,7 +203,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         size: 16,
         color: blackFont,
       ),
-      onTap: () {
+      onTap: () async {
         Navigator.of(context).pushNamed('/request-payment',
             arguments: <String, bool>{
               'isRequest': true,
