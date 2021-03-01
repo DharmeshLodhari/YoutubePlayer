@@ -50,42 +50,6 @@ class _TransactionDetailState extends State<TransactionDetail> {
 
   @override
   Widget build(BuildContext context) {
-    // return WillPopScope(
-    //   onWillPop: () async {
-    //     return true;
-    //   },
-    //   child: Scaffold(
-    //     backgroundColor: lightBlue(),
-    //     resizeToAvoidBottomInset: true,
-    //     appBar: AppBar(
-    //       leading: showBackArrow(),
-    //       title: Center(child: Text(AppLocalization.of(context).transaction)),
-    //       backgroundColor: darkBlue(),
-    //       actions: <Widget>[
-    //         IconButton(
-    //           icon: Icon(
-    //             Icons.location_on,
-    //             color: Colors.white,
-    //           ),
-    //           onPressed: transaction.latitude != "" ? goToMap : () {},
-    //         )
-    //       ],
-    //     ),
-    //     body: SingleChildScrollView(
-    //       child: Container(
-    //         padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
-    //         child: Column(
-    //           mainAxisAlignment: MainAxisAlignment.start,
-    //           children: <Widget>[
-    //             SizedBox(height: 10),
-    //             displayTransactionInfo(),
-    //             SizedBox(height: 10),
-    //           ],
-    //         ),
-    //       ),
-    //     ),
-    //   ),
-    // );
     return WillPopScope(
       onWillPop: () async {
         return true;
@@ -317,23 +281,6 @@ class _TransactionDetailState extends State<TransactionDetail> {
   }
 
   Widget detailTile(IconData icon, String title, String subtitle) {
-    // return Container(
-    //   child: ListTile(
-    //     dense: true,
-    //     leading: icon,
-    //     title: Text(
-    //       title,
-    //       style: TextStyle(
-    //         fontWeight: FontWeight.bold,
-    //       ),
-    //     ),
-    //     subtitle: Text(
-    //       subtitle,
-    //       style: TextStyle(fontSize: 12),
-    //     ),
-    //   ),
-    // );
-
     return Container(
       child: ListTile(
         dense: true,
@@ -346,7 +293,7 @@ class _TransactionDetailState extends State<TransactionDetail> {
           backgroundColor: iconBtnGrey,
         ),
         title: Text(
-          title,
+          title ?? "",
           style: TextStyle(
             fontWeight: FontWeight.w600,
             color: blackFont,
@@ -354,7 +301,7 @@ class _TransactionDetailState extends State<TransactionDetail> {
           ),
         ),
         subtitle: Text(
-          subtitle,
+          subtitle ?? "",
           style: TextStyle(
             color: blackFont,
             fontSize: 14,

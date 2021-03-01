@@ -383,36 +383,36 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   void getList() async {
     if (!isLoading) {
       if (next != null && !isLoading) {
-        if (mounted) {
-          setState(() {
-            isLoading = true;
-          });
-        }
+        isLoading = true;
+
+        if (mounted) setState(() {});
+
         Map<String, dynamic> result =
             await _auth.listPaymentRequests(next, previous, toMe, fromMe);
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
         var tempList = result['results'];
-        if (mounted) {
-          setState(() {
-            isLoading = false;
-            requestPaymentList.addAll(tempList);
-          });
-        }
+
+        isLoading = false;
+        requestPaymentList.addAll(tempList);
+
+        if (mounted) setState(() {});
+
+        getList();
       }
       if (requestPaymentList.isEmpty) {
-        if (mounted) {
-          setState(() {
-            noItemInList = true;
-          });
-        }
+        noItemInList = true;
+
+        if (mounted) setState(() {});
       } else if (next == null && requestPaymentList.length > 6) {
-        _scaffoldPaymentListKey.currentState.showSnackBar(SnackBar(
-          content:
-              Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
-        ));
+        if (mounted) {
+          _scaffoldPaymentListKey.currentState.showSnackBar(SnackBar(
+            content:
+                Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
+            duration: Duration(milliseconds: 500),
+          ));
+        }
       }
     }
   }
@@ -663,8 +663,6 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
     _scrollController.dispose();
     super.dispose();
   }
-
-
 }
 
 class VerticalListItem extends StatefulWidget {

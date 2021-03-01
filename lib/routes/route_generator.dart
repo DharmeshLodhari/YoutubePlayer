@@ -59,6 +59,7 @@ import 'package:Slydo/screens/more_apps/property/property_detail_page.dart';
 import 'package:Slydo/screens/more_apps/property/search_property.dart';
 import 'package:Slydo/screens/more_apps/property/specific_category_property_list.dart';
 import 'package:Slydo/screens/more_apps/review/main_review.dart';
+import 'package:Slydo/screens/more_apps/settings/general_setting.dart';
 import 'package:Slydo/screens/more_apps/shopping/forms/add_product.dart';
 import 'package:Slydo/screens/more_apps/shopping/forms/add_service.dart';
 import 'package:Slydo/screens/more_apps/shopping/forms/edit_product.dart';
@@ -938,9 +939,7 @@ class RouteGenerator {
 
       case "/add-edit-user-bio":
         return PageTransition(
-          child: AddOrEditUserBioScreen(
-            arguments: settings.arguments
-          ),
+          child: AddOrEditUserBioScreen(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -953,6 +952,14 @@ class RouteGenerator {
       //     curve: Curves.ease,
       //     settings: settings,
       //   );
+
+      case "/general-setting":
+        return PageTransition(
+          child: GeneralSettingScreen(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
 
       default:
         // If there is no such named route in the switch statement, e.g. /third

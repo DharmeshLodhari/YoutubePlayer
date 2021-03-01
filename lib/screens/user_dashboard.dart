@@ -24,7 +24,6 @@ import 'package:Slydo/widget/user_dashboard_item_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
@@ -54,24 +53,9 @@ class _UserDashboardState extends State<UserDashboard> {
   DashboardBloc dashboardBloc;
   bool isBalanceHidden = true;
 
-  PackageInfo _packageInfo = PackageInfo(
-    appName: 'Unknown',
-    packageName: 'Unknown',
-    version: 'Unknown',
-    buildNumber: 'Unknown',
-  );
-
-  Future<void> _initPackageInfo() async {
-    final PackageInfo info = await PackageInfo.fromPlatform();
-    setState(() {
-      _packageInfo = info;
-    });
-  }
-
   @override
   void initState() {
     getAccountBalance();
-    _initPackageInfo();
     getLanguage();
     super.initState();
   }
@@ -159,8 +143,36 @@ class _UserDashboardState extends State<UserDashboard> {
         style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
       ),
       actions: <Widget>[
+        settingBtn(),
+        SizedBox(
+          width: 6,
+        ),
         logoutBtn(),
       ],
+    );
+  }
+
+  Widget settingBtn() {
+    return SizedBox(
+      height: 34,
+      width: 34,
+      child: InkWell(
+        child: Card(
+          elevation: 0,
+          color: lightGrey.withOpacity(0.1),
+          margin: EdgeInsets.symmetric(vertical: 10),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(
+            SlydoAppIcon.settings,
+            size: 16,
+          ),
+        ),
+        onTap: () {
+          Navigator.of(context).pushNamed("/general-setting");
+        },
+      ),
     );
   }
 
@@ -424,26 +436,26 @@ class _UserDashboardState extends State<UserDashboard> {
   }
 
   Widget appVersionDataUI() {
-    return _infoTile();
+    return madeInLagosTile();
   }
 
-  Widget _infoTile() {
+  Widget madeInLagosTile() {
     return Container(
       color: Colors.transparent,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Text(
-            AppLocalization.of(context).appVersion +
-                ': ' +
-                _packageInfo.version,
-            style: TextStyle(color: darkGrey, fontSize: 12),
-          ),
-          Text(
-              AppLocalization.of(context).buildNumber +
-                  ': ' +
-                  _packageInfo.buildNumber,
-              style: TextStyle(color: darkGrey, fontSize: 12)),
+          Text("Made in Lagos",
+              style: TextStyle(
+                  color: navyBlue,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  shadows: [
+                    Shadow(
+                        color: boxShadow, blurRadius: 3, offset: Offset(1, 1)),
+                    Shadow(
+                        color: boxShadow, blurRadius: 3, offset: Offset(1, 1))
+                  ])),
         ],
       ),
     );

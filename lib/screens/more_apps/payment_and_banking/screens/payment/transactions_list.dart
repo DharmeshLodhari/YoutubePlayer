@@ -305,25 +305,26 @@ class _TransactionListState extends State<TransactionList> {
         next = result['next'];
         previous = result['previous'];
         var tempList = result['results'];
-        if (mounted) {
-          setState(() {
-            isLoading = false;
-            transactionList.addAll(tempList);
-          });
-        }
+
+        isLoading = false;
+        transactionList.addAll(tempList);
+
+        if (mounted) setState(() {});
+
+        getList();
       }
       if (transactionList.isEmpty) {
-        if (mounted) {
-          setState(() {
-            noItemInList = true;
-          });
-        }
+        noItemInList = true;
+
+        if (mounted) setState(() {});
       } else if (next == null && transactionList.length > 6) {
-        _scaffoldTransactionKey.currentState.showSnackBar(SnackBar(
-          content:
-              Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
-        ));
+        if (mounted) {
+          _scaffoldTransactionKey.currentState.showSnackBar(SnackBar(
+            content:
+                Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
+            duration: Duration(milliseconds: 500),
+          ));
+        }
       }
     }
   }
