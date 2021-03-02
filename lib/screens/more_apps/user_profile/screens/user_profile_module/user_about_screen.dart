@@ -9,6 +9,7 @@ import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../user_auth.dart';
 
@@ -34,7 +35,7 @@ class _UserAboutScreenState extends State<UserAboutScreen> {
   final GlobalKey<ScaffoldState> _scaffoldUserAboutKey =
       new GlobalKey<ScaffoldState>();
 
-  CustomerProfileBloc customerProfileBloc;
+  UserBloc userBloc;
 
   List<OpeningHour> showOpeningHours = [
     OpeningHour(day: "Monday", time: "Closed"),
@@ -82,9 +83,9 @@ class _UserAboutScreenState extends State<UserAboutScreen> {
 
   @override
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
     return WillPopScope(
       onWillPop: () async {
-        customerProfileBloc.customer = null;
         return true;
       },
       child: isLoading
@@ -133,29 +134,31 @@ class _UserAboutScreenState extends State<UserAboutScreen> {
                         fontWeight: FontWeight.w600,
                         color: blackFont),
                   ),
-                  RoundedBackgroundIcon(
-                      height: 28,
-                      width: 28,
-                      backgroundColor: iconBtnGrey,
-                      icon: Icon(
-                        SlydoAppIcon.edit,
-                        color: blackFont,
-                        size: 12,
-                      ),
-                      onTap: () async {
-                        var result = await Navigator.of(context).pushNamed(
-                            '/add-edit-user-bio',
-                            arguments: {"userAbout": userAbout});
+                  widget.user.userName == userBloc.user.userName
+                      ? RoundedBackgroundIcon(
+                          height: 28,
+                          width: 28,
+                          backgroundColor: iconBtnGrey,
+                          icon: Icon(
+                            SlydoAppIcon.edit,
+                            color: blackFont,
+                            size: 12,
+                          ),
+                          onTap: () async {
+                            var result = await Navigator.of(context).pushNamed(
+                                '/add-edit-user-bio',
+                                arguments: {"userAbout": userAbout});
 
-                        if (result != null) {
-                          if (result is UserAbout) {
-                            userAbout = result;
+                            if (result != null) {
+                              if (result is UserAbout) {
+                                userAbout = result;
 
-                            if (mounted) setState(() {});
-                            formatOpeningHour();
-                          }
-                        }
-                      })
+                                if (mounted) setState(() {});
+                                formatOpeningHour();
+                              }
+                            }
+                          })
+                      : Container()
                 ],
               ),
               SizedBox(

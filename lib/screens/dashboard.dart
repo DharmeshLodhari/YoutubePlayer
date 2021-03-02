@@ -68,6 +68,8 @@ class _DashboardState extends State<Dashboard> {
 
     registerPushNotification();
 
+    // ListRefresher().initialize();
+
     super.initState();
   }
 

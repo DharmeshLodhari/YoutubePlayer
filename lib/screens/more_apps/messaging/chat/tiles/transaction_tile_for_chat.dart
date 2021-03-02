@@ -365,7 +365,6 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                                         fontSize: 14,
                                         color: blackFont),
                                     textAlign: TextAlign.justify,
-
                                   ),
                                 ),
                                 SizedBox(
