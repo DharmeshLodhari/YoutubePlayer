@@ -6,11 +6,15 @@ import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module/user_service_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:Slydo/widget/keep_alive_page.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:share/share.dart';
 import 'package:sizer/sizer.dart';
 
 // ignore: must_be_immutable
@@ -43,6 +47,8 @@ class _UserProfileNewScreenState extends State<UserProfileNewScreen> {
   // pageview controller
   PageController pageController;
 
+  CustomerProfileBloc customerProfileBloc;
+
   @override
   void initState() {
     searchedUser = arguments['searchedUser'] ?? null;
@@ -68,6 +74,7 @@ class _UserProfileNewScreenState extends State<UserProfileNewScreen> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+    customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
 
     if (isLoading) {
       return Scaffold(
@@ -92,6 +99,7 @@ class _UserProfileNewScreenState extends State<UserProfileNewScreen> {
                   expandedHeight: 200.0,
                   floating: false,
                   pinned: true,
+                  actions: actionButtons(),
                   leading: IconButton(
                     icon: Icon(
                       Icons.keyboard_arrow_left,
@@ -104,12 +112,7 @@ class _UserProfileNewScreenState extends State<UserProfileNewScreen> {
                     },
                   ),
                   flexibleSpace: FlexibleSpaceBar(
-                      title: Text(isLoading ? "" : searchedUser.fullName,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16.0,
-                          )),
-                      background: getProfileCover())),
+                      title: getUserName(), background: getProfileCover())),
               SliverPersistentHeader(
                 delegate: _SliverAppBarDelegate(
                   TabBar(
@@ -132,6 +135,32 @@ class _UserProfileNewScreenState extends State<UserProfileNewScreen> {
           body: tabViews(),
         ),
       ),
+    );
+  }
+
+  List<Widget> actionButtons() {
+    return [
+      shareProfileIcon(),
+      SizedBox(
+        width: 16,
+      ),
+    ];
+  }
+
+  Widget shareProfileIcon() {
+    return RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
+      icon: Icon(
+        SlydoAppIcon.menu,
+        size: 16,
+        color: Colors.white,
+      ),
+      onTap: () {
+        profileAndroidSheet();
+      },
+      backgroundColor: lightGrey.withOpacity(0.1),
+      enableMargin: true,
     );
   }
 
@@ -325,6 +354,114 @@ class _UserProfileNewScreenState extends State<UserProfileNewScreen> {
       "assets/images/home_screen_background.png",
       fit: BoxFit.cover,
     );
+  }
+
+  Widget getUserName() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        SizedBox(
+          height: 8,
+        ),
+        Text(
+          isLoading ? "" : searchedUser.fullName,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 14.0,
+          ),
+        ),
+        Text(
+          isLoading ? "" : searchedUser.userName,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 10.0,
+          ),
+        )
+      ],
+    );
+  }
+
+  void profileAndroidSheet() {
+    showModalBottomSheet<void>(
+        backgroundColor: Colors.transparent,
+        context: context,
+        builder: (BuildContext context) {
+          return Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20)),
+              ),
+              color: Colors.white,
+              margin: EdgeInsets.zero,
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    bottomSheetItem(
+                      title: "Share",
+                      icon: SlydoAppIcon.share,
+                      onTap: () {
+                        Navigator.pop(context);
+                        var shareBody = "${searchedUser.fullName}\n" +
+                            "http://slydo.co/user/" +
+                            searchedUser.userName;
+                        Share.share(shareBody,
+                            subject: "${searchedUser.fullName}");
+                      },
+                    ),
+                    bottomSheetItem(
+                      title: "Message",
+                      icon: SlydoAppIcon.message,
+                      onTap: () {
+                        Navigator.pop(context);
+                        if (!isOwner) {
+                          Navigator.of(context)
+                              .pushNamed('/compose_message', arguments: {
+                            'recipient': searchedUser.userName,
+                            'subject': "",
+                          });
+                        }
+                      },
+                    ),
+                    bottomSheetItem(
+                      title: "Send",
+                      icon: SlydoAppIcon.send,
+                      onTap: () {
+                        UserAuth()
+                            .fetchCustomerProfile(searchedUserName)
+                            .then((fetchedUser) {
+                          customerProfileBloc.customer = fetchedUser;
+                          Navigator.of(context).pushNamed('/send-payment',
+                              arguments: <String, bool>{
+                                'isFromProfile': false
+                              });
+                        });
+                      },
+                    ),
+                    bottomSheetItem(
+                        title: "Receive",
+                        icon: SlydoAppIcon.receive,
+                        isLast: true,
+                        onTap: () {
+                          UserAuth()
+                              .fetchCustomerProfile(searchedUserName)
+                              .then((fetchedUser) {
+                            customerProfileBloc.customer = fetchedUser;
+                            Navigator.of(context).pushNamed('/request-payment',
+                                arguments: <String, bool>{
+                                  'isFromProfile': false,
+                                  'isRequest': true
+                                });
+                          });
+                        }),
+                  ],
+                ),
+              ));
+        });
   }
 }
 
