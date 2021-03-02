@@ -445,7 +445,7 @@ class _UserDashboardState extends State<UserDashboard> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Text("Made in Lagos",
+          Text("Made in Nigeria",
               style: TextStyle(
                   color: navyBlue,
                   fontSize: 12,

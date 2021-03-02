@@ -11,10 +11,12 @@ class ListRefresher {
   Timer _timerForListRefresher;
 
   void initialize() {
-    // if (_timerForListRefresher?.isActive ?? false) {
-    //   _timerForListRefresher.cancel();
-    // }
+    debugPrint("Refresher Initalizing");
     try {
+      if (_timerForListRefresher?.isActive ?? false) {
+        _timerForListRefresher.cancel();
+        debugPrint("Timer canceled !!");
+      }
       _timerForListRefresher = Timer(_refreshDurationInterval, () {
         debugPrint("<====== Refreshing ======>");
         // _timerForListRefresher.cancel();

@@ -420,6 +420,18 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   SizedBox(
                     height: 16,
                   ),
+                  Divider(
+                    height: 0,
+                    color: dividerColor,
+                    thickness: 1,
+                  ),
+                  SizedBox(
+                    height: 12,
+                  ),
+                  _buildSellerInfoWidget(),
+                  SizedBox(
+                    height: 16,
+                  ),
                 ],
               ),
             ),
@@ -692,6 +704,54 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     );
   }
 
+  Widget _buildSellerInfoWidget() {
+    return product.sellerAvatar == null
+        ? Container()
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Seller",
+                style: TextStyle(
+                    color: blackFont,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold),
+              ),
+              SizedBox(
+                height: 8,
+              ),
+              ListTile(
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                leading: Container(
+                  height: 48,
+                  width: 48,
+                  child: ClipOval(
+                    child: CachedNetworkImage(
+                      imageUrl: product.sellerAvatar,
+                      fit: BoxFit.fill,
+                      errorWidget: imageErrorWidget,
+                      filterQuality: FilterQuality.high,
+                    ),
+                  ),
+                ),
+                title: Text(
+                  product.seller,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: blackFont,
+                  ),
+                  textAlign: TextAlign.justify,
+                ),
+                onTap: () {
+                  Navigator.pushNamed(context, '/profile',
+                      arguments: {"searchedUserName": product.seller});
+                },
+              ),
+            ],
+          );
+  }
+
   Widget _buildSellersOtherProducts() {
     return Container(
       height: 250,
@@ -722,7 +782,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   onTap: () {
                     Navigator.pushNamed(context, '/profile', arguments: {
                       "searchedUserName": product.seller,
-                      "index": 1
+                      "index": 2
                     });
                   },
                 ),

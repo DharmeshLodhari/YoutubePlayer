@@ -4,6 +4,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/item_display_card.dart';
@@ -417,6 +418,18 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                   SizedBox(
                     height: 16,
                   ),
+                  Divider(
+                    height: 0,
+                    color: dividerColor,
+                    thickness: 1,
+                  ),
+                  SizedBox(
+                    height: 12,
+                  ),
+                  _buildSellerInfoWidget(),
+                  SizedBox(
+                    height: 16,
+                  ),
                 ],
               ),
             ),
@@ -458,6 +471,54 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         ),
       ],
     );
+  }
+
+  Widget _buildSellerInfoWidget() {
+    return service.providerAvatar == null
+        ? Container()
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Provider",
+                style: TextStyle(
+                    color: blackFont,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold),
+              ),
+              SizedBox(
+                height: 8,
+              ),
+              ListTile(
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                leading: Container(
+                  height: 48,
+                  width: 48,
+                  child: ClipOval(
+                    child: CachedNetworkImage(
+                      imageUrl: service.providerAvatar,
+                      fit: BoxFit.fill,
+                      errorWidget: imageErrorWidget,
+                      filterQuality: FilterQuality.high,
+                    ),
+                  ),
+                ),
+                title: Text(
+                  service.provider,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: blackFont,
+                  ),
+                  textAlign: TextAlign.justify,
+                ),
+                onTap: () {
+                  Navigator.pushNamed(context, '/profile',
+                      arguments: {"searchedUserName": service.provider});
+                },
+              ),
+            ],
+          );
   }
 
   Widget _buildServiceImagesWidgets() {
@@ -720,7 +781,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                   onTap: () {
                     Navigator.pushNamed(context, '/profile', arguments: {
                       "searchedUserName": service.provider,
-                      "index": 2
+                      "index": 3
                     });
                   },
                 ),
