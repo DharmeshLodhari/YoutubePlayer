@@ -8,6 +8,7 @@ import 'package:Slydo/screens/more_apps/shopping/screens/checkout_shopping_cart.
 import 'package:Slydo/screens/search_module.dart';
 import 'package:Slydo/screens/user_dashboard.dart';
 import 'package:Slydo/services/fcm_push_notification.dart';
+import 'package:Slydo/services/list_refresher.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/dialog.dart';
@@ -68,6 +69,7 @@ class _DashboardState extends State<Dashboard> {
 
     registerPushNotification();
 
+    ListRefresher().initialize();
     super.initState();
   }
 

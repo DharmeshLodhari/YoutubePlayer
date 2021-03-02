@@ -39,6 +39,8 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
   bool isLoading = false;
   bool noItemInList = false;
 
+  RefreshBlocForConnectionDashboard _refreshBloc;
+
   @protected
   void initState() {
     this.getList();
@@ -56,6 +58,20 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
     );
 
     super.initState();
+  }
+
+  // refresh the list when lifecycle called onResume method
+  void _onRefreshOnResume() {
+    _refreshBloc = Provider.of<RefreshBlocForConnectionDashboard>(context);
+    _refreshBloc
+      ..addListener(() {
+        if (_refreshBloc.isRefresh) {
+          if (mounted) {
+            _onRefresh();
+            _refreshBloc.isRefresh = false;
+          }
+        }
+      });
   }
 
   void _onRefresh() async {
@@ -82,6 +98,9 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+
+    // refresh the list when lifecycle called onResume method
+    _onRefreshOnResume();
     return Scaffold(
       key: _scaffoldContactRequestListKey,
       backgroundColor: lightGrey,

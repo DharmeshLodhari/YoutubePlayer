@@ -70,7 +70,6 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
     );
 
-    ListRefresher().initialize();
     super.initState();
   }
 
@@ -137,6 +136,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
 
   @override
   Widget build(BuildContext context) {
+
     menu = CustomizedPopUpMenu(
       buttonKey: _key,
       context: context,

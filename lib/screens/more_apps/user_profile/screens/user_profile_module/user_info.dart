@@ -229,17 +229,24 @@ class _UserInfoState extends State<UserInfo> {
               height: 0,
               thickness: 1,
             ),
-            Container(
-                padding:
-                    EdgeInsets.only(right: 40, left: 40, top: 20, bottom: 10),
-                child: CachedNetworkImage(
-                  imageUrl: user.qrCode,
-                  colorBlendMode: BlendMode.darken,
-                  errorWidget: imageErrorWidget,
-                  fit: BoxFit.fitWidth,
-                  filterQuality: FilterQuality.high,
-                  placeholder: (context, url) => CircularLoadingIndicator(),
-                )),
+            GestureDetector(
+              child: Container(
+                  padding:
+                      EdgeInsets.only(right: 40, left: 40, top: 20, bottom: 10),
+                  child: CachedNetworkImage(
+                    imageUrl: user.qrCode,
+                    colorBlendMode: BlendMode.darken,
+                    errorWidget: imageErrorWidget,
+                    fit: BoxFit.fitWidth,
+                    filterQuality: FilterQuality.high,
+                    placeholder: (context, url) => CircularLoadingIndicator(),
+                  )),
+              onTap: () {
+                // Navigator.of(context).pushNamed("/profile-new");
+                Navigator.pushNamed(context, '/profile-new',
+                    arguments: {"searchedUserName": user.userName});
+              },
+            ),
             SizedBox(
               height: 8,
             ),

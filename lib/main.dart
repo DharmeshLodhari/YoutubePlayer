@@ -64,6 +64,9 @@ void main() async {
           ChangeNotifierProvider<RefreshBlocForMessages>.value(
             value: RefreshBlocForMessages(),
           ),
+          ChangeNotifierProvider<RefreshBlocForConnectionDashboard>.value(
+            value: RefreshBlocForConnectionDashboard(),
+          ),
           ChangeNotifierProvider<BasketBloc>.value(
             value: BasketBloc(),
           ),

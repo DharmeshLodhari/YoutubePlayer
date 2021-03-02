@@ -1,37 +1,34 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module/user_about_screen.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module/user_info.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module/user_product_list.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module/user_service_list.dart';
+import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/colors.dart';
-import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/keep_alive_page.dart';
-import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:share/share.dart';
 import 'package:sizer/sizer.dart';
 
-import '../../user_auth.dart';
-import 'user_info.dart';
-import 'user_product_list.dart';
-import 'user_service_list.dart';
-
 // ignore: must_be_immutable
-class UserProfile extends StatefulWidget {
+class UserProfileNewScreen extends StatefulWidget {
   var arguments;
-
-  UserProfile({@required this.arguments});
+  UserProfileNewScreen({@required this.arguments});
 
   @override
-  _UserProfileState createState() => _UserProfileState(arguments: arguments);
+  _UserProfileNewScreenState createState() =>
+      _UserProfileNewScreenState(arguments: arguments);
 }
 
-class _UserProfileState extends State<UserProfile> {
+class _UserProfileNewScreenState extends State<UserProfileNewScreen> {
   var arguments;
 
   bool isLoading = false;
 
-  _UserProfileState({this.arguments});
+  _UserProfileNewScreenState({this.arguments});
 
   int currentIndex = 0;
   CustomerProfile searchedUser;
@@ -85,68 +82,55 @@ class _UserProfileState extends State<UserProfile> {
       isOwner = true;
     }
 
-    return WillPopScope(
-      onWillPop: () async {
-        return true;
-      },
-      child: DefaultTabController(
+    return Scaffold(
+      body: DefaultTabController(
         length: searchedUser.type.toLowerCase() != "user" ? 4 : 1,
-        child: Scaffold(
-          backgroundColor: Colors.white,
-          appBar: appBar(),
+        child: NestedScrollView(
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return <Widget>[
+              SliverAppBar(
+                  expandedHeight: 200.0,
+                  floating: false,
+                  pinned: true,
+                  leading: IconButton(
+                    icon: Icon(
+                      Icons.keyboard_arrow_left,
+                      color: Colors.white,
+                      size: 24,
+                    ),
+                    onPressed: () {
+                      searchedUser = null;
+                      Navigator.pop(context);
+                    },
+                  ),
+                  flexibleSpace: FlexibleSpaceBar(
+                      title: Text(isLoading ? "" : searchedUser.fullName,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16.0,
+                          )),
+                      background: getProfileCover())),
+              SliverPersistentHeader(
+                delegate: _SliverAppBarDelegate(
+                  TabBar(
+                    labelPadding: EdgeInsets.zero,
+                    indicator: BoxDecoration(),
+                    onTap: (int index) {
+                      currentIndex = index;
+                      setState(() {});
+                      pageController.animateToPage(currentIndex,
+                          duration: Duration(milliseconds: 100),
+                          curve: Curves.linear);
+                    },
+                    tabs: getTabs(),
+                  ),
+                ),
+                pinned: true,
+              ),
+            ];
+          },
           body: tabViews(),
         ),
-      ),
-    );
-  }
-
-  Widget appBar() {
-    return AppBar(
-      elevation: 0,
-      backgroundColor: Colors.white,
-      titleSpacing: 0,
-      automaticallyImplyLeading: false,
-      leading: IconButton(
-        icon: Icon(
-          Icons.keyboard_arrow_left,
-          color: navyBlue,
-          size: 24,
-        ),
-        onPressed: () {
-          searchedUser = null;
-          Navigator.pop(context);
-        },
-      ),
-      title: Text(
-        isLoading ? "" : searchedUser.fullName,
-        style: TextStyle(
-            color: blackFont, fontSize: 16.0.sp, fontWeight: FontWeight.bold),
-        overflow: TextOverflow.fade,
-        softWrap: false,
-        maxLines: 1,
-      ),
-      bottom: isLoading
-          ? null
-          : searchedUser.type.toLowerCase() == "user"
-              ? null
-              : tabBar(),
-      actions: actionButtons(),
-    );
-  }
-
-  Widget tabBar() {
-    return PreferredSize(
-      preferredSize: Size.fromHeight(50.0),
-      child: TabBar(
-        labelPadding: EdgeInsets.zero,
-        indicator: BoxDecoration(),
-        onTap: (int index) {
-          currentIndex = index;
-          setState(() {});
-          pageController.animateToPage(currentIndex,
-              duration: Duration(milliseconds: 100), curve: Curves.linear);
-        },
-        tabs: getTabs(),
       ),
     );
   }
@@ -275,59 +259,6 @@ class _UserProfileState extends State<UserProfile> {
     return tabs;
   }
 
-  Widget shareProfileIcon() {
-    return RoundedBackgroundIcon(
-      height: 34,
-      width: 34,
-      icon: Icon(
-        SlydoAppIcon.share,
-        size: 16,
-        color: blackFont,
-      ),
-      onTap: () {
-        var shareBody = "${searchedUser.fullName}\n" +
-            "http://slydo.co/user/" +
-            searchedUser.userName;
-        Share.share(shareBody, subject: "${searchedUser.fullName}");
-      },
-      backgroundColor: iconBtnGrey,
-      enableMargin: true,
-    );
-  }
-
-  List<Widget> actionButtons() {
-    return [
-      !isOwner
-          ? RoundedBackgroundIcon(
-              height: 34,
-              width: 34,
-              icon: Icon(
-                SlydoAppIcon.message,
-                size: 16,
-                color: blackFont,
-              ),
-              onTap: () {
-                Navigator.of(context).pushNamed('/compose_message', arguments: {
-                  'recipient': searchedUser.userName,
-                  'subject': "",
-                });
-              },
-              backgroundColor: iconBtnGrey,
-              enableMargin: true,
-            )
-          : Container(),
-      !isOwner
-          ? SizedBox(
-              width: 8,
-            )
-          : Container(),
-      shareProfileIcon(),
-      SizedBox(
-        width: 16,
-      ),
-    ];
-  }
-
   Widget tabViews() {
     return searchedUser.type.toLowerCase() == "user"
         ? KeepAlivePage(child: UserInfo(user: searchedUser))
@@ -354,5 +285,69 @@ class _UserProfileState extends State<UserProfile> {
               setState(() {});
             },
           );
+  }
+
+  Widget appBar() {
+    return AppBar(
+      elevation: 0,
+      backgroundColor: Colors.white,
+      titleSpacing: 0,
+      automaticallyImplyLeading: false,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          searchedUser = null;
+          Navigator.pop(context);
+        },
+      ),
+      title: Text(
+        isLoading ? "" : searchedUser.fullName,
+        style: TextStyle(
+            color: blackFont, fontSize: 16.0.sp, fontWeight: FontWeight.bold),
+        overflow: TextOverflow.fade,
+        softWrap: false,
+        maxLines: 1,
+      ),
+    );
+  }
+
+  Widget getProfileCover() {
+    if (searchedUser.profileCover != "") {
+      return CachedNetworkImage(
+          imageUrl: searchedUser.profileCover, fit: BoxFit.cover);
+    }
+
+    return Image.asset(
+      "assets/images/home_screen_background.png",
+      fit: BoxFit.cover,
+    );
+  }
+}
+
+class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
+  _SliverAppBarDelegate(this._tabBar);
+
+  final TabBar _tabBar;
+
+  @override
+  double get minExtent => _tabBar.preferredSize.height;
+  @override
+  double get maxExtent => _tabBar.preferredSize.height;
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return new Container(
+      child: _tabBar,
+    );
+  }
+
+  @override
+  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
+    return false;
   }
 }

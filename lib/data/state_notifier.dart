@@ -119,6 +119,17 @@ class RefreshBlocForMessages extends ChangeNotifier {
   }
 }
 
+class RefreshBlocForConnectionDashboard extends ChangeNotifier {
+  bool _isRefresh = false;
+
+  bool get isRefresh => _isRefresh;
+
+  set isRefresh(bool value) {
+    _isRefresh = value;
+    notifyListeners();
+  }
+}
+
 class BasketBloc extends ChangeNotifier {
   // will accept products and services
   List<Map<String, dynamic>> _items = List<Map<String, dynamic>>();

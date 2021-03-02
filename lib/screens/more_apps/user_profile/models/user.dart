@@ -133,6 +133,7 @@ class CustomerProfile {
   String qrCode;
   String type;
   String conversationId;
+  String profileCover;
   UserStatus status;
 
   // Pass in as named parameter in constructor
@@ -142,6 +143,7 @@ class CustomerProfile {
     this.avatar = "",
     this.qrCode = "",
     this.type = "user",
+    this.profileCover = "",
     this.conversationId = "",
     this.status = UserStatus.UNKNOWN,
   });
@@ -152,6 +154,7 @@ class CustomerProfile {
       userName: json['username'] ?? "",
       avatar: json['avatar'] ?? "",
       qrCode: json['qr_code'] ?? "",
+      profileCover: json['profile_cover'] ?? "",
       type: json['type'] ?? "user",
       conversationId: json['conversation_id'] ?? "",
       status: json['status'] ?? UserStatus.UNKNOWN,
@@ -164,6 +167,7 @@ class CustomerProfile {
     data['username'] = this.userName;
     data['avatar'] = this.avatar;
     data['qr_code'] = this.qrCode;
+    data['profile_cover'] = this.profileCover;
     data['type'] = this.type;
     data['conversation_id'] = this.conversationId;
     data['status'] = this.status;

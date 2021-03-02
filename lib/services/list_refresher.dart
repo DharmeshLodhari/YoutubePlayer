@@ -7,34 +7,45 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ListRefresher {
-  Duration _refreshDurationInterval = Duration(seconds: 5);
+  Duration _refreshDurationInterval = Duration(minutes: 3);
   Timer _timerForListRefresher;
 
   void initialize() {
-    debugPrint("Refresher Initalizing");
-    try {
-      if (_timerForListRefresher?.isActive ?? false) {
-        _timerForListRefresher.cancel();
-        debugPrint("Timer canceled !!");
-      }
-      _timerForListRefresher = Timer(_refreshDurationInterval, () {
-        debugPrint("<====== Refreshing ======>");
-        // _timerForListRefresher.cancel();
-        RouteProvider routeProvider = Provider.of<RouteProvider>(
-            myGlobals.scaffoldKey.currentContext,
-            listen: false);
-        debugPrint("RouteProvider routes ${routeProvider.routes}");
-        debugPrint("==> ${routeProvider.routes.contains("/dashboard")}");
-        if (routeProvider.routes.contains("/dashboard")) {
-          RefreshBlocForRequestPayment refreshBlocForRequestPayment =
-              Provider.of<RefreshBlocForRequestPayment>(
-                  myGlobals.scaffoldKey.currentContext,
-                  listen: false);
-          refreshBlocForRequestPayment.isRefresh = true;
-        }
-      });
-    } catch (e) {
-      debugPrint("ERROR:_ $e");
+    debugPrint("Refresher initializing");
+
+    if (_timerForListRefresher?.isActive ?? false) {
+      _timerForListRefresher.cancel();
     }
+    _timerForListRefresher = Timer.periodic(_refreshDurationInterval, (time) {
+      debugPrint("<====== Refreshing list ======>");
+
+      RouteProvider routeProvider = Provider.of<RouteProvider>(
+          myGlobals.scaffoldKey.currentContext,
+          listen: false);
+
+      if (routeProvider.routes.contains("/dashboard")) {
+        RefreshBlocForRequestPayment refreshBlocForRequestPayment =
+            Provider.of<RefreshBlocForRequestPayment>(
+                myGlobals.scaffoldKey.currentContext,
+                listen: false);
+        refreshBlocForRequestPayment.isRefresh = true;
+      }
+
+      if (routeProvider.routes.contains("/transactions")) {
+        RefreshBlocForTransaction refreshBlocForTransaction =
+            Provider.of<RefreshBlocForTransaction>(
+                myGlobals.scaffoldKey.currentContext,
+                listen: false);
+        refreshBlocForTransaction.isRefresh = true;
+      }
+
+      if (routeProvider.routes.contains("/friends-dashboard")) {
+        RefreshBlocForConnectionDashboard refreshBlocForConnectionDashboard =
+            Provider.of<RefreshBlocForConnectionDashboard>(
+                myGlobals.scaffoldKey.currentContext,
+                listen: false);
+        refreshBlocForConnectionDashboard.isRefresh = true;
+      }
+    });
   }
 }
