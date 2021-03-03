@@ -57,6 +57,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     contactNumberController = TextEditingController();
 
     userBioDetail = widget.userAbout;
+    debugPrint("${widget.userAbout.toJson()}");
 
     bioController.text = userBioDetail.bio;
     addressController.text = userBioDetail.address;

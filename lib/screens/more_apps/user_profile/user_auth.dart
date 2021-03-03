@@ -258,29 +258,35 @@ class UserAuth extends AuthService {
     Map<String, dynamic> data = userAbout.toJson();
     var headers = await getAuthHeaders();
 
-    var request = http.MultipartRequest("PATCH", Uri.parse(url));
+    var responseBody;
+    var response;
+    if (!userAbout.wallpaper.contains("https")) {
+      var request = http.MultipartRequest("PATCH", Uri.parse(url));
 
-    // request.fields.addAll(data);
+      data.forEach((key, value) {
+        request.fields[key] = value is List<Map> ? jsonEncode(value) : value;
+      });
 
-    data.forEach((key, value) {
-      request.fields[key] = value is List<Map> ? jsonEncode(value) : value;
-    });
+      //create multipart using filepath, string or bytes
+      var multipartFile =
+          await http.MultipartFile.fromPath("wallpaper", userAbout.wallpaper);
 
-    //create multipart using filepath, string or bytes
-    var multipartFile =
-        await http.MultipartFile.fromPath("wallpaper", userAbout.wallpaper);
+      //add multipart to request
+      request.files.add(multipartFile);
 
-    //add multipart to request
-    request.files.add(multipartFile);
+      headers.forEach((k, v) => request.headers[k] = v);
 
-    headers.forEach((k, v) => request.headers[k] = v);
+      debugPrint("Files send:- ${request.files}");
+      debugPrint("Data Send:- ${request.fields}");
 
-    debugPrint("Files send:- ${request.files}");
-    debugPrint("Data Send:- ${request.fields}");
+      response = await request.send();
 
-    var response = await request.send();
-
-    var responseBody = await response.stream.bytesToString();
+      responseBody = await response.stream.bytesToString();
+    } else {
+      var _data = jsonEncode(data);
+      response = await http.patch(url, headers: headers, body: _data);
+      responseBody = response.body;
+    }
     debugPrint("Data receive:- $responseBody");
     if (response.statusCode == 200) {
       return UserAbout.fromJson(jsonDecode(responseBody));

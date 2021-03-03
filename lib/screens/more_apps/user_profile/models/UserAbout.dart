@@ -34,7 +34,10 @@ class UserAbout {
     data['address'] = this.address;
     data['bio'] = this.bio;
     data['contact'] = this.contact;
-    data['wallpaper'] = this.wallpaper;
+    if (!this.wallpaper.contains("https")) {
+      data['wallpaper'] = this.wallpaper;
+    }
+
     if (this.openingHours != null) {
       data['opening_hours'] = this.openingHours.map((v) => v.toJson()).toList();
     }
