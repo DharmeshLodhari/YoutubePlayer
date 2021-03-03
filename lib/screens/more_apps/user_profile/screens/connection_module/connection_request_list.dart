@@ -220,7 +220,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
               backgroundColor: navyBlue,
               icon: SlydoAppIcon.send_connection_request,
               onTap: () {
-                acceptFriendRequestAlert(toUser, index);
+                acceptFriendRequestAlert(isRequestSent?toUser:fromUser, index);
               },
               title: AppLocalization.of(context).accept,
               slideController: _slideController,

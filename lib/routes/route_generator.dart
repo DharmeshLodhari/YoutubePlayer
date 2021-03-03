@@ -246,14 +246,14 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
-      case '/profile':
+      case '/profile-new':
         return PageTransition(
           child: UserProfile(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case '/profile-new':
+      case '/profile':
         return PageTransition(
           child: UserProfileNewScreen(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,

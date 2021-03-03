@@ -252,7 +252,6 @@ class _SendPaymentState extends State<SendPayment> {
   Widget scaffoldBody() {
     bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
 
-    debugPrint("Height:- ${MediaQuery.of(context).size.height}");
     return isLoading
         ? Center(
             child: CircularLoadingIndicator(),

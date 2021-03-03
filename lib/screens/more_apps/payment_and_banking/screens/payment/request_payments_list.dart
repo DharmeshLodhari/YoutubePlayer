@@ -468,7 +468,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
             onTap: () {
               acceptPaymentRequestAlert(paymentRequest, index);
             },
-            title: AppLocalization.of(context).sendMoney,
+            title: AppLocalization.of(context).accept,
             slideController: _slideController)
       ];
     }

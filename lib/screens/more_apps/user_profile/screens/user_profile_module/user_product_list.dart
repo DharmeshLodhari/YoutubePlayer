@@ -142,6 +142,7 @@ class _UserProductListState extends State<UserProductList> {
             msg: AppLocalization.of(context).noProducts,
           )
         : StaggeredGridView.countBuilder(
+            physics: ClampingScrollPhysics(),
             controller: _productScrollController,
             crossAxisCount: 2,
             shrinkWrap: true,

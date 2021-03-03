@@ -220,8 +220,8 @@ class UserAuth extends AuthService {
         countryIsoCode: "NG");
   }
 
-  Future<UserAbout> fetchUserAboutInfo() async {
-    var url = secureBaseUrl + "/api/v1/user/about/";
+  Future<UserAbout> fetchUserAboutInfo({String userName}) async {
+    var url = secureBaseUrl + "/api/v1/user/about/$userName/";
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
     debugPrint("${response.statusCode}   ${response.body}");
@@ -231,6 +231,8 @@ class UserAuth extends AuthService {
       return UserAbout.fromJson(jsonData);
     }
 
+    // "wallpaper":
+    // "https://i.pinimg.com/originals/bf/99/1f/bf991fd757c3d369c496f74238516cad.png",
     var data = {
       "address":
           "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
@@ -255,15 +257,35 @@ class UserAuth extends AuthService {
     var url = secureBaseUrl + "/api/v1/user/about/";
     Map<String, dynamic> data = userAbout.toJson();
     var headers = await getAuthHeaders();
-    var _data = jsonEncode(data);
 
-    debugPrint("Data sent:- $_data");
+    var request = http.MultipartRequest("PATCH", Uri.parse(url));
 
-    var response = await http.patch(url, headers: headers, body: _data);
+    // request.fields.addAll(data);
+
+    data.forEach((key, value) {
+      request.fields[key] = value is List<Map> ? jsonEncode(value) : value;
+    });
+
+    //create multipart using filepath, string or bytes
+    var multipartFile =
+        await http.MultipartFile.fromPath("wallpaper", userAbout.wallpaper);
+
+    //add multipart to request
+    request.files.add(multipartFile);
+
+    headers.forEach((k, v) => request.headers[k] = v);
+
+    debugPrint("Files send:- ${request.files}");
+    debugPrint("Data Send:- ${request.fields}");
+
+    var response = await request.send();
+
+    var responseBody = await response.stream.bytesToString();
+    debugPrint("Data receive:- $responseBody");
     if (response.statusCode == 200) {
-      return UserAbout.fromJson(jsonDecode(response.body));
+      return UserAbout.fromJson(jsonDecode(responseBody));
     }
-    return Future.error("${response.body}");
+    return Future.error("$responseBody");
   }
 
   Future<bool> addUserAddress(Map data) async {

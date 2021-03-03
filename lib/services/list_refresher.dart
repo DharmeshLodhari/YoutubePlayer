@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 
 class ListRefresher {
   Duration _refreshDurationInterval = Duration(minutes: 3);
-  Timer _timerForListRefresher;
+  static Timer _timerForListRefresher;
 
   void initialize() {
     debugPrint("Refresher initializing");
@@ -16,6 +16,7 @@ class ListRefresher {
     if (_timerForListRefresher?.isActive ?? false) {
       _timerForListRefresher.cancel();
     }
+
     _timerForListRefresher = Timer.periodic(_refreshDurationInterval, (time) {
       debugPrint("<====== Refreshing list ======>");
 

@@ -122,7 +122,7 @@ class _UserInfoState extends State<UserInfo> {
                 ),
                 displayUserInfo(),
                 SizedBox(height: 30),
-                displayPaymentButtons(),
+                // displayPaymentButtons(),
                 displayUserProfileUpgradeOptions(),
               ],
             ),
@@ -185,54 +185,54 @@ class _UserInfoState extends State<UserInfo> {
         borderOnForeground: true,
         child: Column(
           children: <Widget>[
-            ListTile(
-              leading: Container(
-                height: 48,
-                width: 48,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(
-                      25,
-                    ),
-                    border: Border.all(color: borderColor, width: 2)),
-                child: ClipOval(
-                  child: CachedNetworkImage(
-                    imageUrl: user.avatar,
-                    fit: BoxFit.fill,
-                    errorWidget: imageErrorWidget,
-                  ),
-                ),
-              ),
-              title: Text(
-                user.fullName,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: blackFont,
-                ),
-                maxLines: 1,
-                softWrap: false,
-                overflow: TextOverflow.fade,
-              ),
-              subtitle: Text(
-                user.userName,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: darkGrey,
-                ),
-                maxLines: 1,
-                softWrap: false,
-                overflow: TextOverflow.fade,
-              ),
-            ),
-            Divider(
-              color: dividerColor,
-              height: 0,
-              thickness: 1,
-            ),
+            // ListTile(
+            //   leading: Container(
+            //     height: 48,
+            //     width: 48,
+            //     decoration: BoxDecoration(
+            //         borderRadius: BorderRadius.circular(
+            //           25,
+            //         ),
+            //         border: Border.all(color: borderColor, width: 2)),
+            //     child: ClipOval(
+            //       child: CachedNetworkImage(
+            //         imageUrl: user.avatar,
+            //         fit: BoxFit.fill,
+            //         errorWidget: imageErrorWidget,
+            //       ),
+            //     ),
+            //   ),
+            //   title: Text(
+            //     user.fullName,
+            //     style: TextStyle(
+            //       fontSize: 16,
+            //       fontWeight: FontWeight.bold,
+            //       color: blackFont,
+            //     ),
+            //     maxLines: 1,
+            //     softWrap: false,
+            //     overflow: TextOverflow.fade,
+            //   ),
+            //   subtitle: Text(
+            //     user.userName,
+            //     style: TextStyle(
+            //       fontSize: 14,
+            //       color: darkGrey,
+            //     ),
+            //     maxLines: 1,
+            //     softWrap: false,
+            //     overflow: TextOverflow.fade,
+            //   ),
+            // ),
+            // Divider(
+            //   color: dividerColor,
+            //   height: 0,
+            //   thickness: 1,
+            // ),
             GestureDetector(
               child: Container(
                   padding:
-                      EdgeInsets.only(right: 40, left: 40, top: 20, bottom: 10),
+                      EdgeInsets.only(right: 40, left: 40, top: 40, bottom: 10),
                   child: CachedNetworkImage(
                     imageUrl: user.qrCode,
                     colorBlendMode: BlendMode.darken,

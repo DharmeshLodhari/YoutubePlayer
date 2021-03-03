@@ -54,7 +54,7 @@ class _UserAboutScreenState extends State<UserAboutScreen> {
   }
 
   void fetchUserAboutDetail() {
-    UserAuth().fetchUserAboutInfo().then((value) {
+    UserAuth().fetchUserAboutInfo(userName: user.userName).then((value) {
       userAbout = value;
       isLoading = false;
       if (mounted) setState(() {});
