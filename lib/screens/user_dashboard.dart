@@ -21,6 +21,7 @@ import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart
 import 'package:Slydo/widget/passcodePopup.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/user_dashboard_item_tile.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -29,6 +30,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
 
 import 'more_apps/user_profile/user_auth.dart';
+import 'package:sizer/sizer.dart';
 
 // ignore: must_be_immutable
 class UserDashboard extends StatefulWidget {
@@ -99,11 +101,28 @@ class _UserDashboardState extends State<UserDashboard> {
   }
 
   Widget backgroundScreen() {
-    return Container(
-      child: Image.asset(
-        "assets/images/home_screen_background.png",
-        frameBuilder: imageFrameBuilder,
+    if (userBloc.user.userAbout.wallpaper == null ||
+        userBloc.user.userAbout.wallpaper == "") {
+      return Container(
+        child: Image.asset(
+          "assets/images/home_screen_background.png",
+          frameBuilder: imageFrameBuilder,
+          fit: BoxFit.cover,
+        ),
+      );
+    }
+
+    return ClipRRect(
+      borderRadius: new BorderRadius.vertical(
+          bottom: new Radius.elliptical(100.0.w, 50.0)),
+      child: CachedNetworkImage(
+        imageUrl: userBloc.user.userAbout.wallpaper,
         fit: BoxFit.cover,
+        width: 100.0.w,
+        height: 33.0.h,
+        color: blackFont.withOpacity(0.4),
+        colorBlendMode: BlendMode.darken,
+        filterQuality: FilterQuality.high,
       ),
     );
   }

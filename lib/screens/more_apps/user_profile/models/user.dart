@@ -1,3 +1,5 @@
+import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
+
 class Address {
   String addressLineOne;
   String addressLineTwo;
@@ -40,6 +42,7 @@ class User {
   bool isVerified;
   String conversationId;
   UserStatus status;
+  UserAbout userAbout;
 
   // Pass in as named parameter in constructor
   User({
@@ -55,6 +58,7 @@ class User {
     this.currency = "₦",
     this.isVerified = false,
     this.conversationId = "",
+    this.userAbout,
     this.status = UserStatus.UNKNOWN,
   });
 
@@ -69,6 +73,7 @@ class User {
       phoneNumber: json['phone_number'],
       qrCode: json['qr_code'],
       url: json['url'],
+      userAbout: UserAbout.fromJson(json["profile"]),
       userName: json['username'],
       uuid: json['uuid'],
     );

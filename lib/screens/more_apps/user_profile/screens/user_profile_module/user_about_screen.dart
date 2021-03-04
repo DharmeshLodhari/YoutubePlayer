@@ -3,11 +3,9 @@ import 'package:Slydo/screens/more_apps/user_profile/models/OpeningHour.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/colors.dart';
-import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
-import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -17,7 +15,9 @@ import '../../user_auth.dart';
 class UserAboutScreen extends StatefulWidget {
   CustomerProfile user;
 
-  UserAboutScreen({@required this.user});
+  UserAbout searchedUserAbout;
+
+  UserAboutScreen({@required this.user, this.searchedUserAbout});
 
   @override
   _UserAboutScreenState createState() => _UserAboutScreenState(user: user);
@@ -30,7 +30,7 @@ class _UserAboutScreenState extends State<UserAboutScreen> {
 
   _UserAboutScreenState({this.user});
 
-  bool isLoading = true;
+  bool isLoading = false;
 
   final GlobalKey<ScaffoldState> _scaffoldUserAboutKey =
       new GlobalKey<ScaffoldState>();
@@ -49,7 +49,7 @@ class _UserAboutScreenState extends State<UserAboutScreen> {
 
   @override
   void initState() {
-    fetchUserAboutDetail();
+    // fetchUserAboutDetail();
     super.initState();
   }
 
@@ -83,6 +83,8 @@ class _UserAboutScreenState extends State<UserAboutScreen> {
 
   @override
   Widget build(BuildContext context) {
+    userAbout = widget.searchedUserAbout;
+    formatOpeningHour();
     userBloc = Provider.of<UserBloc>(context);
     return WillPopScope(
       onWillPop: () async {
@@ -124,95 +126,10 @@ class _UserAboutScreenState extends State<UserAboutScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Bio",
-                    style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                        color: blackFont),
-                  ),
-                  widget.user.userName == userBloc.user.userName
-                      ? RoundedBackgroundIcon(
-                          height: 28,
-                          width: 28,
-                          backgroundColor: iconBtnGrey,
-                          icon: Icon(
-                            SlydoAppIcon.edit,
-                            color: blackFont,
-                            size: 12,
-                          ),
-                          onTap: () async {
-                            var result = await Navigator.of(context).pushNamed(
-                                '/add-edit-user-bio',
-                                arguments: {"userAbout": userAbout});
-
-                            if (result != null) {
-                              if (result is UserAbout) {
-                                userAbout = result;
-
-                                if (mounted) setState(() {});
-                                formatOpeningHour();
-                              }
-                            }
-                          })
-                      : Container()
-                ],
-              ),
-              SizedBox(
-                height: 8,
-              ),
-              Text(userAbout.bio),
-              SizedBox(
-                height: 16,
-              ),
-              Column(
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Address:-",
-                        style: TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                      SizedBox(
-                        width: 8,
-                      ),
-                      Expanded(
-                        child: Text(
-                          userAbout.address,
-                          // textAlign: TextAlign.justify,
-                        ),
-                      )
-                    ],
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Contact:-",
-                        style: TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                      SizedBox(
-                        width: 8,
-                      ),
-                      Expanded(child: Text(userAbout.contact))
-                    ],
-                  ),
-                ],
-              ),
               userAbout.openingHours.isEmpty
                   ? Container()
                   : Column(
                       children: [
-                        SizedBox(
-                          height: 16,
-                        ),
                         Text(
                           "Opening hour",
                           style: TextStyle(

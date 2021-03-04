@@ -224,7 +224,6 @@ class UserAuth extends AuthService {
     var url = secureBaseUrl + "/api/v1/user/about/$userName/";
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
-    debugPrint("${response.statusCode}   ${response.body}");
 
     if (response.statusCode == 200) {
       var jsonData = jsonDecode(response.body);
@@ -287,7 +286,6 @@ class UserAuth extends AuthService {
       response = await http.patch(url, headers: headers, body: _data);
       responseBody = response.body;
     }
-    debugPrint("Data receive:- $responseBody");
     if (response.statusCode == 200) {
       return UserAbout.fromJson(jsonDecode(responseBody));
     }

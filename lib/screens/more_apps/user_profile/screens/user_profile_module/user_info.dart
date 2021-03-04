@@ -1,5 +1,6 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
@@ -29,7 +30,7 @@ class UserInfo extends StatefulWidget {
 
 class _UserInfoState extends State<UserInfo> {
   CustomerProfile user;
-  UserBloc _userBloc;
+  UserBloc userBloc;
 
   _UserInfoState({this.user});
 
@@ -39,11 +40,29 @@ class _UserInfoState extends State<UserInfo> {
   bool profileValue = false;
   final auth = AuthService();
   int counter = 0;
+  UserAbout userAbout;
+  bool isAboutLoading = false;
+
+  @override
+  void initState() {
+    fetchUserAboutDetail();
+    super.initState();
+  }
+
+  void fetchUserAboutDetail() {
+    isAboutLoading = true;
+    if (mounted) setState(() {});
+    UserAuth().fetchUserAboutInfo(userName: user.userName).then((value) {
+      userAbout = value;
+      isAboutLoading = false;
+      if (mounted) setState(() {});
+    });
+  }
 
   void checkCurrentUserIsInContact() async {
-    if (_userBloc.user.userName != user.userName) {
+    if (userBloc.user.userName != user.userName) {
       UserAuth()
-          .checkInContactList(user.userName, _userBloc.user.userName)
+          .checkInContactList(user.userName, userBloc.user.userName)
           .then((value) {
         if (mounted) {
           setState(() {
@@ -58,7 +77,7 @@ class _UserInfoState extends State<UserInfo> {
   }
 
   void checkCurrentUserIsInRequestList() async {
-    if (_userBloc.user.userName != user.userName) {
+    if (userBloc.user.userName != user.userName) {
       UserAuth()
         ..checkInRequest(user.userName).then((value) {
           if (mounted) {
@@ -97,7 +116,7 @@ class _UserInfoState extends State<UserInfo> {
   @override
   Widget build(BuildContext context) {
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
-    _userBloc = Provider.of<UserBloc>(context);
+    userBloc = Provider.of<UserBloc>(context);
     if (counter == 0) {
       checkCurrentUserState();
       counter++;
@@ -154,7 +173,7 @@ class _UserInfoState extends State<UserInfo> {
   }
 
   Widget getTrailing() {
-    if (_userBloc.user.userName == user.userName) {
+    if (userBloc.user.userName == user.userName) {
       return null;
     }
     return IconButton(
@@ -250,14 +269,14 @@ class _UserInfoState extends State<UserInfo> {
             SizedBox(
               height: 8,
             ),
-            _userBloc.user.userName != user.userName
+            userBloc.user.userName != user.userName
                 ? Divider(
                     color: dividerColor,
                     height: 0,
                     thickness: 1,
                   )
                 : Container(),
-            _userBloc.user.userName != user.userName
+            userBloc.user.userName != user.userName
                 ? Container(
                     height: 45,
                     child: Row(
@@ -333,18 +352,18 @@ class _UserInfoState extends State<UserInfo> {
   }
 
   Widget displayUserType() {
-    if (_userBloc.user.userName == user.userName) {
+    if (userBloc.user.userName == user.userName) {
       return Container(
         padding: EdgeInsets.symmetric(vertical: 4, horizontal: 12),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(30),
-            color: _userBloc.user.type != "User"
-                ? _userBloc.user.type != "Business"
+            color: userBloc.user.type != "User"
+                ? userBloc.user.type != "Business"
                     ? starYellow
                     : naturalGreen
                 : navyBlue),
         child: Text(
-          _userBloc.user.type,
+          userBloc.user.type,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
@@ -515,7 +534,7 @@ class _UserInfoState extends State<UserInfo> {
   }
 
   Widget displayPaymentButtons() {
-    if (_userBloc.user.userName == user.userName) {
+    if (userBloc.user.userName == user.userName) {
       return Container();
     }
 
@@ -703,8 +722,8 @@ class _UserInfoState extends State<UserInfo> {
   }
 
   Widget displayUserProfileUpgradeOptions() {
-    if (_userBloc.user.userName == user.userName) {
-      return _userBloc.user.type == "User"
+    if (userBloc.user.userName == user.userName) {
+      return userBloc.user.type == "User"
           ? CurvedButton(
               backgroundColor: navyBlue,
               onPressed: () {

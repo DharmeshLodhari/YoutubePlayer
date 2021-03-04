@@ -1,5 +1,6 @@
 import 'package:Slydo/screens/more_apps/business/models/Item.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/fcm_push_notification.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +24,11 @@ class UserBloc extends ChangeNotifier {
   // Setter
   set user(User val) {
     _user = val;
+    notifyListeners();
+  }
+
+  set userAbout(UserAbout userAbout) {
+    _user.userAbout = userAbout;
     notifyListeners();
   }
 }

@@ -168,10 +168,19 @@ class _UserProfileNewScreenState extends State<UserProfileNewScreen> {
           ),
           collapseMode: CollapseMode.parallax,
           title: isShrink
-              ? Text(searchedUser.fullName,
-                  style: TextStyle(
-                    color: Colors.white,
-                  ))
+              ? Container(
+                  padding: EdgeInsets.only(right: 100),
+                  child: Text(
+                    searchedUser.fullName,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18.0.sp,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                )
               : Container(),
           background: getProfileCover(),
         ),
@@ -354,7 +363,7 @@ class _UserProfileNewScreenState extends State<UserProfileNewScreen> {
                   currentIndex == 1 ? navyBlue.withOpacity(0.1) : Colors.white,
             ),
             child: Text(
-              "About",
+              "Products",
               maxLines: 1,
               overflow: TextOverflow.visible,
               style: TextStyle(
@@ -377,7 +386,7 @@ class _UserProfileNewScreenState extends State<UserProfileNewScreen> {
                   currentIndex == 2 ? navyBlue.withOpacity(0.1) : Colors.white,
             ),
             child: Text(
-              "Products",
+              "Services",
               maxLines: 1,
               overflow: TextOverflow.visible,
               style: TextStyle(
@@ -400,7 +409,7 @@ class _UserProfileNewScreenState extends State<UserProfileNewScreen> {
                   currentIndex == 3 ? navyBlue.withOpacity(0.1) : Colors.white,
             ),
             child: Text(
-              "Services",
+              "Hours",
               maxLines: 1,
               overflow: TextOverflow.visible,
               style: TextStyle(
@@ -411,7 +420,7 @@ class _UserProfileNewScreenState extends State<UserProfileNewScreen> {
               ),
             ),
           ),
-        )
+        ),
       ];
     } else {
       tabs = [
@@ -447,7 +456,6 @@ class _UserProfileNewScreenState extends State<UserProfileNewScreen> {
             controller: pageController,
             children: [
               KeepAlivePage(child: UserInfo(user: searchedUser)),
-              KeepAlivePage(child: UserAboutScreen(user: searchedUser)),
               KeepAlivePage(
                 child: UserProductList(
                   user: searchedUser,
@@ -460,6 +468,7 @@ class _UserProfileNewScreenState extends State<UserProfileNewScreen> {
                   isOwner: isOwner,
                 ),
               ),
+              KeepAlivePage(child: UserAboutScreen(user: searchedUser)),
             ],
             onPageChanged: (int index) {
               currentIndex = index;
@@ -518,13 +527,22 @@ class _UserProfileNewScreenState extends State<UserProfileNewScreen> {
                     ),
                   )
                 : searchedUserAbout.wallpaper == ""
-                    ? Image.asset("assets/images/home_screen_background.png",
-                        width: double.infinity, fit: BoxFit.cover)
+                    ? Image.asset(
+                        "assets/images/home_screen_background.png",
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      )
                     : CachedNetworkImage(
                         width: double.infinity,
                         height: double.infinity,
                         imageUrl: searchedUserAbout.wallpaper,
-                        fit: BoxFit.cover),
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) =>
+                            CircularLoadingIndicator(),
+                        color: blackFont.withOpacity(0.4),
+                        colorBlendMode: BlendMode.darken,
+                        filterQuality: FilterQuality.high,
+                      ),
         Container(
           padding: EdgeInsets.symmetric(horizontal: 25),
           child: Column(
@@ -537,25 +555,37 @@ class _UserProfileNewScreenState extends State<UserProfileNewScreen> {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Container(
-                    height: 54,
-                    width: 54,
-                    decoration: BoxDecoration(
+                  Card(
+                    child: Container(
+                      height: 54,
+                      width: 54,
+                      decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(
                           60,
                         ),
-                        border: Border.all(color: borderColor, width: 2)),
-                    child: ClipOval(
-                      child: CachedNetworkImage(
-                        imageUrl: searchedUser.avatar,
-                        colorBlendMode: BlendMode.darken,
-                        errorWidget: imageErrorWidget,
-                        fit: BoxFit.fill,
-                        filterQuality: FilterQuality.high,
-                        placeholder: (context, url) =>
-                            CircularLoadingIndicator(),
+                        border: Border.all(color: borderColor, width: 2),
+                      ),
+                      child: ClipOval(
+                        child: CachedNetworkImage(
+                          imageUrl: searchedUser.avatar,
+                          colorBlendMode: BlendMode.darken,
+                          errorWidget: imageErrorWidget,
+                          fit: BoxFit.fill,
+                          filterQuality: FilterQuality.high,
+                          placeholder: (context, url) =>
+                              CircularLoadingIndicator(),
+                        ),
                       ),
                     ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(60),
+                    ),
+                    color: Colors.white,
+                    elevation: 10,
+                    borderOnForeground: true,
+                    shadowColor: blackFont,
+                    clipBehavior: Clip.hardEdge,
+                    margin: EdgeInsets.zero,
                   ),
                   Container(
                     width: 8,
@@ -586,18 +616,34 @@ class _UserProfileNewScreenState extends State<UserProfileNewScreen> {
           isLoading ? "" : searchedUser.fullName,
           style: TextStyle(
             color: Colors.white,
-            fontSize: 22.0,
+            fontSize: 20.0.sp,
+            fontWeight: FontWeight.w700,
+            shadows: [
+              Shadow(
+                color: blackFont,
+                offset: Offset(1, 1),
+                blurRadius: 2,
+              ),
+            ],
           ),
         ),
         Text(
           isLoading ? "" : searchedUser.userName,
           style: TextStyle(
             color: Colors.white,
-            fontSize: 16.0,
+            fontSize: 14.0.sp,
+            fontWeight: FontWeight.w600,
+            shadows: [
+              Shadow(
+                color: blackFont,
+                offset: Offset(1, 1),
+                blurRadius: 2,
+              )
+            ],
           ),
         ),
         SizedBox(
-          height: 8,
+          height: 6,
         ),
       ],
     );

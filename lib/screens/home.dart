@@ -10,6 +10,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sizer/sizer.dart';
 import 'package:toast/toast.dart';
 
 import 'more_apps/messaging/chat/helpers/chat_user_manager.dart';
@@ -60,11 +61,28 @@ class _HomeState extends State<Home> {
   }
 
   Widget backgroundScreen() {
-    return Container(
-      child: Image.asset(
-        "assets/images/home_screen_background.png",
-        frameBuilder: imageFrameBuilder,
+    if (userBloc.user.userAbout.wallpaper == null ||
+        userBloc.user.userAbout.wallpaper == "") {
+      return Container(
+        child: Image.asset(
+          "assets/images/home_screen_background.png",
+          frameBuilder: imageFrameBuilder,
+          fit: BoxFit.cover,
+        ),
+      );
+    }
+
+    return ClipRRect(
+      borderRadius: new BorderRadius.vertical(
+          bottom: new Radius.elliptical(100.0.w, 50.0)),
+      child: CachedNetworkImage(
+        imageUrl: userBloc.user.userAbout.wallpaper,
         fit: BoxFit.cover,
+        width: 100.0.w,
+        height: 33.0.h,
+        color: blackFont.withOpacity(0.4),
+        colorBlendMode: BlendMode.darken,
+        filterQuality: FilterQuality.high,
       ),
     );
   }
