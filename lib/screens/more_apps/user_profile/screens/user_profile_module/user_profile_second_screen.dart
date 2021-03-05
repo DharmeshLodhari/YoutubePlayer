@@ -12,6 +12,7 @@ import 'package:Slydo/utils/common.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
+import 'package:Slydo/widget/expandable_text.dart';
 import 'package:Slydo/widget/keep_alive_page.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -145,7 +146,7 @@ class _UserProfileSecondScreenState extends State<UserProfileSecondScreen>
             controller: _scrollController,
             headerSliverBuilder: (BuildContext context, bool boxIsScrolled) {
               return <Widget>[
-                getAppbar(),
+                getAppbar(context),
                 getUserBio(),
                 searchedUser.type.toLowerCase() == "user"
                     ? SliverToBoxAdapter(
@@ -169,104 +170,117 @@ class _UserProfileSecondScreenState extends State<UserProfileSecondScreen>
                             tabs: getTabs(),
                           ),
                         ),
-                      )
+                      ),
               ];
             },
-            body: tabViews()),
+            body: SafeArea(bottom: false, top: false, child: tabViews())),
       ),
     );
   }
 
-  SliverAppBar getAppbar() {
+  Widget getAppbar(var context) {
     Color borderColor = getUserTypeColor(user: searchedUser);
 
-    return SliverAppBar(
-      forceElevated: false,
-      expandedHeight: 200,
-      elevation: 0,
-      stretch: true,
-      pinned: true,
-      leading: IconButton(
-        icon: Icon(
-          Icons.keyboard_arrow_left,
-          color: Colors.white,
-          size: 26,
-        ),
-        onPressed: () {
-          searchedUser = null;
-          Navigator.pop(context);
-        },
-      ),
-      floating: true,
-      actions: actionButtons(),
-      title: isShrink
-          ? Container(
-              padding: EdgeInsets.only(right: 100),
-              child: Text(
-                searchedUser.fullName,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18.0.sp,
-                  fontWeight: FontWeight.w600,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            )
-          : Container(),
-      backgroundColor: Colors.transparent,
-      flexibleSpace: FlexibleSpaceBar(
-        stretchModes: <StretchMode>[
-          StretchMode.zoomBackground,
-          StretchMode.blurBackground
-        ],
-        background: isLoading
-            ? SizedBox.shrink()
-            : Stack(
-                alignment: Alignment.topCenter,
-                children: <Widget>[
-                  SizedBox.expand(
-                    child: Container(
-                      padding: EdgeInsets.only(top: 50),
-                      height: 30,
+    return SliverOverlapAbsorber(
+      handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+      sliver: SliverSafeArea(
+        top: false,
+        bottom: true,
+        sliver: SliverAppBar(
+          forceElevated: false,
+          expandedHeight: 200,
+          elevation: 0,
+          stretch: true,
+          pinned: true,
+          floating: true,
+          leading: IconButton(
+            icon: Icon(
+              Icons.keyboard_arrow_left,
+              color: Colors.white,
+              size: 26,
+            ),
+            onPressed: () {
+              searchedUser = null;
+              Navigator.pop(context);
+            },
+          ),
+          actions: actionButtons(),
+          title: isShrink
+              ? Container(
+                  child: Text(
+                    searchedUser.fullName,
+                    style: TextStyle(
                       color: Colors.white,
+                      fontSize: 18.0.sp,
+                      fontWeight: FontWeight.w600,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  // Container(height: 50, color: Colors.black),
-
-                  /// Banner image
-                  getProfileCover(),
-
-                  /// UserModel avatar, message icon, profile edit
-                  Container(
-                    alignment: Alignment.bottomLeft,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: <Widget>[
-                        AnimatedContainer(
-                          duration: Duration(milliseconds: 500),
-                          padding: EdgeInsets.symmetric(horizontal: 10),
-                          decoration: BoxDecoration(
-                              border: Border.all(color: borderColor, width: 2),
-                              shape: BoxShape.circle),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(50),
-                            child: CachedNetworkImage(
-                              height: 80,
-                              width: 80,
-                              fit: BoxFit.fill,
-                              filterQuality: FilterQuality.high,
-                              imageUrl: userBloc.user.avatar,
-                            ),
-                          ),
+                )
+              : Container(),
+          backgroundColor: navyBlue,
+          flexibleSpace: FlexibleSpaceBar(
+            stretchModes: <StretchMode>[
+              StretchMode.zoomBackground,
+              StretchMode.blurBackground
+            ],
+            background: isLoading
+                ? SizedBox.shrink()
+                : Stack(
+                    alignment: Alignment.topCenter,
+                    children: <Widget>[
+                      SizedBox.expand(
+                        child: Container(
+                          padding: EdgeInsets.only(top: 50),
+                          height: 30,
+                          color: Colors.white,
                         ),
-                        getEditBioBtn()
-                      ],
-                    ),
-                  )
-                ],
-              ),
+                      ),
+                      // Container(height: 50, color: Colors.black),
+
+                      /// Banner image
+                      getProfileCover(),
+
+                      /// UserModel avatar, message icon, profile edit
+                      Container(
+                        alignment: Alignment.bottomLeft,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 10),
+                              child: AnimatedContainer(
+                                duration: Duration(milliseconds: 500),
+                                padding: EdgeInsets.only(left: 10, right: 10),
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                        color: borderColor, width: 2),
+                                    shape: BoxShape.circle),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(50),
+                                  child: Container(
+                                    color: Colors.white,
+                                    child: CachedNetworkImage(
+                                      height: 70,
+                                      width: 70,
+                                      fit: BoxFit.fill,
+                                      filterQuality: FilterQuality.high,
+                                      imageUrl: searchedUser.avatar,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            getEditBioBtn()
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+          ),
+        ),
       ),
     );
   }
@@ -286,7 +300,7 @@ class _UserProfileSecondScreenState extends State<UserProfileSecondScreen>
                         Text(
                           searchedUser.fullName,
                           style: TextStyle(
-                              fontSize: 20.0.sp,
+                              fontSize: 22.0.sp,
                               fontWeight: FontWeight.w600,
                               color: blackFont),
                         ),
@@ -295,7 +309,7 @@ class _UserProfileSecondScreenState extends State<UserProfileSecondScreen>
                         ),
                         Text(
                           searchedUser.userName,
-                          style: TextStyle(fontSize: 16.0.sp, color: darkGrey),
+                          style: TextStyle(fontSize: 14.0.sp, color: darkGrey),
                         ),
                         SizedBox(
                           height: 8,
@@ -354,15 +368,7 @@ class _UserProfileSecondScreenState extends State<UserProfileSecondScreen>
 
     if (searchedUserAbout.bio != null) {
       list.addAll([
-        Text(
-          "Bio",
-          style: TextStyle(
-              fontSize: 16.0.sp, fontWeight: FontWeight.w500, color: blackFont),
-        ),
-        SizedBox(
-          height: 8,
-        ),
-        Text(searchedUserAbout.bio),
+        ExpandableText(searchedUserAbout.bio),
         SizedBox(
           height: 16,
         ),
@@ -562,10 +568,10 @@ class _UserProfileSecondScreenState extends State<UserProfileSecondScreen>
               maxLines: 1,
               overflow: TextOverflow.visible,
               style: TextStyle(
-                color: currentIndex == 0 ? navyBlue : blackFont,
+                color: currentIndex == 0 ? navyBlue : darkGrey,
                 fontSize: 12.0.sp,
                 fontWeight:
-                    currentIndex == 0 ? FontWeight.w600 : FontWeight.w400,
+                    currentIndex == 0 ? FontWeight.w700 : FontWeight.w600,
               ),
             ),
           ),
@@ -585,10 +591,10 @@ class _UserProfileSecondScreenState extends State<UserProfileSecondScreen>
               maxLines: 1,
               overflow: TextOverflow.visible,
               style: TextStyle(
-                color: currentIndex == 1 ? navyBlue : blackFont,
+                color: currentIndex == 1 ? navyBlue : darkGrey,
                 fontSize: 12.0.sp,
                 fontWeight:
-                    currentIndex == 1 ? FontWeight.w600 : FontWeight.w400,
+                    currentIndex == 1 ? FontWeight.w700 : FontWeight.w600,
               ),
             ),
           ),
@@ -608,10 +614,10 @@ class _UserProfileSecondScreenState extends State<UserProfileSecondScreen>
               maxLines: 1,
               overflow: TextOverflow.visible,
               style: TextStyle(
-                color: currentIndex == 2 ? navyBlue : blackFont,
+                color: currentIndex == 2 ? navyBlue : darkGrey,
                 fontSize: 12.0.sp,
                 fontWeight:
-                    currentIndex == 2 ? FontWeight.w600 : FontWeight.w400,
+                    currentIndex == 2 ? FontWeight.w700 : FontWeight.w600,
               ),
             ),
           ),
@@ -631,10 +637,10 @@ class _UserProfileSecondScreenState extends State<UserProfileSecondScreen>
               maxLines: 1,
               overflow: TextOverflow.visible,
               style: TextStyle(
-                color: currentIndex == 3 ? navyBlue : blackFont,
+                color: currentIndex == 3 ? navyBlue : darkGrey,
                 fontSize: 12.0.sp,
                 fontWeight:
-                    currentIndex == 3 ? FontWeight.w600 : FontWeight.w400,
+                    currentIndex == 3 ? FontWeight.w700 : FontWeight.w600,
               ),
             ),
           ),
@@ -692,8 +698,10 @@ class _UserProfileSecondScreenState extends State<UserProfileSecondScreen>
                       searchedUserAbout: searchedUserAbout)),
             ],
             onPageChanged: (int index) {
+              _tabController.index = currentIndex;
               currentIndex = index;
               setState(() {});
+
             },
           );
   }
@@ -799,7 +807,7 @@ class _UserProfileSecondScreenState extends State<UserProfileSecondScreen>
           },
         ),
         bottomSheetItem(
-            title: "Receive",
+            title: "Request",
             icon: SlydoAppIcon.receive,
             isLast: true,
             onTap: () {
@@ -853,34 +861,37 @@ class _UserProfileSecondScreenState extends State<UserProfileSecondScreen>
                   crossAxisAlignment: CrossAxisAlignment.end,
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: <Widget>[
-                    MaterialButton(
-                      onPressed: () async {
-                        var result = await Navigator.of(context).pushNamed(
-                            '/add-edit-user-bio',
-                            arguments: {"userAbout": searchedUserAbout});
+                    Padding(
+                      padding: EdgeInsets.only(top: 20, right: 20),
+                      child: GestureDetector(
+                        onTap: () async {
+                          var result = await Navigator.of(context).pushNamed(
+                              '/add-edit-user-bio',
+                              arguments: {"userAbout": searchedUserAbout});
 
-                        if (result != null) {
-                          if (result is UserAbout) {
-                            searchedUserAbout = result;
-                            if (mounted) setState(() {});
+                          if (result != null) {
+                            if (result is UserAbout) {
+                              searchedUserAbout = result;
+                              if (mounted) setState(() {});
+                            }
                           }
-                        }
-                      },
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 5,
-                        ),
-                        decoration: BoxDecoration(
-                          color: navyBlue.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          'Edit',
-                          style: TextStyle(
-                            color: navyBlue,
-                            fontSize: 14.0.sp,
-                            fontWeight: FontWeight.w600,
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 30,
+                            vertical: 5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: navyBlue.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            'Edit',
+                            style: TextStyle(
+                              color: navyBlue,
+                              fontSize: 15.0.sp,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                       ),
@@ -908,6 +919,7 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
     overlapsContent = false;
 
     return new Container(
+      color: Colors.white,
       child: _tabBar,
     );
   }

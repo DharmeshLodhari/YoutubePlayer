@@ -83,7 +83,7 @@ class _UserServiceListState extends State<UserServiceList> {
       key: _serviceScaffoldKey,
       body: Container(
         color: lightGrey,
-        padding: EdgeInsets.fromLTRB(4, 4, 4, 4),
+        padding: EdgeInsets.fromLTRB(4, 10, 4, 4),
         child: SmartRefresher(
             enablePullDown: true,
             header: WaterDropHeader(

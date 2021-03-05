@@ -3,7 +3,6 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/tiles/transaction.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
-import 'package:Slydo/services/list_refresher.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -136,7 +135,6 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
 
   @override
   Widget build(BuildContext context) {
-
     menu = CustomizedPopUpMenu(
       buttonKey: _key,
       context: context,
@@ -468,7 +466,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
             onTap: () {
               acceptPaymentRequestAlert(paymentRequest, index);
             },
-            title: AppLocalization.of(context).accept,
+            title: "Pay",
             slideController: _slideController)
       ];
     }
@@ -500,27 +498,27 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
     bool result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
-        backgroundColor: naturalGreen.withOpacity(0.08),
+        backgroundColor: navyBlue.withOpacity(0.08),
         borderRadius: 20,
         width: 48,
         height: 48,
         icon: Icon(
           SlydoAppIcon.true_icon,
-          color: naturalGreen,
+          color: navyBlue,
           size: 16,
         ),
         enableMargin: false,
       ),
-      actionOneBgColor: greyBorderColor,
-      actionOneTextColor: blackFont,
-      actionTwoBgColor: naturalGreen,
+      actionOneBgColor: navyBlue,
+      actionOneTextColor: Colors.white,
+      actionTwoBgColor: mateRed,
       actionTwoTextColor: Colors.white,
-      firstActionPrimary: false,
-      title: AppLocalization.of(context).accept,
+      firstActionPrimary: true,
+      title: "Pay",
       description:
           AppLocalization.of(context).areYouSureWantToAcceptThisRequest,
-      actionOne: AppLocalization.of(context).cancel,
-      actionTwo: AppLocalization.of(context).accept,
+      actionOne: "Pay",
+      actionTwo: AppLocalization.of(context).cancel,
     );
     if (result) {
       BottomSheetPassCode(

@@ -220,7 +220,8 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
               backgroundColor: navyBlue,
               icon: SlydoAppIcon.send_connection_request,
               onTap: () {
-                acceptFriendRequestAlert(isRequestSent?toUser:fromUser, index);
+                acceptFriendRequestAlert(
+                    isRequestSent ? toUser : fromUser, index);
               },
               title: AppLocalization.of(context).accept,
               slideController: _slideController,
@@ -307,28 +308,28 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
     bool result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
-        backgroundColor: naturalGreen.withOpacity(0.08),
+        backgroundColor: navyBlue.withOpacity(0.08),
         borderRadius: 20,
         width: 48,
         height: 48,
         icon: Icon(
-          SlydoAppIcon.false_icon,
-          color: naturalGreen,
+          SlydoAppIcon.true_icon,
+          color: navyBlue,
           size: 16,
         ),
         enableMargin: false,
       ),
-      actionOneBgColor: greyBorderColor,
-      actionOneTextColor: blackFont,
-      actionTwoBgColor: naturalGreen,
+      actionOneBgColor: navyBlue,
+      actionOneTextColor: Colors.white,
+      actionTwoBgColor: mateRed,
       actionTwoTextColor: Colors.white,
-      firstActionPrimary: false,
+      firstActionPrimary: true,
       title: AppLocalization.of(context).accept,
       description: AppLocalization.of(context).areYouSureWantToAdd +
           " ${user.fullName} " +
           "In Your Connections",
-      actionOne: AppLocalization.of(context).cancel,
-      actionTwo: AppLocalization.of(context).accept,
+      actionOne: AppLocalization.of(context).accept,
+      actionTwo: AppLocalization.of(context).cancel,
     );
     if (result) {
       bool done = await UserAuth().acceptContactRequest(user);

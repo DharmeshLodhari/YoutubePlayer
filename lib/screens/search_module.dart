@@ -504,7 +504,8 @@ class _SearchModuleState extends State<SearchModule> {
                 ? "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png"
                 : user.avatar,
             colorBlendMode: BlendMode.darken,
-            fit: BoxFit.fitWidth,
+            fit: BoxFit.cover,
+            height: double.infinity,
             filterQuality: FilterQuality.high,
             placeholder: (context, _) => CachedNetworkImage(
               imageUrl:
