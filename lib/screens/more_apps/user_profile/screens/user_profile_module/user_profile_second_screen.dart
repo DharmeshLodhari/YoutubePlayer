@@ -249,26 +249,23 @@ class _UserProfileSecondScreenState extends State<UserProfileSecondScreen>
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 10),
-                              child: AnimatedContainer(
-                                duration: Duration(milliseconds: 500),
-                                padding: EdgeInsets.only(left: 10, right: 10),
-                                decoration: BoxDecoration(
-                                    border: Border.all(
-                                        color: borderColor, width: 2),
-                                    shape: BoxShape.circle),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(50),
-                                  child: Container(
-                                    color: Colors.white,
-                                    child: CachedNetworkImage(
-                                      height: 70,
-                                      width: 70,
-                                      fit: BoxFit.fill,
-                                      filterQuality: FilterQuality.high,
-                                      imageUrl: searchedUser.avatar,
-                                    ),
+                            AnimatedContainer(
+                              duration: Duration(milliseconds: 500),
+                              padding: EdgeInsets.only(left: 10, right: 10),
+                              decoration: BoxDecoration(
+                                  border:
+                                      Border.all(color: borderColor, width: 2),
+                                  shape: BoxShape.circle),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(50),
+                                child: Container(
+                                  color: Colors.white,
+                                  child: CachedNetworkImage(
+                                    height: 70,
+                                    width: 70,
+                                    fit: BoxFit.fill,
+                                    filterQuality: FilterQuality.high,
+                                    imageUrl: searchedUser.avatar,
                                   ),
                                 ),
                               ),
@@ -297,19 +294,19 @@ class _UserProfileSecondScreenState extends State<UserProfileSecondScreen>
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        SizedBox(
+                          height: 2,
+                        ),
                         Text(
                           searchedUser.fullName,
                           style: TextStyle(
-                              fontSize: 22.0.sp,
+                              fontSize: 26.0,
                               fontWeight: FontWeight.w600,
                               color: blackFont),
                         ),
-                        SizedBox(
-                          height: 4,
-                        ),
                         Text(
-                          searchedUser.userName,
-                          style: TextStyle(fontSize: 14.0.sp, color: darkGrey),
+                          "@" + searchedUser.userName,
+                          style: TextStyle(fontSize: 16.0, color: darkGrey),
                         ),
                         SizedBox(
                           height: 8,
@@ -701,7 +698,6 @@ class _UserProfileSecondScreenState extends State<UserProfileSecondScreen>
               _tabController.index = currentIndex;
               currentIndex = index;
               setState(() {});
-
             },
           );
   }
