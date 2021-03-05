@@ -461,7 +461,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
     } else {
       return [
         SlideActionButton(
-            backgroundColor: naturalGreen,
+            backgroundColor: navyBlue,
             icon: SlydoAppIcon.send,
             onTap: () {
               acceptPaymentRequestAlert(paymentRequest, index);
@@ -681,14 +681,12 @@ class _VerticalListItemState extends State<VerticalListItem> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () =>
-          Slidable.of(context)?.renderingMode == SlidableRenderingMode.none
-              ? Slidable.of(context)?.open()
-              : Slidable.of(context)?.close(),
-      onDoubleTap: () {
+      onTap: () {
+        Slidable.of(context)?.renderingMode == SlidableRenderingMode.none
+            ? Slidable.of(context)?.open()
+            : Slidable.of(context)?.close();
         Navigator.pushNamed(context, '/profile',
             arguments: {"searchedUserName": widget.paymentRequest.payee});
-
       },
       onLongPress: () {
         if (mounted) {

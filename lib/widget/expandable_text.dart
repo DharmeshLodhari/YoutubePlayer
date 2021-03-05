@@ -16,23 +16,25 @@ class _ExpandableTextState extends State<ExpandableText>
     with TickerProviderStateMixin<ExpandableText> {
   @override
   Widget build(BuildContext context) {
-    return new Column(
+    return Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: <Widget>[
-          new AnimatedSize(
-              vsync: this,
-              duration: const Duration(milliseconds: 500),
-              child: new ConstrainedBox(
-                  constraints: widget.isExpanded
-                      ? new BoxConstraints()
-                      : new BoxConstraints(maxHeight: 50.0),
-                  child: new Text(
-                    widget.text,
-                    softWrap: true,
-                    overflow: TextOverflow.clip,
-                  ))),
+          AnimatedSize(
+            vsync: this,
+            duration: const Duration(milliseconds: 500),
+            child: ConstrainedBox(
+              constraints: widget.isExpanded
+                  ? BoxConstraints()
+                  : BoxConstraints(maxHeight: 50.0),
+              child: Text(
+                widget.text,
+                softWrap: true,
+                overflow: TextOverflow.clip,
+              ),
+            ),
+          ),
           widget.isExpanded
-              ? new ConstrainedBox(constraints: new BoxConstraints())
+              ? ConstrainedBox(constraints: BoxConstraints())
               : Container(
                   color: Colors.transparent,
                   child: GestureDetector(
