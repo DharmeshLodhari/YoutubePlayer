@@ -63,6 +63,8 @@ class _UserProfileSecondScreenState extends State<UserProfileSecondScreen>
   UserAbout searchedUserAbout;
   bool isSearchedUserAboutLoading = false;
 
+  bool isBioShowingLess = true;
+
   @override
   void initState() {
     getSearchedUser();
@@ -140,11 +142,11 @@ class _UserProfileSecondScreenState extends State<UserProfileSecondScreen>
       onWillPop: () async {
         return await Future.value(true);
       },
-        child: SafeArea(
-          bottom:false,
-          child: Scaffold(
-            body: NestedScrollView(
-               controller: _scrollController,
+      child: SafeArea(
+        bottom: false,
+        child: Scaffold(
+          body: NestedScrollView(
+              controller: _scrollController,
               headerSliverBuilder: (BuildContext context, bool boxIsScrolled) {
                 return <Widget>[
                   getAppbar(context),
@@ -175,8 +177,8 @@ class _UserProfileSecondScreenState extends State<UserProfileSecondScreen>
                 ];
               },
               body: SafeArea(bottom: false, top: false, child: tabViews())),
-      ),
         ),
+      ),
     );
   }
 
@@ -187,7 +189,7 @@ class _UserProfileSecondScreenState extends State<UserProfileSecondScreen>
       handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
       sliver: SliverSafeArea(
         top: false,
-        bottom: true,
+        bottom: false,
         sliver: SliverAppBar(
           forceElevated: false,
           expandedHeight: 220,
@@ -370,6 +372,21 @@ class _UserProfileSecondScreenState extends State<UserProfileSecondScreen>
     if (searchedUserAbout.bio.isNotEmpty) {
       list.addAll([
         ExpandableText(searchedUserAbout.bio),
+        // ReadMoreText(
+        //   searchedUserAbout.bio,
+        //   trimMode: TrimMode.Line,
+        //   trimLines: 3,
+        //   delimiter: isBioShowingLess ? "" : "",
+        //   colorClickableText: navyBlue,
+        //   callback: (isOpen) {
+        //     isBioShowingLess = isOpen;
+        //     if (mounted) setState(() {});
+        //   },
+        //   moreStyle: TextStyle(color: navyBlue, fontWeight: FontWeight.w600),
+        //   lessStyle: TextStyle(color: navyBlue, fontWeight: FontWeight.w600),
+        //   trimExpandedText: "less",
+        //   trimCollapsedText: "more",
+        // ),
         SizedBox(
           height: 16,
         ),
