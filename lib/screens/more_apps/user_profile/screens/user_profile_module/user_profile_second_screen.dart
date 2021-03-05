@@ -20,7 +20,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
-import 'package:sizer/sizer.dart';
 import 'package:toast/toast.dart';
 
 // ignore: must_be_immutable
@@ -141,40 +140,43 @@ class _UserProfileSecondScreenState extends State<UserProfileSecondScreen>
       onWillPop: () async {
         return await Future.value(true);
       },
-      child: Scaffold(
-        body: NestedScrollView(
-            controller: _scrollController,
-            headerSliverBuilder: (BuildContext context, bool boxIsScrolled) {
-              return <Widget>[
-                getAppbar(context),
-                getUserBio(),
-                searchedUser.type.toLowerCase() == "user"
-                    ? SliverToBoxAdapter(
-                        child: Container(),
-                      )
-                    : SliverPersistentHeader(
-                        floating: true,
-                        pinned: true,
-                        delegate: _SliverAppBarDelegate(
-                          TabBar(
-                            controller: _tabController,
-                            labelPadding: EdgeInsets.zero,
-                            indicator: BoxDecoration(),
-                            onTap: (int index) {
-                              currentIndex = index;
-                              setState(() {});
-                              pageController.animateToPage(currentIndex,
-                                  duration: Duration(milliseconds: 100),
-                                  curve: Curves.linear);
-                            },
-                            tabs: getTabs(),
+        child: SafeArea(
+          bottom:false,
+          child: Scaffold(
+            body: NestedScrollView(
+               controller: _scrollController,
+              headerSliverBuilder: (BuildContext context, bool boxIsScrolled) {
+                return <Widget>[
+                  getAppbar(context),
+                  getUserBio(),
+                  searchedUser.type.toLowerCase() == "user"
+                      ? SliverToBoxAdapter(
+                          child: Container(),
+                        )
+                      : SliverPersistentHeader(
+                          floating: true,
+                          pinned: true,
+                          delegate: _SliverAppBarDelegate(
+                            TabBar(
+                              controller: _tabController,
+                              labelPadding: EdgeInsets.zero,
+                              indicator: BoxDecoration(),
+                              onTap: (int index) {
+                                currentIndex = index;
+                                setState(() {});
+                                pageController.animateToPage(currentIndex,
+                                    duration: Duration(milliseconds: 100),
+                                    curve: Curves.linear);
+                              },
+                              tabs: getTabs(),
+                            ),
                           ),
                         ),
-                      ),
-              ];
-            },
-            body: SafeArea(bottom: false, top: false, child: tabViews())),
+                ];
+              },
+              body: SafeArea(bottom: false, top: false, child: tabViews())),
       ),
+        ),
     );
   }
 
@@ -188,7 +190,7 @@ class _UserProfileSecondScreenState extends State<UserProfileSecondScreen>
         bottom: true,
         sliver: SliverAppBar(
           forceElevated: false,
-          expandedHeight: 200,
+          expandedHeight: 220,
           elevation: 0,
           stretch: true,
           pinned: true,
@@ -211,7 +213,7 @@ class _UserProfileSecondScreenState extends State<UserProfileSecondScreen>
                     searchedUser.fullName,
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 18.0.sp,
+                      fontSize: 22,
                       fontWeight: FontWeight.w600,
                     ),
                     maxLines: 1,
@@ -219,6 +221,7 @@ class _UserProfileSecondScreenState extends State<UserProfileSecondScreen>
                   ),
                 )
               : Container(),
+          titleSpacing: 0,
           backgroundColor: navyBlue,
           flexibleSpace: FlexibleSpaceBar(
             stretchModes: <StretchMode>[
@@ -232,7 +235,8 @@ class _UserProfileSecondScreenState extends State<UserProfileSecondScreen>
                     children: <Widget>[
                       SizedBox.expand(
                         child: Container(
-                          padding: EdgeInsets.only(top: 50),
+                          padding: EdgeInsets.only(
+                              top: MediaQuery.of(context).padding.top),
                           height: 30,
                           color: Colors.white,
                         ),
@@ -566,7 +570,7 @@ class _UserProfileSecondScreenState extends State<UserProfileSecondScreen>
               overflow: TextOverflow.visible,
               style: TextStyle(
                 color: currentIndex == 0 ? navyBlue : darkGrey,
-                fontSize: 12.0.sp,
+                fontSize: 14,
                 fontWeight:
                     currentIndex == 0 ? FontWeight.w700 : FontWeight.w600,
               ),
@@ -589,7 +593,7 @@ class _UserProfileSecondScreenState extends State<UserProfileSecondScreen>
               overflow: TextOverflow.visible,
               style: TextStyle(
                 color: currentIndex == 1 ? navyBlue : darkGrey,
-                fontSize: 12.0.sp,
+                fontSize: 14,
                 fontWeight:
                     currentIndex == 1 ? FontWeight.w700 : FontWeight.w600,
               ),
@@ -612,7 +616,7 @@ class _UserProfileSecondScreenState extends State<UserProfileSecondScreen>
               overflow: TextOverflow.visible,
               style: TextStyle(
                 color: currentIndex == 2 ? navyBlue : darkGrey,
-                fontSize: 12.0.sp,
+                fontSize: 14,
                 fontWeight:
                     currentIndex == 2 ? FontWeight.w700 : FontWeight.w600,
               ),
@@ -635,7 +639,7 @@ class _UserProfileSecondScreenState extends State<UserProfileSecondScreen>
               overflow: TextOverflow.visible,
               style: TextStyle(
                 color: currentIndex == 3 ? navyBlue : darkGrey,
-                fontSize: 12.0.sp,
+                fontSize: 14,
                 fontWeight:
                     currentIndex == 3 ? FontWeight.w700 : FontWeight.w600,
               ),
@@ -722,7 +726,7 @@ class _UserProfileSecondScreenState extends State<UserProfileSecondScreen>
       title: Text(
         isLoading ? "" : searchedUser.fullName,
         style: TextStyle(
-            color: blackFont, fontSize: 16.0.sp, fontWeight: FontWeight.bold),
+            color: blackFont, fontSize: 22, fontWeight: FontWeight.bold),
         overflow: TextOverflow.fade,
         softWrap: false,
         maxLines: 1,
@@ -885,7 +889,7 @@ class _UserProfileSecondScreenState extends State<UserProfileSecondScreen>
                             'Edit',
                             style: TextStyle(
                               color: navyBlue,
-                              fontSize: 15.0.sp,
+                              fontSize: 16,
                               fontWeight: FontWeight.w600,
                             ),
                           ),

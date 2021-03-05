@@ -468,6 +468,10 @@ class _VerticalListItemState extends State<VerticalListItem> {
         Navigator.of(context).pushNamed('/detail_message',
             arguments: {'id': widget.partialMessage.id});
       },
+      onDoubleTap: () {
+        Navigator.pushNamed(context, '/profile',
+            arguments: {"searchedUserName": widget.partialMessage.sender});
+      },
       onLongPress: () {
         setState(() {
           if (isExpanded) {
@@ -532,7 +536,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
             RoundedBackgroundIcon(
               backgroundColor: navyBlue.withOpacity(0.1),
               icon: Icon(
-                SlydoAppIcon.text_message,
+                SlydoAppIcon.message,
                 color: navyBlue,
                 size: 14,
               ),

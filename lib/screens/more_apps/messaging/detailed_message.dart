@@ -161,6 +161,10 @@ class _DetailedMessageState extends State<DetailedMessage> {
           children: <Widget>[getArchivedButton(), getIsStarredButton()],
         ),
       ),
+      onTap: () {
+        Navigator.pushNamed(context, '/profile',
+            arguments: {"searchedUserName": message.sender});
+      },
     );
   }
 

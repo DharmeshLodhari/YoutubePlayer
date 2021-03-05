@@ -16,43 +16,44 @@ class _ExpandableTextState extends State<ExpandableText>
     with TickerProviderStateMixin<ExpandableText> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: <Widget>[
-          AnimatedSize(
-            vsync: this,
-            duration: const Duration(milliseconds: 500),
-            child: ConstrainedBox(
-              constraints: widget.isExpanded
-                  ? BoxConstraints()
-                  : BoxConstraints(maxHeight: 50.0),
-              child: Text(
-                widget.text,
-                softWrap: true,
-                overflow: TextOverflow.clip,
-              ),
-            ),
+    return Stack(overflow: Overflow.visible, children: <Widget>[
+      AnimatedSize(
+        vsync: this,
+        duration: const Duration(milliseconds: 500),
+        child: ConstrainedBox(
+          constraints: widget.isExpanded
+              ? BoxConstraints()
+              : BoxConstraints(maxHeight: 50.0),
+          child: Text(
+            widget.text,
+            softWrap: true,
+            overflow: TextOverflow.clip,
+            style: TextStyle(fontSize: 14),
           ),
-          widget.isExpanded
-              ? ConstrainedBox(constraints: BoxConstraints())
-              : Container(
-                  color: Colors.transparent,
+        ),
+      ),
+      widget.isExpanded
+          ? ConstrainedBox(constraints: BoxConstraints())
+          : Positioned(
+              bottom: -10,
+              right: 2,
+              child: ClipOval(
+                child: Container(
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: Colors.white),
+                      borderRadius: BorderRadius.circular(50)),
+                  padding: EdgeInsets.all(1),
                   child: GestureDetector(
                       onTap: () => setState(() => widget.isExpanded = true),
                       child: Icon(
                         Icons.keyboard_arrow_down_rounded,
-                        size: 18,
+                        size: 22,
                         color: navyBlue,
                       )),
-                )
-        ]);
+                ),
+              ),
+            )
+    ]);
   }
 }
-
-// Text(
-// 'Show more',
-// style: TextStyle(
-// fontSize: 10.0.sp,
-// color: navyBlue,
-// fontWeight: FontWeight.w500),
-// ),
