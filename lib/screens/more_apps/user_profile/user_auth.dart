@@ -229,27 +229,7 @@ class UserAuth extends AuthService {
       var jsonData = jsonDecode(response.body);
       return UserAbout.fromJson(jsonData);
     }
-
-    // "wallpaper":
-    // "https://i.pinimg.com/originals/bf/99/1f/bf991fd757c3d369c496f74238516cad.png",
-    var data = {
-      "address":
-          "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-      "bio":
-          "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.",
-      "contact": "+00000000000",
-      "opening_hours": [
-        {"day": "Mon", "time": "10am - 1pm"},
-        {"day": "Tue", "time": "10am - 1pm"},
-        {"day": "Wed", "time": "10am - 1pm"},
-        {"day": "Thu", "time": "10am - 1pm"},
-        {"day": "Fri", "time": "10am - 1pm"},
-        {"day": "Sat", "time": "Closed"},
-        {"day": "Sun", "time": "Closed"}
-      ]
-    };
-
-    return UserAbout.fromJson(data);
+    return UserAbout();
   }
 
   Future<UserAbout> addOrUpdateUserBio(UserAbout userAbout) async {

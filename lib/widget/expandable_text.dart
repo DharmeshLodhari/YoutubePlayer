@@ -29,17 +29,20 @@ class _ExpandableTextState extends State<ExpandableText>
                   child: new Text(
                     widget.text,
                     softWrap: true,
-                    overflow: TextOverflow.fade,
+                    overflow: TextOverflow.clip,
                   ))),
           widget.isExpanded
               ? new ConstrainedBox(constraints: new BoxConstraints())
-              : GestureDetector(
-                  onTap: () => setState(() => widget.isExpanded = true),
-                  child: Icon(
-                    Icons.keyboard_arrow_down_rounded,
-                    size: 18,
-                    color: navyBlue,
-                  ))
+              : Container(
+                  color: Colors.transparent,
+                  child: GestureDetector(
+                      onTap: () => setState(() => widget.isExpanded = true),
+                      child: Icon(
+                        Icons.keyboard_arrow_down_rounded,
+                        size: 18,
+                        color: navyBlue,
+                      )),
+                )
         ]);
   }
 }

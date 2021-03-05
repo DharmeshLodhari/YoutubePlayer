@@ -366,7 +366,7 @@ class _UserProfileSecondScreenState extends State<UserProfileSecondScreen>
   List<Widget> getUserAboutSection() {
     List<Widget> list = [];
 
-    if (searchedUserAbout.bio != null) {
+    if (searchedUserAbout.bio.isNotEmpty) {
       list.addAll([
         ExpandableText(searchedUserAbout.bio),
         SizedBox(
@@ -375,7 +375,7 @@ class _UserProfileSecondScreenState extends State<UserProfileSecondScreen>
       ]);
     }
 
-    if (searchedUserAbout.address != null) {
+    if (searchedUserAbout.address.isNotEmpty) {
       list.addAll([
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -407,7 +407,7 @@ class _UserProfileSecondScreenState extends State<UserProfileSecondScreen>
       ]);
     }
 
-    if (searchedUserAbout.contact != null) {
+    if (searchedUserAbout.contact.isNotEmpty) {
       list.addAll([
         Row(
           children: [

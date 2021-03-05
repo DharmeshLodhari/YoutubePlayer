@@ -426,6 +426,15 @@ class _VerticalListItemState extends State<VerticalListItem> {
           Slidable.of(context)?.renderingMode == SlidableRenderingMode.none
               ? Slidable.of(context)?.open()
               : Slidable.of(context)?.close(),
+      onDoubleTap: () {
+
+        if(widget.transaction.payee != "Slydo" && widget.transaction.payee != "Private")
+          {
+            debugPrint(widget.transaction.payee);
+            Navigator.pushNamed(context, '/profile',
+                arguments: {"searchedUserName": widget.transaction.payee});
+          }
+      },
       onLongPress: () {
         if (mounted) {
           setState(() {
@@ -493,7 +502,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
             RoundedBackgroundIcon(
               backgroundColor: navyBlue.withOpacity(0.1),
               icon: Icon(
-                SlydoAppIcon.text_message,
+                SlydoAppIcon.message,
                 color: navyBlue,
                 size: 14,
               ),

@@ -8,18 +8,18 @@ class UserAbout {
   List<OpeningHour> openingHours;
 
   UserAbout(
-      {this.address,
-      this.bio,
-      this.contact,
-      this.wallpaper,
-      this.openingHours});
+      {this.address = "",
+      this.bio = "",
+      this.contact = "",
+      this.wallpaper = "",
+      this.openingHours = const []});
 
   factory UserAbout.fromJson(Map<String, dynamic> json) {
     return UserAbout(
-      address: json['address'] ?? "-",
-      bio: json['bio'] ?? "-",
+      address: json['address'] ?? "",
+      bio: json['bio'] ?? "",
       wallpaper: json['wallpaper'] ?? "",
-      contact: json['contact'] ?? "-",
+      contact: json['contact'] ?? "",
       openingHours: json['opening_hours'] != null
           ? (json['opening_hours'] as List)
               .map((i) => OpeningHour.fromJson(i))
