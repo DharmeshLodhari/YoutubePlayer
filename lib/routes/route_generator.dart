@@ -88,7 +88,7 @@ import 'package:Slydo/screens/more_apps/user_profile/forms/verify_registration_O
 import 'package:Slydo/screens/more_apps/user_profile/forms/verify_reset_password_OTP.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/connection_module/connections_dashboard.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module/user_profile.dart';
-import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module/user_profile_second_screen.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_profile_screen.dart';
 import 'package:Slydo/screens/scan_qr_code.dart';
 import 'package:Slydo/screens/user_dashboard.dart';
 import 'package:Slydo/splash.dart';
@@ -255,7 +255,7 @@ class RouteGenerator {
         );
       case '/profile':
         return PageTransition(
-          child: UserProfileSecondScreen(arguments: settings.arguments),
+          child: UserProfileScreen(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -947,7 +947,7 @@ class RouteGenerator {
 
       case "/add-edit-user-bio":
         return PageTransition(
-          child: AddOrEditUserBioScreen(arguments: settings.arguments),
+          child: AddOrEditUserBioScreen(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

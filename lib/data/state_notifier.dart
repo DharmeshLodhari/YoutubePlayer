@@ -31,6 +31,8 @@ class UserBloc extends ChangeNotifier {
     _user.userAbout = userAbout;
     notifyListeners();
   }
+
+  UserAbout get userAbout => _user.userAbout;
 }
 
 class BankAccountBloc extends ChangeNotifier {

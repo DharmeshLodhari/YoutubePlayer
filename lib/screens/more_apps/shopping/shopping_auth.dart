@@ -657,9 +657,7 @@ class ShoppingAuthService extends AuthService {
   }
 
   Future<List<dynamic>> ownersOrderProductsAndServices(
-      {@required String type,
-      @required String userId,
-      @required String exclude}) async {
+      {@required String type, @required String userId, String exclude}) async {
     String urlPart = type == "products"
         ? "sellers-other-products"
         : "providers-other-services";

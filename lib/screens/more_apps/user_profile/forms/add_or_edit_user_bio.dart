@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/OpeningHour.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -7,8 +10,10 @@ import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
@@ -17,12 +22,6 @@ import '../user_auth.dart';
 
 // ignore: must_be_immutable
 class AddOrEditUserBioScreen extends StatefulWidget {
-  UserAbout userAbout;
-
-  AddOrEditUserBioScreen({var arguments}) {
-    userAbout = arguments["userAbout"];
-  }
-
   @override
   _AddOrEditUserBioScreenState createState() => _AddOrEditUserBioScreenState();
 }
@@ -50,23 +49,28 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
   UserBloc userBloc;
 
   UserAbout userBioDetail;
+
+  bool isSearchedUserAboutLoading;
+
+  bool isLoading = false;
+
   @override
   void initState() {
     bioController = TextEditingController();
     addressController = TextEditingController();
     contactNumberController = TextEditingController();
 
-    userBioDetail = widget.userAbout;
-    debugPrint("${widget.userAbout.toJson()}");
-
-    bioController.text = userBioDetail.bio;
-    addressController.text = userBioDetail.address;
-    contactNumberController.text = userBioDetail.contact;
-    if (userBioDetail.openingHours.isEmpty) {
-      clearUserAddedOpeningHour();
-    } else {
-      addUserAddedOpeningHour();
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      userBioDetail = userBloc.userAbout;
+      bioController.text = userBioDetail.bio;
+      addressController.text = userBioDetail.address;
+      contactNumberController.text = userBioDetail.contact;
+      if (userBioDetail.openingHours.isEmpty) {
+        clearUserAddedOpeningHour();
+      } else {
+        addUserAddedOpeningHour();
+      }
+    });
 
     super.initState();
   }
@@ -91,11 +95,17 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
       onWillPop: () async {
         return true;
       },
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        resizeToAvoidBottomInset: true,
-        appBar: appBar(),
-        body: scaffoldBody(),
+      child: SafeArea(
+        bottom: false,
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          body: NestedScrollView(
+            headerSliverBuilder: (BuildContext context, bool boxIsScrolled) {
+              return [getAppbar(context)];
+            },
+            body: scaffoldBody(),
+          ),
+        ),
       ),
     );
   }
@@ -103,7 +113,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
   Widget appBar() {
     return AppBar(
       elevation: 0,
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.transparent,
       titleSpacing: 0,
       automaticallyImplyLeading: false,
       leading: IconButton(
@@ -157,6 +167,227 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
         ),
       ),
     );
+  }
+
+  Widget getAppbar(var context) {
+    return SliverOverlapAbsorber(
+      handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+      sliver: SliverSafeArea(
+        top: false,
+        bottom: false,
+        sliver: SliverAppBar(
+          forceElevated: false,
+          expandedHeight: 250,
+          elevation: 0,
+          stretch: true,
+          pinned: true,
+          floating: true,
+          leading: IconButton(
+            icon: Icon(
+              Icons.keyboard_arrow_left,
+              color: Colors.white,
+              size: 26,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          actions: [
+            editProfileCoverIcon(),
+            SizedBox(
+              width: 16,
+            )
+          ],
+          title: Container(
+            child: Text(
+              userBloc.user.fullName,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 22,
+                fontWeight: FontWeight.w600,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          titleSpacing: 0,
+          backgroundColor: navyBlue,
+          flexibleSpace: FlexibleSpaceBar(
+            stretchModes: <StretchMode>[
+              StretchMode.zoomBackground,
+              StretchMode.blurBackground
+            ],
+            background: isLoading
+                ? SizedBox.shrink()
+                : Stack(
+                    alignment: Alignment.topCenter,
+                    children: <Widget>[
+                      SizedBox.expand(
+                        child: Container(
+                          padding: EdgeInsets.only(
+                              top: MediaQuery.of(context).padding.top),
+                          height: 30,
+                          color: Colors.white,
+                        ),
+                      ),
+                      // Container(height: 50, color: Colors.black),
+
+                      /// Banner image
+                      getProfileCover(),
+
+                      /// UserModel avatar, message icon, profile edit
+                      getProfilePhoto(),
+                    ],
+                  ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget getProfileCover() {
+    return Container(
+      height: 206,
+      child: userBloc.userAbout == null
+          ? Image.asset(
+              "assets/images/home_screen_background.png",
+              width: double.infinity,
+              fit: BoxFit.cover,
+            )
+          : userBloc.userAbout.wallpaper == ""
+              ? Image.asset(
+                  "assets/images/home_screen_background.png",
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                )
+              : CachedNetworkImage(
+                  width: double.infinity,
+                  height: double.infinity,
+                  imageUrl: userBloc.userAbout.wallpaper,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) =>
+                      Center(child: CircularLoadingIndicator()),
+                  color: blackFont.withOpacity(0.4),
+                  colorBlendMode: BlendMode.darken,
+                  filterQuality: FilterQuality.high,
+                ),
+    );
+  }
+
+  Widget getProfilePhoto() {
+    Color borderColor = getUserTypeColorByType(type: userBloc.user.type);
+
+    return Container(
+      alignment: Alignment.bottomLeft,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Stack(
+            children: [
+              AnimatedContainer(
+                duration: Duration(milliseconds: 500),
+                decoration: BoxDecoration(
+                    border: Border.all(color: borderColor, width: 3),
+                    shape: BoxShape.circle),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(50),
+                  child: Container(
+                    color: Colors.white,
+                    child: CachedNetworkImage(
+                      height: 88,
+                      width: 88,
+                      fit: BoxFit.fill,
+                      filterQuality: FilterQuality.high,
+                      imageUrl: userBloc.user.avatar,
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 0,
+                right: 0,
+                child: GestureDetector(
+                  child: ClipOval(
+                    child: Container(
+                      color: Colors.white,
+                      width: 32,
+                      height: 32,
+                      child: Icon(
+                        Icons.camera_alt,
+                        size: 18,
+                      ),
+                    ),
+                  ),
+                  onTap: () {
+                    updateProfilePicture();
+                  },
+                ),
+              )
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  void updateProfilePicture() async {
+    final imageSource = await showDialog<ImageSource>(
+        context: context,
+        builder: (context) => AlertDialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              title: Text(
+                AppLocalization.of(context).selectTheImageSource,
+                style: TextStyle(fontSize: 18, color: blackFont),
+              ),
+              actions: <Widget>[
+                MaterialButton(
+                  child: Text(
+                    AppLocalization.of(context).camera,
+                    style: TextStyle(fontSize: 16, color: blackFont),
+                  ),
+                  onPressed: () => Navigator.pop(context, ImageSource.camera),
+                ),
+                MaterialButton(
+                  child: Text(
+                    "Gallery",
+                    style: TextStyle(fontSize: 16, color: blackFont),
+                  ),
+                  onPressed: () => Navigator.pop(context, ImageSource.gallery),
+                )
+              ],
+            ));
+
+    if (imageSource != null) {
+      final file =
+          await ImagePicker().getImage(source: imageSource, imageQuality: 70);
+      if (file != null) {
+        try {
+          isLoading = true;
+          if (mounted) setState(() {});
+          // Get user current login info so we can reuse it to login
+          var dbUser = await UserAuth().getUser();
+          var phoneNumber = dbUser.phoneNumber;
+          var password = dbUser.password;
+
+          // Upload Image new image
+          await UserAuth().updateCustomerAvatar(File(file.path));
+
+          // Get New updated user data and set new user data to userBloc
+          await UserAuth().authenticate(phoneNumber, password).then((value) {
+            userBloc.user = value;
+            isLoading = false;
+            if (mounted) setState(() {});
+          });
+        } catch (err) {
+          isLoading = false;
+          if (mounted) setState(() {});
+          Toast.show(err.toString(), context,
+              backgroundColor: blackFont, textColor: Colors.white);
+          debugPrint("Cannot Update Avatar : " + err.toString());
+        }
+      }
+    }
   }
 
   Widget showBackArrow() {
@@ -488,6 +719,86 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
         }
       }
       setState(() {});
+    }
+  }
+
+  Widget editProfileCoverIcon() {
+    return RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
+      icon: Icon(
+        SlydoAppIcon.image,
+        size: 16,
+        color: Colors.white,
+      ),
+      onTap: () {
+        pickImage();
+      },
+      backgroundColor: lightGrey.withOpacity(0.1),
+      enableMargin: true,
+    );
+  }
+
+  void pickImage() async {
+    final imageSource = await showDialog<ImageSource>(
+        context: context,
+        builder: (context) => AlertDialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              title: Text(
+                AppLocalization.of(context).selectTheImageSource,
+                style: TextStyle(fontSize: 18, color: blackFont),
+              ),
+              actions: <Widget>[
+                MaterialButton(
+                  child: Text(
+                    AppLocalization.of(context).camera,
+                    style: TextStyle(fontSize: 16, color: blackFont),
+                  ),
+                  onPressed: () => Navigator.pop(context, ImageSource.camera),
+                ),
+                MaterialButton(
+                  child: Text(
+                    "Gallery",
+                    style: TextStyle(fontSize: 16, color: blackFont),
+                  ),
+                  onPressed: () => Navigator.pop(context, ImageSource.gallery),
+                )
+              ],
+            ));
+
+    if (imageSource != null) {
+      final file =
+          await ImagePicker().getImage(source: imageSource, imageQuality: 70);
+      if (file != null) {
+        try {
+          isSearchedUserAboutLoading = true;
+          if (mounted) setState(() {});
+
+          UserAbout userAbout = userBloc.userAbout;
+
+          userAbout.wallpaper = file.path;
+
+          userAbout = await UserAuth()
+              .addOrUpdateUserBio(userBloc.userAbout)
+              .catchError((error) {
+            debugPrint("Cannot Update Cover : " + error.toString());
+            isSearchedUserAboutLoading = false;
+            if (mounted) setState(() {});
+          });
+
+          userBloc.userAbout = userAbout;
+
+          isSearchedUserAboutLoading = false;
+          if (mounted) setState(() {});
+        } catch (err) {
+          isSearchedUserAboutLoading = false;
+          if (mounted) setState(() {});
+          Toast.show(err.toString(), context,
+              backgroundColor: blackFont, textColor: Colors.white);
+          debugPrint("Cannot Update Cover : " + err.toString());
+        }
+      }
     }
   }
 

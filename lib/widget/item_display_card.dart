@@ -5,86 +5,16 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 Widget displayProduct({BuildContext context, Product product}) {
-  // return Card(
-  //   semanticContainer: true,
-  //   clipBehavior: Clip.antiAliasWithSaveLayer,
-  //   color: Colors.white,
-  //   elevation: 5,
-  //   child: GestureDetector(
-  //     child: Container(
-  //       width: MediaQuery.of(context).size.width - 100,
-  //       height: MediaQuery.of(context).size.height / 3,
-  //       child: Column(
-  //         mainAxisSize: MainAxisSize.min,
-  //         children: <Widget>[
-  //           Expanded(
-  //             child: ClipRRect(
-  //               borderRadius: BorderRadius.only(
-  //                   topLeft: Radius.circular(4), topRight: Radius.circular(4)),
-  //               child: CachedNetworkImage(
-  //                 imageUrl: product.cover,
-  //                 fit: BoxFit.cover,
-  //                 width: double.infinity,
-  //               ),
-  //             ),
-  //           ),
-  //           ListTile(
-  //             dense: true,
-  //             title: Text(
-  //               product.name,
-  //               style: TextStyle(color: lightBlue()),
-  //               maxLines: 1,
-  //             ),
-  //             subtitle: Text(
-  //               product.shortDescription,
-  //               maxLines: 1,
-  //             ),
-  //             trailing: Row(
-  //               mainAxisSize: MainAxisSize.min,
-  //               children: <Widget>[
-  //                 Text(
-  //                   worldCurrencies[product.currency],
-  //                   style: TextStyle(fontFamily: "Roboto"),
-  //                 ),
-  //                 Text(
-  //                   product.price.toString(),
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //     onTap: () {
-  //       Product currentProduct = Product();
-  //       currentProduct.name = product.name;
-  //       currentProduct.id = product.id;
-  //       currentProduct.shortDescription = product.shortDescription;
-  //       currentProduct.description = "";
-  //       currentProduct.condition = product.condition;
-  //       currentProduct.currency = product.currency;
-  //       currentProduct.price = product.price;
-  //       currentProduct.availableFrom = product.availableFrom ?? DateTime.now();
-  //       currentProduct.isAvailable = product.isAvailable;
-  //       currentProduct.qrCode = product.qrCode;
-  //       currentProduct.seller = product.seller;
-  //       currentProduct.manufacturer = product.manufacturer;
-  //       currentProduct.serverImages = product.serverImages;
-  //       Navigator.pushNamed(context, '/product',
-  //           arguments: {"product": currentProduct});
-  //     },
-  //   ),
-  // );
   return Card(
     color: Colors.white,
-    margin: EdgeInsets.only(right: 8.0, bottom: 8.0),
+    margin: EdgeInsets.only(right: 10.0, bottom: 8.0),
     elevation: 3,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
     shadowColor: boxShadow,
     child: GestureDetector(
       child: Container(
-        width: MediaQuery.of(context).size.width - 100,
-        height: MediaQuery.of(context).size.height / 3,
+        width: MediaQuery.of(context).size.width - 80,
+        height: MediaQuery.of(context).size.height / 2.5,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
@@ -174,14 +104,14 @@ Widget displayProduct({BuildContext context, Product product}) {
 Widget displayService({BuildContext context, Service service}) {
   return Card(
     color: Colors.white,
-    margin: EdgeInsets.only(right: 8.0, bottom: 8.0),
+    margin: EdgeInsets.only(right: 10, bottom: 8.0),
     elevation: 3,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
     shadowColor: boxShadow,
     child: GestureDetector(
       child: Container(
-        width: MediaQuery.of(context).size.width - 100,
-        height: MediaQuery.of(context).size.height / 3,
+        width: MediaQuery.of(context).size.width - 80,
+        height: MediaQuery.of(context).size.height / 2.5,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[

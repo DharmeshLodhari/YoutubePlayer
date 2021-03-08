@@ -24,7 +24,7 @@ class ReadMoreText extends StatefulWidget {
     this.semanticsLabel,
     this.moreStyle,
     this.lessStyle,
-    this.delimiter = '... ',
+    this.delimiter = '...',
     this.delimiterStyle,
     this.callback,
   })  : assert(data != null),
