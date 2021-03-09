@@ -369,7 +369,9 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     if (result != null) {
       if (result == "update") {
         updateProfilePicture();
-      } else if (result == "remove") {}
+      } else if (result == "remove") {
+        await UserAuth().deleteCustomerAvatar();
+      }
     }
   }
 
@@ -720,7 +722,9 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     if (result != null) {
       if (result == "update") {
         pickImage();
-      } else if (result == "remove") {}
+      } else if (result == "remove") {
+        await UserAuth().deleteImageCover();
+      }
     }
   }
 
