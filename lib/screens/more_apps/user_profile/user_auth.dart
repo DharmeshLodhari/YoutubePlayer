@@ -105,26 +105,29 @@ class UserAuth extends AuthService {
   Future<bool> deleteCustomerAvatar() async {
     User user = await getUser();
     var headers = await getAuthHeaders();
-    var url = secureBaseUrl + "/api/v1/user/update-avatar/" + user.userName + "/";
+    var url =
+        secureBaseUrl + "/api/v1/user/update-avatar/" + user.userName + "/";
 
     var response = await http.delete(url, headers: headers);
-    var jsonData = json.decode(response.body);
+
     if (response.statusCode == 204) {
       return true;
     } else {
+      var jsonData = json.decode(response.body);
       throw jsonData;
     }
-  } 
+  }
+
   Future<bool> deleteImageCover() async {
-    User user = await getUser();
     var headers = await getAuthHeaders();
-    var url = secureBaseUrl + "/api/v1/user/about/" + user.userName + "/";
+    var url = secureBaseUrl + "/api/v1/user/about/";
 
     var response = await http.delete(url, headers: headers);
-    var jsonData = json.decode(response.body);
+
     if (response.statusCode == 204) {
       return true;
     } else {
+      var jsonData = json.decode(response.body);
       throw jsonData;
     }
   }
