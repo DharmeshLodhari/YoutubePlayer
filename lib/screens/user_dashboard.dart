@@ -27,10 +27,10 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sizer/sizer.dart';
 import 'package:toast/toast.dart';
 
 import 'more_apps/user_profile/user_auth.dart';
-import 'package:sizer/sizer.dart';
 
 // ignore: must_be_immutable
 class UserDashboard extends StatefulWidget {
@@ -743,7 +743,7 @@ class _UserDashboardState extends State<UserDashboard> {
                             .then((user) {
                           Navigator.pop(context);
                           Navigator.pushNamed(context, '/profile',
-                              arguments: {"searchedUser": user});
+                              arguments: {"searchedUserName": user.userName});
                         });
                       },
                     ),

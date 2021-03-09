@@ -754,7 +754,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       title: GestureDetector(
         onTap: () {
           Navigator.pushNamed(context, '/profile',
-              arguments: {"searchedUser": recipientUser});
+              arguments: {"searchedUserName": recipientUser.userName});
         },
         child: Row(
           children: [

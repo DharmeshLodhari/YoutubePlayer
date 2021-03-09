@@ -1069,7 +1069,7 @@ class VerticalListItem extends StatelessWidget {
       onTap: () {
         FocusScope.of(context).unfocus();
         Navigator.pushNamed(context, '/profile',
-            arguments: {"searchedUser": user});
+            arguments: {"searchedUserName": user.userName});
       },
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 2),

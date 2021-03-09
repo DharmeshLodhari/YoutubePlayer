@@ -7,6 +7,7 @@ import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
@@ -43,8 +44,50 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     "Sunday",
   ];
 
-  /// {"day": {"name": "Monday", "value": "mon"},"starting_hour":"10:00 AM","closing_hour":"12:00 PM"}
-  List<Map<String, dynamic>> userAddedOpeningHours = [];
+  List<Map<String, dynamic>> userAddedOpeningHours = [
+    {
+      "is_open": true,
+      "day": "Monday",
+      "starting_hour": "10:00 AM",
+      "closing_hour": "6:00 PM"
+    },
+    {
+      "is_open": true,
+      "day": "Tuesday",
+      "starting_hour": "10:00 AM",
+      "closing_hour": "6:00 PM"
+    },
+    {
+      "is_open": true,
+      "day": "Wednesday",
+      "starting_hour": "10:00 AM",
+      "closing_hour": "6:00 PM"
+    },
+    {
+      "is_open": true,
+      "day": "Thursday",
+      "starting_hour": "10:00 AM",
+      "closing_hour": "6:00 PM"
+    },
+    {
+      "is_open": true,
+      "day": "Friday",
+      "starting_hour": "10:00 AM",
+      "closing_hour": "6:00 PM"
+    },
+    {
+      "is_open": true,
+      "day": "Saturday",
+      "starting_hour": "10:00 AM",
+      "closing_hour": "6:00 PM"
+    },
+    {
+      "is_open": false,
+      "day": "Sunday",
+      "starting_hour": "10:00 AM",
+      "closing_hour": "6:00 PM"
+    }
+  ];
 
   UserBloc userBloc;
 
@@ -65,9 +108,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
       bioController.text = userBioDetail.bio;
       addressController.text = userBioDetail.address;
       contactNumberController.text = userBioDetail.contact;
-      if (userBioDetail.openingHours.isEmpty) {
-        clearUserAddedOpeningHour();
-      } else {
+      if (userBioDetail.openingHours.isNotEmpty) {
         addUserAddedOpeningHour();
       }
     });
@@ -76,15 +117,27 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
   }
 
   void addUserAddedOpeningHour() {
+    List<String> updatedDays = [];
     userBioDetail.openingHours.forEach((element) {
       String time = element.time.trim();
       List<String> openingAndClosingTime = time.split("-");
-      userAddedOpeningHours.add({
-        "day": element.day,
-        "starting_hour": openingAndClosingTime[0].trim(),
-        "closing_hour": openingAndClosingTime[1].trim()
+
+      userAddedOpeningHours.forEach((existing) {
+        if (element.day == existing["day"]) {
+          updatedDays.add(element.day);
+          existing['is_open'] = true;
+          existing['starting_hour'] = openingAndClosingTime[0].trim();
+          existing['closing_hour'] = openingAndClosingTime[1].trim();
+        }
       });
     });
+
+    userAddedOpeningHours.forEach((element) {
+      if (!updatedDays.contains(element["day"])) {
+        element["is_open"] = false;
+      }
+    });
+
     setState(() {});
   }
 
@@ -93,7 +146,11 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     userBloc = Provider.of<UserBloc>(context);
     return WillPopScope(
       onWillPop: () async {
-        return true;
+        Navigator.pop(context, {
+          "userAbout": userBloc.userAbout,
+          "user_avatar": userBloc.user.avatar
+        });
+        return false;
       },
       child: SafeArea(
         bottom: false,
@@ -110,30 +167,6 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     );
   }
 
-  Widget appBar() {
-    return AppBar(
-      elevation: 0,
-      backgroundColor: Colors.transparent,
-      titleSpacing: 0,
-      automaticallyImplyLeading: false,
-      leading: IconButton(
-        icon: Icon(
-          Icons.keyboard_arrow_left,
-          color: navyBlue,
-          size: 24,
-        ),
-        onPressed: () {
-          Navigator.pop(context);
-        },
-      ),
-      title: Text(
-        "Edit Bio",
-        style: TextStyle(
-            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
-      ),
-    );
-  }
-
   Widget scaffoldBody() {
     return SingleChildScrollView(
       child: Container(
@@ -144,18 +177,18 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                SizedBox(height: 10),
+                SizedBox(height: 20),
                 addBioField(),
                 SizedBox(
-                  height: 10,
+                  height: 20,
                 ),
                 addAddressField(),
                 SizedBox(
-                  height: 10,
+                  height: 20,
                 ),
                 addContactNumberField(),
                 SizedBox(
-                  height: 10,
+                  height: 20,
                 ),
                 addOpeningHour(),
                 SizedBox(height: 20),
@@ -189,7 +222,10 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
               size: 26,
             ),
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.pop(context, {
+                "userAbout": userBloc.userAbout,
+                "user_avatar": userBloc.user.avatar
+              });
             },
           ),
           actions: [
@@ -318,9 +354,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
                       ),
                     ),
                   ),
-                  onTap: () {
-                    updateProfilePicture();
-                  },
+                  onTap: selectAvatarAction,
                 ),
               )
             ],
@@ -328,6 +362,15 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
         ],
       ),
     );
+  }
+
+  void selectAvatarAction() async {
+    String result = await selectImageAction(imageName: "avatar");
+    if (result != null) {
+      if (result == "update") {
+        updateProfilePicture();
+      } else if (result == "remove") {}
+    }
   }
 
   void updateProfilePicture() async {
@@ -390,15 +433,6 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     }
   }
 
-  Widget showBackArrow() {
-    return IconButton(
-      icon: Icon(Icons.arrow_back_ios),
-      onPressed: () {
-        Navigator.pop(context);
-      },
-    );
-  }
-
   Widget addAddressField() {
     return CustomizedTextFormField(
       controller: addressController,
@@ -438,48 +472,12 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
 
   Widget addOpeningHour() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              "Opening hours",
-              style: TextStyle(color: darkGrey, fontSize: 14),
-            ),
-            Row(
-              children: [
-                userAddedOpeningHours.length > 1
-                    ? RoundedBackgroundIcon(
-                        height: 28,
-                        width: 28,
-                        backgroundColor: mateRed,
-                        icon: Icon(
-                          Icons.remove,
-                          color: Colors.white,
-                          size: 22,
-                        ),
-                        onTap: () {
-                          removeLastUserAddedOpeningHour();
-                        })
-                    : Container(),
-                SizedBox(
-                  width: userAddedOpeningHours.length > 1 ? 8 : 0,
-                ),
-                RoundedBackgroundIcon(
-                    height: 28,
-                    width: 28,
-                    backgroundColor: naturalGreen,
-                    icon: Icon(
-                      SlydoAppIcon.add,
-                      color: Colors.white,
-                      size: 12,
-                    ),
-                    onTap: () {
-                      addOpeningHourItem();
-                    }),
-              ],
-            )
-          ],
+        Text(
+          "Hours",
+          style: TextStyle(
+              color: darkGrey, fontSize: 14, fontWeight: FontWeight.w400),
         ),
         SizedBox(
           height: 10,
@@ -498,24 +496,6 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
       };
       userAddedOpeningHours.add(newItem);
       setState(() {});
-    }
-  }
-
-  void clearUserAddedOpeningHour() {
-    userAddedOpeningHours.clear();
-
-    userAddedOpeningHours.add({
-      "day": "Monday",
-      "starting_hour": "10:00 AM",
-      "closing_hour": "6:00 PM"
-    });
-    if (mounted) setState(() {});
-  }
-
-  void removeLastUserAddedOpeningHour() {
-    if (userAddedOpeningHours.length > 1) {
-      userAddedOpeningHours.removeLast();
-      if (mounted) setState(() {});
     }
   }
 
@@ -554,28 +534,70 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
       elevation: 0,
       color: Colors.white,
       shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-          side: BorderSide(color: greyBorderColor)),
+        borderRadius: BorderRadius.circular(10),
+      ),
       margin: EdgeInsets.all(0),
       borderOnForeground: true,
       child: DropdownButtonHideUnderline(
         child: ButtonTheme(
             alignedDropdown: true,
-            child: ListTile(
-              dense: true,
-              title: Text(
-                element["day"],
-                style: TextStyle(
-                    color: blackFont,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600),
-              ),
-              trailing: Icon(
-                Icons.keyboard_arrow_down,
-                color: darkGrey,
+            child: GestureDetector(
+              child: Row(
+                children: [
+                  GestureDetector(
+                    child: ClipRRect(
+                      clipBehavior: Clip.antiAliasWithSaveLayer,
+                      borderRadius: BorderRadius.all(Radius.circular(4)),
+                      child: SizedBox(
+                        width: Checkbox.width,
+                        height: Checkbox.width,
+                        child: Container(
+                          decoration: new BoxDecoration(
+                            border: Border.all(
+                              color: greyBorderColor,
+                              width: 1,
+                            ),
+                            borderRadius: new BorderRadius.circular(4),
+                          ),
+                          child: Theme(
+                            data: ThemeData(
+                              unselectedWidgetColor: Colors.transparent,
+                            ),
+                            child: Checkbox(
+                              value: element["is_open"],
+                              onChanged: (newValue) {
+                                element["is_open"] = newValue;
+                                setState(() {});
+                              },
+                              activeColor: navyBlue,
+                              checkColor: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    onTap: () {
+                      element["is_open"] = !element["is_open"];
+                      setState(() {});
+                    },
+                  ),
+                  SizedBox(
+                    width: 8,
+                  ),
+                  Expanded(
+                    child: Text(
+                      element["day"],
+                      style: TextStyle(
+                          color: blackFont,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400),
+                    ),
+                  ),
+                ],
               ),
               onTap: () {
-                selectDay(element: element);
+                element["is_open"] = !element["is_open"];
+                setState(() {});
               },
             )),
       ),
@@ -594,7 +616,11 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
         borderOnForeground: true,
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-          child: Text("${element["starting_hour"]}"),
+          child: Text(
+            "${element["starting_hour"]}",
+            style: TextStyle(
+                color: blackFont, fontWeight: FontWeight.w600, fontSize: 16),
+          ),
         ),
       ),
       onTap: () {
@@ -615,66 +641,17 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
         borderOnForeground: true,
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-          child: Text("${element["closing_hour"]}"),
+          child: Text(
+            "${element["closing_hour"]}",
+            style: TextStyle(
+                color: blackFont, fontWeight: FontWeight.w600, fontSize: 16),
+          ),
         ),
       ),
       onTap: () {
         selectTime(element: element, isOpening: false);
       },
     );
-  }
-
-  void selectDay({Map<String, dynamic> element}) async {
-    final selectedDay = await showDialog<String>(
-        barrierDismissible: false,
-        context: context,
-        builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-              contentPadding: EdgeInsets.zero,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              content: Container(
-                width: MediaQuery.of(context).size.width - 40,
-                child: Card(
-                  margin: EdgeInsets.zero,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: openingHoursDays.map<Widget>((day) {
-                          return ListTile(
-                            title: Text(
-                              day,
-                              style: TextStyle(
-                                  color: blackFont,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400),
-                            ),
-                            dense: true,
-                            onTap: () {
-                              Navigator.pop(context, day);
-                            },
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ));
-    if (selectedDay != null) {
-      for (int i = 0; i < userAddedOpeningHours.length; i++) {
-        if (element == userAddedOpeningHours[i]) {
-          userAddedOpeningHours[i]["day"] = selectedDay;
-          break;
-        }
-      }
-
-      setState(() {});
-    }
   }
 
   void selectTime({Map<String, dynamic> element, bool isOpening = true}) async {
@@ -727,16 +704,24 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
       height: 34,
       width: 34,
       icon: Icon(
-        SlydoAppIcon.image,
+        Icons.camera_alt,
         size: 16,
-        color: Colors.white,
+        color: blackFont,
       ),
-      onTap: () {
-        pickImage();
-      },
-      backgroundColor: lightGrey.withOpacity(0.1),
+      onTap: selectProfileCoverAction,
+      // backgroundColor: lightGrey.withOpacity(0.1),
+      backgroundColor: lightGrey,
       enableMargin: true,
     );
+  }
+
+  void selectProfileCoverAction() async {
+    String result = await selectImageAction(imageName: "profile cover");
+    if (result != null) {
+      if (result == "update") {
+        pickImage();
+      } else if (result == "remove") {}
+    }
   }
 
   void pickImage() async {
@@ -818,6 +803,12 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     if (_formKey.currentState.validate()) {
       addDataToUserAboutObject();
 
+      debugPrint("===> $userAddedOpeningHours");
+
+      userBioDetail.openingHours.forEach((element) {
+        debugPrint("===> ${element.day}  ${element.time}");
+      });
+
       showDialog(
           context: context,
           barrierDismissible: false,
@@ -827,7 +818,8 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
 
       UserAuth().addOrUpdateUserBio(userBioDetail).then((value) {
         Navigator.pop(context);
-        Navigator.pop(context, value);
+        Navigator.pop(
+            context, {"userAbout": value, "user_avatar": userBloc.user.avatar});
         Toast.show(
           "Bio updated successfully!!",
           context,
@@ -854,17 +846,67 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     userBioDetail.openingHours = [];
 
     userAddedOpeningHours.forEach((element) {
-      OpeningHour openingHour = OpeningHour();
+      if (element["is_open"]) {
+        OpeningHour openingHour = OpeningHour();
 
-      openingHour.day = element["day"];
-      openingHour.time =
-          "${element["starting_hour"]} - ${element["closing_hour"]}";
-      if (userBioDetail.openingHours == null) {
-        userBioDetail.openingHours = [openingHour];
-      } else {
-        userBioDetail.openingHours.add(openingHour);
+        openingHour.day = element["day"];
+        openingHour.time =
+            "${element["starting_hour"]} - ${element["closing_hour"]}";
+        if (userBioDetail.openingHours == null) {
+          userBioDetail.openingHours = [openingHour];
+        } else {
+          userBioDetail.openingHours.add(openingHour);
+        }
       }
     });
+  }
+
+  Future<String> selectImageAction({String imageName}) async {
+    String result = await showModalBottomSheet<String>(
+        backgroundColor: Colors.transparent,
+        context: context,
+        builder: (BuildContext context) {
+          return Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20)),
+              ),
+              color: Colors.white,
+              margin: EdgeInsets.zero,
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: generateBottomSheetItem(imageName),
+                ),
+              ));
+        });
+    return result;
+  }
+
+  List<Widget> generateBottomSheetItem(String imageName) {
+    List<Widget> list = [];
+
+    list.add(
+      bottomSheetItem(
+          title: "Update $imageName",
+          icon: SlydoAppIcon.edit,
+          onTap: () async {
+            Navigator.pop(context, "update");
+          }),
+    );
+
+    list.add(bottomSheetItem(
+      title: "Remove $imageName",
+      isLast: true,
+      icon: SlydoAppIcon.delete,
+      onTap: () {
+        Navigator.pop(context, "remove");
+      },
+    ));
+
+    return list;
   }
 
   @override

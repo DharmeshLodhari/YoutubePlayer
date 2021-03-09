@@ -9,15 +9,11 @@ import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../user_auth.dart';
-
 // ignore: must_be_immutable
 class UserAboutScreen extends StatefulWidget {
   CustomerProfile user;
 
-  UserAbout searchedUserAbout;
-
-  UserAboutScreen({@required this.user, this.searchedUserAbout});
+  UserAboutScreen({@required this.user});
 
   @override
   _UserAboutScreenState createState() => _UserAboutScreenState(user: user);
@@ -49,17 +45,7 @@ class _UserAboutScreenState extends State<UserAboutScreen> {
 
   @override
   void initState() {
-    // fetchUserAboutDetail();
     super.initState();
-  }
-
-  void fetchUserAboutDetail() {
-    UserAuth().fetchUserAboutInfo(userName: user.userName).then((value) {
-      userAbout = value;
-      isLoading = false;
-      if (mounted) setState(() {});
-      formatOpeningHour();
-    });
   }
 
   void formatOpeningHour() {
@@ -83,7 +69,7 @@ class _UserAboutScreenState extends State<UserAboutScreen> {
 
   @override
   Widget build(BuildContext context) {
-    userAbout = widget.searchedUserAbout;
+    userAbout = widget.user.userAbout;
     formatOpeningHour();
     userBloc = Provider.of<UserBloc>(context);
     return WillPopScope(

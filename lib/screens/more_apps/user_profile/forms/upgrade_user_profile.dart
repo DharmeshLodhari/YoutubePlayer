@@ -318,7 +318,7 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
                       Navigator.pop(context);
                       Navigator.pop(context);
                       Navigator.pushNamed(context, '/profile',
-                          arguments: {"searchedUser": user});
+                          arguments: {"searchedUserName": user.userName});
                     });
                   });
                 } else {

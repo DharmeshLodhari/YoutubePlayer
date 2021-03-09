@@ -237,7 +237,7 @@ class _SendPaymentState extends State<SendPayment> {
         ),
         onTap: () {
           Navigator.pushNamed(context, '/profile',
-              arguments: {"searchedUser": _payee});
+              arguments: {"searchedUserName": _payee.userName});
         },
         backgroundColor: iconBtnGrey,
         enableMargin: true,
@@ -347,7 +347,7 @@ class _SendPaymentState extends State<SendPayment> {
         icon: Icon(Icons.person),
         onPressed: () {
           Navigator.pushNamed(context, '/profile',
-              arguments: {"searchedUser": _payee});
+              arguments: {"searchedUserName": _payee.userName});
         },
       );
     }
@@ -433,7 +433,7 @@ class _SendPaymentState extends State<SendPayment> {
                   trailing: qrCodeImage,
                   onTap: () {
                     Navigator.pushNamed(context, '/profile',
-                        arguments: {"searchedUser": _payee});
+                        arguments: {"searchedUserName": _payee.userName});
                   },
                 ),
               ),

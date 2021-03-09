@@ -138,7 +138,10 @@ class CustomerProfile {
   String qrCode;
   String type;
   String conversationId;
-  String profileCover;
+  String uuid;
+  String defaultCurrency;
+  bool isVerified;
+  UserAbout userAbout;
   UserStatus status;
 
   // Pass in as named parameter in constructor
@@ -146,24 +149,39 @@ class CustomerProfile {
     this.fullName = "",
     this.userName = "",
     this.avatar = "",
+    this.userAbout,
     this.qrCode = "",
     this.type = "user",
-    this.profileCover = "",
     this.conversationId = "",
+    this.defaultCurrency = "NGN",
+    this.isVerified = false,
+    this.uuid = "",
     this.status = UserStatus.UNKNOWN,
   });
 
   factory CustomerProfile.fromJson(Map<String, dynamic> json) {
-    return CustomerProfile(
-      fullName: json['full_name'] ?? "",
-      userName: json['username'] ?? "",
-      avatar: json['avatar'] ?? "",
-      qrCode: json['qr_code'] ?? "",
-      profileCover: json['profile_cover'] ?? "",
-      type: json['type'] ?? "user",
-      conversationId: json['conversation_id'] ?? "",
-      status: json['status'] ?? UserStatus.UNKNOWN,
-    );
+    CustomerProfile profile = CustomerProfile(
+        fullName: json['full_name'] ?? "",
+        userName: json['username'] ?? "",
+        avatar: json['avatar'] ?? "",
+        qrCode: json['qr_code'] ?? "",
+        type: json['type'] ?? json['account_type'] ?? "user",
+        conversationId: json['conversation_id'] ?? "",
+        status: json['status'] ?? UserStatus.UNKNOWN);
+    if (json['default_currency'] != null) {
+      profile.defaultCurrency = json['default_currency'] ?? "NGN";
+    }
+    if (json['is_verified'] != null) {
+      profile.isVerified = json['is_verified'] ?? false;
+    }
+    if (json['uuid'] != null) {
+      profile.uuid = json['uuid'] ?? "";
+    }
+    if (json['profile'] != null) {
+      profile.userAbout = UserAbout.fromJson(json['profile']);
+    }
+
+    return profile;
   }
 
   Map<String, dynamic> toJson() {
@@ -172,10 +190,13 @@ class CustomerProfile {
     data['username'] = this.userName;
     data['avatar'] = this.avatar;
     data['qr_code'] = this.qrCode;
-    data['profile_cover'] = this.profileCover;
     data['type'] = this.type;
     data['conversation_id'] = this.conversationId;
     data['status'] = this.status;
+    data['uuid'] = this.uuid;
+    data['default_currency'] = this.defaultCurrency;
+    data['is_verified'] = this.isVerified;
+    data['profile'] = this.userAbout.toJson();
     return data;
   }
 }

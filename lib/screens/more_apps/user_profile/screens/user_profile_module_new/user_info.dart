@@ -1,7 +1,6 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
@@ -12,8 +11,6 @@ import 'package:Slydo/widget/read_more_widget.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../../user_auth.dart';
 
 // ignore: must_be_immutable
 class UserInfo extends StatefulWidget {
@@ -43,29 +40,15 @@ class _UserInfoState extends State<UserInfo> {
 
   bool isLoading = true;
   final auth = AuthService();
-  int counter = 0;
-  UserAbout userAbout;
-  bool isAboutLoading = false;
 
   @override
   void initState() {
-    fetchUserAboutDetail();
     if (user.type.toLowerCase() != "user") {
       getProductItems();
       getServiceItems();
     }
 
     super.initState();
-  }
-
-  void fetchUserAboutDetail() {
-    isAboutLoading = true;
-    if (mounted) setState(() {});
-    UserAuth().fetchUserAboutInfo(userName: user.userName).then((value) {
-      userAbout = value;
-      isAboutLoading = false;
-      if (mounted) setState(() {});
-    });
   }
 
   void getProductItems() {
@@ -143,9 +126,7 @@ class _UserInfoState extends State<UserInfo> {
                   child: Column(
                     children: <Widget>[
                       Column(
-                        children: isAboutLoading
-                            ? [Container()]
-                            : getUserAboutSection(),
+                        children: getUserAboutSection(),
                       ),
                       (user.type.toLowerCase() != "user")
                           ? Column(
@@ -295,11 +276,11 @@ class _UserInfoState extends State<UserInfo> {
   List<Widget> getUserAboutSection() {
     List<Widget> list = [];
 
-    if (userAbout.bio.isNotEmpty) {
+    if (user.userAbout.bio.isNotEmpty) {
       list.addAll([
         // ExpandableText(searchedUserAbout.bio),
         ReadMoreText(
-          userAbout.bio,
+          user.userAbout.bio,
           trimMode: TrimMode.Line,
           trimLines: 3,
           textAlign: TextAlign.justify,
@@ -322,7 +303,7 @@ class _UserInfoState extends State<UserInfo> {
       ]);
     }
 
-    if (userAbout.address.isNotEmpty) {
+    if (user.userAbout.address.isNotEmpty) {
       list.addAll([
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -342,7 +323,7 @@ class _UserInfoState extends State<UserInfo> {
             ),
             Expanded(
               child: Text(
-                userAbout.address,
+                user.userAbout.address,
                 // textAlign: TextAlign.justify,
               ),
             )
@@ -354,7 +335,7 @@ class _UserInfoState extends State<UserInfo> {
       ]);
     }
 
-    if (userAbout.contact.isNotEmpty) {
+    if (user.userAbout.contact.isNotEmpty) {
       list.addAll([
         Row(
           children: [
@@ -371,7 +352,7 @@ class _UserInfoState extends State<UserInfo> {
             SizedBox(
               width: 12,
             ),
-            Expanded(child: Text(userAbout.contact))
+            Expanded(child: Text(user.userAbout.contact))
           ],
         )
       ]);

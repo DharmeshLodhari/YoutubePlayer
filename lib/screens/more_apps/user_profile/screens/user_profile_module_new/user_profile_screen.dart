@@ -1,5 +1,4 @@
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_about_screen.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_info.dart';
@@ -57,13 +56,15 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   ScrollController _scrollController;
   bool appBarStatus = true;
 
-  UserAbout searchedUserAbout;
-  bool isSearchedUserAboutLoading = false;
-
   @override
   void initState() {
-    getSearchedUser();
+    initializeVariables();
 
+    super.initState();
+  }
+
+  void initializeVariables() async {
+    await getSearchedUser();
     currentIndex = arguments['index'] ?? 0;
     pageController = PageController(initialPage: currentIndex);
     if (mounted) {
@@ -72,41 +73,29 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
     _scrollController = ScrollController();
     _scrollController.addListener(_scrollListener);
-    super.initState();
   }
 
-  void getSearchedUser() async {
-    searchedUser = arguments['searchedUser'] ?? null;
-    if (searchedUser == null) {
-      searchedUserName = arguments['searchedUserName'];
-      isLoading = true;
-      if (mounted) setState(() {});
-
-      await UserAuth().fetchCustomerProfile(searchedUserName).then((user) {
-        searchedUser = user;
-        isLoading = false;
-        if (mounted) setState(() {});
-      });
-    }
-
-    _tabController = TabController(
-        length: searchedUser.type.toLowerCase() == "user" ? 2 : 5, vsync: this);
-
-    isSearchedUserAboutLoading = true;
+  Future<void> getSearchedUser() async {
+    searchedUserName = arguments['searchedUserName'];
+    isLoading = true;
     if (mounted) setState(() {});
 
-    searchedUserAbout =
-        await UserAuth().fetchUserAboutInfo(userName: searchedUser.userName);
+    CustomerProfile user =
+        await UserAuth().fetchCustomerProfileWithAuth(searchedUserName);
+    searchedUser = user;
+    isLoading = false;
+    if (mounted) setState(() {});
 
-    isSearchedUserAboutLoading = false;
+    _tabController = TabController(
+        length: searchedUser.type.toLowerCase() == "user" ? 1 : 5, vsync: this);
+
     if (mounted) setState(() {});
   }
 
   void _scrollListener() {
     if (isShrink != appBarStatus) {
-      setState(() {
-        appBarStatus = isShrink;
-      });
+      appBarStatus = isShrink;
+      if (mounted) setState(() {});
     }
   }
 
@@ -159,15 +148,14 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                         indicator: BoxDecoration(),
                         onTap: (int index) {
                           currentIndex = index;
-                          setState(() {});
-                          pageController.animateToPage(currentIndex,
-                              duration: Duration(milliseconds: 100),
-                              curve: Curves.linear);
+                          if (mounted) setState(() {});
+                          pageController.jumpToPage(currentIndex);
+                          if (mounted) setState(() {});
                         },
                         tabs: getTabs(),
                       ),
                     ),
-                  ),
+                  )
                 ];
               },
               body: SafeArea(bottom: false, top: false, child: tabViews())),
@@ -286,7 +274,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             child: Container(
               padding: EdgeInsets.only(left: 20, right: 20),
               color: Colors.white,
-              child: isSearchedUserAboutLoading
+              child: isLoading
                   ? SizedBox.shrink()
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -320,7 +308,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   Widget getProfileCover() {
     return Container(
       height: 206,
-      child: isSearchedUserAboutLoading
+      child: isLoading
           ? Center(
               child: CircularProgressIndicator(
                 strokeWidth: 2.5,
@@ -328,7 +316,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                 backgroundColor: Colors.transparent,
               ),
             )
-          : searchedUserAbout == null
+          : searchedUser.userAbout == null
               ? Center(
                   child: CircularProgressIndicator(
                     strokeWidth: 2.5,
@@ -336,7 +324,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                     backgroundColor: Colors.transparent,
                   ),
                 )
-              : searchedUserAbout.wallpaper == ""
+              : searchedUser.userAbout.wallpaper == ""
                   ? Image.asset(
                       "assets/images/home_screen_background.png",
                       width: double.infinity,
@@ -345,7 +333,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                   : CachedNetworkImage(
                       width: double.infinity,
                       height: double.infinity,
-                      imageUrl: searchedUserAbout.wallpaper,
+                      imageUrl: searchedUser.userAbout.wallpaper,
                       fit: BoxFit.cover,
                       placeholder: (context, url) =>
                           Center(child: CircularLoadingIndicator()),
@@ -358,11 +346,43 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   List<Widget> actionButtons() {
     return [
+      getChatIcon(),
       menuIcon(),
       SizedBox(
         width: 16,
       ),
     ];
+  }
+
+  Widget getChatIcon() {
+    return searchedUser.conversationId != ""
+        ? Row(
+            children: [
+              chatIcon(),
+              SizedBox(
+                width: 8,
+              ),
+            ],
+          )
+        : Container();
+  }
+
+  Widget chatIcon() {
+    return RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
+      icon: Icon(
+        SlydoAppIcon.text_message,
+        size: 16,
+        color: Colors.white,
+      ),
+      onTap: () {
+        Navigator.pushNamed(context, '/chat-screen',
+            arguments: {"searchedUser": searchedUser});
+      },
+      backgroundColor: lightGrey.withOpacity(0.1),
+      enableMargin: false,
+    );
   }
 
   Widget menuIcon() {
@@ -384,8 +404,31 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   List<Widget> getTabs() {
     List<Widget> tabs = [];
-    if (searchedUser.type.toLowerCase() != "user") {
-      tabs = [
+
+    if (searchedUser.type.toLowerCase() == "user") {
+      tabs.add(Tab(
+        child: Container(
+          padding: EdgeInsets.symmetric(
+              horizontal: currentIndex == 0 ? 14 : 16, vertical: 8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            shape: BoxShape.rectangle,
+            color: currentIndex == 0 ? navyBlue.withOpacity(0.1) : Colors.white,
+          ),
+          child: Text(
+            "QR code",
+            maxLines: 1,
+            overflow: TextOverflow.visible,
+            style: TextStyle(
+              color: currentIndex == 0 ? navyBlue : blackFont,
+              fontSize: 14,
+              fontWeight: currentIndex == 0 ? FontWeight.w600 : FontWeight.w400,
+            ),
+          ),
+        ),
+      ));
+    } else {
+      tabs.addAll([
         Tab(
           child: Container(
             padding: EdgeInsets.symmetric(
@@ -500,55 +543,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
               ),
             ),
           ),
-        ),
-      ];
-    } else {
-      tabs = [
-        Tab(
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              shape: BoxShape.rectangle,
-              color:
-                  currentIndex == 0 ? navyBlue.withOpacity(0.1) : Colors.white,
-            ),
-            child: Text(
-              "Info",
-              style: TextStyle(
-                color: currentIndex == 0 ? navyBlue : blackFont,
-                fontSize: 14,
-                fontWeight:
-                    currentIndex == 0 ? FontWeight.w600 : FontWeight.w400,
-              ),
-            ),
-          ),
-        ),
-        Tab(
-          child: Container(
-            padding: EdgeInsets.symmetric(
-                horizontal: currentIndex == 1 ? 14 : 16, vertical: 8),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              shape: BoxShape.rectangle,
-              color:
-                  currentIndex == 1 ? navyBlue.withOpacity(0.1) : Colors.white,
-            ),
-            child: Text(
-              "QR code",
-              maxLines: 1,
-              overflow: TextOverflow.visible,
-              style: TextStyle(
-                color: currentIndex == 1 ? navyBlue : blackFont,
-                fontSize: 14,
-                fontWeight:
-                    currentIndex == 1 ? FontWeight.w600 : FontWeight.w400,
-              ),
-            ),
-          ),
-        ),
-      ];
+        )
+      ]);
     }
+
     return tabs;
   }
 
@@ -557,25 +555,29 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       controller: pageController,
       children: getTabViewLayout(),
       onPageChanged: (int index) {
-        _tabController.index = currentIndex;
+        _tabController.index = index;
         currentIndex = index;
-        setState(() {});
+        debugPrint("currentIndex:- $currentIndex");
+        if (mounted) setState(() {});
       },
     );
   }
 
   List<Widget> getTabViewLayout() {
-    List<Widget> list = [
-      KeepAlivePage(
-        child: UserInfo(user: searchedUser),
-      ),
-      KeepAlivePage(
-        child: UserQRCodeScreen(user: searchedUser),
-      ),
-    ];
+    List<Widget> list = [];
 
-    if (searchedUser.type.toLowerCase() != "user") {
+    if (searchedUser.type.toLowerCase() == "user") {
+      list.add(KeepAlivePage(
+        child: UserQRCodeScreen(user: searchedUser),
+      ));
+    } else {
       list.addAll([
+        KeepAlivePage(
+          child: UserInfo(user: searchedUser),
+        ),
+        KeepAlivePage(
+          child: UserQRCodeScreen(user: searchedUser),
+        ),
         KeepAlivePage(
           child: UserProductList(
             user: searchedUser,
@@ -589,8 +591,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           ),
         ),
         KeepAlivePage(
-          child: UserAboutScreen(
-              user: searchedUser, searchedUserAbout: searchedUserAbout),
+          child: UserAboutScreen(user: searchedUser),
         ),
       ]);
     }
@@ -652,6 +653,29 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     );
   }
 
+  void userProfileActionsSheet() {
+    showModalBottomSheet<void>(
+        backgroundColor: Colors.transparent,
+        context: context,
+        builder: (BuildContext context) {
+          return Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20)),
+              ),
+              color: Colors.white,
+              margin: EdgeInsets.zero,
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: generateBottomSheetItem(),
+                ),
+              ));
+        });
+  }
+
   List<Widget> generateBottomSheetItem() {
     List<Widget> list = [];
 
@@ -664,13 +688,15 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             Navigator.pop(context);
             var result = await Navigator.of(context).pushNamed(
                 '/add-edit-user-bio',
-                arguments: {"userAbout": searchedUserAbout});
+                arguments: {"searchedUser": searchedUser});
 
             if (result != null) {
-              if (result is UserAbout) {
-                searchedUserAbout = result;
-                if (mounted) setState(() {});
+              if (result is Map) {
+                searchedUser.userAbout = result["userAbout"];
+                searchedUser.avatar = result["user_avatar"];
               }
+
+              if (mounted) setState(() {});
             }
           },
         ),
@@ -742,79 +768,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     }
 
     return list;
-  }
-
-  void userProfileActionsSheet() {
-    showModalBottomSheet<void>(
-        backgroundColor: Colors.transparent,
-        context: context,
-        builder: (BuildContext context) {
-          return Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20)),
-              ),
-              color: Colors.white,
-              margin: EdgeInsets.zero,
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: generateBottomSheetItem(),
-                ),
-              ));
-        });
-  }
-
-  Widget getEditBioBtn() {
-    return isSearchedUserAboutLoading
-        ? Container()
-        : userBloc.user.userName == searchedUser.userName
-            ? Container(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.only(top: 20, right: 20),
-                      child: GestureDetector(
-                        onTap: () async {
-                          var result = await Navigator.of(context).pushNamed(
-                              '/add-edit-user-bio',
-                              arguments: {"userAbout": searchedUserAbout});
-
-                          if (result != null) {
-                            if (result is UserAbout) {
-                              searchedUserAbout = result;
-                              if (mounted) setState(() {});
-                            }
-                          }
-                        },
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 30,
-                            vertical: 5,
-                          ),
-                          decoration: BoxDecoration(
-                            color: navyBlue.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            'Edit',
-                            style: TextStyle(
-                              color: navyBlue,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            : Container();
   }
 }
 

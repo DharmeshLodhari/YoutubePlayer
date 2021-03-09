@@ -63,6 +63,7 @@ class _UserTileState extends State<UserTile> {
     Widget avatarImage;
 
     Color borderColor = getUserTypeColor(user: widget.user);
+
     avatarImage = Container(
         height: 48,
         width: 48,

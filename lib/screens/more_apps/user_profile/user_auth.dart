@@ -25,13 +25,31 @@ class UserAuth extends AuthService {
       "User-Agent": "Slydo-Mobile",
     };
     var response = await http.get(url, headers: headers);
-    var jsonData = json.decode(response.body);
+
     if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
       CustomerProfile customerProfile = CustomerProfile.fromJson(jsonData);
       return customerProfile;
     } else {
-      debugPrint(jsonData.toString());
-      return null;
+      return Future.error("${response.body}");
+    }
+  }
+
+  Future<CustomerProfile> fetchCustomerProfileWithAuth(String userName) async {
+    if (userName == null) {
+      return CustomerProfile();
+    }
+    var url = secureBaseUrl + "/api/v1/user/customer/" + userName.trim();
+
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+      CustomerProfile customerProfile = CustomerProfile.fromJson(jsonData);
+      return customerProfile;
+    } else {
+      return Future.error("${response.body}");
     }
   }
 

@@ -139,7 +139,7 @@ class _AddContractState extends State<AddContract> {
         ),
         onTap: () {
           Navigator.pushNamed(context, '/profile',
-              arguments: {"searchedUser": _payee});
+              arguments: {"searchedUserName": _payee.userName});
         },
         backgroundColor: iconBtnGrey,
         enableMargin: true,
@@ -238,7 +238,7 @@ class _AddContractState extends State<AddContract> {
         icon: Icon(Icons.person),
         onPressed: () {
           Navigator.pushNamed(context, '/profile',
-              arguments: {"searchedUser": _payee});
+              arguments: {"searchedUserName": _payee.userName});
         },
       );
     }
@@ -311,7 +311,7 @@ class _AddContractState extends State<AddContract> {
                   trailing: qrCodeImage,
                   onTap: () {
                     Navigator.pushNamed(context, '/profile',
-                        arguments: {"searchedUser": _payee});
+                        arguments: {"searchedUserName": _payee.userName});
                   },
                 ),
               ),

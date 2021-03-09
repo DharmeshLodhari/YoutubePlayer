@@ -144,7 +144,7 @@ class _AddInvoiceState extends State<AddInvoice> {
         ),
         onTap: () {
           Navigator.pushNamed(context, '/profile',
-              arguments: {"searchedUser": _payee});
+              arguments: {"searchedUserName": _payee.userName});
         },
         backgroundColor: iconBtnGrey,
         enableMargin: true,
@@ -271,7 +271,7 @@ class _AddInvoiceState extends State<AddInvoice> {
         icon: Icon(Icons.person),
         onPressed: () {
           Navigator.pushNamed(context, '/profile',
-              arguments: {"searchedUser": _payee});
+              arguments: {"searchedUserName": _payee.userName});
         },
       );
     }
@@ -468,7 +468,7 @@ class _AddInvoiceState extends State<AddInvoice> {
                   trailing: qrCodeImage,
                   onTap: () {
                     Navigator.pushNamed(context, '/profile',
-                        arguments: {"searchedUser": _payee});
+                        arguments: {"searchedUserName": _payee.userName});
                   },
                 ),
               ),

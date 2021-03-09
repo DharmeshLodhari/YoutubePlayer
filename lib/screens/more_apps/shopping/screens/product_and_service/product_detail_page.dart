@@ -232,7 +232,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       ),
       onTap: () async {
         Navigator.pushNamed(context, '/profile',
-            arguments: {"searchedUser": product.seller});
+            arguments: {"searchedUserName": product.seller});
       },
     );
   }
