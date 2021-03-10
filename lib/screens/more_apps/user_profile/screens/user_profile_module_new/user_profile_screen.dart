@@ -20,7 +20,7 @@ import 'package:share/share.dart';
 
 // ignore: must_be_immutable
 class UserProfileScreen extends StatefulWidget {
-  var arguments;
+  final arguments;
   UserProfileScreen({@required this.arguments});
 
   @override
@@ -408,7 +408,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         size: 16,
         color: Colors.white,
       ),
-      onTap: () {},
+      onTap: () {
+        Navigator.of(context).pushNamed("/user-product-and-service-search",
+            arguments: {"searchedUser": searchedUser});
+      },
       backgroundColor: lightGrey.withOpacity(0.1),
       enableMargin: false,
     );

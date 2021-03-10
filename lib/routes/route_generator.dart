@@ -87,7 +87,7 @@ import 'package:Slydo/screens/more_apps/user_profile/forms/user_address.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/verify_registration_OTP.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/verify_reset_password_OTP.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/connection_module/connections_dashboard.dart';
-import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module/user_profile.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/search_users_product_and_service.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_profile_screen.dart';
 import 'package:Slydo/screens/scan_qr_code.dart';
 import 'package:Slydo/screens/user_dashboard.dart';
@@ -246,16 +246,18 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
-      case '/profile-new':
+
+      case '/profile':
         return PageTransition(
-          child: UserProfile(arguments: settings.arguments),
+          child: UserProfileScreen(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case '/profile':
+
+      case '/user-product-and-service-search':
         return PageTransition(
-          child: UserProfileScreen(arguments: settings.arguments),
+          child: SearchUsersProductAndService(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
