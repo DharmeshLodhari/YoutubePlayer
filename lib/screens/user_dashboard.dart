@@ -132,7 +132,7 @@ class _UserDashboardState extends State<UserDashboard> {
       padding: EdgeInsets.only(left: 16, right: 16, top: 8),
       child: Column(
         children: [
-          flexibleSpace(),
+          Platform.isIOS ? Container() : flexibleSpace(),
           appBar(),
           flexibleSpace(flex: 4),
           accountBalanceCard(),

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
@@ -99,7 +101,11 @@ class _HomeState extends State<Home> {
             flex: MediaQuery.of(context).size.height > 600 ? 9 : 50,
             child: Column(
               children: <Widget>[
-                flexibleSpace(),
+                Platform.isIOS
+                    ? Container(
+                        height: 10,
+                      )
+                    : flexibleSpace(),
                 appBar(),
                 flexibleSpace(flex: 3),
                 displayUserInfo(),
