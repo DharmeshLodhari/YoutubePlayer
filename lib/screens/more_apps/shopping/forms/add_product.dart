@@ -351,46 +351,6 @@ class _AddProductState extends State<AddProduct> {
     );
   }
 
-  Widget getProductConditionField() {
-    return CustomizedDropDownField(
-      title: "Product condition",
-      child: ListTile(
-        dense: true,
-        title: Row(
-          children: [
-            Text(
-              selectedProductCondition != null
-                  ? selectedProductCondition.name
-                  : "",
-              style: TextStyle(
-                  color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
-            ),
-            Expanded(
-              child: Text(
-                selectedProductCondition != null
-                    ? " (" + selectedProductCondition.description + ")"
-                    : "",
-                maxLines: 1,
-                style: TextStyle(
-                  fontSize: 16,
-                ),
-                softWrap: false,
-                overflow: TextOverflow.fade,
-              ),
-            ),
-          ],
-        ),
-        trailing: Icon(
-          Icons.keyboard_arrow_down,
-          color: darkGrey,
-        ),
-        onTap: () {
-          selectItemCondition();
-        },
-      ),
-    );
-  }
-
   void selectItemCategory() async {
     final pressedCategory = await showDialog<ProductCategory>(
         barrierDismissible: false,
@@ -466,6 +426,46 @@ class _AddProductState extends State<AddProduct> {
       productCategory = selectedProductCategory.name;
       setState(() {});
     }
+  }
+
+  Widget getProductConditionField() {
+    return CustomizedDropDownField(
+      title: "Product condition",
+      child: ListTile(
+        dense: true,
+        title: Row(
+          children: [
+            Text(
+              selectedProductCondition != null
+                  ? selectedProductCondition.name
+                  : "",
+              style: TextStyle(
+                  color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+            Expanded(
+              child: Text(
+                selectedProductCondition != null
+                    ? " (" + selectedProductCondition.description + ")"
+                    : "",
+                maxLines: 1,
+                style: TextStyle(
+                  fontSize: 16,
+                ),
+                softWrap: false,
+                overflow: TextOverflow.fade,
+              ),
+            ),
+          ],
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          selectItemCondition();
+        },
+      ),
+    );
   }
 
   void selectItemCondition() async {

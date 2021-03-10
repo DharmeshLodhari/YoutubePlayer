@@ -2,6 +2,7 @@ import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/services/auth.dart';
@@ -62,10 +63,20 @@ class _SearchUsersProductAndServiceState
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
 
+  List<String> categoryList = [];
+
   var hint = "Search here";
+
+  String selectedCategory;
+
+  CustomerProfile searchedUser;
 
   @override
   void initState() {
+    searchedUser = widget.arguments["searchedUser"];
+
+    updateCategoryList();
+
     slidableController1 = SlidableController(
       onSlideAnimationChanged: handleSlideAnimationChanged1,
       onSlideIsOpenChanged: handleSlideIsOpenChanged1,
@@ -118,6 +129,8 @@ class _SearchUsersProductAndServiceState
   void menuItemSelectionChange(String value, int index) {
     selectedMenuItemIndex = index;
 
+    updateCategoryList();
+
     searchItemTextController.text = "";
     count = 0;
     next = "";
@@ -132,6 +145,16 @@ class _SearchUsersProductAndServiceState
   void menuStateChange(bool isOpen) {
     isPopMenuOpen = isOpen;
     setState(() {});
+  }
+
+  void updateCategoryList() {
+    selectedCategory = "All categories";
+    if (selectedMenuItemIndex == 0) {
+      categoryList = productCategoryList;
+    } else if (selectedMenuItemIndex == 1) {
+      categoryList = serviceCategoryList;
+    }
+    if (mounted) setState(() {});
   }
 
   @override
@@ -171,12 +194,136 @@ class _SearchUsersProductAndServiceState
           SizedBox(
             height: 16,
           ),
+          getFilterDropDowns(),
+          SizedBox(
+            height: 16,
+          ),
           Expanded(
             child: _buildResultList(),
           ),
         ],
       ),
     );
+  }
+
+  Widget getFilterDropDowns() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      child: Row(
+        children: [
+          Expanded(child: getCategoryField()),
+        ],
+      ),
+    );
+  }
+
+  Widget getCategoryField() {
+    return Card(
+      elevation: 0,
+      color: Colors.white,
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(color: greyBorderColor)),
+      margin: EdgeInsets.all(0),
+      borderOnForeground: true,
+      child: DropdownButtonHideUnderline(
+        child: ButtonTheme(
+            alignedDropdown: true,
+            child: ListTile(
+              dense: true,
+              title: Text(
+                selectedCategory != null ? selectedCategory : "",
+                style: TextStyle(
+                    color: blackFont,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600),
+              ),
+              trailing: Icon(
+                Icons.keyboard_arrow_down,
+                color: darkGrey,
+              ),
+              onTap: () {
+                selectItemCategory();
+              },
+            )),
+      ),
+    );
+  }
+
+  void selectItemCategory() async {
+    final pressedCategory = await showDialog<String>(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) => AlertDialog(
+              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              contentPadding: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              content: Container(
+                width: MediaQuery.of(context).size.width - 40,
+                child: Card(
+                  elevation: 2,
+                  shadowColor: Colors.transparent,
+                  margin: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: categoryList.map<Widget>((category) {
+                          if (selectedCategory == category) {
+                            return Container(
+                              color: selectedListItemBackgroundBlue,
+                              child: ListTile(
+                                dense: true,
+                                title: Text(
+                                  category,
+                                  overflow: TextOverflow.fade,
+                                  softWrap: false,
+                                  style: TextStyle(
+                                      color: navyBlue,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                trailing: Icon(
+                                  SlydoAppIcon.checked,
+                                  color: navyBlue,
+                                  size: 12,
+                                ),
+                                onTap: () {
+                                  Navigator.pop(context, category);
+                                },
+                              ),
+                            );
+                          }
+                          return ListTile(
+                            title: Text(
+                              category,
+                              softWrap: false,
+                              overflow: TextOverflow.fade,
+                              style: TextStyle(
+                                  color: blackFont,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                            dense: true,
+                            onTap: () {
+                              Navigator.pop(context, category);
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ));
+    if (pressedCategory != null) {
+      selectedCategory = pressedCategory;
+      setState(() {});
+    }
   }
 
   Widget searchBox() {
@@ -377,6 +524,26 @@ class _SearchUsersProductAndServiceState
     );
   }
 
+  Future<Map<String, dynamic>> getSearchApi() async {
+    switch (filterValue) {
+      case "Products":
+        return await ShoppingAuthService().searchUsersProducts(next, previous,
+            userId: searchedUser.userName,
+            category: selectedCategory,
+            text: searchItemTextController.text);
+      case "Services":
+        return await ShoppingAuthService().searchUsersServices(next, previous,
+            userId: searchedUser.userName,
+            category: selectedCategory,
+            text: searchItemTextController.text);
+      default:
+        return await ShoppingAuthService().searchUsersProducts(next, previous,
+            userId: searchedUser.userName,
+            category: selectedCategory,
+            text: searchItemTextController.text);
+    }
+  }
+
   void getList() async {
     if (!isLoading) {
       if (next != null && !isLoading) {
@@ -384,8 +551,7 @@ class _SearchUsersProductAndServiceState
           isLoading = true;
           setState(() {});
         }
-        Map<String, dynamic> result = await _auth.searchEndpointPagination(
-            getSearchUrl(searchItemTextController.text), next, previous);
+        Map<String, dynamic> result = await getSearchApi();
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
@@ -430,7 +596,7 @@ class _SearchUsersProductAndServiceState
   String getSearchUrl(String searchedText) {
     switch (filterValue) {
       case "Products":
-        return baseUrl + "/api/v1/search/products/?search=" + searchedText;
+        return baseUrl + "/api/v1/search/products/byseller=" + searchedText;
       case "Services":
         return baseUrl + "/api/v1/search/services/?search=" + searchedText;
       default:
@@ -438,28 +604,11 @@ class _SearchUsersProductAndServiceState
     }
   }
 
-  Widget getProductTile(var object) {
-    Product product = Product();
-    product.name = object['name'];
-    product.id = object['id'];
-    product.shortDescription = object['short_description'];
-    product.description = "";
-    product.condition = object['condition'];
-    product.currency = object['currency'];
-    product.price = object['price'].toString();
-    product.availableFrom =
-        DateTime.parse(object['available_from']) ?? DateTime.now();
-    product.isAvailable = object['is_available'];
-    product.qrCode = object['qr_code'];
-    product.seller = object['seller'];
-    product.manufacturer = object['manufacturer'];
-    product.serverImages = [];
-
-    return _getSlidableWithLists1(
-        context, productCard(product, object), product);
+  Widget getProductTile(Product product) {
+    return _getSlidableWithLists1(context, productCard(product), product);
   }
 
-  Widget productCard(Product product, var object) {
+  Widget productCard(Product product) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
       child: Card(
@@ -475,7 +624,7 @@ class _SearchUsersProductAndServiceState
                 padding: EdgeInsets.symmetric(vertical: 8),
                 child: ListTile(
                   dense: true,
-                  leading: getLeading(product, object),
+                  leading: getLeading(product),
                   title: getTitle(product),
                   trailing: product.price.toString().length > 6
                       ? null
@@ -494,10 +643,10 @@ class _SearchUsersProductAndServiceState
     );
   }
 
-  Widget getLeading(Product product, var object) {
+  Widget getLeading(Product product) {
     var imageUrl = "";
     try {
-      imageUrl = object["cover"] ??
+      imageUrl = product.cover ??
           "https://homepages.cae.wisc.edu/~ece533/images/peppers.png";
     } catch (e) {
       imageUrl = "";
@@ -584,26 +733,11 @@ class _SearchUsersProductAndServiceState
     );
   }
 
-  Widget getServiceTile(var object) {
-    Service service = Service();
-    service.name = object['name'];
-    service.id = object['id'];
-    service.shortDescription = object['short_description'];
-    service.currency = object['currency'];
-    service.price = object['price'].toString();
-    service.isAvailable = object['is_available'];
-    service.qrCode = object['qr_code'];
-    service.provider = object['provider'];
-    service.serverImages = [];
-    service.currency = "NGN";
-    service.description = "";
-    service.availableFrom = DateTime.now();
-
-    return _getSlidableWithLists2(
-        context, getServiceCard(service, object), service);
+  Widget getServiceTile(Service service) {
+    return _getSlidableWithLists2(context, getServiceCard(service), service);
   }
 
-  Widget getServiceCard(Service service, var object) {
+  Widget getServiceCard(Service service) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
       child: Card(
@@ -619,9 +753,9 @@ class _SearchUsersProductAndServiceState
                 padding: EdgeInsets.symmetric(vertical: 8),
                 child: ListTile(
                   dense: true,
-                  leading: getLeadingService(service, object),
+                  leading: getLeadingService(service),
                   title: Text(
-                    object["name"],
+                    service.name,
                     maxLines: 1,
                     style: TextStyle(
                         color: blackFont,
@@ -645,10 +779,10 @@ class _SearchUsersProductAndServiceState
     );
   }
 
-  Widget getLeadingService(Service service, var object) {
+  Widget getLeadingService(Service service) {
     var imageUrl = "";
     try {
-      imageUrl = object["cover"] ??
+      imageUrl = service.cover ??
           "https://homepages.cae.wisc.edu/~ece533/images/peppers.png";
     } catch (e) {
       imageUrl = "";

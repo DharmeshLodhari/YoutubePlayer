@@ -43,13 +43,16 @@ class NoItemInList extends StatelessWidget {
                 child: SizedBox(
               height: 2,
             )),
-            Image.asset(
-              isResult
-                  ? "assets/images/no_result_found_1.png"
-                  : "assets/images/no_result_found_2.png",
-              colorBlendMode: BlendMode.color,
-              height: 150,
-              width: 150,
+            Expanded(
+              flex: 2,
+              child: Image.asset(
+                isResult
+                    ? "assets/images/no_result_found_1.png"
+                    : "assets/images/no_result_found_2.png",
+                colorBlendMode: BlendMode.color,
+                height: 150,
+                width: 150,
+              ),
             ),
             SizedBox(
               height: 16,

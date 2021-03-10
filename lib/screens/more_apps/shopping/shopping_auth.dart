@@ -687,4 +687,101 @@ class ShoppingAuthService extends AuthService {
       return items;
     }
   }
+
+  // List services
+  Future<Map<String, dynamic>> searchUsersServices(String next, String previous,
+      {String userId, String category, String text}) async {
+    var url = "";
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      url = secureBaseUrl +
+          "/api/v1/services/by-provider/" +
+          userId +
+          "/?category=$category&name__icontaines=$text";
+    } else {
+      url = next;
+    }
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      List<Service> serviceList = [];
+      var jsonData = json.decode(response.body);
+      for (var item in jsonData["results"]) {
+        Service service = createService(item);
+        serviceList.add(service);
+      }
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": serviceList
+      };
+      return result;
+    } else if (response.statusCode == 500) {
+      throw "Server Error";
+    } else {
+      List<Service> serviceList = [];
+
+      Map<String, dynamic> result = {
+        "count": 0,
+        "next": "test",
+        "previous": "test",
+        "results": serviceList
+      };
+      return result;
+    }
+  }
+
+  // List Products
+  Future<Map<String, dynamic>> searchUsersProducts(String next, String previous,
+      {String userId, String category, String text}) async {
+    var url = "";
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      url = secureBaseUrl +
+          "/api/v1/products/by-seller/" +
+          userId +
+          "/?category=$category&name__icontaines=$text";
+    } else {
+      url = next;
+    }
+    debugPrint(url);
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      List<Product> productList = [];
+      var jsonData = json.decode(response.body);
+      for (var item in jsonData["results"]) {
+        Product product = createProduct(item);
+        productList.add(product);
+      }
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": productList
+      };
+      debugPrint("result:- $result");
+      return result;
+    } else if (response.statusCode == 500) {
+      throw "Server Error";
+    } else {
+      List<Product> productList = [];
+      Map<String, dynamic> result = {
+        "count": 0,
+        "next": "test",
+        "previous": "test",
+        "results": productList
+      };
+      return result;
+    }
+  }
 }

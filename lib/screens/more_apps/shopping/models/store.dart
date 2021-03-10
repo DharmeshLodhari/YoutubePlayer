@@ -382,37 +382,30 @@ List<ProductCategory> productCategories = <ProductCategory>[
       )),
 ];
 
-class ProductCondition {
-  const ProductCondition(this.name, this.description);
-
-  final String name;
-  final String description;
-}
-
-List<ProductCondition> conditions = <ProductCondition>[
-  const ProductCondition(
-    'Fair',
-    'Original packaging or with tag',
-  ),
-  const ProductCondition(
-    'Good',
-    'Original packaging or with tag',
-  ),
-  const ProductCondition(
-    'Like New',
-    'Original packaging or with tag',
-  ),
-  const ProductCondition(
-    'New',
-    'Original packaging or with tag',
-  ),
-  const ProductCondition(
-    'Poor',
-    'Original packaging or with tag',
-  ),
+List<String> productCategoryList = [
+  "All categories",
+  "Auto & Large Appliances",
+  "Automotive",
+  "Baby & Kids",
+  "Beauty & Spas",
+  "Electronics",
+  "Entertainment",
+  "Food & Drink",
+  "Grocery & Household",
+  "Health & Beauty",
+  "Health & Fitness",
+  "Home & Garden",
+  "Jewellery & Watches",
+  "Men's Fashion",
+  "Personalised",
+  "Pet Supplies",
+  "Sports & Outdoors",
+  "Toys",
+  "Women’s Fashion",
 ];
 
-List temp = [
+List<String> serviceCategoryList = [
+  "All categories",
   "Alarms – Security & Fire",
   "Appliance Repairs",
   "Architect",
@@ -466,6 +459,36 @@ List temp = [
   "Upholsterer",
   "Window & Door Repairs,Other",
   "Window Installer"
+];
+
+class ProductCondition {
+  const ProductCondition(this.name, this.description);
+
+  final String name;
+  final String description;
+}
+
+List<ProductCondition> conditions = <ProductCondition>[
+  const ProductCondition(
+    'Fair',
+    'Original packaging or with tag',
+  ),
+  const ProductCondition(
+    'Good',
+    'Original packaging or with tag',
+  ),
+  const ProductCondition(
+    'Like New',
+    'Original packaging or with tag',
+  ),
+  const ProductCondition(
+    'New',
+    'Original packaging or with tag',
+  ),
+  const ProductCondition(
+    'Poor',
+    'Original packaging or with tag',
+  ),
 ];
 
 class ServiceCatagory {
