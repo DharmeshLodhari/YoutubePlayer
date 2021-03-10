@@ -32,6 +32,22 @@ class UserBloc extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updateProfileAvatar(String url) {
+    _user.avatar = url;
+    notifyListeners();
+  }
+
+  void removeProfileAvatar() {
+    _user.avatar =
+        "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png";
+    notifyListeners();
+  }
+
+  void removeProfileCover() {
+    _user.userAbout.wallpaper = "";
+    notifyListeners();
+  }
+
   UserAbout get userAbout => _user.userAbout;
 }
 

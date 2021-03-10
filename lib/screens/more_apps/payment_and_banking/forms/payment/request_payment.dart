@@ -61,6 +61,8 @@ class _RequestPaymentState extends State<RequestPayment> {
   String recipient;
   final locationService = LocationService();
 
+  bool showMoreOption = false;
+
   //variables for categories
   bool isLoading = true;
 
@@ -213,83 +215,128 @@ class _RequestPaymentState extends State<RequestPayment> {
           )
         : SingleChildScrollView(
             child: Container(
-              height: MediaQuery.of(context).size.height -
-                  (AppBar().preferredSize.height +
-                      MediaQuery.of(context).padding.top),
-              width: MediaQuery.of(context).size.width,
               padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               child: Column(
                 children: [
-                  Expanded(
-                    flex: 8,
-                    child: Card(
-                      elevation: 2,
-                      margin: EdgeInsets.zero,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      shadowColor: iconBtnGrey,
-                      child: Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: iconBtnGrey, width: 1)),
-                        child: Form(
-                          key: _formKey,
-                          child: Container(
-                            child: Column(
-                              children: <Widget>[
-                                getDisplayCard(),
-                                Expanded(
-                                  child: Container(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 20),
-                                    child: Column(
-                                      children: [
-                                        flexibleSpace(),
-                                        getRecipientField(),
-                                        flexibleSpace(),
-                                        displayAmountField(),
-                                        flexibleSpace(),
-                                        getCategoryDropDown(),
-                                        flexibleSpace(),
-                                        getReferenceField(),
-                                        flexibleSpace(),
-                                        errorMessage == ""
-                                            ? Container()
-                                            : Text(
-                                                errorMessage,
-                                                style: TextStyle(
-                                                    color: mateRed,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 16),
-                                              ),
-                                        flexibleSpace(),
-                                      ],
+                  Card(
+                    elevation: 2,
+                    margin: EdgeInsets.zero,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    shadowColor: iconBtnGrey,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: iconBtnGrey, width: 1)),
+                      child: Form(
+                        key: _formKey,
+                        child: Container(
+                          child: Column(
+                            children: <Widget>[
+                              getDisplayCard(),
+                              Container(
+                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                child: Column(
+                                  children: [
+                                    SizedBox(
+                                      height: 20,
                                     ),
-                                  ),
+                                    getRecipientField(),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    displayAmountField(),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    showMoreOption
+                                        ? getMoreOption()
+                                        : Container(),
+                                    getMoreOptionTrigger(),
+                                    errorMessage == ""
+                                        ? Container()
+                                        : Text(
+                                            errorMessage,
+                                            style: TextStyle(
+                                                color: mateRed,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16),
+                                          ),
+                                    errorMessage == ""
+                                        ? Container()
+                                        : SizedBox(
+                                            height: 20,
+                                          ),
+                                  ],
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
                     ),
                   ),
-                  Expanded(
-                      flex: MediaQuery.of(context).size.height < 600 ? 2 : 3,
-                      child: Container(
-                        child: Column(
-                          children: [
-                            flexibleSpace(),
-                            getSubmitButton(),
-                            flexibleSpace(flex: 2),
-                          ],
+                  Container(
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: 20,
                         ),
-                      )),
+                        getSubmitButton(),
+                        SizedBox(
+                          height: 20,
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
           );
+  }
+
+  Widget getMoreOption() {
+    return Column(
+      children: [
+        getCategoryDropDown(),
+        SizedBox(
+          height: 20,
+        ),
+        getReferenceField(),
+      ],
+    );
+  }
+
+  Widget getMoreOptionTrigger() {
+    return GestureDetector(
+      onTap: () {
+        showMoreOption = !showMoreOption;
+        if (mounted) setState(() {});
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Icon(
+              showMoreOption
+                  ? Icons.keyboard_arrow_up_rounded
+                  : Icons.keyboard_arrow_down_rounded,
+              color: darkGrey,
+            ),
+            SizedBox(
+              width: 4,
+            ),
+            Text(
+              showMoreOption ? "Less Option" : "More Option",
+              style: TextStyle(
+                  color: darkGrey, fontSize: 14, fontWeight: FontWeight.w600),
+            )
+          ],
+        ),
+      ),
+    );
   }
 
   Widget getDisplayCard() {

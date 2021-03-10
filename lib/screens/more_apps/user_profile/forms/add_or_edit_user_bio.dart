@@ -4,6 +4,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/OpeningHour.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -144,6 +145,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+
     return WillPopScope(
       onWillPop: () async {
         Navigator.pop(context, {
@@ -370,7 +372,12 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
       if (result == "update") {
         updateProfilePicture();
       } else if (result == "remove") {
-        await UserAuth().deleteCustomerAvatar();
+        bool result = await UserAuth().deleteCustomerAvatar();
+        debugPrint("result :- $result");
+
+        if (result) {
+          userBloc.removeProfileAvatar();
+        }
       }
     }
   }
@@ -416,14 +423,23 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
           var password = dbUser.password;
 
           // Upload Image new image
-          await UserAuth().updateCustomerAvatar(File(file.path));
+          CustomerProfile customerProfile =
+              await UserAuth().updateCustomerAvatar(File(file.path));
 
-          // Get New updated user data and set new user data to userBloc
-          await UserAuth().authenticate(phoneNumber, password).then((value) {
-            userBloc.user = value;
-            isLoading = false;
-            if (mounted) setState(() {});
-          });
+          isLoading = false;
+          if (mounted) setState(() {});
+
+          if (customerProfile != null) {
+            debugPrint("==> ${customerProfile.avatar}");
+
+            userBloc.updateProfileAvatar(customerProfile.avatar);
+
+            // Get New updated user data and set new user data to userBloc
+            await UserAuth().authenticate(phoneNumber, password).then((value) {
+              userBloc.user = value;
+              debugPrint("User Updated !!");
+            });
+          }
         } catch (err) {
           isLoading = false;
           if (mounted) setState(() {});
@@ -711,7 +727,6 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
         color: blackFont,
       ),
       onTap: selectProfileCoverAction,
-      // backgroundColor: lightGrey.withOpacity(0.1),
       backgroundColor: lightGrey,
       enableMargin: true,
     );
@@ -723,7 +738,10 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
       if (result == "update") {
         pickImage();
       } else if (result == "remove") {
-        await UserAuth().deleteImageCover();
+        bool result = await UserAuth().deleteImageCover();
+        if (result) {
+          userBloc.removeProfileCover();
+        }
       }
     }
   }
@@ -760,33 +778,27 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
       final file =
           await ImagePicker().getImage(source: imageSource, imageQuality: 70);
       if (file != null) {
-        try {
-          isSearchedUserAboutLoading = true;
-          if (mounted) setState(() {});
+        isSearchedUserAboutLoading = true;
+        if (mounted) setState(() {});
 
-          UserAbout userAbout = userBloc.userAbout;
+        UserAbout userAbout = userBloc.userAbout;
 
-          userAbout.wallpaper = file.path;
+        userAbout.wallpaper = file.path;
 
-          userAbout = await UserAuth()
-              .addOrUpdateUserBio(userBloc.userAbout)
-              .catchError((error) {
-            debugPrint("Cannot Update Cover : " + error.toString());
-            isSearchedUserAboutLoading = false;
-            if (mounted) setState(() {});
-          });
-
-          userBloc.userAbout = userAbout;
-
+        UserAbout newUserAbout = await UserAuth()
+            .addOrUpdateUserBio(userBloc.userAbout)
+            .catchError((error) {
           isSearchedUserAboutLoading = false;
           if (mounted) setState(() {});
-        } catch (err) {
-          isSearchedUserAboutLoading = false;
-          if (mounted) setState(() {});
-          Toast.show(err.toString(), context,
+          Toast.show(error.toString(), context,
               backgroundColor: blackFont, textColor: Colors.white);
-          debugPrint("Cannot Update Cover : " + err.toString());
-        }
+          debugPrint("Cannot Update Cover : " + error.toString());
+        });
+
+        userBloc.userAbout = newUserAbout;
+
+        isSearchedUserAboutLoading = false;
+        if (mounted) setState(() {});
       }
     }
   }
@@ -806,12 +818,6 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
   void updateBio() {
     if (_formKey.currentState.validate()) {
       addDataToUserAboutObject();
-
-      debugPrint("===> $userAddedOpeningHours");
-
-      userBioDetail.openingHours.forEach((element) {
-        debugPrint("===> ${element.day}  ${element.time}");
-      });
 
       showDialog(
           context: context,

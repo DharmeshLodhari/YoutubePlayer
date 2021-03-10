@@ -94,7 +94,8 @@ class UserAuth extends AuthService {
         );
         return customerProfile;
       } else {
-        throw responseBody;
+        return Future.error(
+            "ERROR while calling $url StatusCode:- ${response.statusCode} Body:- $responseBody");
       }
     } else {
       throw "Can't get https.";
@@ -109,26 +110,11 @@ class UserAuth extends AuthService {
         secureBaseUrl + "/api/v1/user/update-avatar/" + user.userName + "/";
 
     var response = await http.delete(url, headers: headers);
-
     if (response.statusCode == 204) {
       return true;
     } else {
-      var jsonData = json.decode(response.body);
-      throw jsonData;
-    }
-  }
-
-  Future<bool> deleteImageCover() async {
-    var headers = await getAuthHeaders();
-    var url = secureBaseUrl + "/api/v1/user/about/";
-
-    var response = await http.delete(url, headers: headers);
-
-    if (response.statusCode == 204) {
-      return true;
-    } else {
-      var jsonData = json.decode(response.body);
-      throw jsonData;
+      return Future.error(
+          "ERROR while calling $url StatusCode:- ${response.statusCode} Body:- ${response.body}");
     }
   }
 
@@ -319,6 +305,20 @@ class UserAuth extends AuthService {
       return UserAbout.fromJson(jsonDecode(responseBody));
     }
     return Future.error("$responseBody");
+  }
+
+  Future<bool> deleteImageCover() async {
+    var headers = await getAuthHeaders();
+    var url = secureBaseUrl + "/api/v1/user/about/";
+
+    var response = await http.delete(url, headers: headers);
+
+    if (response.statusCode == 204) {
+      return true;
+    } else {
+      return Future.error(
+          "ERROR while calling $url StatusCode:- ${response.statusCode} Body:- ${response.body}");
+    }
   }
 
   Future<bool> addUserAddress(Map data) async {

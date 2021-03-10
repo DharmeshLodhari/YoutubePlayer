@@ -347,6 +347,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   List<Widget> actionButtons() {
     return [
       getChatIcon(),
+      getSearchIcon(),
       menuIcon(),
       SizedBox(
         width: 16,
@@ -359,6 +360,19 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         ? Row(
             children: [
               chatIcon(),
+              SizedBox(
+                width: 8,
+              ),
+            ],
+          )
+        : Container();
+  }
+
+  Widget getSearchIcon() {
+    return searchedUser.type.toLowerCase() != "user"
+        ? Row(
+            children: [
+              searchIcon(),
               SizedBox(
                 width: 8,
               ),
@@ -380,6 +394,21 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         Navigator.pushNamed(context, '/chat-screen',
             arguments: {"searchedUser": searchedUser});
       },
+      backgroundColor: lightGrey.withOpacity(0.1),
+      enableMargin: false,
+    );
+  }
+
+  Widget searchIcon() {
+    return RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
+      icon: Icon(
+        SlydoAppIcon.search,
+        size: 16,
+        color: Colors.white,
+      ),
+      onTap: () {},
       backgroundColor: lightGrey.withOpacity(0.1),
       enableMargin: false,
     );
