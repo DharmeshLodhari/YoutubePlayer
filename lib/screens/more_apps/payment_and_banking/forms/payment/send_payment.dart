@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
@@ -917,6 +919,8 @@ class _SendPaymentState extends State<SendPayment> {
                   };
 
                   _auth.makePayment(data).then((value) {
+                    debugPrint(
+                        "status code:- ${value.statusCode}  body:- ${value.body}");
                     response = value;
                     if (response.statusCode == 200) {
                       popFromShoppingCart(product);
@@ -932,6 +936,16 @@ class _SendPaymentState extends State<SendPayment> {
                           '/transactions',
                         );
                       }
+                    } else if (response.statusCode == 400) {
+                      Navigator.pop(context);
+                      setState(() {
+                        errorMessage = "${jsonDecode(value.body)["errors"]}";
+
+                        Toast.show(errorMessage, context,
+                            gravity: Toast.BOTTOM,
+                            backgroundColor: Colors.black,
+                            textColor: Colors.white);
+                      });
                     } else if (response.statusCode == 500) {
                       Navigator.pop(context);
                       setState(() {

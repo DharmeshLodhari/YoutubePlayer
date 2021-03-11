@@ -56,6 +56,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   ScrollController _scrollController;
   bool appBarStatus = true;
 
+  bool isUserIsSimpleUser = false;
+
   @override
   void initState() {
     initializeVariables();
@@ -84,6 +86,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         await UserAuth().fetchCustomerProfileWithAuth(searchedUserName);
     searchedUser = user;
     isLoading = false;
+    if (searchedUser.type.toLowerCase() == "user") {
+      isUserIsSimpleUser = true;
+    }
+
     if (mounted) setState(() {});
 
     _tabController = TabController(
@@ -165,8 +171,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   Widget getAppbar(var context) {
-    Color borderColor = getUserTypeColor(user: searchedUser);
-
     return SliverOverlapAbsorber(
       handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
       sliver: SliverSafeArea(
@@ -231,34 +235,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                       getProfileCover(),
 
                       /// UserModel avatar, message icon, profile edit
-                      Container(
-                        alignment: Alignment.bottomLeft,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            AnimatedContainer(
-                              duration: Duration(milliseconds: 500),
-                              decoration: BoxDecoration(
-                                  border:
-                                      Border.all(color: borderColor, width: 3),
-                                  shape: BoxShape.circle),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(50),
-                                child: Container(
-                                  color: Colors.white,
-                                  child: CachedNetworkImage(
-                                    height: 88,
-                                    width: 88,
-                                    fit: BoxFit.fill,
-                                    filterQuality: FilterQuality.high,
-                                    imageUrl: searchedUser.avatar,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
+                      getProfilePhoto(),
                     ],
                   ),
           ),
@@ -341,6 +318,38 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                       colorBlendMode: BlendMode.darken,
                       filterQuality: FilterQuality.high,
                     ),
+    );
+  }
+
+  Widget getProfilePhoto() {
+    Color borderColor = getUserTypeColor(user: searchedUser);
+
+    return Container(
+      alignment: Alignment.bottomLeft,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          AnimatedContainer(
+            duration: Duration(milliseconds: 500),
+            decoration: BoxDecoration(
+                border: Border.all(color: borderColor, width: 3),
+                shape: BoxShape.circle),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(50),
+              child: Container(
+                color: Colors.white,
+                child: CachedNetworkImage(
+                  height: 88,
+                  width: 88,
+                  fit: BoxFit.fill,
+                  filterQuality: FilterQuality.high,
+                  imageUrl: searchedUser.avatar,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

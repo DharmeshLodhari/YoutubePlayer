@@ -432,72 +432,74 @@ class _SearchUsersProductAndServiceState
     try {
       return Container(
         padding: EdgeInsets.symmetric(horizontal: 16),
-        child: Theme(
-          data: Theme.of(context).copyWith(
-            textSelectionHandleColor: navyBlue,
-          ),
-          child: TextFormField(
-            key: textFormField,
-            controller: searchItemTextController,
-            style: TextStyle(
-              fontSize: 16,
-              color: blackFont,
-              fontWeight: FontWeight.w600,
+        child: Stack(
+          alignment: Alignment.centerRight,
+          children: [
+            Theme(
+              data: Theme.of(context).copyWith(
+                textSelectionHandleColor: navyBlue,
+              ),
+              child: TextFormField(
+                key: textFormField,
+                controller: searchItemTextController,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: blackFont,
+                  fontWeight: FontWeight.w600,
+                ),
+                cursorWidth: 1.5,
+                cursorColor: navyBlue,
+                decoration: InputDecoration(
+                  hintText: "Search here",
+                  fillColor: Colors.white,
+                  filled: true,
+                  contentPadding: EdgeInsets.symmetric(vertical: 10),
+                  prefixIcon: searchTypeSelection(),
+                  prefix: Padding(
+                    padding: EdgeInsets.only(left: 12),
+                  ),
+                  suffix: Padding(
+                    padding: EdgeInsets.only(right: 36),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
+                      color: dividerColor,
+                      width: 1.0,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
+                      color: navyBlue,
+                      width: 1.0,
+                    ),
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
+                      color: dividerColor,
+                      width: 1.0,
+                    ),
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
+                      color: dividerColor,
+                      width: 1.0,
+                    ),
+                  ),
+                ),
+                onFieldSubmitted: (val) {
+                  searchItems();
+                },
+              ),
             ),
-            cursorWidth: 1.5,
-            cursorColor: navyBlue,
-            decoration: InputDecoration(
-              hintText: "Search here",
-              fillColor: Colors.white,
-              filled: true,
-              contentPadding: EdgeInsets.symmetric(vertical: 10),
-              prefixIcon: searchTypeSelection(),
-              prefix: Padding(
-                padding: EdgeInsets.only(left: 12),
-              ),
-              suffixIcon: searchIcon(),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(
-                  color: dividerColor,
-                  width: 1.0,
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(
-                  color: navyBlue,
-                  width: 1.0,
-                ),
-              ),
-              errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(
-                  color: dividerColor,
-                  width: 1.0,
-                ),
-              ),
-              focusedErrorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(
-                  color: dividerColor,
-                  width: 1.0,
-                ),
-              ),
-            ),
-            onFieldSubmitted: (val) {
-              if (mounted) {
-                count = 0;
-                next = "";
-                previous = "";
-                results.clear();
-                noItemInList = false;
-                setState(() {});
-                getList();
-                FocusScope.of(context).unfocus();
-              }
-            },
-          ),
+            Positioned(
+              child: searchIcon(),
+              right: 0,
+            )
+          ],
         ),
       );
     } catch (e) {
@@ -544,19 +546,21 @@ class _SearchUsersProductAndServiceState
         color: darkGrey,
         size: 16,
       ),
-      onPressed: () {
-        if (mounted) {
-          count = 0;
-          next = "";
-          previous = "";
-          results.clear();
-          noItemInList = false;
-          setState(() {});
-          getList();
-          FocusScope.of(context).unfocus();
-        }
-      },
+      onPressed: searchItems,
     );
+  }
+
+  void searchItems() {
+    if (mounted) {
+      count = 0;
+      next = "";
+      previous = "";
+      results.clear();
+      noItemInList = false;
+      if (mounted) setState(() {});
+      FocusScope.of(context).unfocus();
+      getList();
+    }
   }
 
   Widget appBar() {
@@ -740,6 +744,11 @@ class _SearchUsersProductAndServiceState
           } catch (e) {}
           setState(() {});
         }
+      }
+
+      if (results.isNotEmpty) {
+        isSearchIsEmpty = false;
+        if (mounted) setState(() {});
       }
       if (results.isEmpty) {
         if (mounted) {

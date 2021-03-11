@@ -700,7 +700,20 @@ class ShoppingAuthService extends AuthService {
       url = secureBaseUrl +
           "/api/v1/services/by-provider/" +
           filterOptions.searchedUser.userName +
-          "/?category=${filterOptions.category}&name__icontaines=${filterOptions.searchedText}";
+          "/?";
+      if (filterOptions.category != "All categories") {
+        url = url + "category=${filterOptions.category}";
+      }
+      if (filterOptions.searchedText.trim() != "") {
+        url = url + "&name__icontains=${filterOptions.searchedText}";
+      }
+      if (filterOptions.minAmount != null) {
+        url = url + "&price__gte=${filterOptions.minAmount}";
+      }
+      if (filterOptions.maxAmount != null) {
+        url = url + "&price__lte=${filterOptions.maxAmount}";
+      }
+      url = Uri.encodeFull(url);
     } else {
       url = next;
     }
@@ -748,7 +761,22 @@ class ShoppingAuthService extends AuthService {
       url = secureBaseUrl +
           "/api/v1/products/by-seller/" +
           filterOptions.searchedUser.userName +
-          "/?category=${filterOptions.category}&name__icontaines=${filterOptions.searchedText}";
+          "/?";
+
+      if (filterOptions.category != "All categories") {
+        url = url + "category=${filterOptions.category}";
+      }
+      if (filterOptions.searchedText.trim() != "") {
+        url = url + "&name__icontains=${filterOptions.searchedText}";
+      }
+      if (filterOptions.minAmount != null) {
+        url = url + "&price__gte=${filterOptions.minAmount}";
+      }
+      if (filterOptions.maxAmount != null) {
+        url = url + "&price__lte=${filterOptions.maxAmount}";
+      }
+
+      url = Uri.encodeFull(url);
     } else {
       url = next;
     }

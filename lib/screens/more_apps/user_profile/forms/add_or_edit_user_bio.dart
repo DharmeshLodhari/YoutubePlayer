@@ -98,6 +98,10 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
 
   bool isLoading = false;
 
+  bool isUserIsSimpleUser = false;
+
+  bool isUserAvatarLoading = false;
+
   @override
   void initState() {
     bioController = TextEditingController();
@@ -146,6 +150,10 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
 
+    if (userBloc.user.type.toLowerCase() == "user") {
+      isUserIsSimpleUser = true;
+    }
+
     return WillPopScope(
       onWillPop: () async {
         Navigator.pop(context, {
@@ -170,38 +178,40 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
   }
 
   Widget scaffoldBody() {
-    return SingleChildScrollView(
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20),
-        child: Center(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                SizedBox(height: 20),
-                addBioField(),
-                SizedBox(
-                  height: 20,
+    return isUserIsSimpleUser
+        ? Container()
+        : SingleChildScrollView(
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Center(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      SizedBox(height: 20),
+                      addBioField(),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      addAddressField(),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      addContactNumberField(),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      addOpeningHour(),
+                      SizedBox(height: 20),
+                      getSubmitButton(),
+                      SizedBox(height: 40),
+                    ],
+                  ),
                 ),
-                addAddressField(),
-                SizedBox(
-                  height: 20,
-                ),
-                addContactNumberField(),
-                SizedBox(
-                  height: 20,
-                ),
-                addOpeningHour(),
-                SizedBox(height: 20),
-                getSubmitButton(),
-                SizedBox(height: 40),
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
-    );
+          );
   }
 
   Widget getAppbar(var context) {
@@ -230,12 +240,14 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
               });
             },
           ),
-          actions: [
-            editProfileCoverIcon(),
-            SizedBox(
-              width: 16,
-            )
-          ],
+          actions: isUserIsSimpleUser
+              ? null
+              : [
+                  editProfileCoverIcon(),
+                  SizedBox(
+                    width: 16,
+                  )
+                ],
           title: Container(
             child: Text(
               userBloc.user.fullName,
@@ -331,13 +343,18 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
                   borderRadius: BorderRadius.circular(50),
                   child: Container(
                     color: Colors.white,
-                    child: CachedNetworkImage(
-                      height: 88,
-                      width: 88,
-                      fit: BoxFit.fill,
-                      filterQuality: FilterQuality.high,
-                      imageUrl: userBloc.user.avatar,
-                    ),
+                    child: isUserAvatarLoading
+                        ? Container(
+                            height: 88,
+                            width: 88,
+                            child: Center(child: CircularLoadingIndicator()))
+                        : CachedNetworkImage(
+                            height: 88,
+                            width: 88,
+                            fit: BoxFit.fill,
+                            filterQuality: FilterQuality.high,
+                            imageUrl: userBloc.user.avatar,
+                          ),
                   ),
                 ),
               ),
@@ -372,7 +389,12 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
       if (result == "update") {
         updateProfilePicture();
       } else if (result == "remove") {
+        isUserAvatarLoading = true;
+        if (mounted) setState(() {});
         bool result = await UserAuth().deleteCustomerAvatar();
+
+        isUserAvatarLoading = false;
+        if (mounted) setState(() {});
         debugPrint("result :- $result");
 
         if (result) {
@@ -415,33 +437,23 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
           await ImagePicker().getImage(source: imageSource, imageQuality: 70);
       if (file != null) {
         try {
-          isLoading = true;
+          isUserAvatarLoading = true;
           if (mounted) setState(() {});
-          // Get user current login info so we can reuse it to login
-          var dbUser = await UserAuth().getUser();
-          var phoneNumber = dbUser.phoneNumber;
-          var password = dbUser.password;
 
           // Upload Image new image
           CustomerProfile customerProfile =
               await UserAuth().updateCustomerAvatar(File(file.path));
 
-          isLoading = false;
+          isUserAvatarLoading = false;
           if (mounted) setState(() {});
 
           if (customerProfile != null) {
             debugPrint("==> ${customerProfile.avatar}");
 
             userBloc.updateProfileAvatar(customerProfile.avatar);
-
-            // Get New updated user data and set new user data to userBloc
-            await UserAuth().authenticate(phoneNumber, password).then((value) {
-              userBloc.user = value;
-              debugPrint("User Updated !!");
-            });
           }
         } catch (err) {
-          isLoading = false;
+          isUserAvatarLoading = false;
           if (mounted) setState(() {});
           Toast.show(err.toString(), context,
               backgroundColor: blackFont, textColor: Colors.white);
