@@ -3,6 +3,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/search_user_item_with_filter.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/services/auth.dart';
@@ -11,10 +12,13 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
+import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 
@@ -38,8 +42,6 @@ class _SearchUsersProductAndServiceState
   UserBloc userBloc;
   static var filterValue = "Products";
 
-  final _auth = AuthService();
-
   SlidableController slidableController1;
   SlidableController slidableController2;
 
@@ -49,6 +51,7 @@ class _SearchUsersProductAndServiceState
   TextEditingController searchItemTextController = TextEditingController();
 
   GlobalKey<ScaffoldState> _scaffoldSearchKey = GlobalKey<ScaffoldState>();
+  GlobalKey<FormState> _formFieldKey = GlobalKey<FormState>();
 
   //pagination variables
   int count = 0;
@@ -67,13 +70,21 @@ class _SearchUsersProductAndServiceState
 
   var hint = "Search here";
 
-  String selectedCategory;
-
   CustomerProfile searchedUser;
+
+  SearchItemWithFilterModel filterModel = SearchItemWithFilterModel();
+
+  bool showFilterOptions = false;
+
+  bool isFilterApplied = false;
+
+  TextEditingController minAmountTextController = TextEditingController();
+  TextEditingController maxAmountTextController = TextEditingController();
 
   @override
   void initState() {
     searchedUser = widget.arguments["searchedUser"];
+    filterModel.searchedUser = searchedUser;
 
     updateCategoryList();
 
@@ -148,7 +159,7 @@ class _SearchUsersProductAndServiceState
   }
 
   void updateCategoryList() {
-    selectedCategory = "All categories";
+    filterModel.category = "All categories";
     if (selectedMenuItemIndex == 0) {
       categoryList = productCategoryList;
     } else if (selectedMenuItemIndex == 1) {
@@ -185,33 +196,40 @@ class _SearchUsersProductAndServiceState
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
       appBar: appBar(),
-      body: Column(
-        children: [
-          SizedBox(
-            height: 6,
-          ),
-          searchBox(),
-          SizedBox(
-            height: 16,
-          ),
-          getFilterDropDowns(),
-          SizedBox(
-            height: 16,
-          ),
-          Expanded(
-            child: _buildResultList(),
-          ),
-        ],
+      body: Form(
+        key: _formFieldKey,
+        child: Column(
+          children: [
+            SizedBox(
+              height: 6,
+            ),
+            searchBox(),
+            showFilterOptions ? getFilterOptions() : Container(),
+            SizedBox(
+              height: 16,
+            ),
+            Expanded(
+              child: _buildResultList(),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget getFilterDropDowns() {
+  Widget getFilterOptions() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
+      child: Column(
         children: [
-          Expanded(child: getCategoryField()),
+          SizedBox(
+            height: 16,
+          ),
+          getCategoryField(),
+          SizedBox(
+            height: 8,
+          ),
+          getPriceRange()
         ],
       ),
     );
@@ -232,7 +250,7 @@ class _SearchUsersProductAndServiceState
             child: ListTile(
               dense: true,
               title: Text(
-                selectedCategory != null ? selectedCategory : "",
+                filterModel.category,
                 style: TextStyle(
                     color: blackFont,
                     fontSize: 16,
@@ -273,7 +291,7 @@ class _SearchUsersProductAndServiceState
                     child: SingleChildScrollView(
                       child: Column(
                         children: categoryList.map<Widget>((category) {
-                          if (selectedCategory == category) {
+                          if (filterModel.category == category) {
                             return Container(
                               color: selectedListItemBackgroundBlue,
                               child: ListTile(
@@ -321,9 +339,93 @@ class _SearchUsersProductAndServiceState
               ),
             ));
     if (pressedCategory != null) {
-      selectedCategory = pressedCategory;
+      filterModel.category = pressedCategory;
       setState(() {});
     }
+  }
+
+  Widget getPriceRange() {
+    return Container(
+      child: Row(
+        children: <Widget>[
+          Expanded(child: displayMinAmount()),
+          SizedBox(
+            width: 16,
+          ),
+          Expanded(child: displayMaxAmount()),
+        ],
+      ),
+    );
+  }
+
+  Widget displayMinAmount() {
+    return CustomizedTextFormField(
+      labelText: "Min amount",
+      isAmount: true,
+      controller: minAmountTextController,
+      keyboardType: TextInputType.number,
+      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+      onChanged: (val) {
+        if (val.toString() == "") {
+          filterModel.minAmount = null;
+          return;
+        }
+        try {
+          int minAmount = int.parse(val);
+          filterModel.minAmount = minAmount;
+        } catch (e) {}
+      },
+      validator: (val) {
+        if (val.toString().isEmpty) {
+          return null;
+        }
+        try {
+          int amount = int.parse(val);
+          if (amount > 0) {
+            return null;
+          } else {
+            return AppLocalization.of(context).invalidAmount;
+          }
+        } catch (e) {
+          return AppLocalization.of(context).invalidAmount;
+        }
+      },
+    );
+  }
+
+  Widget displayMaxAmount() {
+    return CustomizedTextFormField(
+      labelText: "Max amount",
+      controller: maxAmountTextController,
+      isAmount: true,
+      keyboardType: TextInputType.number,
+      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+      onChanged: (val) {
+        if (val.toString() == "") {
+          filterModel.maxAmount = null;
+          return;
+        }
+        try {
+          int maxAmount = int.parse(val);
+          filterModel.maxAmount = maxAmount;
+        } catch (e) {}
+      },
+      validator: (val) {
+        if (val.toString().isEmpty) {
+          return null;
+        }
+        try {
+          int amount = int.parse(val);
+          if (amount > 0) {
+            return null;
+          } else {
+            return AppLocalization.of(context).invalidAmount;
+          }
+        } catch (e) {
+          return AppLocalization.of(context).invalidAmount;
+        }
+      },
+    );
   }
 
   Widget searchBox() {
@@ -459,26 +561,92 @@ class _SearchUsersProductAndServiceState
 
   Widget appBar() {
     return AppBar(
-      elevation: 0,
-      titleSpacing: 0,
-      backgroundColor: Colors.white,
-      leading: IconButton(
-        icon: Icon(
-          Icons.keyboard_arrow_left,
-          color: navyBlue,
-          size: 24,
+        elevation: 0,
+        titleSpacing: 0,
+        backgroundColor: Colors.white,
+        leading: IconButton(
+          icon: Icon(
+            Icons.keyboard_arrow_left,
+            color: navyBlue,
+            size: 24,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
-        onPressed: () {
-          Navigator.pop(context);
-        },
-      ),
-      centerTitle: false,
-      title: Text(
-        "Search",
-        style: TextStyle(
-            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
-      ),
+        centerTitle: false,
+        title: Text(
+          "Search",
+          style: TextStyle(
+              color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        actions: [filterItemBtn(), SizedBox(width: 8)]);
+  }
+
+  Widget filterItemBtn() {
+    return Stack(
+      children: [
+        Container(
+          padding: EdgeInsets.only(right: 8),
+          child: Column(
+            children: [
+              Expanded(
+                child: RoundedBackgroundIcon(
+                  height: 34,
+                  width: 34,
+                  icon: Icon(
+                    SlydoAppIcon.filter,
+                    size: 16,
+                    color: blackFont,
+                  ),
+                  onTap: () {
+                    showFilterOptions = !showFilterOptions;
+                    if (mounted) setState(() {});
+                    checkForFilterAppliedOrNot();
+                  },
+                  backgroundColor: iconBtnGrey,
+                  enableMargin: true,
+                ),
+              ),
+            ],
+          ),
+        ),
+        isFilterApplied
+            ? Positioned(
+                top: 10,
+                right: 6,
+                child: ClipOval(
+                  child: Container(
+                    height: 8,
+                    width: 8,
+                    color: naturalGreen,
+                  ),
+                ),
+              )
+            : Container()
+      ],
     );
+  }
+
+  void checkForFilterAppliedOrNot() {
+    if (filterModel.category != "All categories") {
+      isFilterApplied = true;
+      if (mounted) setState(() {});
+      return;
+    }
+    if (filterModel.minAmount != null) {
+      isFilterApplied = true;
+      if (mounted) setState(() {});
+      return;
+    }
+    if (filterModel.maxAmount != null) {
+      isFilterApplied = true;
+      if (mounted) setState(() {});
+      return;
+    }
+    isFilterApplied = false;
+    if (mounted) setState(() {});
+    return;
   }
 
   Widget _buildResultList() {
@@ -525,26 +693,33 @@ class _SearchUsersProductAndServiceState
   }
 
   Future<Map<String, dynamic>> getSearchApi() async {
+    filterModel.searchedText = searchItemTextController.text;
     switch (filterValue) {
       case "Products":
-        return await ShoppingAuthService().searchUsersProducts(next, previous,
-            userId: searchedUser.userName,
-            category: selectedCategory,
-            text: searchItemTextController.text);
+        return await ShoppingAuthService()
+            .searchUsersProducts(next, previous, filterOptions: filterModel);
       case "Services":
-        return await ShoppingAuthService().searchUsersServices(next, previous,
-            userId: searchedUser.userName,
-            category: selectedCategory,
-            text: searchItemTextController.text);
+        return await ShoppingAuthService()
+            .searchUsersServices(next, previous, filterOptions: filterModel);
       default:
-        return await ShoppingAuthService().searchUsersProducts(next, previous,
-            userId: searchedUser.userName,
-            category: selectedCategory,
-            text: searchItemTextController.text);
+        return await ShoppingAuthService()
+            .searchUsersProducts(next, previous, filterOptions: filterModel);
     }
   }
 
   void getList() async {
+    if (!_formFieldKey.currentState.validate()) {
+      /// open filters when user has some error in filter fields validation
+      showFilterOptions = true;
+      if (mounted) setState(() {});
+      return;
+    }
+
+    /// close filter when user press search button
+    showFilterOptions = false;
+    if (mounted) setState(() {});
+    checkForFilterAppliedOrNot();
+
     if (!isLoading) {
       if (next != null && !isLoading) {
         if (mounted) {

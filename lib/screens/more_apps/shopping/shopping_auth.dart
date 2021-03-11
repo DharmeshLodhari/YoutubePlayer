@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:Slydo/screens/more_apps/shopping/models/ShoppingProduct.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/search_user_item_with_filter.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
@@ -690,7 +691,7 @@ class ShoppingAuthService extends AuthService {
 
   // List services
   Future<Map<String, dynamic>> searchUsersServices(String next, String previous,
-      {String userId, String category, String text}) async {
+      {SearchItemWithFilterModel filterOptions}) async {
     var url = "";
     if (next == null) {
       return null;
@@ -698,8 +699,8 @@ class ShoppingAuthService extends AuthService {
     if (next == "") {
       url = secureBaseUrl +
           "/api/v1/services/by-provider/" +
-          userId +
-          "/?category=$category&name__icontaines=$text";
+          filterOptions.searchedUser.userName +
+          "/?category=${filterOptions.category}&name__icontaines=${filterOptions.searchedText}";
     } else {
       url = next;
     }
@@ -738,7 +739,7 @@ class ShoppingAuthService extends AuthService {
 
   // List Products
   Future<Map<String, dynamic>> searchUsersProducts(String next, String previous,
-      {String userId, String category, String text}) async {
+      {SearchItemWithFilterModel filterOptions}) async {
     var url = "";
     if (next == null) {
       return null;
@@ -746,8 +747,8 @@ class ShoppingAuthService extends AuthService {
     if (next == "") {
       url = secureBaseUrl +
           "/api/v1/products/by-seller/" +
-          userId +
-          "/?category=$category&name__icontaines=$text";
+          filterOptions.searchedUser.userName +
+          "/?category=${filterOptions.category}&name__icontaines=${filterOptions.searchedText}";
     } else {
       url = next;
     }
