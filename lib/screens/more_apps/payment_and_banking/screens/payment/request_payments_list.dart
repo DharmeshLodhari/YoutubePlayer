@@ -180,7 +180,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       title: Text(
         "Payment request",
         style: TextStyle(
-            color: blackFont, fontSize: 22, fontWeight: FontWeight.w700),
+            color: blackFont, fontSize: 20, fontWeight: FontWeight.w700),
       ),
       actions: <Widget>[
         paymentRequestBtn(),

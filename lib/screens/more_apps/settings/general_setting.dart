@@ -101,7 +101,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
       title: Text(
         "Settings",
         style: TextStyle(
-            color: blackFont, fontSize: 22, fontWeight: FontWeight.w700),
+            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
         // paymentRequestBtn(),

@@ -18,7 +18,7 @@ class ChatShakeDetection extends ChangeNotifier {
   ShakeDetector _detector;
   bool _showShakingAlert = false;
   Timer _nudgeAlertTimer;
-  Duration _nudgeAlertDuration = Duration(seconds: 12);
+  Duration _nudgeAlertDuration = Duration(seconds: 11);
   CustomerProfile _recipientUser;
   UserBloc _userBloc;
 
@@ -29,8 +29,9 @@ class ChatShakeDetection extends ChangeNotifier {
     _detector = ShakeDetector.autoStart(
       onPhoneShake: () {
         // debugPrint("Shake Detected:- ${detector.mShakeCount}");
-        if (_detector.mShakeCount >= 5) {
-          _showShakingDialog();
+        if (_detector.mShakeCount == 5) {
+          ///send Nudge to Recipient
+          _nudgeRecipient();
         }
       },
       shakeSlopTimeMS: Platform.isIOS ? 500 : 150,
@@ -52,8 +53,9 @@ class ChatShakeDetection extends ChangeNotifier {
     _detector = ShakeDetector.autoStart(
       onPhoneShake: () {
         // debugPrint("Shake Detected:- ${detector.mShakeCount}");
-        if (_detector.mShakeCount >= 5) {
-          _showShakingDialog();
+        if (_detector.mShakeCount == 5) {
+          ///send Nudge to Recipient
+          _nudgeRecipient();
         }
       },
       shakeSlopTimeMS: Platform.isIOS ? 500 : 150,
@@ -76,18 +78,16 @@ class ChatShakeDetection extends ChangeNotifier {
     _recipientUser = null;
   }
 
-  void _showShakingDialog() async {
+  void showShakingDialog() async {
+    // debugPrint("showShake $_showShakingAlert");
     if (_showShakingAlert) {
       _showShakingAlert = false;
       notifyListeners();
     } else {
       _showShakingAlert = true;
-      // debugPrint("showShake $showShakingAlert");
+      // debugPrint("showShake $_showShakingAlert");
       _detector.stopListening();
       notifyListeners();
-
-      ///send Nudge to Recipient
-      _nudgeRecipient();
 
       /// if nudge timer is already in action we stop it
       if (_nudgeAlertTimer?.isActive ?? false) {
@@ -100,6 +100,8 @@ class ChatShakeDetection extends ChangeNotifier {
         notifyListeners();
         _resetShakeDetector();
       });
+
+      await Future.delayed(Duration(milliseconds: 1500));
 
       String result = await showDialog<String>(
           context: myGlobals.scaffoldKey.currentContext,

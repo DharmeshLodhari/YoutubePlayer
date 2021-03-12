@@ -30,7 +30,7 @@ class CurvedButton extends StatelessWidget {
         child: Text(
           text,
           style: TextStyle(
-              color: textColor, fontSize: 16.0.sp, fontWeight: FontWeight.w600),
+              color: textColor, fontSize: 16.0, fontWeight: FontWeight.w600),
         ),
         color: backgroundColor,
         onPressed: onPressed,

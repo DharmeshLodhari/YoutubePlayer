@@ -381,7 +381,7 @@ class _SendPaymentState extends State<SendPayment> {
               width: 4,
             ),
             Text(
-              showMoreOption ? "Less Option" : "More Option",
+              showMoreOption ? "less options" : "more options",
               style: TextStyle(
                   color: darkGrey, fontSize: 14, fontWeight: FontWeight.w600),
             )
@@ -862,7 +862,7 @@ class _SendPaymentState extends State<SendPayment> {
       onPressed: onSubmit,
       backgroundColor: navyBlue,
       textColor: Colors.white,
-      text: AppLocalization.of(context).sendPayment,
+      text: "Pay",
     );
   }
 

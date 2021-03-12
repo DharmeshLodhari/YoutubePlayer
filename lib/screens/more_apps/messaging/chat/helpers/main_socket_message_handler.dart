@@ -208,6 +208,13 @@ class MainSocketMessageHandler {
           }
         }
       }
+    } else {
+      debugPrint("=================== $messageData");
+
+      ChatShakeDetection chatShakeDetection = Provider.of<ChatShakeDetection>(
+          myGlobals.scaffoldKey.currentContext,
+          listen: false);
+      chatShakeDetection.showShakingDialog();
     }
   }
 

@@ -211,9 +211,9 @@ class MessageAuth extends AuthService {
       };
       return result;
     } else if (response.statusCode == 500) {
-      throw "Server Error";
+      return Future.error("Server Error");
     } else {
-      throw json.decode(response.body);
+      return Future.error("${response.body}");
     }
   }
 
@@ -223,11 +223,12 @@ class MessageAuth extends AuthService {
         secureBaseUrl + "/api/v1/chat/retrieve-user-chat-status/" + id + "/";
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
-    var jsonData = json.decode(response.body);
+
     if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
       return jsonData;
     } else {
-      return {};
+      return Future.error("ERROR:- ${response.body}");
     }
   }
 

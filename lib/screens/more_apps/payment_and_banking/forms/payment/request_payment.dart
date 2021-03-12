@@ -329,7 +329,7 @@ class _RequestPaymentState extends State<RequestPayment> {
               width: 4,
             ),
             Text(
-              showMoreOption ? "Less Option" : "More Option",
+              showMoreOption ? "less options" : "more options",
               style: TextStyle(
                   color: darkGrey, fontSize: 14, fontWeight: FontWeight.w600),
             )

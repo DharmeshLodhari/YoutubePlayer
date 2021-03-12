@@ -323,7 +323,7 @@ class _SearchModuleState extends State<SearchModule> {
       title: Text(
         "Search",
         style: TextStyle(
-            color: blackFont, fontSize: 22, fontWeight: FontWeight.w700),
+            color: blackFont, fontSize: 20, fontWeight: FontWeight.w700),
       ),
     );
   }
