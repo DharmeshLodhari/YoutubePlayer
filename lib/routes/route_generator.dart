@@ -77,7 +77,6 @@ import 'package:Slydo/screens/more_apps/train/search_train.dart';
 import 'package:Slydo/screens/more_apps/train/train_dashboard.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/add_document.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/add_or_edit_user_bio.dart';
-import 'package:Slydo/screens/more_apps/user_profile/forms/bvn_verification_page.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/forgot_password.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/login.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/reset_password.dart';
@@ -436,7 +435,7 @@ class RouteGenerator {
         );
       case '/bvn-verification':
         return PageTransition(
-          child: BvnVerificationPage(),
+          child: Dashboard(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
