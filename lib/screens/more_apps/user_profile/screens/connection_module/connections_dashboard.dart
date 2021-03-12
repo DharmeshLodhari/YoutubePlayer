@@ -8,6 +8,10 @@ import 'connection_request_list.dart';
 import 'connections_list.dart';
 
 class ConnectionDashboard extends StatefulWidget {
+  final arguments;
+
+  ConnectionDashboard({this.arguments});
+
   @override
   _ConnectionDashboardState createState() => _ConnectionDashboardState();
 }
@@ -16,41 +20,24 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
   int currentIndex = 0;
 
   var filterValue = "Connections";
-  // MainSocketProvider mainSocketProvider;
-  // StreamSubscription streamSubscription;
 
   @override
   void initState() {
+    if (widget.arguments != null) {
+      currentIndex = widget.arguments["index"] ?? 0;
+    }
+
     super.initState();
   }
 
-  // void initializeListener() {
-  //   streamSubscription?.cancel();
-  //   streamSubscription = mainSocketProvider.socketStream.listen((event) {
-  //     Map<String, dynamic> decodeMessage = jsonDecode(event);
-  //
-  //     if (mainSocketProvider.currentConversationId !=
-  //         decodeMessage["conversation"]) {
-  //       MainSocketMessageHandler(message: event);
-  //       if (mounted) setState(() {});
-  //     }
-  //   });
-  // }
-
   @override
   void dispose() {
-    // mainSocketProvider.removeStreamSubscription(streamSubscription);
-    // streamSubscription?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     if (filterValue == 'Connections') filterValue = "Connections";
-
-    // mainSocketProvider = Provider.of<MainSocketProvider>(context);
-
-    // initializeListener();
 
     return WillPopScope(
       onWillPop: () async {
@@ -95,13 +82,15 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
     );
   }
 
+  // ignore: missing_return
   String getTitle() {
     if (currentIndex == 0) {
       return "Connections";
     } else if (currentIndex == 1) {
       return AppLocalization.of(context).requests;
+    } else if (currentIndex == 2) {
+      return AppLocalization.of(context).blocked;
     }
-    return AppLocalization.of(context).blocked;
   }
 
   Widget tabBar() {

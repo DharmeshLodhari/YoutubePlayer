@@ -169,6 +169,10 @@ class PushNotificationService {
       } else if (payload == "/transaction") {
         Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
         Navigator.of(context).pushNamed('/transactions');
+      } else if (payload == "/connection-request") {
+        Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
+        Navigator.of(context)
+            .pushNamed('/friends-dashboard', arguments: {"index": 1});
       } else if (payload.length > 15 &&
           payload.substring(0, 16) == "/detail_message/") {
         //this variable will fetch the id of message from the response

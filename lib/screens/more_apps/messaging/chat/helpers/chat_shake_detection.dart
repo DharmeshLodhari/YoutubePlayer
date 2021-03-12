@@ -138,7 +138,7 @@ class ChatShakeDetection extends ChangeNotifier {
                               Text("Nudging...",
                                   style: TextStyle(
                                     inherit: false,
-                                    fontSize: 18.0.sp,
+                                    fontSize: 18.0,
                                     color: blackFont,
                                     fontWeight: FontWeight.w500,
                                   )),

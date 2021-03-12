@@ -288,7 +288,7 @@ class _IndexState extends State<Index> {
                       "SCAN QR CODE",
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                          fontSize: 22.0.sp, fontWeight: FontWeight.w700),
+                          fontSize: 22.0, fontWeight: FontWeight.w700),
                     ),
                     SizedBox(
                       height: 20,
@@ -299,7 +299,7 @@ class _IndexState extends State<Index> {
                         "Scan QR Code to make payment. Easy and secure.",
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            fontSize: 14.0.sp, color: darkGrey, height: 1.5),
+                            fontSize: 14.0, color: darkGrey, height: 1.5),
                       ),
                     ),
                     Expanded(
@@ -350,7 +350,7 @@ class _IndexState extends State<Index> {
                       "SEND PAYMENT",
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                          fontSize: 22.0.sp, fontWeight: FontWeight.w700),
+                          fontSize: 22.0, fontWeight: FontWeight.w700),
                     ),
                     SizedBox(
                       height: 20,
@@ -361,7 +361,7 @@ class _IndexState extends State<Index> {
                         "Send money fast to anyone, anywhere in Africa.",
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            fontSize: 14.0.sp, color: darkGrey, height: 1.5),
+                            fontSize: 14.0, color: darkGrey, height: 1.5),
                       ),
                     ),
                     Expanded(
@@ -412,7 +412,7 @@ class _IndexState extends State<Index> {
                       "RECEIVE PAYMENT",
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                          fontSize: 22.0.sp, fontWeight: FontWeight.w700),
+                          fontSize: 22.0, fontWeight: FontWeight.w700),
                     ),
                     SizedBox(
                       height: 20,
@@ -423,7 +423,7 @@ class _IndexState extends State<Index> {
                         "Receive instant payment from your customers.",
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            fontSize: 14.0.sp, color: darkGrey, height: 1.5),
+                            fontSize: 14.0, color: darkGrey, height: 1.5),
                       ),
                     ),
                     Expanded(
@@ -474,7 +474,7 @@ class _IndexState extends State<Index> {
                       "VIEW TRANSACTIONS",
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                          fontSize: 22.0.sp, fontWeight: FontWeight.w700),
+                          fontSize: 22.0, fontWeight: FontWeight.w700),
                     ),
                     SizedBox(
                       height: 20,
@@ -485,7 +485,7 @@ class _IndexState extends State<Index> {
                         "See how much you receive and spend daily, weekly and monthly.",
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            fontSize: 14.0.sp, color: darkGrey, height: 1.5),
+                            fontSize: 14.0, color: darkGrey, height: 1.5),
                       ),
                     ),
                     Expanded(
@@ -517,7 +517,7 @@ class _IndexState extends State<Index> {
     return GestureDetector(
       child: Text(
         _currentPageNotifier.value == 3 ? "Done" : "Skip",
-        style: TextStyle(fontSize: 14.0.sp, color: darkGrey),
+        style: TextStyle(fontSize: 14.0, color: darkGrey),
       ),
       onTap: () {
         isIntroDone = true;

@@ -446,7 +446,7 @@ class RouteGenerator {
         );
       case '/friends-dashboard':
         return PageTransition(
-          child: ConnectionDashboard(),
+          child: ConnectionDashboard(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
