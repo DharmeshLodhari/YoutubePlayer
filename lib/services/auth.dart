@@ -7,6 +7,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
 
+import 'device_info.dart';
+
 final String baseUrl = "https://api.slydo.co";
 final String secureBaseUrl = "https://api.slydo.co";
 final String localHostUrl = "https://127.0.0.1:8080";
@@ -59,7 +61,10 @@ class AuthService {
     DateTime now = DateTime.now();
     int expirationTime =
         getEpochTime(now.add(Duration(seconds: 220))); // 3.66667 Minute
+
     Map _body = {"password": password, "phone_number": phoneNumber};
+    var data = await getDeviceInfo();
+    _body.addAll(data);
 
     var response = await http.post(url, body: _body, headers: headers);
     if (response.statusCode == 200) {

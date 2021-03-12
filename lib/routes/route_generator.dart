@@ -90,6 +90,7 @@ import 'package:Slydo/screens/more_apps/user_profile/screens/connection_module/c
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/search_users_product_and_service.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_profile_screen.dart';
 import 'package:Slydo/screens/scan_qr_code.dart';
+import 'package:Slydo/screens/search_module.dart';
 import 'package:Slydo/screens/user_dashboard.dart';
 import 'package:Slydo/splash.dart';
 import 'package:Slydo/widget/resultReturningPasswordPopup.dart';
@@ -140,6 +141,16 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
+      case '/search-module':
+        return PageTransition(
+          child: SearchModule(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
       case '/new-registration':
         return PageTransition(
           child: Registration(),

@@ -19,6 +19,10 @@ import 'package:provider/provider.dart';
 import 'more_apps/user_profile/user_auth.dart';
 
 class SearchModule extends StatefulWidget {
+  final arguments;
+
+  SearchModule({this.arguments});
+
   @override
   _SearchModuleState createState() => _SearchModuleState();
 }
@@ -59,8 +63,14 @@ class _SearchModuleState extends State<SearchModule> {
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
 
+  bool usingOutsideOfDashboard = false;
+
   @override
   void initState() {
+    if (widget.arguments != null) {
+      usingOutsideOfDashboard = widget.arguments["show_back_button"] ?? false;
+    }
+
     slidableController = SlidableController(
       onSlideAnimationChanged: handleSlideAnimationChanged,
       onSlideIsOpenChanged: handleSlideIsOpenChanged,

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/services/device_info.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
@@ -167,6 +168,8 @@ class UserAuth extends AuthService {
     data["password2"] = _body["password2"];
     data["full_name"] = _body["fullName"];
     data["phone_number"] = _body["phoneNumber"];
+    var _data = await getDeviceInfo();
+    data.addAll(_data);
 
     var response = await http.post(url, body: data);
     if (response.statusCode == 200) {
