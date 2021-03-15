@@ -1616,7 +1616,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     };
 
     debugPrint(
-        "recipeintUser = ${recipientUser}  recipientUser.conversationId = ${recipientUser.conversationId}");
+        "recipeintUser = $recipientUser  recipientUser.conversationId = ${recipientUser.conversationId}");
     if (recipientUser != null && recipientUser.conversationId != null) {
       DBSocketMessageHandler()
           .saveMessageToDb(message: ChatTextMessage.fromJson(data));

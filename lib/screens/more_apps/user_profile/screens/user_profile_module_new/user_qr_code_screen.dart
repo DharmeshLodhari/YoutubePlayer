@@ -193,8 +193,6 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
   }
 
   Widget displayUserInfo() {
-    Color borderColor = getUserTypeColor(user: user);
-
     return CustomBoxShadow(
       child: Card(
         elevation: 4,

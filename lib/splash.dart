@@ -1,7 +1,9 @@
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/SecureUser.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/services/secure_storage.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/country_picker/country.dart';
 import 'package:Slydo/utils/country_picker/utils.dart';
@@ -30,8 +32,8 @@ class _SplashScreenState extends State<SplashScreen> {
   bool isChecked = false;
   bool isLoggedOut = false;
   String countryFromPref;
-  String phoneNumberFromPref;
-  String passwordFromPref;
+  String userPhoneNumber;
+  String userPassword;
   SharedPreferences _sharedPreferences;
   BasketBloc basketBloc;
 
@@ -211,19 +213,18 @@ class _SplashScreenState extends State<SplashScreen> {
         Country country =
             CountryPickerUtils.getCountryByIsoCode(countryFromPref);
 
-        phoneNumberFromPref = _sharedPreferences.getString('username') ?? "";
-        passwordFromPref = _sharedPreferences.getString('password') ?? "";
+        SecureUser secureUser = await SecureStorage().getUser();
+        userPhoneNumber = secureUser.phoneNumber ?? "";
+        userPassword = secureUser.password ?? "";
 
         await _sharedPreferences.setBool('isLoggedOut', isLoggedOut);
         await _sharedPreferences.setBool('isChecked', isChecked);
         await _sharedPreferences.setString('country', countryFromPref);
-        await _sharedPreferences.setString('username', phoneNumberFromPref);
-        await _sharedPreferences.setString('password', passwordFromPref);
 
-        var phoneNumber = "+" + country.phoneCode + phoneNumberFromPref;
-        var password = passwordFromPref;
+        var phoneNumber = "+" + country.phoneCode + userPhoneNumber;
+        var password = userPassword;
 
-        if (phoneNumberFromPref != "" && passwordFromPref != "") {
+        if (userPhoneNumber != "" && userPassword != "") {
           var _user;
           var _bankAccount;
           _auth.authenticate(phoneNumber, password).then((value) {
@@ -249,9 +250,6 @@ class _SplashScreenState extends State<SplashScreen> {
                           "/dashboard",
                           (Route<dynamic> route) => false,
                         );
-                      } else {
-                        Navigator.of(context)
-                            .popAndPushNamed('/bvn-verification');
                       }
                     } else {
                       //initialize shoppingcart
@@ -270,6 +268,9 @@ class _SplashScreenState extends State<SplashScreen> {
               Navigator.pop(context);
               Navigator.of(context).pushNamed("/index");
             }
+          }).catchError((error) {
+            Navigator.pop(context);
+            Navigator.of(context).pushNamed("/index");
           });
         } else {
           Navigator.pop(context);

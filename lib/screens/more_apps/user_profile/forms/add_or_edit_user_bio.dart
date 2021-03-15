@@ -391,7 +391,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
       } else if (result == "remove") {
         isUserAvatarLoading = true;
         if (mounted) setState(() {});
-        bool result = await UserAuth().deleteCustomerAvatar();
+        bool result = await UserAuth().deleteUserAvatar();
 
         isUserAvatarLoading = false;
         if (mounted) setState(() {});
@@ -442,7 +442,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
 
           // Upload Image new image
           CustomerProfile customerProfile =
-              await UserAuth().updateCustomerAvatar(File(file.path));
+              await UserAuth().updateUserAvatar(File(file.path));
 
           isUserAvatarLoading = false;
           if (mounted) setState(() {});

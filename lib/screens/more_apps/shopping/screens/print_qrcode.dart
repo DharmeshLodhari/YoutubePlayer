@@ -74,12 +74,14 @@ class _PrintQRCodeState extends State<PrintQRCode> {
   Future<Uint8List> _generatePdf(PdfPageFormat format, String title) async {
     final pdf = pw.Document(title: itemName);
     var imageProvider = NetworkImage(imageUrl);
+    // ignore: deprecated_member_use
     final PdfImage image = await pdfImageFromImageProvider(
         pdf: pdf.document, image: imageProvider);
 
     pdf.addPage(
       pw.Page(build: (pw.Context context) {
         return pw.Container(
+          // ignore: deprecated_member_use
           child: pw.Image(image),
         ); // Center
       }),

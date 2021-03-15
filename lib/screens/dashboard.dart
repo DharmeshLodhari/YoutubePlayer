@@ -42,7 +42,6 @@ class _DashboardState extends State<Dashboard> {
   List<Widget> screens;
   BasketBloc basketBloc;
 
-  NotificationBloc notificationBloc;
   MainSocketProvider mainSocketProvider;
   StreamSubscription streamSubscription;
 

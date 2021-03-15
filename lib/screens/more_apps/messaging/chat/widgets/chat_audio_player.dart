@@ -42,8 +42,6 @@ class _ChatAudioPlayerState extends State<ChatAudioPlayer> {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
     bool isSend = widget.message["author"] == userBloc.user.userName;
-    String messageText = widget.message['text'] ?? "";
-    bool isMessageEmpty = messageText == "";
 
     if (_audioPlayer == null || _audioPlayer?.id != widget.message["id"]) {
       _audioPlayer = AssetsAudioPlayer.withId(widget.message["id"]);

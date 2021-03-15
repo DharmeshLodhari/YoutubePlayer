@@ -142,6 +142,7 @@ class _IndexState extends State<Index> {
                       SizedBox(
                         height: 10,
                       ),
+                      resetDeviceField(),
                     ],
                   ),
                 ),
@@ -157,6 +158,20 @@ class _IndexState extends State<Index> {
         ],
       ),
     );
+  }
+
+  Widget resetDeviceField() {
+    return Container(
+        child: GestureDetector(
+      onTap: () {
+        Navigator.of(context).pushNamed('/reset-device');
+      },
+      child: Text(
+        "Reset device?",
+        style: TextStyle(
+            fontSize: 14, fontWeight: FontWeight.w600, color: mateRed),
+      ),
+    ));
   }
 
   Widget loginButton() {

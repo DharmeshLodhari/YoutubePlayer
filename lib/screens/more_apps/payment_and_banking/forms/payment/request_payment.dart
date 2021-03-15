@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
@@ -721,7 +723,9 @@ class _RequestPaymentState extends State<RequestPayment> {
                       builder: (context) =>
                           Center(child: CircularLoadingIndicator()));
 
-                  userLocation = await locationService.getLocation();
+                  if (Platform.isIOS) {
+                    userLocation = await locationService.getLocation();
+                  }
 
                   var data = {
                     "from_customer": userBloc.user.userName.trim(),
@@ -731,8 +735,8 @@ class _RequestPaymentState extends State<RequestPayment> {
                     "category": selectedCategory.trim(),
                     "notes": reference.trim(),
                     "description": reference.trim(),
-                    "latitude": userLocation.latitude,
-                    "longitude": userLocation.longitude,
+                    "latitude": Platform.isIOS ? userLocation.latitude : "",
+                    "longitude": Platform.isIOS ? userLocation.longitude : "",
                     "made_from_chat": isFromChat ?? false,
                   };
 
@@ -741,6 +745,11 @@ class _RequestPaymentState extends State<RequestPayment> {
                     if (response.statusCode == 201) {
                       if (!isFromChat) {
                         _dashboardBloc.index = 1;
+                        RefreshBlocForRequestPayment
+                            refreshBlocForRequestPayment =
+                            Provider.of<RefreshBlocForRequestPayment>(context,
+                                listen: false);
+                        refreshBlocForRequestPayment.isRefresh = true;
                         Navigator.popUntil(
                             context, ModalRoute.withName("/dashboard"));
                       } else {
@@ -761,13 +770,12 @@ class _RequestPaymentState extends State<RequestPayment> {
                               textColor: Colors.white);
                         });
                       }
-                    } else if (response.statusCode == 700) {
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, "/bvn-verification");
-                    } else if (response.statusCode == 800) {
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, "/add-document");
-                    } else {
+                    }
+                    // else if (response.statusCode == 800) {
+                    //   Navigator.pop(context);
+                    //   Navigator.pushNamed(context, "/add-document");
+                    // }
+                    else {
                       Navigator.pop(context);
                       if (mounted) {
                         setState(() {

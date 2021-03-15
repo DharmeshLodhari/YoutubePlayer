@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
@@ -901,7 +902,10 @@ class _SendPaymentState extends State<SendPayment> {
                       builder: (context) =>
                           Center(child: CircularLoadingIndicator()));
 
-                  userLocation = await locationService.getLocation();
+                  if (Platform.isIOS) {
+                    userLocation = await locationService.getLocation();
+                  }
+
                   deviceData = await getDeviceInfo();
                   var data = {
                     "from_customer": userBloc.user.userName,
@@ -911,8 +915,8 @@ class _SendPaymentState extends State<SendPayment> {
                     "category": selectedCategory.trim(),
                     "notes": reference.trim(),
                     "description": reference.trim(),
-                    "latitude": userLocation.latitude,
-                    "longitude": userLocation.longitude,
+                    "latitude": Platform.isIOS ? userLocation.latitude : "",
+                    "longitude": Platform.isIOS ? userLocation.longitude : "",
                     "deviceData": deviceData,
                     "is_anonymous": sendMoneyAnonymous,
                     "made_from_chat": isFromChat ?? false,
@@ -955,13 +959,12 @@ class _SendPaymentState extends State<SendPayment> {
                             backgroundColor: darkBlue(),
                             textColor: Colors.white);
                       });
-                    } else if (response.statusCode == 700) {
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, "/bvn-verification");
-                    } else if (response.statusCode == 800) {
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, "/add-document");
-                    } else {
+                    }
+                    // else if (response.statusCode == 800) {
+                    //   Navigator.pop(context);
+                    //   Navigator.pushNamed(context, "/add-document");
+                    // }
+                    else {
                       Navigator.pop(context);
                       setState(() {
                         errorMessage =

@@ -59,8 +59,6 @@ class _MessageTileState extends State<MessageTile> {
   }
 
   Widget getLeading() {
-    Color borderColor = getUserTypeColorByType(type: partialMessage.senderType);
-
     return Container(
       height: 48,
       width: 48,

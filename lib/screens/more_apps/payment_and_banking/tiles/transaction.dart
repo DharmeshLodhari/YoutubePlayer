@@ -53,9 +53,6 @@ class _PaymentRequestTileState extends State<PaymentRequestTile> {
   }
 
   Widget getLeading() {
-    Color borderColor =
-        getUserTypeColorByType(type: widget.paymentRequest.userType);
-
     return Container(
       height: 48,
       width: 48,
@@ -218,9 +215,6 @@ class _TransactionTileState extends State<TransactionTile> {
   }
 
   Widget getLeading() {
-    Color borderColor =
-        getUserTypeColorByType(type: widget.transaction.userType);
-
     return widget.transaction.isAnonymous
         ? Container(
             padding: EdgeInsets.only(top: 4.0, bottom: 4.0),

@@ -66,8 +66,6 @@ class OrderTile extends StatelessWidget {
   }
 
   Widget getLeading() {
-    Color borderColor = getUserTypeColorByType(type: getAvatarType());
-
     return Container(
       height: 48,
       width: 48,

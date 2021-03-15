@@ -24,28 +24,30 @@ class ListRefresher {
           myGlobals.scaffoldKey.currentContext,
           listen: false);
 
-      if (routeProvider.routes.contains("/dashboard")) {
-        RefreshBlocForRequestPayment refreshBlocForRequestPayment =
-            Provider.of<RefreshBlocForRequestPayment>(
-                myGlobals.scaffoldKey.currentContext,
-                listen: false);
-        refreshBlocForRequestPayment.isRefresh = true;
-      }
+      if (myGlobals.scaffoldKey.currentContext != null) {
+        if (routeProvider.routes.contains("/dashboard")) {
+          RefreshBlocForRequestPayment refreshBlocForRequestPayment =
+              Provider.of<RefreshBlocForRequestPayment>(
+                  myGlobals.scaffoldKey.currentContext,
+                  listen: false);
+          refreshBlocForRequestPayment.isRefresh = true;
+        }
 
-      if (routeProvider.routes.contains("/transactions")) {
-        RefreshBlocForTransaction refreshBlocForTransaction =
-            Provider.of<RefreshBlocForTransaction>(
-                myGlobals.scaffoldKey.currentContext,
-                listen: false);
-        refreshBlocForTransaction.isRefresh = true;
-      }
+        if (routeProvider.routes.contains("/transactions")) {
+          RefreshBlocForTransaction refreshBlocForTransaction =
+              Provider.of<RefreshBlocForTransaction>(
+                  myGlobals.scaffoldKey.currentContext,
+                  listen: false);
+          refreshBlocForTransaction.isRefresh = true;
+        }
 
-      if (routeProvider.routes.contains("/friends-dashboard")) {
-        RefreshBlocForConnectionDashboard refreshBlocForConnectionDashboard =
-            Provider.of<RefreshBlocForConnectionDashboard>(
-                myGlobals.scaffoldKey.currentContext,
-                listen: false);
-        refreshBlocForConnectionDashboard.isRefresh = true;
+        if (routeProvider.routes.contains("/friends-dashboard")) {
+          RefreshBlocForConnectionDashboard refreshBlocForConnectionDashboard =
+              Provider.of<RefreshBlocForConnectionDashboard>(
+                  myGlobals.scaffoldKey.currentContext,
+                  listen: false);
+          refreshBlocForConnectionDashboard.isRefresh = true;
+        }
       }
     });
   }

@@ -541,11 +541,11 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
                   gravity: Toast.TOP,
                   backgroundColor: darkBlue(),
                   textColor: Colors.white);
-            } else if (response.statusCode == 700) {
-              Navigator.pushNamed(context, "/bvn-verification");
-            } else if (response.statusCode == 800) {
-              Navigator.pushNamed(context, "/add-document");
-            } else {
+            }
+            // else if (response.statusCode == 800) {
+            //   Navigator.pushNamed(context, "/add-document");
+            // }
+            else {
               _showSnackBar(context, AppLocalization.of(context).error);
             }
           },

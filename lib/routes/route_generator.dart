@@ -79,11 +79,13 @@ import 'package:Slydo/screens/more_apps/user_profile/forms/add_document.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/add_or_edit_user_bio.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/forgot_password.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/login.dart';
+import 'package:Slydo/screens/more_apps/user_profile/forms/reset_device.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/reset_password.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/signup.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/upgrade_user_profile.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/user_address.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/verify_registration_OTP.dart';
+import 'package:Slydo/screens/more_apps/user_profile/forms/verify_reset_device_OTP.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/verify_reset_password_OTP.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/connection_module/connections_dashboard.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/search_users_product_and_service.dart';
@@ -111,6 +113,13 @@ class RouteGenerator {
       case '/login':
         return PageTransition(
           child: UserLogin(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case '/reset-device':
+        return PageTransition(
+          child: ResetDevice(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -160,6 +169,13 @@ class RouteGenerator {
       case '/verify-registration-otp':
         return PageTransition(
           child: VerifyRegistrationOTPScreen(arguments: settings.arguments),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case '/verify-reset-device-otp':
+        return PageTransition(
+          child: VerifyResetDeviceOTPScreen(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -429,13 +445,6 @@ class RouteGenerator {
       case '/order-detail-page':
         return PageTransition(
           child: OrderDetailPage(arguments: settings.arguments),
-          type: PageTransitionType.bottomToTop,
-          curve: Curves.ease,
-          settings: settings,
-        );
-      case '/bvn-verification':
-        return PageTransition(
-          child: Dashboard(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

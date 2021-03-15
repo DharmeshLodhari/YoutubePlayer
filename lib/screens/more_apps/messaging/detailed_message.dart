@@ -2,7 +2,6 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/models/message.dart';
 import 'package:Slydo/utils/colors.dart';
-import 'package:Slydo/utils/common.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -181,9 +180,7 @@ class _DetailedMessageState extends State<DetailedMessage> {
     );
   }
 
-  getLeading() {
-    Color borderColor = getUserTypeColorByType(type: message.senderType);
-
+  Widget getLeading() {
     return Container(
       height: 48,
       width: 48,

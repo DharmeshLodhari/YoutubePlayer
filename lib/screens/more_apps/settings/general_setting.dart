@@ -1,11 +1,9 @@
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:package_info/package_info.dart';
 
 class GeneralSettingScreen extends StatefulWidget {
@@ -16,8 +14,6 @@ class GeneralSettingScreen extends StatefulWidget {
 class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
   final GlobalKey<ScaffoldState> _scaffoldGeneralSettingKey =
       new GlobalKey<ScaffoldState>();
-  final _auth = PaymentAndBankingAuth();
-  SlidableController _slideController;
 
   bool isLoading = false;
 

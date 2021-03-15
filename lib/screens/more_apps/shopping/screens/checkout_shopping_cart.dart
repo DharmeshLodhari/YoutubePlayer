@@ -466,19 +466,15 @@ class _ShoppingCartState extends State<ShoppingCart> {
                       backgroundColor: darkBlue(),
                       textColor: Colors.white,
                     );
-                  } else if (response.statusCode == 700) {
-                    Navigator.pop(context);
-                    Navigator.pushNamed(
-                      context,
-                      "/bvn-verification",
-                    );
-                  } else if (response.statusCode == 800) {
-                    Navigator.pop(context);
-                    Navigator.pushNamed(
-                      context,
-                      "/add-document",
-                    );
-                  } else {
+                  }
+                  // else if (response.statusCode == 800) {
+                  //   Navigator.pop(context);
+                  //   Navigator.pushNamed(
+                  //     context,
+                  //     "/add-document",
+                  //   );
+                  // }
+                  else {
                     debugPrint(
                       "MakePaymentForCartOrder Unsuccessful",
                     );

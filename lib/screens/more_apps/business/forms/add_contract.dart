@@ -4,7 +4,6 @@ import 'package:Slydo/screens/more_apps/business/business_auth.dart';
 import 'package:Slydo/screens/more_apps/business/models/Contract.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
-import 'package:Slydo/services/location_service.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -48,7 +47,6 @@ class _AddContractState extends State<AddContract> {
   String category = "";
   String errorMessage = "";
   String recipient;
-  final locationService = LocationService();
 
   DateTime startingDate = DateTime.now();
   DateTime endingDate = DateTime.now();

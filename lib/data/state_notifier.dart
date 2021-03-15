@@ -2,7 +2,6 @@ import 'package:Slydo/screens/more_apps/business/models/Item.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/services/fcm_push_notification.dart';
 import 'package:flutter/material.dart';
 
 class UserBloc extends ChangeNotifier {
@@ -258,18 +257,6 @@ class DashboardBloc extends ChangeNotifier {
     _index = value;
     _pageController.animateToPage(_index,
         duration: Duration(milliseconds: 1), curve: Curves.linear);
-    notifyListeners();
-  }
-}
-
-class NotificationBloc extends ChangeNotifier {
-  PushNotificationService _pushNotificationService;
-
-  PushNotificationService get pushNotificationService =>
-      _pushNotificationService;
-
-  set pushNotificationService(PushNotificationService value) {
-    _pushNotificationService = value;
     notifyListeners();
   }
 }

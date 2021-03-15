@@ -55,7 +55,7 @@ class UserAuth extends AuthService {
   }
 
   // Update User Avatar
-  Future<CustomerProfile> updateCustomerAvatar(File avatar) async {
+  Future<CustomerProfile> updateUserAvatar(File avatar) async {
     User user = await getUser();
     var headers = await getAuthHeaders();
     var url =
@@ -104,7 +104,7 @@ class UserAuth extends AuthService {
   }
 
   // Update User Avatar
-  Future<bool> deleteCustomerAvatar() async {
+  Future<bool> deleteUserAvatar() async {
     User user = await getUser();
     var headers = await getAuthHeaders();
     var url =
@@ -220,7 +220,7 @@ class UserAuth extends AuthService {
   }
 
   // it will verify the phone number to  OTP
-  Future<bool> passwordReset(String passwordOne, String passwordTwo,
+  Future<bool> resetPassword(String passwordOne, String passwordTwo,
       String phoneNumber, String resetToken) async {
     var url = secureBaseUrl + "/api/v1/user/auth/password-reset/";
     var headers = getNonAuthHeader();

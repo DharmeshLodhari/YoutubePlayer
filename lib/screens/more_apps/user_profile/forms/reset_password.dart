@@ -169,7 +169,7 @@ class _ResetPasswordState extends State<ResetPassword> {
 
     if (_formKey.currentState.validate()) {
       UserAuth()
-          .passwordReset(newPassword, confirmPassword, phoneNumber, resetToken)
+          .resetPassword(newPassword, confirmPassword, phoneNumber, resetToken)
           .then((value) {
         if (value) {
           Navigator.popUntil(context, ModalRoute.withName('/login'));

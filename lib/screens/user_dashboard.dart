@@ -10,6 +10,7 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/tiles/bank_account.d
 import 'package:Slydo/screens/more_apps/user_profile/models/device.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/fcm_push_notification.dart';
+import 'package:Slydo/services/secure_storage.dart';
 import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -162,10 +163,10 @@ class _UserDashboardState extends State<UserDashboard> {
         style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
       ),
       actions: <Widget>[
-        settingBtn(),
-        SizedBox(
-          width: 6,
-        ),
+        // settingBtn(),
+        // SizedBox(
+        //   width: 6,
+        // ),
         logoutBtn(),
       ],
     );
@@ -484,8 +485,6 @@ class _UserDashboardState extends State<UserDashboard> {
     emptyBasketCart();
     SharedPreferences _sharedPreferences;
 
-    // await notificationBloc.pushNotificationService.logout();
-
     MainSocketMessageHandler().dispose();
 
     // AssetsAudioPlayer.allPlayers().forEach((key, value) {
@@ -503,6 +502,11 @@ class _UserDashboardState extends State<UserDashboard> {
     dashboardBloc.index = 0;
     _sharedPreferences = await SharedPreferences.getInstance();
     _sharedPreferences.setBool('isLoggedOut', true);
+
+    /// clearing all data when user is logout
+    if (!_sharedPreferences.getBool("isChecked")) {
+      await SecureStorage().clear();
+    }
 
     if (mounted) {
       Navigator.pushNamedAndRemoveUntil(context, "/index", (r) => false,
@@ -621,7 +625,7 @@ class _UserDashboardState extends State<UserDashboard> {
           var password = dbUser.password;
 
           // Upload Image new image
-          await UserAuth().updateCustomerAvatar(File(file.path));
+          await UserAuth().updateUserAvatar(File(file.path));
 
           // Get New updated user data and set new user data to userBloc
           await _auth.authenticate(phoneNumber, password).then((value) {

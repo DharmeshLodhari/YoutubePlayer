@@ -30,12 +30,27 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
 
   bool isChecked = false;
 
+  String bankName;
+  String bankAccountName;
+  String bankAccountNumber;
+
+  bool isBankDetailsIsEmpty = false;
+
   @override
   void initState() {
     debugPrint("response ${widget.arguments}");
     amount = widget.arguments["amount"].toString();
     referenceNumber = widget.arguments["reference"].toString();
     currency = widget.arguments["currency"].toString();
+    Map bankDetails = widget.arguments["bank_details"];
+    if (bankDetails == null || bankDetails.isEmpty) {
+      isBankDetailsIsEmpty = true;
+    } else {
+      bankName = bankDetails["bank_name"].toString();
+      bankAccountName = bankDetails["account_name"].toString();
+      bankAccountNumber = bankDetails["account_number"].toString();
+    }
+
     super.initState();
   }
 
@@ -95,23 +110,7 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
               SizedBox(
                 height: 28,
               ),
-              referenceIdFiled(),
-              SizedBox(
-                height: 20,
-              ),
-              getUserBankAccountSlydo(),
-              SizedBox(
-                height: 24,
-              ),
-              userTopUpNote(),
-              SizedBox(
-                height: 16,
-              ),
-              transferredMoneyCheck(),
-              SizedBox(
-                height: 40,
-              ),
-              isChecked ? getSubmitButton() : Container(),
+              getOtherDetails(),
             ],
           ),
         ),
@@ -172,7 +171,7 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
                       ),
                       Expanded(
                         child: Text(
-                          "GT Bank",
+                          bankName ?? "",
                           style: TextStyle(
                               color: blackFont,
                               fontWeight: FontWeight.w600,
@@ -197,7 +196,7 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
                       ),
                       Expanded(
                         child: Text(
-                          "Slydo Private Limited",
+                          bankAccountName ?? "",
                           style: TextStyle(
                               color: blackFont,
                               fontWeight: FontWeight.w600,
@@ -222,7 +221,7 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
                       ),
                       Expanded(
                         child: Text(
-                          '8562014859',
+                          bankAccountNumber ?? "",
                           style: TextStyle(
                               color: blackFont,
                               fontWeight: FontWeight.w600,
@@ -236,6 +235,51 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget getOtherDetails() {
+    return isBankDetailsIsEmpty
+        ? getBankAccountEmptyWidget()
+        : Column(
+            children: [
+              referenceIdFiled(),
+              SizedBox(
+                height: 20,
+              ),
+              getUserBankAccountSlydo(),
+              SizedBox(
+                height: 24,
+              ),
+              userTopUpNote(),
+              SizedBox(
+                height: 16,
+              ),
+              transferredMoneyCheck(),
+              SizedBox(
+                height: 40,
+              ),
+              isChecked ? getSubmitButton() : Container()
+            ],
+          );
+  }
+
+  Widget getBankAccountEmptyWidget() {
+    return Card(
+      elevation: 0,
+      margin: EdgeInsets.zero,
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+        decoration: decorateBox(),
+        child: Text("Information not available",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                fontSize: 16,
+                color: blackFont,
+                fontWeight: FontWeight.w600,
+                height: 1.5)),
       ),
     );
   }

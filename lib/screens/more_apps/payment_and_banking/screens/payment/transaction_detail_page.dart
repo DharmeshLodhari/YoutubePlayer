@@ -85,7 +85,7 @@ class _TransactionDetailState extends State<TransactionDetail> {
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
-        openGraphBtn(),
+        showMap(),
         SizedBox(
           width: 16,
         ),
@@ -93,7 +93,7 @@ class _TransactionDetailState extends State<TransactionDetail> {
     );
   }
 
-  Widget openGraphBtn() {
+  Widget showMap() {
     return RoundedBackgroundIcon(
       height: 34,
       width: 34,
