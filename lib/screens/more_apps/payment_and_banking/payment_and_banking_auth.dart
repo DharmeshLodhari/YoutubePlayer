@@ -463,6 +463,19 @@ class PaymentAndBankingAuth extends AuthService {
     }
   }
 
+  Future<Map<String, dynamic>> verifyReferenceNumber(
+      Map<String, dynamic> data) async {
+    var url = secureBaseUrl + "/api/v1/transactions/get-payment-reference/";
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await http.post(url, headers: headers, body: _data);
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return jsonDecode(response.body);
+    } else {
+      return Future.error("${response.body}");
+    }
+  }
+
   Future<bool> confirmTopUpWithReferenceNumber(
       Map<String, dynamic> data) async {
     var url = secureBaseUrl + "/api/v1/transactions/topup-by-reference/";

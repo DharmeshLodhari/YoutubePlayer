@@ -249,20 +249,32 @@ class _OrdersListState extends State<OrdersList> {
         next = result['next'];
         previous = result['previous'];
         var tempList = result['results'];
-        if (mounted) {
-          setState(() {
-            isLoading = false;
-            orderList.addAll(tempList);
-          });
+
+        isLoading = false;
+        orderList.addAll(tempList);
+
+        if (mounted) setState(() {});
+
+        if (next != null) {
+          getList();
         }
       }
       if (orderList.isEmpty) {
-        if (mounted) {
-          setState(() {
-            noItemInList = true;
-          });
-        }
+        noItemInList = true;
+
+        if (mounted) setState(() {});
       } else if (next == null && orderList.length > 6) {
+        showReachedToBottomSnackBar();
+      }
+    }
+  }
+
+  void showReachedToBottomSnackBar() {
+    if (mounted) {
+      if (next == null &&
+          _scrollController.position.pixels ==
+              _scrollController.position.maxScrollExtent &&
+          _scrollController.position.pixels != 0) {
         _scaffoldOrderListKey.currentState.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),

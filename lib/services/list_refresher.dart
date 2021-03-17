@@ -18,13 +18,12 @@ class ListRefresher {
     }
 
     _timerForListRefresher = Timer.periodic(_refreshDurationInterval, (time) {
-      debugPrint("<====== Refreshing list ======>");
-
-      RouteProvider routeProvider = Provider.of<RouteProvider>(
-          myGlobals.scaffoldKey.currentContext,
-          listen: false);
-
       if (myGlobals.scaffoldKey.currentContext != null) {
+        debugPrint("<====== Refreshing list ======>");
+        RouteProvider routeProvider = Provider.of<RouteProvider>(
+            myGlobals.scaffoldKey.currentContext,
+            listen: false);
+
         if (routeProvider.routes.contains("/dashboard")) {
           RefreshBlocForRequestPayment refreshBlocForRequestPayment =
               Provider.of<RefreshBlocForRequestPayment>(

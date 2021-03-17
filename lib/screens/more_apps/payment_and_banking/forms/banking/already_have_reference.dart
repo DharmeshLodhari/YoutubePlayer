@@ -1,7 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/utils/colors.dart';
-import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -14,12 +12,14 @@ import 'package:toast/toast.dart';
 
 import '../../payment_and_banking_auth.dart';
 
-class AddMoneyToSlydoOne extends StatefulWidget {
+class AlreadyHaveReferenceScreen extends StatefulWidget {
   @override
-  _AddMoneyToSlydoOneState createState() => _AddMoneyToSlydoOneState();
+  _AlreadyHaveReferenceScreenState createState() =>
+      _AlreadyHaveReferenceScreenState();
 }
 
-class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
+class _AlreadyHaveReferenceScreenState
+    extends State<AlreadyHaveReferenceScreen> {
   final _formKeyTwo = GlobalKey<FormState>();
 
   UserBloc userBloc;
@@ -27,7 +27,7 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
 
   String errorMessage = "";
 
-  String amount = "";
+  String referenceNumber = "";
 
   @override
   void initState() {
@@ -89,36 +89,15 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
           key: _formKeyTwo,
           child: Column(
             children: <Widget>[
-              displayAmountField(),
+              displayReferenceField(),
               SizedBox(
-                height: 60,
+                height: 40,
               ),
-              amountUserGetMsg(),
-              SizedBox(
-                height: 20,
-              ),
-              amountUserGet(),
-              SizedBox(
-                height: 60,
-              ),
-              getReferenceButton(),
-              SizedBox(
-                height: 24,
-              ),
-              noteForUser(),
+              submitBtn(),
             ],
           ),
         ),
       ),
-    );
-  }
-
-  Widget showBackArrow() {
-    return IconButton(
-      icon: Icon(Icons.arrow_back_ios),
-      onPressed: () {
-        Navigator.pop(context);
-      },
     );
   }
 
@@ -161,7 +140,7 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
     );
   }
 
-  Widget displayAmountField() {
+  Widget displayReferenceField() {
     return Card(
       elevation: 0,
       margin: EdgeInsets.zero,
@@ -169,34 +148,31 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
         padding: EdgeInsets.symmetric(vertical: 30, horizontal: 20),
         decoration: decorateBox(),
         child: CustomizedTextFormField(
-          labelText: "Amount",
-          isAmount: true,
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          keyboardType: TextInputType.number,
+          labelText: "Reference",
+          keyboardType: TextInputType.text,
           onChanged: (val) {
-            amount = val.toString();
+            referenceNumber = val.toString();
             setState(() {});
           },
           validator: (val) {
             if (val.isNotEmpty) {
-              try {
-                int.parse(val);
+              if (val.toString().length == 20) {
                 return null;
-              } catch (e) {}
+              }
             }
-            return AppLocalization.of(context).invalidAmount;
+            return "Invalid reference";
           },
         ),
       ),
     );
   }
 
-  Widget getReferenceButton() {
+  Widget submitBtn() {
     return CurvedButton(
       onPressed: onSubmit,
       backgroundColor: navyBlue,
       textColor: Colors.white,
-      text: "Get reference",
+      text: "Next",
     );
   }
 
@@ -204,14 +180,15 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
     //for closing the keypad if it is open
     FocusScope.of(context).unfocus();
 
-    var data = {"amount": amount.toString(), "currency": "NGN"};
+    var data = {"amount": "100", "currency": "NGN"};
+    // var data = {"reference": referenceNumber.toString()};
 
     showDialog(
         context: context,
         builder: (context) => Center(child: CircularLoadingIndicator()));
 
     if (_formKeyTwo.currentState.validate()) {
-      PaymentAndBankingAuth().topUpAccountByBank(data).then((value) {
+      PaymentAndBankingAuth().verifyReferenceNumber(data).then((value) {
         if (value != null) {
           Navigator.pop(context);
           var result = value;
@@ -226,57 +203,5 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
     } else {
       Navigator.pop(context);
     }
-  }
-
-  Widget noteForUser() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 40),
-      child: Text(
-        "You are about to transfer money into your Slydo wallet",
-        textAlign: TextAlign.center,
-        style: TextStyle(
-            fontSize: 14,
-            color: darkGrey,
-            fontWeight: FontWeight.w400,
-            height: 1.5),
-      ),
-    );
-  }
-
-  Widget amountUserGetMsg() {
-    return Text(
-      "You will get following amount in your Slydo wallet",
-      style: TextStyle(
-          fontSize: 14, color: blackFont, fontWeight: FontWeight.w400),
-    );
-  }
-
-  Widget amountUserGet() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Icon(
-          SlydoAppIcon.naira,
-          color: navyBlue,
-          size: 22,
-        ),
-        Text(
-          " " + getFinalAmount(),
-          style: TextStyle(
-              fontSize: 36, color: navyBlue, fontWeight: FontWeight.w700),
-        ),
-      ],
-    );
-  }
-
-  String getFinalAmount() {
-    if (amount != "") {
-      return amount;
-    }
-    // if (amount != "") {
-    //   return (double.parse(amount) - (double.parse(amount) * 0.03)).toString();
-    // }
-    return "0.0";
   }
 }

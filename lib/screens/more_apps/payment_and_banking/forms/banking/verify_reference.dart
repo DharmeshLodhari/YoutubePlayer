@@ -35,6 +35,7 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
   String bankAccountNumber;
 
   bool isBankDetailsIsEmpty = false;
+  bool alreadyHaveReference = false;
 
   @override
   void initState() {

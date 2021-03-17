@@ -311,20 +311,31 @@ class _TransactionListState extends State<TransactionList> {
 
         if (mounted) setState(() {});
 
-        getList();
+        if (next != null) {
+          getList();
+        }
       }
       if (transactionList.isEmpty) {
         noItemInList = true;
 
         if (mounted) setState(() {});
       } else if (next == null && transactionList.length > 6) {
-        if (mounted) {
-          _scaffoldTransactionKey.currentState.showSnackBar(SnackBar(
-            content:
-                Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
-            duration: Duration(milliseconds: 500),
-          ));
-        }
+        showReachedToBottomSnackBar();
+      }
+    }
+  }
+
+  void showReachedToBottomSnackBar() {
+    if (mounted) {
+      if (next == null &&
+          _scrollController.position.pixels ==
+              _scrollController.position.maxScrollExtent &&
+          _scrollController.position.pixels != 0) {
+        _scaffoldTransactionKey.currentState.showSnackBar(SnackBar(
+          content:
+              Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
+          duration: Duration(milliseconds: 500),
+        ));
       }
     }
   }

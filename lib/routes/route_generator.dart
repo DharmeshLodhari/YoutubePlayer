@@ -41,8 +41,9 @@ import 'package:Slydo/screens/more_apps/music/specific_category_music_list.dart'
 import 'package:Slydo/screens/more_apps/news/news_dashboard.dart';
 import 'package:Slydo/screens/more_apps/news/news_detail_page.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/add_bank_account.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/add_money_to_slydo_one.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/add_money_to_slydo_two.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/already_have_reference.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/get_reference.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/verify_reference.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/payment/request_payment.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/payment/send_payment.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/bank_account_list.dart';
@@ -535,6 +536,13 @@ class RouteGenerator {
           child: AddMoneyToSlydoTwo(
             arguments: settings.arguments,
           ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case '/already-have-reference':
+        return PageTransition(
+          child: AlreadyHaveReferenceScreen(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

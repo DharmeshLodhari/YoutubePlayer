@@ -66,11 +66,7 @@ class AuthService {
     var data = await getDeviceInfo();
     _body.addAll(data);
 
-    /// TODO:- COMMENT THIS FOUR LINE WHEN NOT TESTING
-    _body["type"] = "Android";
-    _body["mode"] = "SM-J600G";
-    _body["device_id"] = "a186ce71e730543b";
-    _body["device_name"] = "QP1A.190711.020.J600GDXU9CTL1";
+    debugPrint("Device Data: $data");
 
     var response = await http.post(url, body: _body, headers: headers);
     if (response.statusCode == 200) {

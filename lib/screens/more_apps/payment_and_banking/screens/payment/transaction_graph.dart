@@ -703,7 +703,8 @@ class _TransactionGraphState extends State<TransactionGraph> {
     final measures = <String, num>{};
     if (selectedDatum.isNotEmpty) {
       selectedDatum.forEach((charts.SeriesDatum datumPair) {
-        measures[datumPair.series.displayName] = datumPair.datum.amount;
+        measures[datumPair.series.displayName] =
+            datumPair.datum.referenceNumber;
       });
     }
     // Request a build.

@@ -400,20 +400,31 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
 
         if (mounted) setState(() {});
 
-        getList();
+        if (next != null) {
+          getList();
+        }
       }
       if (requestPaymentList.isEmpty) {
         noItemInList = true;
 
         if (mounted) setState(() {});
       } else if (next == null && requestPaymentList.length > 6) {
-        if (mounted) {
-          _scaffoldPaymentListKey.currentState.showSnackBar(SnackBar(
-            content:
-                Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
-            duration: Duration(milliseconds: 500),
-          ));
-        }
+        showReachedToBottomSnackBar();
+      }
+    }
+  }
+
+  void showReachedToBottomSnackBar() {
+    if (mounted) {
+      if (next == null &&
+          _scrollController.position.pixels ==
+              _scrollController.position.maxScrollExtent &&
+          _scrollController.position.pixels != 0) {
+        _scaffoldPaymentListKey.currentState.showSnackBar(SnackBar(
+          content:
+              Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
+          duration: Duration(milliseconds: 500),
+        ));
       }
     }
   }
