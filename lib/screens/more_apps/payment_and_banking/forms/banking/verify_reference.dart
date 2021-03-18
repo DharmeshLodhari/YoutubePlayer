@@ -45,7 +45,8 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
     currency = widget.arguments["currency"].toString();
     Map bankDetails = widget.arguments["bank_details"];
     if (bankDetails == null || bankDetails.isEmpty) {
-      isBankDetailsIsEmpty = true;
+      // isBankDetailsIsEmpty = true;
+      isBankDetailsIsEmpty = false;
     } else {
       bankName = bankDetails["bank_name"].toString();
       bankAccountName = bankDetails["account_name"].toString();

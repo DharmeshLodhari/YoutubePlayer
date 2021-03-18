@@ -3,6 +3,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +11,6 @@ import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../widget/LoadingIndicator.dart';
 import '../user_auth.dart';
 
 // ignore: must_be_immutable
@@ -64,9 +64,9 @@ class _SignUpState extends State<SignUp> {
         return Future.value(true);
       },
       child: Scaffold(
-        backgroundColor: whiteBackground,
+        backgroundColor: Colors.white,
         appBar: AppBar(
-          backgroundColor: whiteBackground,
+          backgroundColor: Colors.white,
           elevation: 0,
           leading: IconButton(
             icon: Icon(
@@ -183,12 +183,6 @@ class _SignUpState extends State<SignUp> {
       labelText: "Phone number",
       keyboardType: TextInputType.phone,
       isReadOnly: true,
-      validator: (val) {
-        if (val.isNotEmpty && val.length == 13) {
-          return null;
-        }
-        return AppLocalization.of(context).invalidPhoneNumber;
-      },
     );
   }
 
@@ -217,7 +211,7 @@ class _SignUpState extends State<SignUp> {
   Widget passwordInstruction() {
     return Container(
       child: Text(
-        "Use 4 digit number",
+        "Use 6 digit number",
         style: TextStyle(
             fontSize: 12, color: blackFont, fontWeight: FontWeight.w600),
       ),
@@ -233,7 +227,7 @@ class _SignUpState extends State<SignUp> {
       obscureText: true,
       maxLength: 6,
       isPassword: true,
-      validator: validatePassword1,
+      validator: validateEnteredPassword,
     );
   }
 
@@ -246,7 +240,7 @@ class _SignUpState extends State<SignUp> {
       obscureText: true,
       maxLength: 6,
       isPassword: true,
-      validator: validatePassword2,
+      validator: validateEnteredConfirmPassword,
     );
   }
 
@@ -284,14 +278,16 @@ class _SignUpState extends State<SignUp> {
   }
 
   // validate password
-  String validatePassword1(String val) {
+  String validateEnteredPassword(String val) {
     var matcher = RegExp(
       r'^(.)\1{1,}$',
       caseSensitive: true,
     );
     if (val.length != 6) {
       return AppLocalization.of(context).invalidPassword;
-    } else if (val == "123456" || val == "012345") {
+    } else if ("0123456789".contains(val)) {
+      return "you can not set this type of password";
+    } else if ("9876543210".contains(val)) {
       return "you can not set this type of password";
     } else if (matcher.hasMatch(val)) {
       return "you can not set this type of password";
@@ -300,7 +296,7 @@ class _SignUpState extends State<SignUp> {
   }
 
   // validate confirm password
-  String validatePassword2(String val) {
+  String validateEnteredConfirmPassword(String val) {
     var matcher = RegExp(
       r'^(.)\1{1,}$',
       caseSensitive: true,
@@ -309,7 +305,9 @@ class _SignUpState extends State<SignUp> {
       return AppLocalization.of(context).invalidPassword;
     } else if (val != _passwordController.text) {
       return AppLocalization.of(context).passwordMismatch;
-    } else if (val == "123456" || val == "012345") {
+    } else if ("0123456789".contains(val)) {
+      return "you can not set this type of password";
+    } else if ("9876543210".contains(val)) {
       return "you can not set this type of password";
     } else if (matcher.hasMatch(val)) {
       return "you can not set this type of password";
@@ -339,16 +337,12 @@ class _SignUpState extends State<SignUp> {
       UserAuth().userRegistration(data).then((value) {
         isRegistered = value;
         if (isRegistered) {
-          _auth.authenticate(phoneNumber, password).then((value) {
-            var user = value;
-            userBloc.user = user;
-            Navigator.pop(context);
-            Navigator.of(context).pushNamedAndRemoveUntil(
-              "/dashboard",
-              (Route<dynamic> route) => false,
-            );
-          });
+          Navigator.pop(context);
+          Navigator.of(context).popAndPushNamed("/login");
         }
+      }).catchError((error) {
+        Toast.show(error, context,
+            textColor: Colors.white, backgroundColor: blackFont);
       });
     } else {
       var msg = AppLocalization.of(context).invalidDetails;

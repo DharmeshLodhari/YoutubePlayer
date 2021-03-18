@@ -162,6 +162,8 @@ class UserAuth extends AuthService {
   Future<bool> userRegistration(Map _body) async {
     var data = {};
     var url = secureBaseUrl + "/api/v1/user/account/";
+    var headers = getNonAuthHeader();
+    headers.remove("Content-type");
 
     // Convert to what the server is expecting
     data["password1"] = _body["password1"];
@@ -171,11 +173,12 @@ class UserAuth extends AuthService {
     var _data = await getDeviceInfo();
     data.addAll(_data);
 
-    var response = await http.post(url, body: data);
+    var response = await http.post(url, headers: headers, body: data);
     if (response.statusCode == 200) {
       return true;
     }
-    return false;
+    debugPrint("Error:- ${response.body}");
+    return Future.error("Error:- ${response.body}");
   }
 
 // it will register the phone number to get OTP
@@ -571,6 +574,51 @@ class UserAuth extends AuthService {
     } else {
       var jsonData = json.decode(response.body);
       throw jsonData;
+    }
+  }
+
+  // it will reset the phone number to get OTP
+  Future<String> resetDevice({Map data}) async {
+    var url = secureBaseUrl + "api/v1/user/reset-user-device/";
+    var headers = getNonAuthHeader();
+    var _data = jsonEncode(data);
+    var response = await http.post(url, body: _data, headers: headers);
+
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+      return jsonData["otp"];
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+
+      return Future.error(
+          "RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+    }
+  }
+
+  // it will verify the phone number to  OTP
+  Future<String> verifyOTPForResetDevice(
+      String phoneNumber, String otp, String passwordToken) async {
+    var url = secureBaseUrl + "/api/v1/sms/verify";
+    var headers = getNonAuthHeader();
+    var data = {
+      "phone": phoneNumber,
+      "code": otp,
+      "password-token": passwordToken,
+    };
+    var _data = jsonEncode(data);
+    var response = await http.post(url, body: _data, headers: headers);
+
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+      var resetToken = jsonData['reset-token'];
+      return resetToken;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+
+      return Future.error(
+          "RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
     }
   }
 }

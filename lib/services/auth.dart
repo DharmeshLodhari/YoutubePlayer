@@ -264,28 +264,7 @@ class AuthService {
     return headers;
   }
 
-  //search
-
-  // List the searched item
-  Future<Map<String, dynamic>> searchEndpoint(String url) async {
-    var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
-
-    if (response.statusCode == 200) {
-      var jsonData = json.decode(response.body);
-      Map<String, dynamic> result = {
-        "count": jsonData["count"],
-        "next": jsonData["next"],
-        "previous": jsonData["previous"],
-        "results": jsonData["results"],
-      };
-      return result;
-    } else {
-      var jsonData = json.decode(response.body);
-      throw jsonData;
-    }
-  }
-
+  /// Search Module
   // List the  item with pagination
   Future<Map<String, dynamic>> searchEndpointPagination(
       String url, String next, String previous) async {
@@ -312,9 +291,5 @@ class AuthService {
       var jsonData = json.decode(response.body);
       throw jsonData;
     }
-  }
-
-  Future<bool> verifyBVN(String bvnNumber) async {
-    return true;
   }
 }

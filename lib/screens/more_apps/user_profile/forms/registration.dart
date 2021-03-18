@@ -46,9 +46,9 @@ class _RegistrationState extends State<Registration> {
         return Future.value(true);
       },
       child: Scaffold(
-        backgroundColor: whiteBackground,
+        backgroundColor: Colors.white,
         appBar: AppBar(
-          backgroundColor: whiteBackground,
+          backgroundColor: Colors.white,
           elevation: 0,
           leading: IconButton(
             icon: Icon(
@@ -230,7 +230,7 @@ class _RegistrationState extends State<Registration> {
 
     if (_registrationFormKey.currentState.validate() && isUserAgree) {
       UserAuth().registerPhoneNumber(phoneNumberWithCountryCode).then((value) {
-        Navigator.of(context).pushNamed(
+        Navigator.of(context).popAndPushNamed(
           "/verify-registration-otp",
           arguments: {
             "phoneNumber": phoneNumberWithCountryCode,

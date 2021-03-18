@@ -102,7 +102,8 @@ class _UserDashboardState extends State<UserDashboard> {
   }
 
   Widget backgroundScreen() {
-    if (userBloc.user.userAbout.wallpaper == null ||
+    if (userBloc.user.userAbout == null ||
+        userBloc.user.userAbout.wallpaper == null ||
         userBloc.user.userAbout.wallpaper == "") {
       return Container(
         child: Image.asset(

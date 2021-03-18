@@ -73,7 +73,7 @@ class User {
       phoneNumber: json['phone_number'],
       qrCode: json['qr_code'],
       url: json['url'],
-      userAbout: UserAbout.fromJson(json["profile"]),
+      userAbout: UserAbout.fromJson(json["profile"]) ?? null,
       userName: json['username'],
       uuid: json['uuid'],
     );

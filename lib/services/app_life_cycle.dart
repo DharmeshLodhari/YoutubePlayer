@@ -1,6 +1,7 @@
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/utils/global_key.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -60,18 +61,25 @@ class _AppLifeCycleState extends State<AppLifeCycle>
     super.didChangeAppLifecycleState(state);
     switch (state) {
       case AppLifecycleState.resumed:
-        onResume();
+        if (isUserIsLoggedIn()) onResume();
         break;
       case AppLifecycleState.inactive:
-        onInactive();
+        if (isUserIsLoggedIn()) onInactive();
         break;
       case AppLifecycleState.paused:
-        onPause();
+        if (isUserIsLoggedIn()) onPause();
         break;
       case AppLifecycleState.detached:
         onDetached();
         break;
     }
+  }
+
+  bool isUserIsLoggedIn() {
+    if (myGlobals.scaffoldKey.currentContext != null) {
+      return true;
+    }
+    return false;
   }
 
   void onResume() {

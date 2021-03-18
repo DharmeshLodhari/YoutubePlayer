@@ -357,6 +357,7 @@ class MainSocketProvider extends ChangeNotifier {
   /// for closing all the subscription which are alive
   Future<void> close() async {
     _timerForRetryConnection?.cancel();
+    _timerForPingServer?.cancel();
 
     _streamSubscriptions.forEach((element) async {
       await element?.cancel();

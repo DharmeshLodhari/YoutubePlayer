@@ -1,5 +1,4 @@
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/country_picker/country.dart';
 import 'package:Slydo/utils/country_picker/country_picker_dialog.dart';
@@ -7,6 +6,7 @@ import 'package:Slydo/utils/country_picker/utils.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +20,6 @@ class ResetDevice extends StatefulWidget {
 class _ResetDeviceState extends State<ResetDevice> {
   bool isRemember = false;
   final _resetDevice = GlobalKey<FormState>();
-  final _auth = AuthService();
   String phoneNumber = '';
   String password = '';
 
@@ -30,6 +29,12 @@ class _ResetDeviceState extends State<ResetDevice> {
   final FocusNode _pinPutFocusNode = FocusNode();
 
   Country _selectedDialogCountry = CountryPickerUtils.getCountryByIsoCode('NG');
+
+  String selectedReason;
+
+  List<String> resetDeviceReasons = ["Replacement", "Missing device", "Stolen"];
+
+  bool isReasonIsSelected = false;
 
   @override
   void initState() {
@@ -48,9 +53,9 @@ class _ResetDeviceState extends State<ResetDevice> {
         return Future.value(true);
       },
       child: Scaffold(
-        backgroundColor: whiteBackground,
+        backgroundColor: Colors.white,
         appBar: AppBar(
-          backgroundColor: whiteBackground,
+          backgroundColor: Colors.white,
           elevation: 0,
           leading: IconButton(
             icon: Icon(
@@ -65,36 +70,24 @@ class _ResetDeviceState extends State<ResetDevice> {
         body: SingleChildScrollView(
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 20),
-            height: MediaQuery.of(context).size.height -
-                (AppBar().preferredSize.height +
-                    MediaQuery.of(context).padding.top),
-            width: MediaQuery.of(context).size.width,
             child: Column(
               children: <Widget>[
-                Expanded(
-                  flex: 7,
-                  child: Form(
-                    key: _resetDevice,
-                    child: Container(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          appIcon(),
-                          flexibleSpace(flex: 1),
-                          loginTitle(),
-                          flexibleSpace(flex: 4),
-                          phoneNumberField(),
-                          flexibleSpace(flex: 1),
-                          passwordPinFiled(),
-                          flexibleSpace(flex: 4),
-                          loginBtnField(),
-                          flexibleSpace(flex: 2),
-                        ],
-                      ),
+                Form(
+                  key: _resetDevice,
+                  child: Container(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        appIcon(),
+                        SizedBox(height: 20),
+                        titleText(),
+                        SizedBox(height: 30),
+                        getResetDeviceReason(),
+                        isReasonIsSelected ? getDeviceData() : Container()
+                      ],
                     ),
                   ),
                 ),
-                flexibleSpace(flex: 3),
               ],
             ),
           ),
@@ -113,7 +106,7 @@ class _ResetDeviceState extends State<ResetDevice> {
     );
   }
 
-  Widget loginTitle() {
+  Widget titleText() {
     return Container(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -133,6 +126,113 @@ class _ResetDeviceState extends State<ResetDevice> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget getResetDeviceReason() {
+    return CustomizedDropDownField(
+      title: "Reason for reset device",
+      child: ListTile(
+        dense: true,
+        title: Text(
+          selectedReason ?? "",
+          style: TextStyle(
+              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          selectReason();
+        },
+      ),
+    );
+  }
+
+  void selectReason() async {
+    final result = await showDialog<String>(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) => AlertDialog(
+              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              contentPadding: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              content: Container(
+                width: MediaQuery.of(context).size.width - 40,
+                child: Card(
+                  elevation: 2,
+                  shadowColor: Colors.transparent,
+                  margin: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: resetDeviceReasons.map<Widget>((data) {
+                          if (selectedReason == data) {
+                            return Container(
+                              color: selectedListItemBackgroundBlue,
+                              child: ListTile(
+                                dense: true,
+                                title: Text(
+                                  data,
+                                  overflow: TextOverflow.fade,
+                                  softWrap: false,
+                                  style: TextStyle(
+                                      color: navyBlue,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                onTap: () {
+                                  Navigator.pop(context, data);
+                                },
+                              ),
+                            );
+                          }
+                          return ListTile(
+                            title: Text(
+                              data,
+                              softWrap: false,
+                              overflow: TextOverflow.fade,
+                              style: TextStyle(
+                                  color: blackFont,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                            dense: true,
+                            onTap: () {
+                              Navigator.pop(context, data);
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ));
+    if (result != null) {
+      selectedReason = result;
+      isReasonIsSelected = true;
+      if (mounted) setState(() {});
+    }
+  }
+
+  Widget getDeviceData() {
+    return Column(
+      children: [
+        SizedBox(height: 10),
+        phoneNumberField(),
+        SizedBox(height: 10),
+        passwordPinFiled(),
+        SizedBox(height: 20),
+        loginBtnField(),
+        SizedBox(height: 20),
+      ],
     );
   }
 
@@ -174,7 +274,7 @@ class _ResetDeviceState extends State<ResetDevice> {
           height: 6,
         ),
         Card(
-          color: whiteBackground,
+          color: Colors.white,
           elevation: 0,
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
@@ -332,8 +432,6 @@ class _ResetDeviceState extends State<ResetDevice> {
     if (_resetDevice.currentState.validate()) {
       showDialog(context: context, builder: (context) => LoadingIndicator());
 
-      var _user;
-
       var phoneNumberFromTextField = phoneNumberController.text.trim();
 
       if (phoneNumberFromTextField.substring(0, 1) == "0") {
@@ -345,28 +443,22 @@ class _ResetDeviceState extends State<ResetDevice> {
           "+" + _selectedDialogCountry.phoneCode + phoneNumberFromTextField;
       password = passwordController.text.trim();
 
-      // closing loader
+      var data = {};
+      data["phone_number"] = phoneNumber;
+      data["password"] = password;
+      data["reason"] = selectedReason;
+
+      // UserAuth().resetDevice(data: data).then((result) {
+      //   data["otp"] = result;
+
       Navigator.pop(context);
       Navigator.of(context).popAndPushNamed("/verify-reset-device-otp",
-          arguments: {"phoneNumber": phoneNumber});
-
-      // _auth.authenticate(phoneNumber, password).then((value) async {
-      //   _user = value;
-      //   if (_user.fullName != null) {
-      //     // Get user's bank account if user is logged in
-      //     if (_user != null) {
-      //       // Navigator.of(context).pushNamedAndRemoveUntil(
-      //       //   "/verify-reset-device-otp",
-      //       //       (Route<dynamic> route) => false,
-      //       // );
-      //     }
-      //   } else {
-      //     Navigator.pop(context);
-      //     Toast.show(AppLocalization.of(context).userIsNotRegistered, context,
-      //         gravity: Toast.CENTER,
-      //         backgroundColor: darkBlue(),
-      //         textColor: Colors.white);
-      //   }
+          arguments: {"data": data});
+      // }).catchError((error) {
+      //   Toast.show("$error", context,
+      //       backgroundColor: Colors.black,
+      //       textColor: Colors.white,
+      //       duration: Toast.LENGTH_LONG);
       // });
     }
   }

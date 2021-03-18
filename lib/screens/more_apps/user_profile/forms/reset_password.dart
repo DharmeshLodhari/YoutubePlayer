@@ -114,14 +114,7 @@ class _ResetPasswordState extends State<ResetPassword> {
       labelText: "New password",
       controller: _newPasswordController,
       isPassword: true,
-      validator: (val) {
-        if (val.isEmpty) {
-          return AppLocalization.of(context).passwordShouldNotEmpty;
-        } else if (val.length != 6) {
-          return "Password must be of 6 digit";
-        }
-        return null;
-      },
+      validator: validateEnteredPassword,
       onChanged: (val) {
         newPassword = val;
       },
@@ -136,20 +129,50 @@ class _ResetPasswordState extends State<ResetPassword> {
       isPassword: true,
       controller: _confirmPasswordController,
       keyboardType: TextInputType.number,
-      validator: (val) {
-        if (val.isEmpty) {
-          return AppLocalization.of(context).passwordShouldNotEmpty;
-        } else if (val.length != 6) {
-          return "Password must be of 6 digit";
-        } else if (newPassword != confirmPassword) {
-          return AppLocalization.of(context).passwordMismatch;
-        }
-        return null;
-      },
+      validator: validateEnteredConfirmPassword,
       onChanged: (val) {
         confirmPassword = val;
       },
     );
+  }
+
+  // validate password
+  String validateEnteredPassword(String val) {
+    ///regexp for repeated number
+    var matcher = RegExp(
+      r'^(.)\1{1,}$',
+      caseSensitive: true,
+    );
+    if (val.length != 6) {
+      return AppLocalization.of(context).invalidPassword;
+    } else if ("0123456789".contains(val)) {
+      return "you can not set this type of password";
+    } else if ("9876543210".contains(val)) {
+      return "you can not set this type of password";
+    } else if (matcher.hasMatch(val)) {
+      return "you can not set this type of password";
+    }
+    return null;
+  }
+
+  // validate confirm password
+  String validateEnteredConfirmPassword(String val) {
+    var matcher = RegExp(
+      r'^(.)\1{1,}$',
+      caseSensitive: true,
+    );
+    if (val.length != 6) {
+      return AppLocalization.of(context).invalidPassword;
+    } else if (val != _newPasswordController.text) {
+      return AppLocalization.of(context).passwordMismatch;
+    } else if ("0123456789".contains(val)) {
+      return "you can not set this type of password";
+    } else if ("9876543210".contains(val)) {
+      return "you can not set this type of password";
+    } else if (matcher.hasMatch(val)) {
+      return "you can not set this type of password";
+    }
+    return null;
   }
 
   Widget resetPasswordButton() {
