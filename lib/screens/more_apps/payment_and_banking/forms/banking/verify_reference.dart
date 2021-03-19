@@ -260,9 +260,12 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
               ),
               transferredMoneyCheck(),
               SizedBox(
-                height: 40,
+                height: 20,
               ),
-              isChecked ? getSubmitButton() : Container()
+              isChecked ? getSubmitButton() : Container(),
+              SizedBox(
+                height: 20,
+              ),
             ],
           );
   }

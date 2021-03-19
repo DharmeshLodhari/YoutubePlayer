@@ -286,6 +286,7 @@ class AuthService {
         "previous": jsonData["previous"],
         "results": jsonData["results"],
       };
+      debugPrint("===> $result");
       return result;
     } else {
       var jsonData = json.decode(response.body);

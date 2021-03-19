@@ -16,8 +16,9 @@ class MessageAuth extends AuthService {
     if (response.statusCode == 201) {
       return true;
     } else {
-      var jsonData = json.decode(response.body);
-      throw jsonData;
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
     }
   }
 
@@ -65,7 +66,9 @@ class MessageAuth extends AuthService {
     if (response.statusCode == 201) {
       return true;
     } else {
-      return Future.error("${response.statusCode} $responseBody");
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
+      return Future.error("ERROR:- $responseBody");
     }
   }
 
@@ -75,12 +78,13 @@ class MessageAuth extends AuthService {
         secureBaseUrl + "/api/v1/messaging/update/" + id + "/" + action + "/";
     var headers = await getAuthHeaders();
     var response = await http.patch(url, headers: headers);
-    var jsonData = json.decode(response.body);
 
     if (response.statusCode == 200) {
       return true;
     } else {
-      throw jsonData;
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
     }
   }
 
@@ -92,7 +96,9 @@ class MessageAuth extends AuthService {
     if (response.statusCode == 204) {
       return true;
     } else {
-      return false;
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
     }
   }
 
@@ -101,8 +107,9 @@ class MessageAuth extends AuthService {
     var url = secureBaseUrl + "/api/v1/messaging/read/" + id + "/";
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
-    var jsonData = json.decode(response.body);
+
     if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
       Message message = Message(
         subject: jsonData["subject"],
         id: jsonData["id"],
@@ -122,7 +129,9 @@ class MessageAuth extends AuthService {
       );
       return message;
     } else {
-      throw jsonData;
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
     }
   }
 
@@ -176,7 +185,9 @@ class MessageAuth extends AuthService {
     } else if (response.statusCode == 500) {
       throw "Server Error";
     } else {
-      throw json.decode(response.body);
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
     }
   }
 
@@ -213,6 +224,8 @@ class MessageAuth extends AuthService {
     } else if (response.statusCode == 500) {
       return Future.error("Server Error");
     } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
       return Future.error("${response.body}");
     }
   }
@@ -228,6 +241,8 @@ class MessageAuth extends AuthService {
       var jsonData = json.decode(response.body);
       return jsonData;
     } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
       return Future.error("ERROR:- ${response.body}");
     }
   }
@@ -256,10 +271,9 @@ class MessageAuth extends AuthService {
       };
       return result;
     } else {
-      debugPrint("Status Code:- ${response.statusCode}");
-      debugPrint("body:- ${response.body}");
-      var jsonData = json.decode(response.body);
-      throw jsonData;
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
     }
   }
 }

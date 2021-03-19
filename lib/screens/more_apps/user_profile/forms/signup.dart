@@ -1,6 +1,6 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -10,8 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import '../user_auth.dart';
 
 // ignore: must_be_immutable
 class SignUp extends StatefulWidget {
@@ -29,7 +27,6 @@ class _SignUpState extends State<SignUp> {
   _SignUpState({@required this.arguments});
 
   final _registrationFormKey = GlobalKey<FormState>();
-  final _auth = AuthService();
 
   String phoneNumber = '';
   String password = '';
@@ -106,19 +103,19 @@ class _SignUpState extends State<SignUp> {
                           flexibleSpace(
                             flex: 2,
                           ),
-                          nameInstructionNote(),
+                          fullNameField(),
                           flexibleSpace(
                             flex: 1,
                           ),
-                          fullNameField(),
+                          nameInstructionNote(),
                           flexibleSpace(
                             flex: 2,
                           ),
-                          passwordInstruction(),
+                          passwordField(),
                           flexibleSpace(
                             flex: 1,
                           ),
-                          passwordField(),
+                          passwordInstruction(),
                           flexibleSpace(
                             flex: 2,
                           ),
@@ -189,7 +186,7 @@ class _SignUpState extends State<SignUp> {
   Widget nameInstructionNote() {
     return Container(
       child: Text(
-        "This name must be the one registered with your BVN",
+        "Use names registered on a government issued ID",
         style: TextStyle(
             fontSize: 12, color: blackFont, fontWeight: FontWeight.w600),
       ),
@@ -202,10 +199,42 @@ class _SignUpState extends State<SignUp> {
       labelColor: darkGrey,
       labelText: "Full name",
       keyboardType: TextInputType.text,
-      validator: (val) => val.length < 5
-          ? AppLocalization.of(context).enterValidNameMatchingAccountNumber
-          : null,
+      validator: fullNameValidator,
     );
+  }
+
+  String fullNameValidator(String enteredName) {
+    List<String> nameList = enteredName.split(" ");
+
+    /// For not allowing user to put any profession title
+    List<String> notValidProfessionTitles = [
+      "mr",
+      "mrs",
+      "miss",
+      "ms",
+      "chief",
+      "dr",
+      "prof",
+      "engr",
+      "evang",
+    ];
+
+    RegExp regExp = RegExp(r"^[A-Za-z\s]{1,}[A-Za-z\s]{0,}$");
+
+    if (!regExp.hasMatch(enteredName)) {
+      return "Please enter valid name";
+    }
+    if (nameList.length < 2) {
+      return "Please enter full name";
+    }
+    if (notValidProfessionTitles.contains(nameList[0].toLowerCase())) {
+      return "Please remove ${nameList[0]} from name";
+    }
+    if (nameList[0].length < 2 || nameList[1].length < 2) {
+      return "Please enter valid name";
+    }
+
+    return null;
   }
 
   Widget passwordInstruction() {
@@ -350,7 +379,7 @@ class _SignUpState extends State<SignUp> {
         msg,
         context,
         gravity: Toast.BOTTOM,
-        backgroundColor: navyBlue,
+        backgroundColor: Colors.black,
         textColor: Colors.white,
       );
     }

@@ -216,6 +216,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   void fetchRecipientUserIfNotAvailable() async {
     String recipientUserName = widget.arguments["recipientUserName"] ?? "";
 
+    debugPrint("recipientUserName => $recipientUserName");
+
     if (recipientUserName != "") {
       isRecipientLoading = true;
       if (mounted) setState(() {});
@@ -443,9 +445,21 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         }
         debugPrint(
             "recipient conversationID:- ${recipientUser.conversationId}");
-        Map<String, dynamic> result = await MessageAuth().getChatMessages(
-            next, previous,
-            conversionId: recipientUser.conversationId);
+        Map<String, dynamic> result = await MessageAuth()
+            .getChatMessages(next, previous,
+                conversionId: recipientUser.conversationId)
+            .catchError((error) {
+          isLoading = false;
+          if (mounted) setState(() {});
+          Toast.show(error, context,
+              textColor: Colors.white,
+              backgroundColor: Colors.black,
+              duration: Toast.LENGTH_LONG);
+        });
+        if (isLoading == false) {
+          return;
+        }
+
         count = result['count'];
         next = result['next'];
         previous = result['previous'];

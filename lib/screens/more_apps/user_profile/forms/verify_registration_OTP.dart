@@ -1,9 +1,8 @@
+import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:pinput/pin_put/pin_put.dart';
-
-import '../user_auth.dart';
 
 // ignore: must_be_immutable
 class VerifyRegistrationOTPScreen extends StatefulWidget {
