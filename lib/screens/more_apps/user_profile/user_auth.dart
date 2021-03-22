@@ -87,6 +87,7 @@ class UserAuth extends AuthService {
       var responseBody = await response.stream.bytesToString();
       if (response.statusCode == 200) {
         var jsonData = json.decode(responseBody);
+
         CustomerProfile customerProfile = CustomerProfile(
           fullName: jsonData["full_name"],
           userName: jsonData["username"],
@@ -190,11 +191,12 @@ class UserAuth extends AuthService {
     };
     var _data = jsonEncode(data);
     var response = await http.post(url, body: _data, headers: headers);
-    var jsonData = json.decode(response.body);
+
     if (response.statusCode == 200) {
       return true;
     } else {
-      throw jsonData;
+      var jsonData = json.decode(response.body);
+      return Future.error(jsonData["error"]);
     }
   }
 

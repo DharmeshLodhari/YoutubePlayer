@@ -8,6 +8,7 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:toast/toast.dart';
 
 import '../../../../utils/colors.dart';
 
@@ -22,8 +23,6 @@ class _RegistrationState extends State<Registration> {
   String phoneNumberWithCountryCode = "";
 
   Country _selectedDialogCountry = CountryPickerUtils.getCountryByIsoCode('NG');
-
-  bool isUserAgree = false;
 
   TextEditingController phoneNumberController;
 
@@ -63,41 +62,38 @@ class _RegistrationState extends State<Registration> {
         body: SingleChildScrollView(
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 20),
-            height: MediaQuery.of(context).size.height -
-                (AppBar().preferredSize.height +
-                    MediaQuery.of(context).padding.top),
-            width: MediaQuery.of(context).size.width,
-            child: Column(
-              children: <Widget>[
-                Expanded(
-                  flex: 7,
-                  child: Form(
-                    key: _registrationFormKey,
-                    child: Container(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          appIcon(),
-                          flexibleSpace(flex: 1),
-                          registerTitle(),
-                          flexibleSpace(flex: 1),
-                          registrationNote(),
-                          flexibleSpace(flex: 2),
-                          selectCountryField(),
-                          flexibleSpace(flex: 1),
-                          phoneNumberField(),
-                          flexibleSpace(flex: 1),
-                          userAgreementField(),
-                          flexibleSpace(flex: 2),
-                          continueBtn(),
-                          flexibleSpace(flex: 1),
-                        ],
-                      ),
+            child: Form(
+              key: _registrationFormKey,
+              child: Container(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    SizedBox(
+                      height: 20,
                     ),
-                  ),
+                    appIcon(),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    registerTitle(),
+                    SizedBox(
+                      height: 50,
+                    ),
+                    selectCountryField(),
+                    SizedBox(
+                      height: 12,
+                    ),
+                    phoneNumberField(),
+                    SizedBox(
+                      height: 40,
+                    ),
+                    continueBtn(),
+                    SizedBox(
+                      height: 20,
+                    ),
+                  ],
                 ),
-                flexibleSpace(flex: 3)
-              ],
+              ),
             ),
           ),
         ),
@@ -134,15 +130,6 @@ class _RegistrationState extends State<Registration> {
     );
   }
 
-  Widget registrationNote() {
-    return Container(
-      child: Text(
-        "Please enter your phone number. This phone number must be the one registered with your BVN",
-        style: TextStyle(fontSize: 14, color: darkGrey),
-      ),
-    );
-  }
-
   Widget selectCountryField() {
     return Container(
       child: getCountryDropdown(),
@@ -163,9 +150,6 @@ class _RegistrationState extends State<Registration> {
   }
 
   String validatePhoneNumber(number) {
-    // if (number.startsWith("0")) {
-    //   return AppLocalization.of(context).invalidPhoneNumber;
-    // }
     if (number.contains('+') ||
         number.contains('-') ||
         number.contains('*') ||
@@ -186,17 +170,13 @@ class _RegistrationState extends State<Registration> {
   }
 
   void validateField() {
-    if (phoneNumberController.text.length >= 9 && isUserAgree) {
+    if (phoneNumberController.text.length >= 9) {
       isValid = true;
       setState(() {});
     } else {
       isValid = false;
       setState(() {});
     }
-  }
-
-  Widget userAgreementField() {
-    return getUserAgreeCheckBoxWidget();
   }
 
   Widget continueBtn() {
@@ -228,7 +208,7 @@ class _RegistrationState extends State<Registration> {
       FocusScope.of(context).unfocus();
     }
 
-    if (_registrationFormKey.currentState.validate() && isUserAgree) {
+    if (_registrationFormKey.currentState.validate()) {
       UserAuth().registerPhoneNumber(phoneNumberWithCountryCode).then((value) {
         Navigator.of(context).popAndPushNamed(
           "/verify-registration-otp",
@@ -236,67 +216,11 @@ class _RegistrationState extends State<Registration> {
             "phoneNumber": phoneNumberWithCountryCode,
           },
         );
+      }).catchError((error) {
+        Toast.show("$error", context,
+            textColor: Colors.white, backgroundColor: Colors.black);
       });
     }
-  }
-
-  Widget getUserAgreeCheckBoxWidget() {
-    return GestureDetector(
-      onTap: () {
-        isUserAgree = !isUserAgree;
-        validateField();
-        setState(() {});
-      },
-      child: Row(
-        children: <Widget>[
-          ClipRRect(
-            clipBehavior: Clip.antiAliasWithSaveLayer,
-            borderRadius: BorderRadius.all(Radius.circular(5)),
-            child: SizedBox(
-              width: Checkbox.width - 1.5,
-              height: Checkbox.width - 1.5,
-              child: Container(
-                decoration: new BoxDecoration(
-                  border: Border.all(
-                    color: greyBorderColor,
-                    width: 1,
-                  ),
-                  borderRadius: new BorderRadius.circular(5),
-                ),
-                child: Theme(
-                  data: ThemeData(
-                    unselectedWidgetColor: Colors.transparent,
-                  ),
-                  child: Checkbox(
-                    value: isUserAgree,
-                    onChanged: (value) {
-                      isUserAgree = value;
-                      validateField();
-                      setState(() {});
-                    },
-                    activeColor: navyBlue,
-                    checkColor: Colors.white,
-                    materialTapTargetSize: MaterialTapTargetSize.padded,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          SizedBox(
-            width: 12,
-          ),
-          Expanded(
-            child: Text(
-              AppLocalization.of(context).termsForUserAgreeCheckBox,
-              style: TextStyle(
-                color: blackFont,
-                fontSize: 14,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   Widget getCountryDropdown() {

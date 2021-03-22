@@ -13,6 +13,7 @@ import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/delete_product_and_service_confirm_alert.dart';
+import 'package:Slydo/widget/image_crop.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -328,13 +329,16 @@ class _EditProductState extends State<EditProduct> {
             ));
 
     if (imageSource != null) {
-      ImagePicker().getImage(source: imageSource).then((value) {
+      ImagePicker().getImage(source: imageSource).then((value) async {
         if (value != null) {
-          if (mounted) {
-            setState(() {
-              productLocalImages.add(value);
-            });
+          /// for cropping the image
+          String croppedImage = await ImageCrop().cropImage(value.path);
+          if (croppedImage == null) {
+            return;
           }
+
+          productLocalImages.add(PickedFile(croppedImage));
+          if (mounted) setState(() {});
         }
       });
     }

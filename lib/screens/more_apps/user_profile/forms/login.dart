@@ -77,7 +77,6 @@ class _UserLoginState extends State<UserLogin> {
         phoneNumberFromPref = secureUser.phoneNumber ?? "";
         passwordFromPref = secureUser.password ?? "";
 
-        debugPrint("==> ${secureUser.toJson()}");
         //setting fetched userdata into screen
         phoneNumberController.text = phoneNumberFromPref;
         passwordController.text = passwordFromPref;

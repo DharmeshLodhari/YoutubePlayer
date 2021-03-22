@@ -206,6 +206,7 @@ class _SplashScreenState extends State<SplashScreen> {
       isChecked = _sharedPreferences.getBool('isChecked') ?? false;
       isLoggedOut = _sharedPreferences.getBool('isLoggedOut') ?? false;
       if (isLoggedOut) {
+        debugPrint("IsLoggedOyut:- $isLoggedOut");
         Navigator.pop(context);
         Navigator.of(context).pushNamed("/index");
       } else {
@@ -261,6 +262,8 @@ class _SplashScreenState extends State<SplashScreen> {
                     }
                   } catch (e) {
                     debugPrint(e.toString());
+                    Navigator.pop(context);
+                    Navigator.of(context).pushNamed("/index");
                   }
                 });
               }

@@ -11,6 +11,7 @@ import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/image_crop.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
@@ -304,7 +305,8 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
               width: double.infinity,
               fit: BoxFit.cover,
             )
-          : userBloc.userAbout.wallpaper == ""
+          : userBloc.userAbout.wallpaper == "" ||
+                  !userBloc.userAbout.wallpaper.contains("http")
               ? Image.asset(
                   "assets/images/home_screen_background.png",
                   width: double.infinity,
@@ -436,13 +438,19 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
       final file =
           await ImagePicker().getImage(source: imageSource, imageQuality: 70);
       if (file != null) {
+        /// for cropping the image
+        String croppedImage = await ImageCrop().cropImage(file.path);
+        if (croppedImage == null) {
+          return;
+        }
+
         try {
           isUserAvatarLoading = true;
           if (mounted) setState(() {});
 
           // Upload Image new image
           CustomerProfile customerProfile =
-              await UserAuth().updateUserAvatar(File(file.path));
+              await UserAuth().updateUserAvatar(File(croppedImage));
 
           isUserAvatarLoading = false;
           if (mounted) setState(() {});
@@ -790,27 +798,37 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
       final file =
           await ImagePicker().getImage(source: imageSource, imageQuality: 70);
       if (file != null) {
+        /// for cropping the image
+        String croppedImage = await ImageCrop().cropImage(file.path);
+        if (croppedImage == null) {
+          return;
+        }
+
         isSearchedUserAboutLoading = true;
         if (mounted) setState(() {});
 
-        UserAbout userAbout = userBloc.userAbout;
+        UserBloc tempUserBloc = Provider.of<UserBloc>(context, listen: false);
 
-        userAbout.wallpaper = file.path;
+        UserAbout userAbout = tempUserBloc.userAbout;
 
-        UserAbout newUserAbout = await UserAuth()
-            .addOrUpdateUserBio(userBloc.userAbout)
-            .catchError((error) {
+        userAbout.wallpaper = croppedImage;
+
+        await UserAuth().addOrUpdateUserBio(userAbout).catchError((error) {
           isSearchedUserAboutLoading = false;
           if (mounted) setState(() {});
+
           Toast.show(error.toString(), context,
               backgroundColor: blackFont, textColor: Colors.white);
           debugPrint("Cannot Update Cover : " + error.toString());
+
+          isSearchedUserAboutLoading = false;
+          if (mounted) setState(() {});
+        }).then((newUserAbout) {
+          userBloc.userAbout = newUserAbout;
+
+          isSearchedUserAboutLoading = false;
+          if (mounted) setState(() {});
         });
-
-        userBloc.userAbout = newUserAbout;
-
-        isSearchedUserAboutLoading = false;
-        if (mounted) setState(() {});
       }
     }
   }

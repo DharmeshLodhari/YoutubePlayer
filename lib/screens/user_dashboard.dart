@@ -19,6 +19,7 @@ import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
+import 'package:Slydo/widget/image_crop.dart';
 import 'package:Slydo/widget/passcodePopup.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/user_dashboard_item_tile.dart';
@@ -617,6 +618,12 @@ class _UserDashboardState extends State<UserDashboard> {
       final file =
           await ImagePicker().getImage(source: imageSource, imageQuality: 70);
       if (file != null) {
+        /// for cropping the image
+        String croppedImage = await ImageCrop().cropImage(file.path);
+        if (croppedImage == null) {
+          return;
+        }
+
         try {
           isLoading = true;
           if (mounted) setState(() {});
@@ -626,7 +633,7 @@ class _UserDashboardState extends State<UserDashboard> {
           var password = dbUser.password;
 
           // Upload Image new image
-          await UserAuth().updateUserAvatar(File(file.path));
+          await UserAuth().updateUserAvatar(File(croppedImage));
 
           // Get New updated user data and set new user data to userBloc
           await _auth.authenticate(phoneNumber, password).then((value) {
