@@ -56,6 +56,9 @@ class PaymentAndBankingAuth extends AuthService {
         secureBaseUrl + "/api/v1/transactions/delete-bank-account/" + id + "/";
     var headers = await getAuthHeaders();
     var response = await http.delete(url, headers: headers);
+
+    debugPrint(
+        "status code :- ${response.statusCode} response ${response.body}");
     if (response.statusCode == 204) {
       return true;
     } else {

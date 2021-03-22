@@ -193,8 +193,8 @@ class _VerifyResetDeviceOTPScreenState
 
   void verifyOTP() {
     if (_verifyOtpFormKey.currentState.validate()) {
-      String enteredOTP = otpController.text.trim();
-      String passwordToken = "false";
+      // String enteredOTP = otpController.text.trim();
+      // String passwordToken = "false";
 
       // if (enteredOTP == requireOtp) {
       // UserAuth()

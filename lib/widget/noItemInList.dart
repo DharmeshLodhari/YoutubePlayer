@@ -10,30 +10,6 @@ class NoItemInList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // return Container(
-    //   child: Center(
-    //     child: Column(
-    //       mainAxisAlignment: MainAxisAlignment.center,
-    //       children: <Widget>[
-    //         Image.asset(
-    //           "assets/images/noTransactions.png",
-    //           colorBlendMode: BlendMode.color,
-    //         ),
-    //         Padding(
-    //           padding: const EdgeInsets.all(8.0),
-    //           child: Text(
-    //             msg,
-    //             style: TextStyle(
-    //                 color: Colors.black,
-    //                 fontSize: 18,
-    //                 fontWeight: FontWeight.w600),
-    //           ),
-    //         )
-    //       ],
-    //     ),
-    //   ),
-    // );
-
     return Container(
       child: Center(
         child: Column(
@@ -57,10 +33,16 @@ class NoItemInList extends StatelessWidget {
             SizedBox(
               height: 16,
             ),
-            Text(
-              msg,
-              style: TextStyle(
-                  color: blackFont, fontSize: 16, fontWeight: FontWeight.bold),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                msg,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    color: blackFont,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold),
+              ),
             ),
             Expanded(
                 child: SizedBox(

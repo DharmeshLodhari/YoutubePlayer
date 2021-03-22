@@ -258,15 +258,13 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
               result == ConnectivityResult.wifi) &&
           _isNetworkConnectionIsOn == false) {
         _isNetworkConnectionIsOn = true;
-        // if (_isFirstTime) {
-        //   _isFirstTime = false;
-        // } else {
+
         messageList.clear();
         next = "";
         previous = "";
         count = 0;
         getPreviousMessages();
-        // }
+
         debugPrint(
             "_isNetworkConnectionIsOn FROM CHAT SCREEN:- $_isNetworkConnectionIsOn");
       }
@@ -321,7 +319,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     audioRecorder = null;
 
     chatShakeDetection.stopShakeDetector();
-    // detector?.stopListening();
 
     messageController.removeListener(sendUserTypingState);
 
@@ -382,7 +379,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         mainSocketProvider.currentConversationId = recipientUser.conversationId;
         mainSocketProvider.isChatOnScreen = true;
       } catch (e) {
-        debugPrint("Hello error:- $e");
+        debugPrint("Error:- $e");
       }
     });
   }
