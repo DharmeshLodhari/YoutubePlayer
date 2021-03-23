@@ -210,27 +210,26 @@ class _MaterialControlsState extends State<MaterialControls> {
             opacity: _hideStuff ? 0.0 : 1.0,
             duration: Duration(milliseconds: 300),
             child: Container(
-              height: barHeight,
-              color: Colors.transparent,
-              child: Row(
-                children: <Widget>[
-                  flexibleSpace(),
-                  IconButton(
-                    icon: Icon(
-                      isWishList
-                          ? SlydoAppIcon.heart_1
-                          : SlydoAppIcon.heart_empty,
-                      size: 20,
-                      color: Colors.white,
-                    ),
-                    onPressed: () {
-                      isWishList = !isWishList;
-                      setState(() {});
-                    },
-                  )
-                ],
-              ),
-            ),
+                height: barHeight, color: Colors.transparent, child: Container()
+                // Row(
+                //   children: <Widget>[
+                // flexibleSpace(),
+                // IconButton(
+                //   icon: Icon(
+                //     isWishList
+                //         ? SlydoAppIcon.heart_1
+                //         : SlydoAppIcon.heart_empty,
+                //     size: 20,
+                //     color: Colors.white,
+                //   ),
+                //   onPressed: () {
+                //     isWishList = !isWishList;
+                //     setState(() {});
+                //   },
+                // )
+                //   ],
+                // ),
+                ),
           );
   }
 

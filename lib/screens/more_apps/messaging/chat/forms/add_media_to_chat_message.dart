@@ -6,6 +6,7 @@ import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/video_player_controller/chewie_player.dart';
 import 'package:Slydo/utils/video_player_controller/chewie_progress_colors.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/image_crop.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -52,19 +53,32 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
       setUpVideoPlayer();
     }
 
+    if (mediaType == "image") {
+      cropImage();
+    }
+
     super.initState();
   }
 
-  void setUpVideoPlayer() {
+  void cropImage() async {
+    /// for cropping the image
+    String croppedImage = await ImageCrop().cropImage(mediaFile.path);
+    if (croppedImage != null) {
+      mediaFile = File(croppedImage);
+      if (mounted) setState(() {});
+    }
+  }
+
+  void setUpVideoPlayer() async {
     isLoading = true;
     if (mounted) setState(() {});
 
-    _videoController = VideoPlayerController.file(
-      mediaFile,
-    );
+    _videoController = VideoPlayerController.file(mediaFile);
+    await _videoController.initialize();
+
     _chewieController = ChewieController(
       videoPlayerController: _videoController,
-      aspectRatio: 16 / 9,
+      aspectRatio: _videoController.value.aspectRatio,
       allowedScreenSleep: false, autoPlay: false,
       allowFullScreen: true,
       deviceOrientationsAfterFullScreen: [
@@ -334,11 +348,15 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
         imageProvider: FileImage(mediaFile),
       ));
     } else if (mediaType == "video") {
-      return Chewie(
-        controller: _chewieController,
-        posterUrl: "",
-        titleName: "",
-      );
+      return isLoading
+          ? Center(
+              child: CircularLoadingIndicator(),
+            )
+          : Chewie(
+              controller: _chewieController,
+              posterUrl: "",
+              titleName: "",
+            );
     } else if (mediaType == "audio") {
       return Container(
         padding: EdgeInsets.symmetric(horizontal: 16),

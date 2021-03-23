@@ -29,6 +29,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
+import 'package:Slydo/widget/image_crop.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
@@ -162,6 +163,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   /// variables for shaking detection and nudge
   ChatShakeDetection chatShakeDetection;
+
+  /// chat Screen ScaffoldKey
+  GlobalKey<ScaffoldState> chatScreenKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -448,10 +452,12 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
             .catchError((error) {
           isLoading = false;
           if (mounted) setState(() {});
-          Toast.show(error, context,
-              textColor: Colors.white,
-              backgroundColor: Colors.black,
-              duration: Toast.LENGTH_LONG);
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            Toast.show(error, chatScreenKey.currentContext,
+                textColor: Colors.white,
+                backgroundColor: Colors.black,
+                duration: Toast.LENGTH_LONG);
+          });
         });
         if (isLoading == false) {
           return;
@@ -711,6 +717,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         return Future.value(true);
       },
       child: Scaffold(
+        key: chatScreenKey,
         backgroundColor: Colors.white,
         appBar: appBar(),
         body: scaffoldBody(),
@@ -1401,16 +1408,24 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
     if (media == null) return null;
 
-    return media.path;
+    String croppedImage = await ImageCrop().cropImage(media.path);
+    if (croppedImage == null) {
+      return null;
+    }
+
+    return croppedImage;
   }
 
   Future<String> captureVideo() async {
-    var path = await Navigator.of(context).pushNamed("/video-recorder",
-        arguments: {"duration": Duration(seconds: 5)});
+    PickedFile media = await ImagePicker().getVideo(
+        source: ImageSource.camera, maxDuration: Duration(seconds: 5));
 
-    if (path == null) return null;
+    // var path = await Navigator.of(context).pushNamed("/video-recorder",
+    //     arguments: {"duration": Duration(seconds: 5)});
+    //
+    // if (path == null) return null;
 
-    return path;
+    return media.path;
   }
 
   Widget sendMessageBtn() {
@@ -1877,6 +1892,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
     messageText = messageDecoderWithEmoji(messageText);
 
+    debugPrint("message['media'] = ${message['media']}");
     return Column(
       children: [
         Row(

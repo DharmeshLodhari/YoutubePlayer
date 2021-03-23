@@ -1,6 +1,7 @@
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/video_player_controller/chewie_player.dart';
 import 'package:Slydo/utils/video_player_controller/chewie_progress_colors.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:photo_view/photo_view.dart';
@@ -34,37 +35,40 @@ class _ViewChatMediaState extends State<ViewChatMedia> {
     poster = widget.arguments["poster"] ?? null;
 
     if (type == "video") {
-      isLoading = true;
-      if (mounted) setState(() {});
-
-      _videoController = VideoPlayerController.network(
-        url,
-      );
-      _chewieController = ChewieController(
-        videoPlayerController: _videoController,
-        aspectRatio: 16 / 9,
-        allowedScreenSleep: false, autoPlay: true,
-        allowFullScreen: true,
-        deviceOrientationsAfterFullScreen: [
-          DeviceOrientation.portraitUp,
-          DeviceOrientation.portraitDown,
-        ],
-        systemOverlaysAfterFullScreen: SystemUiOverlay.values,
-        // showControls: false,
-        materialProgressColors: ChewieProgressColors(
-          playedColor: navyBlue,
-          handleColor: Colors.white,
-          backgroundColor: dividerColor,
-          bufferedColor: Colors.white30,
-        ),
-        autoInitialize: true,
-      );
-
-      isLoading = false;
-      if (mounted) setState(() {});
+      initializeVideoPlayer();
     }
 
     super.initState();
+  }
+
+  void initializeVideoPlayer() async {
+    isLoading = true;
+    if (mounted) setState(() {});
+
+    _videoController = VideoPlayerController.network(url);
+    await _videoController.initialize();
+    _chewieController = ChewieController(
+      videoPlayerController: _videoController,
+      aspectRatio: _videoController.value.aspectRatio,
+      allowedScreenSleep: false, autoPlay: true,
+      allowFullScreen: true,
+      deviceOrientationsAfterFullScreen: [
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ],
+      systemOverlaysAfterFullScreen: SystemUiOverlay.values,
+      // showControls: false,
+      materialProgressColors: ChewieProgressColors(
+        playedColor: navyBlue,
+        handleColor: Colors.white,
+        backgroundColor: dividerColor,
+        bufferedColor: Colors.white30,
+      ),
+      autoInitialize: true,
+    );
+
+    isLoading = false;
+    if (mounted) setState(() {});
   }
 
   @override
@@ -172,11 +176,17 @@ class _ViewChatMediaState extends State<ViewChatMedia> {
       ));
     }
     if (type == "video") {
-      return Chewie(
-        controller: _chewieController,
-        posterUrl: poster ?? "",
-        titleName: "",
-      );
+      return isLoading
+          ? Container(
+              child: Center(
+                child: CircularLoadingIndicator(),
+              ),
+            )
+          : Chewie(
+              controller: _chewieController,
+              posterUrl: poster ?? "",
+              titleName: "",
+            );
     } else {
       return Container();
     }

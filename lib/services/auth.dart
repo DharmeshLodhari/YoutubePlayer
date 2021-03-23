@@ -66,8 +66,6 @@ class AuthService {
     var data = await getDeviceInfo();
     _body.addAll(data);
 
-    debugPrint("Device Data: $data");
-
     var response = await http.post(url, body: _body, headers: headers);
     if (response.statusCode == 200) {
       Map<String, String> data = {};

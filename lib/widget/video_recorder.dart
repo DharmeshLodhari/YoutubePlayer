@@ -100,61 +100,123 @@ class _VideoRecorderState extends State<VideoRecorder> {
       child: Scaffold(
         key: _scaffoldKey,
         // appBar: appBar(),
-        body: Stack(
-          children: <Widget>[
-            Container(
-              child: Center(
-                child: _cameraPreviewWidget(),
-              ),
-            ),
-            Container(
-              child: Padding(
-                padding: const EdgeInsets.all(1.0),
-              ),
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
-                color: Colors.transparent,
-                border: Border.all(
-                  color: controller != null && controller.value.isRecordingVideo
-                      ? mateRed
-                      : dividerColor,
-                  width: 1.0,
+        body: OrientationBuilder(builder: (context, orientation) {
+          debugPrint("=> ${orientation.index}");
+          if (orientation == Orientation.portrait) {
+            return Stack(
+              children: <Widget>[
+                Container(
+                  child: Center(
+                    child: _cameraPreviewWidget(),
+                  ),
                 ),
-              ),
-            ),
-            Positioned(
-              bottom: 0,
-              child: Column(
-                children: [
-                  Text(
-                    getTimerDuration(timerService.currentDuration),
-                    style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600),
+                Container(
+                  child: Padding(
+                    padding: const EdgeInsets.all(1.0),
                   ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  Container(
-                    padding: EdgeInsets.symmetric(vertical: 16),
-                    width: MediaQuery.of(context).size.width,
-                    color: Colors.black45,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        _cameraTogglesRowWidget(),
-                        _captureControlRowWidget(),
-                        _closeBtnWidget(),
-                      ],
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    border: Border.all(
+                      color: controller != null &&
+                              controller.value.isRecordingVideo
+                          ? mateRed
+                          : dividerColor,
+                      width: 1.0,
                     ),
                   ),
-                ],
+                ),
+                Positioned(
+                  bottom: 0,
+                  child: Column(
+                    children: [
+                      Text(
+                        getTimerDuration(timerService.currentDuration),
+                        style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600),
+                      ),
+                      SizedBox(
+                        height: 8,
+                      ),
+                      Container(
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                        width: MediaQuery.of(context).size.width,
+                        color: Colors.black45,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            _cameraTogglesRowWidget(),
+                            _captureControlRowWidget(),
+                            _closeBtnWidget(),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          }
+          return Stack(
+            children: <Widget>[
+              Container(
+                child: Center(
+                  child: _cameraPreviewWidget(),
+                ),
               ),
-            ),
-          ],
-        ),
+              Container(
+                child: Padding(
+                  padding: const EdgeInsets.all(1.0),
+                ),
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  border: Border.all(
+                    color:
+                        controller != null && controller.value.isRecordingVideo
+                            ? mateRed
+                            : dividerColor,
+                    width: 1.0,
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 0,
+                child: Column(
+                  children: [
+                    Text(
+                      getTimerDuration(timerService.currentDuration),
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600),
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    Container(
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      width: MediaQuery.of(context).size.width,
+                      color: Colors.black45,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          _cameraTogglesRowWidget(),
+                          _captureControlRowWidget(),
+                          _closeBtnWidget(),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          );
+        }),
       ),
     );
   }
@@ -324,6 +386,8 @@ class _VideoRecorderState extends State<VideoRecorder> {
 
     // If the controller is updated then update the UI.
     controller.addListener(() {
+      debugPrint("===>> ${controller.value.aspectRatio} ");
+
       if (mounted) {
         setState(() {});
       }
@@ -436,5 +500,13 @@ class _VideoRecorderState extends State<VideoRecorder> {
     String errorText = 'Error: ${e.code}\nError Message: ${e.description}';
     print(errorText);
     Toast.show('Error: ${e.code}\n${e.description}', context);
+  }
+
+  void dispose() {
+    timer?.cancel();
+    timerService.stop();
+    timerService.reset();
+
+    super.dispose();
   }
 }

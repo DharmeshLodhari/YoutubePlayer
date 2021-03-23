@@ -16,6 +16,7 @@ import 'package:sizer/sizer.dart';
 import 'package:toast/toast.dart';
 
 import 'more_apps/messaging/chat/helpers/chat_user_manager.dart';
+import 'more_apps/messaging/chat/helpers/db_socket_message_handler.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -392,8 +393,8 @@ class _HomeState extends State<Home> {
         ),
       ),
       onTap: () async {
-        // DBSocketMessageHandler().clearChatTextMessage();
-        // ChatUserManager().clearChatUsers();
+        DBSocketMessageHandler().clearChatTextMessage();
+        ChatUserManager().clearChatUsers();
         // Navigator.pushNamed(
         //   context,
         //   '/nfc-reader',
