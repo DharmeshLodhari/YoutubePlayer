@@ -531,68 +531,87 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                 child: CircularLoadingIndicator(),
               ),
             )
-          : Column(
-              children: <Widget>[
-                Stack(
-                  children: <Widget>[
-                    CarouselSlider(
-                      options: CarouselOptions(
-                          viewportFraction: 1.0,
-                          enlargeCenterPage: true,
-                          autoPlay: false,
-                          aspectRatio: 1.7,
-                          onPageChanged: (index, _) {
-                            if (mounted) {
-                              setState(() {
-                                _current = index;
-                              });
-                            }
-                          }),
-                      items: imgList
-                          .map((item) => Container(
-                                child: Center(
-                                    child: ClipRRect(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10)),
-                                  child: CachedNetworkImage(
-                                    placeholder: (context, url) => Center(
-                                        child: CircularLoadingIndicator()),
-                                    imageUrl: item,
-                                    fit: BoxFit.fill,
-                                    height: double.infinity,
-                                    width: double.infinity,
-                                  ),
-                                )),
-                              ))
-                          .toList(),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      left: MediaQuery.of(context).size.width / 2 -
-                          (5 * imgList.length),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: imgList.map((url) {
-                          int index = imgList.indexOf(url);
-                          return Container(
-                            width: 5.0,
-                            height: 5.0,
-                            margin: EdgeInsets.symmetric(
-                                vertical: 10.0, horizontal: 2.0),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color:
-                                  _current == index ? navyBlue : navyBlueLight,
-                            ),
-                          );
-                        }).toList(),
+          : imgList.length == 1
+              ? AspectRatio(
+                  aspectRatio: 1.7,
+                  child: Container(
+                    child: Center(
+                        child: ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      child: CachedNetworkImage(
+                        placeholder: (context, url) =>
+                            Center(child: CircularLoadingIndicator()),
+                        imageUrl: imgList[0],
+                        fit: BoxFit.fill,
+                        height: double.infinity,
+                        width: double.infinity,
                       ),
-                    )
+                    )),
+                  ),
+                )
+              : Column(
+                  children: <Widget>[
+                    Stack(
+                      children: <Widget>[
+                        CarouselSlider(
+                          options: CarouselOptions(
+                              viewportFraction: 1.0,
+                              enlargeCenterPage: true,
+                              autoPlay: false,
+                              aspectRatio: 1.7,
+                              onPageChanged: (index, _) {
+                                if (mounted) {
+                                  setState(() {
+                                    _current = index;
+                                  });
+                                }
+                              }),
+                          items: imgList
+                              .map((item) => Container(
+                                    child: Center(
+                                        child: ClipRRect(
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(10)),
+                                      child: CachedNetworkImage(
+                                        placeholder: (context, url) => Center(
+                                            child: CircularLoadingIndicator()),
+                                        imageUrl: item,
+                                        fit: BoxFit.fill,
+                                        height: double.infinity,
+                                        width: double.infinity,
+                                      ),
+                                    )),
+                                  ))
+                              .toList(),
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          left: MediaQuery.of(context).size.width / 2 -
+                              (5 * imgList.length),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: imgList.map((url) {
+                              int index = imgList.indexOf(url);
+                              return Container(
+                                width: 5.0,
+                                height: 5.0,
+                                margin: EdgeInsets.symmetric(
+                                    vertical: 10.0, horizontal: 2.0),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: _current == index
+                                      ? navyBlue
+                                      : navyBlueLight,
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        )
+                      ],
+                    ),
                   ],
                 ),
-              ],
-            ),
     );
   }
 

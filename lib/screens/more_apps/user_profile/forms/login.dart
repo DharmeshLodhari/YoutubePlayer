@@ -529,10 +529,16 @@ class _UserLoginState extends State<UserLogin> {
         } else {
           Navigator.pop(context);
           Toast.show(AppLocalization.of(context).userIsNotRegistered, context,
-              gravity: Toast.CENTER,
-              backgroundColor: darkBlue(),
+              gravity: Toast.BOTTOM,
+              backgroundColor: Colors.black,
               textColor: Colors.white);
         }
+      }).catchError((error) {
+        Navigator.pop(context);
+        Toast.show("$error", context,
+            gravity: Toast.BOTTOM,
+            backgroundColor: Colors.black,
+            textColor: Colors.white);
       });
     }
   }

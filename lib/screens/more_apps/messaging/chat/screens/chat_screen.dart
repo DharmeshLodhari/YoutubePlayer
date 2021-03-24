@@ -1892,7 +1892,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
     messageText = messageDecoderWithEmoji(messageText);
 
-    debugPrint("message['media'] = ${message['media']}");
     return Column(
       children: [
         Row(

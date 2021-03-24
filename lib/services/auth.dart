@@ -66,6 +66,8 @@ class AuthService {
     var data = await getDeviceInfo();
     _body.addAll(data);
 
+    debugPrint("=> $_body");
+
     var response = await http.post(url, body: _body, headers: headers);
     if (response.statusCode == 200) {
       Map<String, String> data = {};
@@ -92,15 +94,19 @@ class AuthService {
     }
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
-    return User(
-        uuid: null,
-        url: null,
-        phoneNumber: null,
-        fullName: null,
-        userName: null,
-        avatar: null,
-        qrCode: null,
-        password: null);
+
+    try {
+      // Save user to database
+      var jsonData = jsonDecode(response.body);
+
+      if (jsonData["detail"] != null) {
+        return Future.error("${jsonData["detail"]}");
+      } else {
+        return Future.error("${response.body}");
+      }
+    } catch (e) {
+      return Future.error("${response.body}");
+    }
   }
 
   // Log user out

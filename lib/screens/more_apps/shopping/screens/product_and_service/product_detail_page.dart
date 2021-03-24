@@ -1,11 +1,13 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/item_display_card.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
@@ -179,14 +181,64 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         color: blackFont,
       ),
       onTap: () {
+        selectShareOptionBottomSheet();
+      },
+      backgroundColor: iconBtnGrey,
+      enableMargin: true,
+    );
+  }
+
+  void selectShareOptionBottomSheet() {
+    showModalBottomSheet<void>(
+        backgroundColor: Colors.transparent,
+        context: context,
+        builder: (BuildContext context) {
+          return Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20)),
+              ),
+              color: Colors.white,
+              margin: EdgeInsets.zero,
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: generateBottomSheetItem(),
+                ),
+              ));
+        });
+  }
+
+  List<Widget> generateBottomSheetItem() {
+    List<Widget> list = [];
+
+    list.add(bottomSheetItem(
+      title: "Share",
+      icon: SlydoAppIcon.share,
+      onTap: () async {
+        Navigator.pop(context);
         var shareBody = "${product.name}\n" +
             "http://slydo.co/products/" +
             product.id.toString();
         Share.share(shareBody, subject: "${product.name}");
       },
-      backgroundColor: iconBtnGrey,
-      enableMargin: true,
+    ));
+
+    list.add(
+      bottomSheetItem(
+        title: "Share as Message",
+        isLast: true,
+        icon: SlydoAppIcon.text_message,
+        onTap: () async {
+          Navigator.pop(context);
+          await ShareInChat().selectShareCustomer(context);
+        },
+      ),
     );
+
+    return list;
   }
 
   Widget goToCartWidget() {
@@ -461,68 +513,87 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 child: CircularLoadingIndicator(),
               ),
             )
-          : Column(
-              children: <Widget>[
-                Stack(
-                  children: <Widget>[
-                    CarouselSlider(
-                      options: CarouselOptions(
-                          viewportFraction: 1.0,
-                          enlargeCenterPage: true,
-                          autoPlay: false,
-                          aspectRatio: 1.7,
-                          onPageChanged: (index, _) {
-                            if (mounted) {
-                              setState(() {
-                                _current = index;
-                              });
-                            }
-                          }),
-                      items: imgList
-                          .map((item) => Container(
-                                child: Center(
-                                    child: ClipRRect(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10)),
-                                  child: CachedNetworkImage(
-                                    placeholder: (context, url) => Center(
-                                        child: CircularLoadingIndicator()),
-                                    imageUrl: item,
-                                    fit: BoxFit.fill,
-                                    height: double.infinity,
-                                    width: double.infinity,
-                                  ),
-                                )),
-                              ))
-                          .toList(),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      left: MediaQuery.of(context).size.width / 2 -
-                          (5 * imgList.length),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: imgList.map((url) {
-                          int index = imgList.indexOf(url);
-                          return Container(
-                            width: 5.0,
-                            height: 5.0,
-                            margin: EdgeInsets.symmetric(
-                                vertical: 10.0, horizontal: 2.0),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color:
-                                  _current == index ? navyBlue : navyBlueLight,
-                            ),
-                          );
-                        }).toList(),
+          : imgList.length == 1
+              ? AspectRatio(
+                  aspectRatio: 1.7,
+                  child: Container(
+                    child: Center(
+                        child: ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      child: CachedNetworkImage(
+                        placeholder: (context, url) =>
+                            Center(child: CircularLoadingIndicator()),
+                        imageUrl: imgList[0],
+                        fit: BoxFit.fill,
+                        height: double.infinity,
+                        width: double.infinity,
                       ),
-                    )
+                    )),
+                  ),
+                )
+              : Column(
+                  children: <Widget>[
+                    Stack(
+                      children: <Widget>[
+                        CarouselSlider(
+                          options: CarouselOptions(
+                              viewportFraction: 1.0,
+                              enlargeCenterPage: true,
+                              autoPlay: false,
+                              aspectRatio: 1.7,
+                              onPageChanged: (index, _) {
+                                if (mounted) {
+                                  setState(() {
+                                    _current = index;
+                                  });
+                                }
+                              }),
+                          items: imgList
+                              .map((item) => Container(
+                                    child: Center(
+                                        child: ClipRRect(
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(10)),
+                                      child: CachedNetworkImage(
+                                        placeholder: (context, url) => Center(
+                                            child: CircularLoadingIndicator()),
+                                        imageUrl: item,
+                                        fit: BoxFit.fill,
+                                        height: double.infinity,
+                                        width: double.infinity,
+                                      ),
+                                    )),
+                                  ))
+                              .toList(),
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          left: MediaQuery.of(context).size.width / 2 -
+                              (5 * imgList.length),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: imgList.map((url) {
+                              int index = imgList.indexOf(url);
+                              return Container(
+                                width: 5.0,
+                                height: 5.0,
+                                margin: EdgeInsets.symmetric(
+                                    vertical: 10.0, horizontal: 2.0),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: _current == index
+                                      ? navyBlue
+                                      : navyBlueLight,
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        )
+                      ],
+                    ),
                   ],
                 ),
-              ],
-            ),
     );
   }
 
