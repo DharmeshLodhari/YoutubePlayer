@@ -18,6 +18,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:provider/provider.dart';
 
 class GetUserConnectionList extends StatefulWidget {
   @override
@@ -292,6 +293,8 @@ class _ShareToUserTileState extends State<ShareToUserTile> {
 
   Color borderColor;
 
+  ShareMessageToChatBloc _shareMessageToChatBloc;
+
   @override
   void initState() {
     borderColor = getUserTypeColor(user: widget.user);
@@ -300,6 +303,7 @@ class _ShareToUserTileState extends State<ShareToUserTile> {
 
   @override
   Widget build(BuildContext context) {
+    _shareMessageToChatBloc = Provider.of<ShareMessageToChatBloc>(context);
     return getTile();
   }
 
@@ -325,28 +329,37 @@ class _ShareToUserTileState extends State<ShareToUserTile> {
         ));
   }
 
-  Widget getTile() => Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-        shadowColor: boxShadowTwo,
-        elevation: 0,
-        child: GestureDetector(
-          onTap: () {
-            isSelected = !isSelected;
-            setState(() {});
-          },
-          child: Container(
-            decoration: decorateBox(),
-            child: ListTile(
-              dense: true,
-              title: getTitle(),
-              subtitle: getSubtitle(),
-              leading: getAvatar(),
-              trailing: getTrailing(),
-            ),
+  Widget getTile() {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      shadowColor: boxShadowTwo,
+      elevation: 0,
+      child: GestureDetector(
+        onTap: () {
+          isSelected = !isSelected;
+          if (isSelected) {
+            _shareMessageToChatBloc.addRecipient(customerProfile: widget.user);
+          } else {
+            _shareMessageToChatBloc.removeRecipient(
+                customerProfile: widget.user);
+          }
+
+          setState(() {});
+        },
+        child: Container(
+          decoration: decorateBox(),
+          child: ListTile(
+            dense: true,
+            title: getTitle(),
+            subtitle: getSubtitle(),
+            leading: getAvatar(),
+            trailing: getTrailing(),
           ),
         ),
-      );
+      ),
+    );
+  }
 
   Widget getTitle() {
     return Text(

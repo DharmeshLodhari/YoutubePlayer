@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_about_screen.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_info.dart';
@@ -17,6 +20,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
+import 'package:uuid/uuid.dart';
 
 // ignore: must_be_immutable
 class UserProfileScreen extends StatefulWidget {
@@ -747,7 +751,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     list.add(
       bottomSheetItem(
         title: "Share",
-        isLast: userBloc.user.userName == searchedUser.userName,
         icon: SlydoAppIcon.share,
         onTap: () {
           Navigator.pop(context);
@@ -755,6 +758,18 @@ class _UserProfileScreenState extends State<UserProfileScreen>
               "http://slydo.co/user/" +
               searchedUser.userName;
           Share.share(shareBody, subject: "${searchedUser.fullName}");
+        },
+      ),
+    );
+
+    list.add(
+      bottomSheetItem(
+        title: "Share in Chat",
+        isLast: userBloc.user.userName == searchedUser.userName,
+        icon: SlydoAppIcon.text_message,
+        onTap: () async {
+          Navigator.pop(context);
+          sendProfileToUsersInChat();
         },
       ),
     );
@@ -809,6 +824,38 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     }
 
     return list;
+  }
+
+  void sendProfileToUsersInChat() async {
+    List<CustomerProfile> listOfRecipient =
+        await ShareInChat().selectShareCustomer(context);
+    debugPrint("Selected users = ${listOfRecipient.length}");
+
+    Map<String, dynamic> itemData = searchedUser.toJsonToSendInToChat();
+
+    listOfRecipient.forEach((recipient) {
+      addUserProfileToChat(itemData: itemData, recipientUser: recipient);
+    });
+  }
+
+  void addUserProfileToChat(
+      {Map<String, dynamic> itemData,
+      CustomerProfile recipientUser,
+      String url}) async {
+    Map<String, dynamic> data = {
+      "meta_data": jsonEncode(itemData),
+      "check_id": Uuid().v4(),
+      "conversation_id": recipientUser.conversationId,
+      "author": userBloc.user.userName,
+      "message": "",
+      "kind": "user-profile",
+      "created_at": DateTime.now().toUtc().toString(),
+      "type": "chatroom_message",
+    };
+
+    debugPrint("Data To be send:- $data");
+
+    await sendDataToSocket(data);
   }
 }
 

@@ -114,10 +114,6 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     user = arguments['searchedUser'];
-    debugPrint(user.fullName);
-    debugPrint(user.userName);
-    debugPrint(user.qrCode);
-    debugPrint(user.avatar);
 
     this.getProductList();
     _productScrollController.addListener(() {

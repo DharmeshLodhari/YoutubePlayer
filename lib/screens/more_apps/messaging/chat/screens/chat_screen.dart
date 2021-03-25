@@ -14,6 +14,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/Chat
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/product_and_service_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/product_and_service_tile_for_search.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/transaction_tile_for_chat.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/tiles/user_profile_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/widgets/chat_audio_player.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
@@ -1575,6 +1576,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     String messageType = messageData["kind"];
     switch (messageType) {
       case "text":
+        // Widget getUserProfileUI = renderUserProfile(message: messageData);
+        // return getUserProfileUI;
+
         Widget getMessageUi = renderMessage(message: messageData);
         return getMessageUi;
         break;
@@ -1611,6 +1615,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         Widget getServiceUI = renderService(item: messageData);
         return getServiceUI;
         break;
+      case "user-profile":
+        Widget getUserProfileUI = renderUserProfile(message: messageData);
+        return getUserProfileUI;
 
       default:
         Widget getTypingUI = renderTypingMsg();
@@ -2245,6 +2252,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   Widget renderPaymentRequest({Map<String, dynamic> message}) {
     return PaymentRequestTileForChat(message: message, userBloc: userBloc);
+  }
+
+  Widget renderUserProfile({Map<String, dynamic> message}) {
+    return UserProfileTileForChat(message: message);
   }
 
   Widget renderSendPayment({Map<String, dynamic> message}) {

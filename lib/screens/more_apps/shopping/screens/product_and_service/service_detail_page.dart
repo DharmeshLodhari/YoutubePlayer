@@ -1,11 +1,17 @@
+import 'dart:convert';
+
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/item_display_card.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
@@ -17,6 +23,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 import 'package:toast/toast.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../user_profile/user_auth.dart';
 import '../../shopping_auth.dart';
@@ -178,14 +185,104 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         color: blackFont,
       ),
       onTap: () {
+        selectShareOptionBottomSheet();
+      },
+      backgroundColor: iconBtnGrey,
+      enableMargin: true,
+    );
+  }
+
+  void selectShareOptionBottomSheet() {
+    showModalBottomSheet<void>(
+        backgroundColor: Colors.transparent,
+        context: context,
+        builder: (BuildContext context) {
+          return Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20)),
+              ),
+              color: Colors.white,
+              margin: EdgeInsets.zero,
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: generateBottomSheetItem(),
+                ),
+              ));
+        });
+  }
+
+  List<Widget> generateBottomSheetItem() {
+    List<Widget> list = [];
+
+    list.add(bottomSheetItem(
+      title: "Share",
+      icon: SlydoAppIcon.share,
+      onTap: () async {
+        Navigator.pop(context);
         var shareBody = "${service.name}\n" +
             "http://slydo.co/services/" +
             service.id.toString();
         Share.share(shareBody, subject: "${service.name}");
       },
-      backgroundColor: iconBtnGrey,
-      enableMargin: true,
+    ));
+
+    list.add(
+      bottomSheetItem(
+        title: "Share in Chat",
+        isLast: true,
+        icon: SlydoAppIcon.text_message,
+        onTap: () async {
+          Navigator.pop(context);
+          sendItemToUsersInChat();
+        },
+      ),
     );
+
+    return list;
+  }
+
+  void sendItemToUsersInChat() async {
+    List<CustomerProfile> listOfRecipient =
+        await ShareInChat().selectShareCustomer(context);
+    debugPrint("Selected users = ${listOfRecipient.length}");
+
+    String url = secureBaseUrl +
+        "/api/v1/${service is Product ? "products" : "services"}/" +
+        service.id +
+        "/";
+
+    Map<String, dynamic> itemData =
+        await ShoppingAuthService().getProductOrService(url);
+
+    listOfRecipient.forEach((recipient) {
+      addProductOrServiceToChat(
+          item: service,
+          itemData: itemData,
+          recipientUser: recipient,
+          url: url);
+    });
+  }
+
+  void addProductOrServiceToChat(
+      {Map<String, dynamic> itemData,
+      CustomerProfile recipientUser,
+      String url,
+      dynamic item}) async {
+    Map<String, dynamic> data = {
+      "meta_data": jsonEncode(itemData),
+      "check_id": Uuid().v4(),
+      "conversation_id": recipientUser.conversationId,
+      "author": userBloc.user.userName,
+      "message": url,
+      "kind": item is Product ? "product" : "service",
+      "created_at": DateTime.now().toUtc().toString(),
+      "type": "chatroom_message",
+    };
+    await sendDataToSocket(data);
   }
 
   Widget goToCartWidget() {
@@ -555,6 +652,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                       children: <Widget>[
                         CarouselSlider(
                           options: CarouselOptions(
+                              enableInfiniteScroll: false,
                               viewportFraction: 1.0,
                               enlargeCenterPage: true,
                               autoPlay: false,

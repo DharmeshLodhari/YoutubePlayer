@@ -249,11 +249,14 @@ class AuthService {
     } catch (e) {
       debugPrint("updateAppState : " + e.toString());
     }
-    if (response.statusCode != 200) {
-      var jsonData = response.body;
-      debugPrint(jsonData);
+    if (response != null) {
+      if (response.statusCode != 200) {
+        var jsonData = response.body;
+        debugPrint(jsonData);
+      }
+      return response.statusCode == 200;
     }
-    return response.statusCode == 200;
+    return false;
   }
 
   Map getNonAuthHeader() {
@@ -290,7 +293,6 @@ class AuthService {
         "previous": jsonData["previous"],
         "results": jsonData["results"],
       };
-      debugPrint("===> $result");
       return result;
     } else {
       var jsonData = json.decode(response.body);

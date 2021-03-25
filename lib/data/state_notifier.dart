@@ -312,3 +312,73 @@ class AddInvoiceBloc extends ChangeNotifier {
     _total = sum;
   }
 }
+
+class ShareMessageToChatBloc extends ChangeNotifier {
+  List<CustomerProfile> _recipientUsers = List<CustomerProfile>();
+
+  void addRecipient({CustomerProfile customerProfile}) {
+    bool isAlreadyPresent = false;
+
+    /// Check for user is already in the list
+    _recipientUsers.forEach((element) {
+      if (element.userName == customerProfile.userName) isAlreadyPresent = true;
+    });
+
+    /// if user not present in the list then we add that user in recipient list
+    if (!isAlreadyPresent) {
+      _recipientUsers.add(customerProfile);
+      notifyListeners();
+      printRecipient();
+    }
+  }
+
+  void printRecipient() {
+    debugPrint("Sharing to ${_recipientUsers.length} Users");
+
+    _recipientUsers.forEach((element) {
+      debugPrint(
+          "==> Username ${element.userName} ConversationId:- ${element.conversationId}");
+    });
+  }
+
+  void removeRecipient({CustomerProfile customerProfile, String username}) {
+    String userNameToCheck;
+
+    if (customerProfile != null) {
+      userNameToCheck = customerProfile.userName;
+    } else {
+      userNameToCheck = username;
+    }
+
+    if (userNameToCheck != null) {
+      CustomerProfile recipientToBeRemoved;
+
+      for (int i = 0; i < _recipientUsers.length; i++) {
+        if (_recipientUsers[i].userName == customerProfile.userName) {
+          recipientToBeRemoved = _recipientUsers[i];
+          break;
+        }
+      }
+
+      if (recipientToBeRemoved != null) {
+        _recipientUsers.remove(recipientToBeRemoved);
+        printRecipient();
+        notifyListeners();
+      }
+    }
+  }
+
+  List<CustomerProfile> getRecipients() {
+    return _recipientUsers;
+  }
+
+  int recipientsLength() {
+    return _recipientUsers.length;
+  }
+
+  void clearRecipient() {
+    debugPrint("Clearing Sharing List");
+    _recipientUsers.clear();
+    notifyListeners();
+  }
+}

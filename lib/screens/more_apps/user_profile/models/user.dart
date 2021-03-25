@@ -199,6 +199,16 @@ class CustomerProfile {
     data['profile'] = this.userAbout.toJson();
     return data;
   }
+
+  Map<String, dynamic> toJsonToSendInToChat() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['full_name'] = this.fullName;
+    data['username'] = this.userName;
+    data['avatar'] = this.avatar;
+    data['qr_code'] = this.qrCode;
+    data['type'] = this.type;
+    return data;
+  }
 }
 
 class UserLocation {
