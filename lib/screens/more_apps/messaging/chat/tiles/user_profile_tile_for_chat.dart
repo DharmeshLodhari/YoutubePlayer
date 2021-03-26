@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -20,45 +22,21 @@ class _UserProfileTileForChatState extends State<UserProfileTileForChat> {
   UserBloc userBloc;
 
   CustomerProfile customerProfile;
-  @override
-  void initState() {
-    /// {meta_data:
-    /// {"full_name":"Black Striker Enterprise",
-    /// "username":"black",
-    /// "avatar":"https://slydo-assets.s3.amazonaws.com/media/customer/avatar/4f4470b6dbf44b62859ddf2b945d7472.jpg",
-    /// "qr_code":"https://slydo-assets.s3.amazonaws.com/media/customer/qr-code/eae6ec308ace4edca0ff4a16889be3dd.png",
-    /// "type":"Developer"},
-    /// check_id: 580d8439-2907-4f1c-84e3-7f60957ac8a4,
-    /// conversation_id: 9ae68069-b342-4e04-b568-602bde6fe901,
-    /// author: black,
-    /// message: ,
-    /// kind: user_profile,
-    /// created_at: 2021-03-25 09:08:42.478942Z,
-    /// type: chatroom_message}
-
-    Map<String, dynamic> data = {
-      "full_name": "Black Striker Enterprise",
-      "username": "black",
-      "avatar":
-          "https://slydo-assets.s3.amazonaws.com/media/customer/avatar/4f4470b6dbf44b62859ddf2b945d7472.jpg",
-      "qr_code":
-          "https://slydo-assets.s3.amazonaws.com/media/customer/qr-code/eae6ec308ace4edca0ff4a16889be3dd.png",
-      "type": "Developer"
-    };
-
-    // customerProfile = CustomerProfile.fromJson(widget.message["meta_data"]);
-    customerProfile = CustomerProfile.fromJson(data);
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+
+    Map<String, dynamic> data;
+
+    if (widget.message['meta_data'] is String) {
+      data = jsonDecode(widget.message['meta_data']);
+    } else if (widget.message['meta_data'] is Map) {
+      data = widget.message['meta_data'];
+    }
+
+    customerProfile = CustomerProfile.fromJson(data);
+
     bool isSend = widget.message["author"] == userBloc.user.userName;
 
     return Column(
@@ -142,13 +120,8 @@ class _UserProfileTileState extends State<UserProfileTile> {
   Color borderColor;
 
   @override
-  void initState() {
-    borderColor = getUserTypeColor(user: widget.user);
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    borderColor = getUserTypeColor(user: widget.user);
     return getTile();
   }
 

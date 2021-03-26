@@ -847,7 +847,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       "check_id": Uuid().v4(),
       "conversation_id": recipientUser.conversationId,
       "author": userBloc.user.userName,
-      "message": "",
+      "message": "user-profile",
       "kind": "user-profile",
       "created_at": DateTime.now().toUtc().toString(),
       "type": "chatroom_message",
