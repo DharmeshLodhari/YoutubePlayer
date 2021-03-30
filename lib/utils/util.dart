@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:toast/toast.dart';
 
 import 'colors.dart';
 
@@ -168,4 +169,11 @@ String checkImageInErrorList(String url) {
     }
   });
   return url;
+}
+
+void apiErrorHandler({String error, BuildContext context, int duration = 1}) {
+  Toast.show("$error", context,
+      backgroundColor: Colors.black,
+      textColor: Colors.white,
+      duration: duration);
 }

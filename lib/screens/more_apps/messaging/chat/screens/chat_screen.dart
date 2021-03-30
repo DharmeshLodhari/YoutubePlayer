@@ -221,8 +221,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   void fetchRecipientUserIfNotAvailable() async {
     String recipientUserName = widget.arguments["recipientUserName"] ?? "";
 
-    debugPrint("recipientUserName => $recipientUserName");
-
     if (recipientUserName != "") {
       isRecipientLoading = true;
       if (mounted) setState(() {});
@@ -454,10 +452,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
           isLoading = false;
           if (mounted) setState(() {});
           WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-            Toast.show(error, chatScreenKey.currentContext,
-                textColor: Colors.white,
-                backgroundColor: Colors.black,
-                duration: Toast.LENGTH_LONG);
+            if (mounted) {
+              debugPrint("ERROR:- $error");
+            }
           });
         });
         if (isLoading == false) {
@@ -818,7 +815,13 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   void getUserStatus() async {
-    var data = await MessageAuth().getChatUserStatus(recipientUser.userName);
+    var data = await MessageAuth()
+        .getChatUserStatus(recipientUser.userName)
+        .catchError((error) {
+      debugPrint("ERROR:- $error");
+    });
+
+    if (data == null) return;
 
     if (data["status"] == "Online") {
       userStatus = "Online";
@@ -1576,9 +1579,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     String messageType = messageData["kind"];
     switch (messageType) {
       case "text":
-        // Widget getUserProfileUI = renderUserProfile(message: messageData);
-        // return getUserProfileUI;
-
         Widget getMessageUi = renderMessage(message: messageData);
         return getMessageUi;
         break;
@@ -1620,8 +1620,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         return getUserProfileUI;
 
       default:
-        Widget getTypingUI = renderTypingMsg();
-        return getTypingUI;
+        debugPrint("Unknown Message Kind: $messageType Message:- $message");
+        Widget getErrorRenderTypeUI = unKnownMessageType();
+        return getErrorRenderTypeUI;
     }
   }
 
@@ -2304,11 +2305,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     return ServiceTileChatMessage(item: item);
   }
 
-  Widget renderTypingMsg() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [Text("Typing...")],
-    );
+  Widget unKnownMessageType() {
+    return Container();
   }
 
   void checkMessageForRead() {

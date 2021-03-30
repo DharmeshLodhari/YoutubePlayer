@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -17,6 +18,9 @@ class AuthService {
   final String baseUrl = "https://api.slydo.co";
   final String secureBaseUrl = "https://api.slydo.co";
   final String localHostUrl = "https://127.0.0.1:8080";
+
+  final Duration timeOutDuration = Duration(seconds: 4);
+  final String timeOutErrorMessage = "Server Time-out !!";
 
   DatabaseHelper _db = DatabaseHelper();
 
@@ -298,5 +302,9 @@ class AuthService {
       var jsonData = json.decode(response.body);
       throw jsonData;
     }
+  }
+
+  FutureOr<http.Response> timeOutFunction() {
+    return Future.error("$timeOutErrorMessage");
   }
 }

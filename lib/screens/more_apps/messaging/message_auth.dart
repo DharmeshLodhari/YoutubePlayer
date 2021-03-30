@@ -206,7 +206,9 @@ class MessageAuth extends AuthService {
     }
     var headers = await getAuthHeaders();
 
-    var response = await http.get(url, headers: headers);
+    var response = await http
+        .get(url, headers: headers)
+        .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
 
     if (response.statusCode == 200) {
       List<String> previousMessages = [];
@@ -235,7 +237,9 @@ class MessageAuth extends AuthService {
     var url =
         secureBaseUrl + "/api/v1/chat/retrieve-user-chat-status/" + id + "/";
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
+    var response = await http
+        .get(url, headers: headers)
+        .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
 
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
