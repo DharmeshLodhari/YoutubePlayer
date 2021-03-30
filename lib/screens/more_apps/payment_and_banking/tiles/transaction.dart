@@ -109,7 +109,8 @@ class _PaymentRequestTileState extends State<PaymentRequestTile> {
               fontSize: 14),
         ),
         Text(
-          widget.paymentRequest.amount.toString(),
+        moneyDisplayNormalizer(
+        int.parse(widget.paymentRequest.amount.toString())),
           style: TextStyle(
               color: widget.paymentRequest.isCredit ? navyBlue : blackFont,
               fontWeight: FontWeight.bold,
@@ -265,7 +266,8 @@ class _TransactionTileState extends State<TransactionTile> {
               fontSize: 14),
         ),
         Text(
-          widget.transaction.amount.toString(),
+          moneyDisplayNormalizer(
+              int.parse(widget.transaction.amount.toString())),
           style: TextStyle(
               color: widget.transaction.isCredit ? navyBlue : blackFont,
               fontWeight: FontWeight.bold,

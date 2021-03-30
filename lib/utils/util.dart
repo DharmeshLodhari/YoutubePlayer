@@ -177,3 +177,13 @@ void apiErrorHandler({String error, BuildContext context, int duration = 1}) {
       textColor: Colors.white,
       duration: duration);
 }
+
+int moneyInputNormalizer(double amount) {
+  // Format the money into integer as server store money in integer
+  return int.parse((amount * 100).toString());
+}
+
+String moneyDisplayNormalizer(int amount) {
+  // Format the money into double as server returns money in integer
+  return double.parse((amount / 100).toString()).toStringAsFixed(2);
+}
