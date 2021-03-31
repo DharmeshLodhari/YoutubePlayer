@@ -189,7 +189,7 @@ class _ShoppingCartTileForProductState
               fontSize: 14),
         ),
         Text(
-          getTotalPrice(),
+          moneyDisplayNormalizer(int.parse(getTotalPrice())),
           style: TextStyle(
               color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),
         ),
@@ -284,7 +284,7 @@ class _ShoppingCartTileForServiceState
             : CircularProgressIndicator(
                 strokeWidth: 2.5,
                 valueColor: AlwaysStoppedAnimation(Colors.white),
-                backgroundColor: lightBlue(),
+                backgroundColor: navyBlue,
               ),
       ),
     );
@@ -388,7 +388,7 @@ class _ShoppingCartTileForServiceState
               fontSize: 14),
         ),
         Text(
-          getTotalPrice(),
+          moneyDisplayNormalizer(int.parse(getTotalPrice())),
           style: TextStyle(
               color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),
         ),

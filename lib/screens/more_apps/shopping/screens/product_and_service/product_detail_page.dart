@@ -674,7 +674,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                           fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      product.price,
+                      moneyDisplayNormalizer(
+                          int.parse(product.price.toString())),
                       style: TextStyle(
                           fontSize: 18.0,
                           color: navyBlue,

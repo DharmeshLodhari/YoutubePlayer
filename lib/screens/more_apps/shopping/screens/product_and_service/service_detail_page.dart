@@ -744,7 +744,8 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                           fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      service.price,
+                      moneyDisplayNormalizer(
+                          int.parse(service.price.toString())),
                       style: TextStyle(
                           fontSize: 18.0,
                           color: navyBlue,

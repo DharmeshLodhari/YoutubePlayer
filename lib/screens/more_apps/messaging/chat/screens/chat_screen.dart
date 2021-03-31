@@ -46,6 +46,7 @@ import 'package:flutter_sound/flutter_sound.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
+import 'package:linkwell/linkwell.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
@@ -1792,7 +1793,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         Toast.show("Text copied !!", context,
             gravity: Toast.BOTTOM,
             duration: Toast.LENGTH_LONG,
-            backgroundColor: navyBlue,
+            backgroundColor: Colors.black,
             textColor: Colors.white);
       },
       child: Row(
@@ -1832,13 +1833,14 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Flexible(
-                            child: Text(
-                              messageDecoderWithEmoji(
-                                  message['text'].toString()),
+                            child: LinkWell(
+                              detectLinkInMessages(messageDecoderWithEmoji(
+                                  message['text'].toString())),
                               style: TextStyle(
-                                color: isSend ? Colors.white : blackFont,
-                                fontSize: 16,
-                              ),
+                                  color: isSend ? Colors.white : blackFont,
+                                  fontSize: 16,
+                                  fontFamily: "OpenSans"),
+                              textScaleFactor: 0.8,
                             ),
                           ),
                         ],
@@ -1884,6 +1886,18 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         ],
       ),
     );
+  }
+
+  String detectLinkInMessages(String text) {
+    RegExp exp =
+        new RegExp(r'(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-?=%.]+');
+    Iterable<RegExpMatch> matches = exp.allMatches(text);
+
+    matches.forEach((match) {
+      print("===> " + text.substring(match.start, match.end));
+    });
+
+    return text;
   }
 
   String getDateTime(String dateAndTime) {
@@ -1932,7 +1946,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                 Toast.show("Text copied !!", context,
                     gravity: Toast.BOTTOM,
                     duration: Toast.LENGTH_LONG,
-                    backgroundColor: navyBlue,
+                    backgroundColor: Colors.black,
                     textColor: Colors.white);
               },
               child: Container(
@@ -2104,7 +2118,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                 Toast.show("Text copied !!", context,
                     gravity: Toast.BOTTOM,
                     duration: Toast.LENGTH_LONG,
-                    backgroundColor: navyBlue,
+                    backgroundColor: Colors.black,
                     textColor: Colors.white);
               },
               child: Container(

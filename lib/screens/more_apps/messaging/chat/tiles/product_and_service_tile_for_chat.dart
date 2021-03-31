@@ -138,7 +138,9 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
                                                     fontSize: 14)),
                                             TextSpan(
                                                 // text: widget.product.price.toString(),
-                                                text: product.price.toString(),
+                                                text: moneyDisplayNormalizer(
+                                                    int.parse(product.price
+                                                        .toString())),
                                                 style: TextStyle(
                                                   color: navyBlue,
                                                   fontSize: 14,
@@ -400,7 +402,9 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
                                                     fontSize: 14)),
                                             TextSpan(
                                                 // text: widget.product.price.toString(),
-                                                text: service.price.toString(),
+                                                text: moneyDisplayNormalizer(
+                                                    int.parse(service.price
+                                                        .toString())),
                                                 style: TextStyle(
                                                   color: navyBlue,
                                                   fontSize: 14,

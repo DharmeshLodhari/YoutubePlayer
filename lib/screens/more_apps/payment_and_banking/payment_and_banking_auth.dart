@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -105,7 +106,7 @@ class PaymentAndBankingAuth extends AuthService {
     if (next == "") {
       url = secureBaseUrl + "/api/v1/transactions/bank-accounts-list/";
     } else {
-      url = next;
+      url = getSecureUrl(url: next);
     }
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
@@ -247,7 +248,7 @@ class PaymentAndBankingAuth extends AuthService {
         url = url + "?from_me=true";
       }
     } else {
-      url = next;
+      url = getSecureUrl(url: next);
     }
 
     var headers = await getAuthHeaders();
@@ -312,7 +313,7 @@ class PaymentAndBankingAuth extends AuthService {
         url = url + "?money_out=true";
       }
     } else {
-      url = next;
+      url = getSecureUrl(url: next);
     }
     var headers = await getAuthHeaders();
 
@@ -401,7 +402,7 @@ class PaymentAndBankingAuth extends AuthService {
     if (next == "") {
       url = secureBaseUrl + "/api/v1/transactions/payout/";
     } else {
-      url = next;
+      url = getSecureUrl(url: next);
     }
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);

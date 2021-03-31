@@ -126,7 +126,8 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
                                       size: 14,
                                     ),
                                     Text(
-                                      transaction.amount.toString(),
+                                      moneyDisplayNormalizer(int.parse(
+                                          transaction.amount.toString())),
                                       style: TextStyle(
                                           fontSize: 22,
                                           fontWeight: FontWeight.w700,
@@ -378,7 +379,8 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                                       size: 14,
                                     ),
                                     Text(
-                                      paymentRequest.amount.toString(),
+                                      moneyDisplayNormalizer(int.parse(
+                                          paymentRequest.amount.toString())),
                                       style: TextStyle(
                                           fontSize: 22,
                                           fontWeight: FontWeight.w700,

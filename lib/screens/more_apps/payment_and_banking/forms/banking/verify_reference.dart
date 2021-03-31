@@ -456,7 +456,7 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
           size: 22,
         ),
         Text(
-          " " + amount,
+          " " + moneyDisplayNormalizer(int.parse(amount)),
           style: TextStyle(
               fontSize: 36, color: navyBlue, fontWeight: FontWeight.w700),
         ),

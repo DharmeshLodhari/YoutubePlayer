@@ -59,7 +59,7 @@ class _SendPaymentState extends State<SendPayment> {
   bool isFromProfile = false;
   bool isFromChat = false;
   bool isValidPayee = false;
-  int amount;
+  double amount;
   String reference = "";
   String category = "";
   String errorMessage = "";
@@ -118,7 +118,7 @@ class _SendPaymentState extends State<SendPayment> {
 
   void setAllFieldProduct() {
     _amountController.text = product.price;
-    amount = int.parse(_amountController.text);
+    amount = double.parse(_amountController.text);
     _referenceController.text = product.name;
     reference = _referenceController.text;
     selectedCategory = "Shopping";
@@ -127,7 +127,7 @@ class _SendPaymentState extends State<SendPayment> {
 
   void setAllFieldService() {
     _amountController.text = service.price;
-    amount = int.parse(_amountController.text);
+    amount = double.parse(_amountController.text);
     _referenceController.text = service.name;
     reference = _referenceController.text;
     selectedCategory = "Shopping";
@@ -529,20 +529,20 @@ class _SendPaymentState extends State<SendPayment> {
       isAmount: true,
       enabled: product == null && service == null,
       keyboardType: TextInputType.number,
-      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+      // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       controller: _amountController,
       onChanged: (val) {
         if (mounted) {
           setState(() {
-            amount = int.parse(val);
+            amount = double.parse(val);
           });
         }
       },
       validator: (val) {
         if (val.isNotEmpty) {
           try {
-            int amount = int.parse(val);
-            if (amount > 0) {
+            double amount = double.parse(val);
+            if (amount > 0.0) {
               return null;
             } else {
               throw Exception("Invalid amount");
@@ -911,7 +911,7 @@ class _SendPaymentState extends State<SendPayment> {
                     "from_customer": userBloc.user.userName,
                     "to_customer": recipient.trim(),
                     "currency": userBloc.user.currency,
-                    "amount": amount.toString().trim(),
+                    "amount": moneyInputNormalizer(amount.toString()),
                     "category": selectedCategory.trim(),
                     "notes": reference.trim(),
                     "description": reference.trim(),
@@ -922,6 +922,7 @@ class _SendPaymentState extends State<SendPayment> {
                     "made_from_chat": isFromChat ?? false,
                   };
 
+                  debugPrint("Data:- $data");
                   _auth.makePayment(data).then((value) {
                     debugPrint(
                         "status code:- ${value.statusCode}  body:- ${value.body}");

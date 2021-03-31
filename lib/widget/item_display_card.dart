@@ -1,6 +1,7 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
@@ -66,7 +67,7 @@ Widget displayProduct({BuildContext context, Product product}) {
                     ),
                   ),
                   Text(
-                    product.price.toString(),
+                    moneyDisplayNormalizer(int.parse(product.price)),
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 14,
@@ -162,7 +163,7 @@ Widget displayService({BuildContext context, Service service}) {
                     ),
                   ),
                   Text(
-                    service.price.toString(),
+                    moneyDisplayNormalizer(int.parse(service.price.toString())),
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 14,

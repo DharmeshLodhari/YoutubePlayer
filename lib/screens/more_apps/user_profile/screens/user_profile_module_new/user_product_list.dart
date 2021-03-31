@@ -266,7 +266,8 @@ class _UserProductListState extends State<UserProductList> {
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14)),
                         TextSpan(
-                            text: productList[index].price.toString(),
+                            text: moneyDisplayNormalizer(
+                                int.parse(productList[index].price.toString())),
                             style: TextStyle(
                               color: navyBlue,
                               fontSize: 14,

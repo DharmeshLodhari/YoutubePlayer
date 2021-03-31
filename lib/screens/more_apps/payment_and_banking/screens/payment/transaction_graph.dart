@@ -716,7 +716,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
   Widget getSpendOnCategoryTile(Map<String, dynamic> categoryAndSpend) {
     return SpendOnCategoryTile(
         name: categoryAndSpend["category"],
-        amount: categoryAndSpend["amount"].toString(),
+        amount: categoryAndSpend["amount"],
         icon: getCategoryIcon(categoryAndSpend["category"]),
         color: getCategoryIconColor(categoryAndSpend["category"]));
   }

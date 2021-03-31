@@ -37,7 +37,9 @@ class OrderTile extends StatelessWidget {
                   dense: true,
                   leading: getLeading(),
                   title: getTitle(context),
-                  trailing: order.totalPrice.length > 6 ? null : getTrailing(),
+                  trailing: order.totalPrice.toString().length > 6
+                      ? null
+                      : getTrailing(),
                   subtitle: getSubtitle(context)),
             ),
           ],
@@ -116,7 +118,7 @@ class OrderTile extends StatelessWidget {
               fontSize: 14),
         ),
         Text(
-          order.totalPrice,
+          moneyDisplayNormalizer(order.totalPrice),
           style: TextStyle(
             color: navyBlue,
             fontWeight: FontWeight.bold,
@@ -139,7 +141,7 @@ class OrderTile extends StatelessWidget {
         SizedBox(
           height: 2,
         ),
-        order.totalPrice.length > 6 ? getTrailing() : Container(),
+        order.totalPrice.toString().length > 6 ? getTrailing() : Container(),
         getDateTime(context)
       ],
     );

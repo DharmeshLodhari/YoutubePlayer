@@ -202,24 +202,17 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
         borderOnForeground: true,
         child: Column(
           children: <Widget>[
-            GestureDetector(
-              child: Container(
-                  padding:
-                      EdgeInsets.only(right: 40, left: 40, top: 40, bottom: 10),
-                  child: CachedNetworkImage(
-                    imageUrl: user.qrCode,
-                    colorBlendMode: BlendMode.darken,
-                    errorWidget: imageErrorWidget,
-                    fit: BoxFit.fitWidth,
-                    filterQuality: FilterQuality.high,
-                    placeholder: (context, url) => CircularLoadingIndicator(),
-                  )),
-              onTap: () {
-                // Navigator.of(context).pushNamed("/profile-new");
-                Navigator.pushNamed(context, '/profile-new',
-                    arguments: {"searchedUserName": user.userName});
-              },
-            ),
+            Container(
+                padding:
+                    EdgeInsets.only(right: 40, left: 40, top: 40, bottom: 10),
+                child: CachedNetworkImage(
+                  imageUrl: user.qrCode,
+                  colorBlendMode: BlendMode.darken,
+                  errorWidget: imageErrorWidget,
+                  fit: BoxFit.fitWidth,
+                  filterQuality: FilterQuality.high,
+                  placeholder: (context, url) => CircularLoadingIndicator(),
+                )),
             SizedBox(
               height: 8,
             ),

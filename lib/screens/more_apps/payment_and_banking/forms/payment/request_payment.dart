@@ -57,7 +57,7 @@ class _RequestPaymentState extends State<RequestPayment> {
   bool isFromProfile = false;
   bool isFromChat = false;
   bool isValidPayee = false;
-  int amount;
+  double amount;
   String reference = "";
   String errorMessage = "";
   String recipient;
@@ -447,19 +447,19 @@ class _RequestPaymentState extends State<RequestPayment> {
       labelText: "Amount",
       isAmount: true,
       keyboardType: TextInputType.number,
-      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+      // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       onChanged: (val) {
         if (mounted) {
           setState(() {
-            amount = int.parse(val);
+            amount = double.parse(val);
           });
         }
       },
       validator: (val) {
         if (val.isNotEmpty) {
           try {
-            int amount = int.parse(val);
-            if (amount > 0) {
+            double amount = double.parse(val);
+            if (amount > 0.0) {
               return null;
             } else {
               throw Exception("Invalid amount");
@@ -731,7 +731,7 @@ class _RequestPaymentState extends State<RequestPayment> {
                     "from_customer": userBloc.user.userName.trim(),
                     "to_customer": recipient.trim(),
                     "currency": userBloc.user.currency,
-                    "amount": amount.toString().trim(),
+                    "amount": moneyInputNormalizer(amount.toString()),
                     "category": selectedCategory.trim(),
                     "notes": reference.trim(),
                     "description": reference.trim(),

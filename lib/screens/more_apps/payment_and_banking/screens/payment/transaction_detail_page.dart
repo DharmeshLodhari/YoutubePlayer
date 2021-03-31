@@ -213,7 +213,7 @@ class _TransactionDetailState extends State<TransactionDetail> {
           ),
         ),
         Text(
-          transaction.amount.toString(),
+          moneyDisplayNormalizer(int.parse(transaction.amount.toString())),
           style: TextStyle(
               color: transaction.isCredit ? navyBlue : blackFont,
               fontWeight: FontWeight.bold,

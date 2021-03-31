@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:Slydo/screens/more_apps/messaging/models/message.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -145,7 +146,7 @@ class MessageAuth extends AuthService {
     if (next == "") {
       url = secureBaseUrl + "/api/v1/messaging/list/" + filter + "/";
     } else {
-      url = next;
+      url = getSecureUrl(url: next);
     }
     var headers = await getAuthHeaders();
 
@@ -200,15 +201,14 @@ class MessageAuth extends AuthService {
     }
     if (next == "") {
       url = secureBaseUrl + "/api/v1/chat/messages/" + conversionId + "/";
-      debugPrint("$url");
     } else {
-      url = next;
+      url = getSecureUrl(url: next);
     }
     var headers = await getAuthHeaders();
 
     var response = await http
         .get(url, headers: headers)
-        .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
+        .timeout(timeOutDuration, onTimeout: () => timeOutFunction(url: url));
 
     if (response.statusCode == 200) {
       List<String> previousMessages = [];
@@ -259,7 +259,7 @@ class MessageAuth extends AuthService {
       return null;
     }
     if (next != "") {
-      url = next;
+      url = getSecureUrl(url: next);
     }
     var headers = await getAuthHeaders();
 

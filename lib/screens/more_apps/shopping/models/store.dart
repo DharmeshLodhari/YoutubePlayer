@@ -832,7 +832,7 @@ class Order {
   String transactionId;
   String note;
   String createdAt;
-  String totalPrice;
+  int totalPrice;
   String currency;
 
   Order({
@@ -865,7 +865,7 @@ class Order {
     this.transactionId = object["transaction_id"];
     this.note = object["note"];
     this.createdAt = object["created_at"];
-    this.totalPrice = object["total_price"].toString();
+    this.totalPrice = object["total_price"];
     this.currency = object["currency"] ?? "NGN";
   }
 }

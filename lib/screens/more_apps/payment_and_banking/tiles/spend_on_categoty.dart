@@ -1,6 +1,7 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -8,7 +9,7 @@ import 'package:provider/provider.dart';
 // ignore: must_be_immutable
 class SpendOnCategoryTile extends StatefulWidget {
   String name;
-  String amount;
+  int amount;
   IconData icon;
   Color color;
 
@@ -67,7 +68,7 @@ class _SpendOnCategoryTileState extends State<SpendOnCategoryTile> {
                       color: blackFont),
                 ),
                 Text(
-                  widget.amount.toString(),
+                  moneyDisplayNormalizer(widget.amount),
                   style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/device_info.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
@@ -349,7 +350,7 @@ class UserAuth extends AuthService {
       return null;
     }
     if (next != "") {
-      url = next;
+      url = getSecureUrl(url: next);
     }
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
@@ -456,7 +457,7 @@ class UserAuth extends AuthService {
       return null;
     }
     if (next != "") {
-      url = next;
+      url = getSecureUrl(url: next);
     }
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
@@ -509,7 +510,7 @@ class UserAuth extends AuthService {
       return null;
     }
     if (next != "") {
-      url = next;
+      url = getSecureUrl(url: next);
     }
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);

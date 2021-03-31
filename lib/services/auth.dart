@@ -286,7 +286,9 @@ class AuthService {
       url = next;
     }
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
+    var response = await http
+        .get(url, headers: headers)
+        .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
 
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
@@ -304,7 +306,11 @@ class AuthService {
     }
   }
 
-  FutureOr<http.Response> timeOutFunction() {
+  FutureOr<http.Response> timeOutFunction({String url}) {
+    if (url != null) {
+      debugPrint("Timeout on URL:- $url");
+    }
+
     return Future.error("$timeOutErrorMessage");
   }
 }

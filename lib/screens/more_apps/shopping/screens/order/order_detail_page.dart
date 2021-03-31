@@ -5,6 +5,7 @@ import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/order_detail_item_tile.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
@@ -568,7 +569,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                       color: Colors.white),
                 ),
                 Text(
-                  order.totalPrice.toString(),
+                  moneyDisplayNormalizer(order.totalPrice),
                   style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,

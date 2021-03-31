@@ -6,7 +6,6 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_message_handler.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/tiles/bank_account.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/device.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/fcm_push_notification.dart';
@@ -275,7 +274,9 @@ class _UserDashboardState extends State<UserDashboard> {
                     size: 16,
                   ),
             Text(
-              isBalanceHidden ? "*********" : accountBalance,
+              isBalanceHidden
+                  ? "*********"
+                  : moneyDisplayNormalizer(int.parse(accountBalance)),
               style: TextStyle(
                   color: blackFont, fontWeight: FontWeight.bold, fontSize: 26),
             ),
@@ -519,11 +520,6 @@ class _UserDashboardState extends State<UserDashboard> {
   void emptyBasketCart() {
     basketBloc.items.clear();
     basketBloc.total = 0;
-  }
-
-  Widget displayAccountBalance(isLocked) {
-    return AccountBalanceTile(
-        balance: accountBalance, isLocked: isLocked, onTap: () {});
   }
 
   Future<void> getAccountBalance() async {

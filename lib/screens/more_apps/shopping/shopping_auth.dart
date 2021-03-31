@@ -21,7 +21,7 @@ class ShoppingAuthService extends AuthService {
     if (next == "") {
       url = secureBaseUrl + "/api/v1/products/by-seller/black/";
     } else {
-      url = next;
+      url = getSecureUrl(url: next);
     }
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
@@ -60,7 +60,7 @@ class ShoppingAuthService extends AuthService {
       return null;
     }
     if (next != "") {
-      url = next;
+      url = getSecureUrl(url: next);
     }
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
@@ -131,7 +131,7 @@ class ShoppingAuthService extends AuthService {
     if (next == "") {
       url = secureBaseUrl + "/api/v1/products/by-seller/" + userId + "/";
     } else {
-      url = next;
+      url = getSecureUrl(url: next);
     }
     debugPrint(url);
     var headers = await getAuthHeaders();
@@ -333,7 +333,7 @@ class ShoppingAuthService extends AuthService {
     if (next == "") {
       url = secureBaseUrl + "/api/v1/services/by-provider/" + userId + "/";
     } else {
-      url = next;
+      url = getSecureUrl(url: next);
     }
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
@@ -528,7 +528,7 @@ class ShoppingAuthService extends AuthService {
         url = url + "?status__iexact=$filterValue";
       }
     } else {
-      url = next;
+      url = getSecureUrl(url: next);
     }
 
     var headers = await getAuthHeaders();
@@ -715,7 +715,7 @@ class ShoppingAuthService extends AuthService {
       }
       url = Uri.encodeFull(url);
     } else {
-      url = next;
+      url = getSecureUrl(url: next);
     }
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
@@ -778,7 +778,7 @@ class ShoppingAuthService extends AuthService {
 
       url = Uri.encodeFull(url);
     } else {
-      url = next;
+      url = getSecureUrl(url: next);
     }
     debugPrint(url);
     var headers = await getAuthHeaders();

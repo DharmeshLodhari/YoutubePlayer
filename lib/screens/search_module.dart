@@ -388,8 +388,12 @@ class _SearchModuleState extends State<SearchModule> {
           isLoading = true;
           setState(() {});
         }
-        Map<String, dynamic> result = await _auth.searchEndpointPagination(
-            getSearchUrl(searchItemTextController.text), next, previous);
+        Map<String, dynamic> result = await _auth
+            .searchEndpointPagination(
+                getSearchUrl(searchItemTextController.text), next, previous)
+            .catchError((error) {
+          debugPrint("ERROR:- $error");
+        });
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
@@ -631,7 +635,7 @@ class _SearchModuleState extends State<SearchModule> {
               fontSize: 14),
         ),
         Text(
-          product.price.toString(),
+          moneyDisplayNormalizer(int.parse(product.price.toString())),
           style: TextStyle(
               color: blackFont, fontWeight: FontWeight.bold, fontSize: 14),
         ),
@@ -807,7 +811,7 @@ class _SearchModuleState extends State<SearchModule> {
               fontSize: 14),
         ),
         Text(
-          service.price.toString(),
+          moneyDisplayNormalizer(int.parse(service.price.toString())),
           style: TextStyle(
               color: blackFont, fontWeight: FontWeight.bold, fontSize: 14),
         ),

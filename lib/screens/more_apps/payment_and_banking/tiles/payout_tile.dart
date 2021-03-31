@@ -41,7 +41,7 @@ class PayoutTile extends StatelessWidget {
                       fontSize: 14),
                 ),
                 Text(
-                  payout.amount.toString(),
+                  moneyDisplayNormalizer(payout.amount),
                   style: TextStyle(
                       color: getStatusColor(payout.status),
                       fontWeight: FontWeight.bold,

@@ -175,7 +175,8 @@ class _ShoppingCartState extends State<ShoppingCart> {
                       fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  basketBloc.total.toString(),
+                  moneyDisplayNormalizer(
+                      int.parse(basketBloc.total.toString())),
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ],

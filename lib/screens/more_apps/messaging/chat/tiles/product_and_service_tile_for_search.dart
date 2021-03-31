@@ -88,7 +88,8 @@ class _SearchProductTileState extends State<SearchProductTile> {
                                     fontSize: 14)),
                             TextSpan(
                                 // text: widget.product.price.toString(),
-                                text: widget.product.price.toString(),
+                                text: moneyDisplayNormalizer(
+                                    int.parse(widget.product.price.toString())),
                                 style: TextStyle(
                                   color: navyBlue,
                                   fontSize: 14,
@@ -190,7 +191,8 @@ class _SearchServiceTileState extends State<SearchServiceTile> {
                                     fontWeight: FontWeight.bold,
                                     fontSize: 14)),
                             TextSpan(
-                                text: widget.service.price.toString(),
+                                text: moneyDisplayNormalizer(
+                                    int.parse(widget.service.price.toString())),
                                 style: TextStyle(
                                   color: navyBlue,
                                   fontSize: 14,

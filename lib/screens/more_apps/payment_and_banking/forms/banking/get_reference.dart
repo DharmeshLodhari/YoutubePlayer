@@ -283,7 +283,7 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
           size: 22,
         ),
         Text(
-          " " + getFinalAmount(),
+          " " + moneyDisplayNormalizer(int.parse(getFinalAmount())),
           style: TextStyle(
               fontSize: 36, color: navyBlue, fontWeight: FontWeight.w700),
         ),
@@ -295,9 +295,6 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
     if (amount != "") {
       return amount;
     }
-    // if (amount != "") {
-    //   return (double.parse(amount) - (double.parse(amount) * 0.03)).toString();
-    // }
-    return "0.0";
+    return "0";
   }
 }

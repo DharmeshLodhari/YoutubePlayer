@@ -122,7 +122,7 @@ class _OrderTileForProductState extends State<OrderTileForProduct> {
                 fontSize: 14),
           ),
           Text(
-            product.price,
+            moneyDisplayNormalizer(int.parse(product.price.toString())),
             style: TextStyle(
               color: blackFont,
               fontWeight: FontWeight.w600,
@@ -172,7 +172,7 @@ class _OrderTileForProductState extends State<OrderTileForProduct> {
               fontSize: 14),
         ),
         Text(
-          getTotalPrice(),
+          moneyDisplayNormalizer(int.parse(getTotalPrice())),
           style: TextStyle(
               color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),
         ),
@@ -302,7 +302,7 @@ class _OrderTileForServiceState extends State<OrderTileForService> {
                 fontSize: 14),
           ),
           Text(
-            service.price,
+            moneyDisplayNormalizer(int.parse(service.price)),
             style: TextStyle(
               color: blackFont,
               fontWeight: FontWeight.w600,
@@ -352,7 +352,7 @@ class _OrderTileForServiceState extends State<OrderTileForService> {
               fontSize: 14),
         ),
         Text(
-          getTotalPrice(),
+          moneyDisplayNormalizer(int.parse(getTotalPrice())),
           style: TextStyle(
               color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),
         ),

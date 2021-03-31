@@ -5,6 +5,7 @@ import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/noItemInList.dart';
@@ -277,7 +278,8 @@ class _UserServiceListState extends State<UserServiceList> {
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14)),
                         TextSpan(
-                            text: serviceList[index].price.toString(),
+                            text: moneyDisplayNormalizer(
+                                int.parse(serviceList[index].price.toString())),
                             style: TextStyle(
                               color: navyBlue,
                               fontSize: 14,

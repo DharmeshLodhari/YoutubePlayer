@@ -178,12 +178,22 @@ void apiErrorHandler({String error, BuildContext context, int duration = 1}) {
       duration: duration);
 }
 
-int moneyInputNormalizer(double amount) {
+int moneyInputNormalizer(String amount) {
+  double value = double.parse(amount) * 100;
   // Format the money into integer as server store money in integer
-  return int.parse((amount * 100).toString());
+  return value.toInt();
 }
 
 String moneyDisplayNormalizer(int amount) {
   // Format the money into double as server returns money in integer
   return double.parse((amount / 100).toString()).toStringAsFixed(2);
+}
+
+String getSecureUrl({String url}) {
+  String secureUrl;
+  if (!url.startsWith("https://")) {
+    url = url.replaceFirst("http", "https");
+  }
+  secureUrl = url;
+  return secureUrl;
 }
