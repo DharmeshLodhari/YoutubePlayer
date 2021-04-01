@@ -97,6 +97,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         previous = "";
         requestPaymentList = [];
         noItemInList = false;
+        isLoading = false;
         getList();
         _refreshController.refreshCompleted();
       } else {

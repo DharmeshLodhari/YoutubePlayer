@@ -99,91 +99,6 @@ class _BarChartState extends State<BarChart> {
   }
 
   Widget barChart() {
-    // return Padding(
-    //   padding: EdgeInsets.all(12.0),
-    //   child: Column(
-    //     children: <Widget>[
-    //       Row(
-    //         mainAxisAlignment: MainAxisAlignment.center,
-    //         children: <Widget>[
-    //           Text(
-    //             AppLocalization.of(context).expenditure,
-    //             style: TextStyle(
-    //               fontSize: 20.0,
-    //               fontWeight: FontWeight.bold,
-    //               letterSpacing: 1.2,
-    //             ),
-    //           ),
-    //           Text(
-    //             ' (${worldCurrencies[userBloc.user.currency]})',
-    //             style: TextStyle(
-    //               fontFamily: "Roboto",
-    //               fontSize: 20.0,
-    //               fontWeight: FontWeight.bold,
-    //               letterSpacing: 1.2,
-    //             ),
-    //           ),
-    //         ],
-    //       ),
-    //       SizedBox(height: 15.0),
-    //       Row(
-    //         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-    //         crossAxisAlignment: CrossAxisAlignment.end,
-    //         children: <Widget>[
-    //           Expanded(
-    //             child: Bar(
-    //               label: AppLocalization.of(context).sundayAbb,
-    //               amountSpent: barData[0],
-    //               mostExpensive: mostExpensive,
-    //             ),
-    //           ),
-    //           Expanded(
-    //             child: Bar(
-    //               label: AppLocalization.of(context).mondayAbb,
-    //               amountSpent: barData[1],
-    //               mostExpensive: mostExpensive,
-    //             ),
-    //           ),
-    //           Expanded(
-    //             child: Bar(
-    //               label: AppLocalization.of(context).tuesdayAbb,
-    //               amountSpent: barData[2],
-    //               mostExpensive: mostExpensive,
-    //             ),
-    //           ),
-    //           Expanded(
-    //             child: Bar(
-    //               label: AppLocalization.of(context).wednesdayAbb,
-    //               amountSpent: barData[3],
-    //               mostExpensive: mostExpensive,
-    //             ),
-    //           ),
-    //           Expanded(
-    //             child: Bar(
-    //               label: AppLocalization.of(context).thursdayAbb,
-    //               amountSpent: barData[4],
-    //               mostExpensive: mostExpensive,
-    //             ),
-    //           ),
-    //           Expanded(
-    //             child: Bar(
-    //               label: AppLocalization.of(context).fridayAbb,
-    //               amountSpent: barData[5],
-    //               mostExpensive: mostExpensive,
-    //             ),
-    //           ),
-    //           Expanded(
-    //             child: Bar(
-    //               label: AppLocalization.of(context).saturdayAbb,
-    //               amountSpent: barData[6],
-    //               mostExpensive: mostExpensive,
-    //             ),
-    //           ),
-    //         ],
-    //       ),
-    //     ],
-    //   ),
-    // );
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Column(
@@ -321,10 +236,6 @@ class _BarState extends State<Bar> {
         showAmount = !showAmount;
         setState(() {});
       },
-      // onTap: () {
-      //   showAmount = !showAmount;
-      //   setState(() {});
-      // },
       child: Column(
         children: <Widget>[
           showAmount

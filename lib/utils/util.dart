@@ -1,3 +1,4 @@
+import 'package:Slydo/utils/date_time_and_money_converter.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -186,7 +187,28 @@ int moneyInputNormalizer(String amount) {
 
 String moneyDisplayNormalizer(int amount) {
   // Format the money into double as server returns money in integer
-  return double.parse((amount / 100).toString()).toStringAsFixed(2);
+  // amount = 1050500;
+
+  if (amount.toString().length >= 3) {
+    int amountLength = amount.toString().length;
+
+    int getLastTwoDigit =
+        int.parse(amount.toString().substring(amountLength - 2, amountLength));
+
+    if (getLastTwoDigit > 0) {
+      return moneyConverter(
+          double.parse((amount / 100).toString()).toStringAsFixed(2),
+          isNotCompact: true);
+    } else {
+      return moneyConverter(
+          double.parse((amount / 100).toString()).toStringAsFixed(2),
+          isNotCompact: true);
+    }
+  } else {
+    return moneyConverter(
+        double.parse((amount / 100).toString()).toStringAsFixed(2),
+        isNotCompact: true);
+  }
 }
 
 String getSecureUrl({String url}) {

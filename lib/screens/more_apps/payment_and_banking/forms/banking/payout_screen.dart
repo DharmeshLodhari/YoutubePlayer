@@ -206,7 +206,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
     if (_formKey.currentState.validate()) {
       try {
         var data = {
-          "amount": amount,
+          "amount": moneyInputNormalizer(amount.toString()),
           "currency": userBloc.user.currency,
         };
         BottomSheetPassCode(

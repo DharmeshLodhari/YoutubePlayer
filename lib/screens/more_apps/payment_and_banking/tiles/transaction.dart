@@ -40,7 +40,9 @@ class _PaymentRequestTileState extends State<PaymentRequestTile> {
                   dense: true,
                   leading: getLeading(),
                   title: getTitle(),
-                  trailing: widget.paymentRequest.amount.toString().length > 6
+                  trailing: moneyDisplayNormalizer(widget.paymentRequest.amount)
+                              .length >
+                          6
                       ? null
                       : getTrailing(),
                   subtitle: getSubtitle(context)),
@@ -128,7 +130,7 @@ class _PaymentRequestTileState extends State<PaymentRequestTile> {
           style: TextStyle(color: darkGrey, fontSize: 12),
           maxLines: 1,
         ),
-        widget.paymentRequest.amount.toString().length > 6
+        moneyDisplayNormalizer(widget.paymentRequest.amount).length > 6
             ? getTrailing()
             : Container(),
         getDateTime(context)

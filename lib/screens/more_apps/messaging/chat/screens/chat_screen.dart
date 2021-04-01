@@ -13,6 +13,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/helpers/message_sound_pla
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatTextMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/product_and_service_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/product_and_service_tile_for_search.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/tiles/text_message_render_for_chat_screen.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/transaction_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/user_profile_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
@@ -46,7 +47,6 @@ import 'package:flutter_sound/flutter_sound.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
-import 'package:linkwell/linkwell.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
@@ -1784,121 +1784,123 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   Widget renderMessage({Map<String, dynamic> message}) {
-    bool isSend = message["author"] == userBloc.user.userName;
+    return TextMessageRendererForChat(message: message);
 
-    return GestureDetector(
-      onLongPress: () {
-        Clipboard.setData(new ClipboardData(
-            text: messageDecoderWithEmoji(message['text'].toString())));
-        Toast.show("Text copied !!", context,
-            gravity: Toast.BOTTOM,
-            duration: Toast.LENGTH_LONG,
-            backgroundColor: Colors.black,
-            textColor: Colors.white);
-      },
-      child: Row(
-        mainAxisAlignment:
-            isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
-        children: [
-          Column(
-            crossAxisAlignment:
-                isSend ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  isSend
-                      ? Container()
-                      : Container(
-                          width: 20,
-                        ),
-                  Container(
-                      constraints: BoxConstraints(
-                        maxWidth: MediaQuery.of(context).size.width * 0.8,
-                      ),
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: isSend ? navyBlue : chatBackgroundColor,
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(!isSend ? 0 : 10),
-                          bottomRight: Radius.circular(isSend ? 0 : 10),
-                          topLeft: Radius.circular(10),
-                          topRight: Radius.circular(10),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Flexible(
-                            child: LinkWell(
-                              detectLinkInMessages(messageDecoderWithEmoji(
-                                  message['text'].toString())),
-                              style: TextStyle(
-                                  color: isSend ? Colors.white : blackFont,
-                                  fontSize: 16,
-                                  fontFamily: "OpenSans"),
-                              textScaleFactor: 0.8,
-                            ),
-                          ),
-                        ],
-                      )),
-                  isSend
-                      ? Container(
-                          width: 20,
-                          child: isSend
-                              ? Center(
-                                  child: getMessageTick(message: message),
-                                )
-                              : Container(),
-                        )
-                      : Container(),
-                ],
-              ),
-              SizedBox(
-                height: 1,
-              ),
-              Row(
-                children: [
-                  isSend
-                      ? Container()
-                      : SizedBox(
-                          width: 20,
-                        ),
-                  Text(
-                    formatTime(message['created_at']),
-                    style: TextStyle(
-                        color: darkGrey,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w500),
-                  ),
-                  isSend
-                      ? SizedBox(
-                          width: 20,
-                        )
-                      : Container(),
-                ],
-              )
-            ],
-          )
-        ],
-      ),
-    );
+    // bool isSend = message["author"] == userBloc.user.userName;
+    //
+    // return GestureDetector(
+    //   onLongPress: () {
+    //     Clipboard.setData(new ClipboardData(
+    //         text: messageDecoderWithEmoji(message['text'].toString())));
+    //     Toast.show("Text copied !!", context,
+    //         gravity: Toast.BOTTOM,
+    //         duration: Toast.LENGTH_LONG,
+    //         backgroundColor: Colors.black,
+    //         textColor: Colors.white);
+    //   },
+    //   child: Row(
+    //     mainAxisAlignment:
+    //         isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
+    //     children: [
+    //       Column(
+    //         crossAxisAlignment:
+    //             isSend ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+    //         children: [
+    //           Row(
+    //             crossAxisAlignment: CrossAxisAlignment.end,
+    //             mainAxisSize: MainAxisSize.min,
+    //             children: [
+    //               isSend
+    //                   ? Container()
+    //                   : Container(
+    //                       width: 20,
+    //                     ),
+    //               Container(
+    //                   constraints: BoxConstraints(
+    //                     maxWidth: MediaQuery.of(context).size.width * 0.8,
+    //                   ),
+    //                   padding:
+    //                       EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    //                   decoration: BoxDecoration(
+    //                     color: isSend ? navyBlue : chatBackgroundColor,
+    //                     borderRadius: BorderRadius.only(
+    //                       bottomLeft: Radius.circular(!isSend ? 0 : 10),
+    //                       bottomRight: Radius.circular(isSend ? 0 : 10),
+    //                       topLeft: Radius.circular(10),
+    //                       topRight: Radius.circular(10),
+    //                     ),
+    //                   ),
+    //                   child: Row(
+    //                     mainAxisAlignment: MainAxisAlignment.start,
+    //                     mainAxisSize: MainAxisSize.min,
+    //                     children: [
+    //                       Flexible(
+    //                         child: LinkWell(
+    //                           detectLinkInMessages(messageDecoderWithEmoji(
+    //                               message['text'].toString())),
+    //                           style: TextStyle(
+    //                               color: isSend ? Colors.white : blackFont,
+    //                               fontSize: 16,
+    //                               fontFamily: "OpenSans"),
+    //                           textScaleFactor: 0.8,
+    //                         ),
+    //                       ),
+    //                     ],
+    //                   )),
+    //               isSend
+    //                   ? Container(
+    //                       width: 20,
+    //                       child: isSend
+    //                           ? Center(
+    //                               child: getMessageTick(message: message),
+    //                             )
+    //                           : Container(),
+    //                     )
+    //                   : Container(),
+    //             ],
+    //           ),
+    //           SizedBox(
+    //             height: 1,
+    //           ),
+    //           Row(
+    //             children: [
+    //               isSend
+    //                   ? Container()
+    //                   : SizedBox(
+    //                       width: 20,
+    //                     ),
+    //               Text(
+    //                 formatTime(message['created_at']),
+    //                 style: TextStyle(
+    //                     color: darkGrey,
+    //                     fontSize: 10,
+    //                     fontWeight: FontWeight.w500),
+    //               ),
+    //               isSend
+    //                   ? SizedBox(
+    //                       width: 20,
+    //                     )
+    //                   : Container(),
+    //             ],
+    //           )
+    //         ],
+    //       )
+    //     ],
+    //   ),
+    // );
   }
 
-  String detectLinkInMessages(String text) {
-    RegExp exp =
-        new RegExp(r'(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-?=%.]+');
-    Iterable<RegExpMatch> matches = exp.allMatches(text);
-
-    matches.forEach((match) {
-      print("===> " + text.substring(match.start, match.end));
-    });
-
-    return text;
-  }
+  // String detectLinkInMessages(String text) {
+  //   RegExp exp =
+  //       new RegExp(r'(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-?=%.]+');
+  //   Iterable<RegExpMatch> matches = exp.allMatches(text);
+  //
+  //   matches.forEach((match) {
+  //     print("===> " + text.substring(match.start, match.end));
+  //   });
+  //
+  //   return text;
+  // }
 
   String getDateTime(String dateAndTime) {
     DateTime requestTime = DateTime.parse(dateAndTime);

@@ -131,44 +131,6 @@ class _TransactionGraphState extends State<TransactionGraph> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    // return WillPopScope(
-    //   onWillPop: () async {
-    //     return true;
-    //   },
-    //   child: Scaffold(
-    //       key: transactionGraphKey,
-    //       resizeToAvoidBottomInset: true,
-    //       backgroundColor: lightGrey,
-    //       appBar: appBar(),
-    //       body: Column(
-    //         children: <Widget>[
-    //           Container(
-    //             margin: EdgeInsets.fromLTRB(10.0, 8.0, 10.0, 0.0),
-    //             decoration: BoxDecoration(
-    //               color: Colors.white,
-    //               boxShadow: [
-    //                 BoxShadow(
-    //                   color: Colors.black12,
-    //                   offset: Offset(0, 2),
-    //                   blurRadius: 6.0,
-    //                 ),
-    //               ],
-    //               borderRadius: BorderRadius.circular(10.0),
-    //             ),
-    //             child: dateChanger(),
-    //           ),
-    //           isLoading
-    //               ? Expanded(
-    //                   child: Center(
-    //                     child: CircularLoadingIndicator(),
-    //                   ),
-    //                 )
-    //               : Expanded(
-    //                   child: Container(child: flipGraph()),
-    //                 ),
-    //         ],
-    //       )),
-    // );
     return WillPopScope(
       onWillPop: () async {
         return true;
@@ -202,15 +164,6 @@ class _TransactionGraphState extends State<TransactionGraph> {
                             color: dividerColor,
                             thickness: 1,
                           ),
-                          // isLoading
-                          //     ? Expanded(
-                          //         child: Center(
-                          //           child: CircularLoadingIndicator(),
-                          //         ),
-                          //       )
-                          //     : Expanded(
-                          //         child: Container(child: flipGraph()),
-                          //       ),
                           isLoading
                               ? Container(
                                   height: 240,
@@ -231,7 +184,6 @@ class _TransactionGraphState extends State<TransactionGraph> {
                           height: 10,
                         )
                       : Container(),
-
                   !isLineGraph
                       ? Column(
                           children: categoryAndSpend
@@ -240,14 +192,6 @@ class _TransactionGraphState extends State<TransactionGraph> {
                               .toList(),
                         )
                       : Container(),
-                  // !isLineGraph
-                  //     ? ListView.builder(
-                  //         itemCount: categoryAndSpend.length,
-                  //         itemBuilder: (context, index) {
-                  //           return getSpendOnCategoryTile(
-                  //               categoryAndSpend[index]);
-                  //         })
-                  //     : Container(),
                 ],
               ),
             ),
@@ -298,12 +242,6 @@ class _TransactionGraphState extends State<TransactionGraph> {
         // cardKey.currentState.toggleCard();
         isLineGraph = !isLineGraph;
         setState(() {});
-
-        // if (!cardKey.currentState.isFront && !isFlipped) {
-        //   isFlipped = true;
-        // } else {
-        //   isFlipped = false;
-        // }
       },
       backgroundColor: iconBtnGrey,
       enableMargin: true,
@@ -321,29 +259,6 @@ class _TransactionGraphState extends State<TransactionGraph> {
   }
 
   Widget firstSide() {
-    // return ListView.builder(
-    //     itemCount: categoryAndSpend.length + 1,
-    //     itemBuilder: (context, index) {
-    //       if (index == 0) {
-    //         return Container(
-    //           margin: EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 5),
-    //           decoration: BoxDecoration(
-    //             color: Colors.white,
-    //             boxShadow: [
-    //               BoxShadow(
-    //                 color: Colors.black12,
-    //                 offset: Offset(0, 2),
-    //                 blurRadius: 6.0,
-    //               ),
-    //             ],
-    //             borderRadius: BorderRadius.circular(10.0),
-    //           ),
-    //           child: BarChart(arguments: {"week": barChartData}),
-    //         );
-    //       }
-    //       return getSpendOnCategoryTile(categoryAndSpend[index - 1]);
-    //     });
-
     return Container(
       child: BarChart(
         arguments: {"week": barChartData},
@@ -352,20 +267,6 @@ class _TransactionGraphState extends State<TransactionGraph> {
   }
 
   Widget secondSide() {
-    // return Container(
-    //     margin: EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10),
-    //     decoration: BoxDecoration(
-    //       color: Colors.white,
-    //       boxShadow: [
-    //         BoxShadow(
-    //           color: Colors.black12,
-    //           offset: Offset(0, 2),
-    //           blurRadius: 6.0,
-    //         ),
-    //       ],
-    //       borderRadius: BorderRadius.circular(10.0),
-    //     ),
-    //     child: lineGraph());
     return Container(
         height: MediaQuery.of(context).size.height / 1.35,
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -453,65 +354,6 @@ class _TransactionGraphState extends State<TransactionGraph> {
   }
 
   charts.LineChart chartBuilder() {
-    // var series = [
-    //   charts.Series<GraphData, int>(
-    //       id: "income",
-    //       colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
-    //       domainFn: (GraphData data, _) => data.day,
-    //       measureFn: (GraphData data, _) => data.amount,
-    //       displayName: AppLocalization.of(context).income,
-    //       data: firstData),
-    //   charts.Series<GraphData, int>(
-    //       id: "expenditure",
-    //       colorFn: (_, __) => charts.MaterialPalette.red.shadeDefault,
-    //       domainFn: (GraphData data, _) => data.day,
-    //       measureFn: (GraphData data, _) => data.amount,
-    //       displayName: AppLocalization.of(context).expenditure,
-    //       data: secondData)
-    // ];
-    //
-    // return charts.LineChart(series,
-    //     domainAxis: new charts.NumericAxisSpec(
-    //       tickFormatterSpec: charts.BasicNumericTickFormatterSpec(
-    //         formatDay,
-    //       ),
-    //     ),
-    //     animate: true,
-    //     defaultRenderer: new charts.LineRendererConfig(includePoints: true),
-    //     selectionModels: [
-    //       new charts.SelectionModelConfig(
-    //           type: charts.SelectionModelType.info,
-    //           changedListener: _onSelectionChanged)
-    //     ],
-    //     behaviors: [
-    //       new charts.SelectNearest(
-    //           eventTrigger: charts.SelectionTrigger.tapAndDrag),
-    //       new charts.LinePointHighlighter(
-    //           showHorizontalFollowLine:
-    //               charts.LinePointHighlighterFollowLineType.none,
-    //           showVerticalFollowLine:
-    //               charts.LinePointHighlighterFollowLineType.nearest),
-    //       new charts.ChartTitle(AppLocalization.of(context).days,
-    //           titleStyleSpec: charts.TextStyleSpec(
-    //               lineHeight: 0,
-    //               color: charts.MaterialPalette.black,
-    //               fontFamily: 'Georgia',
-    //               fontSize: 11),
-    //           behaviorPosition: charts.BehaviorPosition.bottom,
-    //           titleOutsideJustification:
-    //               charts.OutsideJustification.middleDrawArea),
-    //       new charts.ChartTitle(
-    //           AppLocalization.of(context).amount +
-    //               ' (${worldCurrencies[userBloc.user.currency]})',
-    //           titleStyleSpec: charts.TextStyleSpec(
-    //               lineHeight: 0,
-    //               color: charts.MaterialPalette.black,
-    //               fontFamily: 'Georgia',
-    //               fontSize: 11),
-    //           behaviorPosition: charts.BehaviorPosition.start,
-    //           titleOutsideJustification:
-    //               charts.OutsideJustification.middleDrawArea),
-    //     ]);
     var series = [
       charts.Series<GraphData, int>(
           id: "income",
@@ -624,26 +466,6 @@ class _TransactionGraphState extends State<TransactionGraph> {
                   charts.LinePointHighlighterFollowLineType.none,
               showVerticalFollowLine:
                   charts.LinePointHighlighterFollowLineType.nearest),
-          // new charts.ChartTitle(AppLocalization.of(context).days,
-          //     titleStyleSpec: charts.TextStyleSpec(
-          //         lineHeight: 0,
-          //         color: charts.MaterialPalette.black,
-          //         fontFamily: 'Georgia',
-          //         fontSize: 11),
-          //     behaviorPosition: charts.BehaviorPosition.bottom,
-          //     titleOutsideJustification:
-          //         charts.OutsideJustification.middleDrawArea),
-          // new charts.ChartTitle(
-          //     AppLocalization.of(context).amount +
-          //         ' (${worldCurrencies[userBloc.user.currency]})',
-          //     titleStyleSpec: charts.TextStyleSpec(
-          //         lineHeight: 0,
-          //         color: charts.MaterialPalette.black,
-          //         fontFamily: 'Georgia',
-          //         fontSize: 11),
-          //     behaviorPosition: charts.BehaviorPosition.start,
-          //     titleOutsideJustification:
-          //         charts.OutsideJustification.middleDrawArea),
         ]);
   }
 
@@ -808,53 +630,6 @@ class _TransactionGraphState extends State<TransactionGraph> {
   }
 
   Widget dateChanger() {
-    // return Column(children: <Widget>[
-    //   Text(
-    //     AppLocalization.of(context).weekRange,
-    //     style: TextStyle(
-    //       fontSize: 18.0,
-    //       fontWeight: FontWeight.bold,
-    //       letterSpacing: 1.2,
-    //     ),
-    //   ),
-    //   Row(
-    //     mainAxisAlignment: MainAxisAlignment.spaceAround,
-    //     children: <Widget>[
-    //       Expanded(
-    //         flex: 1,
-    //         child: Center(
-    //           child: IconButton(
-    //             icon: Icon(Icons.arrow_back),
-    //             iconSize: 25.0,
-    //             onPressed: fetchPrevious,
-    //           ),
-    //         ),
-    //       ),
-    //       Expanded(
-    //         flex: 3,
-    //         child: Center(
-    //           child: Text(
-    //             '${start.day}/${start.month}/${start.year} - ${end.day}/${end.month}/${end.year}',
-    //             style: TextStyle(
-    //               fontSize: 14.0,
-    //               fontWeight: FontWeight.w600,
-    //             ),
-    //           ),
-    //         ),
-    //       ),
-    //       Expanded(
-    //         flex: 1,
-    //         child: Center(
-    //           child: IconButton(
-    //             icon: Icon(Icons.arrow_forward),
-    //             iconSize: 25.0,
-    //             onPressed: fetchNext,
-    //           ),
-    //         ),
-    //       ),
-    //     ],
-    //   ),
-    // ]);
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       child: Row(
@@ -930,11 +705,6 @@ class _TransactionGraphState extends State<TransactionGraph> {
         cardKey.currentState.toggleCard();
         isLineGraph = !isLineGraph;
         setState(() {});
-        // if (!cardKey.currentState.isFront && !isFlipped) {
-        //   isFlipped = true;
-        // } else {
-        //   isFlipped = false;
-        // }
       },
     );
   }

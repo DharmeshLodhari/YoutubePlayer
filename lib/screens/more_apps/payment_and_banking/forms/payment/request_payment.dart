@@ -472,22 +472,19 @@ class _RequestPaymentState extends State<RequestPayment> {
       },
       onTap: () async {
         isValidPayee = false;
-        setState(() {});
+        if (mounted) setState(() {});
         if (recipient != null) {
           recipient = recipient.trim();
-          if (mounted) {
-            setState(() {
-              _recipientController.text = recipient;
-            });
-          }
+
+          _recipientController.text = recipient;
+          if (mounted) setState(() {});
           var customerProfile =
               await UserAuth().fetchCustomerProfile(recipient);
-          if (mounted) {
-            setState(() {
-              _payee = customerProfile;
-              isValidPayee = _payee.userName != userBloc.user.userName;
-            });
-          }
+
+          _payee = customerProfile;
+          isValidPayee = _payee.userName != userBloc.user.userName;
+
+          if (mounted) setState(() {});
         }
       },
     );
@@ -781,10 +778,9 @@ class _RequestPaymentState extends State<RequestPayment> {
                         setState(() {
                           errorMessage =
                               AppLocalization.of(context).somethingWentWrong;
-                          Toast.show(errorMessage, context,
-                              gravity: Toast.TOP,
-                              backgroundColor: darkBlue(),
-                              textColor: Colors.white);
+                          Toast.show("${response.body}", context,
+                              backgroundColor: Colors.black,
+                              textColor: Colors.white,duration: Toast.LENGTH_LONG);
                         });
                       }
                     }

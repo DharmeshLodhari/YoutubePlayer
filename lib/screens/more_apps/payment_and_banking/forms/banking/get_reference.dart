@@ -175,7 +175,7 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
         child: CustomizedTextFormField(
           labelText: "Amount",
           isAmount: true,
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           keyboardType: TextInputType.number,
           onChanged: (val) {
             amount = val.toString();
@@ -184,9 +184,11 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
           validator: (val) {
             if (val.isNotEmpty) {
               try {
-                int.parse(val);
+                double.parse(val);
                 return null;
-              } catch (e) {}
+              } catch (e) {
+                return AppLocalization.of(context).invalidAmount;
+              }
             }
             return AppLocalization.of(context).invalidAmount;
           },
@@ -208,8 +210,10 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
     //for closing the keypad if it is open
     FocusScope.of(context).unfocus();
 
-    var data = {"amount": amount.toString(), "currency": "NGN"};
-
+    var data = {
+      "amount": moneyInputNormalizer(amount.toString()),
+      "currency": "NGN"
+    };
     showDialog(
         context: context,
         builder: (context) => Center(child: CircularLoadingIndicator()));
@@ -283,7 +287,7 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
           size: 22,
         ),
         Text(
-          " " + moneyDisplayNormalizer(int.parse(getFinalAmount())),
+          " " + getFinalAmount(),
           style: TextStyle(
               fontSize: 36, color: navyBlue, fontWeight: FontWeight.w700),
         ),

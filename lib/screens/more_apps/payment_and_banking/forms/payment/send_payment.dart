@@ -555,22 +555,20 @@ class _SendPaymentState extends State<SendPayment> {
       },
       onTap: () async {
         isValidPayee = false;
-        setState(() {});
+        if (mounted) setState(() {});
         if (recipient != null) {
           recipient = recipient.trim();
-          if (mounted) {
-            setState(() {
-              _recipientController.text = recipient;
-            });
-          }
+
+          _recipientController.text = recipient;
+          if (mounted) setState(() {});
+
           var customerProfile =
               await UserAuth().fetchCustomerProfile(recipient);
-          if (mounted) {
-            setState(() {
-              _payee = customerProfile;
-              isValidPayee = _payee.userName != userBloc.user.userName;
-            });
-          }
+
+          _payee = customerProfile;
+          isValidPayee = _payee.userName != userBloc.user.userName;
+
+          if (mounted) setState(() {});
         }
       },
     );

@@ -17,8 +17,10 @@ DateTime getEndingOfWeek(DateTime date) {
   return startingOfWeek.add(new Duration(days: 6));
 }
 
-String moneyConverter(var amount) {
+String moneyConverter(var amount, {bool isNotCompact = false}) {
   var amt = double.parse(amount.toString());
-  FlutterMoneyFormatter fmf = FlutterMoneyFormatter(amount: amt);
+  FlutterMoneyFormatter fmf =
+      FlutterMoneyFormatter(amount: amt, settings: MoneyFormatterSettings());
+  if (isNotCompact) return fmf.output.nonSymbol;
   return fmf.output.compactNonSymbol;
 }
