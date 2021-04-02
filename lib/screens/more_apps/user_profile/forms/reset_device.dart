@@ -1,4 +1,5 @@
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/country_picker/country.dart';
 import 'package:Slydo/utils/country_picker/country_picker_dialog.dart';
@@ -11,6 +12,7 @@ import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pinput/pin_put/pin_put.dart';
+import 'package:toast/toast.dart';
 
 class ResetDevice extends StatefulWidget {
   @override
@@ -448,18 +450,20 @@ class _ResetDeviceState extends State<ResetDevice> {
       data["password"] = password;
       data["reason"] = selectedReason;
 
-      // UserAuth().resetDevice(data: data).then((result) {
-      //   data["otp"] = result;
+      UserAuth().resetDevice(data: data).then((result) {
+        data["otp"] = result;
 
-      Navigator.pop(context);
-      Navigator.of(context).popAndPushNamed("/verify-reset-device-otp",
-          arguments: {"data": data});
-      // }).catchError((error) {
-      //   Toast.show("$error", context,
-      //       backgroundColor: Colors.black,
-      //       textColor: Colors.white,
-      //       duration: Toast.LENGTH_LONG);
-      // });
+        Navigator.pop(context);
+        Navigator.of(context).popAndPushNamed("/verify-reset-device-otp",
+            arguments: {"data": data});
+      }).catchError((error) {
+        Navigator.pop(context);
+        debugPrint("ERROR:- $error");
+        Toast.show("$error", context,
+            backgroundColor: Colors.black,
+            textColor: Colors.white,
+            duration: Toast.LENGTH_LONG);
+      });
     }
   }
 

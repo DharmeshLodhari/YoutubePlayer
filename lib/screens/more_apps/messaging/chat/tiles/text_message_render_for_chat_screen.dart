@@ -168,7 +168,6 @@ class _TextMessageRendererForChatState
             key: ValueKey("${linkToBePreview}233"),
             url: linkToBePreview,
             builder: (info) {
-              debugPrint("==:? $info");
               if (info == null)
                 return const SizedBox(
                   height: 0,
@@ -190,9 +189,10 @@ class _TextMessageRendererForChatState
               return Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: const Color(0xFFF0F1F2),
+                  color: Colors.white,
                 ),
                 padding: const EdgeInsets.all(10),
+                margin: EdgeInsets.only(bottom: 4, top: 8),
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: getPreview(webInfo)),
@@ -206,6 +206,11 @@ class _TextMessageRendererForChatState
                 fontSize: 17,
                 fontFamily: "OpenSans"),
             textScaleFactor: 0.8,
+            linkStyle: TextStyle(
+                color: isSend ? Colors.white : navyBlue,
+                decoration: TextDecoration.underline,
+                fontSize: 17,
+                fontFamily: "OpenSans"),
           ),
         ],
       );
@@ -240,22 +245,23 @@ class _TextMessageRendererForChatState
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            
           ],
         ),
       ),
     ];
 
     if (WebAnalyzer.isNotEmpty(webInfo.description)) {
+      debugPrint("webInfo.description ${webInfo.description}");
       children.addAll([
         const SizedBox(height: 4),
         Text(
           webInfo.description,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
-          textAlign: TextAlign.justify,
+          // textAlign: TextAlign.justify,
           style: TextStyle(color: blackFont, fontSize: 14),
         ),
+        const SizedBox(height: 8),
       ]);
     }
 
@@ -268,11 +274,6 @@ class _TextMessageRendererForChatState
         ),
       ]);
     }
-    
-    children.add(
-        SizedBox(
-          height: 8,
-        ),);
 
     return children;
   }

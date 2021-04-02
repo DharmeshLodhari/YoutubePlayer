@@ -582,9 +582,15 @@ class UserAuth extends AuthService {
 
   // it will reset the phone number to get OTP
   Future<String> resetDevice({Map data}) async {
-    var url = secureBaseUrl + "api/v1/user/reset-user-device/";
+    var url = secureBaseUrl + "/api/v1/user/reset-user-device/";
+
     var headers = getNonAuthHeader();
+    var deviceData = await getDeviceInfo();
+    data.addAll(deviceData);
+
     var _data = jsonEncode(data);
+    debugPrint("URL:- $url");
+    debugPrint("DATA SENT:- $_data");
     var response = await http.post(url, body: _data, headers: headers);
 
     if (response.statusCode == 200) {
@@ -592,10 +598,10 @@ class UserAuth extends AuthService {
       return jsonData["otp"];
     } else {
       debugPrint(
-          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+          "URL:- $url \nRESPONSE STATUS CODE:- ${response.statusCode}  \nRESPONSE BODY:- ${response.body}");
 
       return Future.error(
-          "RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+          "RESPONSE STATUS CODE:- ${response.statusCode}  \nRESPONSE BODY:- ${response.body}");
     }
   }
 
