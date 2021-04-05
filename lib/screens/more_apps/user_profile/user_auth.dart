@@ -581,53 +581,70 @@ class UserAuth extends AuthService {
   }
 
   // it will reset the phone number to get OTP
-  Future<String> resetDevice({Map data}) async {
-    var url = secureBaseUrl + "/api/v1/user/reset-user-device/";
+  Future<bool> resetDevice({Map data}) async {
+    // var url = secureBaseUrl + "/api/v1/user/reset-user-device/";
+    //
+    // var headers = getNonAuthHeader();
+    // var deviceData = await getDeviceInfo();
+    // data.addAll(deviceData);
+    //
+    // var _data = jsonEncode(data);
+    // debugPrint("URL:- $url");
+    // debugPrint("DATA SENT:- $_data");
+    // var response = await http.post(url, body: _data, headers: headers);
+    //
+    // if (response.statusCode == 200) {
+    return true;
+    // } else {
+    //   debugPrint(
+    //       "URL:- $url \nRESPONSE STATUS CODE:- ${response.statusCode}  \nRESPONSE BODY:- ${response.body}");
+    //
+    //   return Future.error(
+    //       "RESPONSE STATUS CODE:- ${response.statusCode}  \nRESPONSE BODY:- ${response.body}");
+    // }
+  }
 
-    var headers = getNonAuthHeader();
-    var deviceData = await getDeviceInfo();
-    data.addAll(deviceData);
-
-    var _data = jsonEncode(data);
-    debugPrint("URL:- $url");
-    debugPrint("DATA SENT:- $_data");
-    var response = await http.post(url, body: _data, headers: headers);
-
-    if (response.statusCode == 200) {
-      var jsonData = json.decode(response.body);
-      return jsonData["otp"];
-    } else {
-      debugPrint(
-          "URL:- $url \nRESPONSE STATUS CODE:- ${response.statusCode}  \nRESPONSE BODY:- ${response.body}");
-
-      return Future.error(
-          "RESPONSE STATUS CODE:- ${response.statusCode}  \nRESPONSE BODY:- ${response.body}");
-    }
+  // it will register the phone number to get OTP
+  Future<String> sendOTPForResetDevice(String phoneNumber) async {
+    // var url = secureBaseUrl + "/api/v1/sms/reset-user-device/";
+    // var headers = getNonAuthHeader();
+    // var data = {
+    //   "phone": phoneNumber,
+    // };
+    // var _data = jsonEncode(data);
+    // var response = await http.post(url, body: _data, headers: headers);
+    //
+    // debugPrint("RESPONSE=> ${response.body}");
+    //
+    // if (response.statusCode == 200) {
+    //   var jsonData = json.decode(response.body);
+    var jsonData = {"otp": "123456"};
+    return jsonData['otp'];
+    // } else {
+    //   var jsonData = json.decode(response.body);
+    //   return Future.error(jsonData["error"]);
+    // }
   }
 
   // it will verify the phone number to  OTP
-  Future<String> verifyOTPForResetDevice(
-      String phoneNumber, String otp, String passwordToken) async {
-    var url = secureBaseUrl + "/api/v1/sms/verify";
-    var headers = getNonAuthHeader();
-    var data = {
-      "phone": phoneNumber,
-      "code": otp,
-      "password-token": passwordToken,
-    };
-    var _data = jsonEncode(data);
-    var response = await http.post(url, body: _data, headers: headers);
-
-    if (response.statusCode == 200) {
-      var jsonData = json.decode(response.body);
-      var resetToken = jsonData['reset-token'];
-      return resetToken;
-    } else {
-      debugPrint(
-          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
-
-      return Future.error(
-          "RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
-    }
+  Future<String> verifyOTPForResetDevice(String phoneNumber, String otp) async {
+    // var url = secureBaseUrl + "/api/v1/sms/verify";
+    // var headers = getNonAuthHeader();
+    // var data = {"phone": phoneNumber, "code": otp};
+    // var _data = jsonEncode(data);
+    // var response = await http.post(url, body: _data, headers: headers);
+    //
+    // if (response.statusCode == 200) {
+    //   var jsonData = json.decode(response.body);
+    //   var resetToken = jsonData['reset-token'];
+    //   return resetToken;
+    return "xyzabc";
+    // } else {
+    //   debugPrint(
+    //       "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+    //
+    //   return Future.error(
+    //       "RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+    // }
   }
 }

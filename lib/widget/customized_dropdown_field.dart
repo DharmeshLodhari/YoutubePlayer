@@ -17,15 +17,10 @@ class CustomizedDropDownField extends StatefulWidget {
 
 class _CustomizedDropDownFieldState extends State<CustomizedDropDownField> {
   @override
-  void initState() {
+  Widget build(BuildContext context) {
     if (widget.titleColor == null) {
       widget.titleColor = darkGrey;
     }
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[

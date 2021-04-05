@@ -164,6 +164,7 @@ class _IndexState extends State<Index> {
     return Container(
         child: GestureDetector(
       onTap: () {
+        // Navigator.of(context).pushNamed("/verify-reset-device-otp");
         Navigator.of(context).pushNamed('/reset-device');
       },
       child: Text(
