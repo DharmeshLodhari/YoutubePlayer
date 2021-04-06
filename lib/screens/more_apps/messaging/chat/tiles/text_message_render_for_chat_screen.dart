@@ -11,6 +11,7 @@ import 'package:linkwell/linkwell.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
+// ignore: must_be_immutable
 class TextMessageRendererForChat extends StatefulWidget {
   Map<String, dynamic> message;
   TextMessageRendererForChat({this.message});
@@ -136,7 +137,6 @@ class _TextMessageRendererForChatState
     List<String> listOfLinks = [];
 
     matches.forEach((match) {
-      print("===> " + text.substring(match.start, match.end));
       listOfLinks.add(text.substring(match.start, match.end));
     });
 
@@ -251,7 +251,6 @@ class _TextMessageRendererForChatState
     ];
 
     if (WebAnalyzer.isNotEmpty(webInfo.description)) {
-      debugPrint("webInfo.description ${webInfo.description}");
       children.addAll([
         const SizedBox(height: 4),
         Text(

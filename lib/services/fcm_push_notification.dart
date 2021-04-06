@@ -134,7 +134,7 @@ class PushNotificationService {
 
     notification["data"] = message['data']['data'];
 
-    print("notification from android getnotification $notification");
+    print("notification from android $notification");
     return notification;
   }
 
@@ -148,7 +148,7 @@ class PushNotificationService {
     notification["dir"] = message['dir'];
     notification["actions"] = message['actions'];
     notification['image'] = message['image'];
-    debugPrint("notification from IOS getnotification $notification");
+    debugPrint("notification from IOS $notification");
     return notification;
   }
 
