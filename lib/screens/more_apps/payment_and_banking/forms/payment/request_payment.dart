@@ -780,7 +780,8 @@ class _RequestPaymentState extends State<RequestPayment> {
                               AppLocalization.of(context).somethingWentWrong;
                           Toast.show("${response.body}", context,
                               backgroundColor: Colors.black,
-                              textColor: Colors.white,duration: Toast.LENGTH_LONG);
+                              textColor: Colors.white,
+                              duration: Toast.LENGTH_LONG);
                         });
                       }
                     }

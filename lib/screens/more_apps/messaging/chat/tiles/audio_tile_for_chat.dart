@@ -7,16 +7,16 @@ import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class ChatAudioPlayer extends StatefulWidget {
+class AudioTileForChat extends StatefulWidget {
   final Map<String, dynamic> message;
 
-  ChatAudioPlayer({this.message});
+  AudioTileForChat({this.message});
 
   @override
-  _ChatAudioPlayerState createState() => _ChatAudioPlayerState();
+  _AudioTileForChatState createState() => _AudioTileForChatState();
 }
 
-class _ChatAudioPlayerState extends State<ChatAudioPlayer> {
+class _AudioTileForChatState extends State<AudioTileForChat> {
   /// Music Player
   AssetsAudioPlayer _audioPlayer;
 

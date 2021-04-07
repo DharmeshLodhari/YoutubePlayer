@@ -1,23 +1,25 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_action_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_shake_detection.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/db_socket_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/message_sound_player.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatMessageAction.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatTextMessage.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/tiles/audio_tile_for_chat.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/tiles/image_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/product_and_service_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/product_and_service_tile_for_search.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/text_message_render_for_chat_screen.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/transaction_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/user_profile_tile_for_chat.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/widgets/chat_audio_player.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/tiles/video_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
@@ -53,7 +55,6 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:toast/toast.dart';
 import 'package:uuid/uuid.dart';
-import 'package:video_thumbnail/video_thumbnail.dart';
 
 class ChatScreen extends StatefulWidget {
   final arguments;
@@ -1521,10 +1522,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
     if (await audioRecorder.isEncoderSupported(codec)) {
       await audioRecorder
-          .startRecorder(
-        toFile: filePath,
-        codec: codec,
-      )
+          .startRecorder(toFile: filePath, codec: codec)
           .catchError((error) {
         debugPrint("Error:- while Recording Audio $error");
       });
@@ -1761,7 +1759,11 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
             return _buildIndicator();
           }
           return Container(
-            child: renderDataAccordingType(messageList[index]),
+            child: GestureDetector(
+                onLongPress: () {
+                  showChatMessageAction(message: messageList[index]);
+                },
+                child: renderDataAccordingType(messageList[index])),
             padding: EdgeInsets.only(bottom: 4),
           );
         },
@@ -1787,369 +1789,354 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     return TextMessageRendererForChat(message: message);
   }
 
-  String getDateTime(String dateAndTime) {
-    DateTime requestTime = DateTime.parse(dateAndTime);
-    String date = DateFormat("dd/MM/yyyy").format(requestTime);
-    String time = DateFormat("hh:mm a").format(requestTime);
-    return "$date • $time";
-  }
-
   Widget renderImageMedia({Map<String, dynamic> message}) {
-    bool isSend = message["author"] == userBloc.user.userName;
-    String messageText = message['text'] ?? "";
-    bool isMessageEmpty = messageText == "";
+    return ImageTileForChat(message: message);
 
-    messageText = messageDecoderWithEmoji(messageText);
-
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment:
-              isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            isSend
-                ? Container()
-                : Container(
-                    width: 20,
-                  ),
-            GestureDetector(
-              onTap: () {
-                var result = Navigator.of(context).pushNamed(
-                  "/view-chat-media",
-                  arguments: {
-                    "type": "image",
-                    "file": message['media'],
-                    "message": message['text'],
-                    "poster": message["poster"] ?? null
-                  },
-                );
-
-                debugPrint("Result:- $result");
-              },
-              onLongPress: () {
-                Clipboard.setData(new ClipboardData(
-                    text: message['text'] ?? message['media']));
-                Toast.show("Text copied !!", context,
-                    gravity: Toast.BOTTOM,
-                    duration: Toast.LENGTH_LONG,
-                    backgroundColor: Colors.black,
-                    textColor: Colors.white);
-              },
-              child: Container(
-                constraints: BoxConstraints(
-                  maxWidth: MediaQuery.of(context).size.width / 1.30,
-                  minWidth: MediaQuery.of(context).size.width / 1.30,
-                ),
-                decoration: BoxDecoration(
-                  color: isMessageEmpty
-                      ? Colors.transparent
-                      : isSend
-                          ? navyBlue
-                          : chatBackgroundColor,
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(!isSend ? 0 : 10),
-                    bottomRight: Radius.circular(isSend ? 0 : 10),
-                    topLeft: Radius.circular(10),
-                    topRight: Radius.circular(10),
-                  ),
-                ),
-                padding: EdgeInsets.only(
-                    top: isMessageEmpty ? 0 : 8,
-                    bottom: isMessageEmpty ? 0 : 8),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    isMessageEmpty
-                        ? Container()
-                        : Container(
-                            padding: EdgeInsets.symmetric(horizontal: 8),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    messageText,
-                                    style: TextStyle(
-                                        color:
-                                            isSend ? Colors.white : blackFont,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w400),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                    isMessageEmpty
-                        ? Container()
-                        : SizedBox(
-                            height: 8,
-                          ),
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: isMessageEmpty ? 0 : 8),
-                      child: ClipRRect(
-                        child: CachedNetworkImage(
-                          height: MediaQuery.of(context).size.width / 2.2,
-                          width: MediaQuery.of(context).size.width / 1.30,
-                          imageUrl: message['media'],
-                          fit: BoxFit.cover,
-                          progressIndicatorBuilder:
-                              (context, url, downloadProgress) => Center(
-                            child: CircularProgressIndicator(
-                              value: downloadProgress.progress,
-                              strokeWidth: 2.5,
-                              valueColor: AlwaysStoppedAnimation(
-                                  isSend ? Colors.white : navyBlue),
-                              backgroundColor: Colors.transparent,
-                            ),
-                          ),
-                          errorWidget: imageErrorWidget,
-                        ),
-                        borderRadius: BorderRadius.circular(3),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            isSend
-                ? Container(
-                    width: 20,
-                    child: isSend
-                        ? Center(
-                            child: getMessageTick(message: message),
-                          )
-                        : Container(),
-                  )
-                : Container(),
-          ],
-        ),
-        SizedBox(
-          height: 1,
-        ),
-        Row(
-          mainAxisAlignment:
-              isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
-          children: [
-            isSend
-                ? Container()
-                : SizedBox(
-                    width: 20,
-                  ),
-            Text(
-              formatTime(message['created_at']),
-              style: TextStyle(
-                  color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
-            ),
-            isSend
-                ? SizedBox(
-                    width: 20,
-                  )
-                : Container(),
-          ],
-        )
-      ],
-    );
+    // bool isSend = message["author"] == userBloc.user.userName;
+    // String messageText = message['text'] ?? "";
+    // bool isMessageEmpty = messageText == "";
+    //
+    // messageText = messageDecoderWithEmoji(messageText);
+    //
+    // return Column(
+    //   children: [
+    //     Row(
+    //       mainAxisAlignment:
+    //           isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
+    //       crossAxisAlignment: CrossAxisAlignment.end,
+    //       children: [
+    //         isSend
+    //             ? Container()
+    //             : Container(
+    //                 width: 20,
+    //               ),
+    //         GestureDetector(
+    //           onTap: () {
+    //             var result = Navigator.of(context).pushNamed(
+    //               "/view-chat-media",
+    //               arguments: {
+    //                 "type": "image",
+    //                 "file": message['media'],
+    //                 "message": message['text'],
+    //                 "poster": message["poster"] ?? null
+    //               },
+    //             );
+    //
+    //             debugPrint("Result:- $result");
+    //           },
+    //           onLongPress: () {
+    //             Clipboard.setData(new ClipboardData(
+    //                 text: message['text'] ?? message['media']));
+    //             Toast.show("Text copied !!", context,
+    //                 gravity: Toast.BOTTOM,
+    //                 duration: Toast.LENGTH_LONG,
+    //                 backgroundColor: Colors.black,
+    //                 textColor: Colors.white);
+    //           },
+    //           child: Container(
+    //             constraints: BoxConstraints(
+    //               maxWidth: MediaQuery.of(context).size.width / 1.30,
+    //               minWidth: MediaQuery.of(context).size.width / 1.30,
+    //             ),
+    //             decoration: BoxDecoration(
+    //               color: isMessageEmpty
+    //                   ? Colors.transparent
+    //                   : isSend
+    //                       ? navyBlue
+    //                       : chatBackgroundColor,
+    //               borderRadius: BorderRadius.only(
+    //                 bottomLeft: Radius.circular(!isSend ? 0 : 10),
+    //                 bottomRight: Radius.circular(isSend ? 0 : 10),
+    //                 topLeft: Radius.circular(10),
+    //                 topRight: Radius.circular(10),
+    //               ),
+    //             ),
+    //             padding: EdgeInsets.only(
+    //                 top: isMessageEmpty ? 0 : 8,
+    //                 bottom: isMessageEmpty ? 0 : 8),
+    //             child: Column(
+    //               mainAxisSize: MainAxisSize.min,
+    //               crossAxisAlignment: CrossAxisAlignment.start,
+    //               children: [
+    //                 isMessageEmpty
+    //                     ? Container()
+    //                     : Container(
+    //                         padding: EdgeInsets.symmetric(horizontal: 8),
+    //                         child: Row(
+    //                           children: [
+    //                             Expanded(
+    //                               child: Text(
+    //                                 messageText,
+    //                                 style: TextStyle(
+    //                                     color:
+    //                                         isSend ? Colors.white : blackFont,
+    //                                     fontSize: 14,
+    //                                     fontWeight: FontWeight.w400),
+    //                               ),
+    //                             ),
+    //                           ],
+    //                         ),
+    //                       ),
+    //                 isMessageEmpty
+    //                     ? Container()
+    //                     : SizedBox(
+    //                         height: 8,
+    //                       ),
+    //                 Container(
+    //                   padding: EdgeInsets.symmetric(
+    //                       horizontal: isMessageEmpty ? 0 : 8),
+    //                   child: ClipRRect(
+    //                     child: CachedNetworkImage(
+    //                       height: MediaQuery.of(context).size.width / 2.2,
+    //                       width: MediaQuery.of(context).size.width / 1.30,
+    //                       imageUrl: message['media'],
+    //                       fit: BoxFit.cover,
+    //                       progressIndicatorBuilder:
+    //                           (context, url, downloadProgress) => Center(
+    //                         child: CircularProgressIndicator(
+    //                           value: downloadProgress.progress,
+    //                           strokeWidth: 2.5,
+    //                           valueColor: AlwaysStoppedAnimation(
+    //                               isSend ? Colors.white : navyBlue),
+    //                           backgroundColor: Colors.transparent,
+    //                         ),
+    //                       ),
+    //                       errorWidget: imageErrorWidget,
+    //                     ),
+    //                     borderRadius: BorderRadius.circular(3),
+    //                   ),
+    //                 ),
+    //               ],
+    //             ),
+    //           ),
+    //         ),
+    //         isSend
+    //             ? Container(
+    //                 width: 20,
+    //                 child: isSend
+    //                     ? Center(
+    //                         child: getMessageTick(message: message),
+    //                       )
+    //                     : Container(),
+    //               )
+    //             : Container(),
+    //       ],
+    //     ),
+    //     SizedBox(
+    //       height: 1,
+    //     ),
+    //     Row(
+    //       mainAxisAlignment:
+    //           isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
+    //       children: [
+    //         isSend
+    //             ? Container()
+    //             : SizedBox(
+    //                 width: 20,
+    //               ),
+    //         Text(
+    //           formatTime(message['created_at']),
+    //           style: TextStyle(
+    //               color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
+    //         ),
+    //         isSend
+    //             ? SizedBox(
+    //                 width: 20,
+    //               )
+    //             : Container(),
+    //       ],
+    //     )
+    //   ],
+    // );
   }
 
   Widget renderAudioMedia({Map<String, dynamic> message}) {
-    return new ChatAudioPlayer(message: message);
-  }
-
-  Future<Uint8List> getVideoThumbnail(String url) async {
-    Uint8List uInt8list = await VideoThumbnail.thumbnailData(
-      video: url,
-      imageFormat: ImageFormat.JPEG,
-      maxWidth:
-          512, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
-      quality: 25,
-    );
-
-    return uInt8list;
+    return AudioTileForChat(message: message);
   }
 
   Widget renderVideoMedia({Map<String, dynamic> message}) {
-    bool isSend = message["author"] == userBloc.user.userName;
-    String messageText = message['text'] ?? "";
-    bool isMessageEmpty = messageText == "";
-    messageText = messageDecoderWithEmoji(messageText);
+    return VideoTileForChat(message: message);
 
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment:
-              isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            isSend
-                ? Container()
-                : Container(
-                    width: 20,
-                  ),
-            GestureDetector(
-              onTap: () {
-                var result = Navigator.of(context).pushNamed(
-                  "/view-chat-media",
-                  arguments: {
-                    "type": "video",
-                    "file": message["media"],
-                    "message": message['text']
-                  },
-                );
-                debugPrint("Result:- $result");
-              },
-              onLongPress: () {
-                Clipboard.setData(new ClipboardData(
-                    text: message['text'] ?? message['media']));
-                Toast.show("Text copied !!", context,
-                    gravity: Toast.BOTTOM,
-                    duration: Toast.LENGTH_LONG,
-                    backgroundColor: Colors.black,
-                    textColor: Colors.white);
-              },
-              child: Container(
-                constraints: BoxConstraints(
-                  maxWidth: MediaQuery.of(context).size.width / 1.30,
-                  minWidth: MediaQuery.of(context).size.width / 1.30,
-                ),
-                decoration: BoxDecoration(
-                  color: isMessageEmpty
-                      ? Colors.transparent
-                      : isSend
-                          ? navyBlue
-                          : chatBackgroundColor,
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(!isSend ? 0 : 10),
-                    bottomRight: Radius.circular(isSend ? 0 : 10),
-                    topLeft: Radius.circular(10),
-                    topRight: Radius.circular(10),
-                  ),
-                ),
-                padding: EdgeInsets.only(
-                    top: isMessageEmpty ? 0 : 8,
-                    bottom: isMessageEmpty ? 0 : 8),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    isMessageEmpty
-                        ? Container()
-                        : Container(
-                            padding: EdgeInsets.symmetric(horizontal: 8),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    messageText,
-                                    style: TextStyle(
-                                        color:
-                                            isSend ? Colors.white : blackFont,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w400),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                    isMessageEmpty
-                        ? Container()
-                        : SizedBox(
-                            height: 8,
-                          ),
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: isMessageEmpty ? 0 : 8),
-                      child: Stack(
-                        children: [
-                          ClipRRect(
-                            child: CachedNetworkImage(
-                              height: MediaQuery.of(context).size.width / 2.2,
-                              width: MediaQuery.of(context).size.width / 1.30,
-                              imageUrl: message["poster"] ??
-                                  "https://c1.iggcdn.com/indiegogo-media-prod-cld/image/upload/c_fill,f_auto,h_630,w_1200/v1506734779/wcsmythcukjuuglotjvb.jpg",
-                              fit: BoxFit.cover,
-                              color: Colors.black38,
-                              colorBlendMode: BlendMode.darken,
-                              progressIndicatorBuilder:
-                                  (context, url, downloadProgress) => Center(
-                                child: CircularProgressIndicator(
-                                  value: downloadProgress.progress,
-                                  strokeWidth: 2.5,
-                                  valueColor: AlwaysStoppedAnimation(
-                                      isSend ? Colors.white : navyBlue),
-                                  backgroundColor: Colors.transparent,
-                                ),
-                              ),
-                              errorWidget: imageErrorWidget,
-                            ),
-                            borderRadius: BorderRadius.circular(3),
-                          ),
-                          Container(
-                            height: MediaQuery.of(context).size.width / 2.2,
-                            width: MediaQuery.of(context).size.width / 1.30,
-                            child: Center(
-                              child: ClipOval(
-                                child: Container(
-                                  height: 60,
-                                  width: 60,
-                                  color: Colors.white.withOpacity(0.2),
-                                  child: Center(
-                                    child: Icon(
-                                      Icons.play_arrow_rounded,
-                                      color: Colors.white,
-                                      size: 32,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            isSend
-                ? Container(
-                    width: 20,
-                    child: isSend
-                        ? Center(
-                            child: getMessageTick(message: message),
-                          )
-                        : Container(),
-                  )
-                : Container(),
-          ],
-        ),
-        SizedBox(
-          height: 1,
-        ),
-        Row(
-          mainAxisAlignment:
-              isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
-          children: [
-            isSend
-                ? Container()
-                : SizedBox(
-                    width: 20,
-                  ),
-            Text(
-              formatTime(message['created_at']),
-              style: TextStyle(
-                  color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
-            ),
-            isSend
-                ? SizedBox(
-                    width: 20,
-                  )
-                : Container(),
-          ],
-        )
-      ],
-    );
+    // bool isSend = message["author"] == userBloc.user.userName;
+    // String messageText = message['text'] ?? "";
+    // bool isMessageEmpty = messageText == "";
+    // messageText = messageDecoderWithEmoji(messageText);
+    //
+    // return Column(
+    //   children: [
+    //     Row(
+    //       mainAxisAlignment:
+    //           isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
+    //       crossAxisAlignment: CrossAxisAlignment.end,
+    //       children: [
+    //         isSend
+    //             ? Container()
+    //             : Container(
+    //                 width: 20,
+    //               ),
+    //         GestureDetector(
+    //           onTap: () {
+    //             var result = Navigator.of(context).pushNamed(
+    //               "/view-chat-media",
+    //               arguments: {
+    //                 "type": "video",
+    //                 "file": message["media"],
+    //                 "message": message['text']
+    //               },
+    //             );
+    //             debugPrint("Result:- $result");
+    //           },
+    //           onLongPress: () {
+    //             Clipboard.setData(new ClipboardData(
+    //                 text: message['text'] ?? message['media']));
+    //             Toast.show("Text copied !!", context,
+    //                 gravity: Toast.BOTTOM,
+    //                 duration: Toast.LENGTH_LONG,
+    //                 backgroundColor: Colors.black,
+    //                 textColor: Colors.white);
+    //           },
+    //           child: Container(
+    //             constraints: BoxConstraints(
+    //               maxWidth: MediaQuery.of(context).size.width / 1.30,
+    //               minWidth: MediaQuery.of(context).size.width / 1.30,
+    //             ),
+    //             decoration: BoxDecoration(
+    //               color: isMessageEmpty
+    //                   ? Colors.transparent
+    //                   : isSend
+    //                       ? navyBlue
+    //                       : chatBackgroundColor,
+    //               borderRadius: BorderRadius.only(
+    //                 bottomLeft: Radius.circular(!isSend ? 0 : 10),
+    //                 bottomRight: Radius.circular(isSend ? 0 : 10),
+    //                 topLeft: Radius.circular(10),
+    //                 topRight: Radius.circular(10),
+    //               ),
+    //             ),
+    //             padding: EdgeInsets.only(
+    //                 top: isMessageEmpty ? 0 : 8,
+    //                 bottom: isMessageEmpty ? 0 : 8),
+    //             child: Column(
+    //               mainAxisSize: MainAxisSize.min,
+    //               crossAxisAlignment: CrossAxisAlignment.start,
+    //               children: [
+    //                 isMessageEmpty
+    //                     ? Container()
+    //                     : Container(
+    //                         padding: EdgeInsets.symmetric(horizontal: 8),
+    //                         child: Row(
+    //                           children: [
+    //                             Expanded(
+    //                               child: Text(
+    //                                 messageText,
+    //                                 style: TextStyle(
+    //                                     color:
+    //                                         isSend ? Colors.white : blackFont,
+    //                                     fontSize: 14,
+    //                                     fontWeight: FontWeight.w400),
+    //                               ),
+    //                             ),
+    //                           ],
+    //                         ),
+    //                       ),
+    //                 isMessageEmpty
+    //                     ? Container()
+    //                     : SizedBox(
+    //                         height: 8,
+    //                       ),
+    //                 Container(
+    //                   padding: EdgeInsets.symmetric(
+    //                       horizontal: isMessageEmpty ? 0 : 8),
+    //                   child: Stack(
+    //                     children: [
+    //                       ClipRRect(
+    //                         child: CachedNetworkImage(
+    //                           height: MediaQuery.of(context).size.width / 2.2,
+    //                           width: MediaQuery.of(context).size.width / 1.30,
+    //                           imageUrl: message["poster"] ??
+    //                               "https://c1.iggcdn.com/indiegogo-media-prod-cld/image/upload/c_fill,f_auto,h_630,w_1200/v1506734779/wcsmythcukjuuglotjvb.jpg",
+    //                           fit: BoxFit.cover,
+    //                           color: Colors.black38,
+    //                           colorBlendMode: BlendMode.darken,
+    //                           progressIndicatorBuilder:
+    //                               (context, url, downloadProgress) => Center(
+    //                             child: CircularProgressIndicator(
+    //                               value: downloadProgress.progress,
+    //                               strokeWidth: 2.5,
+    //                               valueColor: AlwaysStoppedAnimation(
+    //                                   isSend ? Colors.white : navyBlue),
+    //                               backgroundColor: Colors.transparent,
+    //                             ),
+    //                           ),
+    //                           errorWidget: imageErrorWidget,
+    //                         ),
+    //                         borderRadius: BorderRadius.circular(3),
+    //                       ),
+    //                       Container(
+    //                         height: MediaQuery.of(context).size.width / 2.2,
+    //                         width: MediaQuery.of(context).size.width / 1.30,
+    //                         child: Center(
+    //                           child: ClipOval(
+    //                             child: Container(
+    //                               height: 60,
+    //                               width: 60,
+    //                               color: Colors.white.withOpacity(0.2),
+    //                               child: Center(
+    //                                 child: Icon(
+    //                                   Icons.play_arrow_rounded,
+    //                                   color: Colors.white,
+    //                                   size: 32,
+    //                                 ),
+    //                               ),
+    //                             ),
+    //                           ),
+    //                         ),
+    //                       )
+    //                     ],
+    //                   ),
+    //                 ),
+    //               ],
+    //             ),
+    //           ),
+    //         ),
+    //         isSend
+    //             ? Container(
+    //                 width: 20,
+    //                 child: isSend
+    //                     ? Center(
+    //                         child: getMessageTick(message: message),
+    //                       )
+    //                     : Container(),
+    //               )
+    //             : Container(),
+    //       ],
+    //     ),
+    //     SizedBox(
+    //       height: 1,
+    //     ),
+    //     Row(
+    //       mainAxisAlignment:
+    //           isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
+    //       children: [
+    //         isSend
+    //             ? Container()
+    //             : SizedBox(
+    //                 width: 20,
+    //               ),
+    //         Text(
+    //           formatTime(message['created_at']),
+    //           style: TextStyle(
+    //               color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
+    //         ),
+    //         isSend
+    //             ? SizedBox(
+    //                 width: 20,
+    //               )
+    //             : Container(),
+    //       ],
+    //     )
+    //   ],
+    // );
   }
 
   Widget renderPaymentRequest({Map<String, dynamic> message}) {
@@ -2674,5 +2661,184 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
             )
           : Container(),
     );
+  }
+
+  void showChatMessageAction({@required String message}) {
+    debugPrint("Showing actions");
+    selectChatMessageAction(message: message);
+  }
+
+  void selectChatMessageAction({@required String message}) {
+    showDialog<String>(
+        context: context,
+        builder: (context) => AlertDialog(
+              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              contentPadding: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              content: Container(
+                width: MediaQuery.of(context).size.width - 40,
+                child: Card(
+                  elevation: 2,
+                  shadowColor: Colors.transparent,
+                  margin: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: getChatMessageActionTiles(message: message),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ));
+  }
+
+  List<Widget> getChatMessageActionTiles({@required String message}) {
+    ChatMessageAction chatMessageAction =
+        GetChatMessageActions().getActions(message: message);
+
+    List<Widget> elements = [];
+
+    if (chatMessageAction.isCopyable) {
+      elements.add(ListTile(
+        title: Text(
+          "Copy message",
+          softWrap: false,
+          overflow: TextOverflow.fade,
+          style: TextStyle(
+              color: blackFont, fontSize: 16, fontWeight: FontWeight.w400),
+        ),
+        dense: true,
+        trailing: Icon(
+          Icons.copy_outlined,
+          color: blackFont,
+          size: 20,
+        ),
+        onTap: () {
+          copyChatMessage(message: message);
+
+          Navigator.pop(context);
+        },
+      ));
+    }
+    if (chatMessageAction.isEditable) {
+      elements.add(ListTile(
+        title: Text(
+          "Edit message",
+          softWrap: false,
+          overflow: TextOverflow.fade,
+          style: TextStyle(
+              color: blackFont, fontSize: 16, fontWeight: FontWeight.w400),
+        ),
+        dense: true,
+        trailing: Icon(
+          Icons.edit_outlined,
+          color: blackFont,
+          size: 20,
+        ),
+        onTap: () {
+          Navigator.pop(context);
+        },
+      ));
+    }
+    if (chatMessageAction.isDeletable) {
+      elements.add(ListTile(
+        title: Text(
+          "Delete",
+          softWrap: false,
+          overflow: TextOverflow.fade,
+          style: TextStyle(
+              color: blackFont, fontSize: 16, fontWeight: FontWeight.w400),
+        ),
+        trailing: Icon(
+          Icons.delete_outline_outlined,
+          color: mateRed,
+          size: 20,
+        ),
+        dense: true,
+        onTap: () {
+          messageList.remove(message);
+          if (mounted) setState(() {});
+          if (messageList.length <= 10) {
+            getPreviousMessages();
+          }
+
+          Navigator.pop(context);
+        },
+      ));
+    }
+    if (chatMessageAction.isReplyable) {
+      elements.add(ListTile(
+        title: Text(
+          "Reply",
+          softWrap: false,
+          overflow: TextOverflow.fade,
+          style: TextStyle(
+              color: blackFont, fontSize: 16, fontWeight: FontWeight.w400),
+        ),
+        trailing: Icon(
+          Icons.reply_outlined,
+          color: blackFont,
+          size: 20,
+        ),
+        dense: true,
+        onTap: () {
+          Navigator.pop(context);
+        },
+      ));
+    }
+
+    return elements;
+  }
+
+  void copyChatMessage({String message}) {
+    String textToBeCopy;
+
+    Map<String, dynamic> messageData = jsonDecode(message);
+
+    String messageType = messageData["kind"];
+    switch (messageType) {
+      case "text":
+        textToBeCopy = messageData["text"] ?? null;
+        break;
+
+      case "image":
+        break;
+
+      case "video":
+        break;
+
+      case "audio":
+        break;
+
+      case "transaction":
+        break;
+      case "payment-request":
+        break;
+      case "product":
+        break;
+      case "service":
+        break;
+      case "user-profile":
+        break;
+
+      default:
+        debugPrint("Unknown Message Kind: $messageType Message:- $message");
+    }
+
+    if (textToBeCopy != null) {
+      Clipboard.setData(new ClipboardData(
+          text: messageDecoderWithEmoji(textToBeCopy.toString())));
+      Toast.show("Text copied !!", context,
+          gravity: Toast.BOTTOM,
+          duration: Toast.LENGTH_LONG,
+          backgroundColor: Colors.black,
+          textColor: Colors.white);
+    }
   }
 }

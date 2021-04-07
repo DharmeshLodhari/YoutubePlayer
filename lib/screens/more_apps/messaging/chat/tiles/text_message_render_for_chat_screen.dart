@@ -5,11 +5,9 @@ import 'package:Slydo/utils/common.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_link_preview/flutter_link_preview.dart';
 import 'package:linkwell/linkwell.dart';
 import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
 
 // ignore: must_be_immutable
 class TextMessageRendererForChat extends StatefulWidget {
@@ -35,97 +33,85 @@ class _TextMessageRendererForChatState
 
     Widget renderedMessage = renderMessage(message: message, isSend: isSend);
 
-    return GestureDetector(
-      onLongPress: () {
-        Clipboard.setData(new ClipboardData(
-            text: messageDecoderWithEmoji(message['text'].toString())));
-        Toast.show("Text copied !!", context,
-            gravity: Toast.BOTTOM,
-            duration: Toast.LENGTH_LONG,
-            backgroundColor: Colors.black,
-            textColor: Colors.white);
-      },
-      child: Row(
-        mainAxisAlignment:
-            isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
-        children: [
-          Column(
-            crossAxisAlignment:
-                isSend ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  isSend
-                      ? Container()
-                      : Container(
-                          width: 20,
-                        ),
-                  Container(
-                      constraints: BoxConstraints(
-                        maxWidth: MediaQuery.of(context).size.width * 0.8,
+    return Row(
+      mainAxisAlignment:
+          isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
+      children: [
+        Column(
+          crossAxisAlignment:
+              isSend ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                isSend
+                    ? Container()
+                    : Container(
+                        width: 20,
                       ),
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: isSend ? navyBlue : chatBackgroundColor,
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(!isSend ? 0 : 10),
-                          bottomRight: Radius.circular(isSend ? 0 : 10),
-                          topLeft: Radius.circular(10),
-                          topRight: Radius.circular(10),
-                        ),
+                Container(
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width * 0.8,
+                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: isSend ? navyBlue : chatBackgroundColor,
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(!isSend ? 0 : 10),
+                        bottomRight: Radius.circular(isSend ? 0 : 10),
+                        topLeft: Radius.circular(10),
+                        topRight: Radius.circular(10),
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Flexible(
-                            child: renderedMessage,
-                          ),
-                        ],
-                      )),
-                  isSend
-                      ? Container(
-                          width: 20,
-                          child: isSend
-                              ? Center(
-                                  child: getMessageTick(message: message),
-                                )
-                              : Container(),
-                        )
-                      : Container(),
-                ],
-              ),
-              SizedBox(
-                height: 1,
-              ),
-              Row(
-                children: [
-                  isSend
-                      ? Container()
-                      : SizedBox(
-                          width: 20,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(
+                          child: renderedMessage,
                         ),
-                  Text(
-                    formatTime(message['created_at']),
-                    style: TextStyle(
-                        color: darkGrey,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w500),
-                  ),
-                  isSend
-                      ? SizedBox(
-                          width: 20,
-                        )
-                      : Container(),
-                ],
-              )
-            ],
-          )
-        ],
-      ),
+                      ],
+                    )),
+                isSend
+                    ? Container(
+                        width: 20,
+                        child: isSend
+                            ? Center(
+                                child: getMessageTick(message: message),
+                              )
+                            : Container(),
+                      )
+                    : Container(),
+              ],
+            ),
+            SizedBox(
+              height: 1,
+            ),
+            Row(
+              children: [
+                isSend
+                    ? Container()
+                    : SizedBox(
+                        width: 20,
+                      ),
+                Text(
+                  formatTime(message['created_at']),
+                  style: TextStyle(
+                      color: darkGrey,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w500),
+                ),
+                isSend
+                    ? SizedBox(
+                        width: 20,
+                      )
+                    : Container(),
+              ],
+            )
+          ],
+        )
+      ],
     );
   }
 

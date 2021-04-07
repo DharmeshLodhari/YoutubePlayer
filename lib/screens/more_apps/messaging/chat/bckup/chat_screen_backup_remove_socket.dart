@@ -6,7 +6,7 @@ import 'dart:typed_data';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/product_and_service_tile_for_search.dart';
 
-import 'package:Slydo/screens/more_apps/messaging/chat/widgets/chat_audio_player.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/tiles/audio_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
@@ -2032,7 +2032,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget renderAudioMedia({Map<String, dynamic> message}) {
-    return ChatAudioPlayer(message: message);
+    return AudioTileForChat(message: message);
   }
 
   Future<Uint8List> getVideoThumbnail(String url) async {
