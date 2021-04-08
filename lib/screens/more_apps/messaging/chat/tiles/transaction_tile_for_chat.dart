@@ -10,7 +10,6 @@ import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:toast/toast.dart';
 
@@ -51,175 +50,172 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
 
     bool isScreenSmall = MediaQuery.of(context).size.width <= 400;
 
-    return GestureDetector(
-      onLongPress: () {
-        if (transaction.description.isNotEmpty) {
-          Clipboard.setData(new ClipboardData(
-              text: messageDecoderWithEmoji(transaction.description)));
-          Toast.show("Text copied !!", context,
-              gravity: Toast.BOTTOM,
-              duration: Toast.LENGTH_LONG,
-              backgroundColor: navyBlue,
-              textColor: Colors.white);
-        }
-      },
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment:
-                isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              isSend ? Container() : Container(width: 20),
-              Container(
-                constraints: BoxConstraints(
-                    maxWidth: MediaQuery.of(context).size.width / 1.40,
-                    minWidth: MediaQuery.of(context).size.width / 1.40,
-                    minHeight: 50),
-                decoration: BoxDecoration(
-                  color: chatBackgroundColor,
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(!isSend ? 0 : 6),
-                    bottomRight: Radius.circular(isSend ? 0 : 6),
-                    topLeft: Radius.circular(6),
-                    topRight: Radius.circular(6),
-                  ),
+    //if (transaction.description.isNotEmpty) {
+    //           Clipboard.setData(new ClipboardData(
+    //               text: messageDecoderWithEmoji(transaction.description)));
+    //           Toast.show("Text copied !!", context,
+    //               gravity: Toast.BOTTOM,
+    //               duration: Toast.LENGTH_LONG,
+    //               backgroundColor: navyBlue,
+    //               textColor: Colors.white);
+    //         }
+
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment:
+              isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            isSend ? Container() : Container(width: 20),
+            Container(
+              constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width / 1.40,
+                  minWidth: MediaQuery.of(context).size.width / 1.40,
+                  minHeight: 50),
+              decoration: BoxDecoration(
+                color: chatBackgroundColor,
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(!isSend ? 0 : 6),
+                  bottomRight: Radius.circular(isSend ? 0 : 6),
+                  topLeft: Radius.circular(6),
+                  topRight: Radius.circular(6),
                 ),
-                padding:
-                    EdgeInsets.only(left: 16, right: 16, top: 12, bottom: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CustomBoxShadow(
-                      child: Card(
-                        elevation: 3,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        margin: EdgeInsets.zero,
-                        shadowColor: boxShadowTwo,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 20, horizontal: 12),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    messageDecoderWithEmoji(
-                                        transaction.description),
-                                    maxLines: 1,
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 14,
-                                        color: blackFont),
-                                    softWrap: false,
-                                    overflow: TextOverflow.ellipsis,
+              ),
+              padding:
+                  EdgeInsets.only(left: 16, right: 16, top: 12, bottom: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CustomBoxShadow(
+                    child: Card(
+                      elevation: 3,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      margin: EdgeInsets.zero,
+                      shadowColor: boxShadowTwo,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 20, horizontal: 12),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  messageDecoderWithEmoji(
+                                      transaction.description),
+                                  maxLines: 1,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 14,
+                                      color: blackFont),
+                                  softWrap: false,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              Row(
+                                children: [
+                                  Icon(
+                                    SlydoAppIcon.naira,
+                                    color: navyBlue,
+                                    size: 14,
                                   ),
-                                ),
-                                Row(
-                                  children: [
-                                    Icon(
-                                      SlydoAppIcon.naira,
-                                      color: navyBlue,
-                                      size: 14,
-                                    ),
-                                    Text(
-                                      moneyDisplayNormalizer(int.parse(
-                                          transaction.amount.toString())),
-                                      style: TextStyle(
-                                          fontSize: 22,
-                                          fontWeight: FontWeight.w700,
-                                          color: navyBlue),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
+                                  Text(
+                                    moneyDisplayNormalizer(int.parse(
+                                        transaction.amount.toString())),
+                                    style: TextStyle(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.w700,
+                                        color: navyBlue),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
                       ),
                     ),
-                    SizedBox(
-                      height: 12,
+                  ),
+                  SizedBox(
+                    height: 12,
+                  ),
+                  Container(
+                    child: Row(
+                      children: [
+                        Icon(
+                          SlydoAppIcon.true_icon,
+                          size: 12,
+                          color: naturalGreen,
+                        ),
+                        SizedBox(
+                          width: 4,
+                        ),
+                        Row(
+                          children: [
+                            Text(isSend ? "You paid" : "You were paid",
+                                style: TextStyle(
+                                    color: blackFont,
+                                    fontWeight: isScreenSmall
+                                        ? FontWeight.w500
+                                        : FontWeight.w600,
+                                    fontSize: isScreenSmall ? 12 : 14)),
+                            Text(
+                                "${getDateTime(dateAndTime: widget.message['created_at'])}",
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                softWrap: false,
+                                style: TextStyle(
+                                  color: darkGrey,
+                                  fontSize: isScreenSmall ? 10 : 12,
+                                  fontWeight: FontWeight.w400,
+                                ))
+                          ],
+                        ),
+                      ],
                     ),
-                    Container(
-                      child: Row(
-                        children: [
-                          Icon(
-                            SlydoAppIcon.true_icon,
-                            size: 12,
-                            color: naturalGreen,
-                          ),
-                          SizedBox(
-                            width: 4,
-                          ),
-                          Row(
-                            children: [
-                              Text(isSend ? "You paid" : "You were paid",
-                                  style: TextStyle(
-                                      color: blackFont,
-                                      fontWeight: isScreenSmall
-                                          ? FontWeight.w500
-                                          : FontWeight.w600,
-                                      fontSize: isScreenSmall ? 12 : 14)),
-                              Text(
-                                  "${getDateTime(dateAndTime: widget.message['created_at'])}",
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  softWrap: false,
-                                  style: TextStyle(
-                                    color: darkGrey,
-                                    fontSize: isScreenSmall ? 10 : 12,
-                                    fontWeight: FontWeight.w400,
-                                  ))
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              isSend
-                  ? Container(
-                      width: 20,
-                      child: isSend
-                          ? Center(
-                              child: getMessageTick(message: widget.message),
-                            )
-                          : Container(),
-                    )
-                  : Container(),
-            ],
-          ),
-          SizedBox(
-            height: 1,
-          ),
-          Row(
-            mainAxisAlignment:
-                isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
-            children: [
-              isSend
-                  ? Container()
-                  : SizedBox(
-                      width: 20,
-                    ),
-              Text(
-                formatTime(widget.message['created_at']),
-                style: TextStyle(
-                    color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
-              ),
-              isSend
-                  ? SizedBox(
-                      width: 20,
-                    )
-                  : Container(),
-            ],
-          )
-        ],
-      ),
+            ),
+            isSend
+                ? Container(
+                    width: 20,
+                    child: isSend
+                        ? Center(
+                            child: getMessageTick(message: widget.message),
+                          )
+                        : Container(),
+                  )
+                : Container(),
+          ],
+        ),
+        SizedBox(
+          height: 1,
+        ),
+        Row(
+          mainAxisAlignment:
+              isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
+          children: [
+            isSend
+                ? Container()
+                : SizedBox(
+                    width: 20,
+                  ),
+            Text(
+              formatTime(widget.message['created_at']),
+              style: TextStyle(
+                  color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
+            ),
+            isSend
+                ? SizedBox(
+                    width: 20,
+                  )
+                : Container(),
+          ],
+        )
+      ],
     );
   }
 
@@ -280,7 +276,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
       } catch (e) {
         paymentActionStatus = "None";
         paymentActionTime = DateTime.now().toString();
-        debugPrint("ERROROR:- $e");
+        debugPrint("ERROR:- $e");
       }
     } else {
       paymentActionStatus = "None";
@@ -303,239 +299,234 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
 
     bool isScreenSmall = MediaQuery.of(context).size.width <= 400;
 
-    return GestureDetector(
-      onLongPress: () {
-        if (paymentRequest.description.isNotEmpty) {
-          Clipboard.setData(new ClipboardData(
-              text: messageDecoderWithEmoji(paymentRequest.description)));
-          Toast.show("Text copied !!", context,
-              gravity: Toast.BOTTOM,
-              duration: Toast.LENGTH_LONG,
-              backgroundColor: navyBlue,
-              textColor: Colors.white);
-        }
-      },
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment:
-                isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              isSend ? Container() : Container(width: 20),
-              Container(
-                constraints: BoxConstraints(
-                    maxWidth: MediaQuery.of(context).size.width / 1.40,
-                    minWidth: MediaQuery.of(context).size.width / 1.40,
-                    minHeight: 50),
-                decoration: BoxDecoration(
-                  color: chatBackgroundColor,
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(!isSend ? 0 : 6),
-                    bottomRight: Radius.circular(isSend ? 0 : 6),
-                    topLeft: Radius.circular(6),
-                    topRight: Radius.circular(6),
-                  ),
+    // if (paymentRequest.description.isNotEmpty) {
+    //   Clipboard.setData(new ClipboardData(
+    //       text: messageDecoderWithEmoji(paymentRequest.description)));
+    //   Toast.show("Text copied !!", context,
+    //       gravity: Toast.BOTTOM,
+    //       duration: Toast.LENGTH_LONG,
+    //       backgroundColor: navyBlue,
+    //       textColor: Colors.white);
+    // }
+
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment:
+              isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            isSend ? Container() : Container(width: 20),
+            Container(
+              constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width / 1.40,
+                  minWidth: MediaQuery.of(context).size.width / 1.40,
+                  minHeight: 50),
+              decoration: BoxDecoration(
+                color: chatBackgroundColor,
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(!isSend ? 0 : 6),
+                  bottomRight: Radius.circular(isSend ? 0 : 6),
+                  topLeft: Radius.circular(6),
+                  topRight: Radius.circular(6),
                 ),
-                padding:
-                    EdgeInsets.only(left: 16, right: 16, top: 12, bottom: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CustomBoxShadow(
-                      child: Card(
-                        elevation: 3,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        margin: EdgeInsets.zero,
-                        shadowColor: boxShadowTwo,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 20, horizontal: 12),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    messageDecoderWithEmoji(
-                                        paymentRequest.description),
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 14,
-                                        color: blackFont),
-                                    textAlign: TextAlign.justify,
+              ),
+              padding:
+                  EdgeInsets.only(left: 16, right: 16, top: 12, bottom: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CustomBoxShadow(
+                    child: Card(
+                      elevation: 3,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      margin: EdgeInsets.zero,
+                      shadowColor: boxShadowTwo,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 20, horizontal: 12),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  messageDecoderWithEmoji(
+                                      paymentRequest.description),
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 14,
+                                      color: blackFont),
+                                  textAlign: TextAlign.justify,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 6,
+                              ),
+                              Row(
+                                children: [
+                                  Icon(
+                                    SlydoAppIcon.naira,
+                                    color: navyBlue,
+                                    size: 14,
                                   ),
-                                ),
-                                SizedBox(
-                                  width: 6,
-                                ),
-                                Row(
-                                  children: [
-                                    Icon(
-                                      SlydoAppIcon.naira,
-                                      color: navyBlue,
-                                      size: 14,
-                                    ),
-                                    Text(
-                                      moneyDisplayNormalizer(int.parse(
-                                          paymentRequest.amount.toString())),
-                                      style: TextStyle(
-                                          fontSize: 22,
-                                          fontWeight: FontWeight.w700,
-                                          color: navyBlue),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
+                                  Text(
+                                    moneyDisplayNormalizer(int.parse(
+                                        paymentRequest.amount.toString())),
+                                    style: TextStyle(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.w700,
+                                        color: navyBlue),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
                       ),
                     ),
-                    paymentActionStatus == "None"
-                        ? SizedBox(
-                            height: 12,
-                          )
-                        : Container(),
-                    paymentActionStatus == "None"
-                        ? Container(
-                            child: isSend
-                                ? Row(
-                                    children: <Widget>[
-                                      Expanded(
-                                        child: CurvedButton(
-                                          text: "CANCEL",
-                                          height: 36,
-                                          backgroundColor: mateRed,
-                                          textColor: Colors.white,
-                                          borderRadius: 10,
-                                          onPressed:
-                                              rejectOrCancelPaymentRequest,
-                                        ),
+                  ),
+                  paymentActionStatus == "None"
+                      ? SizedBox(
+                          height: 12,
+                        )
+                      : Container(),
+                  paymentActionStatus == "None"
+                      ? Container(
+                          child: isSend
+                              ? Row(
+                                  children: <Widget>[
+                                    Expanded(
+                                      child: CurvedButton(
+                                        text: "CANCEL",
+                                        height: 36,
+                                        backgroundColor: mateRed,
+                                        textColor: Colors.white,
+                                        borderRadius: 10,
+                                        onPressed: rejectOrCancelPaymentRequest,
                                       ),
-                                      SizedBox(
-                                        width: 16,
+                                    ),
+                                    SizedBox(
+                                      width: 16,
+                                    ),
+                                    Expanded(
+                                      child: Container(),
+                                    ),
+                                  ],
+                                )
+                              : Row(
+                                  children: <Widget>[
+                                    Expanded(
+                                      child: CurvedButton(
+                                        height: 36,
+                                        text: "REJECT",
+                                        backgroundColor: mateRed,
+                                        borderRadius: 10,
+                                        textColor: Colors.white,
+                                        onPressed: rejectOrCancelPaymentRequest,
                                       ),
-                                      Expanded(
-                                        child: Container(),
+                                    ),
+                                    SizedBox(
+                                      width: 16,
+                                    ),
+                                    Expanded(
+                                      child: CurvedButton(
+                                        text: "PAY",
+                                        height: 36,
+                                        backgroundColor: navyBlue,
+                                        textColor: Colors.white,
+                                        borderRadius: 10,
+                                        onPressed: acceptPaymentRequest,
                                       ),
-                                    ],
-                                  )
-                                : Row(
-                                    children: <Widget>[
-                                      Expanded(
-                                        child: CurvedButton(
-                                          height: 36,
-                                          text: "REJECT",
-                                          backgroundColor: mateRed,
-                                          borderRadius: 10,
-                                          textColor: Colors.white,
-                                          onPressed:
-                                              rejectOrCancelPaymentRequest,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 16,
-                                      ),
-                                      Expanded(
-                                        child: CurvedButton(
-                                          text: "PAY",
-                                          height: 36,
-                                          backgroundColor: navyBlue,
-                                          textColor: Colors.white,
-                                          borderRadius: 10,
-                                          onPressed: acceptPaymentRequest,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                          )
-                        : Container(),
-                    paymentActionStatus != "None"
-                        ? SizedBox(
-                            height: 12,
-                          )
-                        : Container(),
-                    paymentActionStatus != "None"
-                        ? Container(
-                            child: Row(
-                              children: [
-                                Icon(
-                                  SlydoAppIcon.true_icon,
-                                  size: 12,
-                                  color: getStatusOfPaymentColor(),
-                                ),
-                                SizedBox(
-                                  width: 4,
-                                ),
-                                Row(
-                                  children: [
-                                    Text(getStatusOfThePayment(isSend),
-                                        style: TextStyle(
-                                            color: blackFont,
-                                            fontWeight: isScreenSmall
-                                                ? FontWeight.w500
-                                                : FontWeight.w600,
-                                            fontSize: isScreenSmall ? 12 : 14)),
-                                    Text(
-                                        "${getDateTime(dateAndTime: paymentActionTime)}",
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        softWrap: false,
-                                        style: TextStyle(
-                                          color: darkGrey,
-                                          fontSize: isScreenSmall ? 10 : 12,
-                                          fontWeight: FontWeight.w400,
-                                        ))
+                                    ),
                                   ],
                                 ),
-                              ],
-                            ),
+                        )
+                      : Container(),
+                  paymentActionStatus != "None"
+                      ? SizedBox(
+                          height: 12,
+                        )
+                      : Container(),
+                  paymentActionStatus != "None"
+                      ? Container(
+                          child: Row(
+                            children: [
+                              Icon(
+                                SlydoAppIcon.true_icon,
+                                size: 12,
+                                color: getStatusOfPaymentColor(),
+                              ),
+                              SizedBox(
+                                width: 4,
+                              ),
+                              Row(
+                                children: [
+                                  Text(getStatusOfThePayment(isSend),
+                                      style: TextStyle(
+                                          color: blackFont,
+                                          fontWeight: isScreenSmall
+                                              ? FontWeight.w500
+                                              : FontWeight.w600,
+                                          fontSize: isScreenSmall ? 12 : 14)),
+                                  Text(
+                                      "${getDateTime(dateAndTime: paymentActionTime)}",
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      softWrap: false,
+                                      style: TextStyle(
+                                        color: darkGrey,
+                                        fontSize: isScreenSmall ? 10 : 12,
+                                        fontWeight: FontWeight.w400,
+                                      ))
+                                ],
+                              ),
+                            ],
+                          ),
+                        )
+                      : Container(),
+                ],
+              ),
+            ),
+            isSend
+                ? Container(
+                    width: 20,
+                    child: isSend
+                        ? Center(
+                            child: getMessageTick(message: widget.message),
                           )
                         : Container(),
-                  ],
-                ),
-              ),
-              isSend
-                  ? Container(
-                      width: 20,
-                      child: isSend
-                          ? Center(
-                              child: getMessageTick(message: widget.message),
-                            )
-                          : Container(),
-                    )
-                  : Container(),
-            ],
-          ),
-          SizedBox(
-            height: 1,
-          ),
-          Row(
-            mainAxisAlignment:
-                isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
-            children: [
-              isSend
-                  ? Container()
-                  : SizedBox(
-                      width: 20,
-                    ),
-              Text(
-                formatTime(paymentActionTime),
-                style: TextStyle(
-                    color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
-              ),
-              isSend
-                  ? SizedBox(
-                      width: 20,
-                    )
-                  : Container(),
-            ],
-          )
-        ],
-      ),
+                  )
+                : Container(),
+          ],
+        ),
+        SizedBox(
+          height: 1,
+        ),
+        Row(
+          mainAxisAlignment:
+              isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
+          children: [
+            isSend
+                ? Container()
+                : SizedBox(
+                    width: 20,
+                  ),
+            Text(
+              formatTime(paymentActionTime),
+              style: TextStyle(
+                  color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
+            ),
+            isSend
+                ? SizedBox(
+                    width: 20,
+                  )
+                : Container(),
+          ],
+        )
+      ],
     );
   }
 

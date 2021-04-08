@@ -170,6 +170,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   /// chat Screen ScaffoldKey
   GlobalKey<ScaffoldState> chatScreenKey = GlobalKey<ScaffoldState>();
 
+  /// variables for editing message
+  bool isEditingMessage = false;
+  String editingMessage;
+
   @override
   void initState() {
     messageController = TextEditingController();
@@ -1150,7 +1154,11 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                     keyboardType: TextInputType.multiline,
                     focusNode: messageFocus,
                     onFieldSubmitted: (value) {
-                      sendTextMessage();
+                      if (isEditingMessage) {
+                        editTextMessage();
+                      } else {
+                        sendTextMessage();
+                      }
                     },
                     cursorColor: blackFont,
                     cursorWidth: 1,
@@ -1436,7 +1444,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   Widget sendMessageBtn() {
     return InkWell(
-      onTap: sendTextMessage,
+      onTap: isEditingMessage ? editTextMessage : sendTextMessage,
       child: Container(
         padding: EdgeInsets.all(2),
         child: Row(
@@ -1689,6 +1697,42 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     return jsonEncode(newData);
   }
 
+  void editTextMessage() async {
+    String message = messageController.text.trim();
+
+    if (message.isEmpty) {
+      return;
+    }
+
+    showMoreAction = false;
+    if (mounted) setState(() {});
+
+    debugPrint(
+        "recipeintUser = $recipientUser  recipientUser.conversationId = ${recipientUser.conversationId}");
+    if (recipientUser != null && recipientUser.conversationId != null) {
+      // addMessageToChat(message: payload);
+
+      Map<String, dynamic> data = new Map<String, dynamic>();
+
+      data.addAll(jsonDecode(editingMessage));
+
+      data["text"] = message;
+      data["was_edited"] = true;
+
+      messageController.text = "";
+      if (mounted) setState(() {});
+
+      isEditingMessage = false;
+      editingMessage = null;
+      if (mounted) setState(() {});
+
+      await sendDataToSocket(data);
+    } else {
+      Toast.show("Please check your connection !!", context,
+          textColor: Colors.white);
+    }
+  }
+
   Widget scaffoldBody() {
     return Container(
       child: Column(
@@ -1711,10 +1755,75 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
               ],
             ),
           ),
+          isEditingMessage ? getEditingMessageWidget() : Container(),
           messageActionBar()
         ],
       ),
     );
+  }
+
+  Widget getEditingMessageWidget() {
+    Map<String, dynamic> messageData = jsonDecode(editingMessage);
+
+    return Container(
+        height: 50,
+        width: MediaQuery.of(context).size.width,
+        color: navyBlue,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Expanded(
+              child: Container(
+                padding: EdgeInsets.only(left: 8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: 4,
+                    ),
+                    Text(
+                      "Editing",
+                      style: TextStyle(color: Colors.white, fontSize: 10),
+                    ),
+                    SizedBox(
+                      height: 4,
+                    ),
+                    Expanded(
+                      child: Card(
+                        margin: EdgeInsets.zero,
+                        color: Colors.white,
+                        child: Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.only(top: 4, bottom: 4, left: 8),
+                          child: Text(
+                            messageData["text"],
+                            style: TextStyle(color: blackFont, fontSize: 14),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 4,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            IconButton(
+                icon: Icon(
+                  SlydoAppIcon.close_2,
+                  color: Colors.white,
+                  size: 22,
+                ),
+                onPressed: () async {
+                  isEditingMessage = false;
+                  editingMessage = null;
+                  if (mounted) setState(() {});
+                })
+          ],
+        ));
   }
 
   Widget getAudioRecordingWidget() {
@@ -2699,10 +2808,28 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   List<Widget> getChatMessageActionTiles({@required String message}) {
+    bool isEditable = false;
+    bool isDeletable = false;
     ChatMessageAction chatMessageAction =
         GetChatMessageActions().getActions(message: message);
 
     List<Widget> elements = [];
+
+    Map<String, dynamic> messageData = jsonDecode(message);
+
+    DateTime messageCreatedTime =
+        DateTime.parse(messageData["created_at"]).toLocal();
+
+    debugPrint("==> ${messageCreatedTime.toString()}");
+
+    DateTime currentTime = DateTime.now();
+
+    if (currentTime.difference(messageCreatedTime) < Duration(minutes: 1)) {
+      isEditable = true;
+    }
+    if (currentTime.difference(messageCreatedTime) < Duration(minutes: 2)) {
+      isDeletable = true;
+    }
 
     if (chatMessageAction.isCopyable) {
       elements.add(ListTile(
@@ -2726,52 +2853,59 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         },
       ));
     }
-    if (chatMessageAction.isEditable) {
-      elements.add(ListTile(
-        title: Text(
-          "Edit message",
-          softWrap: false,
-          overflow: TextOverflow.fade,
-          style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w400),
-        ),
-        dense: true,
-        trailing: Icon(
-          Icons.edit_outlined,
-          color: blackFont,
-          size: 20,
-        ),
-        onTap: () {
-          Navigator.pop(context);
-        },
-      ));
-    }
-    if (chatMessageAction.isDeletable) {
-      elements.add(ListTile(
-        title: Text(
-          "Delete",
-          softWrap: false,
-          overflow: TextOverflow.fade,
-          style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w400),
-        ),
-        trailing: Icon(
-          Icons.delete_outline_outlined,
-          color: mateRed,
-          size: 20,
-        ),
-        dense: true,
-        onTap: () {
-          messageList.remove(message);
-          if (mounted) setState(() {});
-          if (messageList.length <= 10) {
-            getPreviousMessages();
-          }
+    if (isEditable) {
+      if (chatMessageAction.isEditable) {
+        elements.add(ListTile(
+          title: Text(
+            "Edit message",
+            softWrap: false,
+            overflow: TextOverflow.fade,
+            style: TextStyle(
+                color: blackFont, fontSize: 16, fontWeight: FontWeight.w400),
+          ),
+          dense: true,
+          trailing: Icon(
+            Icons.edit_outlined,
+            color: blackFont,
+            size: 20,
+          ),
+          onTap: () {
+            editChatMessage(message: message);
 
-          Navigator.pop(context);
-        },
-      ));
+            Navigator.pop(context);
+          },
+        ));
+      }
     }
+    if (isDeletable) {
+      if (chatMessageAction.isDeletable) {
+        elements.add(ListTile(
+          title: Text(
+            "Delete",
+            softWrap: false,
+            overflow: TextOverflow.fade,
+            style: TextStyle(
+                color: blackFont, fontSize: 16, fontWeight: FontWeight.w400),
+          ),
+          trailing: Icon(
+            Icons.delete_outline_outlined,
+            color: mateRed,
+            size: 20,
+          ),
+          dense: true,
+          onTap: () {
+            messageList.remove(message);
+            if (mounted) setState(() {});
+            if (messageList.length <= 10) {
+              getPreviousMessages();
+            }
+
+            Navigator.pop(context);
+          },
+        ));
+      }
+    }
+
     if (chatMessageAction.isReplyable) {
       elements.add(ListTile(
         title: Text(
@@ -2808,37 +2942,65 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         break;
 
       case "image":
+        textToBeCopy = messageData["text"] == "" || messageData["text"] == null
+            ? messageData["media"]
+            : messageData["text"];
+
         break;
 
       case "video":
+        textToBeCopy = messageData["text"] == "" || messageData["text"] == null
+            ? messageData["media"]
+            : messageData["text"];
         break;
 
       case "audio":
-        break;
-
-      case "transaction":
-        break;
-      case "payment-request":
-        break;
-      case "product":
-        break;
-      case "service":
-        break;
-      case "user-profile":
+        textToBeCopy = messageData["text"] == "" || messageData["text"] == null
+            ? messageData["media"]
+            : messageData["text"];
         break;
 
       default:
-        debugPrint("Unknown Message Kind: $messageType Message:- $message");
+        debugPrint(
+            "Not implemented Coping Message Kind: $messageType Message:- $message");
     }
 
     if (textToBeCopy != null) {
       Clipboard.setData(new ClipboardData(
           text: messageDecoderWithEmoji(textToBeCopy.toString())));
-      Toast.show("Text copied !!", context,
+      Toast.show("Message copied !!", context,
           gravity: Toast.BOTTOM,
           duration: Toast.LENGTH_LONG,
           backgroundColor: Colors.black,
           textColor: Colors.white);
+    }
+  }
+
+  void editChatMessage({String message}) {
+    Map<String, dynamic> messageData = jsonDecode(message);
+
+    String messageType = messageData["kind"];
+    switch (messageType) {
+      case "text":
+        updateChatTextMessage(message: message);
+        break;
+
+      default:
+        debugPrint(
+            "Not implemented Editing Message Kind: $messageType Message:- $message");
+    }
+  }
+
+  void updateChatTextMessage({String message}) {
+    Map<String, dynamic> messageData = jsonDecode(message);
+    messageController.text = messageData["text"];
+
+    if (!messageFocus.hasFocus) {
+      messageFocus.requestFocus();
+
+      editingMessage = message;
+      isEditingMessage = true;
+      if (mounted) setState(() {});
     }
   }
 }

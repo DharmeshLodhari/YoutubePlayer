@@ -85,6 +85,7 @@ class GetChatMessageActions {
     ChatMessageAction chatMessageAction = ChatMessageAction(message: message);
 
     chatMessageAction.isDeletable = true;
+    chatMessageAction.isCopyable = true;
     chatMessageAction.isReplyable = true;
 
     return chatMessageAction;
@@ -94,6 +95,7 @@ class GetChatMessageActions {
     ChatMessageAction chatMessageAction = ChatMessageAction(message: message);
 
     chatMessageAction.isDeletable = true;
+    chatMessageAction.isCopyable = true;
     chatMessageAction.isReplyable = true;
 
     return chatMessageAction;

@@ -196,8 +196,4 @@ class _UserProfileTileState extends State<UserProfileTile> {
       softWrap: false,
     );
   }
-
-  Widget getTrailing() {
-    return Container();
-  }
 }
