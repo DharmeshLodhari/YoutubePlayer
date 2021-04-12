@@ -174,6 +174,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   bool isEditingMessage = false;
   String editingMessage;
 
+  /// variables for replying message
+  bool isReplyingMessage = false;
+  String replayingMessage;
+
   @override
   void initState() {
     messageController = TextEditingController();
@@ -1154,11 +1158,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                     keyboardType: TextInputType.multiline,
                     focusNode: messageFocus,
                     onFieldSubmitted: (value) {
-                      if (isEditingMessage) {
-                        editTextMessage();
-                      } else {
-                        sendTextMessage();
-                      }
+                      getSendMessageAction();
                     },
                     cursorColor: blackFont,
                     cursorWidth: 1,
@@ -1442,9 +1442,21 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     return media.path;
   }
 
+  void getSendMessageAction() {
+    if (isReplyingMessage) {
+      sendReplyChatMessage();
+      return;
+    }
+    if (isEditingMessage) {
+      editTextMessage();
+      return;
+    }
+    sendTextMessage();
+  }
+
   Widget sendMessageBtn() {
     return InkWell(
-      onTap: isEditingMessage ? editTextMessage : sendTextMessage,
+      onTap: getSendMessageAction,
       child: Container(
         padding: EdgeInsets.all(2),
         child: Row(
@@ -1697,42 +1709,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     return jsonEncode(newData);
   }
 
-  void editTextMessage() async {
-    String message = messageController.text.trim();
-
-    if (message.isEmpty) {
-      return;
-    }
-
-    showMoreAction = false;
-    if (mounted) setState(() {});
-
-    debugPrint(
-        "recipeintUser = $recipientUser  recipientUser.conversationId = ${recipientUser.conversationId}");
-    if (recipientUser != null && recipientUser.conversationId != null) {
-      // addMessageToChat(message: payload);
-
-      Map<String, dynamic> data = new Map<String, dynamic>();
-
-      data.addAll(jsonDecode(editingMessage));
-
-      data["text"] = message;
-      data["was_edited"] = true;
-
-      messageController.text = "";
-      if (mounted) setState(() {});
-
-      isEditingMessage = false;
-      editingMessage = null;
-      if (mounted) setState(() {});
-
-      await sendDataToSocket(data);
-    } else {
-      Toast.show("Please check your connection !!", context,
-          textColor: Colors.white);
-    }
-  }
-
   Widget scaffoldBody() {
     return Container(
       child: Column(
@@ -1900,163 +1876,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   Widget renderImageMedia({Map<String, dynamic> message}) {
     return ImageTileForChat(message: message);
-
-    // bool isSend = message["author"] == userBloc.user.userName;
-    // String messageText = message['text'] ?? "";
-    // bool isMessageEmpty = messageText == "";
-    //
-    // messageText = messageDecoderWithEmoji(messageText);
-    //
-    // return Column(
-    //   children: [
-    //     Row(
-    //       mainAxisAlignment:
-    //           isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
-    //       crossAxisAlignment: CrossAxisAlignment.end,
-    //       children: [
-    //         isSend
-    //             ? Container()
-    //             : Container(
-    //                 width: 20,
-    //               ),
-    //         GestureDetector(
-    //           onTap: () {
-    //             var result = Navigator.of(context).pushNamed(
-    //               "/view-chat-media",
-    //               arguments: {
-    //                 "type": "image",
-    //                 "file": message['media'],
-    //                 "message": message['text'],
-    //                 "poster": message["poster"] ?? null
-    //               },
-    //             );
-    //
-    //             debugPrint("Result:- $result");
-    //           },
-    //           onLongPress: () {
-    //             Clipboard.setData(new ClipboardData(
-    //                 text: message['text'] ?? message['media']));
-    //             Toast.show("Text copied !!", context,
-    //                 gravity: Toast.BOTTOM,
-    //                 duration: Toast.LENGTH_LONG,
-    //                 backgroundColor: Colors.black,
-    //                 textColor: Colors.white);
-    //           },
-    //           child: Container(
-    //             constraints: BoxConstraints(
-    //               maxWidth: MediaQuery.of(context).size.width / 1.30,
-    //               minWidth: MediaQuery.of(context).size.width / 1.30,
-    //             ),
-    //             decoration: BoxDecoration(
-    //               color: isMessageEmpty
-    //                   ? Colors.transparent
-    //                   : isSend
-    //                       ? navyBlue
-    //                       : chatBackgroundColor,
-    //               borderRadius: BorderRadius.only(
-    //                 bottomLeft: Radius.circular(!isSend ? 0 : 10),
-    //                 bottomRight: Radius.circular(isSend ? 0 : 10),
-    //                 topLeft: Radius.circular(10),
-    //                 topRight: Radius.circular(10),
-    //               ),
-    //             ),
-    //             padding: EdgeInsets.only(
-    //                 top: isMessageEmpty ? 0 : 8,
-    //                 bottom: isMessageEmpty ? 0 : 8),
-    //             child: Column(
-    //               mainAxisSize: MainAxisSize.min,
-    //               crossAxisAlignment: CrossAxisAlignment.start,
-    //               children: [
-    //                 isMessageEmpty
-    //                     ? Container()
-    //                     : Container(
-    //                         padding: EdgeInsets.symmetric(horizontal: 8),
-    //                         child: Row(
-    //                           children: [
-    //                             Expanded(
-    //                               child: Text(
-    //                                 messageText,
-    //                                 style: TextStyle(
-    //                                     color:
-    //                                         isSend ? Colors.white : blackFont,
-    //                                     fontSize: 14,
-    //                                     fontWeight: FontWeight.w400),
-    //                               ),
-    //                             ),
-    //                           ],
-    //                         ),
-    //                       ),
-    //                 isMessageEmpty
-    //                     ? Container()
-    //                     : SizedBox(
-    //                         height: 8,
-    //                       ),
-    //                 Container(
-    //                   padding: EdgeInsets.symmetric(
-    //                       horizontal: isMessageEmpty ? 0 : 8),
-    //                   child: ClipRRect(
-    //                     child: CachedNetworkImage(
-    //                       height: MediaQuery.of(context).size.width / 2.2,
-    //                       width: MediaQuery.of(context).size.width / 1.30,
-    //                       imageUrl: message['media'],
-    //                       fit: BoxFit.cover,
-    //                       progressIndicatorBuilder:
-    //                           (context, url, downloadProgress) => Center(
-    //                         child: CircularProgressIndicator(
-    //                           value: downloadProgress.progress,
-    //                           strokeWidth: 2.5,
-    //                           valueColor: AlwaysStoppedAnimation(
-    //                               isSend ? Colors.white : navyBlue),
-    //                           backgroundColor: Colors.transparent,
-    //                         ),
-    //                       ),
-    //                       errorWidget: imageErrorWidget,
-    //                     ),
-    //                     borderRadius: BorderRadius.circular(3),
-    //                   ),
-    //                 ),
-    //               ],
-    //             ),
-    //           ),
-    //         ),
-    //         isSend
-    //             ? Container(
-    //                 width: 20,
-    //                 child: isSend
-    //                     ? Center(
-    //                         child: getMessageTick(message: message),
-    //                       )
-    //                     : Container(),
-    //               )
-    //             : Container(),
-    //       ],
-    //     ),
-    //     SizedBox(
-    //       height: 1,
-    //     ),
-    //     Row(
-    //       mainAxisAlignment:
-    //           isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
-    //       children: [
-    //         isSend
-    //             ? Container()
-    //             : SizedBox(
-    //                 width: 20,
-    //               ),
-    //         Text(
-    //           formatTime(message['created_at']),
-    //           style: TextStyle(
-    //               color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
-    //         ),
-    //         isSend
-    //             ? SizedBox(
-    //                 width: 20,
-    //               )
-    //             : Container(),
-    //       ],
-    //     )
-    //   ],
-    // );
   }
 
   Widget renderAudioMedia({Map<String, dynamic> message}) {
@@ -2065,187 +1884,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   Widget renderVideoMedia({Map<String, dynamic> message}) {
     return VideoTileForChat(message: message);
-
-    // bool isSend = message["author"] == userBloc.user.userName;
-    // String messageText = message['text'] ?? "";
-    // bool isMessageEmpty = messageText == "";
-    // messageText = messageDecoderWithEmoji(messageText);
-    //
-    // return Column(
-    //   children: [
-    //     Row(
-    //       mainAxisAlignment:
-    //           isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
-    //       crossAxisAlignment: CrossAxisAlignment.end,
-    //       children: [
-    //         isSend
-    //             ? Container()
-    //             : Container(
-    //                 width: 20,
-    //               ),
-    //         GestureDetector(
-    //           onTap: () {
-    //             var result = Navigator.of(context).pushNamed(
-    //               "/view-chat-media",
-    //               arguments: {
-    //                 "type": "video",
-    //                 "file": message["media"],
-    //                 "message": message['text']
-    //               },
-    //             );
-    //             debugPrint("Result:- $result");
-    //           },
-    //           onLongPress: () {
-    //             Clipboard.setData(new ClipboardData(
-    //                 text: message['text'] ?? message['media']));
-    //             Toast.show("Text copied !!", context,
-    //                 gravity: Toast.BOTTOM,
-    //                 duration: Toast.LENGTH_LONG,
-    //                 backgroundColor: Colors.black,
-    //                 textColor: Colors.white);
-    //           },
-    //           child: Container(
-    //             constraints: BoxConstraints(
-    //               maxWidth: MediaQuery.of(context).size.width / 1.30,
-    //               minWidth: MediaQuery.of(context).size.width / 1.30,
-    //             ),
-    //             decoration: BoxDecoration(
-    //               color: isMessageEmpty
-    //                   ? Colors.transparent
-    //                   : isSend
-    //                       ? navyBlue
-    //                       : chatBackgroundColor,
-    //               borderRadius: BorderRadius.only(
-    //                 bottomLeft: Radius.circular(!isSend ? 0 : 10),
-    //                 bottomRight: Radius.circular(isSend ? 0 : 10),
-    //                 topLeft: Radius.circular(10),
-    //                 topRight: Radius.circular(10),
-    //               ),
-    //             ),
-    //             padding: EdgeInsets.only(
-    //                 top: isMessageEmpty ? 0 : 8,
-    //                 bottom: isMessageEmpty ? 0 : 8),
-    //             child: Column(
-    //               mainAxisSize: MainAxisSize.min,
-    //               crossAxisAlignment: CrossAxisAlignment.start,
-    //               children: [
-    //                 isMessageEmpty
-    //                     ? Container()
-    //                     : Container(
-    //                         padding: EdgeInsets.symmetric(horizontal: 8),
-    //                         child: Row(
-    //                           children: [
-    //                             Expanded(
-    //                               child: Text(
-    //                                 messageText,
-    //                                 style: TextStyle(
-    //                                     color:
-    //                                         isSend ? Colors.white : blackFont,
-    //                                     fontSize: 14,
-    //                                     fontWeight: FontWeight.w400),
-    //                               ),
-    //                             ),
-    //                           ],
-    //                         ),
-    //                       ),
-    //                 isMessageEmpty
-    //                     ? Container()
-    //                     : SizedBox(
-    //                         height: 8,
-    //                       ),
-    //                 Container(
-    //                   padding: EdgeInsets.symmetric(
-    //                       horizontal: isMessageEmpty ? 0 : 8),
-    //                   child: Stack(
-    //                     children: [
-    //                       ClipRRect(
-    //                         child: CachedNetworkImage(
-    //                           height: MediaQuery.of(context).size.width / 2.2,
-    //                           width: MediaQuery.of(context).size.width / 1.30,
-    //                           imageUrl: message["poster"] ??
-    //                               "https://c1.iggcdn.com/indiegogo-media-prod-cld/image/upload/c_fill,f_auto,h_630,w_1200/v1506734779/wcsmythcukjuuglotjvb.jpg",
-    //                           fit: BoxFit.cover,
-    //                           color: Colors.black38,
-    //                           colorBlendMode: BlendMode.darken,
-    //                           progressIndicatorBuilder:
-    //                               (context, url, downloadProgress) => Center(
-    //                             child: CircularProgressIndicator(
-    //                               value: downloadProgress.progress,
-    //                               strokeWidth: 2.5,
-    //                               valueColor: AlwaysStoppedAnimation(
-    //                                   isSend ? Colors.white : navyBlue),
-    //                               backgroundColor: Colors.transparent,
-    //                             ),
-    //                           ),
-    //                           errorWidget: imageErrorWidget,
-    //                         ),
-    //                         borderRadius: BorderRadius.circular(3),
-    //                       ),
-    //                       Container(
-    //                         height: MediaQuery.of(context).size.width / 2.2,
-    //                         width: MediaQuery.of(context).size.width / 1.30,
-    //                         child: Center(
-    //                           child: ClipOval(
-    //                             child: Container(
-    //                               height: 60,
-    //                               width: 60,
-    //                               color: Colors.white.withOpacity(0.2),
-    //                               child: Center(
-    //                                 child: Icon(
-    //                                   Icons.play_arrow_rounded,
-    //                                   color: Colors.white,
-    //                                   size: 32,
-    //                                 ),
-    //                               ),
-    //                             ),
-    //                           ),
-    //                         ),
-    //                       )
-    //                     ],
-    //                   ),
-    //                 ),
-    //               ],
-    //             ),
-    //           ),
-    //         ),
-    //         isSend
-    //             ? Container(
-    //                 width: 20,
-    //                 child: isSend
-    //                     ? Center(
-    //                         child: getMessageTick(message: message),
-    //                       )
-    //                     : Container(),
-    //               )
-    //             : Container(),
-    //       ],
-    //     ),
-    //     SizedBox(
-    //       height: 1,
-    //     ),
-    //     Row(
-    //       mainAxisAlignment:
-    //           isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
-    //       children: [
-    //         isSend
-    //             ? Container()
-    //             : SizedBox(
-    //                 width: 20,
-    //               ),
-    //         Text(
-    //           formatTime(message['created_at']),
-    //           style: TextStyle(
-    //               color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
-    //         ),
-    //         isSend
-    //             ? SizedBox(
-    //                 width: 20,
-    //               )
-    //             : Container(),
-    //       ],
-    //     )
-    //   ],
-    // );
   }
 
   Widget renderPaymentRequest({Map<String, dynamic> message}) {
@@ -2894,12 +2532,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
           ),
           dense: true,
           onTap: () {
-            messageList.remove(message);
-            if (mounted) setState(() {});
-            if (messageList.length <= 10) {
-              getPreviousMessages();
-            }
-
+            deleteChatMessage(message: message);
             Navigator.pop(context);
           },
         ));
@@ -2922,12 +2555,40 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         ),
         dense: true,
         onTap: () {
+          replyChatMessage(message: message);
           Navigator.pop(context);
         },
       ));
     }
 
     return elements;
+  }
+
+  void deleteChatMessage({String message}) async {
+    Map<String, dynamic> messageData = jsonDecode(message);
+
+    String messageId = messageData["check_id"];
+
+    if (recipientUser != null && recipientUser.conversationId != null) {
+      // addMessageToChat(message: payload);
+
+      Map<String, dynamic> data = Map<String, dynamic>();
+
+      data["check_id"] = messageId;
+      data["conversation_id"] = messageData["conversation_id"];
+      data["type"] = "delete_message";
+
+      await sendDataToSocket(data);
+    } else {
+      Toast.show("Please check your connection !!", context,
+          textColor: Colors.white);
+    }
+
+    // messageList.remove(message);
+    // if (mounted) setState(() {});
+    // if (messageList.length <= 10) {
+    //   getPreviousMessages();
+    // }
   }
 
   void copyChatMessage({String message}) {
@@ -3000,6 +2661,124 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
       editingMessage = message;
       isEditingMessage = true;
+      if (mounted) setState(() {});
+    }
+  }
+
+  void editTextMessage() async {
+    String message = messageController.text.trim();
+
+    if (message.isEmpty) {
+      return;
+    }
+
+    showMoreAction = false;
+    if (mounted) setState(() {});
+
+    debugPrint(
+        "recipientUser = $recipientUser  recipientUser.conversationId = ${recipientUser.conversationId}");
+    if (recipientUser != null && recipientUser.conversationId != null) {
+      // addMessageToChat(message: payload);
+
+      Map<String, dynamic> data = new Map<String, dynamic>();
+
+      Map<String, dynamic> oldMessageData = jsonDecode(editingMessage);
+
+      data["text"] = message;
+      data["check_id"] = oldMessageData["check_id"];
+      data["conversation_id"] = oldMessageData["conversation_id"];
+      data["type"] = "edit_message";
+
+      messageController.text = "";
+      if (mounted) setState(() {});
+
+      isEditingMessage = false;
+      editingMessage = null;
+      if (mounted) setState(() {});
+
+      await sendDataToSocket(data);
+    } else {
+      Toast.show("Please check your connection !!", context,
+          textColor: Colors.white);
+    }
+  }
+
+  void replyChatMessage({String message}) {
+    Map<String, dynamic> messageData = jsonDecode(message);
+
+    debugPrint("Data=> $messageData");
+
+    if (!messageFocus.hasFocus) {
+      messageFocus.requestFocus();
+
+      replayingMessage = message;
+      isReplyingMessage = true;
+      if (mounted) setState(() {});
+    }
+
+    sendReplyChatMessage();
+  }
+
+  void sendReplyChatMessage() async {
+    String message = messageController.text.trim();
+
+    if (message.isEmpty) {
+      return;
+    }
+
+    showMoreAction = false;
+    if (mounted) setState(() {});
+
+    Map<String, dynamic> data = {
+      "check_id": Uuid().v4(),
+      "conversation_id": recipientUser.conversationId,
+      "author": userBloc.user.userName,
+      "message": message,
+      "kind": "text",
+      "read_by_author": true,
+      "read_by_recipient": false,
+      "delivered": false,
+      "created_at": DateTime.now().toUtc().toString(),
+      "type": "chatroom_message",
+    };
+
+    debugPrint(
+        "recipeintUser = $recipientUser  recipientUser.conversationId = ${recipientUser.conversationId}");
+    if (recipientUser != null && recipientUser.conversationId != null) {
+      // DBSocketMessageHandler()
+      //     .saveMessageToDb(message: ChatTextMessage.fromJson(data));
+
+      String payload = convertServerPayload(data);
+
+      // addMessageToChat(message: payload);
+
+      messageController.text = "";
+      if (mounted) setState(() {});
+
+      Map<String, dynamic> messageData = jsonDecode(replayingMessage);
+
+      MessageAuth()
+          .sendReplyMessage(
+              data: payload,
+              messageId: messageData['check_id'],
+              conversationId: recipientUser.conversationId)
+          .then((value) {
+        debugPrint("Value:- $value");
+        replayingMessage = null;
+        isReplyingMessage = false;
+        if (mounted) setState(() {});
+      }).catchError((error) {
+        debugPrint("Error:- $error");
+        Toast.show("$error", context, textColor: Colors.white);
+        replayingMessage = null;
+        isReplyingMessage = false;
+        if (mounted) setState(() {});
+      });
+    } else {
+      Toast.show("Please check your connection !!", context,
+          textColor: Colors.white);
+      replayingMessage = null;
+      isReplyingMessage = false;
       if (mounted) setState(() {});
     }
   }

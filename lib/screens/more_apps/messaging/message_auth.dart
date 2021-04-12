@@ -73,6 +73,23 @@ class MessageAuth extends AuthService {
     }
   }
 
+  Future<bool> sendReplyMessage(
+      {String messageId, String data, String conversationId}) async {
+    var url = secureBaseUrl +
+        "/api/v1/chat/reply-chat-message/$messageId/$conversationId/";
+    var headers = await getAuthHeaders();
+    debugPrint(
+        "Data Sent MESSAGE ID:- $messageId CONVERSATION ID:- $conversationId DATA:- $data");
+    var response = await http.post(url, body: data, headers: headers);
+    if (response.statusCode == 201) {
+      return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
   // it will update the message actions:  [Archived,UnArchived,Starred,UnStarred]
   Future<bool> updateMessage(String id, String action) async {
     var url =
