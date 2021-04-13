@@ -31,7 +31,17 @@ class _TextMessageRendererForChatState
 
     bool isSend = message["author"] == userBloc.user.userName;
 
+    bool isEdited = message["was_edited"] ?? false;
+    // bool isEdited = true;
+
+    bool isReplyMessage = false;
+
     Widget renderedMessage = renderMessage(message: message, isSend: isSend);
+
+    Map<String, dynamic> isReplyTo = message["replied_to"] ?? {};
+    if (isReplyTo.isNotEmpty) {
+      isReplyMessage = true;
+    }
 
     return Row(
       mainAxisAlignment:
@@ -50,29 +60,67 @@ class _TextMessageRendererForChatState
                     : Container(
                         width: 20,
                       ),
-                Container(
-                    constraints: BoxConstraints(
-                      maxWidth: MediaQuery.of(context).size.width * 0.8,
-                    ),
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: isSend ? navyBlue : chatBackgroundColor,
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(!isSend ? 0 : 10),
-                        bottomRight: Radius.circular(isSend ? 0 : 10),
-                        topLeft: Radius.circular(10),
-                        topRight: Radius.circular(10),
+                Row(
+                  children: [
+                    isSend
+                        ? isEdited
+                            ? Row(
+                                children: [
+                                  Icon(
+                                    Icons.edit_outlined,
+                                    size: 16,
+                                    color: navyBlue,
+                                  ),
+                                  SizedBox(
+                                    width: 4,
+                                  )
+                                ],
+                              )
+                            : Container()
+                        : Container(),
+                    Container(
+                      constraints: BoxConstraints(
+                        maxWidth: MediaQuery.of(context).size.width * 0.8,
+                      ),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: isReplyMessage ? 8 : 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: isSend ? navyBlue : chatBackgroundColor,
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(!isSend ? 0 : 10),
+                          bottomRight: Radius.circular(isSend ? 0 : 10),
+                          topLeft: Radius.circular(10),
+                          topRight: Radius.circular(10),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Flexible(
+                            child: renderedMessage,
+                          ),
+                        ],
                       ),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Flexible(
-                          child: renderedMessage,
-                        ),
-                      ],
-                    )),
+                    isSend
+                        ? Container()
+                        : isEdited
+                            ? Row(
+                                children: [
+                                  SizedBox(
+                                    width: 4,
+                                  ),
+                                  Icon(
+                                    Icons.edit_outlined,
+                                    size: 16,
+                                    color: darkGrey,
+                                  ),
+                                ],
+                              )
+                            : Container(),
+                  ],
+                ),
                 isSend
                     ? Container(
                         width: 20,
@@ -137,6 +185,15 @@ class _TextMessageRendererForChatState
   }
 
   Widget renderMessage({Map<String, dynamic> message, bool isSend}) {
+    /// check if message is reply message then render reply UI of message
+    /// {id: 58fb1dce-d430-4074-9b4c-6f06e856dd15, check_id: f42e6f87-891a-415a-ab57-0fcfd83fe1f1, conversation: {id: 9ae68069-b342-4e04-b568-602bde6fe901, group_name: null, banner: null, participants: [black, brijesh.sakariya], blocked_participants: null, is_group_conversation: false, updated_at: 2021-03-09T08:14:18.467461+01:00, created_at: 2021-03-09T08:14:18.467517+01:00}, author: black, text: teset123, read_by_author: true, read_by_recipient: false, was_edited: false, media: null, poster: null, updated_at: 2021-04-13T09:21:24.922145+01:00, created_at: 2021-04-13T09:21:24.922169+01:00, kind: text, deleted_for_recipient: false, deleted_for_author: false, delivered: true, meta_data: {}, replied_to: {id: 736ab0e9-1c57-4452-98b4-13664a262b81, check_id: 5da0bcd7-831d-4d02-97bd-dd9e1f78ebef, author: black, text: test, media: null, poster: null, kind: text, read_by_author: true, read_by_recipient: false, deleted_for_recipient: false, deleted_for_author: false, delivered: true, was_edited
+
+    Map<String, dynamic> isReplyTo = message["replied_to"] ?? {};
+    if (isReplyTo.isNotEmpty) {
+      return getReplyMessageUI(
+          newMessage: message, isSend: isSend, repliedTo: isReplyTo);
+    }
+
     Map<String, dynamic> linkData = detectLinkInMessages(
         messageDecoderWithEmoji(message['text'].toString()));
 
@@ -267,6 +324,44 @@ class _TextMessageRendererForChatState
     return Text(
       messageDecoderWithEmoji(message['text'].toString()),
       style: TextStyle(color: isSend ? Colors.white : blackFont, fontSize: 16),
+    );
+  }
+
+  Widget getReplyMessageUI(
+      {Map<String, dynamic> newMessage,
+      bool isSend,
+      Map<String, dynamic> repliedTo}) {
+    bool isRepliedSend = repliedTo["author"] == userBloc.user.userName;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          constraints: BoxConstraints(
+            minWidth: MediaQuery.of(context).size.width * 0.2,
+          ),
+          padding: EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4), color: starYellow),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(isRepliedSend ? "You" : repliedTo["author"]),
+              Text(
+                messageDecoderWithEmoji(repliedTo['text'].toString()),
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(color: Colors.white, fontSize: 14),
+              ),
+            ],
+          ),
+        ),
+        Text(
+          messageDecoderWithEmoji(newMessage['text'].toString()),
+          style:
+              TextStyle(color: isSend ? Colors.white : blackFont, fontSize: 16),
+        ),
+      ],
     );
   }
 }

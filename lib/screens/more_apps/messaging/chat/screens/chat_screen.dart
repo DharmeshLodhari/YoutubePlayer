@@ -81,6 +81,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   /// Messages list variables
   List<String> messageList = [];
+
   // For storing messages when user is in background
   List<String> temporaryMessages = [];
   bool isLoading = false;
@@ -546,6 +547,14 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       case "pong":
         break;
 
+      case "delete_message":
+        deleteMessageFromMessageList(message: messageData);
+        break;
+
+      case "edit_message":
+        updateEditedMessageInMessageList(message: messageData);
+        break;
+
       default:
         debugPrint("Message type:- ${messageData['type'] ?? messageData}");
     }
@@ -639,6 +648,48 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         };
 
         await mainSocketProvider.add(data);
+      }
+    }
+  }
+
+  void deleteMessageFromMessageList({Map<String, dynamic> message}) {
+    ///{"check_id": "926f06cb-f3f9-40a5-93d5-06acc8e8f76e",
+    /// "type": "delete_message",
+    /// "conversation_id": "9ae68069-b342-4e04-b568-602bde6fe901"}
+
+    if (recipientUser.conversationId == message["conversation_id"]) {
+      for (int i = 0; i < messageList.length; i++) {
+        Map<String, dynamic> decodedMessage = jsonDecode(messageList[i]);
+
+        if (message["check_id"] == decodedMessage["check_id"]) {
+          messageList.removeAt(i);
+
+          if (mounted) setState(() {});
+        }
+      }
+    }
+  }
+
+  void updateEditedMessageInMessageList({Map<String, dynamic> message}) {
+    ///{"check_id": "bda45320-45fe-4071-a242-b9491dff6223",
+    /// "type": "edit_message",
+    /// "kind": "text",
+    /// "conversation_id": "9ae68069-b342-4e04-b568-602bde6fe901",
+    /// "edited": false}
+
+    if (recipientUser.conversationId == message["conversation_id"]) {
+      for (int i = 0; i < messageList.length; i++) {
+        Map<String, dynamic> decodedMessage = jsonDecode(messageList[i]);
+
+        if (message["check_id"] == decodedMessage["check_id"]) {
+          decodedMessage["was_edited"] = message["was_edited"];
+          decodedMessage["text"] = message["text"];
+
+          String encodedMessage = jsonEncode(decodedMessage);
+          messageList[i] = encodedMessage;
+
+          if (mounted) setState(() {});
+        }
       }
     }
   }
@@ -1732,6 +1783,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
             ),
           ),
           isEditingMessage ? getEditingMessageWidget() : Container(),
+          isReplyingMessage ? getReplyingMessageWidget() : Container(),
           messageActionBar()
         ],
       ),
@@ -1796,6 +1848,70 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                 onPressed: () async {
                   isEditingMessage = false;
                   editingMessage = null;
+                  if (mounted) setState(() {});
+                })
+          ],
+        ));
+  }
+
+  Widget getReplyingMessageWidget() {
+    Map<String, dynamic> messageData = jsonDecode(replayingMessage);
+
+    return Container(
+        height: 50,
+        width: MediaQuery.of(context).size.width,
+        color: navyBlue,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Expanded(
+              child: Container(
+                padding: EdgeInsets.only(left: 8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: 4,
+                    ),
+                    Text(
+                      "Replying",
+                      style: TextStyle(color: Colors.white, fontSize: 10),
+                    ),
+                    SizedBox(
+                      height: 4,
+                    ),
+                    Expanded(
+                      child: Card(
+                        margin: EdgeInsets.zero,
+                        color: Colors.white,
+                        child: Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.only(top: 4, bottom: 4, left: 8),
+                          child: Text(
+                            messageData["text"],
+                            style: TextStyle(color: blackFont, fontSize: 14),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 4,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            IconButton(
+                icon: Icon(
+                  SlydoAppIcon.close_2,
+                  color: Colors.white,
+                  size: 22,
+                ),
+                onPressed: () async {
+                  isReplyingMessage = false;
+                  replayingMessage = null;
                   if (mounted) setState(() {});
                 })
           ],
@@ -2448,8 +2564,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   List<Widget> getChatMessageActionTiles({@required String message}) {
     bool isEditable = false;
     bool isDeletable = false;
-    ChatMessageAction chatMessageAction =
-        GetChatMessageActions().getActions(message: message);
+    ChatMessageAction chatMessageAction = GetChatMessageActions()
+        .getActions(message: message, userBloc: userBloc);
 
     List<Widget> elements = [];
 
@@ -2575,20 +2691,16 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       Map<String, dynamic> data = Map<String, dynamic>();
 
       data["check_id"] = messageId;
-      data["conversation_id"] = messageData["conversation_id"];
+      data["conversation_id"] =
+          messageData["conversation_id"] ?? messageData["conversation"];
       data["type"] = "delete_message";
+      data["text"] = "delete_message";
 
       await sendDataToSocket(data);
     } else {
       Toast.show("Please check your connection !!", context,
           textColor: Colors.white);
     }
-
-    // messageList.remove(message);
-    // if (mounted) setState(() {});
-    // if (messageList.length <= 10) {
-    //   getPreviousMessages();
-    // }
   }
 
   void copyChatMessage({String message}) {
@@ -2606,7 +2718,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         textToBeCopy = messageData["text"] == "" || messageData["text"] == null
             ? messageData["media"]
             : messageData["text"];
-
         break;
 
       case "video":
@@ -2683,7 +2794,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       Map<String, dynamic> data = new Map<String, dynamic>();
 
       Map<String, dynamic> oldMessageData = jsonDecode(editingMessage);
-
+      debugPrint("old Data :- $oldMessageData");
       data["text"] = message;
       data["check_id"] = oldMessageData["check_id"];
       data["conversation_id"] = oldMessageData["conversation_id"];
@@ -2740,6 +2851,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       "delivered": false,
       "created_at": DateTime.now().toUtc().toString(),
       "type": "chatroom_message",
+      "replied_to": replayingMessage
     };
 
     debugPrint(
@@ -2755,31 +2867,40 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       messageController.text = "";
       if (mounted) setState(() {});
 
-      Map<String, dynamic> messageData = jsonDecode(replayingMessage);
+      // Map<String, dynamic> messageData = Map<String, dynamic>();
+      //
+      // messageData.addAll(jsonDecode(replayingMessage));
 
-      MessageAuth()
-          .sendReplyMessage(
-              data: payload,
-              messageId: messageData['check_id'],
-              conversationId: recipientUser.conversationId)
-          .then((value) {
-        debugPrint("Value:- $value");
-        replayingMessage = null;
-        isReplyingMessage = false;
-        if (mounted) setState(() {});
-      }).catchError((error) {
-        debugPrint("Error:- $error");
-        Toast.show("$error", context, textColor: Colors.white);
-        replayingMessage = null;
-        isReplyingMessage = false;
-        if (mounted) setState(() {});
-      });
-    } else {
-      Toast.show("Please check your connection !!", context,
-          textColor: Colors.white);
       replayingMessage = null;
       isReplyingMessage = false;
       if (mounted) setState(() {});
+
+      await sendDataToSocket(data);
+
+      //   await MessageAuth()
+      //       .sendReplyMessage(
+      //           data: payload,
+      //           messageId: messageData['check_id'],
+      //           conversationId: recipientUser.conversationId)
+      //       .then((value) {
+      //     debugPrint("Value:- $value");
+      //     replayingMessage = null;
+      //     isReplyingMessage = false;
+      //     if (mounted) setState(() {});
+      //   }).catchError((error) {
+      //     debugPrint("Error:- $error");
+      //     Toast.show("$error", context, textColor: Colors.white);
+      //     replayingMessage = null;
+      //     isReplyingMessage = false;
+      //     if (mounted) setState(() {});
+      //   });
+      // } else {
+      //   Toast.show("Please check your connection !!", context,
+      //       textColor: Colors.white);
+      //   replayingMessage = null;
+      //   isReplyingMessage = false;
+      //   if (mounted) setState(() {});
+      // }
     }
   }
 }
