@@ -98,6 +98,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   Duration userMessageTypingStateUpdateTime = Duration(seconds: 2);
   bool isRecipientTyping = false;
 
+  /// User Audio Recording state variables
+  Timer _timerForCheckingAudioRecording;
+  Duration userAudioRecordingCheckDuration = Duration(seconds: 2);
+
   /// Music Player
   AssetsAudioPlayer _audioPlayer = AssetsAudioPlayer();
   bool isAudioPlaying = false;
@@ -154,6 +158,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   Duration audioRecordingDuration = Duration.zero;
   bool isAudioRecording = false;
   bool isAudioPermissionAccepted = false;
+  bool isOtherUserRecordingAudio = false;
+
+  bool isAudioMessage = false;
 
   BasketBloc basketBloc;
 
@@ -301,6 +308,21 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     });
 
     await getAudioPermission();
+  }
+
+  void setUpAudioRecordingListener() {
+    _timerForCheckingAudioRecording =
+        Timer.periodic(userAudioRecordingCheckDuration, (timer) {
+      if (isAudioRecording) {
+        userRecordingAudio();
+      }
+    });
+  }
+
+  void disposeAudioRecordingListener() {
+    if (_timerForCheckingAudioRecording?.isActive ?? false) {
+      _timerForCheckingAudioRecording?.cancel();
+    }
   }
 
   void disposeAudioPlayers() {
@@ -544,6 +566,20 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         }
 
         break;
+      case "user_recording_audio_message":
+        if (checkIsMessageIsForCurrentChat(messageData)) {
+          if (messageData['username'] != userBloc.user.userName) {
+            isOtherUserRecordingAudio = true;
+            if (mounted) setState(() {});
+
+            Future.delayed(Duration(seconds: 1)).then((value) {
+              isOtherUserRecordingAudio = false;
+              if (mounted) setState(() {});
+            });
+          }
+        }
+
+        break;
       case "pong":
         break;
 
@@ -638,6 +674,16 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     await mainSocketProvider.add(data);
   }
 
+  void userRecordingAudio() async {
+    var data = {
+      "message": "recording audio",
+      "type": "user_recording_audio_message",
+      "conversation_id": recipientUser.conversationId,
+    };
+
+    await mainSocketProvider.add(data);
+  }
+
   void messageReadByRecipient(Map<String, dynamic> message) async {
     if (message["author"] != userBloc.user.userName) {
       if (mainSocketProvider.isChatOnScreen) {
@@ -648,48 +694,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         };
 
         await mainSocketProvider.add(data);
-      }
-    }
-  }
-
-  void deleteMessageFromMessageList({Map<String, dynamic> message}) {
-    ///{"check_id": "926f06cb-f3f9-40a5-93d5-06acc8e8f76e",
-    /// "type": "delete_message",
-    /// "conversation_id": "9ae68069-b342-4e04-b568-602bde6fe901"}
-
-    if (recipientUser.conversationId == message["conversation_id"]) {
-      for (int i = 0; i < messageList.length; i++) {
-        Map<String, dynamic> decodedMessage = jsonDecode(messageList[i]);
-
-        if (message["check_id"] == decodedMessage["check_id"]) {
-          messageList.removeAt(i);
-
-          if (mounted) setState(() {});
-        }
-      }
-    }
-  }
-
-  void updateEditedMessageInMessageList({Map<String, dynamic> message}) {
-    ///{"check_id": "bda45320-45fe-4071-a242-b9491dff6223",
-    /// "type": "edit_message",
-    /// "kind": "text",
-    /// "conversation_id": "9ae68069-b342-4e04-b568-602bde6fe901",
-    /// "edited": false}
-
-    if (recipientUser.conversationId == message["conversation_id"]) {
-      for (int i = 0; i < messageList.length; i++) {
-        Map<String, dynamic> decodedMessage = jsonDecode(messageList[i]);
-
-        if (message["check_id"] == decodedMessage["check_id"]) {
-          decodedMessage["was_edited"] = message["was_edited"];
-          decodedMessage["text"] = message["text"];
-
-          String encodedMessage = jsonEncode(decodedMessage);
-          messageList[i] = encodedMessage;
-
-          if (mounted) setState(() {});
-        }
       }
     }
   }
@@ -857,10 +861,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                   recipientUser != null
                       ? isRecipientTyping
                           ? "Typing.."
-                          : userStatus
+                          : isOtherUserRecordingAudio?"recording audio":userStatus
                       : "", //"Online",
                   style: TextStyle(
-                      color: isRecipientTyping ? naturalGreen : darkGrey,
+                      color: isRecipientTyping || isOtherUserRecordingAudio ? naturalGreen : darkGrey,
                       fontSize: 10,
                       fontWeight: FontWeight.w400),
                   overflow: TextOverflow.fade,
@@ -979,9 +983,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
           constraints: BoxConstraints(minHeight: 54, maxHeight: 100),
           child: Row(
             children: <Widget>[
-              moreActionBtn(),
+              isAudioMessage ? getAudioCancelBtn() : moreActionBtn(),
               Expanded(
-                child: textMessageField(),
+                child:
+                    isAudioMessage ? getAudioRecordingUi() : textMessageField(),
               ),
               sendMessageBtn(),
             ],
@@ -989,6 +994,71 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         ),
         showMoreAction ? moreActionsBtn() : Container()
       ],
+    );
+  }
+
+  Widget getAudioCancelBtn() {
+    return IconButton(
+        icon: Icon(
+          SlydoAppIcon.delete,
+          color: blackFont,
+          size: 20,
+        ),
+        onPressed: () async {
+          if (isAudioRecording) {
+            debugPrint("Recording Stop ");
+            isAudioRecording = false;
+            isAudioMessage = false;
+            disposeAudioRecordingListener();
+            if (mounted) setState(() {});
+            await stopRecorder(sendToServer: false);
+            if (mounted) setState(() {});
+          }
+        });
+  }
+
+  Widget getAudioRecordingUi() {
+    return Container(
+      height: 46,
+      margin: EdgeInsets.symmetric(vertical: 4),
+      decoration: BoxDecoration(
+        color: navyBlue,
+        borderRadius: BorderRadius.circular(3),
+      ),
+      child: Row(
+        children: <Widget>[
+          Container(
+            width: 50,
+            height: 50,
+            child: FlareActor(
+              "assets/images/flare/voice_record_active.flr",
+              animation: "record",
+            ),
+          ),
+          SizedBox(
+            width: 4,
+          ),
+          Expanded(
+            child: Image.asset(
+              "assets/images/sound.gif",
+              width: double.infinity,
+              color: navyBlue,
+              colorBlendMode: BlendMode.darken,
+              fit: BoxFit.cover,
+            ),
+          ),
+          SizedBox(
+            width: 8,
+          ),
+          Text(
+            "${formatDurationInSeconds(duration: audioRecordingDuration)}",
+            style: TextStyle(color: Colors.white),
+          ),
+          SizedBox(
+            width: 10,
+          ),
+        ],
+      ),
     );
   }
 
@@ -1155,15 +1225,19 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         if (isAudioRecording) {
           debugPrint("Recording Stop ");
           isAudioRecording = false;
-          setState(() {});
+          isAudioMessage = false;
+          if (mounted) setState(() {});
           await stopRecorder();
-          setState(() {});
+          if (mounted) setState(() {});
         } else if (!isAudioRecording && isAudioPermissionAccepted) {
           debugPrint("Starting Recording ");
           isAudioRecording = true;
-          setState(() {});
+          showMoreAction = false;
+          isAudioMessage = true;
+          setUpAudioRecordingListener();
+          if (mounted) setState(() {});
           await recordAudio();
-          setState(() {});
+          if (mounted) setState(() {});
         } else {
           await getAudioPermission();
         }
@@ -1493,7 +1567,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     return media.path;
   }
 
-  void getSendMessageAction() {
+  void getSendMessageAction() async {
     if (isReplyingMessage) {
       sendReplyChatMessage();
       return;
@@ -1502,6 +1576,21 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       editTextMessage();
       return;
     }
+    if (isAudioMessage) {
+      if (isAudioRecording) {
+        debugPrint("Recording Stop ");
+        isAudioRecording = false;
+        isAudioMessage = false;
+        disposeAudioRecordingListener();
+        if (mounted) setState(() {});
+        await stopRecorder();
+        if (mounted) setState(() {});
+      } else {
+        await getAudioPermission();
+      }
+      return;
+    }
+
     sendTextMessage();
   }
 
@@ -1524,44 +1613,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
               width: 12,
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget recordAndSendAudioBtn() {
-    return Material(
-      color: Colors.transparent,
-      child: Container(
-        width: 50,
-        height: 50,
-        child: InkWell(
-          onTap: () async {
-            await getAudioPermission();
-
-            if (isAudioRecording) {
-              debugPrint("Recording Stop ");
-              isAudioRecording = false;
-              setState(() {});
-              await stopRecorder();
-              setState(() {});
-            } else if (!isAudioRecording && isAudioPermissionAccepted) {
-              debugPrint("Starting Recording ");
-              isAudioRecording = true;
-              setState(() {});
-              await recordAudio();
-              setState(() {});
-            } else {
-              await getAudioPermission();
-            }
-          },
-          splashColor: navyBlue.withOpacity(0.2),
-          borderRadius: BorderRadius.circular(50),
-          child: Icon(
-            Icons.mic,
-            color: navyBlue,
-            size: 30,
-          ),
         ),
       ),
     );
@@ -1603,11 +1654,14 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     }
   }
 
-  Future<void> stopRecorder() async {
+  Future<void> stopRecorder({bool sendToServer = true}) async {
     audioRecorder.stopRecorder().then((value) {
       debugPrint("Audio Stored");
       audioRecordingDuration = Duration.zero;
-      sendAudioToServer();
+      if (mounted) setState(() {});
+      if (sendToServer) {
+        sendAudioToServer();
+      }
     });
   }
 
@@ -1624,6 +1678,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     _data['type'] = "chatroom_message";
     _data["conversation"] = recipientUser.conversationId;
     _data["author"] = userBloc.user.userName;
+    _data["author_name"] = userBloc.user.fullName;
+    _data["author_avatar"] = userBloc.user.avatar;
 
     showDialog(
         context: context,
@@ -1710,6 +1766,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       "check_id": Uuid().v4(),
       "conversation_id": recipientUser.conversationId,
       "author": userBloc.user.userName,
+      "author_full_name": userBloc.user.fullName,
+      "author_avatar": userBloc.user.avatar,
       "message": message,
       "kind": "text",
       "read_by_author": true,
@@ -1744,6 +1802,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     newData["check_id"] = data["check_id"];
     newData["conversation"] = data["conversation_id"];
     newData["author"] = data["author"];
+    newData["author_full_name"] = data["author_full_name"];
+    newData["author_avatar"] = data["author_avatar"];
     newData["text"] = data["message"];
     newData["kind"] = data["kind"];
     newData["read_by_author"] = data["read_by_author"];
@@ -1756,6 +1816,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     newData["deleted_for_recipient"] = false;
     newData["deleted_for_author"] = false;
     newData["meta_data"] = {};
+    newData["replied_to"] = data["replied_to"] ?? {};
 
     return jsonEncode(newData);
   }
@@ -1765,22 +1826,17 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       child: Column(
         children: [
           Expanded(
-            child: Stack(
-              children: [
-                isRecipientLoading
-                    ? Center(child: CircularLoadingIndicator())
-                    : Theme(
-                        data: ThemeData(highlightColor: navyBlue),
-                        child: Scrollbar(
-                          controller: messageScrollController,
-                          radius: Radius.circular(10),
-                          thickness: 3,
-                          child: messageListBuilder(),
-                        ),
-                      ),
-                isAudioRecording ? getAudioRecordingWidget() : Container(),
-              ],
-            ),
+            child: isRecipientLoading
+                ? Center(child: CircularLoadingIndicator())
+                : Theme(
+                    data: ThemeData(highlightColor: navyBlue),
+                    child: Scrollbar(
+                      controller: messageScrollController,
+                      radius: Radius.circular(10),
+                      thickness: 3,
+                      child: messageListBuilder(),
+                    ),
+                  ),
           ),
           isEditingMessage ? getEditingMessageWidget() : Container(),
           isReplyingMessage ? getReplyingMessageWidget() : Container(),
@@ -1916,33 +1972,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                 })
           ],
         ));
-  }
-
-  Widget getAudioRecordingWidget() {
-    return Container(
-      color: Colors.black87,
-      width: MediaQuery.of(context).size.width,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 200,
-            height: 200,
-            child: FlareActor(
-              "assets/images/flare/voice_record_active.flr",
-              animation: "record",
-            ),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Text(
-            "${formatDurationInSeconds(duration: audioRecordingDuration)}",
-            style: TextStyle(color: Colors.white),
-          ),
-        ],
-      ),
-    );
   }
 
   Widget messageListBuilder() {
@@ -2532,30 +2561,22 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   void selectChatMessageAction({@required String message}) {
-    showDialog<String>(
+    showModalBottomSheet<String>(
+        backgroundColor: Colors.transparent,
         context: context,
-        builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-              contentPadding: EdgeInsets.zero,
+        builder: (context) => Card(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              content: Container(
-                width: MediaQuery.of(context).size.width - 40,
-                child: Card(
-                  elevation: 2,
-                  shadowColor: Colors.transparent,
-                  margin: EdgeInsets.zero,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: getChatMessageActionTiles(message: message),
-                      ),
-                    ),
-                  ),
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20)),
+              ),
+              color: Colors.white,
+              margin: EdgeInsets.zero,
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: getChatMessageActionTiles(message: message),
                 ),
               ),
             ));
@@ -2586,95 +2607,132 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     }
 
     if (chatMessageAction.isCopyable) {
-      elements.add(ListTile(
-        title: Text(
-          "Copy message",
-          softWrap: false,
-          overflow: TextOverflow.fade,
-          style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w400),
-        ),
-        dense: true,
-        trailing: Icon(
-          Icons.copy_outlined,
-          color: blackFont,
-          size: 20,
-        ),
+      elements.add(bottomSheetItem(
+        title: "Copy message",
+        icon: SlydoAppIcon.copy,
         onTap: () {
           copyChatMessage(message: message);
 
           Navigator.pop(context);
         },
       ));
+
+      // elements.add(ListTile(
+      //   title: Text(
+      //     "Copy message",
+      //     softWrap: false,
+      //     overflow: TextOverflow.fade,
+      //     style: TextStyle(
+      //         color: blackFont, fontSize: 16, fontWeight: FontWeight.w400),
+      //   ),
+      //   dense: true,
+      //   trailing: Icon(
+      //     Icons.copy_outlined,
+      //     color: blackFont,
+      //     size: 20,
+      //   ),
+      //   onTap: () {
+      //     copyChatMessage(message: message);
+      //
+      //     Navigator.pop(context);
+      //   },
+      // ));
     }
     if (isEditable) {
       if (chatMessageAction.isEditable) {
-        elements.add(ListTile(
-          title: Text(
-            "Edit message",
-            softWrap: false,
-            overflow: TextOverflow.fade,
-            style: TextStyle(
-                color: blackFont, fontSize: 16, fontWeight: FontWeight.w400),
-          ),
-          dense: true,
-          trailing: Icon(
-            Icons.edit_outlined,
-            color: blackFont,
-            size: 20,
-          ),
+        elements.add(bottomSheetItem(
+          title: "Edit message",
+          icon: SlydoAppIcon.edit,
           onTap: () {
             editChatMessage(message: message);
 
             Navigator.pop(context);
           },
         ));
+        // elements.add(ListTile(
+        //   title: Text(
+        //     "Edit message",
+        //     softWrap: false,
+        //     overflow: TextOverflow.fade,
+        //     style: TextStyle(
+        //         color: blackFont, fontSize: 16, fontWeight: FontWeight.w400),
+        //   ),
+        //   dense: true,
+        //   trailing: Icon(
+        //     Icons.edit_outlined,
+        //     color: blackFont,
+        //     size: 20,
+        //   ),
+        //   onTap: () {
+        //     editChatMessage(message: message);
+        //
+        //     Navigator.pop(context);
+        //   },
+        // ));
       }
     }
     if (isDeletable) {
       if (chatMessageAction.isDeletable) {
-        elements.add(ListTile(
-          title: Text(
-            "Delete",
-            softWrap: false,
-            overflow: TextOverflow.fade,
-            style: TextStyle(
-                color: blackFont, fontSize: 16, fontWeight: FontWeight.w400),
-          ),
-          trailing: Icon(
-            Icons.delete_outline_outlined,
-            color: mateRed,
-            size: 20,
-          ),
-          dense: true,
+        elements.add(bottomSheetItem(
+          title: "Delete",
+          icon: SlydoAppIcon.delete,
           onTap: () {
             deleteChatMessage(message: message);
             Navigator.pop(context);
           },
         ));
+
+        // elements.add(ListTile(
+        //   title: Text(
+        //     "Delete",
+        //     softWrap: false,
+        //     overflow: TextOverflow.fade,
+        //     style: TextStyle(
+        //         color: blackFont, fontSize: 16, fontWeight: FontWeight.w400),
+        //   ),
+        //   trailing: Icon(
+        //     Icons.delete_outline_outlined,
+        //     color: mateRed,
+        //     size: 20,
+        //   ),
+        //   dense: true,
+        //   onTap: () {
+        //     deleteChatMessage(message: message);
+        //     Navigator.pop(context);
+        //   },
+        // ));
       }
     }
 
     if (chatMessageAction.isReplyable) {
-      elements.add(ListTile(
-        title: Text(
-          "Reply",
-          softWrap: false,
-          overflow: TextOverflow.fade,
-          style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w400),
-        ),
-        trailing: Icon(
-          Icons.reply_outlined,
-          color: blackFont,
-          size: 20,
-        ),
-        dense: true,
+      elements.add(bottomSheetItem(
+        title: "Reply",
+        icon: SlydoAppIcon.reply,
         onTap: () {
           replyChatMessage(message: message);
           Navigator.pop(context);
         },
       ));
+
+      // elements.add(ListTile(
+      //   title: Text(
+      //     "Reply",
+      //     softWrap: false,
+      //     overflow: TextOverflow.fade,
+      //     style: TextStyle(
+      //         color: blackFont, fontSize: 16, fontWeight: FontWeight.w400),
+      //   ),
+      //   trailing: Icon(
+      //     Icons.reply_outlined,
+      //     color: blackFont,
+      //     size: 20,
+      //   ),
+      //   dense: true,
+      //   onTap: () {
+      //     replyChatMessage(message: message);
+      //     Navigator.pop(context);
+      //   },
+      // ));
     }
 
     return elements;
@@ -2695,6 +2753,11 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
           messageData["conversation_id"] ?? messageData["conversation"];
       data["type"] = "delete_message";
       data["text"] = "delete_message";
+
+      deleteMessageFromMessageList(message: data);
+
+      FocusScope.of(context).unfocus();
+      if (mounted) setState(() {});
 
       await sendDataToSocket(data);
     } else {
@@ -2767,13 +2830,13 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     Map<String, dynamic> messageData = jsonDecode(message);
     messageController.text = messageData["text"];
 
-    if (!messageFocus.hasFocus) {
-      messageFocus.requestFocus();
+    // if (!messageFocus.hasFocus) {
+    //   messageFocus.requestFocus();
 
-      editingMessage = message;
-      isEditingMessage = true;
-      if (mounted) setState(() {});
-    }
+    editingMessage = message;
+    isEditingMessage = true;
+    if (mounted) setState(() {});
+    // }
   }
 
   void editTextMessage() async {
@@ -2803,6 +2866,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       messageController.text = "";
       if (mounted) setState(() {});
 
+      updateEditedMessageInMessageList(message: data);
+
       isEditingMessage = false;
       editingMessage = null;
       if (mounted) setState(() {});
@@ -2811,6 +2876,48 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     } else {
       Toast.show("Please check your connection !!", context,
           textColor: Colors.white);
+    }
+  }
+
+  void deleteMessageFromMessageList({Map<String, dynamic> message}) {
+    ///{"check_id": "926f06cb-f3f9-40a5-93d5-06acc8e8f76e",
+    /// "type": "delete_message",
+    /// "conversation_id": "9ae68069-b342-4e04-b568-602bde6fe901"}
+
+    if (recipientUser.conversationId == message["conversation_id"]) {
+      for (int i = 0; i < messageList.length; i++) {
+        Map<String, dynamic> decodedMessage = jsonDecode(messageList[i]);
+
+        if (message["check_id"] == decodedMessage["check_id"]) {
+          messageList.removeAt(i);
+
+          if (mounted) setState(() {});
+        }
+      }
+    }
+  }
+
+  void updateEditedMessageInMessageList({Map<String, dynamic> message}) {
+    ///{"check_id": "bda45320-45fe-4071-a242-b9491dff6223",
+    /// "type": "edit_message",
+    /// "kind": "text",
+    /// "conversation_id": "9ae68069-b342-4e04-b568-602bde6fe901",
+    /// "was_edited": false}
+
+    if (recipientUser.conversationId == message["conversation_id"]) {
+      for (int i = 0; i < messageList.length; i++) {
+        Map<String, dynamic> decodedMessage = jsonDecode(messageList[i]);
+
+        if (message["check_id"] == decodedMessage["check_id"]) {
+          decodedMessage["was_edited"] = message["was_edited"];
+          decodedMessage["text"] = message["text"];
+
+          String encodedMessage = jsonEncode(decodedMessage);
+          messageList[i] = encodedMessage;
+
+          if (mounted) setState(() {});
+        }
+      }
     }
   }
 
@@ -2844,6 +2951,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       "check_id": Uuid().v4(),
       "conversation_id": recipientUser.conversationId,
       "author": userBloc.user.userName,
+      "author_full_name": userBloc.user.fullName,
+      "author_avatar": userBloc.user.avatar,
       "message": message,
       "kind": "text",
       "read_by_author": true,
@@ -2857,50 +2966,22 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     debugPrint(
         "recipeintUser = $recipientUser  recipientUser.conversationId = ${recipientUser.conversationId}");
     if (recipientUser != null && recipientUser.conversationId != null) {
-      // DBSocketMessageHandler()
-      //     .saveMessageToDb(message: ChatTextMessage.fromJson(data));
+      DBSocketMessageHandler()
+          .saveMessageToDb(message: ChatTextMessage.fromJson(data));
 
       String payload = convertServerPayload(data);
 
-      // addMessageToChat(message: payload);
+      debugPrint("Data:---- $payload");
+      addMessageToChat(message: payload);
 
       messageController.text = "";
       if (mounted) setState(() {});
-
-      // Map<String, dynamic> messageData = Map<String, dynamic>();
-      //
-      // messageData.addAll(jsonDecode(replayingMessage));
 
       replayingMessage = null;
       isReplyingMessage = false;
       if (mounted) setState(() {});
 
       await sendDataToSocket(data);
-
-      //   await MessageAuth()
-      //       .sendReplyMessage(
-      //           data: payload,
-      //           messageId: messageData['check_id'],
-      //           conversationId: recipientUser.conversationId)
-      //       .then((value) {
-      //     debugPrint("Value:- $value");
-      //     replayingMessage = null;
-      //     isReplyingMessage = false;
-      //     if (mounted) setState(() {});
-      //   }).catchError((error) {
-      //     debugPrint("Error:- $error");
-      //     Toast.show("$error", context, textColor: Colors.white);
-      //     replayingMessage = null;
-      //     isReplyingMessage = false;
-      //     if (mounted) setState(() {});
-      //   });
-      // } else {
-      //   Toast.show("Please check your connection !!", context,
-      //       textColor: Colors.white);
-      //   replayingMessage = null;
-      //   isReplyingMessage = false;
-      //   if (mounted) setState(() {});
-      // }
     }
   }
 }

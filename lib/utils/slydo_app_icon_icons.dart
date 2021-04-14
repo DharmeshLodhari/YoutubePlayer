@@ -255,4 +255,8 @@ class SlydoAppIcon {
       IconData(0xe86f, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData close_2 =
       IconData(0xe870, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData reply =
+      IconData(0xe871, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData copy =
+      IconData(0xe872, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }

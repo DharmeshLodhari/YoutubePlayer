@@ -31,7 +31,7 @@ class DatabaseHelper {
 
   initDb() async {
     io.Directory documentsDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentsDirectory.path, "main.db");
+    String path = join(documentsDirectory.path, "main1.db");
     var theDb = await openDatabase(path,
         version: 1, onCreate: _onCreate, onUpgrade: _onUpgrade);
     return theDb;
@@ -100,13 +100,16 @@ class DatabaseHelper {
       "check_id" TEXT PRIMARY KEY,
       "conversation_id" TEXT,
       "author" TEXT,
+      "author_full_name" TEXT,
+      "author_avatar" TEXT,
       "message" TEXT,
       "kind" TEXT,
       "read_by_author" INTEGER,
       "read_by_recipient" INTEGER,
       "delivered" INTEGER,
       "created_at" TEXT,
-      "type" TEXT);
+      "type" TEXT,
+      "replied_to" TEXT);
     ''');
   }
 
