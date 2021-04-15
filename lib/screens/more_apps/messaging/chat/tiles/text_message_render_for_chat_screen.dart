@@ -359,6 +359,9 @@ class _TextMessageRendererForChatState
               isSend: isSend,
               isRepliedSend: isRepliedSend),
         ),
+        SizedBox(
+          height: 2,
+        ),
         Text(
           messageDecoderWithEmoji(newMessage['text'].toString()),
           style:
@@ -596,7 +599,10 @@ class _TextMessageRendererForChatState
     return Container(
       decoration: BoxDecoration(
         border: Border(
-          left: BorderSide(width: 2.0, color: blackFont),
+          left: BorderSide(
+              width: 2.0,
+              color: getDividerColor(
+                  isSend: isSend, isRepliedSend: isRepliedSend)),
         ),
       ),
       padding: EdgeInsets.symmetric(horizontal: 12),
@@ -610,7 +616,10 @@ class _TextMessageRendererForChatState
                 : transaction["description"] ??
                     getAuthorName(message: message, currentUser: userBloc.user),
             style: TextStyle(
-                color: blackFont, fontSize: 14, fontWeight: FontWeight.w600),
+                color: getDividerColor(
+                    isSend: isSend, isRepliedSend: isRepliedSend),
+                fontSize: 14,
+                fontWeight: FontWeight.w600),
             overflow: TextOverflow.ellipsis,
             maxLines: 1,
             softWrap: false,
@@ -624,7 +633,8 @@ class _TextMessageRendererForChatState
                 "₦ ",
                 style: TextStyle(
                     fontFamily: "Roberto",
-                    color: darkGrey,
+                    color: getDescriptionColor(
+                        isSend: isSend, isRepliedSend: isRepliedSend),
                     fontSize: 12,
                     fontWeight: FontWeight.w400),
                 maxLines: 1,
@@ -634,7 +644,10 @@ class _TextMessageRendererForChatState
                 moneyDisplayNormalizer(
                     int.parse(transaction['amount'].toString())),
                 style: TextStyle(
-                    color: darkGrey, fontSize: 12, fontWeight: FontWeight.w400),
+                    color: getDescriptionColor(
+                        isSend: isSend, isRepliedSend: isRepliedSend),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -658,7 +671,10 @@ class _TextMessageRendererForChatState
     return Container(
       decoration: BoxDecoration(
         border: Border(
-          left: BorderSide(width: 2.0, color: blackFont),
+          left: BorderSide(
+              width: 2.0,
+              color: getDividerColor(
+                  isSend: isSend, isRepliedSend: isRepliedSend)),
         ),
       ),
       padding: EdgeInsets.symmetric(horizontal: 12),
@@ -672,7 +688,10 @@ class _TextMessageRendererForChatState
                 : paymentRequest["description"] ??
                     getAuthorName(message: message, currentUser: userBloc.user),
             style: TextStyle(
-                color: blackFont, fontSize: 14, fontWeight: FontWeight.w600),
+                color: getDividerColor(
+                    isSend: isSend, isRepliedSend: isRepliedSend),
+                fontSize: 14,
+                fontWeight: FontWeight.w600),
             overflow: TextOverflow.ellipsis,
             maxLines: 1,
             softWrap: false,
@@ -686,7 +705,8 @@ class _TextMessageRendererForChatState
                 "₦ ",
                 style: TextStyle(
                     fontFamily: "Roberto",
-                    color: darkGrey,
+                    color: getDescriptionColor(
+                        isSend: isSend, isRepliedSend: isRepliedSend),
                     fontSize: 12,
                     fontWeight: FontWeight.w400),
                 maxLines: 1,
@@ -696,7 +716,10 @@ class _TextMessageRendererForChatState
                 moneyDisplayNormalizer(
                     double.parse(paymentRequest['amount'].toString()).toInt()),
                 style: TextStyle(
-                    color: darkGrey, fontSize: 12, fontWeight: FontWeight.w400),
+                    color: getDescriptionColor(
+                        isSend: isSend, isRepliedSend: isRepliedSend),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -891,7 +914,10 @@ class _TextMessageRendererForChatState
     return Container(
       decoration: BoxDecoration(
         border: Border(
-          left: BorderSide(width: 2.0, color: blackFont),
+          left: BorderSide(
+              width: 2.0,
+              color: getDividerColor(
+                  isSend: isSend, isRepliedSend: isRepliedSend)),
         ),
       ),
       padding: EdgeInsets.symmetric(horizontal: 12),
@@ -927,7 +953,8 @@ class _TextMessageRendererForChatState
                 Text(
                   customerProfile.fullName ?? "",
                   style: TextStyle(
-                      color: blackFont,
+                      color: getDividerColor(
+                          isSend: isSend, isRepliedSend: isRepliedSend),
                       fontSize: 14,
                       fontWeight: FontWeight.w600),
                   overflow: TextOverflow.ellipsis,
@@ -940,7 +967,8 @@ class _TextMessageRendererForChatState
                 Text(
                   customerProfile.userName ?? "",
                   style: TextStyle(
-                      color: darkGrey,
+                      color: getDescriptionColor(
+                          isSend: isSend, isRepliedSend: isRepliedSend),
                       fontSize: 12,
                       fontWeight: FontWeight.w400),
                   maxLines: 2,
