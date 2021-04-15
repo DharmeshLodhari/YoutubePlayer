@@ -12,6 +12,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/helpers/db_socket_message
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/message_sound_player.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatMessageAction.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatTextMessage.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/tiles/EditOrReplyMessageUI.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/audio_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/image_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/product_and_service_tile_for_chat.dart';
@@ -861,10 +862,14 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                   recipientUser != null
                       ? isRecipientTyping
                           ? "Typing.."
-                          : isOtherUserRecordingAudio?"recording audio":userStatus
+                          : isOtherUserRecordingAudio
+                              ? "recording audio"
+                              : userStatus
                       : "", //"Online",
                   style: TextStyle(
-                      color: isRecipientTyping || isOtherUserRecordingAudio ? naturalGreen : darkGrey,
+                      color: isRecipientTyping || isOtherUserRecordingAudio
+                          ? naturalGreen
+                          : darkGrey,
                       fontSize: 10,
                       fontWeight: FontWeight.w400),
                   overflow: TextOverflow.fade,
@@ -1850,62 +1855,40 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     Map<String, dynamic> messageData = jsonDecode(editingMessage);
 
     return Container(
-        height: 50,
         width: MediaQuery.of(context).size.width,
-        color: navyBlue,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
+        child: Column(
           children: [
-            Expanded(
-              child: Container(
-                padding: EdgeInsets.only(left: 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      height: 4,
-                    ),
-                    Text(
-                      "Editing",
-                      style: TextStyle(color: Colors.white, fontSize: 10),
-                    ),
-                    SizedBox(
-                      height: 4,
-                    ),
-                    Expanded(
-                      child: Card(
-                        margin: EdgeInsets.zero,
-                        color: Colors.white,
-                        child: Container(
-                          width: double.infinity,
-                          padding: EdgeInsets.only(top: 4, bottom: 4, left: 8),
-                          child: Text(
-                            messageData["text"],
-                            style: TextStyle(color: blackFont, fontSize: 14),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 4,
-                    ),
-                  ],
-                ),
-              ),
+            Divider(
+              height: 0,
+              thickness: 1,
+              color: dividerColor,
             ),
-            IconButton(
-                icon: Icon(
-                  SlydoAppIcon.close_2,
-                  color: Colors.white,
-                  size: 22,
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                IconButton(
+                    icon: Icon(
+                      SlydoAppIcon.close_2,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                    onPressed: () {}),
+                Expanded(
+                  child: EditOrReplyMessageUI(messageData: messageData),
                 ),
-                onPressed: () async {
-                  isEditingMessage = false;
-                  editingMessage = null;
-                  if (mounted) setState(() {});
-                })
+                IconButton(
+                    icon: Icon(
+                      SlydoAppIcon.close_2,
+                      color: Colors.white,
+                      size: 22,
+                    ),
+                    onPressed: () async {
+                      isEditingMessage = false;
+                      editingMessage = null;
+                      if (mounted) setState(() {});
+                    })
+              ],
+            ),
           ],
         ));
   }
@@ -1914,62 +1897,44 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     Map<String, dynamic> messageData = jsonDecode(replayingMessage);
 
     return Container(
-        height: 50,
         width: MediaQuery.of(context).size.width,
-        color: navyBlue,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
+        child: Column(
           children: [
-            Expanded(
-              child: Container(
-                padding: EdgeInsets.only(left: 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      height: 4,
-                    ),
-                    Text(
-                      "Replying",
-                      style: TextStyle(color: Colors.white, fontSize: 10),
-                    ),
-                    SizedBox(
-                      height: 4,
-                    ),
-                    Expanded(
-                      child: Card(
-                        margin: EdgeInsets.zero,
-                        color: Colors.white,
-                        child: Container(
-                          width: double.infinity,
-                          padding: EdgeInsets.only(top: 4, bottom: 4, left: 8),
-                          child: Text(
-                            messageData["text"],
-                            style: TextStyle(color: blackFont, fontSize: 14),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 4,
-                    ),
-                  ],
-                ),
-              ),
+            Divider(
+              height: 0,
+              thickness: 1,
+              color: dividerColor,
             ),
-            IconButton(
-                icon: Icon(
-                  SlydoAppIcon.close_2,
-                  color: Colors.white,
-                  size: 22,
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                IconButton(
+                    icon: Icon(
+                      SlydoAppIcon.close_2,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                    onPressed: () {}),
+                Expanded(
+                  child: EditOrReplyMessageUI(messageData: messageData),
                 ),
-                onPressed: () async {
-                  isReplyingMessage = false;
-                  replayingMessage = null;
-                  if (mounted) setState(() {});
-                })
+                Container(
+                  width: 48,
+                  padding: EdgeInsets.only(top: 4),
+                  child: GestureDetector(
+                      child: Icon(
+                        Icons.close_rounded,
+                        color: darkGrey,
+                        size: 18,
+                      ),
+                      onTap: () async {
+                        isReplyingMessage = false;
+                        replayingMessage = null;
+                        if (mounted) setState(() {});
+                      }),
+                ),
+              ],
+            ),
           ],
         ));
   }
@@ -2964,7 +2929,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     };
 
     debugPrint(
-        "recipeintUser = $recipientUser  recipientUser.conversationId = ${recipientUser.conversationId}");
+        "recipientUser = $recipientUser  recipientUser.conversationId = ${recipientUser.conversationId}");
     if (recipientUser != null && recipientUser.conversationId != null) {
       DBSocketMessageHandler()
           .saveMessageToDb(message: ChatTextMessage.fromJson(data));

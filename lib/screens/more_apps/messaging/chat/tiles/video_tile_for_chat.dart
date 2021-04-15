@@ -6,16 +6,14 @@ import 'package:Slydo/utils/common.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
 // ignore: must_be_immutable
 class VideoTileForChat extends StatelessWidget {
   Map<String, dynamic> message;
 
-  VideoTileForChat({@required message});
+  VideoTileForChat({@required this.message});
 
   @override
   Widget build(BuildContext context) {
@@ -49,15 +47,6 @@ class VideoTileForChat extends StatelessWidget {
                   },
                 );
                 debugPrint("Result:- $result");
-              },
-              onLongPress: () {
-                Clipboard.setData(new ClipboardData(
-                    text: message['text'] ?? message['media']));
-                Toast.show("Text copied !!", context,
-                    gravity: Toast.BOTTOM,
-                    duration: Toast.LENGTH_LONG,
-                    backgroundColor: Colors.black,
-                    textColor: Colors.white);
               },
               child: Container(
                 constraints: BoxConstraints(

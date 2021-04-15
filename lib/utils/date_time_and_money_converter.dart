@@ -21,6 +21,7 @@ String moneyConverter(var amount, {bool isNotCompact = false}) {
   var amt = double.parse(amount.toString());
   FlutterMoneyFormatter fmf =
       FlutterMoneyFormatter(amount: amt, settings: MoneyFormatterSettings());
-  if (isNotCompact) return fmf.output.nonSymbol;
+
+  if (isNotCompact) return fmf.output.nonSymbol.toString();
   return fmf.output.compactNonSymbol;
 }

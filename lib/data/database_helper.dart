@@ -31,7 +31,7 @@ class DatabaseHelper {
 
   initDb() async {
     io.Directory documentsDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentsDirectory.path, "main1.db");
+    String path = join(documentsDirectory.path, "main2.db");
     var theDb = await openDatabase(path,
         version: 1, onCreate: _onCreate, onUpgrade: _onUpgrade);
     return theDb;
@@ -40,7 +40,7 @@ class DatabaseHelper {
   // UPGRADE DATABASE TABLES BY APPLYING MIGRATIONS
   void _onUpgrade(Database db, int oldVersion, int newVersion) {
     if (oldVersion < newVersion) {
-      debugPrint("Appling migrations");
+      debugPrint("Applying migrations");
       // when we upgrade and database has changed we should put our migration statement over here
       // db.execute("ALTER TABLE table_name ADD column_name TEXT;")  adding column
       // db.execute("ALTER TABLE table_name DROP column_name;")  adding column

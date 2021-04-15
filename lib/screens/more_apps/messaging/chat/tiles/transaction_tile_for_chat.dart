@@ -50,16 +50,6 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
 
     bool isScreenSmall = MediaQuery.of(context).size.width <= 400;
 
-    //if (transaction.description.isNotEmpty) {
-    //           Clipboard.setData(new ClipboardData(
-    //               text: messageDecoderWithEmoji(transaction.description)));
-    //           Toast.show("Text copied !!", context,
-    //               gravity: Toast.BOTTOM,
-    //               duration: Toast.LENGTH_LONG,
-    //               backgroundColor: navyBlue,
-    //               textColor: Colors.white);
-    //         }
-
     return Column(
       children: [
         Row(
