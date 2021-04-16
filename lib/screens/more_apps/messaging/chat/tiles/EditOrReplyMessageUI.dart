@@ -56,10 +56,12 @@ class EditOrReplyMessageUI extends StatelessWidget {
         return getPaymentUI;
 
         break;
+
       case "payment-request":
         Widget getPaymentUI = renderPaymentRequest(message: messageData);
         return getPaymentUI;
         break;
+
       case "product":
         Widget getProductUI = renderProduct(message: messageData);
         return getProductUI;
@@ -71,9 +73,17 @@ class EditOrReplyMessageUI extends StatelessWidget {
       case "user-profile":
         Widget getUserProfileUI = renderUserProfile(message: messageData);
         return getUserProfileUI;
+      case "user_location":
+        Widget getUserLocationUI = renderUserLocationUI(message: messageData);
+        return getUserLocationUI;
+
+      case "gif_image":
+        Widget getGIFImageUI = renderGIFImageUI(message: messageData);
+        return getGIFImageUI;
 
       default:
-        debugPrint("Unknown Message Kind: $messageType Message:- $messageData");
+        debugPrint(
+            "Unknown Message Kind 3: $messageType Message:- $messageData");
         Widget getErrorRenderTypeUI = unKnownMessageType();
         return getErrorRenderTypeUI;
     }
@@ -606,6 +616,120 @@ class EditOrReplyMessageUI extends StatelessWidget {
                 ),
                 Text(
                   customerProfile.userName ?? "",
+                  style: TextStyle(
+                      color: darkGrey,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget renderUserLocationUI({Map<String, dynamic> message}) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(
+          left: BorderSide(width: 2.0, color: blackFont),
+        ),
+      ),
+      padding: EdgeInsets.symmetric(horizontal: 12),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(3),
+            child: CachedNetworkImage(
+              height: 48,
+              width: 48,
+              fit: BoxFit.cover,
+              imageUrl: "https://i.dlpng.com/static/png/6635948_preview.png",
+              color: navyBlue,
+              colorBlendMode: BlendMode.color,
+            ),
+          ),
+          SizedBox(
+            width: 12,
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  getAuthorName(message: message, currentUser: userBloc.user),
+                  style: TextStyle(
+                      color: blackFont,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  softWrap: false,
+                ),
+                SizedBox(
+                  height: 4,
+                ),
+                Text(
+                  "Location",
+                  style: TextStyle(
+                      color: darkGrey,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget renderGIFImageUI({Map<String, dynamic> message}) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(
+          left: BorderSide(width: 2.0, color: blackFont),
+        ),
+      ),
+      padding: EdgeInsets.symmetric(horizontal: 12),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(3),
+            child: CachedNetworkImage(
+              height: 48,
+              width: 48,
+              fit: BoxFit.cover,
+              imageUrl: message["text"],
+            ),
+          ),
+          SizedBox(
+            width: 12,
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  getAuthorName(message: message, currentUser: userBloc.user),
+                  style: TextStyle(
+                      color: blackFont,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  softWrap: false,
+                ),
+                SizedBox(
+                  height: 4,
+                ),
+                Text(
+                  "GIF",
                   style: TextStyle(
                       color: darkGrey,
                       fontSize: 12,

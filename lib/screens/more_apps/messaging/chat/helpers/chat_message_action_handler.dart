@@ -88,8 +88,20 @@ class GetChatMessageActions {
             isAuthorPerformingAction: isAuthorPerformingAction);
         return chatMessageAction;
 
+      case "user_location":
+        chatMessageAction = _getUserLocationActions(
+            message: _message,
+            isAuthorPerformingAction: isAuthorPerformingAction);
+        return chatMessageAction;
+
+      case "gif_image":
+        chatMessageAction = _getGIFImageActions(
+            message: _message,
+            isAuthorPerformingAction: isAuthorPerformingAction);
+        return chatMessageAction;
+
       default:
-        debugPrint("Unknown Message Kind: $messageType Message:- $_message");
+        debugPrint("Unknown Message Kind 2: $messageType Message:- $_message");
         return chatMessageAction;
     }
   }
@@ -191,6 +203,30 @@ class GetChatMessageActions {
   }
 
   ChatMessageAction _getUserProfileActions(
+      {@required String message, bool isAuthorPerformingAction}) {
+    ChatMessageAction chatMessageAction = ChatMessageAction(message: message);
+
+    if (isAuthorPerformingAction) {
+      chatMessageAction.isDeletable = true;
+    }
+    chatMessageAction.isReplyable = true;
+
+    return chatMessageAction;
+  }
+
+  ChatMessageAction _getUserLocationActions(
+      {@required String message, bool isAuthorPerformingAction}) {
+    ChatMessageAction chatMessageAction = ChatMessageAction(message: message);
+
+    if (isAuthorPerformingAction) {
+      chatMessageAction.isDeletable = true;
+    }
+    chatMessageAction.isReplyable = true;
+
+    return chatMessageAction;
+  }
+
+  ChatMessageAction _getGIFImageActions(
       {@required String message, bool isAuthorPerformingAction}) {
     ChatMessageAction chatMessageAction = ChatMessageAction(message: message);
 

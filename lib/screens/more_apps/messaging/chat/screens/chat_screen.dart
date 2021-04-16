@@ -14,7 +14,9 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatMessageAction.
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatTextMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/EditOrReplyMessageUI.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/audio_tile_for_chat.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/tiles/gif_image_tile_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/image_tile_for_chat.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/tiles/location_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/product_and_service_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/product_and_service_tile_for_search.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/text_message_render_for_chat_screen.dart';
@@ -27,6 +29,7 @@ import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/services/location_service.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -187,9 +190,16 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   bool isReplyingMessage = false;
   String replayingMessage;
 
+  /// variables for GIF message
+  TextEditingController searchGIFTextEditingController;
+  bool isUserSearchingGIF = false;
+  bool isGIFLoading = false;
+  List<String> searchResultGIFList = [];
+
   @override
   void initState() {
     messageController = TextEditingController();
+    searchGIFTextEditingController = TextEditingController();
     searchItemTextController = TextEditingController();
     messageFocus = FocusNode();
     recipientUser = widget.arguments["searchedUser"];
@@ -977,7 +987,181 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       elevation: 10,
       margin: EdgeInsets.zero,
       shadowColor: boxShadowTwo,
-      child: getSearchBarLayout(),
+      child: isUserSearchingGIF ? getSearchGIFLayout() : getSearchBarLayout(),
+    );
+  }
+
+  Widget getSearchGIFLayout() {
+    return Column(
+      children: [
+        Container(
+          constraints: BoxConstraints(minHeight: 54, maxHeight: 100),
+          child: Row(
+            children: <Widget>[
+              cancelSearchGIFBtn(),
+              Expanded(
+                child: searchGIFTextField(),
+              ),
+              searchGIFButton(),
+            ],
+          ),
+        ),
+        showSearchedGIFList()
+      ],
+    );
+  }
+
+  Widget cancelSearchGIFBtn() {
+    return IconButton(
+        icon: Icon(
+          SlydoAppIcon.close_2,
+          color: navyBlue,
+          size: 22,
+        ),
+        onPressed: () async {
+          if (FocusScope.of(context).hasFocus) {
+            FocusScope.of(context).unfocus();
+            Future.delayed(Duration(milliseconds: 100)).then((value) {
+              isUserSearchingGIF = false;
+              if (mounted) setState(() {});
+            });
+          } else {
+            isUserSearchingGIF = false;
+            if (mounted) setState(() {});
+          }
+        });
+  }
+
+  Widget searchGIFTextField() {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(3),
+      child: Container(
+        color: chatBackgroundColor,
+        child: Theme(
+            data: ThemeData(highlightColor: navyBlue.withOpacity(0.3)),
+            child: Scrollbar(
+              radius: Radius.circular(12),
+              thickness: 2.5,
+              child: TextFormField(
+                controller: searchGIFTextEditingController,
+                textInputAction: TextInputAction.send,
+                keyboardType: TextInputType.multiline,
+                onFieldSubmitted: (value) {
+                  searchGIFFromServer();
+                },
+                cursorColor: blackFont,
+                cursorWidth: 1,
+                cursorHeight: 20,
+                maxLines: null,
+                cursorRadius: Radius.circular(16),
+                decoration: InputDecoration(
+                  hintText: "Search GIF",
+                  hintStyle: TextStyle(
+                    color: darkGrey,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  prefix: Padding(
+                    padding: EdgeInsets.only(left: 16),
+                  ),
+                  suffix: Padding(
+                    padding: EdgeInsets.only(right: 36),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(vertical: 10),
+                  isDense: true,
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(3),
+                    borderSide: BorderSide(
+                      color: chatBackgroundColor,
+                      width: 1.0,
+                    ),
+                  ),
+                  disabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(3),
+                    borderSide: BorderSide(
+                      color: chatBackgroundColor,
+                      width: 1.0,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(3),
+                    borderSide: BorderSide(
+                      color: chatBackgroundColor,
+                      width: 1.0,
+                    ),
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(3),
+                    borderSide: BorderSide(
+                      color: chatBackgroundColor,
+                      width: 1.0,
+                    ),
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(3),
+                    borderSide: BorderSide(
+                      color: chatBackgroundColor,
+                      width: 1.0,
+                    ),
+                  ),
+                ),
+              ),
+            )),
+      ),
+    );
+  }
+
+  void searchGIFFromServer() {
+    String text = searchGIFTextEditingController.text.trim();
+
+    if (text.length < 3) {
+      return;
+    }
+
+    isGIFLoading = true;
+    if (mounted) setState(() {});
+
+    MessageAuth().searchGIF(text: text).then((value) {
+      isGIFLoading = false;
+      searchResultGIFList = value;
+      if (mounted) setState(() {});
+    }).catchError((error) {
+      isGIFLoading = false;
+
+      if (mounted) setState(() {});
+    });
+  }
+
+  Widget showSearchedGIFList() {
+    return Container(
+      padding: EdgeInsets.only(bottom: 8),
+      height: 170,
+      child: isGIFLoading
+          ? Center(
+              child: CircularLoadingIndicator(),
+            )
+          : searchResultGIFList.length == 0
+              ? NoItemInList(msg: "No item Found")
+              : GridView.builder(
+                  scrollDirection: Axis.horizontal,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 1, childAspectRatio: 0.5),
+                  itemBuilder: (context, index) => GestureDetector(
+                    child: Container(
+                      padding: EdgeInsets.only(
+                          right:
+                              index == searchResultGIFList.length - 1 ? 16 : 8,left: index == 0?16:0),
+                      child: CachedNetworkImage(
+                        fit: BoxFit.cover,
+                        imageUrl: searchResultGIFList[index],
+                      ),
+                    ),
+                    onTap: () {
+                      sendGIFToSocket(urlOfGIF: searchResultGIFList[index]);
+                    },
+                  ),
+                  itemCount: searchResultGIFList.length,
+                ),
     );
   }
 
@@ -1113,6 +1297,13 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                   text: "Product/ Service",
                   child: searchProductAndServiceBtn()),
               flexibleSpace(),
+              assignTitleToAction(text: "Location", child: sendUserLocation()),
+              flexibleSpace(),
+              assignTitleToAction(text: "GIF", child: sendGIFButton()),
+              flexibleSpace(),
+              Container(
+                constraints: BoxConstraints(maxWidth: 60),
+              ),
             ],
           ),
         ],
@@ -1266,6 +1457,71 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         if (mounted) setState(() {});
         showSearchProductAndServiceBottomSheet();
       },
+    );
+  }
+
+  Widget sendUserLocation() {
+    return RoundedBackgroundIcon(
+      borderRadius: 20,
+      height: 50,
+      width: 50,
+      icon: Icon(
+        SlydoAppIcon.location,
+        color: blackFont,
+        size: 18,
+      ),
+      backgroundColor: navyBlue.withOpacity(0.08),
+      onTap: () {
+        showMoreAction = false;
+        if (mounted) setState(() {});
+        sendUserLocationToSocket();
+      },
+    );
+  }
+
+  Widget sendGIFButton() {
+    return RoundedBackgroundIcon(
+      borderRadius: 20,
+      height: 50,
+      width: 50,
+      icon: Icon(
+        Icons.gif_rounded,
+        color: blackFont,
+        size: 38,
+      ),
+      backgroundColor: navyBlue.withOpacity(0.08),
+      onTap: () {
+        showMoreAction = false;
+        isUserSearchingGIF = true;
+
+        if (mounted) setState(() {});
+      },
+    );
+  }
+
+  Widget searchGIFButton() {
+    return InkWell(
+      onTap: () {
+        searchGIFFromServer();
+      },
+      child: Container(
+        padding: EdgeInsets.all(2),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 10,
+            ),
+            Icon(
+              SlydoAppIcon.search,
+              color: navyBlue,
+              size: 20,
+            ),
+            SizedBox(
+              width: 12,
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -1750,10 +2006,118 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         Widget getUserProfileUI = renderUserProfile(message: messageData);
         return getUserProfileUI;
 
+      case "user_location":
+        Widget getUserLocationUI = renderUserLocation(message: messageData);
+        return getUserLocationUI;
+
+      case "gif_image":
+        Widget getGIFImageUI = renderGIFImage(message: messageData);
+        return getGIFImageUI;
+
       default:
-        debugPrint("Unknown Message Kind: $messageType Message:- $message");
+        debugPrint("Unknown Message Kind 1: $messageType Message:- $message");
         Widget getErrorRenderTypeUI = unKnownMessageType();
         return getErrorRenderTypeUI;
+    }
+  }
+
+  void sendGIFToSocket({@required String urlOfGIF}) async {
+    isUserSearchingGIF = false;
+    if (mounted) setState(() {});
+
+    if (urlOfGIF == null || urlOfGIF == "") {
+      return;
+    }
+
+    Map<String, dynamic> data = {
+      "check_id": Uuid().v4(),
+      "conversation_id": recipientUser.conversationId,
+      "author": userBloc.user.userName,
+      "author_full_name": userBloc.user.fullName,
+      "author_avatar": userBloc.user.avatar,
+      "message": urlOfGIF,
+      "kind": "gif_image",
+      "read_by_author": true,
+      "read_by_recipient": false,
+      "delivered": false,
+      "created_at": DateTime.now().toUtc().toString(),
+      "type": "chatroom_message",
+    };
+
+    debugPrint(
+        "recipientUser = $recipientUser  recipientUser.conversationId = ${recipientUser.conversationId}");
+    if (recipientUser != null && recipientUser.conversationId != null) {
+      DBSocketMessageHandler()
+          .saveMessageToDb(message: ChatTextMessage.fromJson(data));
+
+      String payload = convertServerPayload(data);
+
+      addMessageToChat(message: payload);
+
+      if (mounted) setState(() {});
+
+      await sendDataToSocket(data);
+    } else {
+      Toast.show("Please check your connection !!", context,
+          textColor: Colors.white);
+    }
+  }
+
+  void sendUserLocationToSocket() async {
+    showMoreAction = false;
+    if (mounted) setState(() {});
+
+    final locationService = LocationService();
+    UserLocation userLocation;
+    await locationService.getLocation().then((value) {
+      userLocation = value;
+    }).catchError((error) {
+      Toast.show("$error", context,
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+          duration: Toast.LENGTH_LONG);
+    });
+
+    if (userLocation == null) {
+      return;
+    }
+
+    Map<String, double> locationCoordinate = {
+      "latitude": userLocation.latitude,
+      "longitude": userLocation.longitude,
+    };
+
+    Map<String, dynamic> data = {
+      "check_id": Uuid().v4(),
+      "conversation_id": recipientUser.conversationId,
+      "author": userBloc.user.userName,
+      "author_full_name": userBloc.user.fullName,
+      "author_avatar": userBloc.user.avatar,
+      "message": jsonEncode(locationCoordinate),
+      "kind": "user_location",
+      "read_by_author": true,
+      "read_by_recipient": false,
+      "delivered": false,
+      "created_at": DateTime.now().toUtc().toString(),
+      "type": "chatroom_message",
+    };
+
+    debugPrint(
+        "recipientUser = $recipientUser  recipientUser.conversationId = ${recipientUser.conversationId}");
+    if (recipientUser != null && recipientUser.conversationId != null) {
+      DBSocketMessageHandler()
+          .saveMessageToDb(message: ChatTextMessage.fromJson(data));
+
+      String payload = convertServerPayload(data);
+
+      addMessageToChat(message: payload);
+
+      if (mounted) setState(() {});
+
+      await sendDataToSocket(data);
+    } else {
+      Toast.show("Please check your connection !!", context,
+          textColor: Colors.white);
     }
   }
 
@@ -1783,7 +2147,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     };
 
     debugPrint(
-        "recipeintUser = $recipientUser  recipientUser.conversationId = ${recipientUser.conversationId}");
+        "recipientUser = $recipientUser  recipientUser.conversationId = ${recipientUser.conversationId}");
     if (recipientUser != null && recipientUser.conversationId != null) {
       DBSocketMessageHandler()
           .saveMessageToDb(message: ChatTextMessage.fromJson(data));
@@ -2010,6 +2374,15 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   Widget renderProduct({Map<String, dynamic> item}) {
     return ProductTileForChatMessage(item: item);
+  }
+
+  Widget renderUserLocation({Map<String, dynamic> message}) {
+    return LocationTileForChatMessage(message: message);
+  }
+
+
+  Widget renderGIFImage({Map<String, dynamic> message}) {
+    return GIFImageForChatMessage(message: message);
   }
 
   Widget addToCartWidget({var item}) {
@@ -2581,27 +2954,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
           Navigator.pop(context);
         },
       ));
-
-      // elements.add(ListTile(
-      //   title: Text(
-      //     "Copy message",
-      //     softWrap: false,
-      //     overflow: TextOverflow.fade,
-      //     style: TextStyle(
-      //         color: blackFont, fontSize: 16, fontWeight: FontWeight.w400),
-      //   ),
-      //   dense: true,
-      //   trailing: Icon(
-      //     Icons.copy_outlined,
-      //     color: blackFont,
-      //     size: 20,
-      //   ),
-      //   onTap: () {
-      //     copyChatMessage(message: message);
-      //
-      //     Navigator.pop(context);
-      //   },
-      // ));
     }
     if (isEditable) {
       if (chatMessageAction.isEditable) {
@@ -2614,26 +2966,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
             Navigator.pop(context);
           },
         ));
-        // elements.add(ListTile(
-        //   title: Text(
-        //     "Edit message",
-        //     softWrap: false,
-        //     overflow: TextOverflow.fade,
-        //     style: TextStyle(
-        //         color: blackFont, fontSize: 16, fontWeight: FontWeight.w400),
-        //   ),
-        //   dense: true,
-        //   trailing: Icon(
-        //     Icons.edit_outlined,
-        //     color: blackFont,
-        //     size: 20,
-        //   ),
-        //   onTap: () {
-        //     editChatMessage(message: message);
-        //
-        //     Navigator.pop(context);
-        //   },
-        // ));
       }
     }
     if (isDeletable) {
@@ -2646,26 +2978,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
             Navigator.pop(context);
           },
         ));
-
-        // elements.add(ListTile(
-        //   title: Text(
-        //     "Delete",
-        //     softWrap: false,
-        //     overflow: TextOverflow.fade,
-        //     style: TextStyle(
-        //         color: blackFont, fontSize: 16, fontWeight: FontWeight.w400),
-        //   ),
-        //   trailing: Icon(
-        //     Icons.delete_outline_outlined,
-        //     color: mateRed,
-        //     size: 20,
-        //   ),
-        //   dense: true,
-        //   onTap: () {
-        //     deleteChatMessage(message: message);
-        //     Navigator.pop(context);
-        //   },
-        // ));
       }
     }
 
@@ -2678,26 +2990,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
           Navigator.pop(context);
         },
       ));
-
-      // elements.add(ListTile(
-      //   title: Text(
-      //     "Reply",
-      //     softWrap: false,
-      //     overflow: TextOverflow.fade,
-      //     style: TextStyle(
-      //         color: blackFont, fontSize: 16, fontWeight: FontWeight.w400),
-      //   ),
-      //   trailing: Icon(
-      //     Icons.reply_outlined,
-      //     color: blackFont,
-      //     size: 20,
-      //   ),
-      //   dense: true,
-      //   onTap: () {
-      //     replyChatMessage(message: message);
-      //     Navigator.pop(context);
-      //   },
-      // ));
     }
 
     return elements;

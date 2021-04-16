@@ -410,11 +410,13 @@ class _TextMessageRendererForChatState
             message: messageData, isSend: isSend, isRepliedSend: isRepliedSend);
         return getPaymentUI;
         break;
+
       case "product":
         Widget getProductUI = renderProduct(
             message: messageData, isSend: isSend, isRepliedSend: isRepliedSend);
         return getProductUI;
         break;
+
       case "service":
         Widget getServiceUI = renderService(
             message: messageData, isSend: isSend, isRepliedSend: isRepliedSend);
@@ -425,8 +427,21 @@ class _TextMessageRendererForChatState
             message: messageData, isSend: isSend, isRepliedSend: isRepliedSend);
         return getUserProfileUI;
 
+      case "user_location":
+        Widget getUserLocationUI = renderUserLocation(
+            message: messageData, isSend: isSend, isRepliedSend: isRepliedSend);
+        return getUserLocationUI;
+        break;
+
+      case "gif_image":
+        Widget getGIFImageUI = renderGIFImage(
+            message: messageData, isSend: isSend, isRepliedSend: isRepliedSend);
+        return getGIFImageUI;
+        break;
+
       default:
-        debugPrint("Unknown Message Kind: $messageType Message:- $messageData");
+        debugPrint(
+            "Unknown Message Kind 4: $messageType Message:- $messageData");
         Widget getErrorRenderTypeUI = unKnownMessageType();
         return getErrorRenderTypeUI;
     }
@@ -978,6 +993,94 @@ class _TextMessageRendererForChatState
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget renderUserLocation(
+      {Map<String, dynamic> message, bool isSend, bool isRepliedSend}) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(
+          left: BorderSide(
+              width: 2.0,
+              color: getTitleAndDividerColor(
+                  isSend: isSend, isRepliedSend: isRepliedSend)),
+        ),
+      ),
+      padding: EdgeInsets.symmetric(horizontal: 12),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(3),
+            child: CachedNetworkImage(
+              height: 48,
+              width: 48,
+              fit: BoxFit.cover,
+              imageUrl: "https://i.dlpng.com/static/png/6635948_preview.png",
+              color: navyBlue,
+              colorBlendMode: BlendMode.color,
+            ),
+          ),
+          SizedBox(
+            width: 12,
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  getAuthorName(message: message, currentUser: userBloc.user),
+                  style: TextStyle(
+                      color: getTitleAndDividerColor(
+                          isSend: isSend, isRepliedSend: isRepliedSend),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  softWrap: false,
+                ),
+                SizedBox(
+                  height: 4,
+                ),
+                Text(
+                  "Location",
+                  style: TextStyle(
+                      color: getDescriptionColor(
+                          isSend: isSend, isRepliedSend: isRepliedSend),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget renderGIFImage(
+      {Map<String, dynamic> message, bool isSend, bool isRepliedSend}) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(
+          left: BorderSide(
+              width: 2.0,
+              color: getDividerColor(
+                  isSend: isSend, isRepliedSend: isRepliedSend)),
+        ),
+      ),
+      padding: EdgeInsets.symmetric(horizontal: 12),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(3),
+        child: CachedNetworkImage(
+          width: double.infinity,
+          fit: BoxFit.cover,
+          imageUrl: message["text"],
+        ),
       ),
     );
   }

@@ -297,4 +297,14 @@ class MessageAuth extends AuthService {
       return Future.error("ERROR:- ${response.body}");
     }
   }
+
+  Future<List<String>> searchGIF({String text}) async {
+    await Future.delayed(Duration(seconds: 2));
+
+    return Future.value([
+      "https://i.pinimg.com/originals/db/fa/a2/dbfaa26f0bc7356db4218d793aba45af.gif",
+      "https://64.media.tumblr.com/1e65e71685bc52ea14b5fa350cad77d1/tumblr_o1fb2phhHa1t47eb6o1_400.gif",
+      "https://gifimage.net/wp-content/uploads/2018/04/rainbow-explosion-gif-7.gif"
+    ]);
+  }
 }

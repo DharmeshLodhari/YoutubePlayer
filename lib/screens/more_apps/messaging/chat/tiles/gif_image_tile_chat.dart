@@ -1,26 +1,23 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
-import 'package:Slydo/utils/common.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
-class ImageTileForChat extends StatelessWidget {
+class GIFImageForChatMessage extends StatelessWidget {
   Map<String, dynamic> message;
 
-  ImageTileForChat({this.message});
+  GIFImageForChatMessage({this.message});
 
   @override
   Widget build(BuildContext context) {
     UserBloc userBloc = Provider.of<UserBloc>(context);
 
     bool isSend = message["author"] == userBloc.user.userName;
-    String messageText = message['text'] ?? "";
-    bool isMessageEmpty = messageText == "";
 
-    messageText = messageDecoderWithEmoji(messageText);
+    String gifImage = message['text'];
 
     return Column(
       children: [
@@ -40,9 +37,9 @@ class ImageTileForChat extends StatelessWidget {
                   "/view-chat-media",
                   arguments: {
                     "type": "image",
-                    "file": message['media'],
-                    "message": message['text'],
-                    "poster": message["poster"] ?? null
+                    "file": gifImage,
+                    "message": "",
+                    "poster": null
                   },
                 );
               },
@@ -52,11 +49,7 @@ class ImageTileForChat extends StatelessWidget {
                   minWidth: MediaQuery.of(context).size.width / 1.30,
                 ),
                 decoration: BoxDecoration(
-                  color: isMessageEmpty
-                      ? Colors.transparent
-                      : isSend
-                          ? navyBlue
-                          : chatBackgroundColor,
+                  color: Colors.transparent,
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(!isSend ? 0 : 10),
                     bottomRight: Radius.circular(isSend ? 0 : 10),
@@ -64,45 +57,18 @@ class ImageTileForChat extends StatelessWidget {
                     topRight: Radius.circular(10),
                   ),
                 ),
-                padding: EdgeInsets.only(
-                    top: isMessageEmpty ? 0 : 8,
-                    bottom: isMessageEmpty ? 0 : 8),
+                padding: EdgeInsets.only(top: 0, bottom: 0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    isMessageEmpty
-                        ? Container()
-                        : Container(
-                            padding: EdgeInsets.symmetric(horizontal: 8),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    messageText,
-                                    style: TextStyle(
-                                        color:
-                                            isSend ? Colors.white : blackFont,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w400),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                    isMessageEmpty
-                        ? Container()
-                        : SizedBox(
-                            height: 8,
-                          ),
                     Container(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: isMessageEmpty ? 0 : 8),
+                      padding: EdgeInsets.symmetric(horizontal: 0),
                       child: ClipRRect(
                         child: CachedNetworkImage(
                           height: MediaQuery.of(context).size.width / 2.2,
                           width: MediaQuery.of(context).size.width / 1.30,
-                          imageUrl: message['media'],
+                          imageUrl: gifImage,
                           fit: BoxFit.cover,
                           progressIndicatorBuilder:
                               (context, url, downloadProgress) => Center(
