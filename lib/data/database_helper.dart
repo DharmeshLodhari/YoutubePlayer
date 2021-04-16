@@ -31,7 +31,7 @@ class DatabaseHelper {
 
   initDb() async {
     io.Directory documentsDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentsDirectory.path, "main2.db");
+    String path = join(documentsDirectory.path, "main3.db");
     var theDb = await openDatabase(path,
         version: 1, onCreate: _onCreate, onUpgrade: _onUpgrade);
     return theDb;
@@ -110,6 +110,26 @@ class DatabaseHelper {
       "created_at" TEXT,
       "type" TEXT,
       "replied_to" TEXT);
+    ''');
+
+    ///{full_name: Iyalaje Stores,
+    /// username: olabisi.abraham.1,
+    /// avatar: https://slydo-assets.s3.amazonaws.com/media/customer/avatar/c06810e3dc334d088cc864c16655f974.jpg,
+    /// qr_code: https://slydo-assets.s3.amazonaws.com/media/customer/qr-code/ed2ee782326a4526a1d804c410f2336b.png,
+    /// conversation_id: 0fa8952a-e6a5-4aee-bf2a-ec074254ab46,
+    /// type: Business}
+
+    // Create the userConnections table
+    await db.execute('''CREATE TABLE "UserConnection" (
+      "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
+      "conversation_id" TEXT UNIQUE,
+      "full_name" TEXT,
+      "username" TEXT,
+      "avatar" TEXT,
+      "qr_code" TEXT,
+      "type" TEXT,
+      "last_message_time" INTEGER
+   );
     ''');
   }
 
@@ -371,5 +391,54 @@ class DatabaseHelper {
     int res = await dbClient.delete("ChatTextMessage");
     debugPrint("ChatTextMessage Cleared !!");
     return res;
+  }
+
+  ///UserConnection operations
+  Future<dynamic> saveUserConnections(List<CustomerProfile> users) async {
+    Database dbClient = await db;
+
+    Batch insertUserBatch = dbClient.batch();
+
+    users.forEach((user) {
+      Map<String, dynamic> data = user.toJsonForDB();
+      data["last_message_time"] = 0;
+
+      insertUserBatch.insert("UserConnection", data,
+          conflictAlgorithm: ConflictAlgorithm.ignore);
+    });
+
+    await insertUserBatch.commit();
+  }
+
+  Future<List<CustomerProfile>> getUserConnections() async {
+    Database dbClient = await db;
+
+    List<Map<String, dynamic>> res = await dbClient.query("UserConnection",
+        orderBy: "last_message_time DESC");
+
+    if (res != null && res.length > 0) {
+      List<CustomerProfile> connectionList =
+          res.map((element) => CustomerProfile.fromDBJson(element)).toList();
+      return connectionList;
+    }
+    return [];
+  }
+
+  Future<int> getUserConnectionsCount() async {
+    Database dbClient = await db;
+
+    List<Map<String, dynamic>> res = await dbClient.query("UserConnection");
+    if (res != null && res.length > 0) {
+      return res.length;
+    }
+    return 0;
+  }
+
+  Future<int> updateConnectionListLastMessageTime(
+      {String conversationId, int time}) async {
+    Database dbClient = await db;
+
+    return await dbClient.update("UserConnection", {"last_message_time": time},
+        where: "conversation_id = ?", whereArgs: [conversationId]);
   }
 }

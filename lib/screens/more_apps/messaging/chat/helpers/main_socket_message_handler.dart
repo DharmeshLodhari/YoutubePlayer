@@ -5,6 +5,7 @@ import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_shake_detection.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/db_socket_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/MainSocketMessageModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatTextMessage.dart';
@@ -53,22 +54,34 @@ class MainSocketMessageHandler {
     Map<String, dynamic> messageData = jsonDecode(message);
 
     if (messageData["type"] == "chatroom_message") {
-      /// checking if the recipient is in the current chat screen then we will not update message count
       if (messageData.containsKey("conversation") ||
           messageData.containsKey("conversation_id")) {
         MainSocketProvider mainSocketProvider = Provider.of<MainSocketProvider>(
             myGlobals.scaffoldKey.currentContext,
             listen: false);
-        if (mainSocketProvider.currentConversationId !=
-            (messageData.containsKey("conversation")
-                ? messageData["conversation"]
-                : messageData.containsKey("conversation_id"))) {
+
+        String conversationId = (messageData.containsKey("conversation")
+            ? messageData["conversation"]
+            : messageData.containsKey("conversation_id"));
+
+        /// checking if the recipient is in the current chat screen then we will not update message count
+        if (mainSocketProvider.currentConversationId != conversationId) {
           saveAndUpdateUserMessageCount(messageData: messageData);
         }
+
+        /// update ConnectionList order by last recive time
+        updateConnectionListOrder(
+            conversationId: conversationId, messageData: messageData);
 
         ///delete message from ChatTextMessage table in db if message came back from socket
 
         if (messageData['kind'] == "text") {
+          DBSocketMessageHandler().deleteChatTextMessage(
+              message: ChatTextMessage.fromJson(messageData));
+        } else if (messageData['user_location'] == "text") {
+          DBSocketMessageHandler().deleteChatTextMessage(
+              message: ChatTextMessage.fromJson(messageData));
+        } else if (messageData['gif_image'] == "text") {
           DBSocketMessageHandler().deleteChatTextMessage(
               message: ChatTextMessage.fromJson(messageData));
         }
@@ -295,5 +308,20 @@ class MainSocketMessageHandler {
     _audioPlayers.clear();
     _nudgingUsers.clear();
     _hashedNudgingMessages.clear();
+  }
+
+  void updateConnectionListOrder(
+      {String conversationId, Map<String, dynamic> messageData}) {
+    debugPrint("MessageData:- $messageData");
+
+    if (messageData.containsKey("created_at")) {
+      DateTime dateTime = DateTime.parse(messageData["created_at"]).toLocal();
+      int time = dateTime.millisecondsSinceEpoch;
+
+      debugPrint("Last message Time => $time");
+
+      ConnectionListManager()
+          .updateLastMessageTime(conversationId: conversationId, time: time);
+    }
   }
 }

@@ -1,13 +1,13 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_manager.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/tiles/user.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/dialog.dart';
-import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:connectivity/connectivity.dart';
@@ -43,7 +43,8 @@ class _ConnectionListState extends State<ConnectionList> {
 
   @protected
   void initState() {
-    this.getList();
+    fetchConnectionListFromDbIfAvailable();
+
     super.initState();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
@@ -58,6 +59,13 @@ class _ConnectionListState extends State<ConnectionList> {
     );
 
     super.initState();
+  }
+
+  void fetchConnectionListFromDbIfAvailable() async {
+    int result = await ConnectionListManager().getConnectionsCount();
+    if (result == 0) {
+      this.getList();
+    }
   }
 
   void _onRefresh() async {
@@ -98,7 +106,7 @@ class _ConnectionListState extends State<ConnectionList> {
   @override
   Widget build(BuildContext context) {
     // refresh the list when lifecycle called onResume method
-    _onRefreshOnResume();
+    // _onRefreshOnResume();
 
     return Scaffold(
       key: _scaffoldContactsListKey,
@@ -116,27 +124,76 @@ class _ConnectionListState extends State<ConnectionList> {
   }
 
   Widget _buildConnectionsList() {
-    return noItemInList
-        ? NoItemInList(
-            msg: "You Have No Connections",
-          )
-        : ListView.builder(
-            padding: EdgeInsets.symmetric(
-              vertical: 4,
-            ),
-            //+1 for progressbar
-            itemCount: connectionsList.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == connectionsList.length) {
-                return _buildIndicator();
-              } else {
-                return _getSlidableWithLists(
-                    context, connectionsList[index], index);
+    return FutureBuilder(
+        future: ConnectionListManager().getConnectionsFromDB(),
+        builder: (context, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.none:
+              return Center(
+                child: CircularLoadingIndicator(),
+              );
+              break;
+            case ConnectionState.waiting:
+              return Center(
+                child: CircularLoadingIndicator(),
+              );
+              break;
+            case ConnectionState.active:
+              return Center(
+                child: CircularLoadingIndicator(),
+              );
+              break;
+            case ConnectionState.done:
+              if (snapshot.hasData) {
+                return ListView.builder(
+                  padding: EdgeInsets.symmetric(
+                    vertical: 4,
+                  ),
+                  //+1 for progressbar
+                  itemCount: snapshot.data.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return _getSlidableWithLists(
+                        context, snapshot.data[index], index);
+                  },
+                  controller: _scrollController,
+                );
+              } else if (snapshot.hasError) {
+                debugPrint("ERROR:- ${snapshot.error}");
+                return Container();
               }
-            },
-            controller: _scrollController,
-          );
+              debugPrint("ERROR While Loading Data");
+              return Container();
+              break;
+
+            default:
+              debugPrint("ERROR While Loading Data");
+              return Container();
+          }
+        });
   }
+
+  // Widget _buildConnectionsList() {
+  //   return noItemInList
+  //       ? NoItemInList(
+  //           msg: "You Have No Connections",
+  //         )
+  //       : ListView.builder(
+  //           padding: EdgeInsets.symmetric(
+  //             vertical: 4,
+  //           ),
+  //           //+1 for progressbar
+  //           itemCount: connectionsList.length + 1,
+  //           itemBuilder: (BuildContext context, int index) {
+  //             if (index == connectionsList.length) {
+  //               return _buildIndicator();
+  //             } else {
+  //               return _getSlidableWithLists(
+  //                   context, connectionsList[index], index);
+  //             }
+  //           },
+  //           controller: _scrollController,
+  //         );
+  // }
 
   Widget _buildIndicator() {
     return new Padding(
@@ -163,13 +220,17 @@ class _ConnectionListState extends State<ConnectionList> {
         previous = result['previous'];
 
         List tempList = result['results'];
+
+        debugPrint("List:- $tempList");
+
         List<CustomerProfile> users = List<CustomerProfile>();
 
         tempList
             .forEach((element) => users.add(CustomerProfile.fromJson(element)));
 
         isLoading = false;
-        connectionsList.addAll(users);
+        // connectionsList.addAll(users);
+        ConnectionListManager().saveConnectionsToDB(connections: users);
 
         if (mounted) setState(() {});
 

@@ -184,6 +184,18 @@ class CustomerProfile {
     return profile;
   }
 
+  factory CustomerProfile.fromDBJson(Map<String, dynamic> json) {
+    CustomerProfile profile = CustomerProfile(
+      fullName: json['full_name'],
+      userName: json['username'],
+      avatar: json['avatar'],
+      qrCode: json['qr_code'],
+      type: json['type'],
+      conversationId: json['conversation_id'],
+    );
+    return profile;
+  }
+
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['full_name'] = this.fullName;
@@ -197,6 +209,18 @@ class CustomerProfile {
     data['default_currency'] = this.defaultCurrency;
     data['is_verified'] = this.isVerified;
     data['profile'] = this.userAbout.toJson();
+    return data;
+  }
+
+  Map<String, dynamic> toJsonForDB() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['full_name'] = this.fullName;
+    data['username'] = this.userName;
+    data['avatar'] = this.avatar;
+    data['qr_code'] = this.qrCode;
+    data['type'] = this.type;
+    data['conversation_id'] = this.conversationId;
+
     return data;
   }
 
