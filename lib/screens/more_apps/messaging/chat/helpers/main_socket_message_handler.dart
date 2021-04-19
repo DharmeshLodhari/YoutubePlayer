@@ -55,7 +55,8 @@ class MainSocketMessageHandler {
 
     if (messageData["type"] == "chatroom_message") {
       if (messageData.containsKey("conversation") ??
-          messageData.containsKey("conversation_id")) {
+          messageData.containsKey("conversation_id") ??
+          false) {
         MainSocketProvider mainSocketProvider = Provider.of<MainSocketProvider>(
             myGlobals.scaffoldKey.currentContext,
             listen: false);

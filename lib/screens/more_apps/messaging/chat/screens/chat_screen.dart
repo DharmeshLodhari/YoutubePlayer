@@ -209,10 +209,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
     checkNetworkConnectivity();
 
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      fetchRecipientUserIfNotAvailable();
-    });
-
+    fetchRecipientUserIfNotAvailable();
 
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
@@ -363,7 +360,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     audioRecorder?.closeAudioSession();
     audioRecorder = null;
 
-    chatShakeDetection.stopShakeDetector();
+    chatShakeDetection?.stopShakeDetector();
 
     messageController.removeListener(sendUserTypingState);
 
@@ -1125,9 +1122,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
               flexibleSpace(),
               assignTitleToAction(text: "GIF", child: sendGIFButton()),
               flexibleSpace(),
-              Container(
-                constraints: BoxConstraints(maxWidth: 60),
-              ),
+              assignTitleToAction(text: "Sticker", child: sendStickersButton()),
             ],
           ),
         ],
@@ -1324,6 +1319,27 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     );
   }
 
+  Widget sendStickersButton() {
+    return RoundedBackgroundIcon(
+      borderRadius: 20,
+      height: 50,
+      width: 50,
+      icon: Icon(
+        Icons.photo_filter_rounded,
+        color: blackFont,
+        size: 20,
+      ),
+      backgroundColor: navyBlue.withOpacity(0.08),
+      onTap: () {
+        showMoreAction = false;
+
+        if (mounted) setState(() {});
+
+        pickSticker();
+      },
+    );
+  }
+
   void pickGIF() async {
     GiphyGif gif = await GiphyPicker.pickGif(
         context: context,
@@ -1332,6 +1348,26 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         sticker: false,
         title: Text(
           "Slydo GIPHY",
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
+        ));
+
+    if (gif != null) {
+      sendGIFToSocket(urlOfGIF: gif.images.original.url);
+    }
+  }
+
+  void pickSticker() async {
+    GiphyGif gif = await GiphyPicker.pickGif(
+        context: context,
+        apiKey: gifApiKey,
+        showPreviewPage: false,
+        sticker: true,
+        searchText: "Search Sticker",
+        title: Text(
+          "Slydo Sticker",
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.w600,

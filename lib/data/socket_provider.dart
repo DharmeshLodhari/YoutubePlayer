@@ -17,19 +17,19 @@ class MainSocketProvider extends ChangeNotifier {
   var _headers;
   String _currentConversationId;
 
-  bool _isChatOnScreen = false;
+  static bool _isChatOnScreen = false;
 
   bool get isChatOnScreen => _isChatOnScreen;
 
-  List<StreamSubscription> _streamSubscriptions = [];
+  static List<StreamSubscription> _streamSubscriptions = [];
 
-  List<String> _queueMessages = [];
+  static List<String> _queueMessages = [];
 
   bool _isNetworkConnectionIsOn;
 
   bool get isNetworkOn => _isNetworkConnectionIsOn;
-  bool _isFirstTime = true;
-  StreamSubscription networkConnectionSubscription;
+  static bool _isFirstTime = true;
+  static StreamSubscription networkConnectionSubscription;
 
   set isChatOnScreen(bool value) {
     _isChatOnScreen = value;
@@ -44,20 +44,20 @@ class MainSocketProvider extends ChangeNotifier {
   }
 
   /// Reconnect server variables
-  bool _isConnected = false;
-  Timer _timerForRetryConnection;
-  int _numberOfRetry = 30;
-  int _countRetry = 0;
-  Duration _connectionRetryDuration = Duration(seconds: 3);
+  static bool _isConnected = false;
+  static Timer _timerForRetryConnection;
+  static int _numberOfRetry = 30;
+  static int _countRetry = 0;
+  static Duration _connectionRetryDuration = Duration(seconds: 3);
 
   User get currentUser => _currentUser;
 
   /// ping server variables
-  Timer _timerForPingServer;
-  Duration _timePeriodForSecond = Duration(seconds: 20);
-  DateTime _lastSent = DateTime.now();
-  DateTime _lastReceive = DateTime.now();
-  Duration _socketTimeout = Duration(seconds: 19);
+  static Timer _timerForPingServer;
+  static Duration _timePeriodForSecond = Duration(seconds: 20);
+  static DateTime _lastSent = DateTime.now();
+  static DateTime _lastReceive = DateTime.now();
+  static Duration _socketTimeout = Duration(seconds: 19);
 
   set currentUser(User value) {
     _currentUser = value;
