@@ -57,6 +57,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:swipe_to/swipe_to.dart';
 import 'package:toast/toast.dart';
 import 'package:uuid/uuid.dart';
 
@@ -1150,7 +1151,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                     child: Container(
                       padding: EdgeInsets.only(
                           right:
-                              index == searchResultGIFList.length - 1 ? 16 : 8,left: index == 0?16:0),
+                              index == searchResultGIFList.length - 1 ? 16 : 8,
+                          left: index == 0 ? 16 : 0),
                       child: CachedNetworkImage(
                         fit: BoxFit.cover,
                         imageUrl: searchResultGIFList[index],
@@ -1964,61 +1966,99 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     Map<String, dynamic> messageData = jsonDecode(message);
 
     String messageType = messageData["kind"];
+
+    Widget finalUI;
+
     switch (messageType) {
       case "text":
-        Widget getMessageUi = renderMessage(message: messageData);
-        return getMessageUi;
+        // Widget getMessageUi = renderMessage(message: messageData);
+        finalUI = renderMessage(message: messageData);
+        // return getMessageUi;
         break;
 
       case "image":
-        Widget getMessageUi = renderImageMedia(message: messageData);
-        return getMessageUi;
+        // Widget getMessageUi = renderImageMedia(message: messageData);
+        finalUI = renderImageMedia(message: messageData);
+        // return getMessageUi;
         break;
 
       case "video":
-        Widget getMessageUi = renderVideoMedia(message: messageData);
-        return getMessageUi;
+        // Widget getMessageUi = renderVideoMedia(message: messageData);
+        finalUI = renderVideoMedia(message: messageData);
+        // return getMessageUi;
         break;
 
       case "audio":
-        Widget getMessageUi = renderAudioMedia(message: messageData);
-        return getMessageUi;
+        // Widget getMessageUi = renderAudioMedia(message: messageData);
+        finalUI = renderAudioMedia(message: messageData);
+        // return getMessageUi;
         break;
 
       case "transaction":
-        Widget getPaymentUI = renderSendPayment(message: messageData);
-        return getPaymentUI;
+        // Widget getPaymentUI = renderSendPayment(message: messageData);
+        finalUI = renderSendPayment(message: messageData);
+        // return getPaymentUI;
 
         break;
       case "payment-request":
-        Widget getPaymentUI = renderPaymentRequest(message: messageData);
-        return getPaymentUI;
+        // Widget getPaymentUI = renderPaymentRequest(message: messageData);
+        finalUI = renderPaymentRequest(message: messageData);
+        // return getPaymentUI;
         break;
       case "product":
-        Widget getProductUI = renderProduct(item: messageData);
-        return getProductUI;
+        // Widget getProductUI = renderProduct(item: messageData);
+        finalUI = renderProduct(item: messageData);
+        // return getProductUI;
         break;
       case "service":
-        Widget getServiceUI = renderService(item: messageData);
-        return getServiceUI;
+        // Widget getServiceUI = renderService(item: messageData);
+        finalUI = renderService(item: messageData);
+        // return getServiceUI;
         break;
       case "user-profile":
-        Widget getUserProfileUI = renderUserProfile(message: messageData);
-        return getUserProfileUI;
+        // Widget getUserProfileUI = renderUserProfile(message: messageData);
+        finalUI = renderUserProfile(message: messageData);
+        // return getUserProfileUI;
+        break;
 
       case "user_location":
-        Widget getUserLocationUI = renderUserLocation(message: messageData);
-        return getUserLocationUI;
-
+        // Widget getUserLocationUI = renderUserLocation(message: messageData);
+        finalUI = renderUserLocation(message: messageData);
+        // return getUserLocationUI;
+        break;
       case "gif_image":
-        Widget getGIFImageUI = renderGIFImage(message: messageData);
-        return getGIFImageUI;
-
+        // Widget getGIFImageUI = renderGIFImage(message: messageData);
+        finalUI = renderGIFImage(message: messageData);
+        // return getGIFImageUI;
+        break;
       default:
         debugPrint("Unknown Message Kind 1: $messageType Message:- $message");
         Widget getErrorRenderTypeUI = unKnownMessageType();
         return getErrorRenderTypeUI;
     }
+    return getReplyOnSwipe(ui: finalUI, message: message);
+  }
+
+  Widget getReplyOnSwipe({Widget ui, String message}) {
+    Map<String, dynamic> messageData = jsonDecode(message);
+
+    bool isSend = userBloc.user.userName == messageData["author"];
+
+    return SwipeTo(
+      child: ui,
+      onLeftSwipe: isSend
+          ? () {
+              debugPrint("left Swipe");
+              replyChatMessage(message: message);
+            }
+          : null,
+      onRightSwipe: isSend
+          ? null
+          : () {
+              debugPrint("Right Swipe");
+              replyChatMessage(message: message);
+            },
+    );
   }
 
   void sendGIFToSocket({@required String urlOfGIF}) async {
@@ -2379,7 +2419,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   Widget renderUserLocation({Map<String, dynamic> message}) {
     return LocationTileForChatMessage(message: message);
   }
-
 
   Widget renderGIFImage({Map<String, dynamic> message}) {
     return GIFImageForChatMessage(message: message);
@@ -3179,19 +3218,16 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   void replyChatMessage({String message}) {
-    Map<String, dynamic> messageData = jsonDecode(message);
+    isReplyingMessage = false;
+    replayingMessage = null;
 
-    debugPrint("Data=> $messageData");
+    messageFocus.unfocus();
 
-    if (!messageFocus.hasFocus) {
-      messageFocus.requestFocus();
+    messageFocus.requestFocus();
 
-      replayingMessage = message;
-      isReplyingMessage = true;
-      if (mounted) setState(() {});
-    }
-
-    sendReplyChatMessage();
+    replayingMessage = message;
+    isReplyingMessage = true;
+    if (mounted) setState(() {});
   }
 
   void sendReplyChatMessage() async {
@@ -3216,7 +3252,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       "read_by_recipient": false,
       "delivered": false,
       "created_at": DateTime.now().toUtc().toString(),
-      "type": "chatroom_message",
+      "type": "reply_message",
       "replied_to": replayingMessage
     };
 
