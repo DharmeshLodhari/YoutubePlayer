@@ -50,6 +50,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_sound/flutter_sound.dart';
+import 'package:giphy_picker/giphy_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
@@ -191,16 +192,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   bool isReplyingMessage = false;
   String replayingMessage;
 
-  /// variables for GIF message
-  TextEditingController searchGIFTextEditingController;
-  bool isUserSearchingGIF = false;
-  bool isGIFLoading = false;
-  List<String> searchResultGIFList = [];
-
   @override
   void initState() {
     messageController = TextEditingController();
-    searchGIFTextEditingController = TextEditingController();
     searchItemTextController = TextEditingController();
     messageFocus = FocusNode();
     recipientUser = widget.arguments["searchedUser"];
@@ -215,7 +209,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
     checkNetworkConnectivity();
 
-    fetchRecipientUserIfNotAvailable();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      fetchRecipientUserIfNotAvailable();
+    });
+
 
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
@@ -988,182 +985,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       elevation: 10,
       margin: EdgeInsets.zero,
       shadowColor: boxShadowTwo,
-      child: isUserSearchingGIF ? getSearchGIFLayout() : getSearchBarLayout(),
-    );
-  }
-
-  Widget getSearchGIFLayout() {
-    return Column(
-      children: [
-        Container(
-          constraints: BoxConstraints(minHeight: 54, maxHeight: 100),
-          child: Row(
-            children: <Widget>[
-              cancelSearchGIFBtn(),
-              Expanded(
-                child: searchGIFTextField(),
-              ),
-              searchGIFButton(),
-            ],
-          ),
-        ),
-        showSearchedGIFList()
-      ],
-    );
-  }
-
-  Widget cancelSearchGIFBtn() {
-    return IconButton(
-        icon: Icon(
-          SlydoAppIcon.close_2,
-          color: navyBlue,
-          size: 22,
-        ),
-        onPressed: () async {
-          if (FocusScope.of(context).hasFocus) {
-            FocusScope.of(context).unfocus();
-            Future.delayed(Duration(milliseconds: 100)).then((value) {
-              isUserSearchingGIF = false;
-              if (mounted) setState(() {});
-            });
-          } else {
-            isUserSearchingGIF = false;
-            if (mounted) setState(() {});
-          }
-        });
-  }
-
-  Widget searchGIFTextField() {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(3),
-      child: Container(
-        color: chatBackgroundColor,
-        child: Theme(
-            data: ThemeData(highlightColor: navyBlue.withOpacity(0.3)),
-            child: Scrollbar(
-              radius: Radius.circular(12),
-              thickness: 2.5,
-              child: TextFormField(
-                controller: searchGIFTextEditingController,
-                textInputAction: TextInputAction.send,
-                keyboardType: TextInputType.multiline,
-                onFieldSubmitted: (value) {
-                  searchGIFFromServer();
-                },
-                cursorColor: blackFont,
-                cursorWidth: 1,
-                cursorHeight: 20,
-                maxLines: null,
-                cursorRadius: Radius.circular(16),
-                decoration: InputDecoration(
-                  hintText: "Search GIF",
-                  hintStyle: TextStyle(
-                    color: darkGrey,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  prefix: Padding(
-                    padding: EdgeInsets.only(left: 16),
-                  ),
-                  suffix: Padding(
-                    padding: EdgeInsets.only(right: 36),
-                  ),
-                  contentPadding: EdgeInsets.symmetric(vertical: 10),
-                  isDense: true,
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(3),
-                    borderSide: BorderSide(
-                      color: chatBackgroundColor,
-                      width: 1.0,
-                    ),
-                  ),
-                  disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(3),
-                    borderSide: BorderSide(
-                      color: chatBackgroundColor,
-                      width: 1.0,
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(3),
-                    borderSide: BorderSide(
-                      color: chatBackgroundColor,
-                      width: 1.0,
-                    ),
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(3),
-                    borderSide: BorderSide(
-                      color: chatBackgroundColor,
-                      width: 1.0,
-                    ),
-                  ),
-                  focusedErrorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(3),
-                    borderSide: BorderSide(
-                      color: chatBackgroundColor,
-                      width: 1.0,
-                    ),
-                  ),
-                ),
-              ),
-            )),
-      ),
-    );
-  }
-
-  void searchGIFFromServer() {
-    String text = searchGIFTextEditingController.text.trim();
-
-    if (text.length < 3) {
-      return;
-    }
-
-    isGIFLoading = true;
-    if (mounted) setState(() {});
-
-    MessageAuth().searchGIF(text: text).then((value) {
-      isGIFLoading = false;
-      searchResultGIFList = value;
-      if (mounted) setState(() {});
-    }).catchError((error) {
-      isGIFLoading = false;
-
-      if (mounted) setState(() {});
-    });
-  }
-
-  Widget showSearchedGIFList() {
-    return Container(
-      padding: EdgeInsets.only(bottom: 8),
-      height: 170,
-      child: isGIFLoading
-          ? Center(
-              child: CircularLoadingIndicator(),
-            )
-          : searchResultGIFList.length == 0
-              ? NoItemInList(msg: "No item Found")
-              : GridView.builder(
-                  scrollDirection: Axis.horizontal,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 1, childAspectRatio: 0.5),
-                  itemBuilder: (context, index) => GestureDetector(
-                    child: Container(
-                      padding: EdgeInsets.only(
-                          right:
-                              index == searchResultGIFList.length - 1 ? 16 : 8,
-                          left: index == 0 ? 16 : 0),
-                      child: CachedNetworkImage(
-                        fit: BoxFit.cover,
-                        imageUrl: searchResultGIFList[index],
-                      ),
-                    ),
-                    onTap: () {
-                      sendGIFToSocket(urlOfGIF: searchResultGIFList[index]);
-                    },
-                  ),
-                  itemCount: searchResultGIFList.length,
-                ),
+      child: getSearchBarLayout(),
     );
   }
 
@@ -1494,37 +1316,31 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       backgroundColor: navyBlue.withOpacity(0.08),
       onTap: () {
         showMoreAction = false;
-        isUserSearchingGIF = true;
 
         if (mounted) setState(() {});
+
+        pickGIF();
       },
     );
   }
 
-  Widget searchGIFButton() {
-    return InkWell(
-      onTap: () {
-        searchGIFFromServer();
-      },
-      child: Container(
-        padding: EdgeInsets.all(2),
-        child: Row(
-          children: [
-            SizedBox(
-              width: 10,
-            ),
-            Icon(
-              SlydoAppIcon.search,
-              color: navyBlue,
-              size: 20,
-            ),
-            SizedBox(
-              width: 12,
-            ),
-          ],
-        ),
-      ),
-    );
+  void pickGIF() async {
+    GiphyGif gif = await GiphyPicker.pickGif(
+        context: context,
+        apiKey: gifApiKey,
+        showPreviewPage: false,
+        sticker: false,
+        title: Text(
+          "Slydo GIPHY",
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
+        ));
+
+    if (gif != null) {
+      sendGIFToSocket(urlOfGIF: gif.images.original.url);
+    }
   }
 
   Widget textMessageField() {
@@ -2062,8 +1878,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   void sendGIFToSocket({@required String urlOfGIF}) async {
-    isUserSearchingGIF = false;
-    if (mounted) setState(() {});
+    // isUserSearchingGIF = false;
+    // if (mounted) setState(() {});
 
     if (urlOfGIF == null || urlOfGIF == "") {
       return;

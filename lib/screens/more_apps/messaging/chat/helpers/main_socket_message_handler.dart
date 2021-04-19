@@ -79,12 +79,15 @@ class MainSocketMessageHandler {
         if (messageData['kind'] == "text") {
           DBSocketMessageHandler().deleteChatTextMessage(
               message: ChatTextMessage.fromJson(messageData));
-        } else if (messageData['user_location'] == "text") {
+        } else if (messageData['kind'] == "user_location") {
           DBSocketMessageHandler().deleteChatTextMessage(
               message: ChatTextMessage.fromJson(messageData));
-        } else if (messageData['gif_image'] == "text") {
+        } else if (messageData['kind'] == "gif_image") {
           DBSocketMessageHandler().deleteChatTextMessage(
               message: ChatTextMessage.fromJson(messageData));
+        } else {
+          debugPrint(
+              "Unimplemented KIND:- ${messageData['kind']}  message:- $messageData");
         }
       }
     } else if (messageData["type"] == "nudge_user") {

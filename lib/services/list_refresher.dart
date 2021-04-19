@@ -40,13 +40,13 @@ class ListRefresher {
           refreshBlocForTransaction.isRefresh = true;
         }
 
-        if (routeProvider.routes.contains("/friends-dashboard")) {
-          RefreshBlocForConnectionDashboard refreshBlocForConnectionDashboard =
-              Provider.of<RefreshBlocForConnectionDashboard>(
-                  myGlobals.scaffoldKey.currentContext,
-                  listen: false);
-          refreshBlocForConnectionDashboard.isRefresh = true;
-        }
+        // if (routeProvider.routes.contains("/friends-dashboard")) {
+        //   RefreshBlocForConnectionDashboard refreshBlocForConnectionDashboard =
+        //       Provider.of<RefreshBlocForConnectionDashboard>(
+        //           myGlobals.scaffoldKey.currentContext,
+        //           listen: false);
+        //   refreshBlocForConnectionDashboard.isRefresh = true;
+        // }
       }
     });
   }

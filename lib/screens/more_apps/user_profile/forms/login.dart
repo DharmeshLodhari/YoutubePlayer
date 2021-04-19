@@ -477,6 +477,8 @@ class _UserLoginState extends State<UserLogin> {
     final BankAccountBloc bankAccountBloc =
         Provider.of<BankAccountBloc>(context, listen: false);
 
+    FocusScope.of(context).unfocus();
+
     if (_loginFormKey.currentState.validate()) {
       showDialog(context: context, builder: (context) => LoadingIndicator());
 

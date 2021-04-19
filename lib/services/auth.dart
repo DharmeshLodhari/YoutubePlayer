@@ -13,6 +13,7 @@ import 'device_info.dart';
 final String baseUrl = "https://api.slydo.co";
 final String secureBaseUrl = "https://api.slydo.co";
 final String localHostUrl = "https://127.0.0.1:8080";
+final String gifApiKey = "Jmh8SVxEvtKVCegoJDNYnxSSSbfPISPs";
 
 class AuthService {
   final String baseUrl = "https://api.slydo.co";

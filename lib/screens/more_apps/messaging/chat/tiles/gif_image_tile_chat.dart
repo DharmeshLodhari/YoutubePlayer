@@ -75,8 +75,7 @@ class GIFImageForChatMessage extends StatelessWidget {
                             child: CircularProgressIndicator(
                               value: downloadProgress.progress,
                               strokeWidth: 2.5,
-                              valueColor: AlwaysStoppedAnimation(
-                                  isSend ? Colors.white : navyBlue),
+                              valueColor: AlwaysStoppedAnimation(navyBlue),
                               backgroundColor: Colors.transparent,
                             ),
                           ),
