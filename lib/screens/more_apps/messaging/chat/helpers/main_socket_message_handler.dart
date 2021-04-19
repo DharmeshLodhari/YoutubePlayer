@@ -54,15 +54,16 @@ class MainSocketMessageHandler {
     Map<String, dynamic> messageData = jsonDecode(message);
 
     if (messageData["type"] == "chatroom_message") {
-      if (messageData.containsKey("conversation") ||
+      if (messageData.containsKey("conversation") ??
           messageData.containsKey("conversation_id")) {
         MainSocketProvider mainSocketProvider = Provider.of<MainSocketProvider>(
             myGlobals.scaffoldKey.currentContext,
             listen: false);
 
-        String conversationId = (messageData.containsKey("conversation")
-            ? messageData["conversation"]
-            : messageData.containsKey("conversation_id"));
+        String conversationId =
+            (messageData.containsKey("conversation") ?? false
+                ? messageData["conversation"]
+                : messageData.containsKey("conversation_id"));
 
         /// checking if the recipient is in the current chat screen then we will not update message count
         if (mainSocketProvider.currentConversationId != conversationId) {
