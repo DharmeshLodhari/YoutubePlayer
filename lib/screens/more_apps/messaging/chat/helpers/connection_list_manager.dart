@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 
@@ -5,12 +7,15 @@ class ConnectionListManager {
   DatabaseHelper _db = DatabaseHelper();
 
   ///Store Connections in to the db
-  void saveConnectionsToDB({List<CustomerProfile> connections}) async {
+  Future<void> saveConnectionsToDB({List<CustomerProfile> connections}) async {
     await _db.saveUserConnections(connections);
   }
 
   ///Clear stored connections From db
-  void clearConnectionsFromDB() {}
+  Future<void> clearConnections() async {
+    await _db.clearUserConnections();
+    return Future.value(Void);
+  }
 
   ///Get Connections From db
   Future<List<CustomerProfile>> getConnectionsFromDB() async {

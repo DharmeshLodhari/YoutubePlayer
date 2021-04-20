@@ -84,11 +84,11 @@ class MainSocketProvider extends ChangeNotifier {
           _isFirstTime = false;
         } else {
           if (_queueMessages.isNotEmpty) {
-            debugPrint("Clearing Pending Messages !!");
             // _streamSubscriptions.forEach((element) {
             //   element?.cancel();
             // });
             await connect().then((value) async {
+              debugPrint("Clearing Pending Messages !!");
               await addDataInTheCorrectOrder();
               _queueMessages.clear();
             });
@@ -177,15 +177,19 @@ class MainSocketProvider extends ChangeNotifier {
         finalUrl,
         headers: _headers,
       );
+
+      _streamController?.close();
       _streamController = StreamController.broadcast();
-      notifyListeners();
+
       debugPrint(
           "WebSocket Connected to $finalUrl for user ${currentUser.userName}");
       _isConnected = true;
+
+      notifyListeners();
     } catch (e) {
       debugPrint(
           "ERROR:- While connecting WebSocket for user ${currentUser.userName}");
-      reconnectSocket();
+      await reconnectSocket();
     }
 
     /// for listening message in the Socket
@@ -205,12 +209,12 @@ class MainSocketProvider extends ChangeNotifier {
 
         _lastReceive = DateTime.now();
       })
-        ..onError((error) {
+        ..onError((error) async {
           /// if there is any error while listing the socket
 
           _isConnected = false;
           debugPrint("ERROR:- While listening the Socket $error");
-          reconnectSocket();
+          await reconnectSocket();
         })
         ..onDone(() {
           debugPrint("On Done called:-  Socket Closed !!!!");
@@ -228,7 +232,7 @@ class MainSocketProvider extends ChangeNotifier {
   }
 
   /// for reconnection the socket connection
-  void reconnectSocket() {
+  Future<void> reconnectSocket() async {
     if (_isConnected) {
       _timerForRetryConnection?.cancel();
     }
@@ -289,6 +293,8 @@ class MainSocketProvider extends ChangeNotifier {
   /// if socket connection is not alive then it will reconnect the socket and send
   /// all the data in correct order
   Future<bool> addDataInTheCorrectOrder() async {
+    debugPrint("Queue Messages:- $_queueMessages");
+
     try {
       if (_isConnected) {
         _queueMessages.forEach((message) {

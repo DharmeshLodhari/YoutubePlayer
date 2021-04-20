@@ -441,4 +441,11 @@ class DatabaseHelper {
     return await dbClient.update("UserConnection", {"last_message_time": time},
         where: "conversation_id = ?", whereArgs: [conversationId]);
   }
+
+  Future<int> clearUserConnections() async {
+    var dbClient = await db;
+    int res = await dbClient.delete("UserConnection");
+    debugPrint("UserConnection Cleared !!");
+    return res;
+  }
 }

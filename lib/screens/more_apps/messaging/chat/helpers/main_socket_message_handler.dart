@@ -5,7 +5,6 @@ import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_shake_detection.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/db_socket_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/MainSocketMessageModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatTextMessage.dart';
@@ -325,8 +324,13 @@ class MainSocketMessageHandler {
 
       debugPrint("Last message Time => $time");
 
-      ConnectionListManager()
-          .updateLastMessageTime(conversationId: conversationId, time: time);
+      ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
+          myGlobals.scaffoldKey.currentContext,
+          listen: false);
+      connectionListBloc.updateLastMessageTime(
+          conversationId: conversationId, time: time);
+      // ConnectionListManager()
+      //     .updateLastMessageTime(conversationId: conversationId, time: time);
     }
   }
 }

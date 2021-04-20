@@ -1,10 +1,10 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_manager.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/tiles/user.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/dialog.dart';
@@ -40,6 +40,7 @@ class _ConnectionListState extends State<ConnectionList> {
   bool noItemInList = false;
 
   RefreshBlocForConnectionDashboard _refreshBloc;
+  ConnectionListBloc _connectionListBloc;
 
   @protected
   void initState() {
@@ -62,10 +63,20 @@ class _ConnectionListState extends State<ConnectionList> {
   }
 
   void fetchConnectionListFromDbIfAvailable() async {
-    int result = await ConnectionListManager().getConnectionsCount();
+    ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
+        myGlobals.scaffoldKey.currentContext,
+        listen: false);
+
+    int result = await connectionListBloc.getConnectionsCount();
+    debugPrint("RESULT FROm CONNECTION LIST :- $result");
     if (result == 0) {
       this.getList();
     }
+
+    // int result = await ConnectionListManager().getConnectionsCount();
+    // if (result == 0) {
+    //   this.getList();
+    // }
   }
 
   void _onRefresh() async {
@@ -108,6 +119,8 @@ class _ConnectionListState extends State<ConnectionList> {
     // refresh the list when lifecycle called onResume method
     // _onRefreshOnResume();
 
+    _connectionListBloc = Provider.of<ConnectionListBloc>(context);
+
     return Scaffold(
       key: _scaffoldContactsListKey,
       backgroundColor: lightGrey,
@@ -124,52 +137,58 @@ class _ConnectionListState extends State<ConnectionList> {
   }
 
   Widget _buildConnectionsList() {
-    return FutureBuilder(
-        future: ConnectionListManager().getConnectionsFromDB(),
-        builder: (context, snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.none:
-              return Center(
-                child: CircularLoadingIndicator(),
-              );
-              break;
-            case ConnectionState.waiting:
-              return Center(
-                child: CircularLoadingIndicator(),
-              );
-              break;
-            case ConnectionState.active:
-              return Center(
-                child: CircularLoadingIndicator(),
-              );
-              break;
-            case ConnectionState.done:
-              if (snapshot.hasData) {
-                return ListView.builder(
-                  padding: EdgeInsets.symmetric(
-                    vertical: 4,
-                  ),
-                  //+1 for progressbar
-                  itemCount: snapshot.data.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return _getSlidableWithLists(
-                        context, snapshot.data[index], index);
-                  },
-                  controller: _scrollController,
-                );
-              } else if (snapshot.hasError) {
-                debugPrint("ERROR:- ${snapshot.error}");
-                return Container();
-              }
-              debugPrint("ERROR While Loading Data");
-              return Container();
-              break;
+    return isLoading
+        ? Center(
+            child: CircularLoadingIndicator(),
+          )
+        : FutureBuilder(
+            future: Future.value(_connectionListBloc.connectionUsers),
+            builder: (context, snapshot) {
+              switch (snapshot.connectionState) {
+                case ConnectionState.none:
+                  debugPrint("ConnectionState.none");
+                  return Center(
+                    child: CircularLoadingIndicator(),
+                  );
+                  break;
+                case ConnectionState.waiting:
+                  return Center(
+                    child: CircularLoadingIndicator(),
+                  );
+                  break;
+                case ConnectionState.active:
+                  debugPrint("ConnectionState.active");
+                  return Center(
+                    child: CircularLoadingIndicator(),
+                  );
+                  break;
+                case ConnectionState.done:
+                  if (snapshot.hasData) {
+                    return ListView.builder(
+                      padding: EdgeInsets.symmetric(
+                        vertical: 4,
+                      ),
+                      //+1 for progressbar
+                      itemCount: snapshot.data.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return _getSlidableWithLists(
+                            context, snapshot.data[index], index);
+                      },
+                      controller: _scrollController,
+                    );
+                  } else if (snapshot.hasError) {
+                    debugPrint("ERROR:- ${snapshot.error}");
+                    return Container();
+                  }
+                  debugPrint("ERROR While Loading Data 1");
+                  return Container();
+                  break;
 
-            default:
-              debugPrint("ERROR While Loading Data");
-              return Container();
-          }
-        });
+                default:
+                  debugPrint("ERROR While Loading Data 2");
+                  return Container();
+              }
+            });
   }
 
   // Widget _buildConnectionsList() {
@@ -221,7 +240,7 @@ class _ConnectionListState extends State<ConnectionList> {
 
         List tempList = result['results'];
 
-        debugPrint("List:- $tempList");
+        // debugPrint("List:- $tempList");
 
         List<CustomerProfile> users = List<CustomerProfile>();
 
@@ -229,8 +248,16 @@ class _ConnectionListState extends State<ConnectionList> {
             .forEach((element) => users.add(CustomerProfile.fromJson(element)));
 
         isLoading = false;
+        if (mounted) setState(() {});
         // connectionsList.addAll(users);
-        ConnectionListManager().saveConnectionsToDB(connections: users);
+
+        ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
+            myGlobals.scaffoldKey.currentContext,
+            listen: false);
+
+        connectionListBloc.setConnectionUsers(users: users);
+
+        // ConnectionListManager().saveConnectionsToDB(connections: users);
 
         if (mounted) setState(() {});
 

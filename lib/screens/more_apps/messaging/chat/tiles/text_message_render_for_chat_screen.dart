@@ -1069,18 +1069,58 @@ class _TextMessageRendererForChatState
         border: Border(
           left: BorderSide(
               width: 2.0,
-              color: getDividerColor(
+              color: getTitleAndDividerColor(
                   isSend: isSend, isRepliedSend: isRepliedSend)),
         ),
       ),
       padding: EdgeInsets.symmetric(horizontal: 12),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(3),
-        child: CachedNetworkImage(
-          width: double.infinity,
-          fit: BoxFit.cover,
-          imageUrl: message["text"],
-        ),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(3),
+            child: CachedNetworkImage(
+              height: 48,
+              width: 48,
+              fit: BoxFit.cover,
+              imageUrl: message["text"],
+            ),
+          ),
+          SizedBox(
+            width: 12,
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  getAuthorName(message: message, currentUser: userBloc.user),
+                  style: TextStyle(
+                      color: getTitleAndDividerColor(
+                          isSend: isSend, isRepliedSend: isRepliedSend),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  softWrap: false,
+                ),
+                SizedBox(
+                  height: 4,
+                ),
+                Text(
+                  "GIF",
+                  style: TextStyle(
+                      color: getDescriptionColor(
+                          isSend: isSend, isRepliedSend: isRepliedSend),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

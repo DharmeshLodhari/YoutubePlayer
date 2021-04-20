@@ -130,6 +130,9 @@ void main() async {
           ChangeNotifierProvider<ShareMessageToChatBloc>.value(
             value: ShareMessageToChatBloc(),
           ),
+          ChangeNotifierProvider<ConnectionListBloc>.value(
+            value: ConnectionListBloc(),
+          ),
         ], child: MyApp()),
       );
     }, onError: (exception, stack) {

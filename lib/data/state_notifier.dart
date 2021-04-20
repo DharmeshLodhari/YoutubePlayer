@@ -1,4 +1,5 @@
 import 'package:Slydo/screens/more_apps/business/models/Item.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_manager.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -380,5 +381,35 @@ class ShareMessageToChatBloc extends ChangeNotifier {
     debugPrint("Clearing Sharing List");
     _recipientUsers.clear();
     notifyListeners();
+  }
+}
+
+class ConnectionListBloc extends ChangeNotifier {
+  List<CustomerProfile> _connectionUsers = List<CustomerProfile>();
+
+  List<CustomerProfile> get connectionUsers => _connectionUsers;
+
+  void setConnectionUsers({List<CustomerProfile> users}) async {
+    await ConnectionListManager().saveConnectionsToDB(connections: users);
+
+    _connectionUsers.clear();
+    _connectionUsers = await _getConnectionUsers();
+    notifyListeners();
+  }
+
+  Future<List<CustomerProfile>> _getConnectionUsers() async {
+    return await ConnectionListManager().getConnectionsFromDB();
+  }
+
+  void updateLastMessageTime({String conversationId, int time}) async {
+    await ConnectionListManager()
+        .updateLastMessageTime(conversationId: conversationId, time: time);
+    _connectionUsers.clear();
+    _connectionUsers = await _getConnectionUsers();
+    notifyListeners();
+  }
+
+  Future<int> getConnectionsCount() async {
+    return await ConnectionListManager().getConnectionsCount();
   }
 }
