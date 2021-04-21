@@ -409,8 +409,17 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   void storeMessagesTemporary({String message}) {
-    temporaryMessages.add(message);
-    debugPrint("Storing temporary Message:- ${temporaryMessages.length}");
+    bool isPresentInTemporaryMessage = false;
+    for (int i = 0; i < temporaryMessages.length; i++) {
+      if (message == temporaryMessages[i]) {
+        isPresentInTemporaryMessage = true;
+        break;
+      }
+    }
+    if (!isPresentInTemporaryMessage) {
+      temporaryMessages.add(message);
+      debugPrint("Storing temporary Message:- ${temporaryMessages.length}");
+    }
   }
 
   void initializeSocket() {
@@ -1488,6 +1497,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       "type": "chatroom_message",
     };
 
+    updateConnectionList(
+        messageData: data, conversationId: recipientUser.conversationId);
     bool result = await sendDataToSocket(data);
     if (result) {
       clearSearchedListItems();
@@ -1948,6 +1959,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
       if (mounted) setState(() {});
 
+      updateConnectionList(
+          messageData: data, conversationId: recipientUser.conversationId);
       await sendDataToSocket(data);
     } else {
       Toast.show("Please check your connection !!", context,
@@ -2006,6 +2019,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
       if (mounted) setState(() {});
 
+      updateConnectionList(
+          messageData: data, conversationId: recipientUser.conversationId);
       await sendDataToSocket(data);
     } else {
       Toast.show("Please check your connection !!", context,
@@ -2051,6 +2066,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       messageController.text = "";
       if (mounted) setState(() {});
 
+      updateConnectionList(
+          messageData: data, conversationId: recipientUser.conversationId);
       await sendDataToSocket(data);
     } else {
       Toast.show("Please check your connection !!", context,
@@ -3116,7 +3133,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
       String payload = convertServerPayload(data);
 
-      debugPrint("Data:---- $payload");
       addMessageToChat(message: payload);
 
       messageController.text = "";
@@ -3126,7 +3142,25 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       isReplyingMessage = false;
       if (mounted) setState(() {});
 
+      updateConnectionList(
+          messageData: data, conversationId: recipientUser.conversationId);
       await sendDataToSocket(data);
+    }
+  }
+
+  void updateConnectionList(
+      {Map<String, dynamic> messageData, String conversationId}) {
+    if (messageData.containsKey("created_at")) {
+      DateTime dateTime = DateTime.parse(messageData["created_at"]).toLocal();
+      int time = dateTime.millisecondsSinceEpoch;
+
+      debugPrint("Last message Time => $time");
+
+      ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
+          myGlobals.scaffoldKey.currentContext,
+          listen: false);
+      connectionListBloc.updateLastMessageTime(
+          conversationId: conversationId, time: time);
     }
   }
 }

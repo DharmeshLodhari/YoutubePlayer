@@ -10,12 +10,12 @@ import 'package:flutter/material.dart';
 import 'package:web_socket_channel/io.dart';
 
 class MainSocketProvider extends ChangeNotifier {
-  IOWebSocketChannel _channel;
+  static IOWebSocketChannel _channel;
 
-  User _currentUser;
-  String _socketUrl = "wss://slydo.co/ws/main";
-  var _headers;
-  String _currentConversationId;
+  static User _currentUser;
+  static String _socketUrl = "wss://slydo.co/ws/main";
+  static var _headers;
+  static String _currentConversationId;
 
   static bool _isChatOnScreen = false;
 
@@ -25,7 +25,7 @@ class MainSocketProvider extends ChangeNotifier {
 
   static List<String> _queueMessages = [];
 
-  bool _isNetworkConnectionIsOn;
+  static bool _isNetworkConnectionIsOn;
 
   bool get isNetworkOn => _isNetworkConnectionIsOn;
   static bool _isFirstTime = true;
@@ -84,9 +84,6 @@ class MainSocketProvider extends ChangeNotifier {
           _isFirstTime = false;
         } else {
           if (_queueMessages.isNotEmpty) {
-            // _streamSubscriptions.forEach((element) {
-            //   element?.cancel();
-            // });
             await connect().then((value) async {
               debugPrint("Clearing Pending Messages !!");
               await addDataInTheCorrectOrder();
@@ -335,6 +332,37 @@ class MainSocketProvider extends ChangeNotifier {
     }
     notifyListeners();
     return false;
+  }
+
+  void removeFromTheQueue({String message}) {
+    Map<String, dynamic> decodedMessage = jsonDecode(message);
+    if (decodedMessage.containsKey("check_id") ?? false) {
+      int index;
+
+      for (int i = 0; i < _queueMessages.length; i++) {
+        Map<String, dynamic> decodeQueueMessage = jsonDecode(_queueMessages[i]);
+
+        if (decodeQueueMessage.containsKey("check_id") ?? false) {
+          if (decodeQueueMessage["check_id"] == decodedMessage["check_id"]) {
+            debugPrint(
+                "CheckId matched:- ${decodeQueueMessage["check_id"]} == ${decodedMessage["check_id"]} = ${decodeQueueMessage["check_id"] == decodedMessage["check_id"]}");
+            debugPrint(
+                "Checking For Message:- ${_queueMessages[i]} == $message = ${_queueMessages[i] == message}");
+
+            if (_queueMessages[i] == message) {
+              index = i;
+              break;
+            }
+            break;
+          }
+        }
+      }
+
+      if (index != null) {
+        _queueMessages.removeAt(index);
+        notifyListeners();
+      }
+    }
   }
 
   void sendPendingQueueMessages() async {

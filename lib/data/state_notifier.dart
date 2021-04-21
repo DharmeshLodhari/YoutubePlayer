@@ -412,4 +412,12 @@ class ConnectionListBloc extends ChangeNotifier {
   Future<int> getConnectionsCount() async {
     return await ConnectionListManager().getConnectionsCount();
   }
+
+  Future<void> clearConnectionList() async {
+    await ConnectionListManager().clearConnections();
+    _connectionUsers.clear();
+    _connectionUsers = await _getConnectionUsers();
+    notifyListeners();
+    return;
+  }
 }

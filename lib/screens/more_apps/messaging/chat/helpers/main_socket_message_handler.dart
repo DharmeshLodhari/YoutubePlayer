@@ -52,6 +52,16 @@ class MainSocketMessageHandler {
   void handleMessageAccordingToType() {
     Map<String, dynamic> messageData = jsonDecode(message);
 
+    /// TODO: check the logs for this code :- Starts
+
+    MainSocketProvider mainSocketProvider = Provider.of<MainSocketProvider>(
+        myGlobals.scaffoldKey.currentContext,
+        listen: false);
+
+    mainSocketProvider.removeFromTheQueue(message: message);
+
+    /// Ends
+
     if (messageData["type"] == "chatroom_message") {
       if (messageData.containsKey("conversation") ??
           messageData.containsKey("conversation_id") ??

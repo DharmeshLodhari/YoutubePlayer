@@ -67,16 +67,19 @@ class _ConnectionListState extends State<ConnectionList> {
         myGlobals.scaffoldKey.currentContext,
         listen: false);
 
+    isLoading = true;
+    if (mounted) setState(() {});
+
     int result = await connectionListBloc.getConnectionsCount();
-    debugPrint("RESULT FROm CONNECTION LIST :- $result");
+    debugPrint("RESULT FROM CONNECTION LIST :- $result");
     if (result == 0) {
+      isLoading = false;
+
       this.getList();
     }
 
-    // int result = await ConnectionListManager().getConnectionsCount();
-    // if (result == 0) {
-    //   this.getList();
-    // }
+    isLoading = false;
+    if (mounted) setState(() {});
   }
 
   void _onRefresh() async {
@@ -251,9 +254,8 @@ class _ConnectionListState extends State<ConnectionList> {
         if (mounted) setState(() {});
         // connectionsList.addAll(users);
 
-        ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
-            myGlobals.scaffoldKey.currentContext,
-            listen: false);
+        ConnectionListBloc connectionListBloc =
+            Provider.of<ConnectionListBloc>(context, listen: false);
 
         connectionListBloc.setConnectionUsers(users: users);
 

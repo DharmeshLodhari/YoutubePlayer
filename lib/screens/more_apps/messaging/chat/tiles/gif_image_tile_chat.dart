@@ -60,16 +60,19 @@ class GIFImageForChatMessage extends StatelessWidget {
                 padding: EdgeInsets.only(top: 0, bottom: 0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: isSend
+                      ? CrossAxisAlignment.end
+                      : CrossAxisAlignment.start,
                   children: [
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: 0),
                       child: ClipRRect(
                         child: CachedNetworkImage(
-                          height: MediaQuery.of(context).size.width / 2.2,
-                          width: MediaQuery.of(context).size.width / 1.30,
+                          height: MediaQuery.of(context).size.width / 3,
+                          width: MediaQuery.of(context).size.width / 1.8,
                           imageUrl: gifImage,
-                          fit: BoxFit.cover,
+                          fit: BoxFit.fill,
+                          filterQuality: FilterQuality.high,
                           progressIndicatorBuilder:
                               (context, url, downloadProgress) => Center(
                             child: CircularProgressIndicator(

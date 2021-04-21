@@ -321,9 +321,16 @@ class _TextMessageRendererForChatState
     if (WebAnalyzer.isNotEmpty(webInfo.image)) {
       children.addAll([
         const SizedBox(height: 8),
-        CachedNetworkImage(
-          imageUrl: webInfo.image,
-          fit: BoxFit.contain,
+        Center(
+          child: Container(
+            constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.width / 2.5),
+            child: CachedNetworkImage(
+              imageUrl: webInfo.image,
+              width: double.infinity,
+              fit: BoxFit.fill,
+            ),
+          ),
         ),
       ]);
     }
