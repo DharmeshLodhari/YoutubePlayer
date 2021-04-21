@@ -124,6 +124,7 @@ flutter:
     - assets/images/flags/
     - assets/images/category/
     - assets/images/intro_images/
+    - assets/images/envelope/
     - assets/images/flare/
     - assets/fonts/
     - assets/images/appIcon/

@@ -25,6 +25,7 @@ import 'package:Slydo/screens/more_apps/hotels/partner_detail_page.dart';
 import 'package:Slydo/screens/more_apps/hotels/search_hotel.dart';
 import 'package:Slydo/screens/more_apps/hotels/specific_category_hotel_list.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/forms/add_media_to_chat_message.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/forms/send_envelope.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/screens/chat_screen.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/screens/view_chat_media.dart';
 import 'package:Slydo/screens/more_apps/messaging/forms/compose_message.dart';
@@ -507,6 +508,14 @@ class RouteGenerator {
       case '/view-chat-media':
         return PageTransition(
           child: ViewChatMedia(arguments: settings.arguments),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case '/send-envelope':
+        return PageTransition(
+          child: SendEnvelope(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

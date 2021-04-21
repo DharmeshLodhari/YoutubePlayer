@@ -85,9 +85,14 @@ class MainSocketProvider extends ChangeNotifier {
         } else {
           if (_queueMessages.isNotEmpty) {
             await connect().then((value) async {
-              debugPrint("Clearing Pending Messages !!");
-              await addDataInTheCorrectOrder();
-              _queueMessages.clear();
+              if (_isConnected) {
+                debugPrint("Clearing Pending Messages !!");
+                await addDataInTheCorrectOrder();
+                _queueMessages.clear();
+              } else {
+                debugPrint(
+                    "Failed to Clear Pending Messages  Web Socket is Not connected!!");
+              }
             });
           }
         }
@@ -290,8 +295,6 @@ class MainSocketProvider extends ChangeNotifier {
   /// if socket connection is not alive then it will reconnect the socket and send
   /// all the data in correct order
   Future<bool> addDataInTheCorrectOrder() async {
-    debugPrint("Queue Messages:- $_queueMessages");
-
     try {
       if (_isConnected) {
         _queueMessages.forEach((message) {
@@ -302,7 +305,10 @@ class MainSocketProvider extends ChangeNotifier {
         debugPrint("Data added in webSocket :- $_queueMessages");
 
         if (await checkConnection()) {
+          debugPrint("Clearing Pending Messages !!");
           _queueMessages.clear();
+        } else {
+          debugPrint("Failed to clear Pending Messages 1!!");
         }
 
         return true;
@@ -325,6 +331,8 @@ class MainSocketProvider extends ChangeNotifier {
         debugPrint("Data added in webSocket :- $_queueMessages");
         if (await checkConnection()) {
           _queueMessages.clear();
+        } else {
+          debugPrint("Failed to clear Pending Messages 2!!");
         }
 
         return true;

@@ -366,16 +366,16 @@ class DatabaseHelper {
     return [];
   }
 
-  void saveChatTextMessage({ChatTextMessage message}) async {
+  Future<int> saveChatTextMessage({ChatTextMessage message}) async {
     Database dbClient = await db;
 
     int res = await dbClient.insert("ChatTextMessage", message.toJson(),
         conflictAlgorithm: ConflictAlgorithm.ignore);
     if (res != null) {
-      debugPrint("<<<<< ChatTextMessage Added !!");
+      debugPrint("<<<<< ChatTextMessage Added !! $res");
     }
 
-    return;
+    return res;
   }
 
   Future<int> deleteChatTextMessage({ChatTextMessage message}) async {

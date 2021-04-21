@@ -63,17 +63,20 @@ class MainSocketMessageHandler {
     /// Ends
 
     if (messageData["type"] == "chatroom_message") {
-      if (messageData.containsKey("conversation") ??
-          messageData.containsKey("conversation_id") ??
-          false) {
+      debugPrint("Hello >>>>>>>>>>>>  1");
+
+      debugPrint(
+          " Message Data==> ${messageData.containsKey("conversation")}  ${messageData.containsKey("conversation_id")}");
+      if (messageData.containsKey("conversation") ||
+          messageData.containsKey("conversation_id")) {
+        debugPrint("Hello >>>>>>>>>>>>  2");
         MainSocketProvider mainSocketProvider = Provider.of<MainSocketProvider>(
             myGlobals.scaffoldKey.currentContext,
             listen: false);
 
-        String conversationId =
-            (messageData.containsKey("conversation") ?? false
-                ? messageData["conversation"]
-                : messageData.containsKey("conversation_id"));
+        String conversationId = (messageData.containsKey("conversation")
+            ? messageData["conversation"]
+            : messageData["conversation_id"]);
 
         /// checking if the recipient is in the current chat screen then we will not update message count
         if (mainSocketProvider.currentConversationId != conversationId) {
@@ -87,6 +90,8 @@ class MainSocketMessageHandler {
         ///delete message from ChatTextMessage table in db if message came back from socket
 
         if (messageData['kind'] == "text") {
+          debugPrint("Hello  >>>>>>>>>>>>  3");
+
           DBSocketMessageHandler().deleteChatTextMessage(
               message: ChatTextMessage.fromJson(messageData));
         } else if (messageData['kind'] == "user_location") {
@@ -99,6 +104,8 @@ class MainSocketMessageHandler {
           debugPrint(
               "Unimplemented KIND:- ${messageData['kind']}  message:- $messageData");
         }
+      } else {
+        debugPrint("UNIMPLEMENTED for $messageData");
       }
     } else if (messageData["type"] == "nudge_user") {
       showNudgeAlertToUser(messageData: messageData);
