@@ -10,6 +10,7 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gifimage/flutter_gifimage.dart';
 import 'package:flutter_link_preview/flutter_link_preview.dart';
 import 'package:linkwell/linkwell.dart';
 import 'package:provider/provider.dart';
@@ -24,9 +25,11 @@ class TextMessageRendererForChat extends StatefulWidget {
       _TextMessageRendererForChatState();
 }
 
-class _TextMessageRendererForChatState
-    extends State<TextMessageRendererForChat> {
+class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
+    with SingleTickerProviderStateMixin {
   UserBloc userBloc;
+
+  GifController gifController;
 
   @override
   Widget build(BuildContext context) {
@@ -441,6 +444,11 @@ class _TextMessageRendererForChatState
         break;
 
       case "gif_image":
+        if (gifController == null) {
+          gifController = GifController(vsync: this);
+          gifController.value = 0;
+        }
+
         Widget getGIFImageUI = renderGIFImage(
             message: messageData, isSend: isSend, isRepliedSend: isRepliedSend);
         return getGIFImageUI;
@@ -499,6 +507,29 @@ class _TextMessageRendererForChatState
     );
   }
 
+  // Widget renderImageMedia(
+  //     {Map<String, dynamic> message, bool isSend, bool isRepliedSend}) {
+  //   return Container(
+  //     decoration: BoxDecoration(
+  //       border: Border(
+  //         left: BorderSide(
+  //             width: 2.0,
+  //             color: getDividerColor(
+  //                 isSend: isSend, isRepliedSend: isRepliedSend)),
+  //       ),
+  //     ),
+  //     padding: EdgeInsets.symmetric(horizontal: 12),
+  //     child: ClipRRect(
+  //       borderRadius: BorderRadius.circular(3),
+  //       child: CachedNetworkImage(
+  //         width: double.infinity,
+  //         fit: BoxFit.cover,
+  //         imageUrl: message["media"],
+  //       ),
+  //     ),
+  //   );
+  // }
+
   Widget renderImageMedia(
       {Map<String, dynamic> message, bool isSend, bool isRepliedSend}) {
     return Container(
@@ -506,21 +537,102 @@ class _TextMessageRendererForChatState
         border: Border(
           left: BorderSide(
               width: 2.0,
-              color: getDividerColor(
+              color: getTitleAndDividerColor(
                   isSend: isSend, isRepliedSend: isRepliedSend)),
         ),
       ),
       padding: EdgeInsets.symmetric(horizontal: 12),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(3),
-        child: CachedNetworkImage(
-          width: double.infinity,
-          fit: BoxFit.cover,
-          imageUrl: message["media"],
-        ),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(3),
+            child: CachedNetworkImage(
+              height: 48,
+              width: 48,
+              fit: BoxFit.cover,
+              imageUrl: message["media"],
+            ),
+          ),
+          SizedBox(
+            width: 12,
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  getAuthorName(message: message, currentUser: userBloc.user),
+                  style: TextStyle(
+                      color: getTitleAndDividerColor(
+                          isSend: isSend, isRepliedSend: isRepliedSend),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  softWrap: false,
+                ),
+                SizedBox(
+                  height: 4,
+                ),
+                Text(
+                  "Photo",
+                  style: TextStyle(
+                      color: getDescriptionColor(
+                          isSend: isSend, isRepliedSend: isRepliedSend),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
+
+  // Widget renderVideoMedia(
+  //     {Map<String, dynamic> message, bool isSend, bool isRepliedSend}) {
+  //   return Container(
+  //     decoration: BoxDecoration(
+  //       border: Border(
+  //         left: BorderSide(
+  //             width: 2.0,
+  //             color: getDividerColor(
+  //                 isSend: isSend, isRepliedSend: isRepliedSend)),
+  //       ),
+  //     ),
+  //     padding: EdgeInsets.symmetric(horizontal: 12),
+  //     child: ClipRRect(
+  //       borderRadius: BorderRadius.circular(3),
+  //       child: Stack(
+  //         children: [
+  //           CachedNetworkImage(
+  //             width: double.infinity,
+  //             fit: BoxFit.cover,
+  //             imageUrl: message["poster"],
+  //           ),
+  //           Center(
+  //             child: ClipOval(
+  //               child: Container(
+  //                 height: 60,
+  //                 width: 60,
+  //                 color: Colors.white12,
+  //                 child: Icon(
+  //                   SlydoAppIcon.music_play_1,
+  //                   color: Colors.white,
+  //                   size: 16,
+  //                 ),
+  //               ),
+  //             ),
+  //           )
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget renderVideoMedia(
       {Map<String, dynamic> message, bool isSend, bool isRepliedSend}) {
@@ -529,36 +641,71 @@ class _TextMessageRendererForChatState
         border: Border(
           left: BorderSide(
               width: 2.0,
-              color: getDividerColor(
+              color: getTitleAndDividerColor(
                   isSend: isSend, isRepliedSend: isRepliedSend)),
         ),
       ),
       padding: EdgeInsets.symmetric(horizontal: 12),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(3),
-        child: Stack(
-          children: [
-            CachedNetworkImage(
-              width: double.infinity,
-              fit: BoxFit.cover,
-              imageUrl: message["poster"],
-            ),
-            Center(
-              child: ClipOval(
-                child: Container(
-                  height: 60,
-                  width: 60,
-                  color: Colors.white12,
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(3),
+            child: Stack(
+              children: [
+                CachedNetworkImage(
+                  height: 48,
+                  width: 48,
+                  fit: BoxFit.cover,
+                  imageUrl: message["poster"],
+                ),
+                Positioned(
+                  top: 16,
+                  left: 16,
                   child: Icon(
                     SlydoAppIcon.music_play_1,
                     color: Colors.white,
-                    size: 16,
+                    size: 14,
                   ),
+                )
+              ],
+            ),
+          ),
+          SizedBox(
+            width: 12,
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  getAuthorName(message: message, currentUser: userBloc.user),
+                  style: TextStyle(
+                      color: getTitleAndDividerColor(
+                          isSend: isSend, isRepliedSend: isRepliedSend),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  softWrap: false,
                 ),
-              ),
-            )
-          ],
-        ),
+                SizedBox(
+                  height: 4,
+                ),
+                Text(
+                  "Video",
+                  style: TextStyle(
+                      color: getDescriptionColor(
+                          isSend: isSend, isRepliedSend: isRepliedSend),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -1085,11 +1232,12 @@ class _TextMessageRendererForChatState
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(3),
-            child: CachedNetworkImage(
+            child: GifImage(
+              controller: gifController,
               height: 48,
               width: 48,
               fit: BoxFit.cover,
-              imageUrl: message["text"],
+              image: NetworkImage(message["text"]),
             ),
           ),
           SizedBox(
@@ -1166,5 +1314,11 @@ class _TextMessageRendererForChatState
     } else {
       return blackFont;
     }
+  }
+
+  @override
+  void dispose() {
+    gifController?.dispose();
+    super.dispose();
   }
 }

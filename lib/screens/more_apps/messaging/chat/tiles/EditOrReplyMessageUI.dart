@@ -8,22 +8,32 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gifimage/flutter_gifimage.dart';
 import 'package:provider/provider.dart';
 
 import '../utils.dart';
 
 // ignore: must_be_immutable
-class EditOrReplyMessageUI extends StatelessWidget {
+class EditOrReplyMessageUI extends StatefulWidget {
   final Map<String, dynamic> messageData;
 
   EditOrReplyMessageUI({this.messageData});
 
+  @override
+  _EditOrReplyMessageUIState createState() => _EditOrReplyMessageUIState();
+}
+
+class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
+    with SingleTickerProviderStateMixin {
   UserBloc userBloc;
+
+  GifController gifController;
 
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    Widget uiTile = getUITileAccordingToMessageType(messageData: messageData);
+    Widget uiTile =
+        getUITileAccordingToMessageType(messageData: widget.messageData);
 
     return Container(padding: EdgeInsets.only(top: 8), child: uiTile);
   }
@@ -78,6 +88,10 @@ class EditOrReplyMessageUI extends StatelessWidget {
         return getUserLocationUI;
 
       case "gif_image":
+        if (gifController == null) {
+          gifController = GifController(vsync: this);
+          gifController.value = 0;
+        }
         Widget getGIFImageUI = renderGIFImageUI(message: messageData);
         return getGIFImageUI;
 
@@ -701,11 +715,12 @@ class EditOrReplyMessageUI extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(3),
-            child: CachedNetworkImage(
+            child: GifImage(
+              controller: gifController,
               height: 48,
               width: 48,
               fit: BoxFit.cover,
-              imageUrl: message["text"],
+              image: NetworkImage(message["text"]),
             ),
           ),
           SizedBox(
@@ -747,5 +762,11 @@ class EditOrReplyMessageUI extends StatelessWidget {
 
   Widget unKnownMessageType() {
     return Container();
+  }
+
+  @override
+  void dispose() {
+    gifController?.dispose();
+    super.dispose();
   }
 }

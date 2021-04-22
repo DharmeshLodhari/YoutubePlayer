@@ -11,6 +11,10 @@ import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class SendEnvelope extends StatefulWidget {
+  final arguments;
+
+  SendEnvelope({this.arguments});
+
   @override
   _SendEnvelopeState createState() => _SendEnvelopeState();
 }
@@ -18,17 +22,22 @@ class SendEnvelope extends StatefulWidget {
 class _SendEnvelopeState extends State<SendEnvelope> {
   TextEditingController _amountController = TextEditingController();
   TextEditingController _messageController = TextEditingController();
+  TextEditingController _titleController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
   final _sendEnvelopeScaffold = GlobalKey<ScaffoldState>();
   UserBloc userBloc;
 
   double amount;
-  String message = "";
   String errorMessage = "";
+
+  bool isEmptyEnvelope;
 
   @override
   void initState() {
+    isEmptyEnvelope =
+        widget.arguments != null ? widget.arguments["isEmptyEnvelope"] : false;
+
     super.initState();
   }
 
@@ -103,10 +112,20 @@ class _SendEnvelopeState extends State<SendEnvelope> {
                           padding: EdgeInsets.symmetric(horizontal: 20),
                           child: Column(
                             children: [
+                              isEmptyEnvelope
+                                  ? Container()
+                                  : Column(
+                                      children: [
+                                        SizedBox(
+                                          height: 20,
+                                        ),
+                                        displayAmountField(),
+                                      ],
+                                    ),
                               SizedBox(
                                 height: 20,
                               ),
-                              displayAmountField(),
+                              getTitleField(),
                               SizedBox(
                                 height: 20,
                               ),
@@ -199,16 +218,18 @@ class _SendEnvelopeState extends State<SendEnvelope> {
 
   Widget getMessageField() {
     return CustomizedTextFormField(
+      maxLines: 4,
       labelText: "Message",
       textCapitalization: TextCapitalization.sentences,
       controller: _messageController,
-      onChanged: (val) {
-        if (mounted) {
-          setState(() {
-            message = val;
-          });
-        }
-      },
+    );
+  }
+
+  Widget getTitleField() {
+    return CustomizedTextFormField(
+      labelText: "Title",
+      textCapitalization: TextCapitalization.sentences,
+      controller: _titleController,
     );
   }
 
@@ -233,7 +254,8 @@ class _SendEnvelopeState extends State<SendEnvelope> {
           isValidCallback: () async {
             Navigator.pop(context, {
               "amount": moneyInputNormalizer(amount.toString()),
-              "message": message.trim()
+              "message": _messageController.text.trim(),
+              "title": _titleController.text.trim()
             });
           },
           cancelCallBack: () {

@@ -86,8 +86,8 @@ class MainSocketProvider extends ChangeNotifier {
           if (_queueMessages.isNotEmpty) {
             await connect().then((value) async {
               if (_isConnected) {
-                debugPrint("Clearing Pending Messages !!");
                 await addDataInTheCorrectOrder();
+                debugPrint("Clearing Pending Messages !!");
                 _queueMessages.clear();
               } else {
                 debugPrint(

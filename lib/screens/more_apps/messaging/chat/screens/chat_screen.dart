@@ -14,6 +14,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatMessageAction.
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatTextMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/EditOrReplyMessageUI.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/audio_tile_for_chat.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/tiles/envelope_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/gif_image_tile_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/image_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/location_tile_for_chat.dart';
@@ -1431,8 +1432,31 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     );
   }
 
-  void getEnvelopeAmount() async {
-    var result = await Navigator.of(context).pushNamed("/send-envelope");
+  Widget sendEmptyEnvelopeButton() {
+    return RoundedBackgroundIcon(
+      borderRadius: 20,
+      height: 50,
+      width: 50,
+      icon: Container(
+        margin: EdgeInsets.symmetric(vertical: 14),
+        child: Image.asset(
+          "assets/images/envelope/envelope_blue.png",
+        ),
+      ),
+      backgroundColor: navyBlue.withOpacity(0.08),
+      onTap: () {
+        showMoreAction = false;
+
+        if (mounted) setState(() {});
+
+        getEnvelopeAmount(isEmpty: true);
+      },
+    );
+  }
+
+  void getEnvelopeAmount({bool isEmpty = false}) async {
+    var result = await Navigator.of(context)
+        .pushNamed("/send-envelope", arguments: {"isEmptyEnvelope": isEmpty});
 
     debugPrint("Result From send Envelope :- $result");
   }
@@ -1883,65 +1907,54 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
     switch (messageType) {
       case "text":
-        // Widget getMessageUi = renderMessage(message: messageData);
         finalUI = renderMessage(message: messageData);
-        // return getMessageUi;
+
         break;
 
       case "image":
-        // Widget getMessageUi = renderImageMedia(message: messageData);
         finalUI = renderImageMedia(message: messageData);
-        // return getMessageUi;
+
         break;
 
       case "video":
-        // Widget getMessageUi = renderVideoMedia(message: messageData);
         finalUI = renderVideoMedia(message: messageData);
-        // return getMessageUi;
+
         break;
 
       case "audio":
-        // Widget getMessageUi = renderAudioMedia(message: messageData);
         finalUI = renderAudioMedia(message: messageData);
-        // return getMessageUi;
+
         break;
 
       case "transaction":
-        // Widget getPaymentUI = renderSendPayment(message: messageData);
         finalUI = renderSendPayment(message: messageData);
-        // return getPaymentUI;
 
         break;
       case "payment-request":
-        // Widget getPaymentUI = renderPaymentRequest(message: messageData);
         finalUI = renderPaymentRequest(message: messageData);
-        // return getPaymentUI;
+
         break;
       case "product":
-        // Widget getProductUI = renderProduct(item: messageData);
         finalUI = renderProduct(item: messageData);
-        // return getProductUI;
+
         break;
       case "service":
-        // Widget getServiceUI = renderService(item: messageData);
         finalUI = renderService(item: messageData);
-        // return getServiceUI;
+
         break;
       case "user-profile":
-        // Widget getUserProfileUI = renderUserProfile(message: messageData);
         finalUI = renderUserProfile(message: messageData);
-        // return getUserProfileUI;
+
         break;
 
       case "user_location":
-        // Widget getUserLocationUI = renderUserLocation(message: messageData);
         finalUI = renderUserLocation(message: messageData);
-        // return getUserLocationUI;
+
         break;
       case "gif_image":
-        // Widget getGIFImageUI = renderGIFImage(message: messageData);
         finalUI = renderGIFImage(message: messageData);
-        // return getGIFImageUI;
+
+
         break;
       default:
         debugPrint("Unknown Message Kind 1: $messageType Message:- $message");
@@ -2340,6 +2353,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   Widget renderGIFImage({Map<String, dynamic> message}) {
     return GIFImageForChatMessage(message: message);
+  }
+
+  Widget renderEnvelopeUI({Map<String, dynamic> message}) {
+    return EnvelopeTileForChat(message: message);
   }
 
   Widget addToCartWidget({var item}) {
