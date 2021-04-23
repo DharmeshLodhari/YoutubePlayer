@@ -342,9 +342,31 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
   }
 
   Widget getSimpleMessage({Map<String, dynamic> message, bool isSend}) {
-    return Text(
-      messageDecoderWithEmoji(message['text'].toString()),
-      style: TextStyle(color: isSend ? Colors.white : blackFont, fontSize: 16),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        message['author'] != userBloc.user.userName
+            ? Column(
+                children: [
+                  Text(
+                    message['author'],
+                    style: TextStyle(
+                        color: isSend ? Colors.white : blackFont,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600),
+                  ),
+                  SizedBox(
+                    height: 2,
+                  ),
+                ],
+              )
+            : Container(width: 0,),
+        Text(
+          messageDecoderWithEmoji(message['text'].toString()),
+          style:
+              TextStyle(color: isSend ? Colors.white : blackFont, fontSize: 16),
+        ),
+      ],
     );
   }
 
