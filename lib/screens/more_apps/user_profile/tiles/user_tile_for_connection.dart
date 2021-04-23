@@ -13,16 +13,16 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
-class UserTile extends StatefulWidget {
+class UserTileForConnection extends StatefulWidget {
   CustomerProfile user;
 
-  UserTile({this.user});
+  UserTileForConnection({this.user});
 
   @override
-  _UserTileState createState() => _UserTileState();
+  _UserTileForConnectionState createState() => _UserTileForConnectionState();
 }
 
-class _UserTileState extends State<UserTile> {
+class _UserTileForConnectionState extends State<UserTileForConnection> {
   bool isTyping = false;
 
   MainSocketProvider mainSocketProvider;
@@ -53,7 +53,7 @@ class _UserTileState extends State<UserTile> {
 
   @override
   void dispose() {
-    mainSocketProvider.removeStreamSubscription(streamSubscription);
+    mainSocketProvider?.removeStreamSubscription(streamSubscription);
     streamSubscription?.cancel();
     super.dispose();
   }

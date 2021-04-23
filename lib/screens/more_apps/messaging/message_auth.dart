@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:Slydo/screens/more_apps/messaging/chat/models/AddGroupModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/models/message.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/util.dart';
@@ -298,13 +299,51 @@ class MessageAuth extends AuthService {
     }
   }
 
-  Future<List<String>> searchGIF({String text}) async {
-    await Future.delayed(Duration(seconds: 2));
+  Future<bool> createGroupChat({AddGroupModel group}) async {
+    var url = secureBaseUrl + "/api/v1/user/group-conversation/";
+    // debugPrint("URL:- $url");
+    var headers = await getAuthHeaders();
 
-    return Future.value([
-      "https://i.pinimg.com/originals/db/fa/a2/dbfaa26f0bc7356db4218d793aba45af.gif",
-      "https://64.media.tumblr.com/1e65e71685bc52ea14b5fa350cad77d1/tumblr_o1fb2phhHa1t47eb6o1_400.gif",
-      "https://gifimage.net/wp-content/uploads/2018/04/rainbow-explosion-gif-7.gif"
-    ]);
+    var request = http.MultipartRequest("POST", Uri.parse(url));
+
+    List<String> listOfUser = [];
+
+    group.users.forEach((element) {
+      listOfUser.add(element.userName);
+    });
+
+    request.fields["participants"] = jsonEncode(listOfUser);
+    request.fields["group_name"] = group.groupName;
+    request.fields["is_group_conversation"] = jsonEncode(true);
+
+    if (group.groupProfilePhoto != null) {
+      // Create multipart using filepath, string or bytes
+      var multipartFile1 =
+          await http.MultipartFile.fromPath("banner", group.groupProfilePhoto);
+
+      // Add multipart to request
+      request.files.add(multipartFile1);
+    }
+
+    headers.forEach((k, v) => request.headers[k] = v);
+
+    request.fields.forEach((key, value) {
+      debugPrint("$key :- $value");
+    });
+
+    var response = await request.send();
+    if (response.statusCode == 413) {
+      return Future.error(
+          "Please upload smaller image, Your image is too large.");
+    }
+    var responseBody = await response.stream.bytesToString();
+    debugPrint("$responseBody");
+    if (response.statusCode == 201) {
+      return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
+      return Future.error("ERROR:- $responseBody");
+    }
   }
 }

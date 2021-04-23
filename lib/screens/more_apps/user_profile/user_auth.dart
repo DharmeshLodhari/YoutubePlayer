@@ -364,6 +364,9 @@ class UserAuth extends AuthService {
         "previous": jsonData["previous"],
         "results": jsonData["results"],
       };
+
+      debugPrint("Result: $jsonData");
+
       return result;
     } else {
       debugPrint("${response.statusCode} ${response.body}");

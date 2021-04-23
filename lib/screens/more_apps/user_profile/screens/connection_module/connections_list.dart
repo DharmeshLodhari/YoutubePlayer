@@ -2,12 +2,13 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/screens/more_apps/user_profile/tiles/user.dart';
+import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile_for_connection.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/dialog.dart';
+import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:connectivity/connectivity.dart';
@@ -103,20 +104,6 @@ class _ConnectionListState extends State<ConnectionList> {
     });
   }
 
-  // refresh the list when lifecycle called onResume method
-  void _onRefreshOnResume() {
-    _refreshBloc = Provider.of<RefreshBlocForConnectionDashboard>(context);
-    _refreshBloc
-      ..addListener(() {
-        if (_refreshBloc.isRefresh) {
-          if (mounted) {
-            _onRefresh();
-            _refreshBloc.isRefresh = false;
-          }
-        }
-      });
-  }
-
   @override
   Widget build(BuildContext context) {
     // refresh the list when lifecycle called onResume method
@@ -127,6 +114,7 @@ class _ConnectionListState extends State<ConnectionList> {
     return Scaffold(
       key: _scaffoldContactsListKey,
       backgroundColor: lightGrey,
+      // floatingActionButton: getFloatingActionBtn(),
       body: SmartRefresher(
           enablePullDown: true,
           header: WaterDropHeader(
@@ -137,6 +125,35 @@ class _ConnectionListState extends State<ConnectionList> {
           onRefresh: _onRefresh,
           child: _buildConnectionsList()),
     );
+  }
+
+  Widget getFloatingActionBtn() {
+    bool isGroupUser = false;
+
+    List<String> groupUsers = [
+      "brijesh.sakariya",
+      "abiola.rasheed.2",
+      "olabisi.abraham.1",
+      "black"
+    ];
+    UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+
+    groupUsers.forEach((element) {
+      if (element == userBloc.user.userName) {
+        isGroupUser = true;
+      }
+    });
+
+    return !isGroupUser
+        ? null
+        : FloatingActionButton(
+            backgroundColor: navyBlue,
+            child: Icon(Icons.add),
+            onPressed: () {
+              CustomerProfile user = CustomerProfile();
+              _connectionListBloc.addTestConversationForGroup(user: user);
+            },
+          );
   }
 
   Widget _buildConnectionsList() {
@@ -167,6 +184,13 @@ class _ConnectionListState extends State<ConnectionList> {
                   break;
                 case ConnectionState.done:
                   if (snapshot.hasData) {
+                    if (snapshot.data.length == 0) {
+                      return NoItemInList(
+                        msg: "No connection found !!",
+                        isResult: true,
+                      );
+                    }
+
                     return ListView.builder(
                       padding: EdgeInsets.symmetric(
                         vertical: 4,
@@ -229,6 +253,8 @@ class _ConnectionListState extends State<ConnectionList> {
   }
 
   void getList() async {
+    ConnectionListBloc connectionListBloc =
+        Provider.of<ConnectionListBloc>(context, listen: false);
     if (!isLoading) {
       if (next != null && !isLoading) {
         if (mounted) {
@@ -254,9 +280,6 @@ class _ConnectionListState extends State<ConnectionList> {
         if (mounted) setState(() {});
         // connectionsList.addAll(users);
 
-        ConnectionListBloc connectionListBloc =
-            Provider.of<ConnectionListBloc>(context, listen: false);
-
         connectionListBloc.setConnectionUsers(users: users);
 
         // ConnectionListManager().saveConnectionsToDB(connections: users);
@@ -266,10 +289,11 @@ class _ConnectionListState extends State<ConnectionList> {
         /// adding chat Users in database
         ChatUserManager().addUsers(users);
       }
-      if (connectionsList.isEmpty) {
+      if (connectionListBloc.connectionUsers.isEmpty) {
         noItemInList = true;
         if (mounted) setState(() {});
-      } else if (next == null && connectionsList.length > 6) {
+      } else if (next == null &&
+          connectionListBloc.connectionUsers.length > 6) {
         _scaffoldContactsListKey.currentState.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
@@ -452,7 +476,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
       },
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 2),
-        child: UserTile(user: widget.user),
+        child: UserTileForConnection(user: widget.user),
       ),
     );
   }

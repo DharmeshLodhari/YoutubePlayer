@@ -1,5 +1,7 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -78,6 +80,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
         softWrap: false,
         maxLines: 1,
       ),
+      actions: getActions(),
       bottom: tabBar(),
     );
   }
@@ -169,6 +172,56 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
           ),
         ],
       ),
+    );
+  }
+
+  List<Widget> getActions() {
+    List<Widget> list = [
+      searchUserBtn(),
+      SizedBox(
+        width: 8,
+      ),
+      createGroupBtn(),
+      SizedBox(
+        width: 16,
+      ),
+    ];
+
+    return list;
+  }
+
+  Widget createGroupBtn() {
+    return RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
+      icon: Icon(
+        SlydoAppIcon.add,
+        size: 16,
+        color: blackFont,
+      ),
+      onTap: () {
+        Navigator.of(context).pushNamed("/select-user-for-group");
+      },
+      backgroundColor: lightGrey,
+      enableMargin: true,
+    );
+  }
+
+  Widget searchUserBtn() {
+    return RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
+      icon: Icon(
+        SlydoAppIcon.search,
+        size: 16,
+        color: blackFont,
+      ),
+      onTap: () {
+        // Navigator.of(context).pushNamed("/user-product-and-service-search",
+        //     arguments: {"searchedUser": searchedUser});
+      },
+      backgroundColor: lightGrey,
+      enableMargin: true,
     );
   }
 

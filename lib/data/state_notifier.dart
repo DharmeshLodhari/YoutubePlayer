@@ -397,6 +397,12 @@ class ConnectionListBloc extends ChangeNotifier {
     notifyListeners();
   }
 
+  void addTestConversationForGroup({CustomerProfile user}) {
+    _connectionUsers.add(user);
+
+    notifyListeners();
+  }
+
   Future<List<CustomerProfile>> _getConnectionUsers() async {
     return await ConnectionListManager().getConnectionsFromDB();
   }

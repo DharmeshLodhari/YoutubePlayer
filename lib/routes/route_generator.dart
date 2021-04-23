@@ -26,6 +26,8 @@ import 'package:Slydo/screens/more_apps/hotels/search_hotel.dart';
 import 'package:Slydo/screens/more_apps/hotels/specific_category_hotel_list.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/forms/add_media_to_chat_message.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/forms/send_envelope.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/screens/add_chat_group/select_user_for_group.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/screens/add_chat_group/set_name_and_profile_for_group.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/screens/chat_screen.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/screens/envelope_detail_screen.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/screens/view_chat_media.dart';
@@ -514,6 +516,21 @@ class RouteGenerator {
           settings: settings,
         );
 
+      case '/select-user-for-group':
+        return PageTransition(
+          child: SelectUserForGroup(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case '/set-name-and-profile-for-group':
+        return PageTransition(
+          child: SetNameAndProfileOfGroup(arguments: settings.arguments),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
       case '/send-envelope':
         return PageTransition(
           child: SendEnvelope(arguments: settings.arguments),
@@ -521,6 +538,7 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
+
       case '/envelope-detail':
         return PageTransition(
           child: EnvelopeDetailScreen(arguments: settings.arguments),
