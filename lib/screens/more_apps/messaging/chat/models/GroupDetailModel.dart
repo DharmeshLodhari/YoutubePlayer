@@ -1,0 +1,74 @@
+import 'package:Slydo/screens/more_apps/messaging/chat/models/Participant.dart';
+
+class GroupDetailModel {
+  List<String> adminUsers;
+  String avatar;
+  List<String> blockedParticipants;
+  String conversationId;
+  String fullName;
+  bool isGroupConversation;
+  List<String> mutedParticipants;
+  List<Participant> participants;
+  String type;
+  String username;
+
+  GroupDetailModel(
+      {this.adminUsers = const [],
+      this.avatar,
+      this.blockedParticipants = const [],
+      this.conversationId,
+      this.fullName,
+      this.isGroupConversation,
+      this.mutedParticipants = const [],
+      this.participants = const [],
+      this.type,
+      this.username});
+
+  factory GroupDetailModel.fromJson(Map<String, dynamic> json) {
+    return GroupDetailModel(
+      adminUsers: json['admin_users'] != null
+          ? new List<String>.from(json['admin_users'])
+          : [],
+      avatar: json['avatar'],
+      blockedParticipants: json['blocked_participants'] != null
+          ? new List<String>.from(json['blocked_participants'])
+          : [],
+      conversationId: json['conversation_id'],
+      fullName: json['full_name'],
+      isGroupConversation: json['is_group_conversation'],
+      mutedParticipants: json['muted_participants'] != null
+          ? new List<String>.from(json['muted_participants'])
+          : [],
+      participants: json['participants'] != null
+          ? (json['participants'] as List)
+              .map((i) => Participant.fromJson(i))
+              .toList()
+          : [],
+      type: json['type'],
+      username: json['username'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['avatar'] = this.avatar;
+    data['conversation_id'] = this.conversationId;
+    data['full_name'] = this.fullName;
+    data['is_group_conversation'] = this.isGroupConversation;
+    data['type'] = this.type;
+    data['username'] = this.username;
+    if (this.adminUsers != null) {
+      data['admin_users'] = this.adminUsers;
+    }
+    if (this.blockedParticipants != null) {
+      data['blocked_participants'] = this.blockedParticipants;
+    }
+    if (this.mutedParticipants != null) {
+      data['muted_participants'] = this.mutedParticipants;
+    }
+    if (this.participants != null) {
+      data['participants'] = this.participants.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}

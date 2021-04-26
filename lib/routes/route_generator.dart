@@ -30,6 +30,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/screens/add_chat_group/se
 import 'package:Slydo/screens/more_apps/messaging/chat/screens/add_chat_group/set_name_and_profile_for_group.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/screens/chat_screen.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/screens/envelope_detail_screen.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/screens/group_detail_screen.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/screens/view_chat_media.dart';
 import 'package:Slydo/screens/more_apps/messaging/forms/compose_message.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_list.dart';
@@ -542,6 +543,14 @@ class RouteGenerator {
       case '/envelope-detail':
         return PageTransition(
           child: EnvelopeDetailScreen(arguments: settings.arguments),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case '/group-detail':
+        return PageTransition(
+          child: GroupDetailScreen(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

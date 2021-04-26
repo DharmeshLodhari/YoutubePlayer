@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:Slydo/screens/more_apps/messaging/chat/models/AddGroupModel.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/models/message.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/util.dart';
@@ -338,12 +339,270 @@ class MessageAuth extends AuthService {
     }
     var responseBody = await response.stream.bytesToString();
     debugPrint("$responseBody");
+
     if (response.statusCode == 201) {
       return true;
     } else {
       debugPrint(
           "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
       return Future.error("ERROR:- $responseBody");
+    }
+  }
+
+  // Get status of the user you are chatting with
+  Future<GroupDetailModel> getGroupConversationDetail(
+      String conversationID) async {
+    var url = secureBaseUrl +
+        "/api/v1/user/group-conversation/detail/" +
+        conversationID +
+        "/";
+    var headers = await getAuthHeaders();
+    var response = await http
+        .get(url, headers: headers)
+        .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> jsonData = json.decode(response.body);
+
+      jsonData.forEach((key, value) {
+        debugPrint(" => $key:- $value");
+      });
+
+      GroupDetailModel groupDetailModel = GroupDetailModel.fromJson(jsonData);
+      return groupDetailModel;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  \nRESPONSE BODY:- \n${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<bool> addParticipantToGroup(
+      {String conversationId, String userName}) async {
+    var url = secureBaseUrl +
+        "/api/v1/user/group-conversation/add-user/" +
+        conversationId +
+        "/";
+    var headers = await getAuthHeaders();
+    Map<String, dynamic> data = {"user": userName};
+
+    var response =
+        await http.post(url, headers: headers, body: jsonEncode(data));
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<bool> removeParticipantFromAdmin(
+      {String conversationId, String userName}) async {
+    var url = secureBaseUrl +
+        "/api/v1/user/group-conversation/remove-admin-user/" +
+        conversationId +
+        "/";
+    var headers = await getAuthHeaders();
+    Map<String, dynamic> data = {"user": userName};
+
+    var response =
+        await http.patch(url, headers: headers, body: jsonEncode(data));
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<bool> makeParticipantAdmin(
+      {String conversationId, String userName}) async {
+    var url = secureBaseUrl +
+        "/api/v1/user/group-conversation/add-admin-user/" +
+        conversationId +
+        "/";
+    var headers = await getAuthHeaders();
+    Map<String, dynamic> data = {"user": userName};
+
+    var response =
+        await http.patch(url, headers: headers, body: jsonEncode(data));
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<bool> muteParticipantFromGroup(
+      {String conversationId, String userName}) async {
+    var url = secureBaseUrl +
+        "/api/v1/user/group-conversation/mute-participant/" +
+        conversationId +
+        "/";
+    var headers = await getAuthHeaders();
+    Map<String, dynamic> data = {"user": userName};
+
+    var response =
+        await http.patch(url, headers: headers, body: jsonEncode(data));
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<bool> unMuteParticipantFromGroup(
+      {String conversationId, String userName}) async {
+    var url = secureBaseUrl +
+        "/api/v1/user/group-conversation/unmute-participant/" +
+        conversationId +
+        "/";
+    var headers = await getAuthHeaders();
+    Map<String, dynamic> data = {"user": userName};
+
+    var response =
+        await http.patch(url, headers: headers, body: jsonEncode(data));
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<bool> blockParticipantFromGroup(
+      {String conversationId, String userName}) async {
+    var url = secureBaseUrl +
+        "/api/v1/user/group-conversation/block-participants/" +
+        conversationId +
+        "/";
+    var headers = await getAuthHeaders();
+    Map<String, dynamic> data = {"user": userName};
+
+    var response =
+        await http.patch(url, headers: headers, body: jsonEncode(data));
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<bool> unBlockParticipantFromGroup(
+      {String conversationId, String userName}) async {
+    var url = secureBaseUrl +
+        "/api/v1/user/group-conversation/unblock-participants/" +
+        conversationId +
+        "/";
+    var headers = await getAuthHeaders();
+    Map<String, dynamic> data = {"user": userName};
+
+    var response =
+        await http.patch(url, headers: headers, body: jsonEncode(data));
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<bool> removeParticipantFromGroup(
+      {String conversationId, String userName}) async {
+    var url = secureBaseUrl +
+        "/api/v1/user/group-conversation/remove-user/" +
+        conversationId +
+        "/";
+    var headers = await getAuthHeaders();
+    Map<String, dynamic> data = {"user": userName};
+
+    var response =
+        await http.patch(url, headers: headers, body: jsonEncode(data));
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<bool> exitFromGroup({String conversationId}) async {
+    var url = secureBaseUrl +
+        "/api/v1/user/group-conversation/exit-group/" +
+        conversationId +
+        "/";
+    var headers = await getAuthHeaders();
+
+    var response = await http.get(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<bool> searchParticipantInGroup(
+      {String conversationId, String query}) async {
+    query = "abiola.rasheed.2";
+    var url = secureBaseUrl +
+        "/api/v1/user/group-conversation/search-participants/$conversationId?q=" +
+        query +
+        "/";
+    debugPrint("URL:- $url");
+    var headers = await getAuthHeaders();
+
+    var response = await http.get(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      debugPrint("Result:- ${response.body}");
+      return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<bool> searchUserInContact({String query}) async {
+    query = "abiola";
+    var url = secureBaseUrl +
+        "/api/v1/user/group-conversation/search-user-contacts?q=" +
+        query +
+        "/";
+    debugPrint("UR");
+    var headers = await getAuthHeaders();
+
+    var response = await http.get(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      debugPrint("Result:- ${response.body}");
+      return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
     }
   }
 }

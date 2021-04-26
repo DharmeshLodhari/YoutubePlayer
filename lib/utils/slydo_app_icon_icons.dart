@@ -259,4 +259,12 @@ class SlydoAppIcon {
       IconData(0xe871, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData copy =
       IconData(0xe872, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData make_admin =
+      IconData(0xe873, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData remove_admin =
+      IconData(0xe874, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData mute =
+      IconData(0xe875, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData unmute =
+      IconData(0xe876, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }

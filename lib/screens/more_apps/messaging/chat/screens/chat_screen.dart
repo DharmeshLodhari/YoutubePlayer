@@ -193,12 +193,17 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   bool isReplyingMessage = false;
   String replayingMessage;
 
+  /// variables for group chat message
+  bool isGroupConversation = false;
+
   @override
   void initState() {
     messageController = TextEditingController();
     searchItemTextController = TextEditingController();
     messageFocus = FocusNode();
     recipientUser = widget.arguments["searchedUser"];
+
+    determineIfConversationIsGroup();
 
     setupScrollController();
 
@@ -266,6 +271,16 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
     ChatUserManager().clearChatUserMessageCount(
         conversationId: recipientUser.conversationId);
+  }
+
+  void determineIfConversationIsGroup() {
+    if (recipientUser != null) {
+      debugPrint("${recipientUser.fullName} == ${recipientUser.userName}");
+      if (recipientUser.fullName == recipientUser.userName) {
+        isGroupConversation = true;
+        debugPrint("===> Conversation is Group Conversation !!!");
+      }
+    }
   }
 
   void setupShakeDetector() {
@@ -850,7 +865,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       leadingWidth: 40,
       title: GestureDetector(
         onTap: () {
-          Navigator.pushNamed(context, '/profile',
+          // Navigator.pushNamed(context, '/profile',
+          //     arguments: {"searchedUserName": recipientUser.userName});
+          Navigator.pushNamed(context, '/group-detail',
               arguments: {"searchedUserName": recipientUser.userName});
         },
         child: Row(
@@ -1953,7 +1970,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         break;
       case "gif_image":
         finalUI = renderGIFImage(message: messageData);
-
 
         break;
       default:
