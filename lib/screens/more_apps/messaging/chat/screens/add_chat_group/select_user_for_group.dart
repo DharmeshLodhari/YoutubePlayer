@@ -1,24 +1,22 @@
-import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/colors.dart';
-import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/search_text_field.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:toast/toast.dart';
 
+// ignore: must_be_immutable
 class SelectUserForGroup extends StatefulWidget {
+  var arguments;
+
+  SelectUserForGroup({this.arguments});
+
   @override
   _SelectUserForGroupState createState() => _SelectUserForGroupState();
 }
@@ -30,24 +28,27 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
   int count = 0;
   String next = "";
   String previous = "";
-  List<CustomerProfile> searchedConnectionList = [];
+  List<CustomerProfile> connectionList = [];
   List<CustomerProfile> selectedConnectionList = [];
-  RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
   ScrollController _scrollController = new ScrollController();
 
   TextEditingController searchUserController;
 
   bool isLoading = false;
+  bool isSearchIsEmpty = false;
   bool noItemInList = false;
 
-  ConnectionListBloc _connectionListBloc;
+  ///For checking if this page is oprn to add user is existingGroup or not
+  bool isForAddingUserInGroup = false;
 
   @protected
   void initState() {
-    searchUserController = TextEditingController();
+    isForAddingUserInGroup = widget.arguments != null
+        ? widget.arguments["isForAddingUserInGroup"] ?? false
+        : false;
 
-    fetchConnectionListFromDbIfAvailable();
+    searchUserController = TextEditingController();
+    this.getList();
 
     super.initState();
     _scrollController.addListener(() {
@@ -58,54 +59,37 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
       }
     });
 
-    super.initState();
-  }
-
-  void fetchConnectionListFromDbIfAvailable() async {
-    ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
-        myGlobals.scaffoldKey.currentContext,
-        listen: false);
-
-    isLoading = true;
-    if (mounted) setState(() {});
-
-    int result = await connectionListBloc.getConnectionsCount();
-    debugPrint("RESULT FROM CONNECTION LIST :- $result");
-    if (result == 0) {
-      isLoading = false;
-      await this.getList();
-    }
-
-    searchedConnectionList = connectionListBloc.connectionUsers;
-    isLoading = false;
-    if (mounted) setState(() {});
-  }
-
-  void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        count = 0;
-        next = "";
-        previous = "";
-
-        noItemInList = false;
-        getList();
-        _refreshController.refreshCompleted();
+    searchUserController.addListener(() {
+      if (searchUserController.text.length >= 5) {
+        setState(() {
+          count = 0;
+          next = "";
+          previous = "";
+          connectionList.clear();
+          noItemInList = false;
+          getList();
+        });
+      }
+      if (connectionList.isNotEmpty || searchUserController.text.length != 0) {
+        if (mounted) {
+          setState(() {
+            isSearchIsEmpty = false;
+          });
+        }
       } else {
-        Toast.show(
-            AppLocalization.of(context).internetConnectionNotAvailable, context,
-            gravity: Toast.BOTTOM, backgroundColor: darkBlue());
-        _refreshController.refreshCompleted();
+        if (mounted) {
+          setState(() {
+            isSearchIsEmpty = true;
+          });
+        }
       }
     });
+
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    _connectionListBloc = Provider.of<ConnectionListBloc>(context);
-
     return Scaffold(
       key: _scaffoldSelectUserForGroupKey,
       backgroundColor: Colors.white,
@@ -120,15 +104,21 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
         ? null
         : FloatingActionButton(
             backgroundColor: navyBlue,
-            onPressed: () {
-              Navigator.of(context).pushNamed("/set-name-and-profile-for-group",
-                  arguments: {"users": selectedConnectionList});
-            },
+            onPressed: btnPressed,
             child: Icon(
               Icons.arrow_forward_rounded,
               size: 28,
             ),
           );
+  }
+
+  void btnPressed() {
+    if (isForAddingUserInGroup) {
+      Navigator.of(context).pop(selectedConnectionList);
+    } else {
+      Navigator.of(context).pushNamed("/set-name-and-profile-for-group",
+          arguments: {"users": selectedConnectionList});
+    }
   }
 
   Widget getAppBar() {
@@ -229,23 +219,27 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
   }
 
   Widget _buildConnectionsList() {
-    return isLoading
-        ? Center(
-            child: CircularLoadingIndicator(),
+    return isSearchIsEmpty
+        ? NoItemInList(
+            msg: AppLocalization.of(context).pleaseTypeSomethingToGetResult,
+            isResult: false,
           )
-        : searchedConnectionList.length == 0
+        : noItemInList
             ? NoItemInList(
-                msg: "No connection found !!",
-                isResult: true,
+                msg: AppLocalization.of(context).noResultFound,
               )
             : ListView.builder(
                 padding: EdgeInsets.symmetric(
                   vertical: 4,
                 ),
                 //+1 for progressbar
-                itemCount: searchedConnectionList.length,
+                itemCount: connectionList.length + 1,
                 itemBuilder: (BuildContext context, int index) {
-                  return getUserTile(user: searchedConnectionList[index]);
+                  if (index == connectionList.length) {
+                    return _buildIndicator();
+                  } else {
+                    return getUserTile(user: connectionList[index]);
+                  }
                 },
                 controller: _scrollController,
               );
@@ -263,9 +257,6 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
   }
 
   Future<void> getList() async {
-    ConnectionListBloc connectionListBloc =
-        Provider.of<ConnectionListBloc>(context, listen: false);
-
     if (!isLoading) {
       if (next != null && !isLoading) {
         if (mounted) {
@@ -273,14 +264,14 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
             isLoading = true;
           });
         }
-        Map<String, dynamic> result = await UserAuth().contacts(next, previous);
+        Map<String, dynamic> result = await UserAuth().searchUserInContact(
+            next, previous,
+            query: searchUserController.text.trim());
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
 
         List tempList = result['results'];
-
-        // debugPrint("List:- $tempList");
 
         List<CustomerProfile> users = List<CustomerProfile>();
 
@@ -289,22 +280,14 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
 
         isLoading = false;
         if (mounted) setState(() {});
-        // connectionsList.addAll(users);
 
-        connectionListBloc.setConnectionUsers(users: users);
-
-        // ConnectionListManager().saveConnectionsToDB(connections: users);
-
+        connectionList.addAll(users);
         if (mounted) setState(() {});
-
-        /// adding chat Users in database
-        ChatUserManager().addUsers(users);
       }
-      if (connectionListBloc.connectionUsers.isEmpty) {
+      if (connectionList.isEmpty) {
         noItemInList = true;
         if (mounted) setState(() {});
-      } else if (next == null &&
-          connectionListBloc.connectionUsers.length > 6) {
+      } else if (next == null && connectionList.length > 6) {
         _scaffoldSelectUserForGroupKey.currentState.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),

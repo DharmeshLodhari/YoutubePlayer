@@ -650,4 +650,58 @@ class UserAuth extends AuthService {
     //       "RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
     // }
   }
+
+  // Future<bool> searchUserInContact(String next ,String previous,{String query}) async {
+  //   var url = secureBaseUrl +
+  //       "/api/v1/user/group-conversation/search-user-contacts?q=$query/";
+  //   debugPrint("UR");
+  //   var headers = await getAuthHeaders();
+  //
+  //   var response = await http.get(url, headers: headers);
+  //
+  //   if (response.statusCode == 200) {
+  //     debugPrint("Result:- ${response.body}");
+  //     return true;
+  //   } else {
+  //     debugPrint(
+  //         "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+  //     return Future.error("ERROR:- ${response.body}");
+  //   }
+  // }
+
+  // Search User in Contact
+  Future<Map<String, dynamic>> searchUserInContact(String next, String previous,
+      {String query}) async {
+    var url =
+        secureBaseUrl + "/api/v1/user/group-conversation/search-user-contacts";
+
+    if (query != "") {
+      url = url + "?q=$query/";
+    }
+    debugPrint("URL:- $url");
+    if (next == null) {
+      return null;
+    }
+    if (next != "") {
+      url = getSecureUrl(url: next);
+    }
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": jsonData["results"],
+      };
+      return result;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
 }

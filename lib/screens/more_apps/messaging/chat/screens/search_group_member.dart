@@ -1,15 +1,14 @@
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversationModel.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/Participant.dart';
-import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
-import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
-import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/search_text_field.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -17,103 +16,103 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
-class GroupDetailScreen extends StatefulWidget {
-  final arguments;
+import '../../message_auth.dart';
 
-  GroupDetailScreen({this.arguments});
+// ignore: must_be_immutable
+class SearchGroupMember extends StatefulWidget {
+  var arguments;
+
+  SearchGroupMember({this.arguments});
 
   @override
-  _GroupDetailScreenState createState() => _GroupDetailScreenState();
+  _SearchGroupMemberState createState() => _SearchGroupMemberState();
 }
 
-class _GroupDetailScreenState extends State<GroupDetailScreen> {
-  final GlobalKey<ScaffoldState> _scaffoldGroupDetailScreen =
+class _SearchGroupMemberState extends State<SearchGroupMember> {
+  final GlobalKey<ScaffoldState> _scaffoldSearchGroupMemberKey =
       new GlobalKey<ScaffoldState>();
 
-  SlidableController _slideController;
+  int count = 0;
+  String next = "";
+  String previous = "";
+  List<Participant> groupMember = [];
+  ScrollController _scrollController = new ScrollController();
+
+  TextEditingController searchUserController;
+
+  bool isLoading = false;
+  bool isSearchIsEmpty = false;
+  bool noItemInList = false;
 
   GroupDetailModel groupDetail;
-  bool isLoading = false;
 
+  SlidableController _slideController;
   UserBloc userBloc;
 
   @protected
   void initState() {
-    getGroupDetail();
-
+    searchUserController = TextEditingController();
     _slideController = SlidableController(
       onSlideAnimationChanged: handleSlideAnimationChanged,
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
     );
+
+    groupDetail = widget.arguments["groupDetail"];
+
+    this.getList();
+
     super.initState();
-  }
-
-  void getGroupDetail() {
-    ChatConversationModel _chatConversationModel;
-
-    _chatConversationModel = widget.arguments["chat_conversation"] ??
-        ChatConversationModel(
-          conversationId: "36bce4e8-427b-4f47-b292-a40c69b4e776",
-          adminUsers: [],
-          avatar:
-              "https://slydo-assets.s3.amazonaws.com/media/image_cropper_1619181971304.jpg",
-          blockedParticipants: [],
-          mutedParticipants: [],
-          fullName: "Test Group 3",
-          isGroupConversation: true,
-          participants: [
-            "abiola.rasheed.2",
-            "black",
-            "brijesh.sakariya",
-            "ola.abraham",
-            "olabisi.abraham.1"
-          ],
-          type: "User",
-          username: "Test Group 3",
-        );
-
-    groupDetail = convertChatConversationToGroupDetail(_chatConversationModel);
-
-    isLoading = true;
-    if (mounted) setState(() {});
-
-    MessageAuth()
-        .getGroupConversationDetail(groupDetail.conversationId)
-        .then((value) {
-      groupDetail = value;
-      isLoading = false;
-      if (mounted) setState(() {});
-    }).catchError((error) {
-      debugPrint("ERROR:- $error");
-      isLoading = false;
-      if (mounted) setState(() {});
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+              _scrollController.position.maxScrollExtent &&
+          _scrollController.position.pixels != 0) {
+        getList();
+      }
     });
-  }
 
-  GroupDetailModel convertChatConversationToGroupDetail(
-      ChatConversationModel chatConversationModel) {
-    GroupDetailModel groupDetailModel = GroupDetailModel(
-        fullName: chatConversationModel.fullName,
-        username: chatConversationModel.username,
-        type: chatConversationModel.type,
-        mutedParticipants: chatConversationModel.mutedParticipants,
-        blockedParticipants: chatConversationModel.blockedParticipants,
-        avatar: chatConversationModel.avatar,
-        conversationId: chatConversationModel.conversationId,
-        isGroupConversation: chatConversationModel.isGroupConversation,
-        adminUsers: chatConversationModel.adminUsers,
-        participants: []);
-    return groupDetailModel;
+    searchUserController.addListener(() {
+      if (searchUserController.text.length >= 5) {
+        setState(() {
+          count = 0;
+          next = "";
+          previous = "";
+          groupMember.clear();
+          noItemInList = false;
+          getList();
+        });
+      }
+      if (groupMember.isNotEmpty || searchUserController.text.length != 0) {
+        if (mounted) {
+          setState(() {
+            isSearchIsEmpty = false;
+          });
+        }
+      } else {
+        if (mounted) {
+          setState(() {
+            isSearchIsEmpty = true;
+          });
+        }
+      }
+    });
+
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    return Scaffold(
-      key: _scaffoldGroupDetailScreen,
-      backgroundColor: Colors.white,
-      appBar: getAppBar(),
-      body: getScaffoldBody(),
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context, groupDetail);
+        return Future.value(false);
+      },
+      child: Scaffold(
+        key: _scaffoldSearchGroupMemberKey,
+        backgroundColor: Colors.white,
+        appBar: getAppBar(),
+        body: getScaffoldBody(),
+      ),
     );
   }
 
@@ -130,177 +129,119 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
           size: 24,
         ),
         onPressed: () {
-          Navigator.pop(context);
+          Navigator.pop(context, groupDetail);
         },
       ),
-      title: Text(
-        groupDetail.fullName,
-        style: TextStyle(
-            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
-        overflow: TextOverflow.fade,
-        softWrap: false,
-        maxLines: 1,
-      ),
-      actions: [
-        editGroupBtn(),
-        SizedBox(width: 8),
-        addUserToGroupBtn(),
-        SizedBox(
-          width: 16,
-        )
-      ],
+      title: getSearchTextField(),
     );
   }
 
-  Widget addUserToGroupBtn() {
-    return RoundedBackgroundIcon(
-      height: 34,
-      width: 34,
-      icon: Icon(
-        SlydoAppIcon.send_connection_request,
-        size: 16,
-        color: blackFont,
+  Widget getSearchTextField() {
+    return Container(
+      padding: EdgeInsets.only(right: 16),
+      child: SearchTextField(
+        hintText: "Search...",
+        onSubmit: () {
+          debugPrint("Searched Text:- ${searchUserController.text}");
+        },
+        textEditingController: searchUserController,
       ),
-      onTap: () {
-        addParticipantToGroup();
-      },
-      backgroundColor: iconBtnGrey,
-      enableMargin: true,
-    );
-  }
-
-  Widget editGroupBtn() {
-    return RoundedBackgroundIcon(
-      height: 34,
-      width: 34,
-      icon: Icon(
-        SlydoAppIcon.edit,
-        size: 16,
-        color: blackFont,
-      ),
-      onTap: () {},
-      backgroundColor: iconBtnGrey,
-      enableMargin: true,
     );
   }
 
   Widget getScaffoldBody() {
-    return isLoading
-        ? Center(
-            child: CircularLoadingIndicator(),
-          )
-        : Container(
-            child: Column(
-              children: [
-                Expanded(child: _buildConnectionsList()),
-              ],
-            ),
-          );
-  }
-
-  Widget _buildConnectionsList() {
-    return SingleChildScrollView(
+    return Container(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            height: 24,
-          ),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Members (${groupDetail.participants.length})",
-                  style: TextStyle(
-                      color: darkGrey,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400),
-                ),
-                GestureDetector(
-                  onTap: seeAllGroupMember,
-                  child: Text(
-                    "See all",
-                    style: TextStyle(
-                        color: blackFont,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(
-            height: 8,
-          ),
-          Column(
-              children: groupDetail.participants
-                  .asMap()
-                  .map((index, value) =>
-                      MapEntry(index, getUserTile(index: index, user: value)))
-                  .values
-                  .toList()),
-          SizedBox(
-            height: 16,
-          ),
-          Divider(
-            color: dividerColor,
-            height: 0,
-            thickness: 1.5,
-          ),
-          SizedBox(
-            height: 16,
-          ),
-          getExitGroupTile(),
+          Expanded(child: _buildConnectionsList()),
         ],
       ),
     );
   }
 
-  void seeAllGroupMember() async {
-    var result = await Navigator.of(context).pushNamed(
-        "/search-member-in-group",
-        arguments: {"groupDetail": groupDetail});
+  Widget _buildConnectionsList() {
+    return isSearchIsEmpty
+        ? NoItemInList(
+            msg: AppLocalization.of(context).pleaseTypeSomethingToGetResult,
+            isResult: false,
+          )
+        : noItemInList
+            ? NoItemInList(
+                msg: AppLocalization.of(context).noResultFound,
+              )
+            : ListView.builder(
+                padding: EdgeInsets.symmetric(
+                  vertical: 4,
+                ),
+                //+1 for progressbar
+                itemCount: groupMember.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == groupMember.length) {
+                    return _buildIndicator();
+                  } else {
+                    return getUserTile(index: index, user: groupMember[index]);
+                  }
+                },
+                controller: _scrollController,
+              );
+  }
 
-    if (result != null) {
-      debugPrint("Result:- $result");
-      groupDetail = result;
+  Widget _buildIndicator() {
+    return new Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: new Center(
+        child: new Opacity(
+            opacity: isLoading ? 1.0 : 00,
+            child: isLoading ? CircularLoadingIndicator() : Container()),
+      ),
+    );
+  }
 
-      if (mounted) setState(() {});
+  Future<void> getList() async {
+    if (!isLoading) {
+      if (next != null && !isLoading) {
+        if (mounted) {
+          setState(() {
+            isLoading = true;
+          });
+        }
+        Map<String, dynamic> result = await MessageAuth()
+            .searchParticipantInGroup(next, previous,
+                query: searchUserController.text.trim(),
+                conversationId: groupDetail.conversationId);
+        count = result['count'];
+        next = result['next'];
+        previous = result['previous'];
+
+        List tempList = result['results'];
+
+        List<Participant> users = List<Participant>();
+
+        tempList.forEach((element) => users.add(Participant.fromJson(element)));
+
+        isLoading = false;
+        if (mounted) setState(() {});
+
+        groupMember.addAll(users);
+        if (mounted) setState(() {});
+      }
+      if (groupMember.isEmpty) {
+        noItemInList = true;
+        if (mounted) setState(() {});
+      } else if (next == null && groupMember.length > 6) {
+        _scaffoldSearchGroupMemberKey.currentState.showSnackBar(SnackBar(
+          content:
+              Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
+          duration: Duration(milliseconds: 500),
+        ));
+      }
     }
   }
 
-  Widget getExitGroupTile() {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-      shadowColor: boxShadowTwo,
-      elevation: 0,
-      child: Container(
-        decoration: decorateBox(),
-        child: ListTile(
-          title: Text(
-            "Exit group",
-            maxLines: 1,
-            style: TextStyle(
-              color: mateRed,
-              fontWeight: FontWeight.w600,
-              fontSize: 14,
-            ),
-            overflow: TextOverflow.fade,
-            softWrap: false,
-          ),
-          leading: Icon(
-            SlydoAppIcon.leave,
-            color: mateRed,
-          ),
-          onTap: () {
-            exitFromGroup();
-          },
-        ),
-      ),
-    );
+  @override
+  void dispose() {
+    _scrollController?.dispose();
+    super.dispose();
   }
 
   Widget getUserTile({Participant user, int index}) {
@@ -311,6 +252,10 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
         type: user.type);
 
     return _getSlideLists(context, customerProfile, index);
+    // return Container(
+    //   padding: EdgeInsets.symmetric(vertical: 2),
+    //   child: UserTile(user: user),
+    // );
   }
 
   Widget _getSlideLists(BuildContext context, CustomerProfile user, int index) {

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/AddGroupModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/models/message.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
@@ -364,10 +365,6 @@ class MessageAuth extends AuthService {
     if (response.statusCode == 200) {
       Map<String, dynamic> jsonData = json.decode(response.body);
 
-      jsonData.forEach((key, value) {
-        debugPrint(" => $key:- $value");
-      });
-
       GroupDetailModel groupDetailModel = GroupDetailModel.fromJson(jsonData);
       return groupDetailModel;
     } else {
@@ -378,13 +375,18 @@ class MessageAuth extends AuthService {
   }
 
   Future<bool> addParticipantToGroup(
-      {String conversationId, String userName}) async {
+      {String conversationId, List<CustomerProfile> users}) async {
     var url = secureBaseUrl +
         "/api/v1/user/group-conversation/add-user/" +
         conversationId +
         "/";
     var headers = await getAuthHeaders();
-    Map<String, dynamic> data = {"user": userName};
+
+    List<String> userList = users.map((user) => user.userName).toList();
+
+    debugPrint("List of users to add:- $userList");
+
+    Map<String, dynamic> data = {"users": userList};
 
     var response =
         await http.post(url, headers: headers, body: jsonEncode(data));
@@ -410,7 +412,7 @@ class MessageAuth extends AuthService {
     var response =
         await http.patch(url, headers: headers, body: jsonEncode(data));
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else {
       debugPrint(
@@ -431,7 +433,7 @@ class MessageAuth extends AuthService {
     var response =
         await http.patch(url, headers: headers, body: jsonEncode(data));
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else {
       debugPrint(
@@ -452,7 +454,7 @@ class MessageAuth extends AuthService {
     var response =
         await http.patch(url, headers: headers, body: jsonEncode(data));
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else {
       debugPrint(
@@ -473,7 +475,7 @@ class MessageAuth extends AuthService {
     var response =
         await http.patch(url, headers: headers, body: jsonEncode(data));
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else {
       debugPrint(
@@ -494,7 +496,7 @@ class MessageAuth extends AuthService {
     var response =
         await http.patch(url, headers: headers, body: jsonEncode(data));
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else {
       debugPrint(
@@ -515,7 +517,7 @@ class MessageAuth extends AuthService {
     var response =
         await http.patch(url, headers: headers, body: jsonEncode(data));
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else {
       debugPrint(
@@ -536,7 +538,7 @@ class MessageAuth extends AuthService {
     var response =
         await http.patch(url, headers: headers, body: jsonEncode(data));
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else {
       debugPrint(
@@ -554,7 +556,7 @@ class MessageAuth extends AuthService {
 
     var response = await http.get(url, headers: headers);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else {
       debugPrint(
@@ -563,42 +565,34 @@ class MessageAuth extends AuthService {
     }
   }
 
-  Future<bool> searchParticipantInGroup(
+  // Search User in Contact
+  Future<Map<String, dynamic>> searchParticipantInGroup(
+      String next, String previous,
       {String conversationId, String query}) async {
-    query = "abiola.rasheed.2";
     var url = secureBaseUrl +
-        "/api/v1/user/group-conversation/search-participants/$conversationId?q=" +
-        query +
-        "/";
-    debugPrint("URL:- $url");
-    var headers = await getAuthHeaders();
-
-    var response = await http.get(url, headers: headers);
-
-    if (response.statusCode == 200) {
-      debugPrint("Result:- ${response.body}");
-      return true;
-    } else {
-      debugPrint(
-          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
-      return Future.error("ERROR:- ${response.body}");
+        "/api/v1/user/group-conversation/search-participants/$conversationId";
+    if (query != "") {
+      url = url + "?q=$query/";
     }
-  }
-
-  Future<bool> searchUserInContact({String query}) async {
-    query = "abiola";
-    var url = secureBaseUrl +
-        "/api/v1/user/group-conversation/search-user-contacts?q=" +
-        query +
-        "/";
-    debugPrint("UR");
+    debugPrint("URL:- $url");
+    if (next == null) {
+      return null;
+    }
+    if (next != "") {
+      url = getSecureUrl(url: next);
+    }
     var headers = await getAuthHeaders();
-
     var response = await http.get(url, headers: headers);
 
     if (response.statusCode == 200) {
-      debugPrint("Result:- ${response.body}");
-      return true;
+      var jsonData = json.decode(response.body);
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": jsonData["results"],
+      };
+      return result;
     } else {
       debugPrint(
           "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");

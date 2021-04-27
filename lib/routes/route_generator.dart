@@ -31,6 +31,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/screens/add_chat_group/se
 import 'package:Slydo/screens/more_apps/messaging/chat/screens/chat_screen.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/screens/envelope_detail_screen.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/screens/group_detail_screen.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/screens/search_group_member.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/screens/view_chat_media.dart';
 import 'package:Slydo/screens/more_apps/messaging/forms/compose_message.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_list.dart';
@@ -519,7 +520,9 @@ class RouteGenerator {
 
       case '/select-user-for-group':
         return PageTransition(
-          child: SelectUserForGroup(),
+          child: SelectUserForGroup(
+            arguments: settings.arguments,
+          ),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -527,6 +530,14 @@ class RouteGenerator {
       case '/set-name-and-profile-for-group':
         return PageTransition(
           child: SetNameAndProfileOfGroup(arguments: settings.arguments),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case '/search-member-in-group':
+        return PageTransition(
+          child: SearchGroupMember(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

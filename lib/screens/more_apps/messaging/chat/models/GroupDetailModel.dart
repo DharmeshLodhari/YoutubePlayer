@@ -11,6 +11,7 @@ class GroupDetailModel {
   List<Participant> participants;
   String type;
   String username;
+  String owner;
 
   GroupDetailModel(
       {this.adminUsers = const [],
@@ -22,31 +23,32 @@ class GroupDetailModel {
       this.mutedParticipants = const [],
       this.participants = const [],
       this.type,
-      this.username});
+      this.username,
+      this.owner});
 
   factory GroupDetailModel.fromJson(Map<String, dynamic> json) {
     return GroupDetailModel(
-      adminUsers: json['admin_users'] != null
-          ? new List<String>.from(json['admin_users'])
-          : [],
-      avatar: json['avatar'],
-      blockedParticipants: json['blocked_participants'] != null
-          ? new List<String>.from(json['blocked_participants'])
-          : [],
-      conversationId: json['conversation_id'],
-      fullName: json['full_name'],
-      isGroupConversation: json['is_group_conversation'],
-      mutedParticipants: json['muted_participants'] != null
-          ? new List<String>.from(json['muted_participants'])
-          : [],
-      participants: json['participants'] != null
-          ? (json['participants'] as List)
-              .map((i) => Participant.fromJson(i))
-              .toList()
-          : [],
-      type: json['type'],
-      username: json['username'],
-    );
+        adminUsers: json['admin_users'] != null
+            ? new List<String>.from(json['admin_users'])
+            : [],
+        avatar: json['avatar'],
+        blockedParticipants: json['blocked_participants'] != null
+            ? new List<String>.from(json['blocked_participants'])
+            : [],
+        conversationId: json['conversation_id'],
+        fullName: json['full_name'],
+        isGroupConversation: json['is_group_conversation'],
+        mutedParticipants: json['muted_participants'] != null
+            ? new List<String>.from(json['muted_participants'])
+            : [],
+        participants: json['participants'] != null
+            ? (json['participants'] as List)
+                .map((i) => Participant.fromJson(i))
+                .toList()
+            : [],
+        type: json['type'],
+        username: json['username'],
+        owner: json['owner']);
   }
 
   Map<String, dynamic> toJson() {
@@ -57,6 +59,7 @@ class GroupDetailModel {
     data['is_group_conversation'] = this.isGroupConversation;
     data['type'] = this.type;
     data['username'] = this.username;
+    data['owner'] = this.owner;
     if (this.adminUsers != null) {
       data['admin_users'] = this.adminUsers;
     }
