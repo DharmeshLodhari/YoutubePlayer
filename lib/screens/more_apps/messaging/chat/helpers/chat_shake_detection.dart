@@ -25,7 +25,8 @@ class ChatShakeDetection extends ChangeNotifier {
   void setupShakeDetector({@required CustomerProfile recipientUser}) {
     debugPrint("Setting up shake detection for ${recipientUser.userName}");
     _recipientUser = recipientUser;
-    _userBloc = Provider.of<UserBloc>(myGlobals.scaffoldKey.currentContext);
+    _userBloc = Provider.of<UserBloc>(myGlobals.scaffoldKey.currentContext,
+        listen: false);
     _detector = ShakeDetector.autoStart(
       onPhoneShake: () {
         // debugPrint("Shake Detected:- ${detector.mShakeCount}");
@@ -66,16 +67,27 @@ class ChatShakeDetection extends ChangeNotifier {
 
   /// To stop shake detection when user left chat
   void stopShakeDetector() {
-    debugPrint("Stopping shake detection for ${_recipientUser.userName}");
+    if (_recipientUser != null) {
+      debugPrint("Stopping shake detection for ${_recipientUser.userName}");
 
-    /// if nudge timer is already in action we stop it
-    if (_nudgeAlertTimer?.isActive ?? false) {
-      _nudgeAlertTimer.cancel();
+      /// if nudge timer is already in action we stop it
+      if (_nudgeAlertTimer?.isActive ?? false) {
+        _nudgeAlertTimer.cancel();
+      }
+
+      _detector?.stopListening();
+
+      _recipientUser = null;
+    } else {
+      /// if nudge timer is already in action we stop it
+      if (_nudgeAlertTimer?.isActive ?? false) {
+        _nudgeAlertTimer.cancel();
+      }
+
+      _detector?.stopListening();
+
+      _recipientUser = null;
     }
-
-    _detector?.stopListening();
-
-    _recipientUser = null;
   }
 
   void showShakingDialog() async {

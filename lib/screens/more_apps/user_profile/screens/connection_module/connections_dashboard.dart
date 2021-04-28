@@ -177,10 +177,6 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
 
   List<Widget> getActions() {
     List<Widget> list = [
-      searchUserBtn(),
-      SizedBox(
-        width: 8,
-      ),
       createGroupBtn(),
       SizedBox(
         width: 16,
@@ -207,23 +203,6 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
     );
   }
 
-  Widget searchUserBtn() {
-    return RoundedBackgroundIcon(
-      height: 34,
-      width: 34,
-      icon: Icon(
-        SlydoAppIcon.search,
-        size: 16,
-        color: blackFont,
-      ),
-      onTap: () {
-        // Navigator.of(context).pushNamed("/user-product-and-service-search",
-        //     arguments: {"searchedUser": searchedUser});
-      },
-      backgroundColor: lightGrey,
-      enableMargin: true,
-    );
-  }
 
   Widget tabViews() {
     return IndexedStack(

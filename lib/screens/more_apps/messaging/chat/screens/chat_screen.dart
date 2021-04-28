@@ -10,7 +10,9 @@ import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_shake_detect
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/db_socket_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/message_sound_player.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversationModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatMessageAction.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatTextMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/EditOrReplyMessageUI.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/audio_tile_for_chat.dart';
@@ -104,6 +106,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   Timer _timerForUserTypingState;
   Duration userMessageTypingStateUpdateTime = Duration(seconds: 2);
   bool isRecipientTyping = false;
+  String typingMessage = "";
 
   /// User Audio Recording state variables
   Timer _timerForCheckingAudioRecording;
@@ -195,6 +198,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   /// variables for group chat message
   bool isGroupConversation = false;
+  GroupDetailModel groupDetail;
+  bool isUserMuted = false;
+  bool isUserBlocked = false;
 
   @override
   void initState() {
@@ -202,8 +208,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     searchItemTextController = TextEditingController();
     messageFocus = FocusNode();
     recipientUser = widget.arguments["searchedUser"];
-
-    determineIfConversationIsGroup();
 
     setupScrollController();
 
@@ -266,7 +270,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     getUserStatus();
     initializeSocket();
     setUpAudioRecorder();
+    chatShakeDetection =
+        Provider.of<ChatShakeDetection>(myGlobals.scaffoldKey.currentContext);
     setupShakeDetector();
+    determineIfConversationIsGroup();
     await setupNetworkConnectionListener();
 
     ChatUserManager().clearChatUserMessageCount(
@@ -275,18 +282,80 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   void determineIfConversationIsGroup() {
     if (recipientUser != null) {
-      debugPrint("${recipientUser.fullName} == ${recipientUser.userName}");
       if (recipientUser.fullName == recipientUser.userName) {
         isGroupConversation = true;
+        stopShakeDetector();
+
         debugPrint("===> Conversation is Group Conversation !!!");
+        getGroupDetail();
       }
     }
   }
 
+  void getGroupDetail() {
+    ChatConversationModel _chatConversationModel;
+
+    _chatConversationModel = widget.arguments["chat_conversation"] ??
+        ChatConversationModel(
+          conversationId: "36bce4e8-427b-4f47-b292-a40c69b4e776",
+          adminUsers: [],
+          avatar:
+              "https://slydo-assets.s3.amazonaws.com/media/image_cropper_1619181971304.jpg",
+          blockedParticipants: [],
+          mutedParticipants: [],
+          fullName: "Test Group 3",
+          isGroupConversation: true,
+          participants: [
+            "abiola.rasheed.2",
+            "black",
+            "brijesh.sakariya",
+            "ola.abraham",
+            "olabisi.abraham.1"
+          ],
+          type: "User",
+          username: "Test Group 3",
+        );
+
+    groupDetail = convertChatConversationToGroupDetail(_chatConversationModel);
+    if (mounted) setState(() {});
+
+    MessageAuth()
+        .getGroupConversationDetail(recipientUser.conversationId)
+        .then((value) {
+      groupDetail = value;
+      if (mounted) setState(() {});
+    }).catchError((error) {
+      debugPrint("ERROR:- $error");
+      if (mounted) setState(() {});
+    });
+  }
+
+  GroupDetailModel convertChatConversationToGroupDetail(
+      ChatConversationModel chatConversationModel) {
+    GroupDetailModel groupDetailModel = GroupDetailModel(
+        fullName: chatConversationModel.fullName,
+        username: chatConversationModel.username,
+        type: chatConversationModel.type,
+        mutedParticipants: chatConversationModel.mutedParticipants,
+        blockedParticipants: chatConversationModel.blockedParticipants,
+        avatar: chatConversationModel.avatar,
+        conversationId: chatConversationModel.conversationId,
+        isGroupConversation: chatConversationModel.isGroupConversation,
+        adminUsers: chatConversationModel.adminUsers,
+        participants: []);
+    return groupDetailModel;
+  }
+
   void setupShakeDetector() {
-    chatShakeDetection =
-        Provider.of<ChatShakeDetection>(myGlobals.scaffoldKey.currentContext);
-    chatShakeDetection.setupShakeDetector(recipientUser: recipientUser);
+    debugPrint(
+        "isGroup Conversation $isGroupConversation ${recipientUser.userName != recipientUser.fullName}");
+    if (recipientUser.userName != recipientUser.fullName)
+      chatShakeDetection.setupShakeDetector(recipientUser: recipientUser);
+  }
+
+  void stopShakeDetector() {
+    if (recipientUser.userName != recipientUser.fullName)
+      chatShakeDetection?.stopShakeDetector();
   }
 
   Future<void> setupNetworkConnectionListener() async {
@@ -587,10 +656,12 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         if (checkIsMessageIsForCurrentChat(messageData)) {
           if (messageData['username'] != userBloc.user.userName) {
             isRecipientTyping = true;
+            typingMessage = messageData["message"];
             if (mounted) setState(() {});
 
             Future.delayed(Duration(seconds: 1)).then((value) {
               isRecipientTyping = false;
+              typingMessage = "";
               if (mounted) setState(() {});
             });
           }
@@ -699,6 +770,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     var data = {
       "message": "typing",
       "type": "user_typing_message",
+      "full_name": recipientUser.fullName,
       "conversation_id": recipientUser.conversationId,
     };
 
@@ -709,6 +781,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     var data = {
       "message": "recording audio",
       "type": "user_recording_audio_message",
+      "full_name": recipientUser.fullName,
       "conversation_id": recipientUser.conversationId,
     };
 
@@ -864,11 +937,16 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       ),
       leadingWidth: 40,
       title: GestureDetector(
-        onTap: () {
-          // Navigator.pushNamed(context, '/profile',
-          //     arguments: {"searchedUserName": recipientUser.userName});
-          Navigator.pushNamed(context, '/group-detail',
-              arguments: {"searchedUserName": recipientUser.userName});
+        onTap: () async {
+          stopShakeDetector();
+          if (isGroupConversation) {
+            await Navigator.of(context).pushNamed('/group-detail',
+                arguments: {"searchedUserName": recipientUser.userName});
+          } else {
+            await Navigator.pushNamed(context, '/profile',
+                arguments: {"searchedUserName": recipientUser.userName});
+          }
+          setupShakeDetector();
         },
         child: Row(
           children: [
@@ -893,7 +971,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                 Text(
                   recipientUser != null
                       ? isRecipientTyping
-                          ? "Typing.."
+                          ? typingMessage
                           : isOtherUserRecordingAudio
                               ? "recording audio"
                               : userStatus
@@ -1009,8 +1087,28 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       elevation: 10,
       margin: EdgeInsets.zero,
       shadowColor: boxShadowTwo,
-      child: getSearchBarLayout(),
+      child: checkIfParticipantIsMutedOrBlocked()
+          ? getMutedOrBlockedParticipantMessage()
+          : getSearchBarLayout(),
     );
+  }
+
+  bool checkIfParticipantIsMutedOrBlocked() {
+    if (!isGroupConversation) {
+      return false;
+    }
+    if (groupDetail.mutedParticipants.contains(userBloc.user.userName)) {
+      isUserMuted = true;
+    }
+    if (groupDetail.blockedParticipants.contains(userBloc.user.userName)) {
+      isUserBlocked = true;
+    }
+
+    if (isUserMuted || isUserBlocked) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   Widget getSearchBarLayout() {
@@ -1032,6 +1130,24 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         showMoreAction ? moreActionsBtn() : Container()
       ],
     );
+  }
+
+  Widget getMutedOrBlockedParticipantMessage() {
+    return Container(
+        color: isUserMuted ? lightGrey : mateRed.withOpacity(0.1),
+        constraints: BoxConstraints(minHeight: 54),
+        padding: EdgeInsets.symmetric(horizontal: 16),
+        child: Center(
+          child: Text(
+              isUserMuted
+                  ? "You are muted by the admin, Please contact admin to continue conversation in this group."
+                  : "You are blocked by the admin, Please contact admin to continue conversation in this group.",
+              style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: isUserMuted ? blackFont : mateRed),
+              textAlign: TextAlign.center),
+        ));
   }
 
   Widget getAudioCancelBtn() {
@@ -1216,13 +1332,16 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
             Provider.of<CustomerProfileBloc>(context, listen: false);
         customerProfileBloc.customer =
             await UserAuth().fetchCustomerProfile(recipientUser.userName);
-        Navigator.of(context).pushNamed(
+
+        stopShakeDetector();
+        await Navigator.of(context).pushNamed(
           '/request-payment',
           arguments: <String, bool>{
             'isFromProfile': false,
             'isFromChat': true,
           },
         );
+        setupShakeDetector();
       },
     );
   }
@@ -1245,13 +1364,15 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
             Provider.of<CustomerProfileBloc>(context, listen: false);
         customerProfileBloc.customer =
             await UserAuth().fetchCustomerProfile(recipientUser.userName);
-        Navigator.of(context).pushNamed(
+        stopShakeDetector();
+        await Navigator.of(context).pushNamed(
           '/send-payment',
           arguments: <String, bool>{
             'isFromProfile': false,
             'isFromChat': true,
           },
         );
+        setupShakeDetector();
       },
     );
   }
@@ -1472,9 +1593,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   void getEnvelopeAmount({bool isEmpty = false}) async {
+    stopShakeDetector();
     var result = await Navigator.of(context)
         .pushNamed("/send-envelope", arguments: {"isEmptyEnvelope": isEmpty});
-
+    setupShakeDetector();
     debugPrint("Result From send Envelope :- $result");
   }
 
@@ -1615,6 +1737,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         return;
       }
 
+      stopShakeDetector();
       var result = await Navigator.of(context).pushNamed(
         "/send-media-to-chat-message",
         arguments: {
@@ -1629,6 +1752,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       ).catchError((error) {
         debugPrint("Error: = = = = $error");
       });
+      setupShakeDetector();
 
       if (result == null) return;
 
@@ -1736,6 +1860,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     }
 
     if (capturedMediaPath != null) {
+      stopShakeDetector();
       var result = await Navigator.of(context).pushNamed(
         "/send-media-to-chat-message",
         arguments: {
@@ -1750,7 +1875,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       ).catchError((error) {
         debugPrint("Error: = = = = $error");
       });
-
+      setupShakeDetector();
       if (result == null) return;
 
       messageController.text = "";

@@ -27,6 +27,7 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
 
   MainSocketProvider mainSocketProvider;
   StreamSubscription streamSubscription;
+  String typingMessage = "";
 
   @override
   void initState() {
@@ -39,9 +40,11 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
         if (messageData["type"] == "user_typing_message" &&
             messageData["conversation_id"] == widget.user.conversationId) {
           isTyping = true;
+          typingMessage = messageData["message"];
           if (mounted) setState(() {});
           Future.delayed(Duration(milliseconds: 500)).then((value) {
             isTyping = false;
+            typingMessage = "";
             if (mounted) setState(() {});
           });
         }
@@ -116,7 +119,7 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
   Widget getSubtitle(BuildContext context) {
     return isTyping
         ? Text(
-            "Typing...",
+      typingMessage,
             style: TextStyle(
               color: naturalGreen,
             ),

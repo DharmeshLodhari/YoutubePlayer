@@ -25,9 +25,10 @@ import 'package:Slydo/screens/more_apps/hotels/partner_detail_page.dart';
 import 'package:Slydo/screens/more_apps/hotels/search_hotel.dart';
 import 'package:Slydo/screens/more_apps/hotels/specific_category_hotel_list.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/forms/add_media_to_chat_message.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/forms/group/set_name_and_profile_for_group.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/forms/group/update_group_name_and_profile.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/forms/send_envelope.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/screens/add_chat_group/select_user_for_group.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/screens/add_chat_group/set_name_and_profile_for_group.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/screens/chat_screen.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/screens/envelope_detail_screen.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/screens/group_detail_screen.dart';
@@ -530,6 +531,14 @@ class RouteGenerator {
       case '/set-name-and-profile-for-group':
         return PageTransition(
           child: SetNameAndProfileOfGroup(arguments: settings.arguments),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case '/update-name-and-profile-for-group':
+        return PageTransition(
+          child: UpdateGroupNameAndProfile(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

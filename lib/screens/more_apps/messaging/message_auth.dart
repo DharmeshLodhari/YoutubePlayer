@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:Slydo/screens/more_apps/messaging/chat/models/AddGroupModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/UpdateGroupDetailModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/models/message.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/auth.dart';
@@ -343,6 +344,51 @@ class MessageAuth extends AuthService {
 
     if (response.statusCode == 201) {
       return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
+      return Future.error("ERROR:- $responseBody");
+    }
+  }
+
+  Future<Map<String, dynamic>> updateGroupChat(
+      {UpdateGroupDetailModel group}) async {
+    var url = secureBaseUrl +
+        "/api/v1/user/group-conversation/${group.groupConversationId}/";
+    // debugPrint("URL:- $url");
+    var headers = await getAuthHeaders();
+
+    var request = http.MultipartRequest("PATCH", Uri.parse(url));
+
+    request.fields["group_name"] = group.name;
+
+    if (group.avatar != null) {
+      // Create multipart using filepath, string or bytes
+      var multipartFile1 =
+          await http.MultipartFile.fromPath("banner", group.avatar);
+
+      // Add multipart to request
+      request.files.add(multipartFile1);
+    }
+
+    headers.forEach((k, v) => request.headers[k] = v);
+
+    request.fields.forEach((key, value) {
+      debugPrint("$key :- $value");
+    });
+
+    var response = await request.send();
+    if (response.statusCode == 413) {
+      return Future.error(
+          "Please upload smaller image, Your image is too large.");
+
+      ///{"group_name":"Slydo Testing","description":null,"banner":"https://slydo-assets.s3.amazonaws.com/media/image_cropper_1619614137991.jpg","owner":"black"}
+    }
+    var responseBody = await response.stream.bytesToString();
+    debugPrint("$responseBody");
+
+    if (response.statusCode == 200) {
+      return jsonDecode(responseBody);
     } else {
       debugPrint(
           "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");

@@ -2,9 +2,9 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversationModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/Participant.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/tiles/user_tile_for_group_detail.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -142,9 +142,9 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
         maxLines: 1,
       ),
       actions: [
-        editGroupBtn(),
+        isLoading ? Container() : editGroupBtn(),
         SizedBox(width: 8),
-        addUserToGroupBtn(),
+        isLoading ? Container() : addUserToGroupBtn(),
         SizedBox(
           width: 16,
         )
@@ -178,7 +178,17 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
         size: 16,
         color: blackFont,
       ),
-      onTap: () {},
+      onTap: () async {
+        var result = await Navigator.of(context).pushNamed(
+            "/update-name-and-profile-for-group",
+            arguments: {"groupDetail": groupDetail});
+
+        if (result != null) {
+          debugPrint("Result:- $result");
+          groupDetail = result;
+          if(mounted) setState((){});
+        }
+      },
       backgroundColor: iconBtnGrey,
       enableMargin: true,
     );
@@ -320,7 +330,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
       direction: Axis.horizontal,
       actionPane: SlidableBehindActionPane(),
       actionExtentRatio: 0.20,
-      child: VerticalListItem(user),
+      child: VerticalListItem(user, groupDetail),
       actions: listActionSlideActions(user, index),
       secondaryActions: listSecondaryActions(user, index),
     );
@@ -370,7 +380,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
       );
     }
 
-    if (!isBlocked && isCurrentUserIsAdmin) {
+    if (!isBlocked) {
       leftSwipeActions.add(
         SlideActionButton(
             backgroundColor: lightGrey,
@@ -659,9 +669,11 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
 }
 
 class VerticalListItem extends StatefulWidget {
-  VerticalListItem(this.user);
+  VerticalListItem(this.user, this.groupDetail);
 
   final CustomerProfile user;
+
+  final GroupDetailModel groupDetail;
 
   @override
   _VerticalListItemState createState() => _VerticalListItemState();
@@ -678,7 +690,8 @@ class _VerticalListItemState extends State<VerticalListItem> {
       },
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 2),
-        child: UserTile(user: widget.user),
+        child: UserTileForGroupDetail(
+            user: widget.user, groupDetail: widget.groupDetail),
       ),
     );
   }
