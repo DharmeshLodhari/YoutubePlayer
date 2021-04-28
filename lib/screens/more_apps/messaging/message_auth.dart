@@ -227,9 +227,10 @@ class MessageAuth extends AuthService {
     }
     var headers = await getAuthHeaders();
 
-    var response = await http
-        .get(url, headers: headers)
-        .timeout(timeOutDuration, onTimeout: () => timeOutFunction(url: url));
+    // var response = await http
+    //     .get(url, headers: headers)
+    //     .timeout(timeOutDuration, onTimeout: () => timeOutFunction(url: url));
+    var response = await http.get(url, headers: headers);
 
     if (response.statusCode == 200) {
       List<String> previousMessages = [];
