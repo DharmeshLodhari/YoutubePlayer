@@ -10,7 +10,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_shake_detect
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/db_socket_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/message_sound_player.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversationModel.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatMessageAction.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatTextMessage.dart';
@@ -293,10 +293,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   void getGroupDetail() {
-    ChatConversationModel _chatConversationModel;
+    ChatConversation _chatConversationModel;
 
     _chatConversationModel = widget.arguments["chat_conversation"] ??
-        ChatConversationModel(
+        ChatConversation(
           conversationId: "36bce4e8-427b-4f47-b292-a40c69b4e776",
           adminUsers: [],
           avatar:
@@ -331,7 +331,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   GroupDetailModel convertChatConversationToGroupDetail(
-      ChatConversationModel chatConversationModel) {
+      ChatConversation chatConversationModel) {
     GroupDetailModel groupDetailModel = GroupDetailModel(
         fullName: chatConversationModel.fullName,
         username: chatConversationModel.username,

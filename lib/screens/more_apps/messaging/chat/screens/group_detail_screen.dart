@@ -1,5 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversationModel.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/Participant.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/user_tile_for_group_detail.dart';
@@ -49,10 +49,10 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   }
 
   void getGroupDetail() {
-    ChatConversationModel _chatConversationModel;
+    ChatConversation _chatConversationModel;
 
     _chatConversationModel = widget.arguments["chat_conversation"] ??
-        ChatConversationModel(
+        ChatConversation(
           conversationId: "36bce4e8-427b-4f47-b292-a40c69b4e776",
           adminUsers: [],
           avatar:
@@ -91,7 +91,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   }
 
   GroupDetailModel convertChatConversationToGroupDetail(
-      ChatConversationModel chatConversationModel) {
+      ChatConversation chatConversationModel) {
     GroupDetailModel groupDetailModel = GroupDetailModel(
         fullName: chatConversationModel.fullName,
         username: chatConversationModel.username,
