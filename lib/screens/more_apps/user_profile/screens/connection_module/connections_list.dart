@@ -1,6 +1,7 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile_for_connection.dart';
 import 'package:Slydo/utils/colors.dart';
@@ -127,35 +128,6 @@ class _ConnectionListState extends State<ConnectionList> {
     );
   }
 
-  Widget getFloatingActionBtn() {
-    bool isGroupUser = false;
-
-    List<String> groupUsers = [
-      "brijesh.sakariya",
-      "abiola.rasheed.2",
-      "olabisi.abraham.1",
-      "black"
-    ];
-    UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
-
-    groupUsers.forEach((element) {
-      if (element == userBloc.user.userName) {
-        isGroupUser = true;
-      }
-    });
-
-    return !isGroupUser
-        ? null
-        : FloatingActionButton(
-            backgroundColor: navyBlue,
-            child: Icon(Icons.add),
-            onPressed: () {
-              CustomerProfile user = CustomerProfile();
-              _connectionListBloc.addTestConversationForGroup(user: user);
-            },
-          );
-  }
-
   Widget _buildConnectionsList() {
     return isLoading
         ? Center(
@@ -271,10 +243,10 @@ class _ConnectionListState extends State<ConnectionList> {
 
         // debugPrint("List:- $tempList");
 
-        List<CustomerProfile> users = List<CustomerProfile>();
+        List<ChatConversation> users = List<ChatConversation>();
 
-        tempList
-            .forEach((element) => users.add(CustomerProfile.fromJson(element)));
+        tempList.forEach(
+            (element) => users.add(ChatConversation.fromJson(element)));
 
         isLoading = false;
         if (mounted) setState(() {});
@@ -312,13 +284,16 @@ class _ConnectionListState extends State<ConnectionList> {
         .showSnackBar(SnackBar(content: Text(text)));
   }
 
-  List<Widget> listSecondaryActions(CustomerProfile user, int index) {
+  List<Widget> listSecondaryActions(ChatConversation user, int index) {
+    CustomerProfile customerProfile =
+        CustomerProfile.fromChatConversation(user);
+
     return [
       SlideActionButton(
         backgroundColor: mateRed,
         icon: SlydoAppIcon.block,
         onTap: () {
-          blockUserAlert(user, index);
+          blockUserAlert(customerProfile, index);
         },
         title: AppLocalization.of(context).block,
         slideController: _slideController,
@@ -326,13 +301,16 @@ class _ConnectionListState extends State<ConnectionList> {
     ];
   }
 
-  List<Widget> listActionSlideActions(CustomerProfile user, int index) {
+  List<Widget> listActionSlideActions(ChatConversation user, int index) {
+    CustomerProfile customerProfile =
+        CustomerProfile.fromChatConversation(user);
+
     return [
       SlideActionButton(
         backgroundColor: mateRed,
         icon: SlydoAppIcon.remove_connection,
         onTap: () {
-          removeFromConnectionUserAlert(user, index);
+          removeFromConnectionUserAlert(customerProfile, index);
         },
         title: AppLocalization.of(context).remove,
         slideController: _slideController,
@@ -432,7 +410,7 @@ class _ConnectionListState extends State<ConnectionList> {
   }
 
   Widget _getSlidableWithLists(
-      BuildContext context, CustomerProfile user, int index) {
+      BuildContext context, ChatConversation user, int index) {
     return Slidable(
       key: Key(user.userName),
       controller: _slideController,
@@ -456,7 +434,7 @@ class _ConnectionListState extends State<ConnectionList> {
 class VerticalListItem extends StatefulWidget {
   VerticalListItem(this.user);
 
-  final CustomerProfile user;
+  final ChatConversation user;
 
   @override
   _VerticalListItemState createState() => _VerticalListItemState();

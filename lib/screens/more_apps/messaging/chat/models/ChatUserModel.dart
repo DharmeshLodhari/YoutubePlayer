@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:crypto/crypto.dart';
 
 class ChatUserModel {
@@ -35,7 +35,7 @@ class ChatUserModel {
     return data;
   }
 
-  factory ChatUserModel.fromCustomerProfile(CustomerProfile user) {
+  factory ChatUserModel.fromChatConversation(ChatConversation user) {
     return ChatUserModel(
       conversationId: user.conversationId,
       messageCount: 0,

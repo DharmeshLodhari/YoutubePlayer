@@ -3,8 +3,8 @@ import 'dart:convert';
 
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatUserModel.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:badges/badges.dart';
@@ -14,7 +14,7 @@ import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class UserTileForConnection extends StatefulWidget {
-  CustomerProfile user;
+  ChatConversation user;
 
   UserTileForConnection({this.user});
 
@@ -65,7 +65,7 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
   Widget build(BuildContext context) {
     Widget avatarImage;
 
-    Color borderColor = getUserTypeColor(user: widget.user);
+    Color borderColor = getUserTypeColorByType(type: widget.user.type);
 
     avatarImage = Container(
         height: 48,
@@ -119,7 +119,7 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
   Widget getSubtitle(BuildContext context) {
     return isTyping
         ? Text(
-      typingMessage,
+            typingMessage,
             style: TextStyle(
               color: naturalGreen,
             ),
@@ -142,32 +142,74 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Container(
-              width: 1,
-              height: 1,
+              width: 0,
+              height: 0,
             );
           } else if (snapshot.hasData) {
-            if (snapshot.data.messageCount == 0) {
-              return Container(
-                width: 1,
-                height: 1,
-              );
-            }
-            return Badge(
-              elevation: 0,
-              badgeColor: naturalGreen,
-              animationType: BadgeAnimationType.slide,
-              badgeContent: Text(
-                "${snapshot.data.messageCount}",
-                style:
-                    TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
-              ),
-              position: BadgePosition(end: 0, top: 0),
-            );
+            return getBadgeAndGroupLabel(snapshot.data.messageCount);
           }
           return Container(
-            width: 1,
-            height: 1,
+            width: 0,
+            height: 0,
           );
         });
+  }
+
+  Widget getBadgeAndGroupLabel(int count) {
+    if (!widget.user.isGroupConversation) {
+      if (count == 0) {
+        return Container(
+          width: 0,
+          height: 0,
+        );
+      } else {
+        return getBadge(count, padding: 12);
+      }
+    } else {
+      if (count == 0) {
+        return getGroupLabel();
+      } else {
+        return Column(
+          children: [
+            getBadge(count),
+            SizedBox(
+              height: 4,
+            ),
+            getGroupLabel(),
+          ],
+        );
+      }
+    }
+  }
+
+  Widget getGroupLabel() {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 2, horizontal: 6),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(4),
+        color: naturalGreen.withOpacity(0.1),
+      ),
+      child: Text(
+        "Group",
+        style: TextStyle(
+            fontSize: 12, fontWeight: FontWeight.w700, color: naturalGreen),
+      ),
+    );
+  }
+
+  Widget getBadge(int count, {double padding = 0}) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: padding),
+      child: Badge(
+        elevation: 0,
+        badgeColor: naturalGreen,
+        animationType: BadgeAnimationType.slide,
+        badgeContent: Text(
+          "$count",
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+        ),
+        position: BadgePosition(end: 0, top: 0),
+      ),
+    );
   }
 }

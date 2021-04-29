@@ -1,5 +1,4 @@
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/Participant.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/user_tile_for_group_detail.dart';
@@ -49,34 +48,12 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   }
 
   void getGroupDetail() {
-    ChatConversation _chatConversationModel;
-
-    _chatConversationModel = widget.arguments["chat_conversation"] ??
-        ChatConversation(
-          conversationId: "36bce4e8-427b-4f47-b292-a40c69b4e776",
-          adminUsers: [],
-          avatar:
-              "https://slydo-assets.s3.amazonaws.com/media/image_cropper_1619181971304.jpg",
-          blockedParticipants: [],
-          mutedParticipants: [],
-          fullName: "Test Group 3",
-          isGroupConversation: true,
-          participants: [
-            "abiola.rasheed.2",
-            "black",
-            "brijesh.sakariya",
-            "ola.abraham",
-            "olabisi.abraham.1"
-          ],
-          type: "User",
-          username: "Test Group 3",
-        );
-
-    groupDetail = convertChatConversationToGroupDetail(_chatConversationModel);
+    groupDetail = widget.arguments["groupDetail"];
 
     isLoading = true;
     if (mounted) setState(() {});
 
+    debugPrint("groupDetail.conversationId:- ${groupDetail.conversationId}");
     MessageAuth()
         .getGroupConversationDetail(groupDetail.conversationId)
         .then((value) {
@@ -90,30 +67,20 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
     });
   }
 
-  GroupDetailModel convertChatConversationToGroupDetail(
-      ChatConversation chatConversationModel) {
-    GroupDetailModel groupDetailModel = GroupDetailModel(
-        fullName: chatConversationModel.fullName,
-        username: chatConversationModel.username,
-        type: chatConversationModel.type,
-        mutedParticipants: chatConversationModel.mutedParticipants,
-        blockedParticipants: chatConversationModel.blockedParticipants,
-        avatar: chatConversationModel.avatar,
-        conversationId: chatConversationModel.conversationId,
-        isGroupConversation: chatConversationModel.isGroupConversation,
-        adminUsers: chatConversationModel.adminUsers,
-        participants: []);
-    return groupDetailModel;
-  }
-
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    return Scaffold(
-      key: _scaffoldGroupDetailScreen,
-      backgroundColor: Colors.white,
-      appBar: getAppBar(),
-      body: getScaffoldBody(),
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.of(context).pop(groupDetail);
+        return false;
+      },
+      child: Scaffold(
+        key: _scaffoldGroupDetailScreen,
+        backgroundColor: Colors.white,
+        appBar: getAppBar(),
+        body: getScaffoldBody(),
+      ),
     );
   }
 
@@ -130,7 +97,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
           size: 24,
         ),
         onPressed: () {
-          Navigator.pop(context);
+          Navigator.of(context).pop(groupDetail);
         },
       ),
       title: Text(
@@ -186,7 +153,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
         if (result != null) {
           debugPrint("Result:- $result");
           groupDetail = result;
-          if(mounted) setState((){});
+          if (mounted) setState(() {});
         }
       },
       backgroundColor: iconBtnGrey,

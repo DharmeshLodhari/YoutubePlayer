@@ -81,8 +81,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   /// Current chat users
   UserBloc userBloc;
-  CustomerProfile recipientUser;
-  bool isRecipientLoading = false;
+  ChatConversation chatConversation;
+  bool isChatConversationLoading = false;
 
   /// Socket
   MainSocketProvider mainSocketProvider;
@@ -197,7 +197,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   String replayingMessage;
 
   /// variables for group chat message
-  bool isGroupConversation = false;
   GroupDetailModel groupDetail;
   bool isUserMuted = false;
   bool isUserBlocked = false;
@@ -207,7 +206,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     messageController = TextEditingController();
     searchItemTextController = TextEditingController();
     messageFocus = FocusNode();
-    recipientUser = widget.arguments["searchedUser"];
+
+    chatConversation = widget.arguments["searchedUser"];
 
     setupScrollController();
 
@@ -238,7 +238,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   void checkNetworkConnectivity() async {
-    debugPrint("Network Connectivty called !!");
+    debugPrint("Network Connectivity called !!");
     await Connectivity().checkConnectivity().then((value) {
       if (value == ConnectivityResult.none) {
         _isNetworkConnectionIsOn = false;
@@ -256,13 +256,14 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     String recipientUserName = widget.arguments["recipientUserName"] ?? "";
 
     if (recipientUserName != "") {
-      isRecipientLoading = true;
+      isChatConversationLoading = true;
       if (mounted) setState(() {});
 
-      recipientUser = await UserAuth()
-          .fetchContactProfile(widget.arguments["recipientUserName"]);
+      ///TODO:- UPDATE FETCH CONVERSATION DETAIL
+      // recipientUser = await UserAuth()
+      //     .fetchContactProfile(widget.arguments["recipientUserName"]);
 
-      isRecipientLoading = false;
+      isChatConversationLoading = false;
       if (mounted) setState(() {});
     }
 
@@ -277,85 +278,42 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     await setupNetworkConnectionListener();
 
     ChatUserManager().clearChatUserMessageCount(
-        conversationId: recipientUser.conversationId);
+        conversationId: chatConversation.conversationId);
   }
 
   void determineIfConversationIsGroup() {
-    if (recipientUser != null) {
-      if (recipientUser.fullName == recipientUser.userName) {
-        isGroupConversation = true;
-        stopShakeDetector();
-
-        debugPrint("===> Conversation is Group Conversation !!!");
-        getGroupDetail();
-      }
+    if (chatConversation.isGroupConversation) {
+      stopShakeDetector();
+      debugPrint("===> Conversation is Group Conversation !!!");
+      getGroupDetail();
     }
   }
 
   void getGroupDetail() {
-    ChatConversation _chatConversationModel;
-
-    _chatConversationModel = widget.arguments["chat_conversation"] ??
-        ChatConversation(
-          conversationId: "36bce4e8-427b-4f47-b292-a40c69b4e776",
-          adminUsers: [],
-          avatar:
-              "https://slydo-assets.s3.amazonaws.com/media/image_cropper_1619181971304.jpg",
-          blockedParticipants: [],
-          mutedParticipants: [],
-          fullName: "Test Group 3",
-          isGroupConversation: true,
-          participants: [
-            "abiola.rasheed.2",
-            "black",
-            "brijesh.sakariya",
-            "ola.abraham",
-            "olabisi.abraham.1"
-          ],
-          type: "User",
-          username: "Test Group 3",
-        );
-
-    groupDetail = convertChatConversationToGroupDetail(_chatConversationModel);
+    groupDetail = GroupDetailModel.fromChatConversation(chatConversation);
     if (mounted) setState(() {});
 
-    MessageAuth()
-        .getGroupConversationDetail(recipientUser.conversationId)
-        .then((value) {
-      groupDetail = value;
-      if (mounted) setState(() {});
-    }).catchError((error) {
-      debugPrint("ERROR:- $error");
-      if (mounted) setState(() {});
-    });
-  }
-
-  GroupDetailModel convertChatConversationToGroupDetail(
-      ChatConversation chatConversationModel) {
-    GroupDetailModel groupDetailModel = GroupDetailModel(
-        fullName: chatConversationModel.fullName,
-        username: chatConversationModel.username,
-        type: chatConversationModel.type,
-        mutedParticipants: chatConversationModel.mutedParticipants,
-        blockedParticipants: chatConversationModel.blockedParticipants,
-        avatar: chatConversationModel.avatar,
-        conversationId: chatConversationModel.conversationId,
-        isGroupConversation: chatConversationModel.isGroupConversation,
-        adminUsers: chatConversationModel.adminUsers,
-        participants: []);
-    return groupDetailModel;
+    // MessageAuth()
+    //     .getGroupConversationDetail(chatConversation.conversationId)
+    //     .then((value) {
+    //   groupDetail = value;
+    //   if (mounted) setState(() {});
+    // }).catchError((error) {
+    //   debugPrint("ERROR:- $error");
+    //   if (mounted) setState(() {});
+    // });
   }
 
   void setupShakeDetector() {
-    debugPrint(
-        "isGroup Conversation $isGroupConversation ${recipientUser.userName != recipientUser.fullName}");
-    if (recipientUser.userName != recipientUser.fullName)
-      chatShakeDetection.setupShakeDetector(recipientUser: recipientUser);
+    if (!chatConversation.isGroupConversation) {
+      chatShakeDetection.setupShakeDetector(recipientUser: chatConversation);
+    }
   }
 
   void stopShakeDetector() {
-    if (recipientUser.userName != recipientUser.fullName)
+    if (!chatConversation.isGroupConversation) {
       chatShakeDetection?.stopShakeDetector();
+    }
   }
 
   Future<void> setupNetworkConnectionListener() async {
@@ -512,7 +470,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       mainSocketProvider =
           Provider.of<MainSocketProvider>(context, listen: false);
       try {
-        mainSocketProvider.currentConversationId = recipientUser.conversationId;
+        mainSocketProvider.currentConversationId =
+            chatConversation.conversationId;
         mainSocketProvider.isChatOnScreen = true;
       } catch (e) {
         debugPrint("Error:- $e");
@@ -577,10 +536,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
           isFirstTime = false;
         }
         debugPrint(
-            "recipient conversationID:- ${recipientUser.conversationId}");
+            "recipient conversationID:- ${chatConversation.conversationId}");
         Map<String, dynamic> result = await MessageAuth()
             .getChatMessages(next, previous,
-                conversionId: recipientUser.conversationId)
+                conversionId: chatConversation.conversationId)
             .catchError((error) {
           isLoading = false;
           if (mounted) setState(() {});
@@ -624,8 +583,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   bool checkIsMessageIsForCurrentChat(Map<String, dynamic> messageData) {
-    if (messageData["conversation_id"] == recipientUser.conversationId ||
-        messageData["conversation"] == recipientUser.conversationId) {
+    if (messageData["conversation_id"] == chatConversation.conversationId ||
+        messageData["conversation"] == chatConversation.conversationId) {
       return true;
     } else {
       debugPrint("Message For Someone else >>>>>> $messageData");
@@ -770,8 +729,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     var data = {
       "message": "typing",
       "type": "user_typing_message",
-      "full_name": recipientUser.fullName,
-      "conversation_id": recipientUser.conversationId,
+      "full_name": chatConversation.fullName,
+      "conversation_id": chatConversation.conversationId,
     };
 
     await mainSocketProvider.add(data);
@@ -781,8 +740,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     var data = {
       "message": "recording audio",
       "type": "user_recording_audio_message",
-      "full_name": recipientUser.fullName,
-      "conversation_id": recipientUser.conversationId,
+      "full_name": chatConversation.fullName,
+      "conversation_id": chatConversation.conversationId,
     };
 
     await mainSocketProvider.add(data);
@@ -794,7 +753,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         var data = {
           "check_id": message["check_id"],
           "type": "read_by_recipient",
-          "conversation_id": recipientUser.conversationId,
+          "conversation_id": chatConversation.conversationId,
         };
 
         await mainSocketProvider.add(data);
@@ -939,12 +898,11 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       title: GestureDetector(
         onTap: () async {
           stopShakeDetector();
-          if (isGroupConversation) {
-            await Navigator.of(context).pushNamed('/group-detail',
-                arguments: {"searchedUserName": recipientUser.userName});
+          if (chatConversation.isGroupConversation) {
+            navigateToGroupDetailScreen();
           } else {
             await Navigator.pushNamed(context, '/profile',
-                arguments: {"searchedUserName": recipientUser.userName});
+                arguments: {"searchedUserName": chatConversation.userName});
           }
           setupShakeDetector();
         },
@@ -958,7 +916,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  recipientUser != null ? recipientUser.fullName : "",
+                  chatConversation != null ? chatConversation.fullName : "",
                   style: TextStyle(
                     color: blackFont,
                     fontSize: 18,
@@ -969,7 +927,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                   maxLines: 1,
                 ),
                 Text(
-                  recipientUser != null
+                  chatConversation != null
                       ? isRecipientTyping
                           ? typingMessage
                           : isOtherUserRecordingAudio
@@ -994,9 +952,27 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     );
   }
 
+  void navigateToGroupDetailScreen() async {
+    var result = await Navigator.of(context)
+        .pushNamed('/group-detail', arguments: {"groupDetail": groupDetail});
+
+    if (result != null) {
+      if (result is GroupDetailModel) {
+        chatConversation = ChatConversation.fromGroupDetailModel(result);
+        groupDetail = result;
+
+        if (mounted) setState(() {});
+
+
+
+
+      }
+    }
+  }
+
   void getUserStatus() async {
     var data = await MessageAuth()
-        .getChatUserStatus(recipientUser.userName)
+        .getChatUserStatus(chatConversation.userName)
         .catchError((error) {
       debugPrint("ERROR:- $error");
     });
@@ -1035,10 +1011,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   Widget getUserIcon() {
-    if (isRecipientLoading) {
+    if (isChatConversationLoading) {
       return Container();
     }
-    Color borderColor = getUserTypeColor(user: recipientUser);
+    Color borderColor = getUserTypeColorByType(type: chatConversation.type);
 
     return Container(
       height: 36,
@@ -1053,8 +1029,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
             border: Border.all(color: borderColor, width: 2)),
         child: ClipOval(
           child: CachedNetworkImage(
-            imageUrl: recipientUser != null
-                ? recipientUser.avatar ??
+            imageUrl: chatConversation != null
+                ? chatConversation.avatar ??
                     "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png"
                 : "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png",
             colorBlendMode: BlendMode.darken,
@@ -1094,13 +1070,13 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   bool checkIfParticipantIsMutedOrBlocked() {
-    if (!isGroupConversation) {
+    if (!chatConversation.isGroupConversation) {
       return false;
     }
-    if (groupDetail.mutedParticipants.contains(userBloc.user.userName)) {
+    if (chatConversation.mutedParticipants.contains(userBloc.user.userName)) {
       isUserMuted = true;
     }
-    if (groupDetail.blockedParticipants.contains(userBloc.user.userName)) {
+    if (chatConversation.blockedParticipants.contains(userBloc.user.userName)) {
       isUserBlocked = true;
     }
 
@@ -1331,7 +1307,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         var customerProfileBloc =
             Provider.of<CustomerProfileBloc>(context, listen: false);
         customerProfileBloc.customer =
-            await UserAuth().fetchCustomerProfile(recipientUser.userName);
+            await UserAuth().fetchCustomerProfile(chatConversation.userName);
 
         stopShakeDetector();
         await Navigator.of(context).pushNamed(
@@ -1363,7 +1339,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         var customerProfileBloc =
             Provider.of<CustomerProfileBloc>(context, listen: false);
         customerProfileBloc.customer =
-            await UserAuth().fetchCustomerProfile(recipientUser.userName);
+            await UserAuth().fetchCustomerProfile(chatConversation.userName);
         stopShakeDetector();
         await Navigator.of(context).pushNamed(
           '/send-payment',
@@ -1701,7 +1677,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     Map<String, dynamic> data = {
       "meta_data": jsonEncode(itemData),
       "check_id": Uuid().v4(),
-      "conversation_id": recipientUser.conversationId,
+      "conversation_id": chatConversation.conversationId,
       "author": userBloc.user.userName,
       "message": url,
       "kind": item is Product ? "product" : "service",
@@ -1710,7 +1686,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     };
 
     updateConnectionList(
-        messageData: data, conversationId: recipientUser.conversationId);
+        messageData: data, conversationId: chatConversation.conversationId);
     bool result = await sendDataToSocket(data);
     if (result) {
       clearSearchedListItems();
@@ -1742,7 +1718,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         "/send-media-to-chat-message",
         arguments: {
           "data": {
-            "conversation": recipientUser.conversationId,
+            "conversation": chatConversation.conversationId,
             "author": userBloc.user.userName,
           },
           "media": file,
@@ -1865,7 +1841,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         "/send-media-to-chat-message",
         arguments: {
           "data": {
-            "conversation": recipientUser.conversationId,
+            "conversation": chatConversation.conversationId,
             "author": userBloc.user.userName,
           },
           "media": File(capturedMediaPath),
@@ -2017,7 +1993,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     _data["delivered"] = false;
     _data['created_at'] = DateTime.now().toUtc().toString();
     _data['type'] = "chatroom_message";
-    _data["conversation"] = recipientUser.conversationId;
+    _data["conversation"] = chatConversation.conversationId;
     _data["author"] = userBloc.user.userName;
     _data["author_name"] = userBloc.user.fullName;
     _data["author_avatar"] = userBloc.user.avatar;
@@ -2137,7 +2113,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
     Map<String, dynamic> data = {
       "check_id": Uuid().v4(),
-      "conversation_id": recipientUser.conversationId,
+      "conversation_id": chatConversation.conversationId,
       "author": userBloc.user.userName,
       "author_full_name": userBloc.user.fullName,
       "author_avatar": userBloc.user.avatar,
@@ -2151,8 +2127,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     };
 
     debugPrint(
-        "recipientUser = $recipientUser  recipientUser.conversationId = ${recipientUser.conversationId}");
-    if (recipientUser != null && recipientUser.conversationId != null) {
+        "recipientUser = $chatConversation  recipientUser.conversationId = ${chatConversation.conversationId}");
+    if (chatConversation != null && chatConversation.conversationId != null) {
       DBSocketMessageHandler()
           .saveMessageToDb(message: ChatTextMessage.fromJson(data));
 
@@ -2163,7 +2139,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       if (mounted) setState(() {});
 
       updateConnectionList(
-          messageData: data, conversationId: recipientUser.conversationId);
+          messageData: data, conversationId: chatConversation.conversationId);
       await sendDataToSocket(data);
     } else {
       Toast.show("Please check your connection !!", context,
@@ -2197,7 +2173,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
     Map<String, dynamic> data = {
       "check_id": Uuid().v4(),
-      "conversation_id": recipientUser.conversationId,
+      "conversation_id": chatConversation.conversationId,
       "author": userBloc.user.userName,
       "author_full_name": userBloc.user.fullName,
       "author_avatar": userBloc.user.avatar,
@@ -2211,8 +2187,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     };
 
     debugPrint(
-        "recipientUser = $recipientUser  recipientUser.conversationId = ${recipientUser.conversationId}");
-    if (recipientUser != null && recipientUser.conversationId != null) {
+        "recipientUser = $chatConversation  recipientUser.conversationId = ${chatConversation.conversationId}");
+    if (chatConversation != null && chatConversation.conversationId != null) {
       DBSocketMessageHandler()
           .saveMessageToDb(message: ChatTextMessage.fromJson(data));
 
@@ -2223,7 +2199,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       if (mounted) setState(() {});
 
       updateConnectionList(
-          messageData: data, conversationId: recipientUser.conversationId);
+          messageData: data, conversationId: chatConversation.conversationId);
       await sendDataToSocket(data);
     } else {
       Toast.show("Please check your connection !!", context,
@@ -2243,7 +2219,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
     Map<String, dynamic> data = {
       "check_id": Uuid().v4(),
-      "conversation_id": recipientUser.conversationId,
+      "conversation_id": chatConversation.conversationId,
       "author": userBloc.user.userName,
       "author_full_name": userBloc.user.fullName,
       "author_avatar": userBloc.user.avatar,
@@ -2257,8 +2233,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     };
 
     debugPrint(
-        "recipientUser = $recipientUser  recipientUser.conversationId = ${recipientUser.conversationId}");
-    if (recipientUser != null && recipientUser.conversationId != null) {
+        "recipientUser = $chatConversation  recipientUser.conversationId = ${chatConversation.conversationId}");
+    if (chatConversation != null && chatConversation.conversationId != null) {
       DBSocketMessageHandler()
           .saveMessageToDb(message: ChatTextMessage.fromJson(data));
 
@@ -2270,7 +2246,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       if (mounted) setState(() {});
 
       updateConnectionList(
-          messageData: data, conversationId: recipientUser.conversationId);
+          messageData: data, conversationId: chatConversation.conversationId);
       await sendDataToSocket(data);
     } else {
       Toast.show("Please check your connection !!", context,
@@ -2307,7 +2283,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       child: Column(
         children: [
           Expanded(
-            child: isRecipientLoading
+            child: isChatConversationLoading
                 ? Center(child: CircularLoadingIndicator())
                 : Theme(
                     data: ThemeData(highlightColor: navyBlue),
@@ -2775,13 +2751,13 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     String url = getSearchUrl();
 
     if (bottomSheetSearchIndex == 0 && isProductSearch) {
-      url += "&search=seller:" + recipientUser.userName;
+      url += "&search=seller:" + chatConversation.userName;
       return url;
     } else if (bottomSheetSearchIndex == 1 && isProductSearch) {
       url += "&search=seller:" + userBloc.user.userName;
       return url;
     } else if (bottomSheetSearchIndex == 0 && isServiceSearch) {
-      url += "&search=provider:" + recipientUser.userName;
+      url += "&search=provider:" + chatConversation.userName;
       return url;
     } else if (bottomSheetSearchIndex == 1 && isServiceSearch) {
       url += "&search=provider:" + userBloc.user.userName;
@@ -3115,7 +3091,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
     String messageId = messageData["check_id"];
 
-    if (recipientUser != null && recipientUser.conversationId != null) {
+    if (chatConversation != null && chatConversation.conversationId != null) {
       // addMessageToChat(message: payload);
 
       Map<String, dynamic> data = Map<String, dynamic>();
@@ -3222,8 +3198,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     if (mounted) setState(() {});
 
     debugPrint(
-        "recipientUser = $recipientUser  recipientUser.conversationId = ${recipientUser.conversationId}");
-    if (recipientUser != null && recipientUser.conversationId != null) {
+        "recipientUser = $chatConversation  recipientUser.conversationId = ${chatConversation.conversationId}");
+    if (chatConversation != null && chatConversation.conversationId != null) {
       // addMessageToChat(message: payload);
 
       Map<String, dynamic> data = new Map<String, dynamic>();
@@ -3256,7 +3232,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     /// "type": "delete_message",
     /// "conversation_id": "9ae68069-b342-4e04-b568-602bde6fe901"}
 
-    if (recipientUser.conversationId == message["conversation_id"]) {
+    if (chatConversation.conversationId == message["conversation_id"]) {
       for (int i = 0; i < messageList.length; i++) {
         Map<String, dynamic> decodedMessage = jsonDecode(messageList[i]);
 
@@ -3276,7 +3252,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     /// "conversation_id": "9ae68069-b342-4e04-b568-602bde6fe901",
     /// "was_edited": false}
 
-    if (recipientUser.conversationId == message["conversation_id"]) {
+    if (chatConversation.conversationId == message["conversation_id"]) {
       for (int i = 0; i < messageList.length; i++) {
         Map<String, dynamic> decodedMessage = jsonDecode(messageList[i]);
 
@@ -3318,7 +3294,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
     Map<String, dynamic> data = {
       "check_id": Uuid().v4(),
-      "conversation_id": recipientUser.conversationId,
+      "conversation_id": chatConversation.conversationId,
       "author": userBloc.user.userName,
       "author_full_name": userBloc.user.fullName,
       "author_avatar": userBloc.user.avatar,
@@ -3333,8 +3309,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     };
 
     debugPrint(
-        "recipientUser = $recipientUser  recipientUser.conversationId = ${recipientUser.conversationId}");
-    if (recipientUser != null && recipientUser.conversationId != null) {
+        "recipientUser = $chatConversation  recipientUser.conversationId = ${chatConversation.conversationId}");
+    if (chatConversation != null && chatConversation.conversationId != null) {
       DBSocketMessageHandler()
           .saveMessageToDb(message: ChatTextMessage.fromJson(data));
 
@@ -3350,7 +3326,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       if (mounted) setState(() {});
 
       updateConnectionList(
-          messageData: data, conversationId: recipientUser.conversationId);
+          messageData: data, conversationId: chatConversation.conversationId);
       await sendDataToSocket(data);
     }
   }

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/colors.dart';
@@ -32,7 +33,7 @@ class _GetUserConnectionListState extends State<GetUserConnectionList> {
   int count = 0;
   String next = "";
   String previous = "";
-  List connectionsList = [];
+  List<ChatConversation> connectionsList = [];
   ScrollController _scrollController = new ScrollController();
 
   bool isLoading = false;
@@ -117,10 +118,10 @@ class _GetUserConnectionListState extends State<GetUserConnectionList> {
         previous = result['previous'];
 
         List tempList = result['results'];
-        List<CustomerProfile> users = List<CustomerProfile>();
+        List<ChatConversation> users = List<ChatConversation>();
 
-        tempList
-            .forEach((element) => users.add(CustomerProfile.fromJson(element)));
+        tempList.forEach(
+            (element) => users.add(ChatConversation.fromJson(element)));
 
         isLoading = false;
         connectionsList.addAll(users);
@@ -152,13 +153,16 @@ class _GetUserConnectionListState extends State<GetUserConnectionList> {
         .showSnackBar(SnackBar(content: Text(text)));
   }
 
-  List<Widget> listSecondaryActions(CustomerProfile user, int index) {
+  List<Widget> listSecondaryActions(ChatConversation user, int index) {
+    CustomerProfile customerProfile =
+        CustomerProfile.fromChatConversation(user);
+
     return [
       SlideActionButton(
         backgroundColor: mateRed,
         icon: SlydoAppIcon.block,
         onTap: () {
-          blockUserAlert(user, index);
+          blockUserAlert(customerProfile, index);
         },
         title: AppLocalization.of(context).block,
         slideController: _slideController,
@@ -166,13 +170,16 @@ class _GetUserConnectionListState extends State<GetUserConnectionList> {
     ];
   }
 
-  List<Widget> listActionSlideActions(CustomerProfile user, int index) {
+  List<Widget> listActionSlideActions(ChatConversation user, int index) {
+    CustomerProfile customerProfile =
+        CustomerProfile.fromChatConversation(user);
+
     return [
       SlideActionButton(
         backgroundColor: mateRed,
         icon: SlydoAppIcon.remove_connection,
         onTap: () {
-          removeFromConnectionUserAlert(user, index);
+          removeFromConnectionUserAlert(customerProfile, index);
         },
         title: AppLocalization.of(context).remove,
         slideController: _slideController,
@@ -279,7 +286,7 @@ class _GetUserConnectionListState extends State<GetUserConnectionList> {
 }
 
 class ShareToUserTile extends StatefulWidget {
-  CustomerProfile user;
+  ChatConversation user;
 
   ShareToUserTile({this.user});
 
@@ -297,7 +304,7 @@ class _ShareToUserTileState extends State<ShareToUserTile> {
 
   @override
   void initState() {
-    borderColor = getUserTypeColor(user: widget.user);
+    borderColor = getUserTypeColorByType(type: widget.user.type);
     super.initState();
   }
 
@@ -339,7 +346,7 @@ class _ShareToUserTileState extends State<ShareToUserTile> {
         onTap: () {
           isSelected = !isSelected;
           if (isSelected) {
-            _shareMessageToChatBloc.addRecipient(customerProfile: widget.user);
+            _shareMessageToChatBloc.addRecipient(chatConversation: widget.user);
           } else {
             _shareMessageToChatBloc.removeRecipient(
                 customerProfile: widget.user);

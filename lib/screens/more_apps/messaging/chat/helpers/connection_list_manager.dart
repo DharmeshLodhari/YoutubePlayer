@@ -1,13 +1,13 @@
 import 'dart:ffi';
 
 import 'package:Slydo/data/database_helper.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 
 class ConnectionListManager {
   DatabaseHelper _db = DatabaseHelper();
 
   ///Store Connections in to the db
-  Future<void> saveConnectionsToDB({List<CustomerProfile> connections}) async {
+  Future<void> saveConnectionsToDB({List<ChatConversation> connections}) async {
     await _db.saveUserConnections(connections);
   }
 
@@ -18,7 +18,7 @@ class ConnectionListManager {
   }
 
   ///Get Connections From db
-  Future<List<CustomerProfile>> getConnectionsFromDB() async {
+  Future<List<ChatConversation>> getConnectionsFromDB() async {
     return await _db.getUserConnections();
   }
 

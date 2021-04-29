@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io' as io;
 
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatUserModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatTextMessage.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -31,9 +32,9 @@ class DatabaseHelper {
 
   initDb() async {
     io.Directory documentsDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentsDirectory.path, "main3.db");
+    String path = join(documentsDirectory.path, "main.db");
     var theDb = await openDatabase(path,
-        version: 1, onCreate: _onCreate, onUpgrade: _onUpgrade);
+        version: 10, onCreate: _onCreate, onUpgrade: _onUpgrade);
     return theDb;
   }
 
@@ -128,6 +129,13 @@ class DatabaseHelper {
       "avatar" TEXT,
       "qr_code" TEXT,
       "type" TEXT,
+      "admin_users" TEXT,
+      "blocked_participants" TEXT,
+      "description" TEXT,
+      "is_group_conversation" INTEGER,
+      "muted_participants" TEXT,
+      "owner" TEXT,
+      "participants" TEXT,
       "last_message_time" INTEGER
    );
     ''');
@@ -394,31 +402,48 @@ class DatabaseHelper {
   }
 
   ///UserConnection operations
-  Future<dynamic> saveUserConnections(List<CustomerProfile> users) async {
+  Future<dynamic> saveUserConnections(
+      List<ChatConversation> chatConversations) async {
     Database dbClient = await db;
+
+    List<ChatConversation> existingChatConversation =
+        await getUserConnections();
 
     Batch insertUserBatch = dbClient.batch();
 
-    users.forEach((user) {
-      Map<String, dynamic> data = user.toJsonForDB();
-      data["last_message_time"] = 0;
+    chatConversations.forEach((user) {
+      Map<String, dynamic> data = user.toDBJson();
+
+      /// for checking if the chatConversation is already stored in the db
+      bool isChatConversationIsExist = false;
+      for (int i = 0; i < existingChatConversation.length; i++) {
+        if (user.conversationId == existingChatConversation[i].conversationId) {
+          isChatConversationIsExist = true;
+          break;
+        }
+      }
+
+      /// if ChatConversation is new then we will set last_message_time as 0
+      if (!isChatConversationIsExist) {
+        data["last_message_time"] = 0;
+      }
 
       insertUserBatch.insert("UserConnection", data,
-          conflictAlgorithm: ConflictAlgorithm.ignore);
+          conflictAlgorithm: ConflictAlgorithm.replace);
     });
 
     await insertUserBatch.commit();
   }
 
-  Future<List<CustomerProfile>> getUserConnections() async {
+  Future<List<ChatConversation>> getUserConnections() async {
     Database dbClient = await db;
 
     List<Map<String, dynamic>> res = await dbClient.query("UserConnection",
         orderBy: "last_message_time DESC");
 
     if (res != null && res.length > 0) {
-      List<CustomerProfile> connectionList =
-          res.map((element) => CustomerProfile.fromDBJson(element)).toList();
+      List<ChatConversation> connectionList =
+          res.map((element) => ChatConversation.fromDBJson(element)).toList();
       return connectionList;
     }
     return [];

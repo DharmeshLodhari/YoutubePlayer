@@ -1,3 +1,4 @@
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/Participant.dart';
 
 class GroupDetailModel {
@@ -12,6 +13,7 @@ class GroupDetailModel {
   String type;
   String username;
   String owner;
+  String description;
 
   GroupDetailModel(
       {this.adminUsers = const [],
@@ -24,7 +26,8 @@ class GroupDetailModel {
       this.participants = const [],
       this.type,
       this.username,
-      this.owner});
+      this.owner,
+      this.description});
 
   factory GroupDetailModel.fromJson(Map<String, dynamic> json) {
     return GroupDetailModel(
@@ -48,7 +51,25 @@ class GroupDetailModel {
             : [],
         type: json['type'],
         username: json['username'],
-        owner: json['owner']);
+        owner: json['owner'],
+        description: json['description'] ?? "");
+  }
+
+  factory GroupDetailModel.fromChatConversation(
+      ChatConversation chatConversation) {
+    return GroupDetailModel(
+        adminUsers: chatConversation.adminUsers,
+        avatar: chatConversation.avatar,
+        blockedParticipants: chatConversation.blockedParticipants,
+        conversationId: chatConversation.conversationId,
+        fullName: chatConversation.fullName,
+        isGroupConversation: chatConversation.isGroupConversation,
+        mutedParticipants: chatConversation.mutedParticipants,
+        participants: [],
+        type: chatConversation.type,
+        username: chatConversation.userName,
+        owner: chatConversation.owner,
+        description: chatConversation.description);
   }
 
   Map<String, dynamic> toJson() {
@@ -60,6 +81,7 @@ class GroupDetailModel {
     data['type'] = this.type;
     data['username'] = this.username;
     data['owner'] = this.owner;
+    data['description'] = this.description;
     if (this.adminUsers != null) {
       data['admin_users'] = this.adminUsers;
     }

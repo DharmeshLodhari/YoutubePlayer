@@ -366,7 +366,7 @@ class UserAuth extends AuthService {
       };
       if (jsonData["results"] is List) {
         jsonData["results"].forEach((element) {
-          debugPrint("=> $element");
+          debugPrint("=> $element ");
         });
       }
       debugPrint("Result: $jsonData");

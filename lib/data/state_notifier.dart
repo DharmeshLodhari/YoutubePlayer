@@ -1,5 +1,6 @@
 import 'package:Slydo/screens/more_apps/business/models/Item.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_manager.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -315,19 +316,20 @@ class AddInvoiceBloc extends ChangeNotifier {
 }
 
 class ShareMessageToChatBloc extends ChangeNotifier {
-  List<CustomerProfile> _recipientUsers = List<CustomerProfile>();
+  List<ChatConversation> _recipientUsers = List<ChatConversation>();
 
-  void addRecipient({CustomerProfile customerProfile}) {
+  void addRecipient({ChatConversation chatConversation}) {
     bool isAlreadyPresent = false;
 
     /// Check for user is already in the list
     _recipientUsers.forEach((element) {
-      if (element.userName == customerProfile.userName) isAlreadyPresent = true;
+      if (element.userName == chatConversation.userName)
+        isAlreadyPresent = true;
     });
 
     /// if user not present in the list then we add that user in recipient list
     if (!isAlreadyPresent) {
-      _recipientUsers.add(customerProfile);
+      _recipientUsers.add(chatConversation);
       notifyListeners();
       printRecipient();
     }
@@ -342,7 +344,7 @@ class ShareMessageToChatBloc extends ChangeNotifier {
     });
   }
 
-  void removeRecipient({CustomerProfile customerProfile, String username}) {
+  void removeRecipient({ChatConversation customerProfile, String username}) {
     String userNameToCheck;
 
     if (customerProfile != null) {
@@ -352,7 +354,7 @@ class ShareMessageToChatBloc extends ChangeNotifier {
     }
 
     if (userNameToCheck != null) {
-      CustomerProfile recipientToBeRemoved;
+      ChatConversation recipientToBeRemoved;
 
       for (int i = 0; i < _recipientUsers.length; i++) {
         if (_recipientUsers[i].userName == customerProfile.userName) {
@@ -369,7 +371,7 @@ class ShareMessageToChatBloc extends ChangeNotifier {
     }
   }
 
-  List<CustomerProfile> getRecipients() {
+  List<ChatConversation> getRecipients() {
     return _recipientUsers;
   }
 
@@ -385,11 +387,11 @@ class ShareMessageToChatBloc extends ChangeNotifier {
 }
 
 class ConnectionListBloc extends ChangeNotifier {
-  List<CustomerProfile> _connectionUsers = List<CustomerProfile>();
+  List<ChatConversation> _connectionUsers = List<ChatConversation>();
 
-  List<CustomerProfile> get connectionUsers => _connectionUsers;
+  List<ChatConversation> get connectionUsers => _connectionUsers;
 
-  void setConnectionUsers({List<CustomerProfile> users}) async {
+  void setConnectionUsers({List<ChatConversation> users}) async {
     await ConnectionListManager().saveConnectionsToDB(connections: users);
 
     _connectionUsers.clear();
@@ -397,13 +399,13 @@ class ConnectionListBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addTestConversationForGroup({CustomerProfile user}) {
+  void addTestConversationForGroup({ChatConversation user}) {
     _connectionUsers.add(user);
 
     notifyListeners();
   }
 
-  Future<List<CustomerProfile>> _getConnectionUsers() async {
+  Future<List<ChatConversation>> _getConnectionUsers() async {
     return await ConnectionListManager().getConnectionsFromDB();
   }
 

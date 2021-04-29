@@ -1,5 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:flutter/material.dart';
@@ -95,7 +95,7 @@ class ShareInChat {
         });
   }
 
-  Future<List<CustomerProfile>> selectShareCustomer(
+  Future<List<ChatConversation>> selectShareCustomer(
       BuildContext context) async {
     var result = await selectUsersToShare(context);
 
@@ -107,9 +107,9 @@ class ShareInChat {
       shareMessageToChatBloc.clearRecipient();
       return [];
     } else {
-      List<CustomerProfile> tempList = shareMessageToChatBloc.getRecipients();
+      List<ChatConversation> tempList = shareMessageToChatBloc.getRecipients();
 
-      List<CustomerProfile> recipientList = List<CustomerProfile>();
+      List<ChatConversation> recipientList = List<ChatConversation>();
 
       tempList.forEach((element) {
         recipientList.add(element);

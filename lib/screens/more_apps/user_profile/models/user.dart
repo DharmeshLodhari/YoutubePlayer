@@ -1,3 +1,4 @@
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
 
 class Address {
@@ -192,6 +193,19 @@ class CustomerProfile {
       qrCode: json['qr_code'],
       type: json['type'],
       conversationId: json['conversation_id'],
+    );
+    return profile;
+  }
+
+  factory CustomerProfile.fromChatConversation(
+      ChatConversation chatConversation) {
+    CustomerProfile profile = CustomerProfile(
+      fullName: chatConversation.fullName,
+      userName: chatConversation.userName,
+      avatar: chatConversation.avatar,
+      qrCode: chatConversation.qrCode,
+      type: chatConversation.type,
+      conversationId: chatConversation.conversationId,
     );
     return profile;
   }

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -246,7 +247,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   void sendItemToUsersInChat() async {
-    List<CustomerProfile> listOfRecipient =
+    List<ChatConversation> listOfRecipient =
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
@@ -269,7 +270,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
 
   void addProductOrServiceToChat(
       {Map<String, dynamic> itemData,
-      CustomerProfile recipientUser,
+        ChatConversation recipientUser,
       String url,
       dynamic item}) async {
     Map<String, dynamic> data = {

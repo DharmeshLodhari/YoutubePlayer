@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_about_screen.dart';
@@ -827,7 +828,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   void sendProfileToUsersInChat() async {
-    List<CustomerProfile> listOfRecipient =
+    List<ChatConversation> listOfRecipient =
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
@@ -840,7 +841,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   void addUserProfileToChat(
       {Map<String, dynamic> itemData,
-      CustomerProfile recipientUser,
+      ChatConversation recipientUser,
       String url}) async {
     Map<String, dynamic> data = {
       "meta_data": jsonEncode(itemData),

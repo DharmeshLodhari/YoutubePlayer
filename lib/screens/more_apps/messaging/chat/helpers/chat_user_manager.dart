@@ -1,16 +1,16 @@
 import 'package:Slydo/data/database_helper.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatUserModel.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 
 class ChatUserManager {
   DatabaseHelper _db = DatabaseHelper();
 
-  void addUsers(List<CustomerProfile> users) {
+  void addUsers(List<ChatConversation> users) {
     List<ChatUserModel> dbUsers = [];
 
     /// Converting CustomerProfile in to Chat Users
     users.forEach(
-        (user) => dbUsers.add(ChatUserModel.fromCustomerProfile(user)));
+        (user) => dbUsers.add(ChatUserModel.fromChatConversation(user)));
 
     /// adding Chat User into DataBase
     _db.saveChatUsers(dbUsers);

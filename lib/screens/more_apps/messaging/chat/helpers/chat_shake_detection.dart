@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -19,10 +19,10 @@ class ChatShakeDetection extends ChangeNotifier {
   bool _showShakingAlert = false;
   Timer _nudgeAlertTimer;
   Duration _nudgeAlertDuration = Duration(seconds: 11);
-  CustomerProfile _recipientUser;
+  ChatConversation _recipientUser;
   UserBloc _userBloc;
 
-  void setupShakeDetector({@required CustomerProfile recipientUser}) {
+  void setupShakeDetector({@required ChatConversation recipientUser}) {
     debugPrint("Setting up shake detection for ${recipientUser.userName}");
     _recipientUser = recipientUser;
     _userBloc = Provider.of<UserBloc>(myGlobals.scaffoldKey.currentContext,
