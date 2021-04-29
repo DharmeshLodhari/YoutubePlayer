@@ -6,9 +6,9 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_shake_detection.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/db_socket_message_handler.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/MainSocketMessageModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatTextMessage.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -165,10 +165,10 @@ class MainSocketMessageHandler {
         debugPrint(
             "nudgingUsers.contains(messageData['author'])  ${_nudgingUsers.contains(messageData["author"])}");
         if (!_nudgingUsers.contains(messageData["author"])) {
-          CustomerProfile customerProfile =
+          ChatConversation chatConversation =
               await UserAuth().fetchContactProfile(messageData["author"]);
 
-          if (customerProfile == null) {
+          if (chatConversation == null) {
             return;
           }
 
@@ -198,9 +198,9 @@ class MainSocketMessageHandler {
             iconTwoBgColor: navyBlue,
             iconTwoColor: Colors.white,
             firstActionPrimary: false,
-            title: "${customerProfile.fullName}",
-            description: "${customerProfile.userName} is nudging you",
-            image: customerProfile.avatar,
+            title: "${chatConversation.fullName}",
+            description: "${chatConversation.userName} is nudging you",
+            image: chatConversation.avatar,
             actionOneIcon: SlydoAppIcon.remove,
             actionTwoIcon: SlydoAppIcon.text_message,
           );
@@ -221,7 +221,7 @@ class MainSocketMessageHandler {
               /// send Nudge acknowledgement to author that recipient have accepted that nudge and online now
               sendNudgeAcknowledgement(
                   currentUser: userBloc,
-                  author: customerProfile,
+                  author: chatConversation,
                   type: "Accepted");
 
               Navigator.of(myGlobals.scaffoldKey.currentContext)
@@ -229,14 +229,14 @@ class MainSocketMessageHandler {
 
               Navigator.pushNamed(
                   myGlobals.scaffoldKey.currentContext, '/chat-screen',
-                  arguments: {"searchedUser": customerProfile});
+                  arguments: {"searchedUser": chatConversation});
             } else {
               debugPrint("else executed");
 
               /// send Nudge acknowledgement to author that recipient have canceled that nudge and he is busy
               sendNudgeAcknowledgement(
                   currentUser: userBloc,
-                  author: customerProfile,
+                  author: chatConversation,
                   type: "Canceled");
             }
           }
@@ -253,7 +253,7 @@ class MainSocketMessageHandler {
   }
 
   void sendNudgeAcknowledgement(
-      {CustomerProfile author, UserBloc currentUser, String type}) {
+      {ChatConversation author, UserBloc currentUser, String type}) {
     Map<String, dynamic> data = {
       "check_id": Uuid().v4(),
       "conversation_id": author.conversationId,

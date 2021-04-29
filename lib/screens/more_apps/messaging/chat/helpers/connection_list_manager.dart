@@ -32,4 +32,8 @@ class ConnectionListManager {
     return await _db.updateConnectionListLastMessageTime(
         conversationId: conversationId, time: time);
   }
+
+  Future<int> updateChatConversation({ChatConversation chatConversation}) async{
+    return await _db.updateChatConversation(chatConversation:chatConversation);
+  }
 }

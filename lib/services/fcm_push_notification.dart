@@ -4,6 +4,7 @@ import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_message_handler.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/services/auth.dart';
@@ -196,16 +197,16 @@ class PushNotificationService {
               context: context,
               builder: (context) => Center(child: CircularLoadingIndicator()));
 
-          CustomerProfile customerProfile =
+          ChatConversation chatConversation =
               await UserAuth().fetchContactProfile(recipientUsername);
 
-          if (customerProfile == null) {
+          if (chatConversation == null) {
             Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
             return;
           }
           Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
           Navigator.pushNamed(context, '/chat-screen',
-              arguments: {"searchedUser": customerProfile});
+              arguments: {"searchedUser": chatConversation});
         }
       }
     } catch (error) {

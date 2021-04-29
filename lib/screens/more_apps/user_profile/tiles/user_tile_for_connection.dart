@@ -33,7 +33,7 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       mainSocketProvider =
-          Provider.of<MainSocketProvider>(context, listen: false);
+          Provider.of<MainSocketProvider>(context,listen:false);
 
       streamSubscription = mainSocketProvider.listen((message) {
         Map<String, dynamic> messageData = jsonDecode(message);

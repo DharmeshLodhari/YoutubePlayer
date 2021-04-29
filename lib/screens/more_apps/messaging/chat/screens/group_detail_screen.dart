@@ -229,7 +229,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
           SizedBox(
             height: 16,
           ),
-          getExitGroupTile(),
+          userBloc.user.userName != groupDetail.owner?getExitGroupTile():Container(),
         ],
       ),
     );

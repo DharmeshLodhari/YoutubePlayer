@@ -406,7 +406,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       ),
       onTap: () {
         Navigator.pushNamed(context, '/chat-screen',
-            arguments: {"searchedUser": searchedUser});
+            arguments: {"recipientUserName": searchedUser.userName});
       },
       backgroundColor: lightGrey.withOpacity(0.1),
       enableMargin: false,

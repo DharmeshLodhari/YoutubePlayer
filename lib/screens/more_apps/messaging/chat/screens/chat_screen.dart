@@ -259,9 +259,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       isChatConversationLoading = true;
       if (mounted) setState(() {});
 
-      ///TODO:- UPDATE FETCH CONVERSATION DETAIL
-      // recipientUser = await UserAuth()
-      //     .fetchContactProfile(widget.arguments["recipientUserName"]);
+      chatConversation = await UserAuth()
+          .fetchContactProfile(widget.arguments["recipientUserName"]);
 
       isChatConversationLoading = false;
       if (mounted) setState(() {});
@@ -272,7 +271,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     initializeSocket();
     setUpAudioRecorder();
     chatShakeDetection =
-        Provider.of<ChatShakeDetection>(myGlobals.scaffoldKey.currentContext);
+        Provider.of<ChatShakeDetection>(myGlobals.scaffoldKey.currentContext,listen:false);
     setupShakeDetector();
     determineIfConversationIsGroup();
     await setupNetworkConnectionListener();
@@ -962,9 +961,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         groupDetail = result;
 
         if (mounted) setState(() {});
+        ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(context,listen:false);
 
-
-
+        connectionListBloc.updateChatConversation(chatConversation:chatConversation);
 
       }
     }
@@ -1070,6 +1069,12 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   bool checkIfParticipantIsMutedOrBlocked() {
+    if(isChatConversationLoading)
+      {
+        return false;
+      }
+
+
     if (!chatConversation.isGroupConversation) {
       return false;
     }

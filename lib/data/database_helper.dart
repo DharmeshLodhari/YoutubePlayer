@@ -473,4 +473,11 @@ class DatabaseHelper {
     debugPrint("UserConnection Cleared !!");
     return res;
   }
+
+  Future<int> updateChatConversation({ChatConversation chatConversation}) async{
+    Database dbClient = await db;
+
+    return await dbClient.update("UserConnection", chatConversation.toDBJson(),
+        where: "conversation_id = ?", whereArgs: [chatConversation.conversationId]);
+  }
 }

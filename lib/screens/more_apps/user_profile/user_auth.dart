@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/device_info.dart';
@@ -33,7 +34,9 @@ class UserAuth extends AuthService {
       CustomerProfile customerProfile = CustomerProfile.fromJson(jsonData);
       return customerProfile;
     } else {
-      return Future.error("${response.body}");
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
     }
   }
 
@@ -51,7 +54,9 @@ class UserAuth extends AuthService {
       CustomerProfile customerProfile = CustomerProfile.fromJson(jsonData);
       return customerProfile;
     } else {
-      return Future.error("${response.body}");
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
     }
   }
 
@@ -380,22 +385,23 @@ class UserAuth extends AuthService {
   }
 
   // Fetch user profile
-  Future<CustomerProfile> fetchContactProfile(String userName) async {
+  Future<ChatConversation> fetchContactProfile(String userName) async {
     var url = secureBaseUrl + "/api/v1/user/connections/" + userName.trim();
 
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
 
-    var jsonData = jsonDecode(response.body);
-
     if (response.statusCode == 200) {
-      CustomerProfile customerProfile = CustomerProfile.fromJson(jsonData);
-      return customerProfile;
-    } else {
+      var jsonData = jsonDecode(response.body);
       debugPrint("STATUS CODE:- ${response.statusCode}");
       debugPrint("response from fetchCustomer = $jsonData");
-      debugPrint(jsonData.toString());
-      return null;
+      ChatConversation customerProfile = ChatConversation.fromJson(jsonData);
+      return customerProfile;
+    } else {
+      debugPrint(
+          "ERROR while calling $url StatusCode:- ${response.statusCode} Body:- ${response.body}");
+      return Future.error(
+          "ERROR while calling $url StatusCode:- ${response.statusCode} Body:- ${response.body}");
     }
   }
 

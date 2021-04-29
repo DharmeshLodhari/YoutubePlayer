@@ -32,6 +32,7 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
   List<CustomerProfile> selectedConnectionList = [];
 
   TextEditingController groupNameController;
+  TextEditingController groupDescriptionController;
 
   GroupDetailModel groupDetail;
 
@@ -40,10 +41,12 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
   @protected
   void initState() {
     groupNameController = TextEditingController();
+    groupDescriptionController = TextEditingController();
 
     getGroupDetail();
 
     groupNameController.text = groupDetail.fullName;
+    groupDescriptionController.text = groupDetail.description;
 
     super.initState();
   }

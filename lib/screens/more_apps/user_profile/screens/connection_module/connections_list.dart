@@ -2,6 +2,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile_for_connection.dart';
 import 'package:Slydo/utils/colors.dart';
@@ -285,6 +286,9 @@ class _ConnectionListState extends State<ConnectionList> {
   }
 
   List<Widget> listSecondaryActions(ChatConversation user, int index) {
+    if (user.isGroupConversation) {
+      return [];
+    }
     CustomerProfile customerProfile =
         CustomerProfile.fromChatConversation(user);
 
@@ -301,9 +305,29 @@ class _ConnectionListState extends State<ConnectionList> {
     ];
   }
 
-  List<Widget> listActionSlideActions(ChatConversation user, int index) {
+  List<Widget> listActionSlideActions(
+      ChatConversation chatConversation, int index) {
+    UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+
+    if (chatConversation.isGroupConversation) {
+      if (userBloc.user.userName == chatConversation.owner) {
+        return [];
+      }
+
+      return [
+        SlideActionButton(
+          backgroundColor: mateRed,
+          icon: SlydoAppIcon.leave,
+          onTap: () {
+            exitTheGroupAlert(chatConversation, index);
+          },
+          title: "Exit",
+          slideController: _slideController,
+        ),
+      ];
+    }
     CustomerProfile customerProfile =
-        CustomerProfile.fromChatConversation(user);
+        CustomerProfile.fromChatConversation(chatConversation);
 
     return [
       SlideActionButton(
@@ -351,6 +375,48 @@ class _ConnectionListState extends State<ConnectionList> {
             context,
             "${user.fullName} " +
                 AppLocalization.of(context).isBlockedSuccessfully);
+        setState(() {
+          connectionsList.removeAt(index);
+          if (connectionsList.length <= 9) {
+            getList();
+          }
+        });
+      } else {
+        _showSnackBar(context, AppLocalization.of(context).error);
+      }
+    }
+  }
+
+  Future<void> exitTheGroupAlert(
+      ChatConversation chatConversation, int index) async {
+    bool result = await showDialogBox(
+      context: context,
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        backgroundColor: mateRed.withOpacity(0.08),
+        borderRadius: 20,
+        width: 48,
+        height: 48,
+        icon: Icon(
+          SlydoAppIcon.leave,
+          color: mateRed,
+          size: 16,
+        ),
+        enableMargin: false,
+      ),
+      actionOneBgColor: mateRed,
+      actionOneTextColor: Colors.white,
+      actionTwoBgColor: greyBorderColor,
+      actionTwoTextColor: blackFont,
+      title: "Exit",
+      description: "Are you sure want to leave ${chatConversation.fullName} ?",
+      actionOne: "Exit",
+      actionTwo: AppLocalization.of(context).cancel,
+    );
+    if (result) {
+      bool done = await MessageAuth()
+          .exitFromGroup(conversationId: chatConversation.conversationId);
+      if (done) {
+        _showSnackBar(context, "You left ${chatConversation.fullName}");
         setState(() {
           connectionsList.removeAt(index);
           if (connectionsList.length <= 9) {
