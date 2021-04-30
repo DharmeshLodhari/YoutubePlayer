@@ -110,15 +110,28 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
         softWrap: false,
         maxLines: 1,
       ),
-      actions: [
-        isLoading ? Container() : editGroupBtn(),
-        SizedBox(width: 8),
-        isLoading ? Container() : addUserToGroupBtn(),
-        SizedBox(
-          width: 16,
-        )
-      ],
+      actions: getGroupActions(),
     );
+  }
+
+
+  List<Widget> getGroupActions(){
+
+    if(groupDetail.adminUsers.contains(userBloc.user.userName))
+      {
+        return [
+          isLoading ? Container() : editGroupBtn(),
+          SizedBox(width: 8),
+          isLoading ? Container() : addUserToGroupBtn(),
+          SizedBox(
+            width: 16,
+          )
+        ];
+      }
+    return [];
+
+
+
   }
 
   Widget addUserToGroupBtn() {
