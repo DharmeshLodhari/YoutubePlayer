@@ -318,6 +318,8 @@ class MessageAuth extends AuthService {
 
     request.fields["participants"] = jsonEncode(listOfUser);
     request.fields["group_name"] = group.groupName;
+    request.fields["description"] = group.groupDescription;
+
     request.fields["is_group_conversation"] = jsonEncode(true);
 
     if (group.groupProfilePhoto != null) {
@@ -362,6 +364,7 @@ class MessageAuth extends AuthService {
     var request = http.MultipartRequest("PATCH", Uri.parse(url));
 
     request.fields["group_name"] = group.name;
+    request.fields["description"] = group.description;
 
     if (group.avatar != null) {
       // Create multipart using filepath, string or bytes
@@ -597,6 +600,24 @@ class MessageAuth extends AuthService {
   Future<bool> exitFromGroup({String conversationId}) async {
     var url = secureBaseUrl +
         "/api/v1/user/group-conversation/exit-group/" +
+        conversationId +
+        "/";
+    var headers = await getAuthHeaders();
+
+    var response = await http.get(url, headers: headers);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<bool> deleteGroup({String conversationId}) async {
+    var url = secureBaseUrl +
+        "/api/v1/user/group-conversation/delete-group/" +
         conversationId +
         "/";
     var headers = await getAuthHeaders();

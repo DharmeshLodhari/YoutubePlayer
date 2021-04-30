@@ -33,7 +33,7 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       mainSocketProvider =
-          Provider.of<MainSocketProvider>(context,listen:false);
+          Provider.of<MainSocketProvider>(context, listen: false);
 
       streamSubscription = mainSocketProvider.listen((message) {
         Map<String, dynamic> messageData = jsonDecode(message);
@@ -172,8 +172,10 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
         return Column(
           children: [
             getBadge(count),
-            SizedBox(
-              height: 4,
+            Expanded(
+              child: SizedBox(
+                height: 4,
+              ),
             ),
             getGroupLabel(),
           ],
@@ -206,7 +208,7 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
         animationType: BadgeAnimationType.slide,
         badgeContent: Text(
           "$count",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w400),
         ),
         position: BadgePosition(end: 0, top: 0),
       ),

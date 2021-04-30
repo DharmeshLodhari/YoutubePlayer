@@ -93,7 +93,6 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
     return Scaffold(
       key: _scaffoldSelectUserForGroupKey,
       backgroundColor: Colors.white,
-      appBar: getAppBar(),
       body: getScaffoldBody(),
       floatingActionButton: getFloatingActionBtn(),
     );
@@ -122,28 +121,49 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
   }
 
   Widget getAppBar() {
-    return AppBar(
-      elevation: 0,
-      backgroundColor: Colors.white,
-      titleSpacing: 0,
-      automaticallyImplyLeading: false,
-      leading: IconButton(
-        icon: Icon(
-          Icons.keyboard_arrow_left,
-          color: navyBlue,
-          size: 24,
-        ),
-        onPressed: () {
-          Navigator.pop(context);
-        },
-      ),
-      title: getSearchTextField(),
-    );
+    return Container(
+        padding: EdgeInsets.only(top: 8),
+        child: Row(
+          children: [
+            IconButton(
+              icon: Icon(
+                Icons.keyboard_arrow_left,
+                color: navyBlue,
+                size: 24,
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            Expanded(
+              child: getSearchTextField(),
+            )
+          ],
+        ));
+
+    // return AppBar(
+    //   elevation: 0,
+    //   backgroundColor: Colors.white,
+    //   titleSpacing: 0,
+    //   automaticallyImplyLeading: false,
+    //   leading: IconButton(
+    //     icon: Icon(
+    //       Icons.keyboard_arrow_left,
+    //       color: navyBlue,
+    //       size: 24,
+    //     ),
+    //     onPressed: () {
+    //       Navigator.pop(context);
+    //     },
+    //   ),
+    //   title: getSearchTextField(),
+    // );
   }
 
   Widget getSearchTextField() {
     return Container(
       padding: EdgeInsets.only(right: 16),
+      margin: EdgeInsets.only(top: 10),
       child: SearchTextField(
         hintText: "Search...",
         onSubmit: () {
@@ -155,12 +175,15 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
   }
 
   Widget getScaffoldBody() {
-    return Container(
-      child: Column(
-        children: [
-          getSelectedUserList(),
-          Expanded(child: _buildConnectionsList()),
-        ],
+    return SafeArea(
+      child: Container(
+        child: Column(
+          children: [
+            getAppBar(),
+            getSelectedUserList(),
+            Expanded(child: _buildConnectionsList()),
+          ],
+        ),
       ),
     );
   }
@@ -168,6 +191,7 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
   Widget getSelectedUserList() {
     return selectedConnectionList.isNotEmpty
         ? Container(
+            padding: EdgeInsets.only(top: 10),
             child: Container(
               height: 80,
               padding: EdgeInsets.only(top: 10, right: 10, left: 16),

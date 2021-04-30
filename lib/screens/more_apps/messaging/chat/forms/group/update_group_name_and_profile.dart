@@ -8,6 +8,7 @@ import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/image_crop.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
@@ -29,6 +30,8 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
   final GlobalKey<ScaffoldState> _scaffoldUpdateGroupNameAndProfileKey =
       new GlobalKey<ScaffoldState>();
 
+  final GlobalKey<FormState> _formFieldKey = new GlobalKey<FormState>();
+
   List<CustomerProfile> selectedConnectionList = [];
 
   TextEditingController groupNameController;
@@ -37,6 +40,10 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
   GroupDetailModel groupDetail;
 
   UpdateGroupDetailModel groupModel;
+
+  bool isProfileChanged = false;
+  bool isGroupNameChanged = false;
+  bool isDescriptionChanged = false;
 
   @protected
   void initState() {
@@ -47,6 +54,15 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
 
     groupNameController.text = groupDetail.fullName;
     groupDescriptionController.text = groupDetail.description;
+
+    groupDescriptionController.addListener(() {
+      if (groupDescriptionController.text != groupDetail.description) {
+        isDescriptionChanged = true;
+        if (mounted) setState(() {});
+      } else {
+        isDescriptionChanged = false;
+      }
+    });
 
     super.initState();
   }
@@ -80,23 +96,17 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
   }
 
   Widget getFloatingActionBtn() {
-    if (groupNameController.text.trim() == groupDetail.fullName &&
-        groupModel.avatar == null) {
-      return null;
+    if (isGroupNameChanged || isDescriptionChanged || isProfileChanged) {
+      return FloatingActionButton(
+        backgroundColor: navyBlue,
+        onPressed: updateGroup,
+        child: Icon(
+          Icons.arrow_forward_rounded,
+          size: 28,
+        ),
+      );
     }
-
-    if (groupNameController.text.trim().isEmpty && groupModel.avatar == null) {
-      return null;
-    }
-
-    return FloatingActionButton(
-      backgroundColor: navyBlue,
-      onPressed: updateGroup,
-      child: Icon(
-        Icons.arrow_forward_rounded,
-        size: 28,
-      ),
-    );
+    return null;
   }
 
   Widget getAppBar() {
@@ -127,12 +137,28 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
   }
 
   Widget getScaffoldBody() {
+    return Form(
+      key: _formFieldKey,
+      child: Container(
+        child: Column(
+          children: [
+            getGroupNameAndProfile(),
+            getGroupDescription(),
+            Expanded(child: _buildConnectionsList()),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget getGroupDescription() {
     return Container(
-      child: Column(
-        children: [
-          getGroupNameAndProfile(),
-          Expanded(child: _buildConnectionsList()),
-        ],
+      padding: EdgeInsets.only(top: 16, right: 16, left: 16),
+      child: CustomizedTextFormField(
+        maxLines: 4,
+        labelText: "Description",
+        textCapitalization: TextCapitalization.sentences,
+        controller: groupDescriptionController,
       ),
     );
   }
@@ -157,11 +183,19 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
               width: 8,
             ),
             Expanded(
-                child: TextField(
+                child: TextFormField(
               controller: groupNameController,
               cursorColor: blackFont,
               onChanged: (value) {
-                setState(() {});
+                if (groupNameController.text.trim() == groupDetail.fullName &&
+                    value.isNotEmpty) {
+                  isGroupNameChanged = true;
+                  setState(() {});
+                }
+              },
+              validator: (value) {
+                if (value.isNotEmpty) return null;
+                return "Please Enter group name";
               },
               style: TextStyle(
                   color: blackFont, fontWeight: FontWeight.w700, fontSize: 16),
@@ -248,6 +282,7 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
         }
 
         groupModel.avatar = croppedImage;
+        isProfileChanged = true;
         if (mounted) setState(() {});
       }
     }
@@ -298,41 +333,45 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
   }
 
   void updateGroup() {
-    groupModel.name = groupNameController.text.trim();
+    if (_formFieldKey.currentState.validate()) {
+      groupModel.name = groupNameController.text.trim();
+      groupModel.description = groupDescriptionController.text.trim();
 
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => Center(
-              child: CircularLoadingIndicator(),
-            ));
+      showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => Center(
+                child: CircularLoadingIndicator(),
+              ));
 
-    MessageAuth().updateGroupChat(group: groupModel).then((value) {
-      Navigator.pop(context);
-      if (value != null) {
+      MessageAuth().updateGroupChat(group: groupModel).then((value) {
+        Navigator.pop(context);
+        if (value != null) {
+          Toast.show(
+            "Group detail updated successfully !!",
+            context,
+            duration: Toast.LENGTH_LONG,
+            textColor: Colors.white,
+          );
+          debugPrint("Group detail updated successfully !!");
+          Map<String, dynamic> data = value;
+
+          groupDetail.avatar = data["banner"];
+          groupDetail.fullName = data["group_name"];
+          groupDetail.username = data["group_name"];
+          groupDetail.description = data["description"];
+
+          Navigator.pop(context, groupDetail);
+        }
+      }).catchError((error) {
+        debugPrint("ERROR While Updating Group :- $error");
         Toast.show(
-          "Group detail updated successfully !!",
+          "$error",
           context,
           duration: Toast.LENGTH_LONG,
           textColor: Colors.white,
         );
-        debugPrint("Group detail updated successfully !!");
-        Map<String, dynamic> data = value;
-
-        groupDetail.avatar = data["banner"];
-        groupDetail.fullName = data["group_name"];
-        groupDetail.username = data["group_name"];
-
-        Navigator.pop(context, groupDetail);
-      }
-    }).catchError((error) {
-      debugPrint("ERROR While Updating Group :- $error");
-      Toast.show(
-        "$error",
-        context,
-        duration: Toast.LENGTH_LONG,
-        textColor: Colors.white,
-      );
-    });
+      });
+    }
   }
 }

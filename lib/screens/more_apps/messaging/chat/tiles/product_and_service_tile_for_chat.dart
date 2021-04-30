@@ -9,6 +9,7 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/disclaimer_dialogue_for_goods.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -167,31 +168,38 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
                                                     ),
                                                     Expanded(
                                                       child: CurvedButton(
-                                                        height: 36,
-                                                        textColor: Colors.white,
-                                                        backgroundColor:
-                                                            navyBlue,
-                                                        text: "BUY NOW",
-                                                        borderRadius: 10,
-                                                        onPressed: () async {
-                                                          customerProfileBloc
-                                                                  .customer =
-                                                              await UserAuth()
-                                                                  .fetchCustomerProfile(
-                                                                      product
-                                                                          .seller);
+                                                          height: 36,
+                                                          textColor:
+                                                              Colors.white,
+                                                          backgroundColor:
+                                                              navyBlue,
+                                                          text: "BUY NOW",
+                                                          borderRadius: 10,
+                                                          onPressed: () async {
+                                                            bool result =
+                                                                await showDisclaimerDialogueForGoods(
+                                                                    context);
+                                                            if (result) {
+                                                              customerProfileBloc
+                                                                      .customer =
+                                                                  await UserAuth()
+                                                                      .fetchCustomerProfile(
+                                                                          product
+                                                                              .seller);
 
-                                                          Navigator.of(context)
-                                                              .pushNamed(
-                                                            '/send-payment',
-                                                            arguments: {
-                                                              'isFromProfile':
-                                                                  false,
-                                                              'product': product
-                                                            },
-                                                          );
-                                                        },
-                                                      ),
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pushNamed(
+                                                                '/send-payment',
+                                                                arguments: {
+                                                                  'isFromProfile':
+                                                                      false,
+                                                                  'product':
+                                                                      product
+                                                                },
+                                                              );
+                                                            }
+                                                          }),
                                                     ),
                                                   ],
                                                 ),
@@ -431,31 +439,38 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
                                                     ),
                                                     Expanded(
                                                       child: CurvedButton(
-                                                        height: 36,
-                                                        textColor: Colors.white,
-                                                        backgroundColor:
-                                                            navyBlue,
-                                                        text: "BUY NOW",
-                                                        borderRadius: 10,
-                                                        onPressed: () async {
-                                                          customerProfileBloc
-                                                                  .customer =
-                                                              await UserAuth()
-                                                                  .fetchCustomerProfile(
-                                                                      service
-                                                                          .provider);
+                                                          height: 36,
+                                                          textColor:
+                                                              Colors.white,
+                                                          backgroundColor:
+                                                              navyBlue,
+                                                          text: "BUY NOW",
+                                                          borderRadius: 10,
+                                                          onPressed: () async {
+                                                            bool result =
+                                                                await showDisclaimerDialogueForGoods(
+                                                                    context);
+                                                            if (result) {
+                                                              customerProfileBloc
+                                                                      .customer =
+                                                                  await UserAuth()
+                                                                      .fetchCustomerProfile(
+                                                                          service
+                                                                              .provider);
 
-                                                          Navigator.of(context)
-                                                              .pushNamed(
-                                                            '/send-payment',
-                                                            arguments: {
-                                                              'isFromProfile':
-                                                                  false,
-                                                              'service': service
-                                                            },
-                                                          );
-                                                        },
-                                                      ),
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pushNamed(
+                                                                '/send-payment',
+                                                                arguments: {
+                                                                  'isFromProfile':
+                                                                      false,
+                                                                  'service':
+                                                                      service
+                                                                },
+                                                              );
+                                                            }
+                                                          }),
                                                     ),
                                                   ],
                                                 ),

@@ -33,7 +33,12 @@ class ConnectionListManager {
         conversationId: conversationId, time: time);
   }
 
-  Future<int> updateChatConversation({ChatConversation chatConversation}) async{
-    return await _db.updateChatConversation(chatConversation:chatConversation);
+  Future<int> updateChatConversation(
+      {ChatConversation chatConversation}) async {
+    return await _db.updateChatConversation(chatConversation: chatConversation);
+  }
+
+  Future<int> deleteChatConversation({String conversationId}) async {
+    return await _db.deleteChatConversation(conversationId: conversationId);
   }
 }

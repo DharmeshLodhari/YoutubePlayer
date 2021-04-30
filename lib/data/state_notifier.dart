@@ -399,7 +399,6 @@ class ConnectionListBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-
   Future<List<ChatConversation>> _getConnectionUsers() async {
     return await ConnectionListManager().getConnectionsFromDB();
   }
@@ -412,14 +411,21 @@ class ConnectionListBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateChatConversation({ChatConversation chatConversation})async
-  {
-    await ConnectionListManager().updateChatConversation(chatConversation:chatConversation);
+  void updateChatConversation({ChatConversation chatConversation}) async {
+    await ConnectionListManager()
+        .updateChatConversation(chatConversation: chatConversation);
     _connectionUsers.clear();
     _connectionUsers = await _getConnectionUsers();
     notifyListeners();
   }
 
+  void deleteChatConversation({String conversationId}) async {
+    await ConnectionListManager()
+        .deleteChatConversation(conversationId: conversationId);
+    _connectionUsers.clear();
+    _connectionUsers = await _getConnectionUsers();
+    notifyListeners();
+  }
 
   Future<int> getConnectionsCount() async {
     _connectionUsers.clear();

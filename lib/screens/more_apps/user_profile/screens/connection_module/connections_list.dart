@@ -375,12 +375,15 @@ class _ConnectionListState extends State<ConnectionList> {
             context,
             "${user.fullName} " +
                 AppLocalization.of(context).isBlockedSuccessfully);
-        setState(() {
-          connectionsList.removeAt(index);
-          if (connectionsList.length <= 9) {
-            getList();
-          }
-        });
+        ConnectionListBloc connectionListBloc =
+            Provider.of<ConnectionListBloc>(context, listen: false);
+        connectionListBloc.deleteChatConversation(
+            conversationId: user.conversationId);
+
+        // if (connectionsList.length <= 9) {
+        //   getList();
+        // }
+        setState(() {});
       } else {
         _showSnackBar(context, AppLocalization.of(context).error);
       }
@@ -417,12 +420,16 @@ class _ConnectionListState extends State<ConnectionList> {
           .exitFromGroup(conversationId: chatConversation.conversationId);
       if (done) {
         _showSnackBar(context, "You left ${chatConversation.fullName}");
-        setState(() {
-          connectionsList.removeAt(index);
-          if (connectionsList.length <= 9) {
-            getList();
-          }
-        });
+
+        ConnectionListBloc connectionListBloc =
+            Provider.of<ConnectionListBloc>(context, listen: false);
+        connectionListBloc.deleteChatConversation(
+            conversationId: chatConversation.conversationId);
+
+        // if (connectionsList.length <= 9) {
+        //   getList();
+        // }
+        setState(() {});
       } else {
         _showSnackBar(context, AppLocalization.of(context).error);
       }
@@ -463,12 +470,15 @@ class _ConnectionListState extends State<ConnectionList> {
             context,
             "${user.fullName} " +
                 AppLocalization.of(context).isRemovedSuccessfully);
-        setState(() {
-          connectionsList.removeAt(index);
-          if (connectionsList.length <= 9) {
-            getList();
-          }
-        });
+
+        ConnectionListBloc connectionListBloc =
+            Provider.of<ConnectionListBloc>(context, listen: false);
+        connectionListBloc.deleteChatConversation(
+            conversationId: user.conversationId);
+        // if (connectionsList.length <= 9) {
+        //   getList();
+        // }
+        if (mounted) setState(() {});
       } else {
         _showSnackBar(context, AppLocalization.of(context).error);
       }

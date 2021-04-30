@@ -8,6 +8,7 @@ import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/image_crop.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +32,7 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
   List<CustomerProfile> selectedConnectionList = [];
 
   TextEditingController groupNameController;
+  TextEditingController groupDescriptionController;
 
   AddGroupModel groupModel = AddGroupModel();
 
@@ -103,8 +105,21 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
       child: Column(
         children: [
           getGroupNameAndProfile(),
+          getGroupDescription(),
           Expanded(child: _buildConnectionsList()),
         ],
+      ),
+    );
+  }
+
+  Widget getGroupDescription() {
+    return Container(
+      padding: EdgeInsets.only(top: 16, right: 16, left: 16),
+      child: CustomizedTextFormField(
+        maxLines: 4,
+        labelText: "Description",
+        textCapitalization: TextCapitalization.sentences,
+        controller: groupDescriptionController,
       ),
     );
   }
@@ -270,6 +285,7 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
   void createGroup() {
     groupModel.users = selectedConnectionList;
     groupModel.groupName = groupNameController.text.trim();
+    groupModel.groupDescription = groupDescriptionController.text.trim();
 
     showDialog(
         context: context,

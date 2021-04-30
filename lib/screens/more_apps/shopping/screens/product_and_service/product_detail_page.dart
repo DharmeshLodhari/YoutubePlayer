@@ -6,7 +6,6 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -14,6 +13,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/disclaimer_dialogue_for_goods.dart';
 import 'package:Slydo/widget/item_display_card.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:badges/badges.dart';
@@ -271,7 +271,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   void addProductOrServiceToChat(
       {Map<String, dynamic> itemData,
-        ChatConversation recipientUser,
+      ChatConversation recipientUser,
       String url,
       dynamic item}) async {
     Map<String, dynamic> data = {
@@ -933,10 +933,13 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         backgroundColor: navyBlue,
         textColor: Colors.white,
         text: "BUY NOW",
-        onPressed: () {
+        onPressed: () async {
           if (isValidCustomer) {
-            getRecipient();
-            navigateToSendPayment();
+            bool result = await showDisclaimerDialogueForGoods(context);
+            if (result) {
+              getRecipient();
+              navigateToSendPayment();
+            }
           } else {
             Toast.show(
                 AppLocalization.of(context).youCanNotPurchaseThisItem, context,

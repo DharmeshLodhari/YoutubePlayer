@@ -36,6 +36,8 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
 
   UserBloc userBloc;
 
+  bool muteNotification = false;
+
   @protected
   void initState() {
     getGroupDetail();
@@ -175,13 +177,45 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
           );
   }
 
+  Widget getGroupDescription() {
+    return groupDetail.description == ""
+        ? Container()
+        : Container(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Description",
+                  style: TextStyle(
+                      color: darkGrey,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600),
+                ),
+                SizedBox(
+                  height: 8,
+                ),
+                Text(
+                  "${groupDetail.description}",
+                  style: TextStyle(color: blackFont),
+                ),
+              ],
+            ),
+          );
+  }
+
   Widget _buildConnectionsList() {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            height: 24,
+            height: 12,
+          ),
+          getGroupDescription(),
+
+          SizedBox(
+            height: 16,
           ),
           Container(
             padding: EdgeInsets.symmetric(horizontal: 16),
@@ -224,12 +258,26 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
           Divider(
             color: dividerColor,
             height: 0,
-            thickness: 1.5,
+            thickness: 1,
           ),
           SizedBox(
             height: 16,
           ),
-          userBloc.user.userName != groupDetail.owner?getExitGroupTile():Container(),
+          getMuteNotificationTile(),
+          SizedBox(
+            height: 16,
+          ),
+          Divider(
+            color: dividerColor,
+            height: 0,
+            thickness: 1,
+          ),
+          SizedBox(
+            height: 16,
+          ),
+          userBloc.user.userName != groupDetail.owner
+              ? getExitGroupTile()
+              : getDeleteGroupTile(),
         ],
       ),
     );
@@ -246,6 +294,81 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
 
       if (mounted) setState(() {});
     }
+  }
+
+  Widget getMuteNotificationTile() {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      shadowColor: boxShadowTwo,
+      elevation: 0,
+      child: Container(
+        decoration: decorateBox(),
+        child: ListTile(
+          title: Text(
+            "Mute notifications",
+            maxLines: 1,
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
+            overflow: TextOverflow.fade,
+            softWrap: false,
+          ),
+          trailing: Container(
+            width: 60,
+            child: Switch(
+              value: muteNotification,
+              onChanged: (value) {
+                muteNotification = value;
+                setState(() {});
+              },
+              activeTrackColor: navyBlueLight,
+              activeColor: navyBlue,
+              inactiveTrackColor: navyBlueLight,
+            ),
+          ),
+          onTap: () {
+            if (muteNotification) {
+              muteGroupNotification();
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget getDeleteGroupTile() {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      shadowColor: boxShadowTwo,
+      elevation: 0,
+      child: Container(
+        decoration: decorateBox(),
+        child: ListTile(
+          title: Text(
+            "Delete group",
+            maxLines: 1,
+            style: TextStyle(
+              color: mateRed,
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
+            overflow: TextOverflow.fade,
+            softWrap: false,
+          ),
+          leading: Icon(
+            SlydoAppIcon.delete,
+            color: mateRed,
+          ),
+          onTap: () {
+            deleteGroup();
+          },
+        ),
+      ),
+    );
   }
 
   Widget getExitGroupTile() {
@@ -347,7 +470,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
       );
     }
 
-    if (!isBlocked) {
+    if (!isBlocked && isCurrentUserIsAdmin) {
       leftSwipeActions.add(
         SlideActionButton(
             backgroundColor: lightGrey,
@@ -449,7 +572,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
       );
     }
 
-    if (!isAdmin) {
+    if (!isAdmin && isCurrentUserIsAdmin) {
       rightSwipeAction.add(
         SlideActionButton(
             backgroundColor: naturalGreen,
@@ -626,6 +749,11 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
         .exitFromGroup(conversationId: groupDetail.conversationId)
         .then((value) {
       if (value) {
+        ConnectionListBloc connectionListBloc =
+            Provider.of<ConnectionListBloc>(context, listen: false);
+        connectionListBloc.deleteChatConversation(
+            conversationId: groupDetail.conversationId);
+
         Toast.show("You left the ${groupDetail.fullName}!!", context);
         Navigator.popUntil(context, ModalRoute.withName("/friends-dashboard"));
       }
@@ -633,6 +761,42 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
       debugPrint("ERROR:- $error");
     });
   }
+
+  void deleteGroup() {
+    MessageAuth()
+        .exitFromGroup(conversationId: groupDetail.conversationId)
+        .then((value) {
+      if (value) {
+        ConnectionListBloc connectionListBloc =
+            Provider.of<ConnectionListBloc>(context, listen: false);
+        connectionListBloc.deleteChatConversation(
+            conversationId: groupDetail.conversationId);
+        Toast.show("You deleted the ${groupDetail.fullName}!!", context);
+        Navigator.popUntil(context, ModalRoute.withName("/friends-dashboard"));
+      }
+    }).catchError((error) {
+      debugPrint("ERROR:- $error");
+    });
+  }
+}
+
+void muteGroupNotification() {
+  debugPrint("Mute Notification");
+  //   MessageAuth()
+  //       .exitFromGroup(conversationId: groupDetail.conversationId)
+  //       .then((value) {
+  //     if (value) {
+  //       ConnectionListBloc connectionListBloc =
+  //           Provider.of<ConnectionListBloc>(context, listen: false);
+  //       connectionListBloc.deleteChatConversation(
+  //           conversationId: groupDetail.conversationId);
+  //       Toast.show("You deleted the ${groupDetail.fullName}!!", context);
+  //       Navigator.popUntil(context, ModalRoute.withName("/friends-dashboard"));
+  //     }
+  //   }).catchError((error) {
+  //     debugPrint("ERROR:- $error");
+  //   });
+  // }
 }
 
 class VerticalListItem extends StatefulWidget {

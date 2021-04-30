@@ -319,6 +319,14 @@ class DatabaseHelper {
     return res;
   }
 
+  Future<int> deleteSingleChatUsers({String conversationId}) async {
+    var dbClient = await db;
+    int res = await dbClient.delete("ChatUser",
+        where: "conversationId = ?", whereArgs: [conversationId]);
+    debugPrint("ChatUser $conversationId is Deleted !!");
+    return res;
+  }
+
   Future<void> updateChatUserMessageCount(
       {String conversationId, String hashedMessage}) async {
     var dbClient = await db;
@@ -474,10 +482,21 @@ class DatabaseHelper {
     return res;
   }
 
-  Future<int> updateChatConversation({ChatConversation chatConversation}) async{
+  Future<int> updateChatConversation(
+      {ChatConversation chatConversation}) async {
     Database dbClient = await db;
 
     return await dbClient.update("UserConnection", chatConversation.toDBJson(),
-        where: "conversation_id = ?", whereArgs: [chatConversation.conversationId]);
+        where: "conversation_id = ?",
+        whereArgs: [chatConversation.conversationId]);
+  }
+
+  Future<int> deleteChatConversation({String conversationId}) async {
+    var dbClient = await db;
+    int res = await dbClient.delete("UserConnection",
+        where: "conversation_id = ?", whereArgs: [conversationId]);
+    debugPrint("UserConnection $conversationId is Deleted !!");
+    await deleteSingleChatUsers();
+    return res;
   }
 }
