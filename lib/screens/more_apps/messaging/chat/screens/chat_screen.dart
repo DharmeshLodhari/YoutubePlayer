@@ -2030,7 +2030,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
     switch (messageType) {
       case "text":
-        finalUI = renderMessage(message: messageData);
+        finalUI = renderMessage(message: messageData,chatConversation:chatConversation);
 
         break;
 
@@ -2437,8 +2437,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         : Container();
   }
 
-  Widget renderMessage({Map<String, dynamic> message}) {
-    return TextMessageRendererForChat(message: message);
+  Widget renderMessage({Map<String, dynamic> message,ChatConversation chatConversation}) {
+    return TextMessageRendererForChat(message: message,chatConversation:chatConversation);
   }
 
   Widget renderImageMedia({Map<String, dynamic> message}) {

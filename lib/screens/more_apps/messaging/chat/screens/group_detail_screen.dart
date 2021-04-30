@@ -763,7 +763,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
 
   void deleteGroup() {
     MessageAuth()
-        .exitFromGroup(conversationId: groupDetail.conversationId)
+        .deleteGroup(conversationId: groupDetail.conversationId)
         .then((value) {
       if (value) {
         ConnectionListBloc connectionListBloc =

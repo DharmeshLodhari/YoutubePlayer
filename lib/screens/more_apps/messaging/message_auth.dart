@@ -620,9 +620,10 @@ class MessageAuth extends AuthService {
         "/api/v1/user/group-conversation/delete-group/" +
         conversationId +
         "/";
+    debugPrint("Delete url:- $url");
     var headers = await getAuthHeaders();
 
-    var response = await http.get(url, headers: headers);
+    var response = await http.delete(url, headers: headers);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;

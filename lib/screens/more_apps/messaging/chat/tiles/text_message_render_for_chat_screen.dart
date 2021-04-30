@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -18,7 +19,8 @@ import 'package:provider/provider.dart';
 // ignore: must_be_immutable
 class TextMessageRendererForChat extends StatefulWidget {
   Map<String, dynamic> message;
-  TextMessageRendererForChat({this.message});
+  ChatConversation chatConversation;
+  TextMessageRendererForChat({this.message,this.chatConversation});
 
   @override
   _TextMessageRendererForChatState createState() =>
@@ -345,7 +347,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        message['author'] != userBloc.user.userName
+        widget.chatConversation.isGroupConversation?message['author'] != userBloc.user.userName
             ? Column(
                 children: [
                   Text(
@@ -360,7 +362,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                   ),
                 ],
               )
-            : Container(width: 0,),
+            : Container(width: 0,): Container(width: 0,),
         Text(
           messageDecoderWithEmoji(message['text'].toString()),
           style:
