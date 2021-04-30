@@ -457,6 +457,23 @@ class DatabaseHelper {
     return [];
   }
 
+  Future<List<ChatConversation>> getSearchedUserConnections(
+      {String searchedText}) async {
+    Database dbClient = await db;
+
+    List<Map<String, dynamic>> result = await dbClient.query("UserConnection",
+        where: "username LIKE ? OR full_name LIKE ?",
+        whereArgs: ['%$searchedText%', '%$searchedText%']);
+
+    if (result != null && result.length > 0) {
+      List<ChatConversation> connectionList = result
+          .map((element) => ChatConversation.fromDBJson(element))
+          .toList();
+      return connectionList;
+    }
+    return [];
+  }
+
   Future<int> getUserConnectionsCount() async {
     Database dbClient = await db;
 

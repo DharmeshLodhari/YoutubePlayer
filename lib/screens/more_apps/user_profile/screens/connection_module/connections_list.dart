@@ -1,6 +1,7 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -12,6 +13,7 @@ import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:Slydo/widget/search_text_field.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
@@ -45,9 +47,15 @@ class _ConnectionListState extends State<ConnectionList> {
   RefreshBlocForConnectionDashboard _refreshBloc;
   ConnectionListBloc _connectionListBloc;
 
+  TextEditingController searchChatConversation;
+  bool isUserIsSearching = false;
+  List<ChatConversation> searchedChatConnection = [];
+
   @protected
   void initState() {
     fetchConnectionListFromDbIfAvailable();
+
+    setupSearchChatConnection();
 
     super.initState();
     _scrollController.addListener(() {
@@ -63,6 +71,28 @@ class _ConnectionListState extends State<ConnectionList> {
     );
 
     super.initState();
+  }
+
+  void setupSearchChatConnection() {
+    searchChatConversation = TextEditingController();
+
+    searchChatConversation.addListener(() {
+      if (searchChatConversation.text.isNotEmpty) {
+        isUserIsSearching = true;
+        if (mounted) setState(() {});
+        getSearchedChatConnections();
+      } else {
+        isUserIsSearching = false;
+        if (mounted) setState(() {});
+      }
+    });
+  }
+
+  void getSearchedChatConnections() async {
+    searchedChatConnection = await ConnectionListManager()
+        .getSearchedConnectionsFromDB(
+            searchedText: searchChatConversation.text.trim());
+    if (mounted) setState(() {});
   }
 
   void fetchConnectionListFromDbIfAvailable() async {
@@ -115,17 +145,69 @@ class _ConnectionListState extends State<ConnectionList> {
 
     return Scaffold(
       key: _scaffoldContactsListKey,
-      backgroundColor: lightGrey,
+      backgroundColor: Colors.white,
       // floatingActionButton: getFloatingActionBtn(),
-      body: SmartRefresher(
-          enablePullDown: true,
-          header: WaterDropHeader(
-            complete: Container(),
-            waterDropColor: navyBlue,
-          ),
-          controller: _refreshController,
-          onRefresh: _onRefresh,
-          child: _buildConnectionsList()),
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).requestFocus(new FocusNode());
+        },
+        child: Column(
+          children: [
+            getSearchTextField(),
+            isUserIsSearching
+                ? Expanded(child: getSearchedUserListUI())
+                : Expanded(
+                    child: SmartRefresher(
+                        enablePullDown: true,
+                        header: WaterDropHeader(
+                          complete: Container(),
+                          waterDropColor: navyBlue,
+                        ),
+                        controller: _refreshController,
+                        onRefresh: _onRefresh,
+                        child: Container(
+                            color: lightGrey, child: _buildConnectionsList())),
+                  ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget getSearchedUserListUI() {
+    return searchedChatConnection.isEmpty
+        ? NoItemInList(
+            msg: "No Result found",
+            isResult: true,
+          )
+        : Container(
+            child: ListView.builder(
+            padding: EdgeInsets.symmetric(
+              vertical: 4,
+            ),
+            //+1 for progressbar
+            itemCount: searchedChatConnection.length,
+            itemBuilder: (BuildContext context, int index) {
+              return _getSlidableWithLists(
+                  context, searchedChatConnection[index], index);
+            },
+            controller: _scrollController,
+          ));
+  }
+
+  Widget getSearchTextField() {
+    return Container(
+      color: Colors.white,
+      padding: EdgeInsets.only(left: 16, right: 16, top: 4, bottom: 8),
+      child: SearchTextField(
+        hintText: "Search...",
+        hintStyle: TextStyle(
+            fontSize: 14, fontWeight: FontWeight.w400, color: darkGrey),
+        onSubmit: () {
+          getSearchedChatConnections();
+        },
+        textEditingController: searchChatConversation,
+      ),
     );
   }
 

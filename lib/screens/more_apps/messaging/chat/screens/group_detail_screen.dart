@@ -213,7 +213,6 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
             height: 12,
           ),
           getGroupDescription(),
-
           SizedBox(
             height: 16,
           ),
