@@ -63,13 +63,10 @@ class MainSocketMessageHandler {
     /// Ends
 
     if (messageData["type"] == "chatroom_message") {
-      debugPrint("Hello >>>>>>>>>>>>  1");
-
       debugPrint(
           " Message Data==> ${messageData.containsKey("conversation")}  ${messageData.containsKey("conversation_id")}");
       if (messageData.containsKey("conversation") ||
           messageData.containsKey("conversation_id")) {
-        debugPrint("Hello >>>>>>>>>>>>  2");
         MainSocketProvider mainSocketProvider = Provider.of<MainSocketProvider>(
             myGlobals.scaffoldKey.currentContext,
             listen: false);
@@ -90,8 +87,6 @@ class MainSocketMessageHandler {
         ///delete message from ChatTextMessage table in db if message came back from socket
 
         if (messageData['kind'] == "text") {
-          debugPrint("Hello  >>>>>>>>>>>>  3");
-
           DBSocketMessageHandler().deleteChatTextMessage(
               message: ChatTextMessage.fromJson(messageData));
         } else if (messageData['kind'] == "user_location") {

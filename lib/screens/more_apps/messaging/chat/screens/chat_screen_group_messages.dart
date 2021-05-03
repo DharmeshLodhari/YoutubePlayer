@@ -61,20 +61,22 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:sticky_grouped_list/sticky_grouped_list.dart';
 import 'package:swipe_to/swipe_to.dart';
 import 'package:toast/toast.dart';
 import 'package:uuid/uuid.dart';
 
-class ChatScreen extends StatefulWidget {
+class ChatScreenGroupMessage extends StatefulWidget {
   final arguments;
 
-  ChatScreen({this.arguments});
+  ChatScreenGroupMessage({this.arguments});
 
   @override
-  _ChatScreenState createState() => _ChatScreenState();
+  _ChatScreenGroupMessageState createState() => _ChatScreenGroupMessageState();
 }
 
-class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
+class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
+    with WidgetsBindingObserver {
   /// Text message controller
   TextEditingController messageController;
   FocusNode messageFocus;
@@ -2409,30 +2411,89 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         ));
   }
 
+  // Widget messageListBuilder() {
+  //   return LazyLoadScrollView(
+  //     isLoading: isLoading,
+  //     onEndOfPage: getPreviousMessages,
+  //     child: ListView.builder(
+  //       reverse: true,
+  //       controller: messageScrollController,
+  //       padding: EdgeInsets.symmetric(vertical: 4),
+  //       //+1 for progressbar
+  //       itemCount: messageList.length + 1,
+  //       itemBuilder: (BuildContext context, int index) {
+  //         debugPrint("messageList[index]= ${messageList[index]}");
+  //         if (index == messageList.length) {
+  //           return _buildIndicator();
+  //         }
+  //         return Container(
+  //           child: GestureDetector(
+  //               onLongPress: () {
+  //                 showChatMessageAction(message: messageList[index]);
+  //               },
+  //               child: renderDataAccordingType(messageList[index])),
+  //           padding: EdgeInsets.only(bottom: 4),
+  //         );
+  //       },
+  //     ),
+  //   );
+  // }
   Widget messageListBuilder() {
     return LazyLoadScrollView(
       isLoading: isLoading,
       onEndOfPage: getPreviousMessages,
-      child: ListView.builder(
-        reverse: true,
-        controller: messageScrollController,
-        padding: EdgeInsets.symmetric(vertical: 4),
-        //+1 for progressbar
-        itemCount: messageList.length + 1,
-        itemBuilder: (BuildContext context, int index) {
-          if (index == messageList.length) {
-            return _buildIndicator();
-          }
-          return Container(
-            child: GestureDetector(
-                onLongPress: () {
-                  showChatMessageAction(message: messageList[index]);
-                },
-                child: renderDataAccordingType(messageList[index])),
-            padding: EdgeInsets.only(bottom: 4),
-          );
-        },
+      child: getGroupMessage(),
+    );
+  }
+
+  Widget getGroupMessage() {
+    return StickyGroupedListView<String, DateTime>(
+      elements: messageList,
+      groupBy: (String element) {
+        Map<String, dynamic> message = jsonDecode(element);
+        DateTime dateTime = DateTime.parse(message['created_at']).toLocal();
+        return dateTime;
+      },
+      groupSeparatorBuilder: (String element) {
+        Map<String, dynamic> message = jsonDecode(element);
+
+        DateTime dateTime = DateTime.parse(message['created_at']).toLocal();
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+                margin: EdgeInsets.only(bottom: 4),
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                    color: navyBlue, borderRadius: BorderRadius.circular(25)),
+                child: Text(message['created_at'],
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                    ))),
+          ],
+        );
+      },
+      itemBuilder: (context, dynamic element) => Container(
+        padding: EdgeInsets.only(bottom: 4),
+        child: GestureDetector(
+          onLongPress: () {
+            showChatMessageAction(message: element);
+          },
+          child: renderDataAccordingType(element),
+        ),
       ),
+      itemComparator: (element1, element2) {
+        Map<String, dynamic> message1 = jsonDecode(element1);
+        Map<String, dynamic> message2 = jsonDecode(element2);
+        DateTime messageOneDateTime = DateTime.parse(message1['created_at']).toLocal();
+        DateTime messageTwoDateTime = DateTime.parse(message2['created_at']).toLocal();
+
+        return messageOneDateTime.compareTo(messageTwoDateTime);
+      }, // optional
+      itemScrollController: GroupedItemScrollController(), // optional
+      order: StickyGroupedListOrder.ASC, // optional
     );
   }
 

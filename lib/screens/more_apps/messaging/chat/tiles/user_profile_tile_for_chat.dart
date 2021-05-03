@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/colors.dart';
@@ -11,8 +12,9 @@ import 'package:provider/provider.dart';
 
 class UserProfileTileForChat extends StatefulWidget {
   final Map<String, dynamic> message;
+  final ChatConversation chatConversation;
 
-  UserProfileTileForChat({this.message});
+  UserProfileTileForChat({this.message, this.chatConversation});
 
   @override
   _UserProfileTileForChatState createState() => _UserProfileTileForChatState();
@@ -52,16 +54,61 @@ class _UserProfileTileForChatState extends State<UserProfileTileForChat> {
                   maxWidth: MediaQuery.of(context).size.width / 1.30,
                   minWidth: MediaQuery.of(context).size.width / 1.30,
                   minHeight: 50),
+              padding: EdgeInsets.symmetric(
+                  horizontal: widget.chatConversation.isGroupConversation
+                      ? isSend
+                          ? 0
+                          : 8
+                      : 0,
+                  vertical: widget.chatConversation.isGroupConversation
+                      ? isSend
+                          ? 0
+                          : 8
+                      : 0),
               decoration: BoxDecoration(
+                color: widget.chatConversation.isGroupConversation
+                    ? isSend
+                        ? Colors.transparent
+                        : chatBackgroundColor
+                    : Colors.transparent,
                 borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(!isSend ? 0 : 6),
-                  bottomRight: Radius.circular(isSend ? 0 : 6),
-                  topLeft: Radius.circular(6),
-                  topRight: Radius.circular(6),
+                  bottomLeft: Radius.circular(!isSend ? 0 : 10),
+                  bottomRight: Radius.circular(isSend ? 0 : 10),
+                  topLeft: Radius.circular(10),
+                  topRight: Radius.circular(10),
                 ),
               ),
-              child: UserProfileTile(
-                user: customerProfile,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  widget.chatConversation.isGroupConversation
+                      ? widget.message['author'] != userBloc.user.userName
+                          ? Column(
+                              children: [
+                                Text(
+                                  widget.message['author_full_name'] ??
+                                      widget.message['author'],
+                                  style: TextStyle(
+                                      color: isSend ? Colors.white : blackFont,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                SizedBox(
+                                  height: 4,
+                                ),
+                              ],
+                            )
+                          : Container(
+                              width: 0,
+                            )
+                      : Container(
+                          width: 0,
+                        ),
+                  UserProfileTile(
+                    user: customerProfile,
+                  ),
+                ],
               ),
             ),
             isSend

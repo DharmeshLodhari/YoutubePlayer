@@ -502,6 +502,13 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
+      // case '/chat-screen':
+      //   return PageTransition(
+      //     child: ChatScreenGroupMessage(arguments: settings.arguments),
+      //     type: PageTransitionType.bottomToTop,
+      //     curve: Curves.ease,
+      //     settings: settings,
+      //   );
 
       case '/send-media-to-chat-message':
         return PageTransition(

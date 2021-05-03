@@ -1,4 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/screens/more_apps/music/music_detail_page.dart';
 import 'package:Slydo/utils/colors.dart';
@@ -9,8 +10,9 @@ import 'package:provider/provider.dart';
 
 class AudioTileForChat extends StatefulWidget {
   final Map<String, dynamic> message;
+  final ChatConversation chatConversation;
 
-  AudioTileForChat({this.message});
+  AudioTileForChat({this.message, this.chatConversation});
 
   @override
   _AudioTileForChatState createState() => _AudioTileForChatState();
@@ -64,7 +66,11 @@ class _AudioTileForChatState extends State<AudioTileForChat> {
               constraints: BoxConstraints(
                   maxWidth: MediaQuery.of(context).size.width / 1.30,
                   minWidth: MediaQuery.of(context).size.width / 1.30,
-                  minHeight: 50),
+                  minHeight: widget.chatConversation.isGroupConversation
+                      ? widget.message['author'] != userBloc.user.userName
+                          ? 65
+                          : 50
+                      : 50),
               decoration: BoxDecoration(
                 color: chatBackgroundColor,
                 borderRadius: BorderRadius.only(
@@ -79,6 +85,31 @@ class _AudioTileForChatState extends State<AudioTileForChat> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  widget.chatConversation.isGroupConversation
+                      ? widget.message['author'] != userBloc.user.userName
+                          ? Container(
+                              padding: EdgeInsets.only(left: 12),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    widget.message['author_full_name'] ??
+                                        widget.message['author'],
+                                    style: TextStyle(
+                                        color:
+                                            isSend ? Colors.white : blackFont,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : Container(
+                              width: 0,
+                            )
+                      : Container(
+                          width: 0,
+                        ),
                   Row(
                     children: [
                       Container(

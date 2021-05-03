@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/utils/common.dart';
 import 'package:Slydo/utils/util.dart';
@@ -9,11 +10,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
-// ignore: must_be_immutable
 class VideoTileForChat extends StatelessWidget {
-  Map<String, dynamic> message;
+  final Map<String, dynamic> message;
+  final ChatConversation chatConversation;
 
-  VideoTileForChat({@required this.message});
+  VideoTileForChat({@required this.message, this.chatConversation});
 
   @override
   Widget build(BuildContext context) {
@@ -54,11 +55,17 @@ class VideoTileForChat extends StatelessWidget {
                   minWidth: MediaQuery.of(context).size.width / 1.30,
                 ),
                 decoration: BoxDecoration(
-                  color: isMessageEmpty
-                      ? Colors.transparent
-                      : isSend
-                          ? navyBlue
-                          : chatBackgroundColor,
+                  color: chatConversation.isGroupConversation
+                      ? isSend
+                          ? isMessageEmpty
+                              ? Colors.transparent
+                              : navyBlue
+                          : chatBackgroundColor
+                      : isMessageEmpty
+                          ? Colors.transparent
+                          : isSend
+                              ? navyBlue
+                              : chatBackgroundColor,
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(!isSend ? 0 : 10),
                     bottomRight: Radius.circular(isSend ? 0 : 10),
@@ -67,16 +74,61 @@ class VideoTileForChat extends StatelessWidget {
                   ),
                 ),
                 padding: EdgeInsets.only(
-                    top: isMessageEmpty ? 0 : 8,
-                    bottom: isMessageEmpty ? 0 : 8),
+                    top: chatConversation.isGroupConversation
+                        ? isSend
+                        ? 0
+                        : 8
+                        : isMessageEmpty
+                            ? 0
+                            : 8,
+                    bottom: chatConversation.isGroupConversation
+                        ? isSend
+                        ? 0
+                        : 8
+                        : isMessageEmpty
+                            ? 0
+                            : 8,
+                    left: chatConversation.isGroupConversation ? isSend
+                        ? 0
+                        : 8 : 0,
+                    right: chatConversation.isGroupConversation ? isSend
+                        ? 0
+                        : 8 : 0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    chatConversation.isGroupConversation
+                        ? message['author'] != userBloc.user.userName
+                            ? Column(
+                                children: [
+                                  Text(
+                                    message['author_full_name'] ??
+                                        message['author'],
+                                    style: TextStyle(
+                                        color:
+                                            isSend ? Colors.white : blackFont,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                  SizedBox(
+                                    height: isMessageEmpty ? 4 : 2,
+                                  ),
+                                ],
+                              )
+                            : Container(
+                                width: 0,
+                              )
+                        : Container(
+                            width: 0,
+                          ),
                     isMessageEmpty
                         ? Container()
                         : Container(
-                            padding: EdgeInsets.symmetric(horizontal: 8),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: chatConversation.isGroupConversation
+                                    ? 0
+                                    : 8),
                             child: Row(
                               children: [
                                 Expanded(
@@ -99,7 +151,11 @@ class VideoTileForChat extends StatelessWidget {
                           ),
                     Container(
                       padding: EdgeInsets.symmetric(
-                          horizontal: isMessageEmpty ? 0 : 8),
+                          horizontal: chatConversation.isGroupConversation
+                              ? 0
+                              : isMessageEmpty
+                                  ? 0
+                                  : 8),
                       child: Stack(
                         children: [
                           ClipRRect(

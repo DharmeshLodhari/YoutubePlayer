@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/colors.dart';
@@ -10,8 +11,9 @@ import 'package:provider/provider.dart';
 
 class EnvelopeTileForChat extends StatefulWidget {
   final Map<String, dynamic> message;
+  final ChatConversation chatConversation;
 
-  EnvelopeTileForChat({this.message});
+  EnvelopeTileForChat({this.message, this.chatConversation});
 
   @override
   _EnvelopeTileForChatState createState() => _EnvelopeTileForChatState();

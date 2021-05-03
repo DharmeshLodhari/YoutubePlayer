@@ -230,6 +230,7 @@ class MessageAuth extends AuthService {
     // var response = await http
     //     .get(url, headers: headers)
     //     .timeout(timeOutDuration, onTimeout: () => timeOutFunction(url: url));
+
     var response = await http.get(url, headers: headers);
 
     if (response.statusCode == 200) {

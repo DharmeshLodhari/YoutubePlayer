@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/util.dart';
@@ -9,11 +10,11 @@ import 'package:flutter/material.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:provider/provider.dart';
 
-// ignore: must_be_immutable
 class LocationTileForChatMessage extends StatelessWidget {
-  Map<String, dynamic> message;
+  final Map<String, dynamic> message;
+  final ChatConversation chatConversation;
 
-  LocationTileForChatMessage({this.message});
+  LocationTileForChatMessage({this.message, this.chatConversation});
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +59,11 @@ class LocationTileForChatMessage extends StatelessWidget {
                   minWidth: MediaQuery.of(context).size.width / 1.30,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.transparent,
+                  color: chatConversation.isGroupConversation
+                      ? isSend
+                          ? Colors.transparent
+                          : chatBackgroundColor
+                      : Colors.transparent,
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(!isSend ? 0 : 10),
                     bottomRight: Radius.circular(isSend ? 0 : 10),
@@ -66,11 +71,45 @@ class LocationTileForChatMessage extends StatelessWidget {
                     topRight: Radius.circular(10),
                   ),
                 ),
-                padding: EdgeInsets.only(top: 0, bottom: 0),
+                padding: EdgeInsets.symmetric(
+                    horizontal: chatConversation.isGroupConversation
+                        ? isSend
+                            ? 0
+                            : 8
+                        : 0,
+                    vertical: chatConversation.isGroupConversation
+                        ? isSend
+                            ? 0
+                            : 8
+                        : 0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    chatConversation.isGroupConversation
+                        ? message['author'] != userBloc.user.userName
+                            ? Column(
+                                children: [
+                                  Text(
+                                    message['author_full_name'] ??
+                                        message['author'],
+                                    style: TextStyle(
+                                        color:
+                                            isSend ? Colors.white : blackFont,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                  SizedBox(
+                                    height: 4,
+                                  ),
+                                ],
+                              )
+                            : Container(
+                                width: 0,
+                              )
+                        : Container(
+                            width: 0,
+                          ),
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: 0),
                       child: ClipRRect(

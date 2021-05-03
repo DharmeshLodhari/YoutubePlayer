@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
@@ -16,8 +17,9 @@ import 'package:toast/toast.dart';
 class TransactionTileForChat extends StatefulWidget {
   final Map<String, dynamic> message;
   final UserBloc userBloc;
+  final ChatConversation chatConversation;
 
-  TransactionTileForChat({this.message, this.userBloc});
+  TransactionTileForChat({this.message, this.userBloc, this.chatConversation});
   @override
   _TransactionTileForChatState createState() => _TransactionTileForChatState();
 }
@@ -220,8 +222,10 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
 class PaymentRequestTileForChat extends StatefulWidget {
   final Map<String, dynamic> message;
   final UserBloc userBloc;
+  final ChatConversation chatConversation;
 
-  PaymentRequestTileForChat({this.message, this.userBloc});
+  PaymentRequestTileForChat(
+      {this.message, this.userBloc, this.chatConversation});
 
   @override
   _PaymentRequestTileForChatState createState() =>

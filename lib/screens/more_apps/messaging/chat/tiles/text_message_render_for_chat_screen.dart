@@ -20,7 +20,7 @@ import 'package:provider/provider.dart';
 class TextMessageRendererForChat extends StatefulWidget {
   Map<String, dynamic> message;
   ChatConversation chatConversation;
-  TextMessageRendererForChat({this.message,this.chatConversation});
+  TextMessageRendererForChat({this.message, this.chatConversation});
 
   @override
   _TextMessageRendererForChatState createState() =>
@@ -223,6 +223,29 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          widget.chatConversation.isGroupConversation
+              ? message['author'] != userBloc.user.userName
+                  ? Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          message['author'],
+                          style: TextStyle(
+                              color: isSend ? Colors.white : blackFont,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600),
+                        ),
+                        SizedBox(
+                          height: 2,
+                        ),
+                      ],
+                    )
+                  : Container(
+                      width: 0,
+                    )
+              : Container(
+                  width: 0,
+                ),
           FlutterLinkPreview(
             key: ValueKey("${linkToBePreview}233"),
             url: linkToBePreview,
@@ -253,6 +276,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                 padding: const EdgeInsets.all(10),
                 margin: EdgeInsets.only(bottom: 4, top: 8),
                 child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: getPreview(webInfo)),
               );
@@ -347,22 +371,28 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        widget.chatConversation.isGroupConversation?message['author'] != userBloc.user.userName
-            ? Column(
-                children: [
-                  Text(
-                    message['author'],
-                    style: TextStyle(
-                        color: isSend ? Colors.white : blackFont,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600),
-                  ),
-                  SizedBox(
-                    height: 2,
-                  ),
-                ],
-              )
-            : Container(width: 0,): Container(width: 0,),
+        widget.chatConversation.isGroupConversation
+            ? message['author'] != userBloc.user.userName
+                ? Column(
+                    children: [
+                      Text(
+                        message['author_full_name'] ?? message['author'],
+                        style: TextStyle(
+                            color: isSend ? Colors.white : blackFont,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600),
+                      ),
+                      SizedBox(
+                        height: 2,
+                      ),
+                    ],
+                  )
+                : Container(
+                    width: 0,
+                  )
+            : Container(
+                width: 0,
+              ),
         Text(
           messageDecoderWithEmoji(message['text'].toString()),
           style:
@@ -387,11 +417,43 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
             minWidth: MediaQuery.of(context).size.width * 0.2,
             maxHeight: MediaQuery.of(context).size.width / 2.2,
           ),
-          padding: EdgeInsets.symmetric(horizontal: 2, vertical: 2),
-          child: getRepliedMessageUI(
-              messageData: repliedTo,
-              isSend: isSend,
-              isRepliedSend: isRepliedSend),
+          padding: EdgeInsets.symmetric(
+            horizontal: 2,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              widget.chatConversation.isGroupConversation
+                  ? newMessage['author'] != userBloc.user.userName
+                      ? Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              newMessage['author_full_name'] ??
+                                  newMessage['author'],
+                              style: TextStyle(
+                                  color: isSend ? Colors.white : blackFont,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                            SizedBox(
+                              height: 4,
+                            ),
+                          ],
+                        )
+                      : Container(
+                          width: 0,
+                        )
+                  : Container(
+                      width: 0,
+                    ),
+              getRepliedMessageUI(
+                  messageData: repliedTo,
+                  isSend: isSend,
+                  isRepliedSend: isRepliedSend),
+            ],
+          ),
         ),
         SizedBox(
           height: 2,
@@ -517,7 +579,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
             height: 4,
           ),
           Text(
-            message["text"],
+            messageDecoderWithEmoji(message["text"]),
             style: TextStyle(
                 color: getDescriptionColor(
                     isSend: isSend, isRepliedSend: isRepliedSend),
