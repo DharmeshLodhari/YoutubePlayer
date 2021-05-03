@@ -346,8 +346,13 @@ class MessageAuth extends AuthService {
     debugPrint("$responseBody");
 
     if (response.statusCode == 201) {
+      debugPrint("DATA:- ${request.fields}");
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
+
       return true;
     } else {
+      debugPrint("DATA:- ${request.fields}");
       debugPrint(
           "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
       return Future.error("ERROR:- $responseBody");

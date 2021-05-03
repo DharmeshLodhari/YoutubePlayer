@@ -39,6 +39,7 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
   @protected
   void initState() {
     groupNameController = TextEditingController();
+    groupDescriptionController = TextEditingController();
 
     fetchConnectionList();
 
