@@ -29,7 +29,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/forms/group/set_name_and_
 import 'package:Slydo/screens/more_apps/messaging/chat/forms/group/update_group_name_and_profile.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/forms/send_envelope.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/screens/add_chat_group/select_user_for_group.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/screens/chat_screen.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/screens/chat_screen_group_messages.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/screens/envelope_detail_screen.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/screens/group_detail_screen.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/screens/search_group_member.dart';
@@ -495,20 +495,20 @@ class RouteGenerator {
 
       /// Chat
 
-      case '/chat-screen':
-        return PageTransition(
-          child: ChatScreen(arguments: settings.arguments),
-          type: PageTransitionType.bottomToTop,
-          curve: Curves.ease,
-          settings: settings,
-        );
       // case '/chat-screen':
       //   return PageTransition(
-      //     child: ChatScreenGroupMessage(arguments: settings.arguments),
+      //     child: ChatScreen(arguments: settings.arguments),
       //     type: PageTransitionType.bottomToTop,
       //     curve: Curves.ease,
       //     settings: settings,
       //   );
+      case '/chat-screen':
+        return PageTransition(
+          child: ChatScreenGroupMessage(arguments: settings.arguments),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
 
       case '/send-media-to-chat-message':
         return PageTransition(

@@ -13,6 +13,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/helpers/message_sound_pla
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatMessageAction.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/Participant.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatTextMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/EditOrReplyMessageUI.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/audio_tile_for_chat.dart';
@@ -30,6 +31,7 @@ import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/location_service.dart';
@@ -101,7 +103,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   String previous = "";
 
   /// Message scrolling variables
-  ScrollController messageScrollController;
+  // ScrollController messageScrollController;
   bool fabIsVisible = false;
 
   /// User typing state variables
@@ -203,15 +205,18 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   bool isUserMuted = false;
   bool isUserBlocked = false;
 
+  GroupedItemScrollController messageListController;
+
   @override
   void initState() {
     messageController = TextEditingController();
     searchItemTextController = TextEditingController();
     messageFocus = FocusNode();
+    messageListController = GroupedItemScrollController();
 
     chatConversation = widget.arguments["searchedUser"];
 
-    setupScrollController();
+    // setupScrollController();
 
     messageController.addListener(sendUserTypingState);
 
@@ -295,15 +300,19 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     groupDetail = GroupDetailModel.fromChatConversation(chatConversation);
     if (mounted) setState(() {});
 
-    // MessageAuth()
-    //     .getGroupConversationDetail(chatConversation.conversationId)
-    //     .then((value) {
-    //   groupDetail = value;
-    //   if (mounted) setState(() {});
-    // }).catchError((error) {
-    //   debugPrint("ERROR:- $error");
-    //   if (mounted) setState(() {});
-    // });
+    getGroupDetailFromServer();
+  }
+
+  void getGroupDetailFromServer() async {
+    await MessageAuth()
+        .getGroupConversationDetail(chatConversation.conversationId)
+        .then((value) {
+      groupDetail = value;
+      if (mounted) setState(() {});
+    }).catchError((error) {
+      debugPrint("ERROR:- $error");
+      if (mounted) setState(() {});
+    });
   }
 
   void setupShakeDetector() {
@@ -503,22 +512,21 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     }
   }
 
-  void setupScrollController() {
-    messageScrollController = ScrollController();
-
-    messageScrollController.addListener(() {
-      /// for floating button to show scroll to bottom
-
-      fabIsVisible = messageScrollController.position.userScrollDirection ==
-          ScrollDirection.reverse;
-      if (messageScrollController.position.pixels ==
-          messageScrollController.position.minScrollExtent) {
-        fabIsVisible = false;
-      }
-
-      if (mounted) setState(() {});
-    });
-  }
+  // void setupScrollController() {
+  //
+  //   messageScrollController.addListener(() {
+  //     /// for floating button to show scroll to bottom
+  //
+  //     fabIsVisible = messageScrollController.position.userScrollDirection ==
+  //         ScrollDirection.reverse;
+  //     if (messageScrollController.position.pixels ==
+  //         messageScrollController.position.minScrollExtent) {
+  //       fabIsVisible = false;
+  //     }
+  //
+  //     if (mounted) setState(() {});
+  //   });
+  // }
 
   void getPreviousMessages({bool showLoading = true}) async {
     debugPrint("Fetching previous messages !!");
@@ -539,6 +547,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         }
         debugPrint(
             "recipient conversationID:- ${chatConversation.conversationId}");
+
         Map<String, dynamic> result = await MessageAuth()
             .getChatMessages(next, previous,
                 conversionId: chatConversation.conversationId)
@@ -765,20 +774,20 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     }
   }
 
-  void scrollToBottom() {
-    debugPrint("Scrolling to Bottom");
-    messageScrollController.animateTo(
-        messageScrollController.position.minScrollExtent,
-        duration: Duration(microseconds: 100),
-        curve: Curves.easeOut);
-  }
-
-  void scrollToTopWithTopSpace() {
-    messageScrollController.animateTo(
-        messageScrollController.position.minScrollExtent + 10,
-        duration: Duration(microseconds: 100),
-        curve: Curves.easeOut);
-  }
+  // void scrollToBottom() {
+  //   debugPrint("Scrolling to Bottom");
+  //   messageScrollController.animateTo(
+  //       messageScrollController.position.minScrollExtent,
+  //       duration: Duration(microseconds: 100),
+  //       curve: Curves.easeOut);
+  // }
+  //
+  // void scrollToTopWithTopSpace() {
+  //   messageScrollController.animateTo(
+  //       messageScrollController.position.minScrollExtent + 10,
+  //       duration: Duration(microseconds: 100),
+  //       curve: Curves.easeOut);
+  // }
 
   void menuItemSelectionChange(String value, int index) {
     selectedMenuItemIndex = index;
@@ -851,29 +860,29 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         backgroundColor: Colors.white,
         appBar: appBar(),
         body: scaffoldBody(),
-        floatingActionButton: Padding(
-          padding: EdgeInsets.only(bottom: 48),
-          child: AnimatedSwitcher(
-            duration: Duration(milliseconds: 100),
-            child: fabIsVisible
-                ? FloatingActionButton(
-                    mini: true,
-                    backgroundColor: dividerColor,
-                    child: Icon(
-                      Icons.keyboard_arrow_down_rounded,
-                      size: 28,
-                      color: blackFont,
-                    ),
-                    tooltip: "Increment",
-                    onPressed: scrollToBottom,
-                  )
-                : Container(
-                    height: 0,
-                    width: 0,
-                  ),
-          ),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+        // floatingActionButton: Padding(
+        //   padding: EdgeInsets.only(bottom: 48),
+        //   child: AnimatedSwitcher(
+        //     duration: Duration(milliseconds: 100),
+        //     child: fabIsVisible
+        //         ? FloatingActionButton(
+        //             mini: true,
+        //             backgroundColor: dividerColor,
+        //             child: Icon(
+        //               Icons.keyboard_arrow_down_rounded,
+        //               size: 28,
+        //               color: blackFont,
+        //             ),
+        //             tooltip: "Increment",
+        //             onPressed: scrollToBottom,
+        //           )
+        //         : Container(
+        //             height: 0,
+        //             width: 0,
+        //           ),
+        //   ),
+        // ),
+        // floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       ),
     );
   }
@@ -1309,25 +1318,113 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         size: 22,
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
-      onTap: () async {
-        showMoreAction = false;
-        if (mounted) setState(() {});
+      onTap: requestMoneyBtnPressed,
+    );
+  }
 
-        var customerProfileBloc =
-            Provider.of<CustomerProfileBloc>(context, listen: false);
-        customerProfileBloc.customer =
-            await UserAuth().fetchCustomerProfile(chatConversation.userName);
+  void requestMoneyBtnPressed() async {
+    showMoreAction = false;
+    if (mounted) setState(() {});
 
-        stopShakeDetector();
-        await Navigator.of(context).pushNamed(
-          '/request-payment',
-          arguments: <String, bool>{
-            'isFromProfile': false,
-            'isFromChat': true,
-          },
-        );
-        setupShakeDetector();
+    String selectedUser;
+
+    if (chatConversation.isGroupConversation) {
+      if (groupDetail.participants.isEmpty) {
+        getGroupDetailFromServer();
+      }
+
+      selectedUser = await selectRecipientForAction();
+    } else {
+      selectedUser = chatConversation.userName;
+    }
+
+    var customerProfileBloc =
+        Provider.of<CustomerProfileBloc>(context, listen: false);
+    customerProfileBloc.customer =
+        await UserAuth().fetchCustomerProfile(selectedUser);
+
+    stopShakeDetector();
+    await Navigator.of(context).pushNamed(
+      '/request-payment',
+      arguments: <String, bool>{
+        'isFromProfile': false,
+        'isFromChat': true,
       },
+    );
+    setupShakeDetector();
+  }
+
+  Future<String> selectRecipientForAction() async {
+    return await showModalBottomSheet<String>(
+        backgroundColor: Colors.transparent,
+        context: context,
+        builder: (BuildContext context) {
+          return Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20)),
+              ),
+              color: Colors.white,
+              margin: EdgeInsets.zero,
+              child: Container(
+                padding: EdgeInsets.only(bottom: 18),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      height: 8,
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Center(
+                            child: Text(
+                              "Select Recipient",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  color: blackFont,
+                                  fontSize: 18),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 20,
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    Expanded(child: getGroupUserList())
+                  ],
+                ),
+              ));
+        });
+  }
+
+  Widget getGroupUserList() {
+    List<Participant> participantList = [];
+
+    groupDetail.participants.forEach((element) {
+      if (element.userName != userBloc.user.userName) {
+        participantList.add(element);
+      }
+    });
+
+    return ListView.builder(
+      itemBuilder: (context, index) {
+        CustomerProfile user =
+            CustomerProfile.fromGroupParticipant(participantList[index]);
+
+        return GestureDetector(
+          onTap: () {
+            Navigator.pop(context, user.userName);
+          },
+          child: UserTile(user: user),
+        );
+      },
+      itemCount: participantList.length,
     );
   }
 
@@ -1342,24 +1439,40 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         size: 22,
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
-      onTap: () async {
-        showMoreAction = false;
-        if (mounted) setState(() {});
-        var customerProfileBloc =
-            Provider.of<CustomerProfileBloc>(context, listen: false);
-        customerProfileBloc.customer =
-            await UserAuth().fetchCustomerProfile(chatConversation.userName);
-        stopShakeDetector();
-        await Navigator.of(context).pushNamed(
-          '/send-payment',
-          arguments: <String, bool>{
-            'isFromProfile': false,
-            'isFromChat': true,
-          },
-        );
-        setupShakeDetector();
+      onTap: sendMoneyBtnPressed,
+    );
+  }
+
+  void sendMoneyBtnPressed() async {
+    showMoreAction = false;
+    if (mounted) setState(() {});
+
+    String selectedUser;
+
+    if (chatConversation.isGroupConversation) {
+      if (groupDetail.participants.isEmpty) {
+        getGroupDetailFromServer();
+      }
+
+      selectedUser = await selectRecipientForAction();
+    } else {
+      selectedUser = chatConversation.userName;
+    }
+
+    var customerProfileBloc =
+        Provider.of<CustomerProfileBloc>(context, listen: false);
+    customerProfileBloc.customer =
+        await UserAuth().fetchCustomerProfile(selectedUser);
+
+    stopShakeDetector();
+    await Navigator.of(context).pushNamed(
+      '/send-payment',
+      arguments: <String, bool>{
+        'isFromProfile': false,
+        'isFromChat': true,
       },
     );
+    setupShakeDetector();
   }
 
   Widget addMediaButton() {
@@ -1545,10 +1658,22 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         ),
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
-      onTap: () {
+      onTap: () async {
         showMoreAction = false;
 
         if (mounted) setState(() {});
+
+        String selectedUser;
+
+        if (chatConversation.isGroupConversation) {
+          if (groupDetail.participants.isEmpty) {
+            getGroupDetailFromServer();
+          }
+
+          selectedUser = await selectRecipientForAction();
+        } else {
+          selectedUser = chatConversation.userName;
+        }
 
         getEnvelopeAmount();
       },
@@ -2305,15 +2430,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           Expanded(
             child: isChatConversationLoading
                 ? Center(child: CircularLoadingIndicator())
-                : Theme(
-                    data: ThemeData(highlightColor: navyBlue),
-                    child: Scrollbar(
-                      controller: messageScrollController,
-                      radius: Radius.circular(10),
-                      thickness: 3,
-                      child: messageListBuilder(),
-                    ),
-                  ),
+                : messageListBuilder(),
           ),
           isEditingMessage ? getEditingMessageWidget() : Container(),
           isReplyingMessage ? getReplyingMessageWidget() : Container(),
@@ -2442,7 +2559,11 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     return LazyLoadScrollView(
       isLoading: isLoading,
       onEndOfPage: getPreviousMessages,
-      child: getGroupMessage(),
+      child: isLoading && messageList.isEmpty
+          ? Center(
+              child: CircularLoadingIndicator(),
+            )
+          : getGroupMessage(),
     );
   }
 
@@ -2452,30 +2573,52 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       groupBy: (String element) {
         Map<String, dynamic> message = jsonDecode(element);
         DateTime dateTime = DateTime.parse(message['created_at']).toLocal();
-        return dateTime;
+        DateTime date = DateTime(dateTime.year, dateTime.month, dateTime.day);
+        return date;
       },
+      stickyHeaderBackgroundColor: Colors.transparent,
       groupSeparatorBuilder: (String element) {
         Map<String, dynamic> message = jsonDecode(element);
 
         DateTime dateTime = DateTime.parse(message['created_at']).toLocal();
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
+
+        String formattedDate = formatDateInTwoDigit(dateTime);
+
+        DateTime presentDate = DateTime.now().toLocal();
+
+        /// checking if git is today's Date
+        if (DateTime(presentDate.year, presentDate.month, presentDate.day)
+                .compareTo(
+                    DateTime(dateTime.year, dateTime.month, dateTime.day)) ==
+            0) {
+          formattedDate = "Today";
+        }
+
+        return Container(
+          padding: EdgeInsets.only(top: 2),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
                 margin: EdgeInsets.only(bottom: 4),
                 padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                     color: navyBlue, borderRadius: BorderRadius.circular(25)),
-                child: Text(message['created_at'],
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w600,
-                    ))),
-          ],
+                child: Text(
+                  isLoading ? "Loading ..." : "$formattedDate",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
         );
       },
-      itemBuilder: (context, dynamic element) => Container(
+      itemBuilder: (context, String element) => Container(
         padding: EdgeInsets.only(bottom: 4),
         child: GestureDetector(
           onLongPress: () {
@@ -2487,34 +2630,89 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       itemComparator: (element1, element2) {
         Map<String, dynamic> message1 = jsonDecode(element1);
         Map<String, dynamic> message2 = jsonDecode(element2);
-        DateTime messageOneDateTime = DateTime.parse(message1['created_at']).toLocal();
-        DateTime messageTwoDateTime = DateTime.parse(message2['created_at']).toLocal();
+        DateTime messageOneDateTime =
+            DateTime.parse(message1['created_at']).toLocal();
+        DateTime messageTwoDateTime =
+            DateTime.parse(message2['created_at']).toLocal();
 
         return messageOneDateTime.compareTo(messageTwoDateTime);
       }, // optional
-      itemScrollController: GroupedItemScrollController(), // optional
-      order: StickyGroupedListOrder.ASC, // optional
+      itemScrollController: messageListController, // optional
+
+      groupComparator: (dateTime1, dateTime2) {
+        DateTime groupOneDate =
+            DateTime(dateTime1.year, dateTime1.month, dateTime1.day);
+        DateTime groupTwoDate =
+            DateTime(dateTime2.year, dateTime2.month, dateTime2.day);
+        return groupOneDate.compareTo(groupTwoDate);
+      },
+      order: StickyGroupedListOrder.DESC,
+      reverse: true,
     );
   }
 
-  Widget _buildIndicator() {
-    return isLoading
-        ? Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: new Center(
-              child: new Opacity(
-                opacity: isLoading ? 1.0 : 00,
-                child: CircularLoadingIndicator(),
-              ),
-            ),
-          )
-        : Container();
-  }
+  // Widget _buildIndicator() {
+  //   return isLoading
+  //       ? Padding(
+  //           padding: const EdgeInsets.all(8.0),
+  //           child: new Center(
+  //             child: new Opacity(
+  //               opacity: isLoading ? 1.0 : 00,
+  //               child: CircularLoadingIndicator(),
+  //             ),
+  //           ),
+  //         )
+  //       : Container();
+  // }
 
   Widget renderMessage(
       {Map<String, dynamic> message, ChatConversation chatConversation}) {
+    bool isReplyMessage = false;
+
+    Map<String, dynamic> isReplyTo = message["replied_to"] is String
+        ? jsonDecode(message["replied_to"])
+        : message["replied_to"] ?? {};
+
+    if (isReplyTo.isNotEmpty) {
+      isReplyMessage = true;
+    }
+
     return TextMessageRendererForChat(
-        message: message, chatConversation: chatConversation);
+        message: message,
+        chatConversation: chatConversation,
+        onReplyMessageTap: isReplyMessage
+            ? () {
+                replyMessageTapped(repliedTo: isReplyTo);
+              }
+            : null);
+  }
+
+  void replyMessageTapped({Map<String, dynamic> repliedTo}) {
+    if (repliedTo.isNotEmpty) {
+      int messageListLength = messageList.length;
+
+      int index;
+      for (int i = 0; i < messageList.length; i++) {
+        Map<String, dynamic> messageData = jsonDecode(messageList[i]);
+
+        if (repliedTo['id'] == messageData['id'] ||
+            repliedTo['check_id'] == messageData['check_id']) {
+          debugPrint(
+              "${repliedTo['id']} == ${messageData['id']} =>  ${repliedTo['id'] == messageData['id']}");
+          debugPrint(
+              "${repliedTo['check_id']} == ${messageData['check_id']} =>  ${repliedTo['check_id'] == messageData['check_id']}");
+          index = i;
+          break;
+        }
+      }
+
+      if (index != null) {
+        if (mounted) setState(() {});
+        messageListController.scrollTo(
+            index: messageListLength - index - 4,
+            duration: Duration(milliseconds: 500));
+      }
+    }
   }
 
   Widget renderImageMedia(

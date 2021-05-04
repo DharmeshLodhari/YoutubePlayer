@@ -20,7 +20,9 @@ import 'package:provider/provider.dart';
 class TextMessageRendererForChat extends StatefulWidget {
   Map<String, dynamic> message;
   ChatConversation chatConversation;
-  TextMessageRendererForChat({this.message, this.chatConversation});
+  Function onReplyMessageTap;
+  TextMessageRendererForChat(
+      {Key key,this.message, this.chatConversation, this.onReplyMessageTap}):super(key:key);
 
   @override
   _TextMessageRendererForChatState createState() =>
@@ -32,10 +34,12 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
   UserBloc userBloc;
 
   GifController gifController;
+  Function onReplyMessageTap;
 
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+    onReplyMessageTap = widget.onReplyMessageTap;
 
     Map<String, dynamic> message = widget.message;
 
@@ -448,10 +452,13 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                   : Container(
                       width: 0,
                     ),
-              getRepliedMessageUI(
-                  messageData: repliedTo,
-                  isSend: isSend,
-                  isRepliedSend: isRepliedSend),
+              GestureDetector(
+                onTap: onReplyMessageTap ?? null,
+                child: getRepliedMessageUI(
+                    messageData: repliedTo,
+                    isSend: isSend,
+                    isRepliedSend: isRepliedSend),
+              ),
             ],
           ),
         ),

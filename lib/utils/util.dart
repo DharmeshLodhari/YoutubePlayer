@@ -106,6 +106,13 @@ String formatDate(DateTime dateTime) {
   return date;
 }
 
+String formatDateInTwoDigit(DateTime dateTime) {
+  String date =
+      "${dateTime.day.toString().padLeft(2, '0')} ${monthName[dateTime.month - 1]}, ${dateTime.year}";
+
+  return date;
+}
+
 String formatDateInDigit(DateTime dateTime) {
   String date = "${dateTime.day}/${dateTime.month}/${dateTime.year}";
 
