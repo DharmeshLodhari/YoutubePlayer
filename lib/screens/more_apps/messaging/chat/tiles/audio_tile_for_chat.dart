@@ -96,10 +96,9 @@ class _AudioTileForChatState extends State<AudioTileForChat> {
                                     widget.message['author_full_name'] ??
                                         widget.message['author'],
                                     style: TextStyle(
-                                        color:
-                                            isSend ? Colors.white : blackFont,
+                                        color: isSend ? Colors.white : navyBlue,
                                         fontSize: 12,
-                                        fontWeight: FontWeight.w600),
+                                        fontWeight: FontWeight.w700),
                                   ),
                                 ],
                               ),

@@ -76,24 +76,28 @@ class VideoTileForChat extends StatelessWidget {
                 padding: EdgeInsets.only(
                     top: chatConversation.isGroupConversation
                         ? isSend
-                        ? 0
-                        : 8
+                            ? 0
+                            : 8
                         : isMessageEmpty
                             ? 0
                             : 8,
                     bottom: chatConversation.isGroupConversation
                         ? isSend
-                        ? 0
-                        : 8
+                            ? 0
+                            : 8
                         : isMessageEmpty
                             ? 0
                             : 8,
-                    left: chatConversation.isGroupConversation ? isSend
-                        ? 0
-                        : 8 : 0,
-                    right: chatConversation.isGroupConversation ? isSend
-                        ? 0
-                        : 8 : 0),
+                    left: chatConversation.isGroupConversation
+                        ? isSend
+                            ? 0
+                            : 8
+                        : 0,
+                    right: chatConversation.isGroupConversation
+                        ? isSend
+                            ? 0
+                            : 8
+                        : 0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -106,10 +110,9 @@ class VideoTileForChat extends StatelessWidget {
                                     message['author_full_name'] ??
                                         message['author'],
                                     style: TextStyle(
-                                        color:
-                                            isSend ? Colors.white : blackFont,
+                                        color: isSend ? Colors.white : navyBlue,
                                         fontSize: 12,
-                                        fontWeight: FontWeight.w600),
+                                        fontWeight: FontWeight.w700),
                                   ),
                                   SizedBox(
                                     height: isMessageEmpty ? 4 : 2,

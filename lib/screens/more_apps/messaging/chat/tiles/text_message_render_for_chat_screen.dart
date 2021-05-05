@@ -22,7 +22,8 @@ class TextMessageRendererForChat extends StatefulWidget {
   ChatConversation chatConversation;
   Function onReplyMessageTap;
   TextMessageRendererForChat(
-      {Key key,this.message, this.chatConversation, this.onReplyMessageTap}):super(key:key);
+      {Key key, this.message, this.chatConversation, this.onReplyMessageTap})
+      : super(key: key);
 
   @override
   _TextMessageRendererForChatState createState() =>
@@ -233,11 +234,12 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          message['author'],
+                          widget.message['author_full_name'] ??
+                              widget.message['author'],
                           style: TextStyle(
-                              color: isSend ? Colors.white : blackFont,
+                              color: isSend ? Colors.white : navyBlue,
                               fontSize: 12,
-                              fontWeight: FontWeight.w600),
+                              fontWeight: FontWeight.w700),
                         ),
                         SizedBox(
                           height: 2,
@@ -382,9 +384,9 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                       Text(
                         message['author_full_name'] ?? message['author'],
                         style: TextStyle(
-                            color: isSend ? Colors.white : blackFont,
+                            color: isSend ? Colors.white : navyBlue,
                             fontSize: 12,
-                            fontWeight: FontWeight.w600),
+                            fontWeight: FontWeight.w700),
                       ),
                       SizedBox(
                         height: 2,
@@ -437,9 +439,9 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                               newMessage['author_full_name'] ??
                                   newMessage['author'],
                               style: TextStyle(
-                                  color: isSend ? Colors.white : blackFont,
+                                  color: isSend ? Colors.white : navyBlue,
                                   fontSize: 12,
-                                  fontWeight: FontWeight.w600),
+                                  fontWeight: FontWeight.w700),
                             ),
                             SizedBox(
                               height: 4,

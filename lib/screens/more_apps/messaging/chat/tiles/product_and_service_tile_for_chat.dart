@@ -113,10 +113,9 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
                                     widget.message['author_full_name'] ??
                                         widget.message['author'],
                                     style: TextStyle(
-                                        color:
-                                            isSend ? Colors.white : blackFont,
+                                        color: isSend ? Colors.white : navyBlue,
                                         fontSize: 12,
-                                        fontWeight: FontWeight.w600),
+                                        fontWeight: FontWeight.w700),
                                   ),
                                   SizedBox(
                                     height: 4,
@@ -452,10 +451,9 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
                                     widget.message['author_full_name'] ??
                                         widget.message['author'],
                                     style: TextStyle(
-                                        color:
-                                            isSend ? Colors.white : blackFont,
+                                        color: isSend ? Colors.white : navyBlue,
                                         fontSize: 12,
-                                        fontWeight: FontWeight.w600),
+                                        fontWeight: FontWeight.w700),
                                   ),
                                   SizedBox(
                                     height: 4,
