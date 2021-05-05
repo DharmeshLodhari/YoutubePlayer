@@ -265,7 +265,9 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
       direction: Axis.horizontal,
       actionPane: SlidableBehindActionPane(),
       actionExtentRatio: 0.20,
-      child: VerticalListItem(user,groupDetail),
+      fastThreshold: 1,
+      showAllActionsThreshold: 0.6,
+      child: VerticalListItem(user, groupDetail),
       actions: listActionSlideActions(user, index),
       secondaryActions: listSecondaryActions(user, index),
     );

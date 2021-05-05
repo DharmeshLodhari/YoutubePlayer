@@ -114,24 +114,18 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
     );
   }
 
-
-  List<Widget> getGroupActions(){
-
-    if(groupDetail.adminUsers.contains(userBloc.user.userName))
-      {
-        return [
-          isLoading ? Container() : editGroupBtn(),
-          SizedBox(width: 8),
-          isLoading ? Container() : addUserToGroupBtn(),
-          SizedBox(
-            width: 16,
-          )
-        ];
-      }
+  List<Widget> getGroupActions() {
+    if (groupDetail.adminUsers.contains(userBloc.user.userName)) {
+      return [
+        isLoading ? Container() : editGroupBtn(),
+        SizedBox(width: 8),
+        isLoading ? Container() : addUserToGroupBtn(),
+        SizedBox(
+          width: 16,
+        )
+      ];
+    }
     return [];
-
-
-
   }
 
   Widget addUserToGroupBtn() {
@@ -432,6 +426,9 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
       direction: Axis.horizontal,
       actionPane: SlidableBehindActionPane(),
       actionExtentRatio: 0.20,
+      fastThreshold: 1,
+      showAllActionsThreshold: 0.6,
+      // movementDuration: Duration(milliseconds: 300),
       child: VerticalListItem(user, groupDetail),
       actions: listActionSlideActions(user, index),
       secondaryActions: listSecondaryActions(user, index),

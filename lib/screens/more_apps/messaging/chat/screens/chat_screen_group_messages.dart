@@ -205,14 +205,14 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   bool isUserMuted = false;
   bool isUserBlocked = false;
 
-  GroupedItemScrollController messageListController;
+  GroupedItemScrollController messageListController =
+      GroupedItemScrollController();
 
   @override
   void initState() {
     messageController = TextEditingController();
     searchItemTextController = TextEditingController();
     messageFocus = FocusNode();
-    messageListController = GroupedItemScrollController();
 
     chatConversation = widget.arguments["searchedUser"];
 
@@ -579,9 +579,14 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         checkMessageForRead();
 
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          if (isFirstTime && MediaQuery.of(context).size.height > 704) {
-            debugPrint(
-                "height:- " + MediaQuery.of(context).size.height.toString());
+          if (isFirstTime &&
+              MediaQuery.of(myGlobals.scaffoldKey.currentContext).size.height >
+                  704) {
+            debugPrint("height:- " +
+                MediaQuery.of(myGlobals.scaffoldKey.currentContext)
+                    .size
+                    .height
+                    .toString());
             getPreviousMessages();
           }
         });
@@ -1338,20 +1343,22 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       selectedUser = chatConversation.userName;
     }
 
-    var customerProfileBloc =
-        Provider.of<CustomerProfileBloc>(context, listen: false);
-    customerProfileBloc.customer =
-        await UserAuth().fetchCustomerProfile(selectedUser);
+    if (selectedUser != null) {
+      var customerProfileBloc =
+          Provider.of<CustomerProfileBloc>(context, listen: false);
+      customerProfileBloc.customer =
+          await UserAuth().fetchCustomerProfile(selectedUser);
 
-    stopShakeDetector();
-    await Navigator.of(context).pushNamed(
-      '/request-payment',
-      arguments: <String, bool>{
-        'isFromProfile': false,
-        'isFromChat': true,
-      },
-    );
-    setupShakeDetector();
+      stopShakeDetector();
+      await Navigator.of(context).pushNamed(
+        '/request-payment',
+        arguments: <String, bool>{
+          'isFromProfile': false,
+          'isFromChat': true,
+        },
+      );
+      setupShakeDetector();
+    }
   }
 
   Future<String> selectRecipientForAction() async {
@@ -1459,20 +1466,22 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       selectedUser = chatConversation.userName;
     }
 
-    var customerProfileBloc =
-        Provider.of<CustomerProfileBloc>(context, listen: false);
-    customerProfileBloc.customer =
-        await UserAuth().fetchCustomerProfile(selectedUser);
+    if (selectedUser != null) {
+      var customerProfileBloc =
+          Provider.of<CustomerProfileBloc>(context, listen: false);
+      customerProfileBloc.customer =
+          await UserAuth().fetchCustomerProfile(selectedUser);
 
-    stopShakeDetector();
-    await Navigator.of(context).pushNamed(
-      '/send-payment',
-      arguments: <String, bool>{
-        'isFromProfile': false,
-        'isFromChat': true,
-      },
-    );
-    setupShakeDetector();
+      stopShakeDetector();
+      await Navigator.of(context).pushNamed(
+        '/send-payment',
+        arguments: <String, bool>{
+          'isFromProfile': false,
+          'isFromChat': true,
+        },
+      );
+      setupShakeDetector();
+    }
   }
 
   Widget addMediaButton() {
@@ -1675,7 +1684,9 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           selectedUser = chatConversation.userName;
         }
 
-        getEnvelopeAmount();
+        if (selectedUser != null) {
+          getEnvelopeAmount();
+        }
       },
     );
   }
@@ -2233,6 +2244,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
     return SwipeTo(
       child: ui,
+      animationDuration: Duration(milliseconds: 200),
+      offsetDx: 0.2,
       onLeftSwipe: isSend
           ? () {
               debugPrint("left Swipe");
