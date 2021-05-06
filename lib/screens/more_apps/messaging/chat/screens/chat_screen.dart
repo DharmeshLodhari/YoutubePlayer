@@ -13,7 +13,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/helpers/message_sound_pla
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatMessageAction.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatTextMessage.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/EditOrReplyMessageUI.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/audio_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/envelope_tile_for_chat.dart';
@@ -1675,7 +1675,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   void addProductOrServiceToChat(var item) async {
     String url = secureBaseUrl +
         "/api/v1/${item is Product ? "products" : "services"}/" +
-        item.id +
+        item.messageId +
         "/";
 
     Map<String, dynamic> itemData =
@@ -2148,7 +2148,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         "recipientUser = $chatConversation  recipientUser.conversationId = ${chatConversation.conversationId}");
     if (chatConversation != null && chatConversation.conversationId != null) {
       DBSocketMessageHandler()
-          .saveMessageToDb(message: ChatTextMessage.fromJson(data));
+          .saveMessageToDb(message: SocketQueueChatMessage.fromJson(data));
 
       String payload = convertServerPayload(data);
 
@@ -2208,7 +2208,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         "recipientUser = $chatConversation  recipientUser.conversationId = ${chatConversation.conversationId}");
     if (chatConversation != null && chatConversation.conversationId != null) {
       DBSocketMessageHandler()
-          .saveMessageToDb(message: ChatTextMessage.fromJson(data));
+          .saveMessageToDb(message: SocketQueueChatMessage.fromJson(data));
 
       String payload = convertServerPayload(data);
 
@@ -2254,7 +2254,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         "recipientUser = $chatConversation  recipientUser.conversationId = ${chatConversation.conversationId}");
     if (chatConversation != null && chatConversation.conversationId != null) {
       DBSocketMessageHandler()
-          .saveMessageToDb(message: ChatTextMessage.fromJson(data));
+          .saveMessageToDb(message: SocketQueueChatMessage.fromJson(data));
 
       String payload = convertServerPayload(data);
 
@@ -2543,14 +2543,14 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         basketBloc.addItemToCart(item: item, type: type);
         var mapData;
         basketBloc.items.forEach((element) {
-          if (element["item"].id == item.id) {
+          if (element["item"].messageId == item.messageId) {
             mapData = element;
             return;
           }
         });
         Map data = {
           "type": type,
-          "id": mapData["item"].id,
+          "id": mapData["item"].messageId,
           "qty": mapData["qty"],
         };
         debugPrint("Data From Product Page : $data");
@@ -3358,7 +3358,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         "recipientUser = $chatConversation  recipientUser.conversationId = ${chatConversation.conversationId}");
     if (chatConversation != null && chatConversation.conversationId != null) {
       DBSocketMessageHandler()
-          .saveMessageToDb(message: ChatTextMessage.fromJson(data));
+          .saveMessageToDb(message: SocketQueueChatMessage.fromJson(data));
 
       String payload = convertServerPayload(data);
 

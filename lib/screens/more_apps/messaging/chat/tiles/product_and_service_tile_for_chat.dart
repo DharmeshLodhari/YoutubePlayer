@@ -341,14 +341,14 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
         basketBloc.addItemToCart(item: item, type: type);
         var mapData;
         basketBloc.items.forEach((element) {
-          if (element["item"].id == item.id) {
+          if (element["item"].messageId == item.messageId) {
             mapData = element;
             return;
           }
         });
         Map data = {
           "type": type,
-          "id": mapData["item"].id,
+          "id": mapData["item"].messageId,
           "qty": mapData["qty"],
         };
         debugPrint("Data From Product Page : $data");
@@ -677,14 +677,14 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
         basketBloc.addItemToCart(item: item, type: type);
         var mapData;
         basketBloc.items.forEach((element) {
-          if (element["item"].id == item.id) {
+          if (element["item"].messageId == item.messageId) {
             mapData = element;
             return;
           }
         });
         Map data = {
           "type": type,
-          "id": mapData["item"].id,
+          "id": mapData["item"].messageId,
           "qty": mapData["qty"],
         };
         debugPrint("Data From Product Page : $data");

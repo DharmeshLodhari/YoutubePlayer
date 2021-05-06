@@ -13,7 +13,7 @@ class ChatUserManager {
         (user) => dbUsers.add(ChatUserModel.fromChatConversation(user)));
 
     /// adding Chat User into DataBase
-    _db.saveChatUsers(dbUsers);
+    _db.saveChatUserCount(dbUsers);
   }
 
   void addUser({String conversationId}) {

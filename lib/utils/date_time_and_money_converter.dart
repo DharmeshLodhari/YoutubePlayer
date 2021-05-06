@@ -25,3 +25,13 @@ String moneyConverter(var amount, {bool isNotCompact = false}) {
   if (isNotCompact) return fmf.output.nonSymbol.toString();
   return fmf.output.compactNonSymbol;
 }
+
+int convertStringToMillisecondsSinceEpoch(String dateTime) {
+  DateTime date = DateTime.parse(dateTime).toLocal();
+  return date.millisecondsSinceEpoch;
+}
+
+String convertMillisecondsSinceEpochToString(int millisecondsSinceEpoch) {
+  DateTime date = DateTime.fromMillisecondsSinceEpoch(millisecondsSinceEpoch);
+  return date.toString();
+}

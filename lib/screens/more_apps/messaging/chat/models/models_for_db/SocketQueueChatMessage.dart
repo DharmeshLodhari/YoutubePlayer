@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-class ChatTextMessage {
+class SocketQueueChatMessage {
   String author;
   String authorName;
   String authorAvatar;
@@ -15,7 +15,7 @@ class ChatTextMessage {
   String type;
   String repliedTo;
 
-  ChatTextMessage(
+  SocketQueueChatMessage(
       {this.author,
       this.authorName,
       this.authorAvatar,
@@ -30,8 +30,8 @@ class ChatTextMessage {
       this.type,
       this.repliedTo});
 
-  factory ChatTextMessage.fromJson(Map<String, dynamic> json) {
-    return ChatTextMessage(
+  factory SocketQueueChatMessage.fromJson(Map<String, dynamic> json) {
+    return SocketQueueChatMessage(
         author: json['author'],
         authorAvatar: json['author_avatar'],
         authorName: json['author_full_name'],

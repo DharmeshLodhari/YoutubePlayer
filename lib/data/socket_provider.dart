@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/db_socket_message_handler.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatTextMessage.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:connectivity/connectivity.dart';
@@ -374,8 +374,8 @@ class MainSocketProvider extends ChangeNotifier {
   }
 
   void sendPendingQueueMessages() async {
-    List<ChatTextMessage> pendingMessages =
-        await DBSocketMessageHandler().getChatTextMessage();
+    List<SocketQueueChatMessage> pendingMessages =
+        await DBSocketMessageHandler().getSocketQueueChatMessage();
 
     int count = 0;
     pendingMessages.forEach((element) async {

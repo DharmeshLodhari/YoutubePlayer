@@ -6,6 +6,7 @@ import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_action_handler.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_shake_detection.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/db_socket_message_handler.dart';
@@ -14,7 +15,8 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.d
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatMessageAction.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/Participant.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatTextMessage.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/EditOrReplyMessageUI.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/audio_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/envelope_tile_for_chat.dart';
@@ -53,6 +55,7 @@ import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:giphy_picker/giphy_picker.dart';
@@ -205,14 +208,18 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   bool isUserMuted = false;
   bool isUserBlocked = false;
 
-  GroupedItemScrollController messageListController =
-      GroupedItemScrollController();
+  GroupedItemScrollController messageListController ;
 
   @override
   void initState() {
     messageController = TextEditingController();
     searchItemTextController = TextEditingController();
     messageFocus = FocusNode();
+
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      messageListController =
+          GroupedItemScrollController();
+    });
 
     chatConversation = widget.arguments["searchedUser"];
 
@@ -273,7 +280,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       if (mounted) setState(() {});
     }
 
-    getPreviousMessages();
+    getDBMessage();
+
     getUserStatus();
     initializeSocket();
     setUpAudioRecorder();
@@ -286,6 +294,28 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
     ChatUserManager().clearChatUserMessageCount(
         conversationId: chatConversation.conversationId);
+  }
+
+  void getDBMessage() async {
+    List<ChatMessage> messages = await ChatMessageHandler()
+        .getChatMessages(chatConversation: chatConversation);
+
+    if (messages.isEmpty) {
+      getPreviousMessages();
+    } else {
+      messages
+          .map((element) => jsonEncode(element.toJson()))
+          .toList()
+          .forEach((element) {
+        if (!messageList.contains(element)) {
+          messageList.add(element);
+        }
+      });
+
+      isLoading = false;
+
+      if (mounted) setState(() {});
+    }
   }
 
   void determineIfConversationIsGroup() {
@@ -528,6 +558,78 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   //   });
   // }
 
+  // void getPreviousMessages({bool showLoading = true}) async {
+  //   debugPrint("Fetching previous messages !!");
+  //   if (!isLoading) {
+  //     if (next != null && !isLoading) {
+  //       bool isFirstTime;
+  //       if (mounted) {
+  //         if (showLoading) {
+  //           isLoading = true;
+  //           setState(() {});
+  //         }
+  //       }
+  //
+  //       if (messageList.isEmpty) {
+  //         isFirstTime = true;
+  //       } else {
+  //         isFirstTime = false;
+  //       }
+  //       debugPrint(
+  //           "recipient conversationID:- ${chatConversation.conversationId}");
+  //
+  //       Map<String, dynamic> result = await MessageAuth()
+  //           .getChatMessages(next, previous,
+  //               conversionId: chatConversation.conversationId)
+  //           .catchError((error) {
+  //         isLoading = false;
+  //         if (mounted) setState(() {});
+  //         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+  //           if (mounted) {
+  //             debugPrint("ERROR:- $error");
+  //           }
+  //         });
+  //       });
+  //       if (isLoading == false) {
+  //         return;
+  //       }
+  //
+  //       count = result['count'];
+  //       next = result['next'];
+  //       previous = result['previous'];
+  //       List<String> tempList = result['results'];
+  //
+  //       isLoading = false;
+  //       if (mounted) setState(() {});
+  //
+  //       messageList.addAll(tempList);
+  //
+  //       if (mounted) setState(() {});
+  //
+  //
+  //       checkMessageForRead();
+  //
+  //       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+  //         if (isFirstTime &&
+  //             MediaQuery.of(myGlobals.scaffoldKey.currentContext).size.height >
+  //                 704) {
+  //           debugPrint("height:- " +
+  //               MediaQuery.of(myGlobals.scaffoldKey.currentContext)
+  //                   .size
+  //                   .height
+  //                   .toString());
+  //           getPreviousMessages();
+  //         }
+  //       });
+  //     }
+  //     if (messageList.isEmpty) {
+  //       if (mounted) {
+  //         /// set flag if chat is empty
+  //         setState(() {});
+  //       }
+  //     }
+  //   }
+  // }
   void getPreviousMessages({bool showLoading = true}) async {
     debugPrint("Fetching previous messages !!");
     if (!isLoading) {
@@ -569,10 +671,28 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         previous = result['previous'];
         List<String> tempList = result['results'];
 
-        isLoading = false;
-        if (mounted) setState(() {});
+        // isLoading = false;
+        // if (mounted) setState(() {});
 
-        messageList.addAll(tempList);
+        // messageList.addAll(tempList);
+        //
+        // if (mounted) setState(() {});
+
+        ChatMessageHandler().saveChatMessages(messages: tempList);
+
+        List<ChatMessage> messages = await ChatMessageHandler()
+            .getChatMessages(chatConversation: chatConversation);
+
+        messages
+            .map((element) => jsonEncode(element.toJson()))
+            .toList()
+            .forEach((element) {
+          if (!messageList.contains(element)) {
+            messageList.add(element);
+          }
+        });
+
+        isLoading = false;
 
         if (mounted) setState(() {});
 
@@ -1813,7 +1933,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   void addProductOrServiceToChat(var item) async {
     String url = secureBaseUrl +
         "/api/v1/${item is Product ? "products" : "services"}/" +
-        item.id +
+        item.messageId +
         "/";
 
     Map<String, dynamic> itemData =
@@ -2288,7 +2408,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         "recipientUser = $chatConversation  recipientUser.conversationId = ${chatConversation.conversationId}");
     if (chatConversation != null && chatConversation.conversationId != null) {
       DBSocketMessageHandler()
-          .saveMessageToDb(message: ChatTextMessage.fromJson(data));
+          .saveMessageToDb(message: SocketQueueChatMessage.fromJson(data));
 
       String payload = convertServerPayload(data);
 
@@ -2348,7 +2468,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         "recipientUser = $chatConversation  recipientUser.conversationId = ${chatConversation.conversationId}");
     if (chatConversation != null && chatConversation.conversationId != null) {
       DBSocketMessageHandler()
-          .saveMessageToDb(message: ChatTextMessage.fromJson(data));
+          .saveMessageToDb(message: SocketQueueChatMessage.fromJson(data));
 
       String payload = convertServerPayload(data);
 
@@ -2394,7 +2514,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         "recipientUser = $chatConversation  recipientUser.conversationId = ${chatConversation.conversationId}");
     if (chatConversation != null && chatConversation.conversationId != null) {
       DBSocketMessageHandler()
-          .saveMessageToDb(message: ChatTextMessage.fromJson(data));
+          .saveMessageToDb(message: SocketQueueChatMessage.fromJson(data));
 
       String payload = convertServerPayload(data);
 
@@ -2815,14 +2935,14 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         basketBloc.addItemToCart(item: item, type: type);
         var mapData;
         basketBloc.items.forEach((element) {
-          if (element["item"].id == item.id) {
+          if (element["item"].messageId == item.messageId) {
             mapData = element;
             return;
           }
         });
         Map data = {
           "type": type,
-          "id": mapData["item"].id,
+          "id": mapData["item"].messageId,
           "qty": mapData["qty"],
         };
         debugPrint("Data From Product Page : $data");
@@ -3630,7 +3750,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         "recipientUser = $chatConversation  recipientUser.conversationId = ${chatConversation.conversationId}");
     if (chatConversation != null && chatConversation.conversationId != null) {
       DBSocketMessageHandler()
-          .saveMessageToDb(message: ChatTextMessage.fromJson(data));
+          .saveMessageToDb(message: SocketQueueChatMessage.fromJson(data));
 
       String payload = convertServerPayload(data);
 

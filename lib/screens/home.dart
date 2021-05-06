@@ -393,7 +393,7 @@ class _HomeState extends State<Home> {
         ),
       ),
       onTap: () async {
-        DBSocketMessageHandler().clearChatTextMessage();
+        DBSocketMessageHandler().clearSocketQueueChatMessage();
         ChatUserManager().clearChatUsers();
 
         ConnectionListBloc connectionListBloc =

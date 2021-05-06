@@ -3,7 +3,8 @@ import 'dart:io' as io;
 
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatUserModel.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatTextMessage.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
@@ -16,6 +17,8 @@ class DatabaseHelper {
   factory DatabaseHelper() => _instance;
 
   static Database _db;
+
+  static int _databaseVersion = 1;
 
   /// if _db fail to get this data then we will return this variables
   User _user;
@@ -34,7 +37,10 @@ class DatabaseHelper {
     io.Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, "main.db");
     var theDb = await openDatabase(path,
-        version: 10, onCreate: _onCreate, onUpgrade: _onUpgrade);
+        version: _databaseVersion,
+        onCreate: _onCreate,
+        onUpgrade: _onUpgrade,
+        onConfigure: _onConfigure);
     return theDb;
   }
 
@@ -45,60 +51,66 @@ class DatabaseHelper {
       // when we upgrade and database has changed we should put our migration statement over here
       // db.execute("ALTER TABLE table_name ADD column_name TEXT;")  adding column
       // db.execute("ALTER TABLE table_name DROP column_name;")  adding column
-//      db.execute("ALTER TABLE User ADD is_verified INTEGER;");
+      // db.execute("ALTER TABLE User ADD is_verified INTEGER;");
 
     } else {
       debugPrint("No migrations to apply");
     }
   }
 
+  // To configure foreign key support in SQFLITE
+  FutureOr<void> _onConfigure(Database db) async {
+    await db.execute('PRAGMA foreign_keys = ON');
+    return;
+  }
+
   // Create this database tables when we initialize app
   void _onCreate(Database db, int version) async {
-    // Create the user table
-    await db.execute("""CREATE TABLE "User" (
-        "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
-        "uuid"	TEXT,
-        "fullName"	TEXT,
-        "userName"	TEXT,
-        "phoneNumber"	TEXT,
-        "password"	TEXT,
-        "avatar"	TEXT,
-        "qrCode"	TEXT,
-        "url"	TEXT,
-        "currency"	TEXT
-    );""");
+    try {
+      // Create the user table
+      await db.execute("""CREATE TABLE "User" (
+      "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
+      "uuid"	TEXT,
+      "fullName"	TEXT,
+      "userName"	TEXT,
+      "phoneNumber"	TEXT,
+      "password"	TEXT,
+      "avatar"	TEXT,
+      "qrCode"	TEXT,
+      "url"	TEXT,
+      "currency"	TEXT);
+    """);
 
-    // Create the jwt table
-    await db.execute('''CREATE TABLE "Jwt" (
-                "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
-                "access"	TEXT,
-                "refresh"	TEXT,
-                "expiration"	TEXT
-            );
+      // Create the jwt table
+      await db.execute('''CREATE TABLE "Jwt" (
+      "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
+      "access"	TEXT,
+      "refresh"	TEXT,
+      "expiration"	TEXT);
     ''');
 
-    // Create the device table
-    await db.execute('''CREATE TABLE "Device" (
-                "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
-                "firebaseToken"	TEXT,
-                "type"	TEXT,
-                "mode"	TEXT,
-                "deviceId"	TEXT,
-                "deviceName"	TEXT
-             );
+      // Create the device table
+      await db.execute('''CREATE TABLE "Device" (
+      "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
+      "firebaseToken"	TEXT,
+      "type"	TEXT,
+      "mode"	TEXT,
+      "deviceId"	TEXT,
+      "deviceName"	TEXT);
       ''');
 
-    // Create the ChatUser table
-    await db
-        .execute('''CREATE TABLE "ChatUser" ("conversationId" TEXT PRIMARY KEY,
-                     "messageCount" INTEGER,
-                     "hashedMessage" TEXT UNIQUE     
-              );
+      // Create the ChatUser table which will handle count of the messages in user connection
+      await db.execute('''CREATE TABLE "ChatUser" (
+      "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
+      "conversationId" TEXT UNIQUE,
+      "messageCount" INTEGER,
+      "hashedMessage" TEXT UNIQUE);
     ''');
 
-    // Create the ChatTextMessage table
-    await db.execute('''CREATE TABLE "ChatTextMessage" (
-      "check_id" TEXT PRIMARY KEY,
+      // Create the SocketQueueChatMessage table which will store all the sent messages when user is offline
+      await db.execute('''CREATE TABLE "SocketQueueChatMessage" (
+      "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+      "check_id" TEXT UNIQUE,
       "conversation_id" TEXT,
       "author" TEXT,
       "author_full_name" TEXT,
@@ -113,15 +125,8 @@ class DatabaseHelper {
       "replied_to" TEXT);
     ''');
 
-    ///{full_name: Iyalaje Stores,
-    /// username: olabisi.abraham.1,
-    /// avatar: https://slydo-assets.s3.amazonaws.com/media/customer/avatar/c06810e3dc334d088cc864c16655f974.jpg,
-    /// qr_code: https://slydo-assets.s3.amazonaws.com/media/customer/qr-code/ed2ee782326a4526a1d804c410f2336b.png,
-    /// conversation_id: 0fa8952a-e6a5-4aee-bf2a-ec074254ab46,
-    /// type: Business}
-
-    // Create the userConnections table
-    await db.execute('''CREATE TABLE "UserConnection" (
+      // Create the userConnections table
+      await db.execute('''CREATE TABLE "UserConnection" (
       "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
       "conversation_id" TEXT UNIQUE,
       "full_name" TEXT,
@@ -139,6 +144,120 @@ class DatabaseHelper {
       "last_message_time" INTEGER
    );
     ''');
+
+      // Create the ChatMessage table
+      await db.execute('''CREATE TABLE "ChatMessage" (
+      "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
+      "author" TEXT,
+      "author_full_name" TEXT,
+      "check_id" TEXT,
+      "created_at" INTEGER,
+      "updated_at" INTEGER,
+      "meta_data" TEXT,
+      "deleted_for_author" INTEGER,
+      "deleted_for_recipient" INTEGER,
+      "delivered" INTEGER,
+      "message_id" TEXT,
+      "kind" TEXT,
+      "media" TEXT,
+      "poster" TEXT,
+      "read_by_author" INTEGER,
+      "read_by_recipient" INTEGER,
+      "replied_to" TEXT,
+      "text" TEXT,
+      "type" TEXT,
+      "was_edited" INTEGER,
+      "conversation_id" TEXT,
+      FOREIGN KEY(conversation_id) REFERENCES UserConnection(conversation_id)
+   );
+    ''');
+
+      // Simple TEXT Message
+      ///{
+      ///  "created_at":"2021-05-06 07:39:39.617011Z",
+      ///  "check_id":"b1064611-bd3d-4d42-befa-131f23379c6b",
+      ///  "author":"black",
+      ///  "text":"test",
+      ///  "kind":"text",
+      ///  "meta_data":{
+      ///
+      ///  },
+      ///  "read_by_author":true,
+      ///  "read_by_recipient":false,
+      ///  "delivered":true,
+      ///  "type":"chatroom_message",
+      ///  "conversation_id":"9ae68069-b342-4e04-b568-602bde6fe901"
+      ///}
+
+      // IMAGE
+      ///{
+      ///  "id":"1ddf624d-a54b-43a9-bfec-e08a6c7f4a68",
+      ///  "check_id":"6a0bc705-afea-4f5f-ad0a-0357142e3394",
+      ///  "conversation":"9ae68069-b342-4e04-b568-602bde6fe901",
+      ///  "author":"black",
+      ///  "text":"test",
+      ///  "read_by_author":true,
+      ///  "read_by_recipient":false,
+      ///  "was_edited":false,
+      ///  "media":"https://slydo-assets.s3.amazonaws.com/media/image_cropper_1620286940411.jpg",
+      ///  "poster":null,
+      ///  "updated_at":"2021-05-06T08:42:42.596232+01:00",
+      ///  "created_at":"2021-05-06T08:42:42.596310+01:00",
+      ///  "kind":"image",
+      ///  "deleted_for_recipient":false,
+      ///  "deleted_for_author":false,
+      ///  "delivered":true,
+      ///  "meta_data":{
+      ///
+      ///  },
+      ///  "replied_to":null,
+      ///  "type":"chatroom_message"
+      ///}
+
+      //PRODUCT
+      /// {
+      ///   "created_at":"2021-05-06 07:50:35.304782Z",
+      ///   "check_id":"70eb05a6-9a52-4c81-adc8-173110d0909f",
+      ///   "author":"black",
+      ///   "text":"https://api.slydo.co/api/v1/products/90808cbc-59c1-460e-ae0d-f84dc1d1ac56/",
+      ///   "kind":"product",
+      ///   "meta_data":{
+      ///     "id":"90808cbc-59c1-460e-ae0d-f84dc1d1ac56",
+      ///     "type":"product",
+      ///     "name":"Product Add Desktop",
+      ///     "short_description":"hello test",
+      ///     "description":"hi",
+      ///     "category":"Beauty & Spas",
+      ///     "condition":"Fair",
+      ///     "currency":"NGN",
+      ///     "price":12,
+      ///     "created_at":"2020-06-04T09:56:33.472686Z",
+      ///     "available_from":"2020-06-29",
+      ///     "is_available":true,
+      ///     "qr_code":"https://slydo-assets.s3.amazonaws.com/media/products/qr-code/11419c9b10c1463d87a7808ad40318d8.png",
+      ///     "seller":"abiola.rasheed.2",
+      ///     "seller_avatar":"https://slydo-assets.s3.amazonaws.com/media/customer/avatar/42cfa1076d64401790101f08769317cf.jpg",
+      ///     "manufacturer":"Black",
+      ///     "pictures":[
+      ///       {
+      ///         "id":188,
+      ///         "file":"https://slydo-assets.s3.amazonaws.com/media/Screenshot_2020-06-16_at_15.37.23.png",
+      ///         "title":"Image 1"
+      ///       }
+      ///     ],
+      ///     "cover":"https://slydo-assets.s3.amazonaws.com/media/Screenshot_2020-06-16_at_15.37.23.png"
+      ///   },
+      ///   "read_by_author":true,
+      ///   "read_by_recipient":false,
+      ///   "delivered":true,
+      ///   "type":"chatroom_message",
+      ///   "conversation_id":"9ae68069-b342-4e04-b568-602bde6fe901"
+      /// }
+
+      debugPrint("DATABASE:- Tables are created !!");
+    } catch (e) {
+      debugPrint("DATABASE:- ERROR: while creating tables: $e");
+    }
   }
 
   // Close connect to the db
@@ -153,11 +272,11 @@ class DatabaseHelper {
     int res;
     try {
       res = await dbClient.insert("User", user.toMap());
-      debugPrint("User saved to db");
+      debugPrint("DATABASE:- User saved to db");
     } catch (error) {
       await dbClient.delete("User");
       res = await dbClient.insert("User", user.toMap());
-      debugPrint("User saved to db");
+      debugPrint("DATABASE:- User saved to db");
     }
     return res;
   }
@@ -167,7 +286,7 @@ class DatabaseHelper {
     var dbClient = await db;
     _user = null;
     int res = await dbClient.delete("User");
-    debugPrint("User deleted from db");
+    debugPrint("DATABASE:- User deleted from db");
     return res;
   }
 
@@ -183,7 +302,7 @@ class DatabaseHelper {
     // Get the user
     var dbClient = await db;
     List<Map<String, dynamic>> res = await dbClient.query("User");
-//    List<User> users = [];
+
     var user;
     if (res != null && res.length > 0) {
       var obj = res.first;
@@ -212,7 +331,7 @@ class DatabaseHelper {
     var dbClient = await db;
     _jwt = data;
     int res = await dbClient.insert("Jwt", data);
-    debugPrint("Jwt saved to db");
+    debugPrint("DATABASE:- Jwt saved to db");
     return res;
   }
 
@@ -221,7 +340,7 @@ class DatabaseHelper {
     var dbClient = await db;
     _jwt = null;
     int res = await dbClient.delete("Jwt");
-    debugPrint("Jwt deleted from db");
+    debugPrint("DATABASE:- Jwt deleted from db");
     return res;
   }
 
@@ -284,9 +403,9 @@ class DatabaseHelper {
     return result.first;
   }
 
-  /// ChatUsers Operation
+  /// ChatUser Operation
 
-  void saveChatUsers(List<ChatUserModel> users) async {
+  void saveChatUserCount(List<ChatUserModel> users) async {
     Database dbClient = await db;
 
     Batch insertUserBatch = dbClient.batch();
@@ -305,7 +424,7 @@ class DatabaseHelper {
     int res = await dbClient.insert("ChatUser", user.toJson(),
         conflictAlgorithm: ConflictAlgorithm.ignore);
     if (res != null) {
-      debugPrint("Save Chat User !!");
+      debugPrint("DATABASE:- Save Chat User !!");
     }
 
     return;
@@ -315,7 +434,7 @@ class DatabaseHelper {
   Future<int> deleteChatUsers() async {
     var dbClient = await db;
     int res = await dbClient.delete("ChatUser");
-    debugPrint("ChatUsers deleted from db");
+    debugPrint("DATABASE:- ChatUsers deleted from db");
     return res;
   }
 
@@ -323,7 +442,7 @@ class DatabaseHelper {
     var dbClient = await db;
     int res = await dbClient.delete("ChatUser",
         where: "conversationId = ?", whereArgs: [conversationId]);
-    debugPrint("ChatUser $conversationId is Deleted !!");
+    debugPrint("DATABASE:- ChatUser $conversationId is Deleted !!");
     return res;
   }
 
@@ -334,9 +453,9 @@ class DatabaseHelper {
       await dbClient.execute(
           "UPDATE ChatUser SET messageCount = messageCount + 1 , hashedMessage = ? where conversationId = ? AND hashedMessage != ?",
           [hashedMessage, conversationId, hashedMessage]);
-      debugPrint("Chat message count updated from db");
+      debugPrint("DATABASE:- Chat message count updated from db");
     } catch (e) {
-      debugPrint("ERROR:- while updating the Chat Message count $e");
+      debugPrint("DATABASE:- ERROR:- while updating the Chat Message count $e");
     }
 
     return;
@@ -351,9 +470,9 @@ class DatabaseHelper {
       // await dbClient.execute(
       //     "UPDATE ChatUser SET messageCount = 0 where conversationId = ?", [conversationId]);
     } catch (e) {
-      debugPrint("ERROR:- while Clearing MessageCount $e");
+      debugPrint("DATABASE:- ERROR:- while Clearing MessageCount $e");
     }
-    debugPrint("ChatUsers MessageCount clear from db");
+    debugPrint("DATABASE:- ChatUsers MessageCount clear from db");
     return result;
   }
 
@@ -368,44 +487,48 @@ class DatabaseHelper {
     return 0;
   }
 
-  /// ChatTextMessage
+  /// SocketQueueChatMessage
 
-  Future<List<ChatTextMessage>> getChatTextMessages() async {
+  Future<List<SocketQueueChatMessage>> getSocketQueueChatMessages() async {
     var dbClient = await db;
-    List<Map<String, dynamic>> res = await dbClient.query("ChatTextMessage");
+    List<Map<String, dynamic>> res =
+        await dbClient.query("SocketQueueChatMessage");
 
     if (res != null && res.length > 0) {
-      List<ChatTextMessage> chatTextMessages =
-          res.map((element) => ChatTextMessage.fromJson(element)).toList();
-      return chatTextMessages;
+      List<SocketQueueChatMessage> socketQueueChatMessages = res
+          .map((element) => SocketQueueChatMessage.fromJson(element))
+          .toList();
+      return socketQueueChatMessages;
     }
     return [];
   }
 
-  Future<int> saveChatTextMessage({ChatTextMessage message}) async {
+  Future<int> saveSocketQueueChatMessage(
+      {SocketQueueChatMessage message}) async {
     Database dbClient = await db;
 
-    int res = await dbClient.insert("ChatTextMessage", message.toJson(),
+    int res = await dbClient.insert("SocketQueueChatMessage", message.toJson(),
         conflictAlgorithm: ConflictAlgorithm.ignore);
     if (res != null) {
-      debugPrint("<<<<< ChatTextMessage Added !! $res");
+      debugPrint("DATABASE:- <<<<< SocketQueueChatMessage Added !! $res");
     }
 
     return res;
   }
 
-  Future<int> deleteChatTextMessage({ChatTextMessage message}) async {
+  Future<int> deleteSocketQueueChatMessage(
+      {SocketQueueChatMessage message}) async {
     var dbClient = await db;
-    int res = await dbClient.delete("ChatTextMessage",
+    int res = await dbClient.delete("SocketQueueChatMessage",
         where: "check_id = ?", whereArgs: [message.checkId]);
-    debugPrint(">>>> ChatTextMessage deleted !!");
+    debugPrint("DATABASE:- >>>> SocketQueueChatMessage deleted !!");
     return res;
   }
 
-  Future<int> clearChatTextMessage() async {
+  Future<int> clearSocketQueueChatMessage() async {
     var dbClient = await db;
-    int res = await dbClient.delete("ChatTextMessage");
-    debugPrint("ChatTextMessage Cleared !!");
+    int res = await dbClient.delete("SocketQueueChatMessage");
+    debugPrint("DATABASE:- SocketQueueChatMessage Cleared !!");
     return res;
   }
 
@@ -495,7 +618,7 @@ class DatabaseHelper {
   Future<int> clearUserConnections() async {
     var dbClient = await db;
     int res = await dbClient.delete("UserConnection");
-    debugPrint("UserConnection Cleared !!");
+    debugPrint("DATABASE:- UserConnection Cleared !!");
     return res;
   }
 
@@ -515,5 +638,38 @@ class DatabaseHelper {
     debugPrint("UserConnection $conversationId is Deleted !!");
     await deleteSingleChatUsers();
     return res;
+  }
+
+  /// ChatMessage Operations
+  Future<dynamic> saveChatMessage(List<ChatMessage> chatMessages) async {
+    Database dbClient = await db;
+
+    Batch insertUserBatch = dbClient.batch();
+
+    chatMessages.forEach((chatMessage) {
+      Map<String, dynamic> data = chatMessage.toDBJson();
+
+      insertUserBatch.insert("ChatMessage", data,
+          conflictAlgorithm: ConflictAlgorithm.ignore);
+    });
+
+    return await insertUserBatch.commit();
+  }
+
+  Future<List<ChatMessage>> getChatMessages(
+      {ChatConversation chatConversation}) async {
+    Database dbClient = await db;
+
+    List<Map<String, dynamic>> res = await dbClient.query("ChatMessage",
+        orderBy: "created_at DESC",
+        where: "conversation_id = ?",
+        whereArgs: [chatConversation.conversationId]);
+
+    if (res != null && res.length > 0) {
+      List<ChatMessage> chatMessages =
+          res.map((element) => ChatMessage.fromDBJson(element)).toList();
+      return chatMessages;
+    }
+    return [];
   }
 }

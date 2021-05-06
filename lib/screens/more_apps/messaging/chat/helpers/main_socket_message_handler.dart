@@ -8,7 +8,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/db_socket_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/MainSocketMessageModel.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatTextMessage.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -65,6 +65,11 @@ class MainSocketMessageHandler {
     if (messageData["type"] == "chatroom_message") {
       debugPrint(
           " Message Data==> ${messageData.containsKey("conversation")}  ${messageData.containsKey("conversation_id")}");
+
+      messageData.forEach((key, value) {
+        debugPrint("$key:$value");
+      });
+
       if (messageData.containsKey("conversation") ||
           messageData.containsKey("conversation_id")) {
         MainSocketProvider mainSocketProvider = Provider.of<MainSocketProvider>(
@@ -87,14 +92,14 @@ class MainSocketMessageHandler {
         ///delete message from ChatTextMessage table in db if message came back from socket
 
         if (messageData['kind'] == "text") {
-          DBSocketMessageHandler().deleteChatTextMessage(
-              message: ChatTextMessage.fromJson(messageData));
+          DBSocketMessageHandler().deleteSocketQueueChatMessage(
+              message: SocketQueueChatMessage.fromJson(messageData));
         } else if (messageData['kind'] == "user_location") {
-          DBSocketMessageHandler().deleteChatTextMessage(
-              message: ChatTextMessage.fromJson(messageData));
+          DBSocketMessageHandler().deleteSocketQueueChatMessage(
+              message: SocketQueueChatMessage.fromJson(messageData));
         } else if (messageData['kind'] == "gif_image") {
-          DBSocketMessageHandler().deleteChatTextMessage(
-              message: ChatTextMessage.fromJson(messageData));
+          DBSocketMessageHandler().deleteSocketQueueChatMessage(
+              message: SocketQueueChatMessage.fromJson(messageData));
         } else {
           debugPrint(
               "Unimplemented KIND:- ${messageData['kind']}  message:- $messageData");

@@ -184,7 +184,7 @@ class BasketBloc extends ChangeNotifier {
     bool flag = false;
 
     _items.forEach((element) {
-      if (element["item"].id == item.id) {
+      if (element["item"].messageId == item.messageId) {
         flag = true;
         element["qty"] = element["qty"] + 1;
         _total = _total + int.parse(item.price);
@@ -211,7 +211,7 @@ class BasketBloc extends ChangeNotifier {
     var foundItem;
     try {
       for (int i = 0; i < _items.length; i++) {
-        if (_items[i]["item"].id == item.id) {
+        if (_items[i]["item"].messageId == item.messageId) {
           foundItem = _items[i];
           break;
         }
