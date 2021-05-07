@@ -16,6 +16,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatMessageAction.
 import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/Participant.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessagePagination.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/EditOrReplyMessageUI.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/audio_tile_for_chat.dart';
@@ -208,7 +209,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   bool isUserMuted = false;
   bool isUserBlocked = false;
 
-  GroupedItemScrollController messageListController ;
+  GroupedItemScrollController messageListController;
 
   @override
   void initState() {
@@ -216,10 +217,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     searchItemTextController = TextEditingController();
     messageFocus = FocusNode();
 
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      messageListController =
-          GroupedItemScrollController();
-    });
+    messageListController = GroupedItemScrollController();
 
     chatConversation = widget.arguments["searchedUser"];
 
@@ -301,15 +299,28 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         .getChatMessages(chatConversation: chatConversation);
 
     if (messages.isEmpty) {
+      ChatMessagePagination chatMessagePagination = ChatMessagePagination(
+          conversationId: chatConversation.conversationId,
+          count: count,
+          next: next,
+          previous: previous);
+      await ChatMessageHandler().saveChatMessagePagination(
+          chatMessagePagination: chatMessagePagination);
       getPreviousMessages();
     } else {
+      ChatMessagePagination chatMessagePagination = await ChatMessageHandler()
+          .getChatMessagePagination(
+              conversationId: chatConversation.conversationId);
+
+      count = chatMessagePagination.count;
+      next = chatMessagePagination.next;
+      previous = chatMessagePagination.previous;
+
       messages
           .map((element) => jsonEncode(element.toJson()))
           .toList()
           .forEach((element) {
-        if (!messageList.contains(element)) {
-          messageList.add(element);
-        }
+        messageList.add(element);
       });
 
       isLoading = false;
@@ -632,6 +643,15 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   // }
   void getPreviousMessages({bool showLoading = true}) async {
     debugPrint("Fetching previous messages !!");
+
+    ChatMessagePagination chatMessagePagination = await ChatMessageHandler()
+        .getChatMessagePagination(
+            conversationId: chatConversation.conversationId);
+
+    count = chatMessagePagination.count;
+    next = chatMessagePagination.next;
+    previous = chatMessagePagination.previous;
+
     if (!isLoading) {
       if (next != null && !isLoading) {
         bool isFirstTime;
@@ -666,9 +686,9 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           return;
         }
 
-        count = result['count'];
-        next = result['next'];
-        previous = result['previous'];
+        // count = result['count'];
+        // next = result['next'];
+        // previous = result['previous'];
         List<String> tempList = result['results'];
 
         // isLoading = false;
@@ -678,19 +698,30 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         //
         // if (mounted) setState(() {});
 
-        ChatMessageHandler().saveChatMessages(messages: tempList);
+        List<ChatMessage> messages =
+            await ChatMessageHandler().saveChatMessages(messages: tempList);
 
-        List<ChatMessage> messages = await ChatMessageHandler()
-            .getChatMessages(chatConversation: chatConversation);
+        chatMessagePagination.count = result['count'];
+        chatMessagePagination.next = result['next'];
+        chatMessagePagination.previous = result['previous'];
 
-        messages
-            .map((element) => jsonEncode(element.toJson()))
-            .toList()
-            .forEach((element) {
-          if (!messageList.contains(element)) {
-            messageList.add(element);
-          }
-        });
+        await ChatMessageHandler().updateChatMessagePagination(
+            chatMessagePagination: chatMessagePagination);
+
+        // List<ChatMessage> messages = await ChatMessageHandler()
+        //     .getChatMessages(chatConversation: chatConversation);
+
+        messageList.addAll(
+            messages.map((element) => jsonEncode(element.toJson())).toList());
+
+        // messages
+        //     .map((element) => jsonEncode(element.toJson()))
+        //     .toList()
+        //     .forEach((element) {
+        //   if (!messageList.contains(element)) {
+        //     messageList.add(element);
+        //   }
+        // });
 
         isLoading = false;
 
@@ -849,7 +880,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     }
   }
 
-  void updateMessageReadMark({String message}) {
+  void updateMessageReadMark({String message}) async {
     Map<String, dynamic> messageData = jsonDecode(message);
 
     for (int i = 0; i < messageList.length; i++) {
@@ -2416,6 +2447,12 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
       if (mounted) setState(() {});
 
+      ChatMessage chatMessage = convertToChatMessage(data);
+
+      await ChatMessageHandler().addChatMessage(chatMessage: chatMessage);
+
+      scrollToTheBottom();
+
       updateConnectionList(
           messageData: data, conversationId: chatConversation.conversationId);
       await sendDataToSocket(data);
@@ -2476,6 +2513,12 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
       if (mounted) setState(() {});
 
+      ChatMessage chatMessage = convertToChatMessage(data);
+
+      await ChatMessageHandler().addChatMessage(chatMessage: chatMessage);
+
+      scrollToTheBottom();
+
       updateConnectionList(
           messageData: data, conversationId: chatConversation.conversationId);
       await sendDataToSocket(data);
@@ -2523,6 +2566,12 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       messageController.text = "";
       if (mounted) setState(() {});
 
+      ChatMessage chatMessage = convertToChatMessage(data);
+
+      await ChatMessageHandler().addChatMessage(chatMessage: chatMessage);
+
+      scrollToTheBottom();
+
       updateConnectionList(
           messageData: data, conversationId: chatConversation.conversationId);
       await sendDataToSocket(data);
@@ -2554,6 +2603,30 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     newData["replied_to"] = data["replied_to"] ?? {};
 
     return jsonEncode(newData);
+  }
+
+  ChatMessage convertToChatMessage(Map<String, dynamic> data) {
+    Map<String, dynamic> newData = {};
+    newData["check_id"] = data["check_id"];
+    newData["conversation"] = data["conversation_id"];
+    newData["author"] = data["author"];
+    newData["author_full_name"] = data["author_full_name"];
+    newData["author_avatar"] = data["author_avatar"];
+    newData["text"] = data["message"];
+    newData["kind"] = data["kind"];
+    newData["read_by_author"] = data["read_by_author"];
+    newData["read_by_recipient"] = data["read_by_recipient"];
+    newData["delivered"] = data["delivered"];
+    newData["created_at"] = data["created_at"];
+    newData["updated_at"] = data["updated_at"];
+    newData["type"] = data["type"];
+    newData["was_edited"] = false;
+    newData["deleted_for_recipient"] = false;
+    newData["deleted_for_author"] = false;
+    newData["meta_data"] = {};
+    newData["replied_to"] = data["replied_to"] ?? {};
+
+    return ChatMessage.fromJson(newData);
   }
 
   Widget scaffoldBody() {
@@ -2846,6 +2919,11 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
             duration: Duration(milliseconds: 500));
       }
     }
+  }
+
+  void scrollToTheBottom() {
+    // messageListController.scrollTo(
+    //     index: 0, duration: Duration(milliseconds: 500));
   }
 
   Widget renderImageMedia(
@@ -3762,6 +3840,11 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       replayingMessage = null;
       isReplyingMessage = false;
       if (mounted) setState(() {});
+
+      ChatMessage chatMessage = convertToChatMessage(data);
+
+      await ChatMessageHandler().addChatMessage(chatMessage: chatMessage);
+      scrollToTheBottom();
 
       updateConnectionList(
           messageData: data, conversationId: chatConversation.conversationId);

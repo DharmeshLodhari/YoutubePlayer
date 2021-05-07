@@ -27,8 +27,11 @@ String moneyConverter(var amount, {bool isNotCompact = false}) {
 }
 
 int convertStringToMillisecondsSinceEpoch(String dateTime) {
-  DateTime date = DateTime.parse(dateTime).toLocal();
-  return date.millisecondsSinceEpoch;
+  if (dateTime != null) {
+    DateTime date = DateTime.parse(dateTime).toLocal();
+    return date.millisecondsSinceEpoch;
+  }
+  return null;
 }
 
 String convertMillisecondsSinceEpochToString(int millisecondsSinceEpoch) {

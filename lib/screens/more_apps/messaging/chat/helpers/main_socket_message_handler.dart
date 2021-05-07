@@ -3,11 +3,13 @@ import 'dart:convert';
 
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_shake_detection.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/db_socket_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/MainSocketMessageModel.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/global_key.dart';
@@ -63,12 +65,10 @@ class MainSocketMessageHandler {
     /// Ends
 
     if (messageData["type"] == "chatroom_message") {
+      /// TODO: update the message
+
       debugPrint(
           " Message Data==> ${messageData.containsKey("conversation")}  ${messageData.containsKey("conversation_id")}");
-
-      messageData.forEach((key, value) {
-        debugPrint("$key:$value");
-      });
 
       if (messageData.containsKey("conversation") ||
           messageData.containsKey("conversation_id")) {
@@ -84,6 +84,11 @@ class MainSocketMessageHandler {
         if (mainSocketProvider.currentConversationId != conversationId) {
           saveAndUpdateUserMessageCount(messageData: messageData);
         }
+
+        /// update message in the local message db
+        // {"created_at": "2021-05-07 10:05:26.332872Z", "check_id": "337e4aa6-039d-4c13-b438-34905cbcb3b3", "author": "brijesh.sakariya", "text": "10", "kind": "text", "meta_data": {}, "read_by_author": true, "read_by_recipient": false, "delivered": true, "type": "chatroom_message", "conversation_id": "9ae68069-b342-4e04-b568-602bde6fe901"}
+        ChatMessage chatMessage = ChatMessage.fromJson(messageData);
+        ChatMessageHandler().updateChatMessage(chatMessage: chatMessage);
 
         /// update ConnectionList order by last recive time
         updateConnectionListOrder(
@@ -107,6 +112,20 @@ class MainSocketMessageHandler {
       } else {
         debugPrint("UNIMPLEMENTED for $messageData");
       }
+    } else if (messageData["type"] == "read_by_recipient") {
+      ChatMessageHandler().updateReadByRecipientChatMessage(
+          checkId: messageData["check_id"],
+          conversationId: messageData["conversation_id"]);
+    } else if (messageData["type"] == "delete_message") {
+      ChatMessageHandler().deleteChatMessage(
+          checkId: messageData["check_id"],
+          conversationId: messageData["conversation_id"]);
+    } else if (messageData["type"] == "edit_message") {
+      ChatMessageHandler().updateEditedChatMessage(
+          checkId: messageData["check_id"],
+          conversationId: messageData["conversation_id"],
+          wasEdited: messageData['was_edited'],
+          text: messageData['text']);
     } else if (messageData["type"] == "nudge_user") {
       showNudgeAlertToUser(messageData: messageData);
     } else if (messageData["type"] == "stop_nudging") {

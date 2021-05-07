@@ -78,7 +78,7 @@ class ChatMessage {
   factory ChatMessage.fromDBJson(Map<String, dynamic> json) {
     return ChatMessage(
       author: json['author'],
-      authorFullName: json['author_full_name'] ?? "",
+      authorFullName: json['author_full_name'],
       checkId: json['check_id'],
       conversationId: json['conversation_id'],
       createdAt: convertMillisecondsSinceEpochToString(json['created_at']),
@@ -95,7 +95,9 @@ class ChatMessage {
       repliedTo: json['replied_to'],
       text: json['text'],
       type: json['type'],
-      updatedAt: convertMillisecondsSinceEpochToString(json['updated_at']),
+      updatedAt: json['updated_at'] != null
+          ? convertMillisecondsSinceEpochToString(json['updated_at'])
+          : "",
       wasEdited: convertIntToBool(json['was_edited']),
     );
   }
@@ -128,7 +130,7 @@ class ChatMessage {
   Map<String, dynamic> toDBJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['author'] = this.author;
-    data['author_full_name'] = this.authorFullName ?? "";
+    data['author_full_name'] = this.authorFullName;
     data['check_id'] = this.checkId;
     data['conversation_id'] = this.conversationId;
     data['created_at'] = convertStringToMillisecondsSinceEpoch(this.createdAt);

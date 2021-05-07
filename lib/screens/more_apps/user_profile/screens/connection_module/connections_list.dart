@@ -109,10 +109,10 @@ class _ConnectionListState extends State<ConnectionList> {
       isLoading = false;
 
       this.getList();
+    } else {
+      isLoading = false;
+      if (mounted) setState(() {});
     }
-
-    isLoading = false;
-    if (mounted) setState(() {});
   }
 
   void _onRefresh() async {
@@ -312,11 +312,8 @@ class _ConnectionListState extends State<ConnectionList> {
         Provider.of<ConnectionListBloc>(context, listen: false);
     if (!isLoading) {
       if (next != null && !isLoading) {
-        if (mounted) {
-          setState(() {
-            isLoading = true;
-          });
-        }
+        isLoading = true;
+        if (mounted) setState(() {});
         Map<String, dynamic> result = await UserAuth().contacts(next, previous);
         count = result['count'];
         next = result['next'];
@@ -331,11 +328,12 @@ class _ConnectionListState extends State<ConnectionList> {
         tempList.forEach(
             (element) => users.add(ChatConversation.fromJson(element)));
 
-        isLoading = false;
-        if (mounted) setState(() {});
         // connectionsList.addAll(users);
 
         connectionListBloc.setConnectionUsers(users: users);
+
+        isLoading = false;
+        if (mounted) setState(() {});
 
         // ConnectionListManager().saveConnectionsToDB(connections: users);
 
