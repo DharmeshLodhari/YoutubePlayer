@@ -157,16 +157,23 @@ class _ConnectionListState extends State<ConnectionList> {
             isUserIsSearching
                 ? Expanded(child: getSearchedUserListUI())
                 : Expanded(
-                    child: SmartRefresher(
-                        enablePullDown: true,
-                        header: WaterDropHeader(
-                          complete: Container(),
-                          waterDropColor: navyBlue,
-                        ),
-                        controller: _refreshController,
-                        onRefresh: _onRefresh,
-                        child: Container(
-                            color: lightGrey, child: _buildConnectionsList())),
+                    child: RefreshConfiguration(
+                      headerTriggerDistance: 70,
+                      dragSpeedRatio: 0.35,
+                      child: SmartRefresher(
+                          enablePullDown: true,
+                          header: WaterDropHeader(
+                            complete: Container(),
+                            waterDropColor: navyBlue,
+                          ),
+                          controller: _refreshController,
+                          onRefresh: _onRefresh,
+                          child: Container(
+                              color: lightGrey,
+                              child: _buildConnectionsList())),
+                      // child: _buildListTile()),
+                    ),
+                    // child: _buildListTile())),
                   ),
           ],
         ),
@@ -208,6 +215,22 @@ class _ConnectionListState extends State<ConnectionList> {
         },
         textEditingController: searchChatConversation,
       ),
+    );
+  }
+
+  Widget _buildListTile() {
+    return ListView.builder(
+      padding: EdgeInsets.symmetric(
+        vertical: 4,
+      ),
+      //+1 for progressbar
+      itemCount: 100,
+      itemBuilder: (BuildContext context, int index) {
+        return ListTile(
+          title: Text("$index"),
+        );
+      },
+      controller: _scrollController,
     );
   }
 

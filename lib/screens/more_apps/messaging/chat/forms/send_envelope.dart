@@ -1,10 +1,12 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -33,10 +35,13 @@ class _SendEnvelopeState extends State<SendEnvelope> {
 
   bool isEmptyEnvelope;
 
+  CustomerProfile recipientUser;
+
   @override
   void initState() {
     isEmptyEnvelope =
         widget.arguments != null ? widget.arguments["isEmptyEnvelope"] : false;
+    recipientUser = widget.arguments["recipient"];
 
     super.initState();
   }
@@ -76,10 +81,75 @@ class _SendEnvelopeState extends State<SendEnvelope> {
         },
       ),
       title: Text(
-        "Send envelope",
+        isEmptyEnvelope ? "Send empty envelope" : "Send magic envelope",
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
+    );
+  }
+
+  Widget getDisplayCard() {
+    var avatarImage;
+    var qrCodeImage;
+    if (recipientUser != null) {
+      avatarImage = Container(
+        height: 48,
+        width: 48,
+        child: ClipOval(
+          child: CachedNetworkImage(
+            imageUrl: recipientUser.avatar,
+            colorBlendMode: BlendMode.darken,
+            fit: BoxFit.fill,
+            filterQuality: FilterQuality.high,
+          ),
+        ),
+      );
+
+      qrCodeImage = CachedNetworkImage(
+        height: 48,
+        width: 48,
+        imageUrl: recipientUser.qrCode ?? "",
+        colorBlendMode: BlendMode.darken,
+        fit: BoxFit.fill,
+        filterQuality: FilterQuality.high,
+      );
+    }
+
+    return Column(
+      children: [
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          child: ListTile(
+            contentPadding: EdgeInsets.zero,
+            title: Text(
+              recipientUser.fullName,
+              style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
+            subtitle: Text(
+              recipientUser.userName,
+              style: TextStyle(fontSize: 14, color: darkGrey),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
+            leading: avatarImage,
+            trailing: qrCodeImage,
+            onTap: () {
+              Navigator.pushNamed(context, '/profile',
+                  arguments: {"searchedUserName": recipientUser.userName});
+            },
+          ),
+        ),
+        Divider(
+          color: dividerColor,
+          height: 1,
+          thickness: 1,
+        ),
+      ],
     );
   }
 
@@ -108,6 +178,7 @@ class _SendEnvelopeState extends State<SendEnvelope> {
                   child: Container(
                     child: Column(
                       children: <Widget>[
+                        getDisplayCard(),
                         Container(
                           padding: EdgeInsets.symmetric(horizontal: 20),
                           child: Column(
@@ -166,6 +237,7 @@ class _SendEnvelopeState extends State<SendEnvelope> {
                   SizedBox(
                     height: 20,
                   ),
+                  getConditionText(),
                 ],
               ),
             ),
@@ -231,6 +303,12 @@ class _SendEnvelopeState extends State<SendEnvelope> {
       textCapitalization: TextCapitalization.sentences,
       controller: _titleController,
     );
+  }
+
+  Widget getConditionText() {
+    return Text("This service will cost you ₦ 4",
+        style: TextStyle(
+            fontSize: 14, fontWeight: FontWeight.w400, color: darkGrey));
   }
 
   Widget getSubmitButton() {

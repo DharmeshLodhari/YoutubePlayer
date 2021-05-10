@@ -67,8 +67,8 @@ class MainSocketMessageHandler {
     if (messageData["type"] == "chatroom_message") {
       /// TODO: update the message
 
-      debugPrint(
-          " Message Data==> ${messageData.containsKey("conversation")}  ${messageData.containsKey("conversation_id")}");
+      // debugPrint(
+      //     " Message Data==> ${messageData.containsKey("conversation")}  ${messageData.containsKey("conversation_id")}");
 
       if (messageData.containsKey("conversation") ||
           messageData.containsKey("conversation_id")) {
@@ -352,7 +352,7 @@ class MainSocketMessageHandler {
 
   void updateConnectionListOrder(
       {String conversationId, Map<String, dynamic> messageData}) {
-    debugPrint("MessageData:- $messageData");
+    // debugPrint("MessageData:- $messageData");
 
     if (messageData.containsKey("created_at")) {
       DateTime dateTime = DateTime.parse(messageData["created_at"]).toLocal();

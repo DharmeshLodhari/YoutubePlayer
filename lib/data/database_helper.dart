@@ -572,10 +572,10 @@ class DatabaseHelper {
       }
 
       insertUserBatch.insert("UserConnection", data,
-          conflictAlgorithm: ConflictAlgorithm.replace);
+          conflictAlgorithm: ConflictAlgorithm.ignore);
     });
 
-    await insertUserBatch.commit();
+    return await insertUserBatch.commit();
   }
 
   Future<List<ChatConversation>> getUserConnections() async {
