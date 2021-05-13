@@ -51,8 +51,10 @@ class VideoTileForChat extends StatelessWidget {
               },
               child: Container(
                 constraints: BoxConstraints(
-                  maxWidth: MediaQuery.of(context).size.width / 1.30,
-                  minWidth: MediaQuery.of(context).size.width / 1.30,
+                  // maxWidth: MediaQuery.of(context).size.width / 1.30,
+                  // minWidth: MediaQuery.of(context).size.width / 1.30,
+                  maxWidth: MediaQuery.of(context).size.width / 1.8,
+                  minWidth: MediaQuery.of(context).size.width / 1.8,
                 ),
                 decoration: BoxDecoration(
                   color: chatConversation.isGroupConversation
@@ -100,7 +102,9 @@ class VideoTileForChat extends StatelessWidget {
                         : 0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: isSend
+                      ? CrossAxisAlignment.end
+                      : CrossAxisAlignment.start,
                   children: [
                     chatConversation.isGroupConversation
                         ? message['author'] != userBloc.user.userName
@@ -163,8 +167,10 @@ class VideoTileForChat extends StatelessWidget {
                         children: [
                           ClipRRect(
                             child: CachedNetworkImage(
-                              height: MediaQuery.of(context).size.width / 2.2,
-                              width: MediaQuery.of(context).size.width / 1.30,
+                              height: MediaQuery.of(context).size.width / 3,
+                              width: MediaQuery.of(context).size.width / 1.8,
+                              // height: MediaQuery.of(context).size.width / 2.2,
+                              // width: MediaQuery.of(context).size.width / 1.30,
                               imageUrl: message["poster"] ??
                                   "https://c1.iggcdn.com/indiegogo-media-prod-cld/image/upload/c_fill,f_auto,h_630,w_1200/v1506734779/wcsmythcukjuuglotjvb.jpg",
                               fit: BoxFit.cover,
@@ -185,19 +191,21 @@ class VideoTileForChat extends StatelessWidget {
                             borderRadius: BorderRadius.circular(3),
                           ),
                           Container(
-                            height: MediaQuery.of(context).size.width / 2.2,
-                            width: MediaQuery.of(context).size.width / 1.30,
+                            height: MediaQuery.of(context).size.width / 3,
+                            width: MediaQuery.of(context).size.width / 1.8,
+                            // height: MediaQuery.of(context).size.width / 2.2,
+                            // width: MediaQuery.of(context).size.width / 1.30,
                             child: Center(
                               child: ClipOval(
                                 child: Container(
-                                  height: 60,
-                                  width: 60,
+                                  height: 40,
+                                  width: 40,
                                   color: Colors.white.withOpacity(0.2),
                                   child: Center(
                                     child: Icon(
                                       Icons.play_arrow_rounded,
                                       color: Colors.white,
-                                      size: 32,
+                                      size: 24,
                                     ),
                                   ),
                                 ),

@@ -8,6 +8,8 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.d
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/device_info.dart';
+import 'package:Slydo/services/local_notification_helper.dart';
+import 'package:Slydo/services/local_notification_service.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -18,6 +20,28 @@ import 'package:provider/provider.dart';
 
 /// for implementing flutter local notification
 /// https://github.com/FirebaseExtended/flutterfire/issues/1590
+
+Future<dynamic> fcmBackgroundMessageHandler(message) async {
+// await Firebase.initializeApp();
+  debugPrint("onBackgroundMessage: $message");
+
+  try {
+// creating notification from server payload
+// var notification = Platform.isAndroid
+//     ? getAndroidNotification(message)
+//     : getIosNotification(message);
+// debugPrint("Notification From OnResume:  $notification");
+//
+    await LocalNotificationService().init();
+
+    showOngoingNotification(
+        LocalNotificationService().flutterLocalNotificationsPlugin,
+        title: "Hello",
+        body: "Slydo");
+  } catch (error) {
+    debugPrint("ERROR IN BACKGROUND HANDLER : - $error");
+  }
+}
 
 class PushNotificationService {
   static FirebaseMessaging _fcm = FirebaseMessaging();
@@ -67,92 +91,70 @@ class PushNotificationService {
     }
 
     _fcm.configure(
-      // Called when the app is in the foreground and we receive a push notification
-      onMessage: (Map<String, dynamic> message) async {
-        print("onMessage: $message");
-        // creating notification from server payload
-        var notification = Platform.isAndroid
-            ? getAndroidNotification(message)
-            : getIosNotification(message);
+        // Called when the app is in the foreground and we receive a push notification
+        onMessage: (Map<String, dynamic> message) async {
+          print("onMessage: $message");
+          // creating notification from server payload
+          var notification = Platform.isAndroid
+              ? getAndroidNotification(message)
+              : getIosNotification(message);
 
-        print("Notification From onMessage:  $notification");
+          print("Notification From onMessage:  $notification");
 
-        if (notification["data"] != null) {
-          print("notification data = ${notification["data"]}");
-          print("notification data type = ${notification["data"] is String}");
-          MainSocketMessageHandler(message: notification["data"]);
-        }
+          ///{body: Slydo Nudge Message,
+          /// title: Slydo Notification,
+          /// vibrate: [200,100,200,100,200,100,400],
+          /// icon: null,
+          /// badge: null,
+          /// sound: null, link: null,
+          /// tag: null, dir: auto,
+          /// actions: /chat-screen/brijesh.sakariya,
+          /// image: null, data: {"type":"nudge_user"}}
 
-        showAlertMessage(
-            notification: notification,
-            context: myGlobals.scaffoldKey.currentContext);
-      },
+          if (notification["data"] != null) {
+            print("notification data = ${notification["data"]}");
+            print("notification data type = ${notification["data"] is String}");
+            MainSocketMessageHandler(message: notification["data"]);
+          }
 
-      // Called when the app has been closed comlpetely and it's opened
-      // from the push notification.
-      onLaunch: (Map<String, dynamic> message) async {
-        print("onLaunch: $message");
-        // creating notification from server payload
-        var notification = Platform.isAndroid
-            ? getAndroidNotification(message)
-            : getIosNotification(message);
+          showAlertMessage(
+              notification: notification,
+              context: myGlobals.scaffoldKey.currentContext);
+        },
 
-        print("Notification From onLaunch:  $notification");
+        // Called when the app has been closed completely and it's opened
+        // from the push notification.
+        onLaunch: (Map<String, dynamic> message) async {
+          print("onLaunch: $message");
 
-        //navigate to the particular screen
-        _navigateToItemDetail(
-            notification, myGlobals.scaffoldKey.currentContext);
-      },
-      // Called when the app is in the background and it's opened
-      // from the push notification.
-      onResume: (Map<String, dynamic> message) async {
-        print("onResume: $message");
-        // creating notification from server payload
-        var notification = Platform.isAndroid
-            ? getAndroidNotification(message)
-            : getIosNotification(message);
+          // // creating notification from server payload
+          // var notification = Platform.isAndroid
+          //     ? getAndroidNotification(message)
+          //     : getIosNotification(message);
+          //
+          // print("Notification From onLaunch:  $notification");
+          //
+          // //navigate to the particular screen
+          // _navigateToItemDetail(
+          //     notification, myGlobals.scaffoldKey.currentContext);
+        },
+        // Called when the app is in the background and it's opened
+        // from the push notification.
+        onResume: (Map<String, dynamic> message) async {
+          print("onResume: $message");
 
-        print("Notification From OnResume:  $notification");
-
-        //navigate to the particular screen
-        _navigateToItemDetail(
-            notification, myGlobals.scaffoldKey.currentContext);
-      },
-    );
-  }
-
-  Map<String, dynamic> getAndroidNotification(Map<String, dynamic> message) {
-    Map<String, dynamic> notification = {};
-    notification["body"] = message['notification']['body'];
-    notification["title"] = message['notification']['title'];
-    notification["vibrate"] = message['data']['vibrate'];
-    notification["icon"] = message['data']['icon'];
-    notification["badge"] = message['data']['badge'];
-    notification["sound"] = message['data']['sound'];
-    notification["link"] = message['data']['link'];
-    notification["tag"] = message['data']['tag'];
-    notification["dir"] = message['data']['dir'];
-    notification["actions"] = message['data']['actions'];
-    notification['image'] = message['data']['image'];
-
-    notification["data"] = message['data']['data'];
-
-    print("notification from android $notification");
-    return notification;
-  }
-
-  Map<String, dynamic> getIosNotification(Map<String, dynamic> message) {
-    Map<String, dynamic> notification = {};
-    notification["body"] = message['notification']['body'];
-    notification["title"] = message['notification']['title'];
-    notification["vibrate"] = message['vibrate'];
-    notification["icon"] = message['notification']['icon'];
-    notification["tag"] = message['notification']['tag'];
-    notification["dir"] = message['dir'];
-    notification["actions"] = message['actions'];
-    notification['image'] = message['image'];
-    debugPrint("notification from IOS $notification");
-    return notification;
+          // // creating notification from server payload
+          // var notification = Platform.isAndroid
+          //     ? getAndroidNotification(message)
+          //     : getIosNotification(message);
+          //
+          // print("Notification From OnResume:  $notification");
+          //
+          // //navigate to the particular screen
+          // _navigateToItemDetail(
+          //     notification, myGlobals.scaffoldKey.currentContext);
+        },
+        onBackgroundMessage: fcmBackgroundMessageHandler);
   }
 
   // ignore: missing_return
@@ -256,4 +258,38 @@ class PushNotificationService {
       _navigateToItemDetail(notification, context);
     }
   }
+}
+
+Map<String, dynamic> getAndroidNotification(Map<String, dynamic> message) {
+  Map<String, dynamic> notification = {};
+  notification["body"] = message['notification']['body'] ?? "Hello";
+  notification["title"] = message['notification']['title'];
+  notification["vibrate"] = message['data']['vibrate'];
+  notification["icon"] = message['data']['icon'];
+  notification["badge"] = message['data']['badge'];
+  notification["sound"] = message['data']['sound'];
+  notification["link"] = message['data']['link'];
+  notification["tag"] = message['data']['tag'];
+  notification["dir"] = message['data']['dir'];
+  notification["actions"] = message['data']['actions'];
+  notification['image'] = message['data']['image'];
+
+  notification["data"] = message['data']['data'];
+
+  print("notification from android $notification");
+  return notification;
+}
+
+Map<String, dynamic> getIosNotification(Map<String, dynamic> message) {
+  Map<String, dynamic> notification = {};
+  notification["body"] = message['notification']['body'];
+  notification["title"] = message['notification']['title'];
+  notification["vibrate"] = message['vibrate'];
+  notification["icon"] = message['notification']['icon'];
+  notification["tag"] = message['notification']['tag'];
+  notification["dir"] = message['dir'];
+  notification["actions"] = message['actions'];
+  notification['image'] = message['image'];
+  debugPrint("notification from IOS $notification");
+  return notification;
 }

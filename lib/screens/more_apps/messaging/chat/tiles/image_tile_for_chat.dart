@@ -49,8 +49,10 @@ class ImageTileForChat extends StatelessWidget {
               },
               child: Container(
                 constraints: BoxConstraints(
-                  maxWidth: MediaQuery.of(context).size.width / 1.30,
-                  minWidth: MediaQuery.of(context).size.width / 1.30,
+                  // maxWidth: MediaQuery.of(context).size.width / 1.30,
+                  // minWidth: MediaQuery.of(context).size.width / 1.30,
+                  maxWidth: MediaQuery.of(context).size.width / 1.8,
+                  minWidth: MediaQuery.of(context).size.width / 1.8,
                 ),
                 decoration: BoxDecoration(
                   color: chatConversation.isGroupConversation
@@ -98,7 +100,9 @@ class ImageTileForChat extends StatelessWidget {
                         : 0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: isSend
+                      ? CrossAxisAlignment.end
+                      : CrossAxisAlignment.start,
                   children: [
                     chatConversation.isGroupConversation
                         ? message['author'] != userBloc.user.userName
@@ -159,8 +163,10 @@ class ImageTileForChat extends StatelessWidget {
                                   : 8),
                       child: ClipRRect(
                         child: CachedNetworkImage(
-                          height: MediaQuery.of(context).size.width / 2.2,
-                          width: MediaQuery.of(context).size.width / 1.30,
+                          height: MediaQuery.of(context).size.width / 3,
+                          width: MediaQuery.of(context).size.width / 1.8,
+                          // height: MediaQuery.of(context).size.width / 2.2,
+                          // width: MediaQuery.of(context).size.width / 1.30,
                           imageUrl: message['media'],
                           fit: BoxFit.cover,
                           progressIndicatorBuilder:

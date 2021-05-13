@@ -328,6 +328,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       isLoading = false;
 
       if (mounted) setState(() {});
+
+      // checkMessageForRead();
     }
   }
 
@@ -1170,6 +1172,24 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           ],
         ),
       ),
+      actions: [
+        IconButton(
+          icon: Icon(Icons.vibration_outlined),
+          color: navyBlue,
+          onPressed: () {
+            Map<String, dynamic> data = {
+              "check_id": Uuid().v4(),
+              "conversation_id": chatConversation.conversationId,
+              "author": userBloc.user.userName,
+              "recipient": chatConversation.userName,
+              "created_at": DateTime.now().toUtc().toString(),
+              "type": "nudge_user",
+            };
+            sendDataToSocket(data);
+          },
+        ),
+        SizedBox(width:16)
+      ],
     );
   }
 
@@ -2040,7 +2060,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   void addProductOrServiceToChat(var item) async {
     String url = secureBaseUrl +
         "/api/v1/${item is Product ? "products" : "services"}/" +
-        item.messageId +
+        item.id +
         "/";
 
     Map<String, dynamic> itemData =

@@ -55,8 +55,10 @@ class LocationTileForChatMessage extends StatelessWidget {
               },
               child: Container(
                 constraints: BoxConstraints(
-                  maxWidth: MediaQuery.of(context).size.width / 1.30,
-                  minWidth: MediaQuery.of(context).size.width / 1.30,
+                  // maxWidth: MediaQuery.of(context).size.width / 1.30,
+                  // minWidth: MediaQuery.of(context).size.width / 1.30,
+                  maxWidth: MediaQuery.of(context).size.width / 1.8,
+                  minWidth: MediaQuery.of(context).size.width / 1.8,
                 ),
                 decoration: BoxDecoration(
                   color: chatConversation.isGroupConversation
@@ -113,8 +115,10 @@ class LocationTileForChatMessage extends StatelessWidget {
                       padding: EdgeInsets.symmetric(horizontal: 0),
                       child: ClipRRect(
                         child: CachedNetworkImage(
-                          height: MediaQuery.of(context).size.width / 2.2,
-                          width: MediaQuery.of(context).size.width / 1.30,
+                          height: MediaQuery.of(context).size.width / 3,
+                          width: MediaQuery.of(context).size.width / 1.8,
+                          // height: MediaQuery.of(context).size.width / 2.2,
+                          // width: MediaQuery.of(context).size.width / 1.30,
                           imageUrl:
                               "https://i.dlpng.com/static/png/6635948_preview.png",
                           fit: BoxFit.cover,

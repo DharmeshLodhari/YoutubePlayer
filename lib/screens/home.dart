@@ -4,6 +4,7 @@ import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_handler.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/db_socket_message_handler.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -17,7 +18,6 @@ import 'package:sizer/sizer.dart';
 import 'package:toast/toast.dart';
 
 import 'more_apps/messaging/chat/helpers/chat_user_manager.dart';
-import 'more_apps/messaging/chat/helpers/db_socket_message_handler.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -401,6 +401,33 @@ class _HomeState extends State<Home> {
         ConnectionListBloc connectionListBloc =
             Provider.of<ConnectionListBloc>(context, listen: false);
         await connectionListBloc.clearConnectionList();
+
+        // LocalNotificationService().showNotification(
+        //     {"id": 1, "payload": "Hello 1"},
+        //     "Hello Notification sound",
+        //     "slydo_notification");
+
+        // showOngoingNotification(
+        //     LocalNotificationService().flutterLocalNotificationsPlugin,
+        //     title: "Sound Notification",
+        //     body: "Hello custom sound");
+
+        // showImageNotification(
+        //   context,
+        //   LocalNotificationService().flutterLocalNotificationsPlugin,
+        //   title: "Nudge From User",
+        //   body: "Black is Nudging you",
+        //   picture: Image.network(
+        //       "https://files.wallpaperpass.com/2019/10/black%20panther%20wallpaper%2018%20-%205120x2880.jpg"),
+        // );
+
+        // LocalNotificationService().showNotification(
+        //     {"id": 2, "payload": "Hello 2"}, "Hello ping sound", "slydo_nudge");
+
+        // AwesomeNotificationService().showNotification({
+        //   "id": 1234,
+        //   "payload": {"data": "test"}
+        // }, "Hello Notification");
 
         // Navigator.pushNamed(
         //   context,
