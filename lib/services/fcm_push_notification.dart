@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/services/auth.dart';
@@ -11,7 +10,6 @@ import 'package:Slydo/services/device_info.dart';
 import 'package:Slydo/services/local_notification_helper.dart';
 import 'package:Slydo/services/local_notification_service.dart';
 import 'package:Slydo/utils/colors.dart';
-import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -21,9 +19,10 @@ import 'package:provider/provider.dart';
 /// for implementing flutter local notification
 /// https://github.com/FirebaseExtended/flutterfire/issues/1590
 
-Future<dynamic> fcmBackgroundMessageHandler(message) async {
+Future<dynamic> fcmBackgroundMessageHandler(
+    Map<String, dynamic> message) async {
 // await Firebase.initializeApp();
-  debugPrint("onBackgroundMessage: $message");
+  print("onBackgroundMessage: $message");
 
   try {
 // creating notification from server payload
@@ -31,7 +30,7 @@ Future<dynamic> fcmBackgroundMessageHandler(message) async {
 //     ? getAndroidNotification(message)
 //     : getIosNotification(message);
 // debugPrint("Notification From OnResume:  $notification");
-//
+
     await LocalNotificationService().init();
 
     showOngoingNotification(
@@ -39,8 +38,10 @@ Future<dynamic> fcmBackgroundMessageHandler(message) async {
         title: "Hello",
         body: "Slydo");
   } catch (error) {
-    debugPrint("ERROR IN BACKGROUND HANDLER : - $error");
+    print("ERROR IN BACKGROUND HANDLER : - $error");
   }
+
+  return Future<void>.value();
 }
 
 class PushNotificationService {
@@ -48,16 +49,26 @@ class PushNotificationService {
   static AuthService _auth = AuthService();
   static DatabaseHelper _db = DatabaseHelper();
 
+  static final PushNotificationService _singleton =
+      new PushNotificationService._internal();
+
+  factory PushNotificationService() {
+    return _singleton;
+  }
+
+  PushNotificationService._internal();
+
   FirebaseMessaging get fcm => _fcm;
 
-  Future login() async {
+  initialize() async {
     //to stop automatically recreates the token when we deregister user in logout
     _fcm.setAutoInitEnabled(false);
 
     var data = await getDeviceInfo();
-    _fcm.getToken().then((String token) async {
+    await _fcm.getToken().then((String token) async {
       data["token"] = token;
 
+      print("FCM Token:- $token");
       // this piece of code convert Map<dynamic,dynamic> data to Map<String,String> tempData
       // so we can store that data into database
       Map<String, dynamic> tempData = new Map<String, dynamic>();
@@ -85,9 +96,6 @@ class PushNotificationService {
       _fcm.onIosSettingsRegistered.listen((IosNotificationSettings settings) {
         // debugPrint("Settings registered: $settings");
       });
-      _fcm.getToken().then((String token) {
-        // debugPrint("firebase IOS token : $token");
-      });
     }
 
     _fcm.configure(
@@ -95,11 +103,11 @@ class PushNotificationService {
         onMessage: (Map<String, dynamic> message) async {
           print("onMessage: $message");
           // creating notification from server payload
-          var notification = Platform.isAndroid
-              ? getAndroidNotification(message)
-              : getIosNotification(message);
-
-          print("Notification From onMessage:  $notification");
+          // var notification = Platform.isAndroid
+          //     ? getAndroidNotification(message)
+          //     : getIosNotification(message);
+          //
+          // print("Notification From onMessage:  $notification");
 
           ///{body: Slydo Nudge Message,
           /// title: Slydo Notification,
@@ -111,15 +119,15 @@ class PushNotificationService {
           /// actions: /chat-screen/brijesh.sakariya,
           /// image: null, data: {"type":"nudge_user"}}
 
-          if (notification["data"] != null) {
-            print("notification data = ${notification["data"]}");
-            print("notification data type = ${notification["data"] is String}");
-            MainSocketMessageHandler(message: notification["data"]);
-          }
-
-          showAlertMessage(
-              notification: notification,
-              context: myGlobals.scaffoldKey.currentContext);
+          // if (notification["data"] != null) {
+          //   print("notification data = ${notification["data"]}");
+          //   print("notification data type = ${notification["data"] is String}");
+          //   MainSocketMessageHandler(message: notification["data"]);
+          // }
+          //
+          // showAlertMessage(
+          //     notification: notification,
+          //     context: myGlobals.scaffoldKey.currentContext);
         },
 
         // Called when the app has been closed completely and it's opened
@@ -154,7 +162,8 @@ class PushNotificationService {
           // _navigateToItemDetail(
           //     notification, myGlobals.scaffoldKey.currentContext);
         },
-        onBackgroundMessage: fcmBackgroundMessageHandler);
+        onBackgroundMessage:
+            Platform.isIOS ? null : fcmBackgroundMessageHandler);
   }
 
   // ignore: missing_return

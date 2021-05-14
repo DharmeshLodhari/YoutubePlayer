@@ -194,7 +194,7 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
       child: Text(
         "Group",
         style: TextStyle(
-            fontSize: 12, fontWeight: FontWeight.w600, color: naturalGreen),
+            fontSize: 11, fontWeight: FontWeight.w600, color: naturalGreen),
       ),
     );
   }

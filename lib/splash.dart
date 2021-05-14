@@ -233,8 +233,12 @@ class _SplashScreenState extends State<SplashScreen> {
 
             if (_user.fullName != null) {
               userBloc.user = _user;
-              socketProvider.currentUser = _user;
-
+              try {
+                socketProvider.currentUser = _user;
+              } catch (error) {
+                debugPrint(
+                    "ERROR: while connecting socket in Splash Screen :- $error");
+              }
               if (_user != null) {
                 PaymentAndBankingAuth().getBankAccounts().then((accounts) {
                   try {

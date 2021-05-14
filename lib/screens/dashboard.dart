@@ -66,10 +66,10 @@ class _DashboardState extends State<Dashboard> {
       });
     }
 
-    registerPushNotification();
-
-    ListRefresher().initialize();
     super.initState();
+
+    PushNotificationService().initialize();
+    ListRefresher().initialize();
   }
 
   void initializeListener() {
@@ -87,10 +87,6 @@ class _DashboardState extends State<Dashboard> {
       //   if (mounted) setState(() {});
       // }
     });
-  }
-
-  void registerPushNotification() async {
-    await PushNotificationService().login();
   }
 
   Widget goToBasket() {
