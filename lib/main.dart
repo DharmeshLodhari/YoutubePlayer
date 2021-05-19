@@ -5,6 +5,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_generator.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_shake_detection.dart';
 import 'package:Slydo/services/app_life_cycle.dart';
+import 'package:Slydo/services/awesome_notification_service.dart';
 import 'package:Slydo/services/local_notification_service.dart';
 import 'package:Slydo/services/route_observer.dart';
 import 'package:Slydo/services/route_provider.dart';
@@ -33,7 +34,7 @@ void main() async {
 
   await Firebase.initializeApp();
 
-  // AwesomeNotificationService().init();
+  AwesomeNotificationService().init();
 
   // Pass all uncaught errors to Crashlytics.
   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;

@@ -1,15 +1,17 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/services/awesome_notification_service.dart';
 import 'package:Slydo/services/device_info.dart';
-import 'package:Slydo/services/local_notification_helper.dart';
-import 'package:Slydo/services/local_notification_service.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -31,14 +33,40 @@ Future<dynamic> fcmBackgroundMessageHandler(
 //     : getIosNotification(message);
 // debugPrint("Notification From OnResume:  $notification");
 
-    await LocalNotificationService().init();
+    // await LocalNotificationService().init();
+    //
+    // showOngoingNotification(
+    //     LocalNotificationService().flutterLocalNotificationsPlugin,
+    //     title: "Hello",
+    //     body: "Slydo");
 
-    showOngoingNotification(
-        LocalNotificationService().flutterLocalNotificationsPlugin,
-        title: "Hello",
-        body: "Slydo");
+    /// {data:
+    /// {priority: high,
+    /// actions: /chat-screen/9ae68069-b342-4e04-b568-602bde6fe901,
+    /// body: Slydo Nudge Message,
+    /// data:
+    /// {"conversation_id":"9ae68069-b342-4e04-b568-602bde6fe901",
+    /// "author":"brijesh.sakariya",
+    /// "recipient":"black",
+    /// "check_id":"2b312f4e-86aa-42e3-9972-b33f2d3d2fbd",
+    /// "created_at":"2021-05-19 11:01:02.661721+00:00",
+    /// "type":"nudge_user",
+    /// "author_avatar":null},
+    /// title: Slydo Notification}}
+
+    Map<String, dynamic> data = {};
+
+    data['actions'] = message['data']['actions'];
+    data['body'] = message['data']['body'];
+    data['title'] = message['data']['title'];
+    data['data'] = jsonDecode(message['data']['data']);
+
+    if (data['data']['type'] == "nudge_user") {
+      AwesomeNotificationService().showNudgeNotification(message: data);
+    }
   } catch (error) {
     print("ERROR IN BACKGROUND HANDLER : - $error");
+    print("DATA IN BACKGROUND HANDLER : - $message");
   }
 
   return Future<void>.value();
@@ -103,10 +131,10 @@ class PushNotificationService {
         onMessage: (Map<String, dynamic> message) async {
           print("onMessage: $message");
           // creating notification from server payload
-          // var notification = Platform.isAndroid
-          //     ? getAndroidNotification(message)
-          //     : getIosNotification(message);
-          //
+          var notification = Platform.isAndroid
+              ? getAndroidNotification(message)
+              : getIosNotification(message);
+
           // print("Notification From onMessage:  $notification");
 
           ///{body: Slydo Nudge Message,
@@ -119,15 +147,15 @@ class PushNotificationService {
           /// actions: /chat-screen/brijesh.sakariya,
           /// image: null, data: {"type":"nudge_user"}}
 
-          // if (notification["data"] != null) {
-          //   print("notification data = ${notification["data"]}");
-          //   print("notification data type = ${notification["data"] is String}");
-          //   MainSocketMessageHandler(message: notification["data"]);
-          // }
-          //
-          // showAlertMessage(
-          //     notification: notification,
-          //     context: myGlobals.scaffoldKey.currentContext);
+          if (notification["data"] != null) {
+            print("notification data = ${notification["data"]}");
+            print("notification data type = ${notification["data"] is String}");
+            MainSocketMessageHandler(message: notification["data"]);
+          }
+
+          showAlertMessage(
+              notification: notification,
+              context: myGlobals.scaffoldKey.currentContext);
         },
 
         // Called when the app has been closed completely and it's opened
@@ -135,32 +163,32 @@ class PushNotificationService {
         onLaunch: (Map<String, dynamic> message) async {
           print("onLaunch: $message");
 
-          // // creating notification from server payload
-          // var notification = Platform.isAndroid
-          //     ? getAndroidNotification(message)
-          //     : getIosNotification(message);
-          //
+          // creating notification from server payload
+          var notification = Platform.isAndroid
+              ? getAndroidNotification(message)
+              : getIosNotification(message);
+
           // print("Notification From onLaunch:  $notification");
-          //
-          // //navigate to the particular screen
-          // _navigateToItemDetail(
-          //     notification, myGlobals.scaffoldKey.currentContext);
+
+          //navigate to the particular screen
+          _navigateToItemDetail(
+              notification, myGlobals.scaffoldKey.currentContext);
         },
         // Called when the app is in the background and it's opened
         // from the push notification.
         onResume: (Map<String, dynamic> message) async {
           print("onResume: $message");
 
-          // // creating notification from server payload
-          // var notification = Platform.isAndroid
-          //     ? getAndroidNotification(message)
-          //     : getIosNotification(message);
-          //
+          // creating notification from server payload
+          var notification = Platform.isAndroid
+              ? getAndroidNotification(message)
+              : getIosNotification(message);
+
           // print("Notification From OnResume:  $notification");
-          //
-          // //navigate to the particular screen
-          // _navigateToItemDetail(
-          //     notification, myGlobals.scaffoldKey.currentContext);
+
+          //navigate to the particular screen
+          _navigateToItemDetail(
+              notification, myGlobals.scaffoldKey.currentContext);
         },
         onBackgroundMessage:
             Platform.isIOS ? null : fcmBackgroundMessageHandler);

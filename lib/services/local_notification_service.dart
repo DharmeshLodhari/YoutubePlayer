@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -61,7 +60,7 @@ class LocalNotificationService {
   }
 
   Future selectNotification(String payload) async {
-    debugPrint("Select notification $payload");
+    print("Select notification $payload");
   }
 
   // void showNotification(Map<String, dynamic> message,

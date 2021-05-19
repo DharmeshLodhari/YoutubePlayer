@@ -386,7 +386,8 @@ class UserAuth extends AuthService {
 
   // Fetch user profile
   Future<ChatConversation> fetchContactProfile(String userName) async {
-    var url = secureBaseUrl + "/api/v1/user/connections/" + userName.trim();
+    var url =
+        secureBaseUrl + "/api/v1/user/connections/" + userName.trim() + "/";
 
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);

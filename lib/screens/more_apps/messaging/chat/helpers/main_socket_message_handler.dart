@@ -277,6 +277,7 @@ class MainSocketMessageHandler {
       "check_id": Uuid().v4(),
       "conversation_id": author.conversationId,
       "author": currentUser.user.userName,
+      "author_avatar": currentUser.user.avatar,
       "recipient": author.userName,
       "created_at": DateTime.now().toUtc().toString(),
       "acknowledgement_type": type,

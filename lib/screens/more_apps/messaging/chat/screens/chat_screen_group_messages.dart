@@ -211,6 +211,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   GroupedItemScrollController messageListController;
   ItemPositionsListener messageListPositionListener;
+  bool isUserNudging = false;
 
   @override
   void initState() {
@@ -873,6 +874,38 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         updateEditedMessageInMessageList(message: messageData);
         break;
 
+      /// {
+      ///   "check_id": "1736d07b-9324-47ed-9be8-d11d0fa7556e",
+      ///   "conversation_id": "9ae68069-b342-4e04-b568-602bde6fe901",
+      ///   "author": "brijesh.sakariya", "recipient": "black",
+      ///   "created_at": "2021-05-17 09:23:24.644963Z",
+      ///   "type": "nudge_user", "username": "brijesh.sakariya"
+      ///}
+
+      case "nudge_user":
+        isUserNudging = true;
+        if (mounted) setState(() {});
+
+        Future.delayed(Duration(seconds: 11)).then((value) {
+          isUserNudging = false;
+          if (mounted) setState(() {});
+        });
+
+        break;
+
+      /// {check_id: 983fd148-15c2-4ac7-bdef-086a2970e622,
+      /// conversation_id: 9ae68069-b342-4e04-b568-602bde6fe901,
+      /// author: black, recipient: brijesh.sakariya,
+      /// created_at: 2021-05-17 11:23:00.193844Z,
+      /// acknowledgement_type: Accepted,
+      /// type: stop_nudging, username: black}
+
+      case "stop_nudging":
+        isUserNudging = false;
+        if (mounted) setState(() {});
+
+        break;
+
       default:
         debugPrint("Message type:- ${messageData['type'] ?? messageData}");
     }
@@ -1172,25 +1205,35 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           ],
         ),
       ),
-      actions: [
-        IconButton(
-          icon: Icon(Icons.vibration_outlined),
-          color: navyBlue,
-          onPressed: () {
-            Map<String, dynamic> data = {
-              "check_id": Uuid().v4(),
-              "conversation_id": chatConversation.conversationId,
-              "author": userBloc.user.userName,
-              "recipient": chatConversation.userName,
-              "created_at": DateTime.now().toUtc().toString(),
-              "type": "nudge_user",
-            };
-            sendDataToSocket(data);
-          },
-        ),
-        SizedBox(width:16)
-      ],
+      actions: [getNudgeUserBtn(), SizedBox(width: 16)],
     );
+  }
+
+  Widget getNudgeUserBtn() {
+    if (chatConversation.isGroupConversation) {
+      return Container();
+    }
+
+    return isUserNudging
+        ? Container(
+            margin: EdgeInsets.only(top: 8, bottom: 8),
+            child: Center(child: CircularLoadingIndicator()))
+        : IconButton(
+            icon: Icon(Icons.vibration_outlined),
+            color: navyBlue,
+            onPressed: () {
+              Map<String, dynamic> data = {
+                "check_id": Uuid().v4(),
+                "conversation_id": chatConversation.conversationId,
+                "author": userBloc.user.userName,
+                "author_avatar": userBloc.user.avatar,
+                "recipient": chatConversation.userName,
+                "created_at": DateTime.now().toUtc().toString(),
+                "type": "nudge_user",
+              };
+              sendDataToSocket(data);
+            },
+          );
   }
 
   void navigateToGroupDetailScreen() async {
@@ -1213,6 +1256,12 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void getUserStatus() async {
+    if (chatConversation.isGroupConversation) {
+      userStatus = "${chatConversation.participants.length} Members";
+      if (mounted) setState(() {});
+      return;
+    }
+
     var data = await MessageAuth()
         .getChatUserStatus(chatConversation.userName)
         .catchError((error) {
@@ -1223,6 +1272,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
     if (data["status"] == "Online") {
       userStatus = "Online";
+      if (mounted) setState(() {});
+      return;
     } else {
       DateTime now = new DateTime.now();
       DateTime today = new DateTime(now.year, now.month, now.day);
@@ -1238,11 +1289,13 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
       if (today == lastSeenDate) {
         userStatus = 'last seen today at ' + lastSeenTime;
+        if (mounted) setState(() {});
         return;
       }
 
       if (yesterday == lastSeenDate) {
         userStatus = 'last seen yesterday at ' + lastSeenTime;
+        if (mounted) setState(() {});
         return;
       }
       //Todo: Add within last 7 day (last seen Monday at 1.30 AM)
