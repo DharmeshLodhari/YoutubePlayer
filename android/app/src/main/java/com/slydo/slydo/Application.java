@@ -9,6 +9,9 @@ import io.flutter.plugins.firebasemessaging.FirebaseMessagingPlugin;
 import io.flutter.plugins.pathprovider.PathProviderPlugin;
 import com.dexterous.flutterlocalnotifications.FlutterLocalNotificationsPlugin;
 import me.carda.awesome_notifications.AwesomeNotificationsPlugin;
+import com.tekartik.sqflite.SqflitePlugin;
+import io.flutter.plugins.deviceinfo.DeviceInfoPlugin;
+import com.example.devicelocale.DevicelocalePlugin;
 
 import android.os.Build;
 
@@ -21,6 +24,9 @@ public class Application extends FlutterApplication implements PluginRegistrantC
 
     @Override
     public void registerWith(PluginRegistry registry) {
+        DeviceInfoPlugin.registerWith(registry.registrarFor("io.flutter.plugins.deviceinfo.DeviceInfoPlugin"));
+        DevicelocalePlugin.registerWith(registry.registrarFor("com.example.devicelocale.DevicelocalePlugin"));
+        SqflitePlugin.registerWith(registry.registrarFor("com.tekartik.sqflite.SqflitePlugin"));
         AwesomeNotificationsPlugin.registerWith(registry.registrarFor("me.carda.awesome_notifications.AwesomeNotificationsPlugin"));
         PathProviderPlugin.registerWith(registry.registrarFor("io.flutter.plugins.pathprovider.PathProviderPlugin"));
         FlutterLocalNotificationsPlugin.registerWith(registry.registrarFor("com.dexterous.flutterlocalnotifications.FlutterLocalNotificationsPlugin"));

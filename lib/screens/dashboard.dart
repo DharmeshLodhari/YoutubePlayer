@@ -1,16 +1,22 @@
 import 'dart:async';
 
+import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_message_handler.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/nudge_notification/NudgeNotification.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/checkout_shopping_cart.dart';
+import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/screens/search_module.dart';
 import 'package:Slydo/screens/user_dashboard.dart';
 import 'package:Slydo/services/fcm_push_notification.dart';
 import 'package:Slydo/services/list_refresher.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/keep_alive_page.dart';
 import 'package:badges/badges.dart';
@@ -70,6 +76,8 @@ class _DashboardState extends State<Dashboard> {
 
     PushNotificationService().initialize();
     ListRefresher().initialize();
+
+    checkNotificationToNavigate();
   }
 
   void initializeListener() {
@@ -87,6 +95,48 @@ class _DashboardState extends State<Dashboard> {
       //   if (mounted) setState(() {});
       // }
     });
+  }
+
+  void checkNotificationToNavigate() async {
+    debugPrint("CHECK NOTIFICATION INITIALIZE");
+
+    NudgeNotification nudgeNotification =
+        await DatabaseHelper().getNotification();
+    if (nudgeNotification != null) {
+      showDialog(
+          context: context,
+          builder: (context) => Center(child: CircularLoadingIndicator()));
+
+      UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+
+      await DatabaseHelper().deleteNotification();
+
+      ChatConversation chatConversation = await UserAuth()
+          .fetchContactProfile(nudgeNotification.recipientUsername);
+
+      MainSocketMessageHandler().sendNudgeAcknowledgement(
+          author: chatConversation, currentUser: userBloc, type: "Accepted");
+
+      /// if User is not added in database
+      try {
+        ConnectionListBloc connectionListBloc =
+            Provider.of<ConnectionListBloc>(context, listen: false);
+
+        connectionListBloc.setConnectionUsers(users: [chatConversation]);
+
+        ChatUserManager().addUsers([chatConversation]);
+      } catch (error) {
+        debugPrint("ERRORR:- $error");
+      }
+
+      if (chatConversation == null) {
+        Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
+        return;
+      }
+      Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
+      Navigator.pushNamed(context, '/chat-screen',
+          arguments: {"searchedUser": chatConversation});
+    }
   }
 
   Widget goToBasket() {

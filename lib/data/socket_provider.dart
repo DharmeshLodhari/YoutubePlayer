@@ -36,6 +36,8 @@ class MainSocketProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  String get socketUrl => _socketUrl;
+
   String get currentConversationId => _currentConversationId;
 
   set currentConversationId(String value) {

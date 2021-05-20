@@ -34,8 +34,8 @@ class ChatUserManager {
     return chatUserModel;
   }
 
-  void clearChatUsers() async {
-    await _db.deleteChatUsers();
+  Future<int> clearChatUsers() async {
+    return await _db.deleteChatUsers();
   }
 
   void updateChatUserMessageCount(

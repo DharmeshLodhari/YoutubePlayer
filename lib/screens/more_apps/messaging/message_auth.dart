@@ -674,4 +674,24 @@ class MessageAuth extends AuthService {
       return Future.error("ERROR:- ${response.body}");
     }
   }
+
+  void sendStopNudge({Map<String, dynamic> dataToSend}) async {
+    var url = secureBaseUrl + "/api/v1/chat/stop-nudge/";
+    var headers = await getAuthHeaders();
+
+    debugPrint("DATA SENT:- $dataToSend");
+    debugPrint("HEADERS SENT:- $headers");
+
+    var response =
+        await http.post(url, headers: headers, body: jsonEncode(dataToSend));
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      debugPrint(
+          "STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
 }

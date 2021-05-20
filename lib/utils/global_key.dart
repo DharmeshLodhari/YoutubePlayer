@@ -5,9 +5,18 @@ MyGlobals myGlobals = MyGlobals();
 final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
 class MyGlobals {
-  GlobalKey _scaffoldKey;
-  MyGlobals() {
-    _scaffoldKey = GlobalKey();
+  MyGlobals._internal();
+
+  static final MyGlobals _myGlobals = MyGlobals._internal();
+  static GlobalKey _scaffoldKey = GlobalKey();
+
+  static GlobalKey<NavigatorState> _navKey = GlobalKey<NavigatorState>();
+
+  factory MyGlobals() {
+    return _myGlobals;
   }
+
   GlobalKey get scaffoldKey => _scaffoldKey;
+
+  GlobalKey get navigationKey => _navKey;
 }

@@ -11,6 +11,7 @@ import 'package:Slydo/services/route_observer.dart';
 import 'package:Slydo/services/route_provider.dart';
 import 'package:Slydo/services/timer_service.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/global_key.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
@@ -162,6 +163,7 @@ class MyApp extends StatelessWidget {
         return OrientationBuilder(builder: (context, orientation) {
           SizerUtil().init(constraints, orientation);
           return MaterialApp(
+            navigatorKey: MyGlobals().navigationKey,
             localizationsDelegates: [
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,

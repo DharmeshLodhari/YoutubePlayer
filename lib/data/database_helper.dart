@@ -6,6 +6,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatUserModel.dart
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessagePagination.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/nudge_notification/NudgeNotification.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
@@ -265,6 +266,23 @@ class DatabaseHelper {
       ///   "type":"chatroom_message",
       ///   "conversation_id":"9ae68069-b342-4e04-b568-602bde6fe901"
       /// }
+
+      // Create the NOTIFICATION table
+      await db.execute('''CREATE TABLE "Notification" (
+            "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
+            "check_id" TEXT,
+            "conversation_id" TEXT,
+            "notification_id" TEXT,
+            "author" TEXT,
+            "recipient" TEXT,
+            "created_at" TEXT,
+            "acknowledgement_type" TEXT,
+            "author_avatar" TEXT,
+            "actions" TEXT,
+            "type" TEXT,
+            "recipient_username" TEXT
+          );
+    ''');
 
       debugPrint("DATABASE:- Tables are created !!");
     } catch (e) {
@@ -836,5 +854,42 @@ class DatabaseHelper {
     debugPrint(
         "DATABASE:- ChatMessagePagination $conversationId is Deleted !!");
     return res;
+  }
+
+  /// NOTIFICATION OPERATION
+
+  Future<int> saveNotification(NudgeNotification nudgeNotification) async {
+    Database dbClient = await db;
+
+    int res = await dbClient.insert("Notification", nudgeNotification.toJson(),
+        conflictAlgorithm: ConflictAlgorithm.ignore);
+    if (res != null) {
+      debugPrint("DATABASE:- Save NUDGE NOTIFICATION !!");
+      return res;
+    }
+    return null;
+  }
+
+  Future<int> deleteNotification() async {
+    Database dbClient = await db;
+
+    int res = await dbClient.delete("Notification");
+    if (res != null) {
+      debugPrint("DATABASE:- DELETE NUDGE NOTIFICATION !!");
+      return res;
+    }
+    return null;
+  }
+
+  Future<NudgeNotification> getNotification() async {
+    Database dbClient = await db;
+
+    List<Map<String, dynamic>> notifications =
+        await dbClient.query("Notification");
+    if (notifications != null) {
+      if (notifications.length > 0)
+        return NudgeNotification.fromJson(notifications.first);
+    }
+    return null;
   }
 }

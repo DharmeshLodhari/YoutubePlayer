@@ -56,6 +56,8 @@ Future<dynamic> fcmBackgroundMessageHandler(
 
     Map<String, dynamic> data = {};
 
+    AwesomeNotificationService().init();
+
     data['actions'] = message['data']['actions'];
     data['body'] = message['data']['body'];
     data['title'] = message['data']['title'];

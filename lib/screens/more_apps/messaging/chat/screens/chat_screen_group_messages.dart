@@ -274,8 +274,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       isChatConversationLoading = true;
       if (mounted) setState(() {});
 
-      chatConversation = await UserAuth()
-          .fetchContactProfile(widget.arguments["recipientUserName"]);
+      chatConversation =
+          await UserAuth().fetchContactProfile(recipientUserName);
 
       isChatConversationLoading = false;
       if (mounted) setState(() {});
@@ -1222,6 +1222,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
             icon: Icon(Icons.vibration_outlined),
             color: navyBlue,
             onPressed: () {
+              isUserNudging = true;
+              if (mounted) setState(() {});
               Map<String, dynamic> data = {
                 "check_id": Uuid().v4(),
                 "conversation_id": chatConversation.conversationId,
