@@ -232,7 +232,9 @@ class _UserLoginState extends State<UserLogin> {
           child: ListTile(
             dense: true,
             contentPadding: EdgeInsets.fromLTRB(8, 0, 0, 0),
-            onTap: _openCountryPickerDialog,
+            onTap: () {
+              _openCountryPickerDialog(isForLogin: true);
+            },
             title: _buildDialogItem(_selectedDialogCountry),
           ),
         ),
@@ -281,25 +283,28 @@ class _UserLoginState extends State<UserLogin> {
           ),
         ),
         SizedBox(width: 8.0),
-        Text(
-          "(" + country.name + ")",
-          overflow: TextOverflow.fade,
-          softWrap: false,
-          style: TextStyle(
-            fontSize: 16,
-            color: blackFont,
-            fontWeight: FontWeight.w600,
+        Expanded(
+          child: Text(
+            "(" + country.name + ")",
+            overflow: TextOverflow.fade,
+            softWrap: false,
+            style: TextStyle(
+              fontSize: 16,
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         )
       ],
     );
   }
 
-  void _openCountryPickerDialog() => showDialog(
+  void _openCountryPickerDialog({bool isForLogin = false}) => showDialog(
         context: context,
         builder: (context) => Theme(
           data: Theme.of(context).copyWith(primaryColor: navyBlue),
           child: CountryPickerDialog(
+            isForLogin: isForLogin,
             titlePadding: EdgeInsets.all(8.0),
             searchCursorColor: navyBlue,
             searchInputDecoration: InputDecoration(

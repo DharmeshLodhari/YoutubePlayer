@@ -412,7 +412,7 @@ class MainSocketProvider extends ChangeNotifier {
 
     _channel = null;
     debugPrint(
-        "WebSocket disconnected to $_socketUrl for user ${currentUser.userName}");
+        "WebSocket disconnected to $_socketUrl for user ${currentUser?.userName}");
     notifyListeners();
   }
 }

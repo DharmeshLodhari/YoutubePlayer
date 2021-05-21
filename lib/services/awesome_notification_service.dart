@@ -2,13 +2,11 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:Slydo/data/database_helper.dart';
-import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/nudge_notification/NudgeNotification.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
-import 'package:web_socket_channel/io.dart';
 
 class AwesomeNotificationService {
   static final AwesomeNotificationService _notificationService =
@@ -217,54 +215,6 @@ class AwesomeNotificationService {
       debugPrint("ERROR WHILE INSERTING $error");
     }
     return;
-  }
-
-  Future<void> sendDataToSocketFromNotification(
-      {Map<String, dynamic> data, String userName}) async {
-    /// change socket url according to recipient user url
-    // var finalUrl = "$_socketUrl";
-    var finalUrl = "${MainSocketProvider().socketUrl}/$userName/";
-
-    // Set auth headers or socket will be closed
-    var _headers = await MessageAuth().getAuthHeaders();
-
-    IOWebSocketChannel _channel;
-
-    /// for connecting the socket
-    try {
-      _channel = IOWebSocketChannel.connect(
-        finalUrl,
-        headers: _headers,
-      );
-
-      debugPrint("WebSocket Connected to $finalUrl for user $userName");
-    } catch (e) {
-      debugPrint("ERROR:- While connecting WebSocket for user $userName");
-      return;
-    }
-
-    /// for listening message in the Socket
-
-    debugPrint("Listener called!!");
-
-    _channel.stream.listen((message) {
-      /// listen every message from the socket
-      debugPrint("Got Message on main socket:- $message ");
-    })
-      ..onError((error) async {
-        /// if there is any error while listing the socket
-
-        debugPrint("ERROR:- While listening the Socket $error");
-      })
-      ..onDone(() {
-        debugPrint("On Done called:-  Socket Closed !!!!");
-      });
-
-    try {
-      _channel.sink.add(data);
-    } catch (error) {
-      debugPrint("ERROR : WHILE ADDING DATA IN SOCKET");
-    }
   }
 
   void showNudgeNotification({Map<String, dynamic> message}) async {

@@ -1903,7 +1903,11 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         context: context,
         apiKey: gifApiKey,
         showPreviewPage: false,
+
         sticker: false,
+        onError: (error) {
+          debugPrint("ERROR IN GIPHY PICKER:- $error");
+        },
         title: Text(
           "Slydo GIPHY",
           style: TextStyle(
@@ -1921,7 +1925,9 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     GiphyGif gif = await GiphyPicker.pickGif(
         context: context,
         apiKey: gifApiKey,
-        showPreviewPage: false,
+        showPreviewPage: false,onError: (error) {
+      debugPrint("ERROR IN GIPHY PICKER:- $error");
+    },
         sticker: true,
         searchText: "Search Sticker",
         title: Text(

@@ -76,7 +76,6 @@ class _DashboardState extends State<Dashboard> {
 
     PushNotificationService().initialize();
     ListRefresher().initialize();
-
     checkNotificationToNavigate();
   }
 
@@ -98,11 +97,10 @@ class _DashboardState extends State<Dashboard> {
   }
 
   void checkNotificationToNavigate() async {
-    debugPrint("CHECK NOTIFICATION INITIALIZE");
-
     NudgeNotification nudgeNotification =
         await DatabaseHelper().getNotification();
     if (nudgeNotification != null) {
+      debugPrint("NOTIFICATION FOUND :- ${nudgeNotification.toJson()}");
       showDialog(
           context: context,
           builder: (context) => Center(child: CircularLoadingIndicator()));

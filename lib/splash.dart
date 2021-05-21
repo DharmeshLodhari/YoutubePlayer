@@ -194,7 +194,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> getLoggedInUser() async {
-    await Future.delayed(Duration(milliseconds: 500));
+    // await Future.delayed(Duration(milliseconds: 500));
     _sharedPreferences = await SharedPreferences.getInstance();
     final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
     final MainSocketProvider socketProvider =
@@ -211,6 +211,8 @@ class _SplashScreenState extends State<SplashScreen> {
         Navigator.of(context).pushNamed("/index");
       } else {
         countryFromPref = _sharedPreferences.getString('country') ?? "NG";
+        debugPrint(
+            "Country code:- _sharedPreferences.getString('country') => ${_sharedPreferences.getString('country')} $countryFromPref ");
         Country country =
             CountryPickerUtils.getCountryByIsoCode(countryFromPref);
 
@@ -269,6 +271,10 @@ class _SplashScreenState extends State<SplashScreen> {
                     Navigator.pop(context);
                     Navigator.of(context).pushNamed("/index");
                   }
+                }).catchError((error) {
+                  debugPrint("ERROR:- $error");
+                  Navigator.pop(context);
+                  Navigator.of(context).pushNamed("/index");
                 });
               }
             } else {
@@ -276,6 +282,7 @@ class _SplashScreenState extends State<SplashScreen> {
               Navigator.of(context).pushNamed("/index");
             }
           }).catchError((error) {
+            debugPrint("ERROR:- $error");
             Navigator.pop(context);
             Navigator.of(context).pushNamed("/index");
           });
@@ -291,11 +298,15 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void initializeShoppingCart() async {
-    debugPrint("initializeShoppingCart called");
-    List items = await ShoppingAuthService().getShoppingCart();
-    items.forEach((element) {
-      String type = element is Product ? "product" : "service";
-      basketBloc.addItemToCart(item: element, type: type);
-    });
+    try {
+      debugPrint("initializeShoppingCart called");
+      List items = await ShoppingAuthService().getShoppingCart();
+      items.forEach((element) {
+        String type = element is Product ? "product" : "service";
+        basketBloc.addItemToCart(item: element, type: type);
+      });
+    } catch (e) {
+      debugPrint("ERROR:- while loading shopping cart ITEM");
+    }
   }
 }
