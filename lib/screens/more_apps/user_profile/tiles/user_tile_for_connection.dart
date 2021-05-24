@@ -32,23 +32,29 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      mainSocketProvider =
-          Provider.of<MainSocketProvider>(context, listen: false);
+      try {
+        if (mounted) {
+          mainSocketProvider =
+              Provider.of<MainSocketProvider>(context, listen: false);
 
-      streamSubscription = mainSocketProvider.listen((message) {
-        Map<String, dynamic> messageData = jsonDecode(message);
-        if (messageData["type"] == "user_typing_message" &&
-            messageData["conversation_id"] == widget.user.conversationId) {
-          isTyping = true;
-          typingMessage = messageData["message"];
-          if (mounted) setState(() {});
-          Future.delayed(Duration(milliseconds: 500)).then((value) {
-            isTyping = false;
-            typingMessage = "";
-            if (mounted) setState(() {});
+          streamSubscription = mainSocketProvider.listen((message) {
+            Map<String, dynamic> messageData = jsonDecode(message);
+            if (messageData["type"] == "user_typing_message" &&
+                messageData["conversation_id"] == widget.user.conversationId) {
+              isTyping = true;
+              typingMessage = messageData["message"];
+              if (mounted) setState(() {});
+              Future.delayed(Duration(milliseconds: 500)).then((value) {
+                isTyping = false;
+                typingMessage = "";
+                if (mounted) setState(() {});
+              });
+            }
           });
         }
-      });
+      } catch (error) {
+        debugPrint("ERROR10 :- $error");
+      }
     });
 
     super.initState();

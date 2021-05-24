@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/AddGroupModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
@@ -13,6 +14,7 @@ import 'package:Slydo/widget/image_crop.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
 class SetNameAndProfileOfGroup extends StatefulWidget {
@@ -295,9 +297,28 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
               child: CircularLoadingIndicator(),
             ));
 
-    MessageAuth().createGroupChat(group: groupModel).then((value) {
+    MessageAuth().createGroupChat(group: groupModel).then((value) async {
       Navigator.pop(context);
-      if (value) {
+      if (value != null) {
+        // TODO: WHEN API UPDATED ADD NEW GROUP TO LIST
+        // {"full_name":"Group delta",
+        // "username":"Group delta",
+        // "avatar":"https://slydo-assets.s3.amazonaws.com/media/image_cropper_1621855527905.jpg",
+        // "qr_code":"",
+        // "conversation_id":"4c1707c0-db9a-4bd7-ac20-e53c5d2abca8",
+        // "type":"User",
+        // "participants":["black","brijesh.sakariya"],
+        // "blocked_participants":null,
+        // "muted_participants":null,
+        // "admin_users":["black"],
+        // "is_group_conversation":true,
+        // "owner":"black",
+        // "description":"Delta members"}
+
+        ConnectionListBloc connectionListBloc =
+            Provider.of<ConnectionListBloc>(context, listen: false);
+        connectionListBloc.addConnectionUser(chatConversation: value);
+
         Navigator.popUntil(context, ModalRoute.withName("/friends-dashboard"));
       }
     }).catchError((error) {

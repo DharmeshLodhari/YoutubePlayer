@@ -170,7 +170,7 @@ class DatabaseHelper {
       "type" TEXT,
       "was_edited" INTEGER,
       "conversation_id" TEXT,
-      FOREIGN KEY(conversation_id) REFERENCES UserConnection(conversation_id),
+      FOREIGN KEY(conversation_id) REFERENCES UserConnection(conversation_id) ON DELETE CASCADE,
       UNIQUE(check_id,conversation_id)
    );
     ''');
@@ -594,6 +594,33 @@ class DatabaseHelper {
     });
 
     return await insertUserBatch.commit();
+  }
+
+  Future<int> addUserConnection({ChatConversation chatConversation}) async {
+    Database dbClient = await db;
+
+    List<ChatConversation> existingChatConversation =
+        await getUserConnections();
+
+    Map<String, dynamic> data = chatConversation.toDBJson();
+
+    /// for checking if the chatConversation is already stored in the db
+    bool isChatConversationIsExist = false;
+    for (int i = 0; i < existingChatConversation.length; i++) {
+      if (chatConversation.conversationId ==
+          existingChatConversation[i].conversationId) {
+        isChatConversationIsExist = true;
+        break;
+      }
+    }
+
+    /// if ChatConversation is new then we will set last_message_time as 0
+    if (!isChatConversationIsExist) {
+      data["last_message_time"] = 0;
+    }
+
+    return await dbClient.insert("UserConnection", data,
+        conflictAlgorithm: ConflictAlgorithm.ignore);
   }
 
   Future<List<ChatConversation>> getUserConnections() async {

@@ -39,22 +39,22 @@ class ChatConversation {
     return ChatConversation(
       adminUsers: json['admin_users'] != null
           ? new List<String>.from(json['admin_users'])
-          : null,
+          : [],
       avatar: json['avatar'],
       blockedParticipants: json['blocked_participants'] != null
           ? new List<String>.from(json['blocked_participants'])
-          : null,
+          : [],
       conversationId: json['conversation_id'],
       description: json['description'] ?? "",
       fullName: json['full_name'],
       isGroupConversation: json['is_group_conversation'],
       mutedParticipants: json['muted_participants'] != null
           ? new List<String>.from(json['muted_participants'])
-          : null,
+          : [],
       owner: json['owner'] == "" || json['owner'] == null ? '' : json['owner'],
       participants: json['participants'] != null
           ? new List<String>.from(json['participants'])
-          : null,
+          : [],
       qrCode: json['qr_code'] == "" || json['qr_code'] == null
           ? ''
           : json['qr_code'],

@@ -34,7 +34,8 @@ class PaymentAndBankingAuth extends AuthService {
       }
       return accounts;
     } else {
-      throw "Can't get https.";
+      return Future.error(
+          "ERROR while calling $url StatusCode:- ${response.statusCode} Body:- ${jsonDecode(response.body)}");
     }
   }
 

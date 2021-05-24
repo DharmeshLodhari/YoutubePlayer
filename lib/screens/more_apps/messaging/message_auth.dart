@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:Slydo/screens/more_apps/messaging/chat/models/AddGroupModel.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/UpdateGroupDetailModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/models/message.dart';
@@ -304,7 +305,7 @@ class MessageAuth extends AuthService {
     }
   }
 
-  Future<bool> createGroupChat({AddGroupModel group}) async {
+  Future<ChatConversation> createGroupChat({AddGroupModel group}) async {
     var url = secureBaseUrl + "/api/v1/user/group-conversation/";
     // debugPrint("URL:- $url");
     var headers = await getAuthHeaders();
@@ -351,7 +352,10 @@ class MessageAuth extends AuthService {
       debugPrint(
           "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
 
-      return true;
+      ChatConversation chatConversation =
+          ChatConversation.fromJson(jsonDecode(responseBody));
+
+      return chatConversation;
     } else {
       debugPrint("DATA:- ${request.fields}");
       debugPrint(

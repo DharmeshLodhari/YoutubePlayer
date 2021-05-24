@@ -43,6 +43,7 @@ class _ConnectionListState extends State<ConnectionList> {
       RefreshController(initialRefresh: false);
   bool isLoading = false;
   bool noItemInList = false;
+  bool isLoadingFromDB = false;
 
   RefreshBlocForConnectionDashboard _refreshBloc;
   ConnectionListBloc _connectionListBloc;
@@ -62,7 +63,7 @@ class _ConnectionListState extends State<ConnectionList> {
       if (_scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&
           _scrollController.position.pixels != 0) {
-        getList();
+        // getList();
       }
     });
     _slideController = SlidableController(
