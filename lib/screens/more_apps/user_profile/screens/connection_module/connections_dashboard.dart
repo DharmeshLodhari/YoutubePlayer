@@ -203,7 +203,6 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
     );
   }
 
-
   Widget tabViews() {
     return IndexedStack(
       index: currentIndex,

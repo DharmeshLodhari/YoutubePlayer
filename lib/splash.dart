@@ -42,6 +42,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   // bool for to check if internet connection is available or not
   var hasConnection = true;
+  String errorText = "";
 
   @override
   void initState() {
@@ -163,6 +164,17 @@ class _SplashScreenState extends State<SplashScreen> {
                         fontSize: 52,
                         color: Colors.white,
                         fontWeight: FontWeight.w600),
+                  ),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  Text(
+                    errorText,
+                    style: TextStyle(
+                        fontFamily: "CircularStd",
+                        fontSize: 14,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600),
                   )
                 ],
               ),
@@ -221,6 +233,52 @@ class _SplashScreenState extends State<SplashScreen> {
     }
 
     isChecked = _sharedPreferences.getBool('isChecked') ?? false;
+    //
+    // if (isChecked) {
+    //   countryFromPref = _sharedPreferences.getString('country');
+    //   errorText += "countryFromPref = $countryFromPref\n";
+    //   Country country1;
+    //   try {
+    //     country1 = CountryPickerUtils.getCountryByIsoCode("NG");
+    //   } catch (error) {
+    //     errorText += "error while fetching country1 = $error\n";
+    //   }
+    //   if (country1 != null) {
+    //     errorText += "country1 phoneCode ${country1.phoneCode}\n";
+    //     errorText += "country1 name ${country1.name}\n";
+    //     errorText += "country1 isoCode ${country1.isoCode}\n";
+    //     errorText += "country1 iso3Code ${country1.iso3Code}\n";
+    //   }
+    //
+    //   Country country2;
+    //   try {
+    //     country2 = CountryPickerUtils.getCountryByIsoCode(countryFromPref);
+    //   } catch (error) {
+    //     errorText += "error while fetching country2 = $error\n";
+    //   }
+    //   if (country2 != null) {
+    //     errorText += "country2 phoneCode ${country2.phoneCode}\n";
+    //     errorText += "country2 name ${country2.name}\n";
+    //     errorText += "country2 isoCode ${country2.isoCode}\n";
+    //     errorText += "country2 iso3Code ${country2.iso3Code}\n";
+    //
+    //     SecureUser secureUser = await SecureStorage().getUser();
+    //     userPhoneNumber = secureUser.phoneNumber;
+    //     userPassword = secureUser.password;
+    //
+    //     var phoneNumber = "+" + country2.phoneCode + userPhoneNumber;
+    //     var password = userPassword;
+    //
+    //     errorText += "phoneNumber $phoneNumber\n";
+    //     errorText += "password $password\n";
+    //   }
+    //   if (mounted) setState(() {});
+    // } else {
+    //   Navigator.pop(MyGlobals().navigationKey.currentContext);
+    //   Navigator.of(MyGlobals().navigationKey.currentContext)
+    //       .pushNamed("/index");
+    //   return Future.value(null);
+    // }
 
     try {
       if (isChecked) {

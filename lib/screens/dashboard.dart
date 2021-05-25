@@ -27,6 +27,7 @@ import 'package:provider/provider.dart';
 
 import '../utils/colors.dart';
 import 'home.dart';
+import 'more_apps/messaging/chat/helpers/connection_list_synchronizer.dart';
 import 'more_apps/payment_and_banking/screens/payment/request_payments_list.dart';
 
 // ignore: must_be_immutable
@@ -76,7 +77,22 @@ class _DashboardState extends State<Dashboard> {
 
     PushNotificationService().initialize();
     ListRefresher().initialize();
+
+    fetchConnections();
+
     checkNotificationToNavigate();
+  }
+
+  void fetchConnections() async {
+    ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
+        myGlobals.navigationKey.currentContext,
+        listen: false);
+
+    int result = await connectionListBloc.getConnectionsCount();
+    debugPrint("CONNECTION LIST LENGTH:- $result");
+    if (result == 0) {
+      ConnectionSynchronizer().fetch(isRefresh: true);
+    }
   }
 
   void initializeListener() {

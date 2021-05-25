@@ -2,6 +2,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_manager.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_synchronizer.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -20,7 +21,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:toast/toast.dart';
 
 import '../../user_auth.dart';
@@ -39,8 +39,8 @@ class _ConnectionListState extends State<ConnectionList> {
   String previous = "";
   List connectionsList = [];
   ScrollController _scrollController = new ScrollController();
-  RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
+  // RefreshController _refreshController =
+  //     RefreshController(initialRefresh: false);
   bool isLoading = false;
   bool noItemInList = false;
   bool isLoadingFromDB = false;
@@ -127,12 +127,12 @@ class _ConnectionListState extends State<ConnectionList> {
         connectionsList = [];
         noItemInList = false;
         getList();
-        _refreshController.refreshCompleted();
+        // _refreshController.refreshCompleted();
       } else {
         Toast.show(
             AppLocalization.of(context).internetConnectionNotAvailable, context,
             gravity: Toast.BOTTOM, backgroundColor: darkBlue());
-        _refreshController.refreshCompleted();
+        // _refreshController.refreshCompleted();
       }
     });
   }
@@ -144,10 +144,45 @@ class _ConnectionListState extends State<ConnectionList> {
 
     _connectionListBloc = Provider.of<ConnectionListBloc>(context);
 
+    // return Scaffold(
+    //   key: _scaffoldContactsListKey,
+    //   backgroundColor: Colors.white,
+    //
+    //   body: GestureDetector(
+    //     onTap: () {
+    //       FocusScope.of(context).requestFocus(new FocusNode());
+    //     },
+    //     child: Column(
+    //       children: [
+    //         getSearchTextField(),
+    //         isUserIsSearching
+    //             ? Expanded(child: getSearchedUserListUI())
+    //             : Expanded(
+    //                 child: RefreshConfiguration(
+    //                   headerTriggerDistance: 70,
+    //                   dragSpeedRatio: 0.35,
+    //                   child: SmartRefresher(
+    //                       enablePullDown: true,
+    //                       header: WaterDropHeader(
+    //                         complete: Container(),
+    //                         waterDropColor: navyBlue,
+    //                       ),
+    //                       controller: _refreshController,
+    //                       onRefresh: _onRefresh,
+    //                       child: Container(
+    //                           color: lightGrey,
+    //                           child: _buildConnectionsList())),
+    //                   // child: _buildListTile()),
+    //                 ),
+    //                 // child: _buildListTile())),
+    //               ),
+    //       ],
+    //     ),
+    //   ),
+    // );
     return Scaffold(
       key: _scaffoldContactsListKey,
       backgroundColor: Colors.white,
-      // floatingActionButton: getFloatingActionBtn(),
       body: GestureDetector(
         onTap: () {
           FocusScope.of(context).requestFocus(new FocusNode());
@@ -158,28 +193,29 @@ class _ConnectionListState extends State<ConnectionList> {
             isUserIsSearching
                 ? Expanded(child: getSearchedUserListUI())
                 : Expanded(
-                    child: RefreshConfiguration(
-                      headerTriggerDistance: 70,
-                      dragSpeedRatio: 0.35,
-                      child: SmartRefresher(
-                          enablePullDown: true,
-                          header: WaterDropHeader(
-                            complete: Container(),
-                            waterDropColor: navyBlue,
-                          ),
-                          controller: _refreshController,
-                          onRefresh: _onRefresh,
-                          child: Container(
-                              color: lightGrey,
-                              child: _buildConnectionsList())),
-                      // child: _buildListTile()),
-                    ),
-                    // child: _buildListTile())),
+                    child: getRefreshIndicator(),
                   ),
           ],
         ),
       ),
     );
+  }
+
+  Widget getRefreshIndicator() {
+    return RefreshIndicator(
+      backgroundColor: Colors.white,
+      color: navyBlue,
+      onRefresh: refreshList,
+      strokeWidth: 2.0,
+      child: Container(
+        color: lightGrey,
+        child: _buildConnectionsList(),
+      ),
+    );
+  }
+
+  Future<void> refreshList() async {
+    await ConnectionSynchronizer().fetch(isRefresh: true);
   }
 
   Widget getSearchedUserListUI() {
@@ -219,82 +255,32 @@ class _ConnectionListState extends State<ConnectionList> {
     );
   }
 
-  Widget _buildListTile() {
+  Widget _buildConnectionsList() {
+    if (isLoading) {
+      return Center(
+        child: CircularLoadingIndicator(),
+      );
+    }
+
+    if (_connectionListBloc.connectionUsers.length == 0) {
+      return NoItemInList(
+        msg: "No connection found !!",
+        isResult: true,
+      );
+    }
+
     return ListView.builder(
       padding: EdgeInsets.symmetric(
         vertical: 4,
       ),
       //+1 for progressbar
-      itemCount: 100,
+      itemCount: _connectionListBloc.connectionUsers.length,
       itemBuilder: (BuildContext context, int index) {
-        return ListTile(
-          title: Text("$index"),
-        );
+        return _getSlidableWithLists(
+            context, _connectionListBloc.connectionUsers[index], index);
       },
       controller: _scrollController,
     );
-  }
-
-  Widget _buildConnectionsList() {
-    return isLoading
-        ? Center(
-            child: CircularLoadingIndicator(),
-          )
-        : FutureBuilder(
-            future: Future.value(_connectionListBloc.connectionUsers),
-            builder: (context, snapshot) {
-              switch (snapshot.connectionState) {
-                case ConnectionState.none:
-                  debugPrint("ConnectionState.none");
-                  return Center(
-                    child: CircularLoadingIndicator(),
-                  );
-                  break;
-                case ConnectionState.waiting:
-                  return Center(
-                    child: CircularLoadingIndicator(),
-                  );
-                  break;
-                case ConnectionState.active:
-                  debugPrint("ConnectionState.active");
-                  return Center(
-                    child: CircularLoadingIndicator(),
-                  );
-                  break;
-                case ConnectionState.done:
-                  if (snapshot.hasData) {
-                    if (snapshot.data.length == 0) {
-                      return NoItemInList(
-                        msg: "No connection found !!",
-                        isResult: true,
-                      );
-                    }
-
-                    return ListView.builder(
-                      padding: EdgeInsets.symmetric(
-                        vertical: 4,
-                      ),
-                      //+1 for progressbar
-                      itemCount: snapshot.data.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return _getSlidableWithLists(
-                            context, snapshot.data[index], index);
-                      },
-                      controller: _scrollController,
-                    );
-                  } else if (snapshot.hasError) {
-                    debugPrint("ERROR:- ${snapshot.error}");
-                    return Container();
-                  }
-                  debugPrint("ERROR While Loading Data 1");
-                  return Container();
-                  break;
-
-                default:
-                  debugPrint("ERROR While Loading Data 2");
-                  return Container();
-              }
-            });
   }
 
   // Widget _buildConnectionsList() {
@@ -606,7 +592,7 @@ class _ConnectionListState extends State<ConnectionList> {
   @override
   void dispose() {
     _scrollController.dispose();
-    _refreshController.dispose();
+    // _refreshController.dispose();
     super.dispose();
   }
 }
