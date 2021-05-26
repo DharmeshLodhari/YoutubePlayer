@@ -15,6 +15,7 @@ build: #Job name
 
   script:
     - flutter build apk
+
   artifacts:
     paths:
       - build/app/outputs/apk/release/app-release.apk

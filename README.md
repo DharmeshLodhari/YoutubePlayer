@@ -20,6 +20,9 @@ rm -rf ~/Developer/flutter/bin/cache
 flutter doctor -v 
 flutter clean     
 
+
+[![pipeline status]
+
 ### COMMANDS TO CREATE LOCALIZATION FILES 
 
 1)
