@@ -130,6 +130,8 @@ class MainSocketMessageHandler {
       showNudgeAlertToUser(messageData: messageData);
     } else if (messageData["type"] == "stop_nudging") {
       stopNudgeAlertToUser(messageData: messageData);
+    } else if (messageData["type"] == "conversation_created") {
+      debugPrint("DATA=>:-  $messageData");
     }
   }
 

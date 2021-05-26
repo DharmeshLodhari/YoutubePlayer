@@ -233,7 +233,7 @@ class _SplashScreenState extends State<SplashScreen> {
     }
 
     isChecked = _sharedPreferences.getBool('isChecked') ?? false;
-    //
+
     // if (isChecked) {
     //   countryFromPref = _sharedPreferences.getString('country');
     //   errorText += "countryFromPref = $countryFromPref\n";
@@ -271,6 +271,36 @@ class _SplashScreenState extends State<SplashScreen> {
     //
     //     errorText += "phoneNumber $phoneNumber\n";
     //     errorText += "password $password\n";
+    //
+    //     User user;
+    //     try {
+    //       user = await _auth.authenticate(phoneNumber, password);
+    //     } catch (e) {
+    //       errorText += "ERROR while fetching USER:- $e\n";
+    //     }
+    //     if (user != null) {
+    //       errorText += "User:- ${user.toJson()}\n";
+    //
+    //       List<BankAccount> accounts;
+    //
+    //       try {
+    //         accounts = await PaymentAndBankingAuth().getBankAccounts();
+    //       } catch (e) {
+    //         errorText += "ERROR while fetching ACCOUNTS:- $e\n";
+    //       }
+    //
+    //       if (accounts != null) {
+    //         errorText += "accounts:- ${accounts.length}\n";
+    //         accounts.forEach((element) {
+    //           errorText +=
+    //               "element:- ${element.accountName} ${element.isDefault} \n";
+    //         });
+    //       } else {
+    //         errorText += "accounts not found\n";
+    //       }
+    //     } else {
+    //       errorText += "User not found\n";
+    //     }
     //   }
     //   if (mounted) setState(() {});
     // } else {
