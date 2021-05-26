@@ -1,6 +1,9 @@
 # slydo
 
-A new Flutter application.
+Slydo Mobile appp
+
+[![pipeline status](https://code.slydo.co/mobile-team/slydo/badges/master/pipeline.svg)](https://code.slydo.co/mobile-team/slydo/-/commits/master)
+
 
 ## Getting Started
 
@@ -20,8 +23,6 @@ rm -rf ~/Developer/flutter/bin/cache
 flutter doctor -v 
 flutter clean     
 
-
-[![pipeline status]
 
 ### COMMANDS TO CREATE LOCALIZATION FILES 
 
