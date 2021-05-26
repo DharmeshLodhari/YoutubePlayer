@@ -11,7 +11,7 @@ before_script:
 
 
 build: #Job name
-  stage: build # kind of job
+  stage: build # Stage name
 
   script:
     - flutter build apk
