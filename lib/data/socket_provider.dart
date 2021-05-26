@@ -38,6 +38,8 @@ class MainSocketProvider extends ChangeNotifier {
 
   String get socketUrl => _socketUrl;
 
+  List<String> get queueMessages => _queueMessages;
+
   String get currentConversationId => _currentConversationId;
 
   set currentConversationId(String value) {
@@ -286,9 +288,19 @@ class MainSocketProvider extends ChangeNotifier {
 
   /// for adding data into user socket
   Future<bool> add(Map<String, dynamic> data) async {
+    bool isDataAlreadyInQueue = false;
     String _data = jsonEncode(data);
 
-    _queueMessages.add(_data);
+    for (int i = 0; i < _queueMessages.length; i++) {
+      if (_data == _queueMessages[i]) {
+        isDataAlreadyInQueue = true;
+        break;
+      }
+    }
+
+    if (!isDataAlreadyInQueue) {
+      _queueMessages.add(_data);
+    }
 
     return await addDataInTheCorrectOrder();
   }

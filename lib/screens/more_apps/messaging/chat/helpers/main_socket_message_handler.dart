@@ -54,85 +54,125 @@ class MainSocketMessageHandler {
   void handleMessageAccordingToType() {
     Map<String, dynamic> messageData = jsonDecode(message);
 
-    /// TODO: check the logs for this code :- Starts
-
     MainSocketProvider mainSocketProvider = Provider.of<MainSocketProvider>(
         myGlobals.scaffoldKey.currentContext,
         listen: false);
 
     mainSocketProvider.removeFromTheQueue(message: message);
 
-    /// Ends
+    String messageType = messageData["type"];
 
-    if (messageData["type"] == "chatroom_message") {
-      /// TODO: update the message
+    switch (messageType) {
+      case "chatroom_message":
+        if (messageData.containsKey("conversation") ||
+            messageData.containsKey("conversation_id")) {
+          MainSocketProvider mainSocketProvider =
+              Provider.of<MainSocketProvider>(
+                  myGlobals.scaffoldKey.currentContext,
+                  listen: false);
 
-      // debugPrint(
-      //     " Message Data==> ${messageData.containsKey("conversation")}  ${messageData.containsKey("conversation_id")}");
+          String conversationId = (messageData.containsKey("conversation")
+              ? messageData["conversation"]
+              : messageData["conversation_id"]);
 
-      if (messageData.containsKey("conversation") ||
-          messageData.containsKey("conversation_id")) {
-        MainSocketProvider mainSocketProvider = Provider.of<MainSocketProvider>(
-            myGlobals.scaffoldKey.currentContext,
-            listen: false);
+          /// checking if the recipient is in the current chat screen then we will not update message count
+          if (mainSocketProvider.currentConversationId != conversationId) {
+            saveAndUpdateUserMessageCount(messageData: messageData);
+          }
 
-        String conversationId = (messageData.containsKey("conversation")
-            ? messageData["conversation"]
-            : messageData["conversation_id"]);
+          /// update message in the local message db
+          // {"created_at": "2021-05-07 10:05:26.332872Z", "check_id": "337e4aa6-039d-4c13-b438-34905cbcb3b3", "author": "brijesh.sakariya", "text": "10", "kind": "text", "meta_data": {}, "read_by_author": true, "read_by_recipient": false, "delivered": true, "type": "chatroom_message", "conversation_id": "9ae68069-b342-4e04-b568-602bde6fe901"}
+          ChatMessage chatMessage = ChatMessage.fromJson(messageData);
+          ChatMessageHandler().updateChatMessage(chatMessage: chatMessage);
 
-        /// checking if the recipient is in the current chat screen then we will not update message count
-        if (mainSocketProvider.currentConversationId != conversationId) {
-          saveAndUpdateUserMessageCount(messageData: messageData);
-        }
+          /// update ConnectionList order by last recive time
+          updateConnectionListOrder(
+              conversationId: conversationId, messageData: messageData);
 
-        /// update message in the local message db
-        // {"created_at": "2021-05-07 10:05:26.332872Z", "check_id": "337e4aa6-039d-4c13-b438-34905cbcb3b3", "author": "brijesh.sakariya", "text": "10", "kind": "text", "meta_data": {}, "read_by_author": true, "read_by_recipient": false, "delivered": true, "type": "chatroom_message", "conversation_id": "9ae68069-b342-4e04-b568-602bde6fe901"}
-        ChatMessage chatMessage = ChatMessage.fromJson(messageData);
-        ChatMessageHandler().updateChatMessage(chatMessage: chatMessage);
+          ///delete message from ChatTextMessage table in db if message came back from socket
 
-        /// update ConnectionList order by last recive time
-        updateConnectionListOrder(
-            conversationId: conversationId, messageData: messageData);
+          String chatMessageKind = messageData['kind'];
 
-        ///delete message from ChatTextMessage table in db if message came back from socket
-
-        if (messageData['kind'] == "text") {
-          DBSocketMessageHandler().deleteSocketQueueChatMessage(
-              message: SocketQueueChatMessage.fromJson(messageData));
-        } else if (messageData['kind'] == "user_location") {
-          DBSocketMessageHandler().deleteSocketQueueChatMessage(
-              message: SocketQueueChatMessage.fromJson(messageData));
-        } else if (messageData['kind'] == "gif_image") {
-          DBSocketMessageHandler().deleteSocketQueueChatMessage(
-              message: SocketQueueChatMessage.fromJson(messageData));
+          switch (chatMessageKind) {
+            case "text":
+              DBSocketMessageHandler().deleteSocketQueueChatMessage(
+                  message: SocketQueueChatMessage.fromJson(messageData));
+              break;
+            case "user_location":
+              DBSocketMessageHandler().deleteSocketQueueChatMessage(
+                  message: SocketQueueChatMessage.fromJson(messageData));
+              break;
+            case "gif_image":
+              DBSocketMessageHandler().deleteSocketQueueChatMessage(
+                  message: SocketQueueChatMessage.fromJson(messageData));
+              break;
+            default:
+              debugPrint(
+                  "UNKNOWN==> KIND:- ${messageData['kind']}  message:- $messageData");
+          }
         } else {
-          debugPrint(
-              "Unimplemented KIND:- ${messageData['kind']}  message:- $messageData");
+          debugPrint("UNKNOWN==> chatroom_message $messageData");
         }
-      } else {
-        debugPrint("UNIMPLEMENTED for $messageData");
-      }
-    } else if (messageData["type"] == "read_by_recipient") {
-      ChatMessageHandler().updateReadByRecipientChatMessage(
-          checkId: messageData["check_id"],
-          conversationId: messageData["conversation_id"]);
-    } else if (messageData["type"] == "delete_message") {
-      ChatMessageHandler().deleteChatMessage(
-          checkId: messageData["check_id"],
-          conversationId: messageData["conversation_id"]);
-    } else if (messageData["type"] == "edit_message") {
-      ChatMessageHandler().updateEditedChatMessage(
-          checkId: messageData["check_id"],
-          conversationId: messageData["conversation_id"],
-          wasEdited: messageData['was_edited'],
-          text: messageData['text']);
-    } else if (messageData["type"] == "nudge_user") {
-      showNudgeAlertToUser(messageData: messageData);
-    } else if (messageData["type"] == "stop_nudging") {
-      stopNudgeAlertToUser(messageData: messageData);
-    } else if (messageData["type"] == "conversation_created") {
-      debugPrint("DATA=>:-  $messageData");
+        break;
+
+      case "read_by_recipient":
+        ChatMessageHandler().updateReadByRecipientChatMessage(
+            checkId: messageData["check_id"],
+            conversationId: messageData["conversation_id"]);
+        break;
+
+      case "delete_message":
+        ChatMessageHandler().deleteChatMessage(
+            checkId: messageData["check_id"],
+            conversationId: messageData["conversation_id"]);
+        break;
+
+      case "edit_message":
+        ChatMessageHandler().updateEditedChatMessage(
+            checkId: messageData["check_id"],
+            conversationId: messageData["conversation_id"],
+            wasEdited: messageData['was_edited'],
+            text: messageData['text']);
+        break;
+
+      case "nudge_user":
+        showNudgeAlertToUser(messageData: messageData);
+        break;
+
+      case "stop_nudging":
+        stopNudgeAlertToUser(messageData: messageData);
+        break;
+
+      case "conversation_created":
+        addChatConversation(messageData: messageData);
+        break;
+
+      case "group_conversation_admin_actions":
+        debugPrint("DATA=>:-  $messageData");
+        break;
+
+      default:
+        if (messageType != "pong") {
+          debugPrint("UNHANDLED MESSAGE GOT IN SOCKET:-  $messageData");
+        }
     }
+  }
+
+  void addChatConversation({Map<String, dynamic> messageData}) {
+    ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
+        MyGlobals().navigationKey.currentContext,
+        listen: false);
+
+    Map<String, dynamic> json;
+
+    if (messageData['meta_data'] is String) {
+      json = jsonDecode(messageData['meta_data']);
+    } else {
+      json = messageData['meta_data'];
+    }
+
+    ChatConversation chatConversation = ChatConversation.fromJson(json);
+    connectionListBloc.addConnectionUser(chatConversation: chatConversation);
   }
 
   void saveAndUpdateUserMessageCount({Map<String, dynamic> messageData}) {

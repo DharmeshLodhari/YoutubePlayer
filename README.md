@@ -1,9 +1,8 @@
 # slydo
 
-Slydo Mobile appp
+Slydo Mobile app
 
 [![pipeline status](https://code.slydo.co/mobile-team/slydo/badges/master/pipeline.svg)](https://code.slydo.co/mobile-team/slydo/-/commits/master)
-
 
 ## Getting Started
 

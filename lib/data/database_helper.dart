@@ -616,7 +616,8 @@ class DatabaseHelper {
 
     /// if ChatConversation is new then we will set last_message_time as 0
     if (!isChatConversationIsExist) {
-      data["last_message_time"] = 0;
+      DateTime dateTime = DateTime.now();
+      data["last_message_time"] = dateTime.millisecondsSinceEpoch;
     }
 
     return await dbClient.insert("UserConnection", data,

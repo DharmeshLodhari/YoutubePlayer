@@ -330,7 +330,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
       if (mounted) setState(() {});
 
-      // checkMessageForRead();
+      checkMessageForRead();
     }
   }
 
@@ -498,7 +498,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   void acknowledgeThatMessageAreRead() {
     if (mainSocketProvider.isChatOnScreen) {
       if (temporaryMessages.isNotEmpty) {
-        temporaryMessages.forEach((element) {
+        temporaryMessages.forEach((element) async {
           messageReadByRecipient(jsonDecode(element));
         });
 
