@@ -636,6 +636,8 @@ class MessageAuth extends AuthService {
     var response = await http.delete(url, headers: headers);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
       return true;
     } else {
       debugPrint(

@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_group_action_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_action_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_shake_detection.dart';
@@ -874,14 +875,6 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         updateEditedMessageInMessageList(message: messageData);
         break;
 
-      /// {
-      ///   "check_id": "1736d07b-9324-47ed-9be8-d11d0fa7556e",
-      ///   "conversation_id": "9ae68069-b342-4e04-b568-602bde6fe901",
-      ///   "author": "brijesh.sakariya", "recipient": "black",
-      ///   "created_at": "2021-05-17 09:23:24.644963Z",
-      ///   "type": "nudge_user", "username": "brijesh.sakariya"
-      ///}
-
       case "nudge_user":
         isUserNudging = true;
         if (mounted) setState(() {});
@@ -893,21 +886,43 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
         break;
 
-      /// {check_id: 983fd148-15c2-4ac7-bdef-086a2970e622,
-      /// conversation_id: 9ae68069-b342-4e04-b568-602bde6fe901,
-      /// author: black, recipient: brijesh.sakariya,
-      /// created_at: 2021-05-17 11:23:00.193844Z,
-      /// acknowledgement_type: Accepted,
-      /// type: stop_nudging, username: black}
-
       case "stop_nudging":
         isUserNudging = false;
         if (mounted) setState(() {});
 
         break;
 
+      case "group_conversation_admin_actions":
+        var result =
+            ChatGroupActionManagerForLiveConversation(message: messageData)
+                .handleMessageAction(chatConversation: chatConversation);
+
+        if (result != null) {
+          if (result is ChatConversation) {
+            chatConversation = result;
+            if (chatConversation.isGroupConversation)
+              groupDetail =
+                  GroupDetailModel.fromChatConversation(chatConversation);
+
+            updateParticipantRights();
+            if (mounted) setState(() {});
+          }
+        }
+
+        break;
+
       default:
         debugPrint("Message type:- ${messageData['type'] ?? messageData}");
+    }
+  }
+
+  void updateParticipantRights() {
+    if (!chatConversation.mutedParticipants.contains(userBloc.user.userName)) {
+      isUserMuted = false;
+    }
+    if (!chatConversation.blockedParticipants
+        .contains(userBloc.user.userName)) {
+      isUserBlocked = false;
     }
   }
 

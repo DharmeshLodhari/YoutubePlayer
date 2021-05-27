@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_group_action_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_shake_detection.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
@@ -148,7 +149,14 @@ class MainSocketMessageHandler {
         break;
 
       case "group_conversation_admin_actions":
-        debugPrint("DATA=>:-  $messageData");
+        UserBloc user = Provider.of<UserBloc>(
+            MyGlobals().navigationKey.currentContext,
+            listen: false);
+
+        if (messageData['meta_data']['author'] != user.user.userName) {
+          ChatGroupActionManager(message: messageData);
+        }
+
         break;
 
       default:

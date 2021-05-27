@@ -1,4 +1,9 @@
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_group_action_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/Participant.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/user_tile_for_group_detail.dart';
@@ -38,6 +43,10 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
 
   bool muteNotification = false;
 
+  /// Socket
+  MainSocketProvider mainSocketProvider;
+  StreamSubscription streamSubscription;
+
   @protected
   void initState() {
     getGroupDetail();
@@ -47,6 +56,39 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
     );
     super.initState();
+  }
+
+  void initializeListener() {
+    streamSubscription?.cancel();
+    streamSubscription = mainSocketProvider.socketStream.listen((event) {
+      determineMessageType(event);
+    });
+  }
+
+  @override
+  void dispose() {
+    streamSubscription?.cancel();
+    super.dispose();
+  }
+
+  void determineMessageType(String message) async {
+    Map<String, dynamic> messageData = jsonDecode(message);
+
+    switch (messageData['type']) {
+      case "group_conversation_admin_actions":
+        var result =
+            ChatGroupActionManagerForLiveConversation(message: messageData)
+                .handleMessageAction(groupDetailModel: groupDetail);
+
+        if (result != null) {
+          if (result is GroupDetailModel) {
+            groupDetail = result;
+            if (mounted) setState(() {});
+          }
+        }
+
+        break;
+    }
   }
 
   void getGroupDetail() {
@@ -72,8 +114,12 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+    mainSocketProvider = Provider.of<MainSocketProvider>(context);
+
+    initializeListener();
     return WillPopScope(
       onWillPop: () async {
+        mainSocketProvider.removeStreamSubscription(streamSubscription);
         Navigator.of(context).pop(groupDetail);
         return false;
       },
