@@ -634,6 +634,7 @@ class DatabaseHelper {
     if (res != null && res.length > 0) {
       List<ChatConversation> connectionList =
           res.map((element) => ChatConversation.fromDBJson(element)).toList();
+
       return connectionList;
     }
     return [];
@@ -701,6 +702,21 @@ class DatabaseHelper {
     await deleteSingleChatUsers(conversationId: conversationId);
     await deleteSingleUserChatMessage(conversationId: conversationId);
     return res;
+  }
+
+  Future<ChatConversation> getLastChatConversation(
+      {String conversationId}) async {
+    Database dbClient = await db;
+
+    List<Map<String, dynamic>> res = await dbClient.query("UserConnection",
+        orderBy: "created_at ASC", limit: 1);
+
+    if (res != null && res.length > 0) {
+      ChatConversation chatConversation =
+          ChatConversation.fromDBJson(res.first);
+      return chatConversation;
+    }
+    return null;
   }
 
   /// ChatMessage Operations
@@ -813,6 +829,20 @@ class DatabaseHelper {
     Database dbClient = await db;
 
     return await dbClient.insert("ChatMessage", chatMessage.toDBJson());
+  }
+
+  Future<ChatMessage> getLastChatMessage(
+      {ChatConversation chatConversation}) async {
+    Database dbClient = await db;
+
+    List<Map<String, dynamic>> res = await dbClient.query("ChatMessage",
+        orderBy: "created_at ASC", limit: 1);
+
+    if (res != null && res.length > 0) {
+      ChatMessage chatMessage = ChatMessage.fromDBJson(res.first);
+      return chatMessage;
+    }
+    return null;
   }
 
   Future<int> updateSingleChatMessage(ChatMessage chatMessage) async {

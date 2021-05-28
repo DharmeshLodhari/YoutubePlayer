@@ -47,6 +47,10 @@ class ConnectionListManager {
     return await _db.deleteChatConversation(conversationId: conversationId);
   }
 
+  Future<ChatConversation> getLastChatConversation() async {
+    return await _db.getLastChatConversation();
+  }
+
   ///Get Searched Connections From db
   Future<List<ChatConversation>> getSearchedConnectionsFromDB(
       {String searchedText}) async {

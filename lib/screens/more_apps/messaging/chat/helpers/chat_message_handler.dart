@@ -76,4 +76,9 @@ class ChatMessageHandler {
       {ChatMessagePagination chatMessagePagination}) async {
     return await _db.updateChatMessagePagination(chatMessagePagination);
   }
+
+  Future<ChatMessage> getLastChatMessage(
+      {ChatConversation chatConversation}) async {
+    return await _db.getLastChatMessage();
+  }
 }

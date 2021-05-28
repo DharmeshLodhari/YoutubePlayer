@@ -1,5 +1,8 @@
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
+import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:flutter/cupertino.dart';
@@ -53,5 +56,18 @@ class ChatMessageSynchronizer {
       }
       return Future.value();
     }
+  }
+
+  void update() async {
+    ChatMessage chatMessage = await ChatMessageHandler().getLastChatMessage();
+
+    if (chatMessage == null) return;
+
+    debugPrint("ChatMessage:- ${chatMessage.toJson()}");
+
+    await MessageAuth().fetchMissedMessages(
+        conversationId: chatMessage.conversationId,
+        createdAt: chatMessage.createdAt,
+        checkId: chatMessage.checkId);
   }
 }

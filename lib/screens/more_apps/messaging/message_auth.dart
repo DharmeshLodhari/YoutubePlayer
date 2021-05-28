@@ -696,4 +696,33 @@ class MessageAuth extends AuthService {
       return Future.error("ERROR:- ${response.body}");
     }
   }
+
+  Future<Map<String, dynamic>> fetchMissedMessages(
+      {String createdAt, String conversationId, String checkId}) async {
+    var url = secureBaseUrl + "/api/v1/chat/fetch-missed-messages/";
+
+    debugPrint("URL:- $url");
+    var headers = await getAuthHeaders();
+
+    Map<String, dynamic> data = {
+      "data": [
+        {
+          "conversation_id": conversationId,
+          "created_at": createdAt,
+          "check_id": checkId
+        }
+      ]
+    };
+
+    debugPrint("DATA SENT:- $data");
+    var response =
+        await http.post(url, headers: headers, body: jsonEncode(data));
+
+    debugPrint("STATUSCODE:- ${response.statusCode} BODY:- ${response.body}");
+    return {};
+
+    // debugPrint("${response.statusCode} ${response.body}");
+    // var jsonData = jsonDecode(response.body);
+    // throw jsonData;
+  }
 }
