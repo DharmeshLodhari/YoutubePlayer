@@ -245,17 +245,27 @@ class ChatGroupActionManager {
         break;
       }
     }
-    if (chatConversation != null) {
-      List users = message['meta_data']['users'];
-      if (users.isEmpty) return;
-      if (users.first == null || users.first == {}) return;
-      Participant user = Participant.fromJson(users.first);
 
+    List users = message['meta_data']['users'];
+    if (users.isEmpty) return;
+    if (users.first == null || users.first == {}) return;
+    Participant user = Participant.fromJson(users.first);
+
+    if (chatConversation != null) {
       if (!chatConversation.participants.contains(user)) {
         chatConversation.participants.add(user.userName);
         connectionListBloc.updateChatConversation(
             chatConversation: chatConversation);
       }
+    }
+    UserBloc userBloc = Provider.of<UserBloc>(
+        MyGlobals().navigationKey.currentContext,
+        listen: false);
+
+    if (userBloc.user.userName == user.userName) {
+      ChatConversation chatConversation =
+          ChatConversation.fromJson(users.first['conversation']);
+      connectionListBloc.addConnectionUser(chatConversation: chatConversation);
     }
   }
 
@@ -290,6 +300,14 @@ class ChatGroupActionManager {
         connectionListBloc.updateChatConversation(
             chatConversation: chatConversation);
       }
+
+      UserBloc userBloc = Provider.of<UserBloc>(
+          MyGlobals().navigationKey.currentContext,
+          listen: false);
+      if (userBloc.user.userName == user) {
+        connectionListBloc.deleteChatConversation(
+            conversationId: chatConversation.conversationId);
+      }
     }
   }
 
@@ -317,10 +335,35 @@ class ChatGroupActionManager {
         connectionListBloc.updateChatConversation(
             chatConversation: chatConversation);
       }
+
+      UserBloc userBloc = Provider.of<UserBloc>(
+          MyGlobals().navigationKey.currentContext,
+          listen: false);
+      if (userBloc.user.userName == user) {
+        connectionListBloc.deleteChatConversation(
+            conversationId: chatConversation.conversationId);
+      }
     }
   }
 
-  void deleteGroup() {}
+  void deleteGroup() {
+    ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
+        MyGlobals().navigationKey.currentContext,
+        listen: false);
+
+    ChatConversation chatConversation;
+    for (int i = 0; i < connectionListBloc.connectionUsers.length; i++) {
+      if (message['meta_data']['conversation_id'] ==
+          connectionListBloc.connectionUsers[i].conversationId) {
+        chatConversation = connectionListBloc.connectionUsers[i];
+        break;
+      }
+    }
+    if (chatConversation != null) {
+      connectionListBloc.deleteChatConversation(
+          conversationId: chatConversation.conversationId);
+    }
+  }
 }
 
 class ChatGroupActionManagerForLiveConversation {
@@ -380,10 +423,6 @@ class ChatGroupActionManagerForLiveConversation {
 
       case "exit_group":
         return exitGroup();
-        break;
-
-      case "delete_group":
-        return deleteGroup();
         break;
 
       default:
@@ -634,10 +673,6 @@ class ChatGroupActionManagerForLiveConversation {
         return groupDetailModelToUpdate;
       }
     }
-    return null;
-  }
-
-  dynamic deleteGroup() {
     return null;
   }
 }

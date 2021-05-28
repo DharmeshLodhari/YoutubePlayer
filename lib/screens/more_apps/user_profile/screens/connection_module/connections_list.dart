@@ -108,8 +108,7 @@ class _ConnectionListState extends State<ConnectionList> {
     debugPrint("RESULT FROM CONNECTION LIST :- $result");
     if (result == 0) {
       isLoading = false;
-
-      this.getList();
+      refreshList();
     } else {
       isLoading = false;
       if (mounted) setState(() {});
@@ -206,7 +205,6 @@ class _ConnectionListState extends State<ConnectionList> {
       backgroundColor: Colors.white,
       color: navyBlue,
       onRefresh: refreshList,
-      strokeWidth: 2.0,
       child: Container(
         color: lightGrey,
         child: _buildConnectionsList(),
@@ -275,6 +273,8 @@ class _ConnectionListState extends State<ConnectionList> {
       ),
       //+1 for progressbar
       itemCount: _connectionListBloc.connectionUsers.length,
+      physics:
+          const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
       itemBuilder: (BuildContext context, int index) {
         return _getSlidableWithLists(
             context, _connectionListBloc.connectionUsers[index], index);

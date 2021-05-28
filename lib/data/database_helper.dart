@@ -136,6 +136,7 @@ class DatabaseHelper {
       "avatar" TEXT,
       "qr_code" TEXT,
       "type" TEXT,
+      "created_at" INTEGER,
       "admin_users" TEXT,
       "blocked_participants" TEXT,
       "description" TEXT,
@@ -791,7 +792,7 @@ class DatabaseHelper {
   Future<int> deleteSingleUserChatMessage({String conversationId}) async {
     var dbClient = await db;
     int res = await dbClient.delete("ChatMessage",
-        where: "conversationId = ?", whereArgs: [conversationId]);
+        where: "conversation_id = ?", whereArgs: [conversationId]);
     debugPrint("DATABASE:- ChatMessage $conversationId is Deleted !!");
 
     await deleteSingleChatMessagePagination(conversationId: conversationId);
@@ -878,7 +879,7 @@ class DatabaseHelper {
   Future<int> deleteSingleChatMessagePagination({String conversationId}) async {
     var dbClient = await db;
     int res = await dbClient.delete("ChatMessagePagination",
-        where: "conversationId = ?", whereArgs: [conversationId]);
+        where: "conversation_id = ?", whereArgs: [conversationId]);
     debugPrint(
         "DATABASE:- ChatMessagePagination $conversationId is Deleted !!");
     return res;

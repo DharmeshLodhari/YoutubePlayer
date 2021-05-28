@@ -740,17 +740,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           return;
         }
 
-        // count = result['count'];
-        // next = result['next'];
-        // previous = result['previous'];
         List<String> tempList = result['results'];
-
-        // isLoading = false;
-        // if (mounted) setState(() {});
-
-        // messageList.addAll(tempList);
-        //
-        // if (mounted) setState(() {});
 
         List<ChatMessage> messages =
             await ChatMessageHandler().saveChatMessages(messages: tempList);
@@ -893,6 +883,41 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         break;
 
       case "group_conversation_admin_actions":
+        if (messageData['meta_data']['conversation_id'] ==
+            chatConversation.conversationId) {
+          if (messageData['meta_data']['action'] == "delete_group") {
+            Toast.show(
+                "${messageData['meta_data']['author']} has deleted this group !!",
+                context,
+                textColor: Colors.white,
+                backgroundColor: Colors.black,
+                duration: Toast.LENGTH_LONG);
+
+            Navigator.popUntil(
+                context, ModalRoute.withName("/friends-dashboard"));
+            return;
+          } else if (messageData['meta_data']['action'] == "remove_user") {
+            List users = messageData['meta_data']['users'];
+            if (users.isEmpty) return;
+
+            if (users.first == null || users.first == "") return;
+            String user = users.first.toString();
+
+            if (user == userBloc.user.userName) {
+              Toast.show(
+                  "${messageData['meta_data']['author']} has removed you from group !!",
+                  context,
+                  textColor: Colors.white,
+                  backgroundColor: Colors.black,
+                  duration: Toast.LENGTH_LONG);
+
+              Navigator.popUntil(
+                  context, ModalRoute.withName("/friends-dashboard"));
+              return;
+            }
+          }
+        }
+
         var result =
             ChatGroupActionManagerForLiveConversation(message: messageData)
                 .handleMessageAction(chatConversation: chatConversation);

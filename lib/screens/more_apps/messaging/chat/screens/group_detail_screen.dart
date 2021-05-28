@@ -10,6 +10,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/tiles/user_tile_for_group
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -76,18 +77,54 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
 
     switch (messageData['type']) {
       case "group_conversation_admin_actions":
-        var result =
-            ChatGroupActionManagerForLiveConversation(message: messageData)
-                .handleMessageAction(groupDetailModel: groupDetail);
-
-        if (result != null) {
-          if (result is GroupDetailModel) {
-            groupDetail = result;
-            if (mounted) setState(() {});
+        if (messageData['meta_data']['conversation_id'] ==
+            groupDetail.conversationId) {
+          if (messageData['meta_data']['action'] == "delete_group") {
+            Toast.show(
+                "${messageData['meta_data']['author']} has deleted this group !!",
+                context,
+                textColor: Colors.white,
+                backgroundColor: Colors.black,
+                duration: Toast.LENGTH_LONG);
+            Navigator.popUntil(
+                context, ModalRoute.withName("/friends-dashboard"));
+            return;
+          } else if (messageData['meta_data']['action'] == "remove_user") {
+            List users = messageData['meta_data']['users'];
+            if (users.isEmpty) return;
+            if (users.first == null || users.first == "") return;
+            String user = users.first.toString();
+            if (user == userBloc.user.userName) {
+              Toast.show(
+                  "${messageData['meta_data']['author']} has removed you from group !!",
+                  context,
+                  textColor: Colors.white,
+                  backgroundColor: Colors.black,
+                  duration: Toast.LENGTH_LONG);
+              Navigator.popUntil(
+                  context, ModalRoute.withName("/friends-dashboard"));
+              return;
+            }
           }
         }
+        UserBloc user = Provider.of<UserBloc>(
+            MyGlobals().navigationKey.currentContext,
+            listen: false);
 
-        break;
+        if (messageData['meta_data']['author'] != user.user.userName) {
+          var result =
+              ChatGroupActionManagerForLiveConversation(message: messageData)
+                  .handleMessageAction(groupDetailModel: groupDetail);
+
+          if (result != null) {
+            if (result is GroupDetailModel) {
+              groupDetail = result;
+              if (mounted) setState(() {});
+            }
+          }
+
+          break;
+        }
     }
   }
 

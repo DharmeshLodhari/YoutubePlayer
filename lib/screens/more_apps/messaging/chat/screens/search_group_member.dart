@@ -10,6 +10,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/Participant.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/user_tile_for_group_detail.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/noItemInList.dart';
@@ -120,17 +121,22 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
 
     switch (messageData['type']) {
       case "group_conversation_admin_actions":
-        var result =
-            ChatGroupActionManagerForLiveConversation(message: messageData)
-                .handleMessageAction(groupDetailModel: groupDetail);
+        UserBloc user = Provider.of<UserBloc>(
+            MyGlobals().navigationKey.currentContext,
+            listen: false);
 
-        if (result != null) {
-          if (result is GroupDetailModel) {
-            groupDetail = result;
-            if (mounted) setState(() {});
+        if (messageData['meta_data']['author'] != user.user.userName) {
+          var result =
+              ChatGroupActionManagerForLiveConversation(message: messageData)
+                  .handleMessageAction(groupDetailModel: groupDetail);
+
+          if (result != null) {
+            if (result is GroupDetailModel) {
+              groupDetail = result;
+              if (mounted) setState(() {});
+            }
           }
         }
-
         break;
     }
   }

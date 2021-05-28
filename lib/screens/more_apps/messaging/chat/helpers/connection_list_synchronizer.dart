@@ -39,8 +39,6 @@ class ConnectionSynchronizer {
 
       List tempList = result['results'];
 
-      // debugPrint("List:- $tempList");
-
       List<ChatConversation> users = List<ChatConversation>();
 
       tempList
@@ -54,4 +52,6 @@ class ConnectionSynchronizer {
       return Future.value();
     }
   }
+
+  void update() {}
 }
