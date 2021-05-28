@@ -1,4 +1,5 @@
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_synchronizer.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -219,7 +220,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
       ),
       onTap: () {
         ConnectionSynchronizer().update();
-        // ChatMessageSynchronizer().update();
+        ChatMessageSynchronizer().update();
       },
       backgroundColor: lightGrey,
       enableMargin: true,
