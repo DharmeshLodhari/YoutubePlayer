@@ -1,58 +1,22 @@
-image: cirrusci/flutter:stable
+image: cirrusci/flutter:latest
 
 stages:
   - build
-#  - analyze
-#  - test
 
 before_script:
   - flutter pub get
   - flutter clean
 
 
-build: #Job name
-  stage: build # Stage name
-
+build:
+  stage: build
   script:
     - flutter build apk
 
   artifacts:
     paths:
       - build/app/outputs/apk/release/app-release.apk
+
   tags:
     - flutter
-
-#build:
-#  stage: build
-#
-#  script:
-#    - flutter build aot
-#
-#  tags:
-#    - flutter
-#
-#  only:
-#    - merge_requests
-#unit_test:
-#  stage: test
-#
-#  script:
-#    - flutter test test/*
-#
-#  tags:
-#    - shared
-#
-#  only:
-#    - merge_requests
-#analyze:
-#  stage: analyze
-#
-#  script:
-#    - echo job excluded
-#
-#  tags:
-#    - shared
-#
-#  only:
-#    - merge_requests
 
