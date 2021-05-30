@@ -762,6 +762,26 @@ class DatabaseHelper {
     return [];
   }
 
+  Future<List<ChatMessage>> insertMissedMessage(
+      List<ChatMessage> chatMessages) async {
+    Database dbClient = await db;
+
+    Batch insertUserBatch = dbClient.batch();
+
+    chatMessages.forEach((chatMessage) {
+      Map<String, dynamic> data = chatMessage.toDBJson();
+
+      insertUserBatch.insert("ChatMessage", data,
+          conflictAlgorithm: ConflictAlgorithm.replace);
+    });
+
+    List<dynamic> result = await insertUserBatch.commit();
+
+    debugPrint("Batch Result:- $result");
+
+    return [];
+  }
+
   Future<List<ChatMessage>> getChatMessages(
       {ChatConversation chatConversation}) async {
     Database dbClient = await db;
@@ -831,16 +851,26 @@ class DatabaseHelper {
     return await dbClient.insert("ChatMessage", chatMessage.toDBJson());
   }
 
-  Future<ChatMessage> getLastChatMessage(
-      {ChatConversation chatConversation}) async {
+  Future<List<ChatMessage>> getLastChatMessage({String author}) async {
     Database dbClient = await db;
 
-    List<Map<String, dynamic>> res = await dbClient.query("ChatMessage",
-        orderBy: "created_at ASC", limit: 1);
+    List<Map<String, dynamic>> res = await dbClient.query(
+      "ChatMessage",
+      where: "delivered = ? AND author = ?",
+      whereArgs: [1, author],
+      groupBy: "conversation_id",
+      orderBy: "created_at ASC",
+    );
 
     if (res != null && res.length > 0) {
-      ChatMessage chatMessage = ChatMessage.fromDBJson(res.first);
-      return chatMessage;
+      debugPrint("res:- ${res.length}\n");
+
+      res.forEach((element) {
+        debugPrint("message:- ${element}\n");
+      });
+
+      // ChatMessage chatMessage = ChatMessage.fromDBJson(res.first);
+      // return chatMessage;
     }
     return null;
   }

@@ -697,32 +697,32 @@ class MessageAuth extends AuthService {
     }
   }
 
-  Future<Map<String, dynamic>> fetchMissedMessages(
-      {String createdAt, String conversationId, String checkId}) async {
-    var url = secureBaseUrl + "/api/v1/chat/fetch-missed-messages/";
-
-    debugPrint("URL:- $url");
-    var headers = await getAuthHeaders();
-
-    Map<String, dynamic> data = {
-      "data": [
-        {
-          "conversation_id": conversationId,
-          "created_at": createdAt,
-          "check_id": checkId
-        }
-      ]
-    };
-
-    debugPrint("DATA SENT:- $data");
-    var response =
-        await http.post(url, headers: headers, body: jsonEncode(data));
-
-    debugPrint("STATUSCODE:- ${response.statusCode} BODY:- ${response.body}");
-    return {};
-
-    // debugPrint("${response.statusCode} ${response.body}");
-    // var jsonData = jsonDecode(response.body);
-    // throw jsonData;
-  }
+  // Future<Map<String, dynamic>> fetchMissedMessages(
+  //     {List<ChatMessage> chatMessages}) async {
+  //   var url = secureBaseUrl + "/api/v1/chat/fetch-missed-messages/";
+  //
+  //   debugPrint("URL:- $url");
+  //   var headers = await getAuthHeaders();
+  //
+  //   Map<String, dynamic> data = {
+  //     "data": [
+  //       {
+  //         "conversation_id": conversationId,
+  //         "created_at": createdAt,
+  //         "check_id": checkId
+  //       }
+  //     ]
+  //   };
+  //
+  //   debugPrint("DATA SENT:- $data");
+  //   var response =
+  //       await http.post(url, headers: headers, body: jsonEncode(data));
+  //
+  //   debugPrint("STATUSCODE:- ${response.statusCode} BODY:- ${response.body}");
+  //   return jsonDecode(response.body);
+  //
+  //   // debugPrint("${response.statusCode} ${response.body}");
+  //   // var jsonData = jsonDecode(response.body);
+  //   // throw jsonData;
+  // }
 }
