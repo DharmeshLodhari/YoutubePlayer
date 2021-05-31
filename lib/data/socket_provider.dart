@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_synchronizer.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/db_socket_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
@@ -91,7 +93,7 @@ class MainSocketProvider extends ChangeNotifier {
             await connect().then((value) async {
               if (_isConnected) {
                 await addDataInTheCorrectOrder();
-                debugPrint("Clearing Pending Messages !!");
+                debugPrint("Clearing Pending Messages 1!!");
                 _queueMessages.clear();
               } else {
                 debugPrint(
@@ -161,6 +163,10 @@ class MainSocketProvider extends ChangeNotifier {
           _lastSent = DateTime.now();
           print("ping Done!!");
           _isConnected = false;
+
+          ///TODO: UNCOMMENT THIS WHEN IT IS DONE
+          await ConnectionSynchronizer().update();
+          await ChatMessageSynchronizer().update();
         });
       }
     }
@@ -319,7 +325,7 @@ class MainSocketProvider extends ChangeNotifier {
         debugPrint("Data added in webSocket :- $_queueMessages");
 
         if (await checkConnection()) {
-          debugPrint("Clearing Pending Messages !!");
+          debugPrint("Clearing Pending Messages 2!!");
           _queueMessages.clear();
         } else {
           debugPrint("Failed to clear Pending Messages 1!!");

@@ -21,12 +21,10 @@ class ChatMessageHandler {
     return insertedMessages;
   }
 
-  Future<List<ChatMessage>> insertMissedChatMessage(
-      {List<ChatMessage> messages}) async {
+  Future<List> insertMissedChatMessage({List<ChatMessage> messages}) async {
     /// adding Chat User into DataBase
-    List<ChatMessage> insertedMessages =
-        await _db.insertMissedMessage(messages);
-    return insertedMessages;
+
+    return await _db.insertMissedMessage(messages);
   }
 
   Future<List<ChatMessage>> getChatMessages(
@@ -85,7 +83,7 @@ class ChatMessageHandler {
     return await _db.updateChatMessagePagination(chatMessagePagination);
   }
 
-  Future<List<ChatMessage>> getLastChatMessage({String author}) async {
-    return await _db.getLastChatMessage(author: author);
+  Future<List<ChatMessage>> getLastChatMessage() async {
+    return await _db.getLastChatMessage();
   }
 }

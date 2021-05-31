@@ -690,7 +690,9 @@ class _ScrollablePositionedListState extends State<ScrollablePositionedList>
                   ? value
                   : element));
     }
-    widget.itemPositionsNotifier?.itemPositions?.value = itemPositions;
+    if (widget.itemPositionsNotifier?.itemPositions?.value != null ?? false) {
+      widget.itemPositionsNotifier?.itemPositions?.value = itemPositions;
+    }
   }
 }
 

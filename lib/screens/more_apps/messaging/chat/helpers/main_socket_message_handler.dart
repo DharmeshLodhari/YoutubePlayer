@@ -183,19 +183,23 @@ class MainSocketMessageHandler {
     connectionListBloc.addConnectionUser(chatConversation: chatConversation);
   }
 
-  void saveAndUpdateUserMessageCount({Map<String, dynamic> messageData}) {
+  Future<void> saveAndUpdateUserMessageCount(
+      {Map<String, dynamic> messageData}) async {
+    debugPrint("MESSAGEDATA:- $messageData");
+
     MainSocketMessageModel messageModel =
-        MainSocketMessageModel.fromJson(jsonDecode(message));
+        MainSocketMessageModel.fromJson(messageData);
 
-    String hashedMessage = generateHashedMessage(message);
+    String hashedMessage = generateHashedMessage(jsonEncode(messageData));
 
-    ChatUserManager().addUser(
+    await ChatUserManager().addUser(
         conversationId:
             messageData["conversation"] ?? messageData["conversation_id"]);
 
-    ChatUserManager().updateChatUserMessageCount(
+    await ChatUserManager().updateChatUserMessageCount(
         conversationId: messageModel.conversation,
         hashedMessage: hashedMessage);
+    return;
   }
 
   void showNudgeAlertToUser({Map<String, dynamic> messageData}) async {

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:Slydo/data/socket_provider.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatUserModel.dart';
@@ -143,21 +144,25 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
   }
 
   Widget getTrailing() {
-    return FutureBuilder<ChatUserModel>(
-        future: ChatUserManager().getUser(widget.user.conversationId),
+    return StreamBuilder(
+        stream: ChatMessageSynchronizer().getChatMessageCountStream,
         builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Container(
-              width: 0,
-              height: 0,
-            );
-          } else if (snapshot.hasData) {
-            return getBadgeAndGroupLabel(snapshot.data.messageCount);
-          }
-          return Container(
-            width: 0,
-            height: 0,
-          );
+          return FutureBuilder<ChatUserModel>(
+              future: ChatUserManager().getUser(widget.user.conversationId),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return Container(
+                    width: 0,
+                    height: 0,
+                  );
+                } else if (snapshot.hasData) {
+                  return getBadgeAndGroupLabel(snapshot.data.messageCount);
+                }
+                return Container(
+                  width: 0,
+                  height: 0,
+                );
+              });
         });
   }
 

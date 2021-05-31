@@ -164,7 +164,9 @@ class AuthService {
     if (hasTokenExpired(expirationTime)) {
       debugPrint("Token Expired getting new one");
       User _user = await _db.getUser();
-      await authenticate(_user.phoneNumber, _user.password);
+      await authenticate(_user.phoneNumber, _user.password).catchError((error) {
+        debugPrint("ERROR:- while fetching new Token $error");
+      });
       tokenData = await _db.getJwt(); // get new token now
     }
 

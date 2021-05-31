@@ -5,6 +5,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/AddGroupModel.dart
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/UpdateGroupDetailModel.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/models/message.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/auth.dart';
@@ -424,7 +425,6 @@ class MessageAuth extends AuthService {
 
     if (response.statusCode == 200) {
       Map<String, dynamic> jsonData = json.decode(response.body);
-
       GroupDetailModel groupDetailModel = GroupDetailModel.fromJson(jsonData);
       return groupDetailModel;
     } else {
@@ -697,32 +697,38 @@ class MessageAuth extends AuthService {
     }
   }
 
-  // Future<Map<String, dynamic>> fetchMissedMessages(
-  //     {List<ChatMessage> chatMessages}) async {
-  //   var url = secureBaseUrl + "/api/v1/chat/fetch-missed-messages/";
-  //
-  //   debugPrint("URL:- $url");
-  //   var headers = await getAuthHeaders();
-  //
-  //   Map<String, dynamic> data = {
-  //     "data": [
-  //       {
-  //         "conversation_id": conversationId,
-  //         "created_at": createdAt,
-  //         "check_id": checkId
-  //       }
-  //     ]
-  //   };
-  //
-  //   debugPrint("DATA SENT:- $data");
-  //   var response =
-  //       await http.post(url, headers: headers, body: jsonEncode(data));
-  //
-  //   debugPrint("STATUSCODE:- ${response.statusCode} BODY:- ${response.body}");
-  //   return jsonDecode(response.body);
-  //
-  //   // debugPrint("${response.statusCode} ${response.body}");
-  //   // var jsonData = jsonDecode(response.body);
-  //   // throw jsonData;
-  // }
+  Future<Map<String, dynamic>> fetchMissedMessages(
+      {List<ChatMessage> chatMessages}) async {
+    var url = secureBaseUrl + "/api/v1/chat/fetch-missed-messages/";
+
+    debugPrint("URL:- $url");
+    var headers = await getAuthHeaders();
+
+    List<Map<String, dynamic>> dataToBeSent = [];
+
+    chatMessages.forEach((element) {
+      dataToBeSent.add({
+        "conversation_id": element.conversationId,
+        "created_at": DateTime.parse(element.createdAt).toUtc().toString(),
+        "check_id": element.checkId
+      });
+    });
+
+    Map<String, dynamic> data = {"data": dataToBeSent};
+
+    debugPrint("DATA SENT:- $data");
+
+    var response =
+        await http.post(url, headers: headers, body: jsonEncode(data));
+
+    if (response.statusCode == 200) {
+      debugPrint(
+          "STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return jsonDecode(response.body);
+    } else {
+      debugPrint(
+          "URL:- $url STATUSCODE:- ${response.statusCode} BODY:- ${response.body}");
+      return null;
+    }
+  }
 }

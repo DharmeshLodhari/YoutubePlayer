@@ -11,6 +11,13 @@ class ConnectionListManager {
     await _db.saveUserConnections(connections);
   }
 
+  ///Store Missed connection in the  db
+  Future<void> saveMissedConnectionsToDB(
+      {List<ChatConversation> connections}) async {
+    await _db.saveMissedUserConnections(connections);
+    return;
+  }
+
   ///Store Single Connection to db
   Future<int> addConnectionToDB({ChatConversation chatConversation}) async {
     return await _db.addUserConnection(chatConversation: chatConversation);

@@ -4,6 +4,7 @@ import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
@@ -91,7 +92,10 @@ class _DashboardState extends State<Dashboard> {
     int result = await connectionListBloc.getConnectionsCount();
     debugPrint("CONNECTION LIST LENGTH:- $result");
     if (result == 0) {
-      ConnectionSynchronizer().fetch(isRefresh: true);
+      await ConnectionSynchronizer().fetch(isRefresh: true);
+    } else {
+      await ConnectionSynchronizer().update();
+      await ChatMessageSynchronizer().update();
     }
   }
 

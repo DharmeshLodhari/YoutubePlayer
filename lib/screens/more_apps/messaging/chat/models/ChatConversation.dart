@@ -164,6 +164,7 @@ class ChatConversation {
       fullName: groupDetailModel.fullName,
       isGroupConversation: groupDetailModel.isGroupConversation,
       mutedParticipants: groupDetailModel.mutedParticipants,
+      createdAt: groupDetailModel.createdAt,
       owner: groupDetailModel.owner,
       participants: getParticipants(groupDetailModel.participants),
       qrCode: "",

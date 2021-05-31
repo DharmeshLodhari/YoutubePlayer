@@ -449,7 +449,7 @@ class DatabaseHelper {
     await insertUserBatch.commit();
   }
 
-  void saveChatUser(ChatUserModel user) async {
+  Future<void> saveChatUser(ChatUserModel user) async {
     Database dbClient = await db;
 
     int res = await dbClient.insert("ChatUser", user.toJson(),
@@ -484,7 +484,8 @@ class DatabaseHelper {
       await dbClient.execute(
           "UPDATE ChatUser SET messageCount = messageCount + 1 , hashedMessage = ? where conversationId = ? AND hashedMessage != ?",
           [hashedMessage, conversationId, hashedMessage]);
-      debugPrint("DATABASE:- Chat message count updated from db");
+      debugPrint(
+          "DATABASE:- Chat message count updated from db $conversationId");
     } catch (e) {
       debugPrint("DATABASE:- ERROR:- while updating the Chat Message count $e");
     }
@@ -587,7 +588,7 @@ class DatabaseHelper {
 
       /// if ChatConversation is new then we will set last_message_time as 0
       if (!isChatConversationIsExist) {
-        data["last_message_time"] = 0;
+        data["last_message_time"] = data['created_at'];
       }
 
       insertUserBatch.insert("UserConnection", data,
@@ -595,6 +596,42 @@ class DatabaseHelper {
     });
 
     return await insertUserBatch.commit();
+  }
+
+  Future<dynamic> saveMissedUserConnections(
+      List<ChatConversation> chatConversations) async {
+    Database dbClient = await db;
+
+    List<ChatConversation> existingChatConversation =
+        await getUserConnections();
+
+    Batch insertUserBatch = dbClient.batch();
+
+    chatConversations.forEach((user) {
+      Map<String, dynamic> data = user.toDBJson();
+
+      /// for checking if the chatConversation is already stored in the db
+      bool isChatConversationIsExist = false;
+      for (int i = 0; i < existingChatConversation.length; i++) {
+        if (user.conversationId == existingChatConversation[i].conversationId) {
+          isChatConversationIsExist = true;
+          break;
+        }
+      }
+
+      /// if ChatConversation is new then we will set last_message_time as 0
+      if (!isChatConversationIsExist) {
+        data["last_message_time"] = data['created_at'];
+      }
+
+      insertUserBatch.insert("UserConnection", data,
+          conflictAlgorithm: ConflictAlgorithm.ignore);
+    });
+
+    var result = await insertUserBatch.commit();
+    debugPrint("Result From Batch:- $result");
+
+    return result;
   }
 
   Future<int> addUserConnection({ChatConversation chatConversation}) async {
@@ -709,7 +746,7 @@ class DatabaseHelper {
     Database dbClient = await db;
 
     List<Map<String, dynamic>> res = await dbClient.query("UserConnection",
-        orderBy: "created_at ASC", limit: 1);
+        orderBy: "created_at DESC", limit: 1);
 
     if (res != null && res.length > 0) {
       ChatConversation chatConversation =
@@ -762,8 +799,7 @@ class DatabaseHelper {
     return [];
   }
 
-  Future<List<ChatMessage>> insertMissedMessage(
-      List<ChatMessage> chatMessages) async {
+  Future<List> insertMissedMessage(List<ChatMessage> chatMessages) async {
     Database dbClient = await db;
 
     Batch insertUserBatch = dbClient.batch();
@@ -779,7 +815,7 @@ class DatabaseHelper {
 
     debugPrint("Batch Result:- $result");
 
-    return [];
+    return result;
   }
 
   Future<List<ChatMessage>> getChatMessages(
@@ -851,26 +887,26 @@ class DatabaseHelper {
     return await dbClient.insert("ChatMessage", chatMessage.toDBJson());
   }
 
-  Future<List<ChatMessage>> getLastChatMessage({String author}) async {
+  Future<List<ChatMessage>> getLastChatMessage() async {
     Database dbClient = await db;
 
     List<Map<String, dynamic>> res = await dbClient.query(
       "ChatMessage",
-      where: "delivered = ? AND author = ?",
-      whereArgs: [1, author],
+      where: "delivered = ?",
+      whereArgs: [1],
+      orderBy: "created_at DESC",
       groupBy: "conversation_id",
-      orderBy: "created_at ASC",
     );
 
     if (res != null && res.length > 0) {
-      debugPrint("res:- ${res.length}\n");
+      debugPrint("Messages from DB:- ${res.length}");
 
-      res.forEach((element) {
-        debugPrint("message:- ${element}\n");
+      List<ChatMessage> chatMessages = List<ChatMessage>();
+      res.forEach((message) {
+        chatMessages.add(ChatMessage.fromDBJson(message));
       });
 
-      // ChatMessage chatMessage = ChatMessage.fromDBJson(res.first);
-      // return chatMessage;
+      return chatMessages;
     }
     return null;
   }

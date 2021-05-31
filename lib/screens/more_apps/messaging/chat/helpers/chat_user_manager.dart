@@ -16,14 +16,15 @@ class ChatUserManager {
     _db.saveChatUserCount(dbUsers);
   }
 
-  void addUser({String conversationId}) {
+  Future<void> addUser({String conversationId}) async {
     /// Converting CustomerProfile in to Chat Users
 
     ChatUserModel chatUserModel =
         ChatUserModel.fromConversationId(conversationId);
 
     /// adding Chat User into DataBase
-    _db.saveChatUser(chatUserModel);
+    await _db.saveChatUser(chatUserModel);
+    return;
   }
 
   Future<ChatUserModel> getUser(String conversationId) async {
@@ -38,10 +39,11 @@ class ChatUserManager {
     return await _db.deleteChatUsers();
   }
 
-  void updateChatUserMessageCount(
+  Future<void> updateChatUserMessageCount(
       {String conversationId, String hashedMessage}) async {
     await _db.updateChatUserMessageCount(
         conversationId: conversationId, hashedMessage: hashedMessage);
+    return;
   }
 
   void clearChatUserMessageCount({String conversationId}) async {

@@ -387,7 +387,7 @@ class UserAuth extends AuthService {
     }
   }
 
-  Future<Map<String, dynamic>> fetchMissedContact(
+  Future<List> fetchMissedContact(
       {String createdAt, String conversationId}) async {
     var url = secureBaseUrl + "/api/v1/chat/fetch-missed-conversations/";
 
@@ -395,19 +395,21 @@ class UserAuth extends AuthService {
     debugPrint("URL:- $url");
     Map<String, dynamic> data = {
       "conversation_id": conversationId,
-      "created_at": createdAt
+      "created_at": DateTime.parse(createdAt).toUtc().toString()
     };
 
     debugPrint("DATA SENT:- $data");
     var response =
         await http.post(url, headers: headers, body: jsonEncode(data));
 
-    debugPrint("STATUSCODE:- ${response.statusCode} BODY:- ${response.body}");
-    return {};
-
-    // debugPrint("${response.statusCode} ${response.body}");
-    // var jsonData = jsonDecode(response.body);
-    // throw jsonData;
+    if (response.statusCode == 200) {
+      debugPrint("STATUSCODE:- ${response.statusCode} BODY:- ${response.body}");
+      return jsonDecode(response.body);
+    } else {
+      debugPrint(
+          "URL:- $url STATUSCODE:- ${response.statusCode} RESPONSEBODY:- ${response.body}");
+      return null;
+    }
   }
 
   // Fetch user profile

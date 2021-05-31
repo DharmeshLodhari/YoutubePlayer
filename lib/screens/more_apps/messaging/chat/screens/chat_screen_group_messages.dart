@@ -335,6 +335,30 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     }
   }
 
+  getMissedMessageFromDB() async {
+    List<ChatMessage> messages = await ChatMessageHandler()
+        .getChatMessages(chatConversation: chatConversation);
+
+    messages.forEach((element) {
+      String message = jsonEncode(element.toJson());
+
+      if (!messageList.contains(message)) {
+        messageList.add(message);
+      }
+    });
+
+    // messages
+    //     .map((element) => jsonEncode(element.toJson()))
+    //     .toList()
+    //     .forEach((element) {
+    //   messageList.add(element);
+    // });
+
+    if (mounted) setState(() {});
+
+    checkMessageForRead();
+  }
+
   void determineIfConversationIsGroup() {
     if (chatConversation.isGroupConversation) {
       stopShakeDetector();
@@ -580,7 +604,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       // }
 
       if (messageListPositionListener
-              .itemPositions.value.first.itemTrailingEdge <
+              ?.itemPositions?.value?.first?.itemTrailingEdge <
           1) {
         // print("top?" +
         //     messageListPositionListener

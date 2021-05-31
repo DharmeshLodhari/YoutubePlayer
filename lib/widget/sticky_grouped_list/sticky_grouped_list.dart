@@ -265,11 +265,11 @@ class _StickyGroupedListViewState<T, E>
       return current.itemTrailingEdge < pos.itemTrailingEdge ? current : pos;
     }
 
-    ItemPosition currentItem = _listener.itemPositions.value
-        .where((ItemPosition position) =>
+    ItemPosition currentItem = _listener.itemPositions?.value
+        ?.where((ItemPosition position) =>
             !_isSeparator(position.index) &&
             position.itemTrailingEdge > _headerDimension)
-        .reduce(reducePositions);
+        ?.reduce(reducePositions);
 
     int index = (currentItem?.index ?? 0) ~/ 2;
     if (_topElementIndex != index) {

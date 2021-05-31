@@ -178,10 +178,10 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
 
   List<Widget> getActions() {
     List<Widget> list = [
-      synchronizeContactBtn(),
-      SizedBox(
-        width: 8,
-      ),
+      // synchronizeContactBtn(),
+      // SizedBox(
+      //   width: 8,
+      // ),
       createGroupBtn(),
       SizedBox(
         width: 16,
@@ -217,9 +217,9 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
         size: 24,
         color: blackFont,
       ),
-      onTap: () {
-        // ConnectionSynchronizer().update();
-        ChatMessageSynchronizer().update();
+      onTap: () async {
+        // await ConnectionSynchronizer().update();
+        await ChatMessageSynchronizer().update();
       },
       backgroundColor: lightGrey,
       enableMargin: true,

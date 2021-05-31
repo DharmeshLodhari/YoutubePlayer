@@ -283,6 +283,7 @@ class ChatGroupActionManager {
       }
     }
     if (chatConversation != null) {
+      debugPrint("chatConversation:- ${chatConversation.toJson()}");
       List users = message['meta_data']['users'];
       if (users.isEmpty) return;
       if (users.first == null || users.first == "") return;

@@ -4,6 +4,7 @@ import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_handler.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/db_socket_message_handler.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -210,27 +211,31 @@ class _HomeState extends State<Home> {
             ),
           ],
         ),
-        FutureBuilder(
-            future: ChatUserManager().checkForChatMessagesCount(),
-            initialData: false,
+        StreamBuilder(
+            stream: ChatMessageSynchronizer().getChatMessageCountStream,
             builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                if (snapshot.data == true) {
-                  return Positioned(
-                    top: 8,
-                    right: -2,
-                    child: ClipOval(
-                      child: Container(
-                        height: 8,
-                        width: 8,
-                        color: naturalGreen,
-                      ),
-                    ),
-                  );
-                }
-                return Container();
-              }
-              return Container();
+              return FutureBuilder(
+                  future: ChatUserManager().checkForChatMessagesCount(),
+                  initialData: false,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      if (snapshot.data == true) {
+                        return Positioned(
+                          top: 8,
+                          right: -2,
+                          child: ClipOval(
+                            child: Container(
+                              height: 8,
+                              width: 8,
+                              color: naturalGreen,
+                            ),
+                          ),
+                        );
+                      }
+                      return Container();
+                    }
+                    return Container();
+                  });
             })
       ],
     );
