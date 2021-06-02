@@ -28,13 +28,17 @@ String moneyConverter(var amount, {bool isNotCompact = false}) {
 
 int convertStringToMillisecondsSinceEpoch(String dateTime) {
   if (dateTime != null) {
-    DateTime date = DateTime.parse(dateTime).toUtc();
+    DateTime date = DateTime.parse(dateTime);
+    if (!date.isUtc) {
+      date = date.toUtc();
+    }
     return date.millisecondsSinceEpoch;
   }
   return null;
 }
 
 String convertMillisecondsSinceEpochToString(int millisecondsSinceEpoch) {
-  DateTime date = DateTime.fromMillisecondsSinceEpoch(millisecondsSinceEpoch);
-  return date.toString();
+  DateTime date =
+      DateTime.fromMillisecondsSinceEpoch(millisecondsSinceEpoch).toUtc();
+  return date.toIso8601String();
 }

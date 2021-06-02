@@ -45,10 +45,10 @@ class ConnectionSynchronizer {
       tempList
           .forEach((element) => users.add(ChatConversation.fromJson(element)));
 
-      connectionListBloc.setConnectionUsers(users: users);
+      await connectionListBloc.setConnectionUsers(users: users);
 
       if (_next != null) {
-        fetch();
+        await fetch();
       }
       return Future.value();
     }

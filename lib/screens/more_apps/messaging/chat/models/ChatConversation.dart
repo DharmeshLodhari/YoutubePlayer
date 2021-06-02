@@ -51,7 +51,7 @@ class ChatConversation {
       description: json['description'] ?? "",
       fullName: json['full_name'],
       isGroupConversation: json['is_group_conversation'],
-      createdAt: json['created_at'] ?? DateTime.now().toString(),
+      createdAt: json['created_at'] ?? DateTime.now().toUtc().toIso8601String(),
       mutedParticipants: json['muted_participants'] != null
           ? new List<String>.from(json['muted_participants'])
           : [],

@@ -8,8 +8,10 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_group_action_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_action_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_handler.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_shake_detection.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_synchronizer.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/db_socket_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/message_sound_player.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
@@ -292,7 +294,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         listen: false);
     setupShakeDetector();
     determineIfConversationIsGroup();
-    await setupNetworkConnectionListener();
+    // await setupNetworkConnectionListener();
 
     ChatUserManager().clearChatUserMessageCount(
         conversationId: chatConversation.conversationId);
@@ -335,15 +337,27 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     }
   }
 
-  getMissedMessageFromDB() async {
+  void getMissedMessageFromDB() async {
     List<ChatMessage> messages = await ChatMessageHandler()
         .getChatMessages(chatConversation: chatConversation);
 
-    messages.forEach((element) {
-      String message = jsonEncode(element.toJson());
+    messages.forEach((message) {
+      bool isPresent = false;
+      for (int i = 0; i < messageList.length; i++) {
+        Map<String, dynamic> decodePresentMessage = jsonDecode(messageList[i]);
+        ChatMessage decodedMessage = ChatMessage.fromJson(decodePresentMessage);
 
-      if (!messageList.contains(message)) {
-        messageList.add(message);
+        if (message.checkId == decodedMessage.checkId &&
+            message.conversationId == decodedMessage.conversationId) {
+          isPresent = true;
+        }
+      }
+
+      if (!isPresent) {
+        debugPrint("MESSAGE ADDED:--- ${message.text}");
+        String encodedMessage = jsonEncode(message.toJson());
+        messageList.add(encodedMessage);
+        storeMessagesTemporary(message: encodedMessage);
       }
     });
 
@@ -356,7 +370,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
     if (mounted) setState(() {});
 
-    checkMessageForRead();
+    acknowledgeThatMessageAreRead();
+
+    ChatUserManager().clearChatUserMessageCount(
+        conversationId: chatConversation.conversationId);
   }
 
   void determineIfConversationIsGroup() {
@@ -1228,7 +1245,17 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         },
         child: Row(
           children: [
-            getUserIcon(),
+            StreamBuilder<Object>(
+                initialData: false,
+                stream: ChatMessageSynchronizer().getChatMessageStream,
+                builder: (context, snapshot) {
+                  if (snapshot.data == true) {
+                    debugPrint("======================================>Called");
+                    ChatMessageSynchronizer().setStreamFalse();
+                    getMissedMessageFromDB();
+                  }
+                  return getUserIcon();
+                }),
             SizedBox(
               width: 12,
             ),
@@ -1269,7 +1296,30 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           ],
         ),
       ),
-      actions: [getNudgeUserBtn(), SizedBox(width: 16)],
+      actions: [
+        // synchronizeContactBtn(),
+        // SizedBox(width: 8),
+        getNudgeUserBtn(),
+        SizedBox(width: 16)
+      ],
+    );
+  }
+
+  Widget synchronizeContactBtn() {
+    return RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
+      icon: Icon(
+        Icons.sync,
+        size: 24,
+        color: blackFont,
+      ),
+      onTap: () async {
+        await ConnectionSynchronizer().update();
+        await ChatMessageSynchronizer().update();
+      },
+      backgroundColor: lightGrey,
+      enableMargin: true,
     );
   }
 
@@ -1294,7 +1344,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                 "author": userBloc.user.userName,
                 "author_avatar": userBloc.user.avatar,
                 "recipient": chatConversation.userName,
-                "created_at": DateTime.now().toUtc().toString(),
+                "created_at": DateTime.now().toUtc().toIso8601String(),
                 "type": "nudge_user",
               };
               sendDataToSocket(data);
@@ -2199,7 +2249,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       "author": userBloc.user.userName,
       "message": url,
       "kind": item is Product ? "product" : "service",
-      "created_at": DateTime.now().toUtc().toString(),
+      "created_at": DateTime.now().toUtc().toIso8601String(),
       "type": "chatroom_message",
     };
 
@@ -2509,7 +2559,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     _data['read_by_author'] = true;
     _data['read_by_recipient'] = false;
     _data["delivered"] = false;
-    _data['created_at'] = DateTime.now().toUtc().toString();
+    _data['created_at'] = DateTime.now().toUtc().toIso8601String();
     _data['type'] = "chatroom_message";
     _data["conversation"] = chatConversation.conversationId;
     _data["author"] = userBloc.user.userName;
@@ -2653,7 +2703,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       "read_by_author": true,
       "read_by_recipient": false,
       "delivered": false,
-      "created_at": DateTime.now().toUtc().toString(),
+      "created_at": DateTime.now().toUtc().toIso8601String(),
       "type": "chatroom_message",
     };
 
@@ -2719,7 +2769,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       "read_by_author": true,
       "read_by_recipient": false,
       "delivered": false,
-      "created_at": DateTime.now().toUtc().toString(),
+      "created_at": DateTime.now().toUtc().toIso8601String(),
       "type": "chatroom_message",
     };
 
@@ -2771,7 +2821,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       "read_by_author": true,
       "read_by_recipient": false,
       "delivered": false,
-      "created_at": DateTime.now().toUtc().toString(),
+      "created_at": DateTime.now().toUtc().toIso8601String(),
       "type": "chatroom_message",
     };
 
@@ -4042,7 +4092,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       "read_by_author": true,
       "read_by_recipient": false,
       "delivered": false,
-      "created_at": DateTime.now().toUtc().toString(),
+      "created_at": DateTime.now().toUtc().toIso8601String(),
       "type": "reply_message",
       "replied_to": replayingMessage
     };

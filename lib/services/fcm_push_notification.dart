@@ -4,8 +4,10 @@ import 'dart:io';
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/awesome_notification_service.dart';
@@ -58,13 +60,22 @@ Future<dynamic> fcmBackgroundMessageHandler(
 
     AwesomeNotificationService().init();
 
-    data['actions'] = message['data']['actions'];
-    data['body'] = message['data']['body'];
-    data['title'] = message['data']['title'];
     data['data'] = jsonDecode(message['data']['data']);
 
     if (data['data']['type'] == "nudge_user") {
+      data['actions'] = message['data']['actions'];
+      data['body'] = message['data']['body'];
+      data['title'] = message['data']['title'];
+
       AwesomeNotificationService().showNudgeNotification(message: data);
+    } else if (data['data']['type'] == "chatroom_message") {
+      data['notification'] = jsonDecode(message['data']['notification']);
+
+      ChatMessage textMessage = ChatMessage.fromJson(data['data']);
+
+      ChatMessageHandler().addChatMessage(chatMessage: textMessage);
+
+      AwesomeNotificationService().showMessageNotification(message: data);
     }
   } catch (error) {
     print("ERROR IN BACKGROUND HANDLER : - $error");

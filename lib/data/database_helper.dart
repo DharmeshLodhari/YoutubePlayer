@@ -8,6 +8,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/Chat
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/nudge_notification/NudgeNotification.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import "package:collection/collection.dart";
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -268,8 +269,8 @@ class DatabaseHelper {
       ///   "conversation_id":"9ae68069-b342-4e04-b568-602bde6fe901"
       /// }
 
-      // Create the NOTIFICATION table
-      await db.execute('''CREATE TABLE "Notification" (
+      // Create the NUDGENOTIFICATION table
+      await db.execute('''CREATE TABLE "NUDGENOTIFICATION" (     
             "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
             "check_id" TEXT,
             "conversation_id" TEXT,
@@ -282,6 +283,13 @@ class DatabaseHelper {
             "actions" TEXT,
             "type" TEXT,
             "recipient_username" TEXT
+          );
+    ''');
+
+      // Create the NOTIFICATION table
+      await db.execute('''CREATE TABLE "NOTIFICATION" (     
+            "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
+            "notification" TEXT
           );
     ''');
 
@@ -890,22 +898,31 @@ class DatabaseHelper {
   Future<List<ChatMessage>> getLastChatMessage() async {
     Database dbClient = await db;
 
-    List<Map<String, dynamic>> res = await dbClient.query(
-      "ChatMessage",
-      where: "delivered = ?",
-      whereArgs: [1],
-      orderBy: "created_at DESC",
-      groupBy: "conversation_id",
-    );
+    // List<Map<String, dynamic>> res = await dbClient.query(
+    //   "ChatMessage",
+    //   where: "delivered = ?",
+    //   whereArgs: [1],
+    //   orderBy: "created_at DESC",
+    //   groupBy: "conversation_id",
+    // );
+
+    List<Map<String, dynamic>> res = await dbClient.rawQuery(
+        "SELECT * FROM ChatMessage where delivered=? order by created_at DESC;",
+        [1]);
 
     if (res != null && res.length > 0) {
-      debugPrint("Messages from DB:- ${res.length}");
-
-      List<ChatMessage> chatMessages = List<ChatMessage>();
-      res.forEach((message) {
-        chatMessages.add(ChatMessage.fromDBJson(message));
+      var newMap = groupBy(res, (obj) => obj['conversation_id']);
+      // debugPrint("==> $newMap");
+      List<Map<String, dynamic>> messages = List<Map<String, dynamic>>();
+      newMap.forEach((key, value) {
+        messages.add(value[0]);
       });
 
+      List<ChatMessage> chatMessages = List<ChatMessage>();
+      messages.forEach((message) {
+        chatMessages.add(ChatMessage.fromDBJson(message));
+      });
+      debugPrint("Messages from DB:- ${chatMessages.length}");
       return chatMessages;
     }
     return null;
@@ -983,10 +1000,11 @@ class DatabaseHelper {
 
   /// NOTIFICATION OPERATION
 
-  Future<int> saveNotification(NudgeNotification nudgeNotification) async {
+  Future<int> saveNudgeNotification(NudgeNotification nudgeNotification) async {
     Database dbClient = await db;
 
-    int res = await dbClient.insert("Notification", nudgeNotification.toJson(),
+    int res = await dbClient.insert(
+        "NUDGENOTIFICATION", nudgeNotification.toJson(),
         conflictAlgorithm: ConflictAlgorithm.ignore);
     if (res != null) {
       debugPrint("DATABASE:- Save NUDGE NOTIFICATION !!");
@@ -995,10 +1013,10 @@ class DatabaseHelper {
     return null;
   }
 
-  Future<int> deleteNotification() async {
+  Future<int> deleteNudgeNotification() async {
     Database dbClient = await db;
 
-    int res = await dbClient.delete("Notification");
+    int res = await dbClient.delete("NUDGENOTIFICATION");
     if (res != null) {
       debugPrint("DATABASE:- DELETE NUDGE NOTIFICATION !!");
       return res;
@@ -1006,14 +1024,51 @@ class DatabaseHelper {
     return null;
   }
 
-  Future<NudgeNotification> getNotification() async {
+  Future<NudgeNotification> getNudgeNotification() async {
     Database dbClient = await db;
 
     List<Map<String, dynamic>> notifications =
-        await dbClient.query("Notification");
+        await dbClient.query("NUDGENOTIFICATION");
     if (notifications != null) {
       if (notifications.length > 0)
         return NudgeNotification.fromJson(notifications.first);
+    }
+    return null;
+  }
+
+  Future<int> saveNotification(String notification) async {
+    Database dbClient = await db;
+
+    await deleteNotification();
+
+    int res = await dbClient.insert(
+        "NOTIFICATION", {"notification": notification},
+        conflictAlgorithm: ConflictAlgorithm.replace);
+    if (res != null) {
+      debugPrint("DATABASE:- Save NOTIFICATION !!");
+      return res;
+    }
+    return null;
+  }
+
+  Future<int> deleteNotification() async {
+    Database dbClient = await db;
+
+    int res = await dbClient.delete("NOTIFICATION");
+    if (res != null) {
+      debugPrint("DATABASE:- DELETE NOTIFICATION !!");
+      return res;
+    }
+    return null;
+  }
+
+  Future<Map<String, dynamic>> getNotification() async {
+    Database dbClient = await db;
+
+    List<Map<String, dynamic>> notifications =
+        await dbClient.query("NOTIFICATION");
+    if (notifications != null) {
+      if (notifications.length > 0) return notifications.first;
     }
     return null;
   }

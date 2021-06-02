@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:Slydo/data/database_helper.dart';
@@ -28,12 +29,13 @@ class AwesomeNotificationService {
     awesomeNotifications.initialize(
       'resource://drawable/app_icon',
       [
-        // NotificationChannel(
-        //     channelKey: 'basic_channel',
-        //     channelName: 'Basic notifications',
-        //     channelDescription: 'Notification channel for basic tests',
-        //     defaultColor: Color(0xFF9D50DD),
-        //     ledColor: Colors.white),
+        NotificationChannel(
+          channelKey: 'basic_channel',
+          channelName: 'Basic notifications',
+          channelDescription: 'Notification channel for basic tests',
+          defaultColor: Color(0xFF3F61DB),
+          ledColor: Colors.white,
+        ),
         // NotificationChannel(
         //     channelKey: 'badge_channel',
         //     channelName: 'Badge indicator notifications',
@@ -178,11 +180,12 @@ class AwesomeNotificationService {
 
       _streamController.addStream(awesomeNotifications.actionStream);
 
-      _streamController.stream.listen((receivedNotification) {
+      _streamController.stream.listen((receivedNotification) async {
         debugPrint("action:-  ${receivedNotification.buttonKeyPressed}");
         debugPrint("data:-  ${receivedNotification.payload}");
 
         Map<String, dynamic> payload = receivedNotification.payload;
+
         if (receivedNotification.buttonKeyPressed == "reject_nudge") {
           Map<String, dynamic> data = {
             "check_id": Uuid().v4(),
@@ -200,6 +203,8 @@ class AwesomeNotificationService {
           }
         } else if (receivedNotification.buttonKeyPressed == "accept_nudge") {
           saveNudgeNotification(receivedNotification.payload);
+        } else if (payload['type'] == "chatroom_message") {
+          saveNotification(payload);
         }
       });
     }
@@ -209,7 +214,7 @@ class AwesomeNotificationService {
     NudgeNotification nudgeNotification = NudgeNotification.fromJson(payload);
     nudgeNotification.recipientUsername = payload['author'];
     try {
-      await DatabaseHelper().saveNotification(nudgeNotification);
+      await DatabaseHelper().saveNudgeNotification(nudgeNotification);
     } catch (error) {
       debugPrint("DATA ${nudgeNotification.toJson()}");
       debugPrint("ERROR WHILE INSERTING $error");
@@ -252,5 +257,38 @@ class AwesomeNotificationService {
     } catch (e) {
       debugPrint("EERROR:- $e");
     }
+  }
+
+  void showMessageNotification({Map<String, dynamic> message}) async {
+    int id = Random().nextInt(5000);
+
+    Map<String, String> notification =
+        Map<String, String>.from(message['notification']);
+
+    notification['type'] = message['data']['type'];
+    notification['notification_id'] = id.toString();
+
+    await awesomeNotifications.cancelAll();
+
+    await awesomeNotifications.createNotification(
+      content: NotificationContent(
+        channelKey: "basic_channel",
+        id: id,
+        body: notification['body'],
+        payload: notification,
+        title: notification['title'],
+        createdSource: NotificationSource.Local,
+      ),
+    );
+  }
+
+  void saveNotification(Map<String, dynamic> payload) async {
+    try {
+      await DatabaseHelper().saveNotification(jsonEncode(payload));
+    } catch (error) {
+      debugPrint("DATA $payload");
+      debugPrint("ERROR WHILE INSERTING $error");
+    }
+    return;
   }
 }

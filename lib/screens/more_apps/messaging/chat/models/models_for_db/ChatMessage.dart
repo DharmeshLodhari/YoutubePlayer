@@ -52,7 +52,7 @@ class ChatMessage {
       authorFullName: json['author_full_name'],
       checkId: json['check_id'],
       conversationId: json['conversation_id'] ?? json['conversation'],
-      createdAt: DateTime.parse(json['created_at']).toUtc().toString(),
+      createdAt: DateTime.parse(json['created_at']).toIso8601String(),
       deletedForAuthor: json['deleted_for_author'],
       deletedForRecipient: json['deleted_for_recipient'],
       delivered: json['delivered'],

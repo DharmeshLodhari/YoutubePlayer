@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_message_handler.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
@@ -495,6 +496,7 @@ class _UserDashboardState extends State<UserDashboard> {
     //   value.dispose();
     // });
 
+    ChatMessageSynchronizer().dispose();
     CacheManager().deleteCache(clearAll: true);
     await socketProvider?.close();
 

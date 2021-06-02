@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/socket_provider.dart';
@@ -13,6 +14,7 @@ import 'package:Slydo/screens/more_apps/shopping/screens/checkout_shopping_cart.
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/screens/search_module.dart';
 import 'package:Slydo/screens/user_dashboard.dart';
+import 'package:Slydo/services/awesome_notification_service.dart';
 import 'package:Slydo/services/fcm_push_notification.dart';
 import 'package:Slydo/services/list_refresher.dart';
 import 'package:Slydo/utils/global_key.dart';
@@ -82,6 +84,8 @@ class _DashboardState extends State<Dashboard> {
     fetchConnections();
 
     checkNotificationToNavigate();
+
+    listenNotificationTap();
   }
 
   void fetchConnections() async {
@@ -93,6 +97,14 @@ class _DashboardState extends State<Dashboard> {
     debugPrint("CONNECTION LIST LENGTH:- $result");
     if (result == 0) {
       await ConnectionSynchronizer().fetch(isRefresh: true);
+
+      int result = await connectionListBloc.getConnectionsCount();
+      debugPrint("CONNECTION LIST LENGTH:- $result");
+
+      connectionListBloc.connectionUsers.forEach((conversation) async {
+        await ChatMessageSynchronizer()
+            .getMessages(chatConversation: conversation, isFirstTime: true);
+      });
     } else {
       await ConnectionSynchronizer().update();
       await ChatMessageSynchronizer().update();
@@ -118,7 +130,7 @@ class _DashboardState extends State<Dashboard> {
 
   void checkNotificationToNavigate() async {
     NudgeNotification nudgeNotification =
-        await DatabaseHelper().getNotification();
+        await DatabaseHelper().getNudgeNotification();
     if (nudgeNotification != null) {
       debugPrint("NOTIFICATION FOUND :- ${nudgeNotification.toJson()}");
       showDialog(
@@ -127,7 +139,7 @@ class _DashboardState extends State<Dashboard> {
 
       UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
 
-      await DatabaseHelper().deleteNotification();
+      await DatabaseHelper().deleteNudgeNotification();
 
       ChatConversation chatConversation = await UserAuth()
           .fetchContactProfile(nudgeNotification.recipientUsername);
@@ -154,7 +166,48 @@ class _DashboardState extends State<Dashboard> {
       Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
       Navigator.pushNamed(context, '/chat-screen',
           arguments: {"searchedUser": chatConversation});
+      return;
+    } else {
+      Map<String, dynamic> notificationList =
+          await DatabaseHelper().getNotification();
+
+      if (notificationList == null) return;
+
+      Map<String, dynamic> notification =
+          jsonDecode(notificationList['notification']);
+
+      String recipientUsername =
+          notification['actions'].replaceAll("/chat-screen/", "");
+      print("Recipient user name = $recipientUsername");
+
+      if (recipientUsername != null) {
+        showDialog(
+            context: MyGlobals().navigationKey.currentContext,
+            builder: (context) => Center(child: CircularLoadingIndicator()));
+
+        await DatabaseHelper().deleteNotification();
+
+        ChatConversation chatConversation =
+            await UserAuth().fetchContactProfile(recipientUsername);
+
+        if (chatConversation == null) {
+          Navigator.of(MyGlobals().navigationKey.currentContext)
+              .popUntil(ModalRoute.withName('/dashboard'));
+          return;
+        }
+        Navigator.of(MyGlobals().navigationKey.currentContext)
+            .popUntil(ModalRoute.withName('/dashboard'));
+        Navigator.pushNamed(
+            MyGlobals().navigationKey.currentContext, '/chat-screen',
+            arguments: {"searchedUser": chatConversation});
+      }
     }
+  }
+
+  void listenNotificationTap() {
+    AwesomeNotificationService().notificationActionStream.listen((event) {
+      debugPrint("<=====> $event");
+    });
   }
 
   Widget goToBasket() {

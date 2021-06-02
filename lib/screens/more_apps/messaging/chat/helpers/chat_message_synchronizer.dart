@@ -5,8 +5,8 @@ import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_hand
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessagePagination.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
-import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
@@ -21,6 +21,10 @@ class ChatMessageSynchronizer {
 
   Stream<bool> get getChatMessageCountStream => _chatMessageCountStream.stream;
 
+  final _chatMessageStream = StreamController<bool>.broadcast();
+
+  Stream<bool> get getChatMessageStream => _chatMessageStream.stream;
+
   factory ChatMessageSynchronizer() {
     return _chatMessageSynchronizer;
   }
@@ -29,43 +33,68 @@ class ChatMessageSynchronizer {
   static String _next = "";
   static String _previous = "";
 
-  Future<void> fetch({bool isRefresh = false}) async {
-    if (isRefresh) {
-      _count = 0;
-      _next = "";
-      _previous = "";
-    }
+  void setStreamFalse() {
+    _chatMessageStream.sink.add(false);
+  }
 
-    MyGlobals myGlobals = MyGlobals();
-    BuildContext context = myGlobals.navigationKey.currentContext;
+  Future<void> getMessages(
+      {ChatConversation chatConversation, bool isFirstTime}) async {
+    debugPrint("Fetching previous messages !!");
 
-    ConnectionListBloc connectionListBloc =
-        Provider.of<ConnectionListBloc>(context, listen: false);
+    ChatMessagePagination chatMessagePagination = await ChatMessageHandler()
+        .getChatMessagePagination(
+            conversationId: chatConversation.conversationId);
+
+    _count = chatMessagePagination.count;
+    _next = chatMessagePagination.next;
+    _previous = chatMessagePagination.previous;
+
     if (_next != null) {
-      Map<String, dynamic> result = await UserAuth().contacts(_next, _previous);
-      _count = result['count'];
-      _next = result['next'];
-      _previous = result['previous'];
+      debugPrint(
+          "recipient conversationID:- ${chatConversation.conversationId}  ${chatConversation.fullName}");
 
-      List tempList = result['results'];
+      Map<String, dynamic> result = await MessageAuth()
+          .getChatMessages(_next, _previous,
+              conversionId: chatConversation.conversationId)
+          .catchError((error) {
+        debugPrint("ERROR:- $error");
+      });
 
-      List<ChatConversation> users = List<ChatConversation>();
+      List<String> tempList = result['results'];
 
-      tempList
-          .forEach((element) => users.add(ChatConversation.fromJson(element)));
+      List<ChatMessage> messages =
+          await ChatMessageHandler().saveChatMessages(messages: tempList);
 
-      connectionListBloc.setConnectionUsers(users: users);
+      chatMessagePagination.count = result['count'];
+      chatMessagePagination.next = result['next'];
+      chatMessagePagination.previous = result['previous'];
 
-      if (_next != null) {
-        fetch();
+      if (isFirstTime) {
+        await ChatMessageHandler().saveChatMessagePagination(
+            chatMessagePagination: chatMessagePagination);
+      } else {
+        await ChatMessageHandler().updateChatMessagePagination(
+            chatMessagePagination: chatMessagePagination);
       }
-      return Future.value();
     }
+
+    if (isFirstTime && chatMessagePagination.next != null) {
+      await getMessages(chatConversation: chatConversation, isFirstTime: false);
+    } else {
+      return;
+    }
+    return;
   }
 
   Future<void> update() async {
     List<ChatMessage> chatMessages =
         await ChatMessageHandler().getLastChatMessage();
+
+    if (chatMessages == null || chatMessages.isEmpty) return;
+
+    // chatMessages.forEach((element) {
+    //   debugPrint("Message:- ${element.text}  createdAt:- ${element.createdAt}");
+    // });
 
     MyGlobals myGlobals = MyGlobals();
     BuildContext context = myGlobals.navigationKey.currentContext;
@@ -121,6 +150,8 @@ class ChatMessageSynchronizer {
 
         messages.forEach((message) {
           ChatMessage chatMessage = ChatMessage.fromJson(message);
+          debugPrint(
+              "<==== ${chatMessage.text}   <===== ${chatMessage.createdAt}");
           messageList.add(chatMessage);
         });
       });
@@ -128,6 +159,8 @@ class ChatMessageSynchronizer {
 
     if (messageList.isNotEmpty) {
       await ChatMessageHandler().insertMissedChatMessage(messages: messageList);
+
+      _chatMessageStream.sink.add(true);
 
       messageList.forEach((message) async {
         await MainSocketMessageHandler()
@@ -137,5 +170,10 @@ class ChatMessageSynchronizer {
     }
 
     return Future.value();
+  }
+
+  void dispose() {
+    _chatMessageCountStream.close();
+    _chatMessageStream.close();
   }
 }

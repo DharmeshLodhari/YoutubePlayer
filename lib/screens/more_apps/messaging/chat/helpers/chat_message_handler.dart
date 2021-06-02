@@ -80,7 +80,8 @@ class ChatMessageHandler {
 
   Future<void> updateChatMessagePagination(
       {ChatMessagePagination chatMessagePagination}) async {
-    return await _db.updateChatMessagePagination(chatMessagePagination);
+    await _db.updateChatMessagePagination(chatMessagePagination);
+    return Future.value();
   }
 
   Future<List<ChatMessage>> getLastChatMessage() async {

@@ -236,11 +236,11 @@ class MessageAuth extends AuthService {
     var response = await http.get(url, headers: headers);
 
     if (response.statusCode == 200) {
+      debugPrint("URL:- $url RESPONSE STATUS CODE:- ${response.statusCode} ");
       List<String> previousMessages = [];
       var jsonData = json.decode(response.body);
       for (var item in jsonData["results"])
         previousMessages.add(jsonEncode(item));
-
       Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
@@ -709,10 +709,16 @@ class MessageAuth extends AuthService {
     chatMessages.forEach((element) {
       dataToBeSent.add({
         "conversation_id": element.conversationId,
-        "created_at": DateTime.parse(element.createdAt).toUtc().toString(),
+        "created_at":
+            DateTime.parse(element.createdAt).toUtc().toIso8601String(),
         "check_id": element.checkId
       });
     });
+
+    // dataToBeSent.forEach((element) {
+    //   debugPrint(
+    //       "===> ${element['conversation_id']}   ====> ${element['created_at']}");
+    // });
 
     Map<String, dynamic> data = {"data": dataToBeSent};
 
