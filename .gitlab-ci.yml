@@ -28,7 +28,7 @@ android:build:
     - cd android && gem install fastlane
 
   script:
-    - bundle exec fastlane build_android
+    - cd android && bundle exec fastlane build_android
 
   artifacts:
     paths:
