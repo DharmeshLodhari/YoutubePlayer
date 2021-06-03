@@ -43,3 +43,16 @@ local.properties
 app.android-arm.symbols
 app.android-arm64.symbols
 app.android-x64.symbols
+/android/fastlane/slydo_play_console.json
+
+
+# You definitely want these
+**/ios/*.ipa
+**/ios/*.app.dSYM.zip
+# These are optional
+# For our open source projects we choose to exclude some metadata that contains private information
+android/fastlane/report.xml
+ios/fastlane/report.xml
+ios/fastlane/Preview.html
+ios/fastlane/metadata/review_information
+ios/fastlane/metadata/trade_representative_contact_information
