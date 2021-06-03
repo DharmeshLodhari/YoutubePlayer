@@ -25,7 +25,7 @@ android:build:
   stage: Build Android
 
   before_script:
-    - cd android && gem install --local Gemfile
+    - cd android && gem install fastlane
 
   script:
     - bundle exec fastlane build_android
