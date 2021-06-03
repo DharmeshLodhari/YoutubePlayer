@@ -21,7 +21,7 @@ test:
     - flutter
 
 
-build:
+android:build:
   stage: Build Android
 
   before_script:
