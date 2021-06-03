@@ -26,7 +26,7 @@ android:build:
 
   before_script:
     - gem install bundler
-    - export WD=$(pwd) && android && gem install fastlane && cd $WD
+    - export WD=$(pwd) && cd android && gem install fastlane && cd $WD
 
   script:
     # Flutter local configuration
