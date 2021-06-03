@@ -12,6 +12,9 @@ before_script:
   - cat $KEYFILE >> android/key.properties
   - cat $SERVICE_FILE >> android/fastlane/slydo_play_console.json
 
+after_script:
+  - rm ~/google_play_api_key.json
+
 test:
   stage: Test
   script:
@@ -26,7 +29,7 @@ android:build:
 
   before_script:
     - gem install bundler
-    - export WD=$(pwd) && cd android && gem install fastlane && cd $WD
+#    - export WD=$(pwd) && cd android && gem install fastlane && cd $WD
 
   script:
     # Flutter local configuration
@@ -34,6 +37,7 @@ android:build:
     - echo sdk.dir=$ANDROID_SDK_PATH >> android/local.properties
     - echo flutter.buildMode=release >> android/local.properties
     - cd android
+    - bundle install --deployment
     - bundle exec fastlane build_android
     - rm -f android/local.properties
     - rm -f android/key.properties
