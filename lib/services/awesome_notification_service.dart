@@ -260,7 +260,7 @@ class AwesomeNotificationService {
   }
 
   void showNotification({Map<String, dynamic> message}) async {
-    int id = Random().nextInt(5000);
+    int id = Random().nextInt(50000);
 
     Map<String, String> notification =
         Map<String, String>.from(message['notification']);
