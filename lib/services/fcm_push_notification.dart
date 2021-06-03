@@ -60,22 +60,44 @@ Future<dynamic> fcmBackgroundMessageHandler(
 
     AwesomeNotificationService().init();
 
-    data['data'] = jsonDecode(message['data']['data']);
+    if (message['data'].containsKey('data')) {
+      data['data'] = jsonDecode(message['data']['data']);
 
-    if (data['data']['type'] == "nudge_user") {
-      data['actions'] = message['data']['actions'];
-      data['body'] = message['data']['body'];
-      data['title'] = message['data']['title'];
+      if (data['data']['type'] == "nudge_user") {
+        data['actions'] = message['data']['actions'];
+        data['body'] = message['data']['body'];
+        data['title'] = message['data']['title'];
 
-      AwesomeNotificationService().showNudgeNotification(message: data);
-    } else if (data['data']['type'] == "chatroom_message") {
+        AwesomeNotificationService().showNudgeNotification(message: data);
+      } else if (data['data']['type'] == "chatroom_message") {
+        data['notification'] = jsonDecode(message['data']['notification']);
+
+        ChatMessage textMessage = ChatMessage.fromJson(data['data']);
+
+        ChatMessageHandler().addChatMessage(chatMessage: textMessage);
+
+        AwesomeNotificationService().showNotification(message: data);
+      }
+    } else {
       data['notification'] = jsonDecode(message['data']['notification']);
 
-      ChatMessage textMessage = ChatMessage.fromJson(data['data']);
-
-      ChatMessageHandler().addChatMessage(chatMessage: textMessage);
-
-      AwesomeNotificationService().showMessageNotification(message: data);
+      if (data['notification']['actions'] == "/transaction") {
+        data['data'] = {"type": "transaction"};
+      } else if (data['notification']['actions'] == "/request-payment") {
+        data['data'] = {"type": "request-payment"};
+      } else if (data['notification']['actions'] == "/connection-request") {
+        data['data'] = {"type": "connection-request"};
+      } else if (data['notification']['actions'] == "/friends-dashboard") {
+        data['data'] = {"type": "friends-dashboard"};
+      } else if (data['notification']['actions'].length > 15 &&
+          data['notification']['actions'].substring(0, 16) ==
+              "/detail_message/") {
+        data['data'] = {"type": "detail_message"};
+      } else {
+        debugPrint("UNKNOWN NOTIFICATION TYPE $message");
+        return;
+      }
+      AwesomeNotificationService().showNotification(message: data);
     }
   } catch (error) {
     print("ERROR IN BACKGROUND HANDLER : - $error");

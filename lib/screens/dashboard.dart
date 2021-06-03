@@ -176,30 +176,67 @@ class _DashboardState extends State<Dashboard> {
       Map<String, dynamic> notification =
           jsonDecode(notificationList['notification']);
 
-      String recipientUsername =
-          notification['actions'].replaceAll("/chat-screen/", "");
-      print("Recipient user name = $recipientUsername");
+      if (notification['type'] == "chatroom_message") {
+        String recipientUsername =
+            notification['actions'].replaceAll("/chat-screen/", "");
+        print("Recipient user name = $recipientUsername");
 
-      if (recipientUsername != null) {
-        showDialog(
-            context: MyGlobals().navigationKey.currentContext,
-            builder: (context) => Center(child: CircularLoadingIndicator()));
+        if (recipientUsername != null) {
+          showDialog(
+              context: MyGlobals().navigationKey.currentContext,
+              builder: (context) => Center(child: CircularLoadingIndicator()));
 
-        await DatabaseHelper().deleteNotification();
+          await DatabaseHelper().deleteNotification();
 
-        ChatConversation chatConversation =
-            await UserAuth().fetchContactProfile(recipientUsername);
+          ChatConversation chatConversation =
+              await UserAuth().fetchContactProfile(recipientUsername);
 
-        if (chatConversation == null) {
+          if (chatConversation == null) {
+            Navigator.of(MyGlobals().navigationKey.currentContext)
+                .popUntil(ModalRoute.withName('/dashboard'));
+            return;
+          }
           Navigator.of(MyGlobals().navigationKey.currentContext)
               .popUntil(ModalRoute.withName('/dashboard'));
-          return;
+          Navigator.pushNamed(
+              MyGlobals().navigationKey.currentContext, '/chat-screen',
+              arguments: {"searchedUser": chatConversation});
         }
+      } else if (notification['type'] == "request-payment") {
+        await DatabaseHelper().deleteNotification();
         Navigator.of(MyGlobals().navigationKey.currentContext)
             .popUntil(ModalRoute.withName('/dashboard'));
-        Navigator.pushNamed(
-            MyGlobals().navigationKey.currentContext, '/chat-screen',
-            arguments: {"searchedUser": chatConversation});
+        DashboardBloc _dashboardBloc = Provider.of<DashboardBloc>(
+            MyGlobals().navigationKey.currentContext,
+            listen: false);
+        _dashboardBloc.index = 1;
+      } else if (notification['type'] == "transaction") {
+        await DatabaseHelper().deleteNotification();
+        Navigator.of(MyGlobals().navigationKey.currentContext)
+            .popUntil(ModalRoute.withName('/dashboard'));
+        Navigator.of(MyGlobals().navigationKey.currentContext)
+            .pushNamed('/transactions');
+      } else if (notification['type'] == "connection-request") {
+        await DatabaseHelper().deleteNotification();
+        Navigator.of(MyGlobals().navigationKey.currentContext)
+            .popUntil(ModalRoute.withName('/dashboard'));
+        Navigator.of(MyGlobals().navigationKey.currentContext)
+            .pushNamed('/friends-dashboard', arguments: {"index": 1});
+      } else if (notification['type'] == "friends-dashboard") {
+        await DatabaseHelper().deleteNotification();
+        Navigator.of(MyGlobals().navigationKey.currentContext)
+            .popUntil(ModalRoute.withName('/dashboard'));
+        Navigator.of(MyGlobals().navigationKey.currentContext)
+            .pushNamed('/friends-dashboard', arguments: {"index": 0});
+      } else if (notification['type'] == "detail_message") {
+        await DatabaseHelper().deleteNotification();
+        //this variable will fetch the id of message from the response
+        String idOfMessage =
+            notification['actions'].replaceAll("/detail_message/", "");
+        Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
+        Navigator.of(context).pushNamed('/detail_message', arguments: {
+          'id': idOfMessage,
+        });
       }
     }
   }

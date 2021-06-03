@@ -203,7 +203,7 @@ class AwesomeNotificationService {
           }
         } else if (receivedNotification.buttonKeyPressed == "accept_nudge") {
           saveNudgeNotification(receivedNotification.payload);
-        } else if (payload['type'] == "chatroom_message") {
+        } else {
           saveNotification(payload);
         }
       });
@@ -259,7 +259,7 @@ class AwesomeNotificationService {
     }
   }
 
-  void showMessageNotification({Map<String, dynamic> message}) async {
+  void showNotification({Map<String, dynamic> message}) async {
     int id = Random().nextInt(5000);
 
     Map<String, String> notification =
