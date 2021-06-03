@@ -25,7 +25,7 @@ android:build:
   stage: Build Android
 
   before_script:
-    - bundle install fastlane
+    - brew install fastlane
 
   script:
     - bundle exec fastlane build_android
@@ -47,7 +47,7 @@ internal:android:deploy:
     - flutter
 
   before_script:
-    - bundle install fastlane
+    - brew install fastlane
 
   script:
     - cd android
@@ -62,7 +62,7 @@ alpha:android:deploy:
     - flutter
 
   before_script:
-    - bundle install fastlane
+    - brew install fastlane
 
   script:
     - cd android
@@ -77,7 +77,7 @@ beta:android:deploy:
     - flutter
 
   before_script:
-    - bundle install fastlane
+    - brew install fastlane
 
   script:
     - cd android
@@ -93,7 +93,7 @@ prod:android:deploy:
     - flutter
 
   before_script:
-    - bundle install fastlane
+    - brew install fastlane
 
   script:
     - cd android
