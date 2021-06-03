@@ -1,8 +1,8 @@
 image: cirrusci/flutter:1.22.5
 
 stages:
-  - test
-  - build
+  - Test
+  - Build Android
 
 before_script:
   - flutter pub get
@@ -18,10 +18,14 @@ test:
 
 
 build:
-  stage: build
+  stage: Build Android
 
-#  before_script:
-#    - echo "$"
+  before_script:
+    - touch android/key.properties
+    - echo "storePassword=$STOREPASSWORD" >> android/key.properties
+    - echo "keyPassword=$KEYPASSWORD" >> android/key.properties
+    - echo "keyAlias=slydo" >> android/key.properties
+    - echo "storeFile=slydo.jks" >> android/key.properties
 
   script:
     - flutter build apk
@@ -33,6 +37,6 @@ build:
   tags:
     - flutter
 
-  only:
-    - tags
+#  only:
+#    - tags
 
