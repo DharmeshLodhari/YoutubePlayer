@@ -22,10 +22,7 @@ build:
 
   before_script:
     - touch android/key.properties
-    - echo "storePassword=$STOREPASSWORD" >> android/key.properties
-    - echo "keyPassword=$KEYPASSWORD" >> android/key.properties
-    - echo "keyAlias=slydo" >> android/key.properties
-    - echo "storeFile=slydo.jks" >> android/key.properties
+    - cat $KEYFILE >> android/key.properties
 
   script:
     - flutter build apk
