@@ -1,15 +1,28 @@
 image: cirrusci/flutter:1.22.5
 
 stages:
+  - test
   - build
 
 before_script:
   - flutter pub get
   - flutter clean
 
+test:
+  stage: Test
+  script:
+    - flutter test
+
+  tags:
+    - flutter
+
 
 build:
   stage: build
+
+#  before_script:
+#    - echo "$"
+
   script:
     - flutter build apk
 
@@ -19,4 +32,7 @@ build:
 
   tags:
     - flutter
+
+  only:
+    - tags
 
