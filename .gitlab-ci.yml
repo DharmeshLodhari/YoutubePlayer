@@ -25,11 +25,11 @@ android:build:
   stage: Build Android
 
   before_script:
-    - echo "$CI_BUILDS_DIR"
-    - cd $CI_BUILDS_DIR/android && gem install fastlane
+    - echo "$CI_PROJECT_PATH"
+    - cd $CI_PROJECT_PATH/android && gem install fastlane
 
   script:
-    - cd $CI_BUILDS_DIR/android && bundle exec fastlane build_android
+    - cd $CI_PROJECT_PATH/android && bundle exec fastlane build_android
 
   artifacts:
     paths:
