@@ -13,7 +13,7 @@ before_script:
   - cat $SERVICE_FILE >> android/fastlane/slydo_play_console.json
 
 after_script:
-  - rm ~/google_play_api_key.json
+  - rm android/fastlane/slydo_play_console.json
 
 test:
   stage: Test
@@ -37,7 +37,7 @@ android:build:
     - echo sdk.dir=$ANDROID_SDK_PATH >> android/local.properties
     - echo flutter.buildMode=release >> android/local.properties
     - cd android
-    - bundle install --deployment
+    - bundle install
     - bundle exec fastlane build_android
     - rm -f android/local.properties
     - rm -f android/key.properties
