@@ -3,10 +3,14 @@ image: cirrusci/flutter:1.22.5
 stages:
   - Test
   - Build Android
+  - Deploy
 
 before_script:
   - flutter pub get
   - flutter clean
+  - touch android/key.properties
+  - cat $KEYFILE >> android/key.properties
+  - cat $SERVICE_FILE >> android/fastlane/slydo_play_console.json
 
 test:
   stage: Test
@@ -21,18 +25,79 @@ build:
   stage: Build Android
 
   before_script:
-    - touch android/key.properties
-    - cat $KEYFILE >> android/key.properties
+    - bundle install fastlane
 
   script:
-    - flutter build apk
+    - bundle exec fastlane build_android
 
   artifacts:
     paths:
       - build/app/outputs/flutter-apk/app-release.apk
+      - build/app/outputs/bundle/release/app.aab
 
   tags:
     - flutter
 
 #  only:
 #    - tags
+
+internal:android:deploy:
+  stage: Deploy
+  tags:
+    - flutter
+
+  before_script:
+    - bundle install fastlane
+
+  script:
+    - cd android
+    - bundle exec fastlane deploy_android internal:true
+  when: manual
+  dependencies:
+    - android:build
+
+alpha:android:deploy:
+  stage: Deploy
+  tags:
+    - flutter
+
+  before_script:
+    - bundle install fastlane
+
+  script:
+    - cd android
+    - bundle exec fastlane deploy_android alpha:true
+  when: manual
+  dependencies:
+    - android:build
+
+beta:android:deploy:
+  stage: Deploy
+  tags:
+    - flutter
+
+  before_script:
+    - bundle install fastlane
+
+  script:
+    - cd android
+    - bundle exec fastlane deploy_android beta:true
+  when: manual
+  dependencies:
+    - android:build
+
+
+prod:android:deploy:
+  stage: Deploy
+  tags:
+    - flutter
+
+  before_script:
+    - bundle install fastlane
+
+  script:
+    - cd android
+    - bundle exec fastlane deploy_android production:true
+  when: manual
+  dependencies:
+    - android:build
