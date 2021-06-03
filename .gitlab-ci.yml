@@ -12,8 +12,6 @@ before_script:
   - cat $KEYFILE >> android/key.properties
   - cat $SERVICE_FILE >> android/fastlane/slydo_play_console.json
 
-after_script:
-  - rm android/fastlane/slydo_play_console.json
 
 test:
   stage: Test
@@ -39,8 +37,9 @@ android:build:
     - cd android
     - bundle install
     - bundle exec fastlane build_android
-    - rm -f android/local.properties
-    - rm -f android/key.properties
+#    - rm -f local.properties
+#    - rm -f key.properties
+#    - rm fastlane/slydo_play_console.json
 
   artifacts:
     paths:
