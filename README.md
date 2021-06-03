@@ -71,4 +71,33 @@ OR
 
 2> THEN RUN
     `flutter pub run flutter_launcher_icons:main`
+
+
+### FASTLANE
+
+## Build the release binaries (aab and apk)
+```
+bundle exec fastlane build_android
+```
+
+## Deploy (Upload to play store)
+
+# Production deploy:
+```
+bundle exec fastlane deploy_android production:true`
+```    
+
+# Beta deploy:
+```
+bundle exec fastlane deploy_android beta:true`
+```
     
+# Alpha deploy:
+```
+bundle exec fastlane deploy_android alpha:true`
+```
+    
+# Internal track deploy:
+```
+bundle exec fastlane deploy_android internal:true`
+```
