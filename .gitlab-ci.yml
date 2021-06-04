@@ -47,7 +47,6 @@ android:build:
     - bundle exec fastlane build_android
     - rm -f local.properties
     - rm -f key.properties
-    - rm fastlane/slydo_play_console.json
 
   artifacts:
     paths:

@@ -541,7 +541,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     if (mainSocketProvider.isChatOnScreen) {
       if (temporaryMessages.isNotEmpty) {
         temporaryMessages.forEach((element) async {
-          messageReadByRecipient(jsonDecode(element));
+          await messageReadByRecipient(jsonDecode(element));
         });
 
         debugPrint("Clearing temporary Message");
@@ -1082,7 +1082,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     await mainSocketProvider.add(data);
   }
 
-  void messageReadByRecipient(Map<String, dynamic> message) async {
+  Future<void> messageReadByRecipient(Map<String, dynamic> message) async {
     if (message["author"] != userBloc.user.userName) {
       if (mainSocketProvider.isChatOnScreen) {
         var data = {
