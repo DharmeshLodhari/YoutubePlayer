@@ -24,6 +24,8 @@ test:
 
 android:build:
   stage: Build Android
+  dependencies:
+    - test
 
   before_script:
     - gem install bundler
