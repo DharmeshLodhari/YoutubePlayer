@@ -44,6 +44,7 @@ android:build:
 #    - cat $KEYFILE >> android/key.properties
     - cd android
     - bundle install
+    - fastlane env
     - bundle exec fastlane build_android
     - rm -f local.properties
     - rm -f key.properties
