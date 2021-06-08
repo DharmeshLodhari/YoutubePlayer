@@ -426,10 +426,13 @@ class UserAuth extends AuthService {
 
   Future<bool> removeFromContactList(CustomerProfile user) async {
     var url = secureBaseUrl + "/api/v1/user/contacts/remove-from-contact/";
+    debugPrint("URL:- $url");
     var data = {"user": user.userName};
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.patch(url, headers: headers, body: _data);
+    debugPrint(
+        "RESPONSE :- STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     if (response.statusCode == 200) {
       return true;
     }

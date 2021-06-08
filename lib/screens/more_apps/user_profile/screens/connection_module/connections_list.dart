@@ -565,9 +565,6 @@ class _ConnectionListState extends State<ConnectionList> {
             Provider.of<ConnectionListBloc>(context, listen: false);
         connectionListBloc.deleteChatConversation(
             conversationId: user.conversationId);
-        // if (connectionsList.length <= 9) {
-        //   getList();
-        // }
         if (mounted) setState(() {});
       } else {
         _showSnackBar(context, AppLocalization.of(context).error);

@@ -270,16 +270,32 @@ class AwesomeNotificationService {
 
     await awesomeNotifications.cancelAll();
 
-    await awesomeNotifications.createNotification(
-      content: NotificationContent(
-        channelKey: "basic_channel",
-        id: id,
-        body: notification['body'],
-        payload: notification,
-        title: notification['title'],
-        createdSource: NotificationSource.Local,
-      ),
-    );
+    if (notification.containsKey("image") &&
+        notification['image'] != "" &&
+        notification['image'] != null) {
+      await awesomeNotifications.createNotification(
+        content: NotificationContent(
+          channelKey: "basic_channel",
+          id: id,
+          body: notification['body'],
+          payload: notification,
+          largeIcon: notification['image'],
+          title: notification['title'],
+          createdSource: NotificationSource.Local,
+        ),
+      );
+    } else {
+      await awesomeNotifications.createNotification(
+        content: NotificationContent(
+          channelKey: "basic_channel",
+          id: id,
+          body: notification['body'],
+          payload: notification,
+          title: notification['title'],
+          createdSource: NotificationSource.Local,
+        ),
+      );
+    }
   }
 
   void saveNotification(Map<String, dynamic> payload) async {

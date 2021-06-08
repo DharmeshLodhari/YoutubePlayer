@@ -17,11 +17,13 @@ class ChatMessageSynchronizer {
 
   ChatMessageSynchronizer._internal();
 
-  final _chatMessageCountStream = StreamController<bool>.broadcast();
+  StreamController<bool> _chatMessageCountStream =
+      StreamController<bool>.broadcast();
 
   Stream<bool> get getChatMessageCountStream => _chatMessageCountStream.stream;
 
-  final _chatMessageStream = StreamController<bool>.broadcast();
+  StreamController<bool> _chatMessageStream =
+      StreamController<bool>.broadcast();
 
   Stream<bool> get getChatMessageStream => _chatMessageStream.stream;
 

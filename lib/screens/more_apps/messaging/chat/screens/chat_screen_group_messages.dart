@@ -1299,8 +1299,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       actions: [
         // synchronizeContactBtn(),
         // SizedBox(width: 8),
-        getNudgeUserBtn(),
-        SizedBox(width: 16)
+        // getNudgeUserBtn(),
+        // SizedBox(width: 16)
       ],
     );
   }
