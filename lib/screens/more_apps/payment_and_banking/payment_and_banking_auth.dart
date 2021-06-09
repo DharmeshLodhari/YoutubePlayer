@@ -40,7 +40,7 @@ class PaymentAndBankingAuth extends AuthService {
   }
 
   // Get Account Balance
-  Future<Map> getAccountBalance() async {
+  Future<Map<String, dynamic>> getAccountBalance() async {
     var url = secureBaseUrl + "/api/v1/transactions/check-account-balance/";
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);

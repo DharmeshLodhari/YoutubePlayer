@@ -294,7 +294,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                         AppLocalization.of(context).note,
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            color: darkBlue(),
+                            color: blackFont,
                             fontSize: 20.0,
                             fontWeight: FontWeight.bold),
                       ),
@@ -355,7 +355,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         onFieldSubmitted: (val) {
           addNote();
         },
-        cursorColor: darkBlue(),
+        cursorColor: blackFont,
         decoration: InputDecoration(
           isDense: true,
           labelText: AppLocalization.of(context).enterYourNoteHere,
@@ -429,7 +429,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                         AppLocalization.of(context).status,
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            color: darkBlue(),
+                            color: blackFont,
                             fontSize: 20.0,
                             fontWeight: FontWeight.bold),
                       ),
@@ -661,7 +661,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     basketBloc.removeItemFromCart(item);
     Toast.show(
         AppLocalization.of(context).itemIsRemovedSuccessfullyFromCart, context,
-        backgroundColor: darkBlue(),
+        backgroundColor: Colors.black,
         textColor: Colors.white,
         duration: Toast.LENGTH_LONG);
   }

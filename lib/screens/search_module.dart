@@ -879,7 +879,7 @@ class _SearchModuleState extends State<SearchModule> {
             ),
             focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color: darkBlue(),
+                color: blackFont,
                 width: 1,
               ),
               borderRadius: BorderRadius.circular(6),

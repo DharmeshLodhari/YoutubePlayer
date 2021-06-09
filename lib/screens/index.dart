@@ -67,7 +67,7 @@ class _IndexState extends State<Index> {
         return false;
       },
       child: Scaffold(
-          backgroundColor: lightBlue(),
+          backgroundColor: navyBlue,
           resizeToAvoidBottomInset: true,
           body: !isIntroDone ? introScreen() : homeScreen()),
     );
@@ -183,7 +183,7 @@ class _IndexState extends State<Index> {
           Navigator.of(context).pushNamed('/login');
         },
         textColor: Colors.white,
-        color: darkBlue(),
+        color: blackFont,
         height: 50,
         child: Text(AppLocalization.of(context).login),
       ),
@@ -198,7 +198,7 @@ class _IndexState extends State<Index> {
           Navigator.of(context).pushNamed('/new-registration');
         },
         textColor: Colors.white,
-        color: darkBlue(),
+        color: blackFont,
         height: 50,
         child: Text(AppLocalization.of(context).register),
       ),

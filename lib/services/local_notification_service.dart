@@ -107,5 +107,7 @@ class LocalNotificationService {
   }
 
   Future onDidReceiveLocalNotification(
-      int id, String title, String body, String payload) {}
+      int id, String title, String body, String payload) async {
+    return;
+  }
 }

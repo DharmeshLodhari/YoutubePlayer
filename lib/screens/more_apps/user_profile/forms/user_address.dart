@@ -272,7 +272,7 @@ class _UserAddressState extends State<UserAddress> {
         Toast.show(
           AppLocalization.of(context).addressAddedSuccessFully + " !!!",
           context,
-          backgroundColor: darkBlue(),
+          backgroundColor: Colors.black,
           textColor: Colors.white,
           duration: Toast.LENGTH_LONG,
         );

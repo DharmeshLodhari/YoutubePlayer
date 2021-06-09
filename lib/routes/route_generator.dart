@@ -102,7 +102,6 @@ import 'package:Slydo/screens/scan_qr_code.dart';
 import 'package:Slydo/screens/search_module.dart';
 import 'package:Slydo/screens/user_dashboard.dart';
 import 'package:Slydo/splash.dart';
-import 'package:Slydo/widget/resultReturningPasswordPopup.dart';
 import 'package:Slydo/widget/video_recorder.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
@@ -369,13 +368,7 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
-      case '/resultPasswordPopup':
-        return PageTransition(
-          child: ResultReturningPasswordPopup(),
-          type: PageTransitionType.bottomToTop,
-          curve: Curves.ease,
-          settings: settings,
-        );
+
       case '/add-bank-account':
         return PageTransition(
           child: AddAccount(),

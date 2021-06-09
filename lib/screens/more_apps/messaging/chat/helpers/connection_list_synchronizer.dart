@@ -16,13 +16,11 @@ class ConnectionSynchronizer {
     return _connectionSynchronizer;
   }
 
-  static int _count = 0;
   static String _next = "";
   static String _previous = "";
 
   Future<void> fetch({bool isRefresh = false}) async {
     if (isRefresh) {
-      _count = 0;
       _next = "";
       _previous = "";
     }
@@ -34,7 +32,6 @@ class ConnectionSynchronizer {
         Provider.of<ConnectionListBloc>(context, listen: false);
     if (_next != null) {
       Map<String, dynamic> result = await UserAuth().contacts(_next, _previous);
-      _count = result['count'];
       _next = result['next'];
       _previous = result['previous'];
 

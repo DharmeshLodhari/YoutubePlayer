@@ -40,10 +40,10 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
       },
       child: Scaffold(
         key: cardPaymentPageKey,
-        backgroundColor: lightBlue(),
+        backgroundColor: chatBackgroundColor,
         appBar: AppBar(
           automaticallyImplyLeading: true,
-          backgroundColor: darkBlue(),
+          backgroundColor: navyBlue,
           title: Text(AppLocalization.of(context).cardPayment),
         ),
         body: Column(
@@ -78,20 +78,20 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                   margin: const EdgeInsets.only(left: 16, top: 16, right: 16),
                   child: TextFormField(
                     controller: _cardNumberController,
-                    cursorColor: darkBlue(),
+                    cursorColor: navyBlue,
                     style: TextStyle(
-                      color: darkBlue(),
+                      color: navyBlue,
                     ),
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.white)),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: darkBlue(), width: 1.3),
+                        borderSide: BorderSide(color: navyBlue, width: 1.3),
                       ),
                       enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: darkBlue())),
-                      hintStyle: TextStyle(color: darkBlue()),
-                      labelStyle: TextStyle(color: darkBlue()),
+                          borderSide: BorderSide(color: navyBlue)),
+                      hintStyle: TextStyle(color: navyBlue),
+                      labelStyle: TextStyle(color: navyBlue),
                       labelText: AppLocalization.of(context).cardNumber,
                       hintText: 'xxxx xxxx xxxx xxxx',
                     ),
@@ -109,20 +109,20 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                   margin: const EdgeInsets.only(left: 16, top: 8, right: 16),
                   child: TextFormField(
                     controller: _expiryDateController,
-                    cursorColor: darkBlue(),
+                    cursorColor: navyBlue,
                     style: TextStyle(
-                      color: darkBlue(),
+                      color: navyBlue,
                     ),
                     decoration: InputDecoration(
                         border: OutlineInputBorder(
                             borderSide: BorderSide(color: Colors.white)),
                         focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: darkBlue(), width: 1.3),
+                          borderSide: BorderSide(color: navyBlue, width: 1.3),
                         ),
                         enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: darkBlue())),
-                        hintStyle: TextStyle(color: darkBlue()),
-                        labelStyle: TextStyle(color: darkBlue()),
+                            borderSide: BorderSide(color: navyBlue)),
+                        hintStyle: TextStyle(color: navyBlue),
+                        labelStyle: TextStyle(color: navyBlue),
                         labelText: AppLocalization.of(context).expiredDate,
                         hintText: 'MM/YY'),
                     keyboardType: TextInputType.number,
@@ -140,20 +140,20 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                   child: TextField(
                     focusNode: cvvFocusNode,
                     controller: _cvvCodeController,
-                    cursorColor: darkBlue(),
+                    cursorColor: navyBlue,
                     style: TextStyle(
-                      color: darkBlue(),
+                      color: navyBlue,
                     ),
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.white)),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: darkBlue(), width: 1.3),
+                        borderSide: BorderSide(color: navyBlue, width: 1.3),
                       ),
                       enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: darkBlue())),
-                      hintStyle: TextStyle(color: darkBlue()),
-                      labelStyle: TextStyle(color: darkBlue()),
+                          borderSide: BorderSide(color: navyBlue)),
+                      hintStyle: TextStyle(color: navyBlue),
+                      labelStyle: TextStyle(color: navyBlue),
                       labelText: AppLocalization.of(context).cvv,
                       hintText: 'XXXX',
                     ),
@@ -171,20 +171,20 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                   margin: const EdgeInsets.only(left: 16, top: 8, right: 16),
                   child: TextFormField(
                     controller: _cardHolderNameController,
-                    cursorColor: darkBlue(),
+                    cursorColor: navyBlue,
                     style: TextStyle(
-                      color: darkBlue(),
+                      color: navyBlue,
                     ),
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.white)),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: darkBlue(), width: 1.3),
+                        borderSide: BorderSide(color: navyBlue, width: 1.3),
                       ),
                       enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: darkBlue())),
-                      hintStyle: TextStyle(color: darkBlue()),
-                      labelStyle: TextStyle(color: darkBlue()),
+                          borderSide: BorderSide(color: navyBlue)),
+                      hintStyle: TextStyle(color: navyBlue),
+                      labelStyle: TextStyle(color: navyBlue),
                       labelText: AppLocalization.of(context).cardHolder,
                     ),
                     keyboardType: TextInputType.text,
@@ -201,20 +201,20 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                   margin: const EdgeInsets.only(left: 16, top: 8, right: 16),
                   child: TextFormField(
                     controller: _amountController,
-                    cursorColor: darkBlue(),
+                    cursorColor: navyBlue,
                     style: TextStyle(
-                      color: darkBlue(),
+                      color: navyBlue,
                     ),
                     decoration: InputDecoration(
                         border: OutlineInputBorder(
                             borderSide: BorderSide(color: Colors.white)),
                         focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: darkBlue(), width: 1.3),
+                          borderSide: BorderSide(color: navyBlue, width: 1.3),
                         ),
                         enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: darkBlue())),
-                        hintStyle: TextStyle(color: darkBlue()),
-                        labelStyle: TextStyle(color: darkBlue()),
+                            borderSide: BorderSide(color: navyBlue)),
+                        hintStyle: TextStyle(color: navyBlue),
+                        labelStyle: TextStyle(color: navyBlue),
                         labelText: AppLocalization.of(context).amount,
                         hintText: AppLocalization.of(context).enterAmount),
                     keyboardType: TextInputType.number,
@@ -240,7 +240,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                   margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: MaterialButton(
                     minWidth: double.infinity,
-                    color: darkBlue(),
+                    color: navyBlue,
                     child: Text(
                       AppLocalization.of(context).topUp,
                       style: TextStyle(color: Colors.white),
@@ -252,8 +252,8 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                         Toast.show(
                             AppLocalization.of(context).invalidDetails + " !!",
                             context,
-                            textColor: Colors.white,
-                            backgroundColor: darkBlue());
+                          backgroundColor: Colors.black,
+                          textColor: Colors.white,);
                       }
                     },
                   ),
@@ -272,12 +272,13 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                 " " +
                 AppLocalization.of(context).done,
             context,
-            textColor: Colors.white,
-            backgroundColor: darkBlue());
+          backgroundColor: Colors.black,
+          textColor: Colors.white,);
         Navigator.pop(context);
       } else {
         Toast.show(AppLocalization.of(context).somethingWentWrong, context,
-            textColor: Colors.white, backgroundColor: darkBlue());
+          backgroundColor: Colors.black,
+          textColor: Colors.white,);
       }
     });
   }

@@ -652,29 +652,42 @@ class _AddContractState extends State<AddContract> {
                 Navigator.pop(context);
               }
             }).catchError((error) {
-              Toast.show(error.toString(), context,
-                  gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+              Toast.show(
+                error.toString(),
+                context,
+                gravity: Toast.BOTTOM,
+                backgroundColor: Colors.black,
+                textColor: Colors.white,
+              );
             });
           } catch (e) {
             debugPrint(e);
-            Toast.show(e, context,
-                gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+            Toast.show(
+              e,
+              context,
+              gravity: Toast.BOTTOM,
+              backgroundColor: Colors.black,
+              textColor: Colors.white,
+            );
           }
         } else {
           Toast.show(
             AppLocalization.of(context).invalidRecipient,
             context,
+            backgroundColor: Colors.black,
             textColor: Colors.white,
-            backgroundColor: darkBlue(),
           );
         }
       }
     } else {
       var msg = AppLocalization.of(context).invalidRecipient;
-      Toast.show(msg, context,
-          gravity: Toast.CENTER,
-          backgroundColor: darkBlue(),
-          textColor: Colors.white);
+      Toast.show(
+        msg,
+        context,
+        gravity: Toast.CENTER,
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+      );
     }
   }
 

@@ -21,13 +21,13 @@ class ConfirmDelete extends StatelessWidget {
         actions: <Widget>[
           FlatButton(
               child: Text(AppLocalization.of(context).yes),
-              color: darkBlue(),
+              color: blackFont,
               onPressed: () {
                 Navigator.pop(context, true);
               }),
           FlatButton(
             child: Text(AppLocalization.of(context).cancel),
-            color: darkBlue(),
+            color: blackFont,
             onPressed: () {
               Navigator.pop(context, false);
             },

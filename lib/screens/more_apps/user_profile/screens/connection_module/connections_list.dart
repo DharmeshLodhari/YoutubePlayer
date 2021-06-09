@@ -16,12 +16,10 @@ import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/search_text_field.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
 
 import '../../user_auth.dart';
 
@@ -39,13 +37,11 @@ class _ConnectionListState extends State<ConnectionList> {
   String previous = "";
   List connectionsList = [];
   ScrollController _scrollController = new ScrollController();
-  // RefreshController _refreshController =
-  //     RefreshController(initialRefresh: false);
+
   bool isLoading = false;
   bool noItemInList = false;
   bool isLoadingFromDB = false;
 
-  RefreshBlocForConnectionDashboard _refreshBloc;
   ConnectionListBloc _connectionListBloc;
 
   TextEditingController searchChatConversation;
@@ -115,27 +111,6 @@ class _ConnectionListState extends State<ConnectionList> {
     }
   }
 
-  void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        count = 0;
-        next = "";
-        previous = "";
-        connectionsList = [];
-        noItemInList = false;
-        getList();
-        // _refreshController.refreshCompleted();
-      } else {
-        Toast.show(
-            AppLocalization.of(context).internetConnectionNotAvailable, context,
-            gravity: Toast.BOTTOM, backgroundColor: darkBlue());
-        // _refreshController.refreshCompleted();
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     // refresh the list when lifecycle called onResume method
@@ -143,42 +118,6 @@ class _ConnectionListState extends State<ConnectionList> {
 
     _connectionListBloc = Provider.of<ConnectionListBloc>(context);
 
-    // return Scaffold(
-    //   key: _scaffoldContactsListKey,
-    //   backgroundColor: Colors.white,
-    //
-    //   body: GestureDetector(
-    //     onTap: () {
-    //       FocusScope.of(context).requestFocus(new FocusNode());
-    //     },
-    //     child: Column(
-    //       children: [
-    //         getSearchTextField(),
-    //         isUserIsSearching
-    //             ? Expanded(child: getSearchedUserListUI())
-    //             : Expanded(
-    //                 child: RefreshConfiguration(
-    //                   headerTriggerDistance: 70,
-    //                   dragSpeedRatio: 0.35,
-    //                   child: SmartRefresher(
-    //                       enablePullDown: true,
-    //                       header: WaterDropHeader(
-    //                         complete: Container(),
-    //                         waterDropColor: navyBlue,
-    //                       ),
-    //                       controller: _refreshController,
-    //                       onRefresh: _onRefresh,
-    //                       child: Container(
-    //                           color: lightGrey,
-    //                           child: _buildConnectionsList())),
-    //                   // child: _buildListTile()),
-    //                 ),
-    //                 // child: _buildListTile())),
-    //               ),
-    //       ],
-    //     ),
-    //   ),
-    // );
     return Scaffold(
       key: _scaffoldContactsListKey,
       backgroundColor: Colors.white,
@@ -266,55 +205,38 @@ class _ConnectionListState extends State<ConnectionList> {
         isResult: true,
       );
     }
-
-    return ListView.builder(
-      padding: EdgeInsets.symmetric(
-        vertical: 4,
-      ),
-      //+1 for progressbar
-      itemCount: _connectionListBloc.connectionUsers.length,
-      physics:
-          const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-      itemBuilder: (BuildContext context, int index) {
-        return _getSlidableWithLists(
-            context, _connectionListBloc.connectionUsers[index], index);
-      },
-      controller: _scrollController,
-    );
-  }
-
-  // Widget _buildConnectionsList() {
-  //   return noItemInList
-  //       ? NoItemInList(
-  //           msg: "You Have No Connections",
-  //         )
-  //       : ListView.builder(
-  //           padding: EdgeInsets.symmetric(
-  //             vertical: 4,
-  //           ),
-  //           //+1 for progressbar
-  //           itemCount: connectionsList.length + 1,
-  //           itemBuilder: (BuildContext context, int index) {
-  //             if (index == connectionsList.length) {
-  //               return _buildIndicator();
-  //             } else {
-  //               return _getSlidableWithLists(
-  //                   context, connectionsList[index], index);
-  //             }
-  //           },
-  //           controller: _scrollController,
-  //         );
-  // }
-
-  Widget _buildIndicator() {
-    return new Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
-            opacity: isLoading ? 1.0 : 00,
-            child: isLoading ? CircularLoadingIndicator() : Container()),
-      ),
-    );
+    try {
+      return ListView.builder(
+        padding: EdgeInsets.symmetric(
+          vertical: 4,
+        ),
+        //+1 for progressbar
+        itemCount: _connectionListBloc.connectionUsers.length,
+        physics: const BouncingScrollPhysics(
+            parent: AlwaysScrollableScrollPhysics()),
+        itemBuilder: (BuildContext context, int index) {
+          return _getSlidableWithLists(
+              context, _connectionListBloc.connectionUsers[index], index);
+        },
+        controller: _scrollController,
+      );
+    } catch (error) {
+      debugPrint("ERROR=>:- $error");
+      return ListView.builder(
+        padding: EdgeInsets.symmetric(
+          vertical: 4,
+        ),
+        //+1 for progressbar
+        itemCount: _connectionListBloc.connectionUsers.length,
+        physics: const BouncingScrollPhysics(
+            parent: AlwaysScrollableScrollPhysics()),
+        itemBuilder: (BuildContext context, int index) {
+          return _getSlidableWithLists(
+              context, _connectionListBloc.connectionUsers[index], index);
+        },
+        controller: _scrollController,
+      );
+    }
   }
 
   void getList() async {

@@ -478,7 +478,7 @@ class _AddServiceState extends State<AddService> {
           service.shortDescription = serviceShortDescription;
           service.description = serviceDescription;
           service.category = serviceCategory;
-          service.price = servicePrice;
+          service.price = moneyInputNormalizer(servicePrice).toString();
           service.availableFrom = serviceAvailableFrom;
           service.isAvailable = serviceIsAvailable;
 
@@ -487,20 +487,24 @@ class _AddServiceState extends State<AddService> {
             Toast.show(
               AppLocalization.of(context).serviceAddedSuccessfully,
               context,
+              backgroundColor: Colors.black,
               textColor: Colors.white,
-              backgroundColor: darkBlue(),
               duration: 3,
             );
           }).catchError((error) {
             Toast.show(error.toString(), context,
+                backgroundColor: Colors.black,
                 textColor: Colors.white,
-                backgroundColor: darkBlue(),
                 duration: 5);
           });
         }
       } else {
-        Toast.show(AppLocalization.of(context).pleaseAddImage, context,
-            textColor: Colors.white, backgroundColor: darkBlue());
+        Toast.show(
+          AppLocalization.of(context).pleaseAddImage,
+          context,
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+        );
       }
     }
   }
@@ -510,7 +514,7 @@ class _AddServiceState extends State<AddService> {
       return true;
     } else {
       Toast.show(AppLocalization.of(context).selectCategory, context,
-          backgroundColor: darkBlue(),
+          backgroundColor: Colors.black,
           textColor: Colors.white,
           gravity: Toast.CENTER);
       return false;

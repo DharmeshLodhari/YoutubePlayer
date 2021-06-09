@@ -47,9 +47,9 @@ class _AddDocumentState extends State<AddDocument> {
     ];
 
     return Scaffold(
-      backgroundColor: lightBlue(),
+      backgroundColor: chatBackgroundColor,
       appBar: AppBar(
-        backgroundColor: darkBlue(),
+        backgroundColor: navyBlue,
         title: Text(AppLocalization.of(context).verifyYourIdentity),
       ),
       body: Column(
@@ -147,7 +147,7 @@ class _AddDocumentState extends State<AddDocument> {
                     userAgree = value;
                   });
                 },
-                activeColor: darkBlue(),
+                activeColor: navyBlue,
               ),
               SizedBox(
                 width: 8,
@@ -183,7 +183,7 @@ class _AddDocumentState extends State<AddDocument> {
       leading: icon,
       title: Text(
         title,
-        style: TextStyle(fontWeight: FontWeight.bold, color: darkBlue()),
+        style: TextStyle(fontWeight: FontWeight.bold, color: blackFont),
       ),
       subtitle: Text(subtitle),
       trailing: Icon(Icons.keyboard_arrow_right),
@@ -309,7 +309,7 @@ class _AddDocumentState extends State<AddDocument> {
                   AppLocalization.of(context).next,
                   style: TextStyle(color: Colors.white),
                 ),
-                color: darkBlue(),
+                color: blackFont,
                 onPressed: _nextFormStep,
               )
             : Container(),
@@ -346,7 +346,7 @@ class _AddDocumentState extends State<AddDocument> {
     return Text(
       AppLocalization.of(context).userPhotoPage,
       style: TextStyle(
-          fontWeight: FontWeight.bold, fontSize: 24, color: darkBlue()),
+          fontWeight: FontWeight.bold, fontSize: 24, color: blackFont),
     );
   }
 
@@ -359,7 +359,7 @@ class _AddDocumentState extends State<AddDocument> {
         ),
         title: Text(
           AppLocalization.of(context).needToUseYourMobileToTake,
-          style: TextStyle(fontWeight: FontWeight.bold, color: darkBlue()),
+          style: TextStyle(fontWeight: FontWeight.bold, color: blackFont),
         ),
         subtitle: Text(AppLocalization.of(context).tapHereToContinue),
         onTap: () {
@@ -412,7 +412,7 @@ class _AddDocumentState extends State<AddDocument> {
             AppLocalization.of(context).previous,
             style: TextStyle(color: Colors.white),
           ),
-          color: darkBlue(),
+          color: blackFont,
           onPressed: _previousFormStep,
         ),
         userImage != null
@@ -421,7 +421,7 @@ class _AddDocumentState extends State<AddDocument> {
                   AppLocalization.of(context).finish,
                   style: TextStyle(color: Colors.white),
                 ),
-                color: darkBlue(),
+                color: blackFont,
                 onPressed: () {
                   final _auth = AuthService();
                   final userBloc =
@@ -450,8 +450,12 @@ class _AddDocumentState extends State<AddDocument> {
                         });
                       });
                     } catch (exception) {
-                      Toast.show(exception, context,
-                          textColor: Colors.white, backgroundColor: darkBlue());
+                      Toast.show(
+                        exception,
+                        context,
+                        backgroundColor: Colors.black,
+                        textColor: Colors.white,
+                      );
                     }
                   });
                 },

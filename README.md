@@ -4,6 +4,8 @@ Slydo Mobile app
 
 [![pipeline status](https://code.slydo.co/mobile-team/slydo/badges/master/pipeline.svg)](https://code.slydo.co/mobile-team/slydo/-/commits/master)
 
+[![coverage report](https://code.slydo.co/mobile-team/slydo/badges/master/coverage.svg)](https://code.slydo.co/mobile-team/slydo/-/commits/master)
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.

@@ -620,6 +620,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       //   }
       // }
 
+      // ignore: null_aware_before_operator
       if (messageListPositionListener
               ?.itemPositions?.value?.first?.itemTrailingEdge <
           1) {
@@ -1250,7 +1251,6 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                 stream: ChatMessageSynchronizer().getChatMessageStream,
                 builder: (context, snapshot) {
                   if (snapshot.data == true) {
-                    debugPrint("======================================>Called");
                     ChatMessageSynchronizer().setStreamFalse();
                     getMissedMessageFromDB();
                   }
@@ -2014,6 +2014,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void pickGIF() async {
+    stopShakeDetector();
     GiphyGif gif = await GiphyPicker.pickGif(
         context: context,
         apiKey: gifApiKey,
@@ -2030,12 +2031,14 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           ),
         ));
 
+    setupShakeDetector();
     if (gif != null) {
       sendGIFToSocket(urlOfGIF: gif.images.original.url);
     }
   }
 
   void pickSticker() async {
+    stopShakeDetector();
     GiphyGif gif = await GiphyPicker.pickGif(
         context: context,
         apiKey: gifApiKey,
@@ -2052,7 +2055,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
             fontWeight: FontWeight.w600,
           ),
         ));
-
+    setupShakeDetector();
     if (gif != null) {
       sendGIFToSocket(urlOfGIF: gif.images.original.url);
     }
@@ -2263,6 +2266,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void addMediaToMessage() async {
+    stopShakeDetector();
     showMoreAction = false;
     if (mounted) setState(() {});
 
@@ -2278,10 +2282,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       File file = File(pickedMedia.files.single.path);
       String mediaType = getFileType(pickedMedia);
       if (mediaType == "") {
+        setupShakeDetector();
         return;
       }
 
-      stopShakeDetector();
       var result = await Navigator.of(context).pushNamed(
         "/send-media-to-chat-message",
         arguments: {
@@ -2390,8 +2394,12 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void captureImageOrVideo() async {
+    stopShakeDetector();
     String mediaType = await selectMediaType();
-    if (mediaType == null) return;
+    if (mediaType == null) {
+      setupShakeDetector();
+      return;
+    }
 
     String capturedMediaPath;
 
@@ -2400,6 +2408,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     } else if (mediaType == "video") {
       capturedMediaPath = await captureVideo();
     } else {
+      setupShakeDetector();
       return;
     }
 
@@ -3331,6 +3340,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void showSearchProductAndServiceBottomSheet() async {
+    stopShakeDetector();
     var result = await showModalBottomSheet<String>(
         backgroundColor: Colors.transparent,
         context: context,
@@ -3370,6 +3380,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           });
         });
     bottomSheetMounted = false;
+    setupShakeDetector();
     if (result == null) {
       if (itemSearchTypeSelectionMenu.isMenuOpen) {
         itemSearchTypeSelectionMenu.closeMenu();
@@ -3708,7 +3719,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       } else {
         Toast.show(
             AppLocalization.of(context).internetConnectionNotAvailable, context,
-            gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+            gravity: Toast.BOTTOM,  backgroundColor: Colors.black,
+          textColor: Colors.white,);
         _refreshController.refreshCompleted();
       }
     });

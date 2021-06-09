@@ -14,12 +14,9 @@ final String baseUrl = "https://api.slydo.co";
 final String secureBaseUrl = "https://api.slydo.co";
 final String localHostUrl = "https://127.0.0.1:8080";
 final String gifApiKey = "Jmh8SVxEvtKVCegoJDNYnxSSSbfPISPs";
+final String socketUrl = "wss://slydo.co/ws/main";
 
 class AuthService {
-  final String baseUrl = "https://api.slydo.co";
-  final String secureBaseUrl = "https://api.slydo.co";
-  final String localHostUrl = "https://127.0.0.1:8080";
-
   final Duration timeOutDuration = Duration(seconds: 4);
   final String timeOutErrorMessage = "Server Time-out !!";
 

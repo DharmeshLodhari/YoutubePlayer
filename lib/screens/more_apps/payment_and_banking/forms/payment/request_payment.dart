@@ -761,10 +761,13 @@ class _RequestPaymentState extends State<RequestPayment> {
                         setState(() {
                           errorMessage =
                               AppLocalization.of(context).serverError;
-                          Toast.show(errorMessage, context,
-                              gravity: Toast.TOP,
-                              backgroundColor: darkBlue(),
-                              textColor: Colors.white);
+                          Toast.show(
+                            errorMessage,
+                            context,
+                            gravity: Toast.TOP,
+                            backgroundColor: Colors.black,
+                            textColor: Colors.white,
+                          );
                         });
                       }
                     }
@@ -795,23 +798,34 @@ class _RequestPaymentState extends State<RequestPayment> {
                 });
           } catch (e) {
             debugPrint(e);
-            Toast.show(e, context,
-                gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+            Toast.show(
+              e,
+              context,
+              gravity: Toast.BOTTOM,
+              backgroundColor: Colors.black,
+              textColor: Colors.white,
+            );
           }
         } else {
           var msg = AppLocalization.of(context).invalidRecipient;
-          Toast.show(msg, context,
-              gravity: Toast.CENTER,
-              backgroundColor: darkBlue(),
-              textColor: Colors.white);
+          Toast.show(
+            msg,
+            context,
+            gravity: Toast.CENTER,
+            backgroundColor: Colors.black,
+            textColor: Colors.white,
+          );
         }
       }
     } else {
       var msg = AppLocalization.of(context).invalidRecipient;
-      Toast.show(msg, context,
-          gravity: Toast.CENTER,
-          backgroundColor: darkBlue(),
-          textColor: Colors.white);
+      Toast.show(
+        msg,
+        context,
+        gravity: Toast.CENTER,
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+      );
     }
   }
 

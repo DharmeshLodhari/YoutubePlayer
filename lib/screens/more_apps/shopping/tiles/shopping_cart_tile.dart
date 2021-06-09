@@ -3,6 +3,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -86,11 +87,7 @@ class _ShoppingCartTileForProductState
         filterQuality: FilterQuality.high,
         placeholder: (context, url) => widget.item?.cover == null ?? true
             ? Icon(Icons.widgets)
-            : CircularProgressIndicator(
-                strokeWidth: 2.5,
-                valueColor: AlwaysStoppedAnimation(Colors.white),
-                backgroundColor: lightBlue(),
-              ),
+            : CircularLoadingIndicator(),
       ),
     );
   }

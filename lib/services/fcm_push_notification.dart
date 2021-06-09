@@ -5,7 +5,7 @@ import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_handler.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_message_handler.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
@@ -13,6 +13,7 @@ import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/awesome_notification_service.dart';
 import 'package:Slydo/services/device_info.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/date_time_and_money_converter.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/dialog.dart';
@@ -20,28 +21,12 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-/// for implementing flutter local notification
-/// https://github.com/FirebaseExtended/flutterfire/issues/1590
-
 Future<dynamic> fcmBackgroundMessageHandler(
     Map<String, dynamic> message) async {
 // await Firebase.initializeApp();
   print("onBackgroundMessage: $message");
 
   try {
-// creating notification from server payload
-// var notification = Platform.isAndroid
-//     ? getAndroidNotification(message)
-//     : getIosNotification(message);
-// debugPrint("Notification From OnResume:  $notification");
-
-    // await LocalNotificationService().init();
-    //
-    // showOngoingNotification(
-    //     LocalNotificationService().flutterLocalNotificationsPlugin,
-    //     title: "Hello",
-    //     body: "Slydo");
-
     /// {data:
     /// {priority: high,
     /// actions: /chat-screen/9ae68069-b342-4e04-b568-602bde6fe901,
@@ -75,6 +60,13 @@ Future<dynamic> fcmBackgroundMessageHandler(
         ChatMessage textMessage = ChatMessage.fromJson(data['data']);
 
         ChatMessageHandler().addChatMessage(chatMessage: textMessage);
+
+        int time = convertStringToMillisecondsSinceEpoch(textMessage.createdAt);
+
+        String conversationId = textMessage.conversationId;
+
+        ConnectionListManager()
+            .updateLastMessageTime(conversationId: conversationId, time: time);
 
         AwesomeNotificationService().showNotification(message: data);
       }
@@ -170,8 +162,6 @@ class PushNotificationService {
               ? getAndroidNotification(message)
               : getIosNotification(message);
 
-          // print("Notification From onMessage:  $notification");
-
           ///{body: Slydo Nudge Message,
           /// title: Slydo Notification,
           /// vibrate: [200,100,200,100,200,100,400],
@@ -185,12 +175,12 @@ class PushNotificationService {
           if (notification["data"] != null) {
             print("notification data = ${notification["data"]}");
             print("notification data type = ${notification["data"] is String}");
-            MainSocketMessageHandler(message: notification["data"]);
+            // MainSocketMessageHandler(message: notification["data"]);
+          } else {
+            showAlertMessage(
+                notification: notification,
+                context: myGlobals.scaffoldKey.currentContext);
           }
-
-          showAlertMessage(
-              notification: notification,
-              context: myGlobals.scaffoldKey.currentContext);
         },
 
         // Called when the app has been closed completely and it's opened
@@ -202,8 +192,6 @@ class PushNotificationService {
           var notification = Platform.isAndroid
               ? getAndroidNotification(message)
               : getIosNotification(message);
-
-          // print("Notification From onLaunch:  $notification");
 
           //navigate to the particular screen
           _navigateToItemDetail(
@@ -218,8 +206,6 @@ class PushNotificationService {
           var notification = Platform.isAndroid
               ? getAndroidNotification(message)
               : getIosNotification(message);
-
-          // print("Notification From OnResume:  $notification");
 
           //navigate to the particular screen
           _navigateToItemDetail(

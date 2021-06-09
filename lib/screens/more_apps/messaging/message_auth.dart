@@ -396,8 +396,6 @@ class MessageAuth extends AuthService {
     if (response.statusCode == 413) {
       return Future.error(
           "Please upload smaller image, Your image is too large.");
-
-      ///{"group_name":"Slydo Testing","description":null,"banner":"https://slydo-assets.s3.amazonaws.com/media/image_cropper_1619614137991.jpg","owner":"black"}
     }
     var responseBody = await response.stream.bytesToString();
     debugPrint("$responseBody");
@@ -714,11 +712,6 @@ class MessageAuth extends AuthService {
         "check_id": element.checkId
       });
     });
-
-    // dataToBeSent.forEach((element) {
-    //   debugPrint(
-    //       "===> ${element['conversation_id']}   ====> ${element['created_at']}");
-    // });
 
     Map<String, dynamic> data = {"data": dataToBeSent};
 

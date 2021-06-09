@@ -227,10 +227,13 @@ class _PayoutScreenState extends State<PayoutScreen> {
                   if (mounted) {
                     setState(() {
                       errorMessage = AppLocalization.of(context).serverError;
-                      Toast.show(errorMessage, context,
-                          gravity: Toast.TOP,
-                          backgroundColor: darkBlue(),
-                          textColor: Colors.white);
+                      Toast.show(
+                        errorMessage,
+                        context,
+                        gravity: Toast.TOP,
+                        backgroundColor: Colors.black,
+                        textColor: Colors.white,
+                      );
                     });
                   }
                 }
@@ -244,10 +247,13 @@ class _PayoutScreenState extends State<PayoutScreen> {
                     setState(() {
                       errorMessage =
                           AppLocalization.of(context).somethingWentWrong;
-                      Toast.show(errorMessage, context,
-                          gravity: Toast.TOP,
-                          backgroundColor: darkBlue(),
-                          textColor: Colors.white);
+                      Toast.show(
+                        errorMessage,
+                        context,
+                        gravity: Toast.TOP,
+                        backgroundColor: Colors.black,
+                        textColor: Colors.white,
+                      );
                     });
                   }
                 }
@@ -261,8 +267,13 @@ class _PayoutScreenState extends State<PayoutScreen> {
             });
       } catch (e) {
         debugPrint(e);
-        Toast.show(e, context,
-            gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+        Toast.show(
+          e,
+          context,
+          gravity: Toast.BOTTOM,
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+        );
       }
     }
   }

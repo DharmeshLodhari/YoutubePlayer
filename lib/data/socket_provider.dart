@@ -7,6 +7,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/helpers/db_socket_message
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/services/auth.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/io.dart';
@@ -15,7 +16,6 @@ class MainSocketProvider extends ChangeNotifier {
   static IOWebSocketChannel _channel;
 
   static User _currentUser;
-  static String _socketUrl = "wss://slydo.co/ws/main";
   static var _headers;
   static String _currentConversationId;
 
@@ -37,8 +37,6 @@ class MainSocketProvider extends ChangeNotifier {
     _isChatOnScreen = value;
     notifyListeners();
   }
-
-  String get socketUrl => _socketUrl;
 
   List<String> get queueMessages => _queueMessages;
 
@@ -178,7 +176,7 @@ class MainSocketProvider extends ChangeNotifier {
 
     /// change socket url according to recipient user url
     // var finalUrl = "$_socketUrl";
-    var finalUrl = "$_socketUrl/${_currentUser.userName}/";
+    var finalUrl = "$socketUrl/${_currentUser.userName}/";
 
     // Set auth headers or socket will be closed
     _headers = await MessageAuth().getAuthHeaders();
@@ -430,7 +428,7 @@ class MainSocketProvider extends ChangeNotifier {
 
     _channel = null;
     debugPrint(
-        "WebSocket disconnected to $_socketUrl for user ${currentUser?.userName}");
+        "WebSocket disconnected to $socketUrl for user ${currentUser?.userName}");
     notifyListeners();
   }
 }

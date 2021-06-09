@@ -31,7 +31,6 @@ class ChatMessageSynchronizer {
     return _chatMessageSynchronizer;
   }
 
-  static int _count = 0;
   static String _next = "";
   static String _previous = "";
 
@@ -47,7 +46,6 @@ class ChatMessageSynchronizer {
         .getChatMessagePagination(
             conversationId: chatConversation.conversationId);
 
-    _count = chatMessagePagination.count;
     _next = chatMessagePagination.next;
     _previous = chatMessagePagination.previous;
 
@@ -64,8 +62,7 @@ class ChatMessageSynchronizer {
 
       List<String> tempList = result['results'];
 
-      List<ChatMessage> messages =
-          await ChatMessageHandler().saveChatMessages(messages: tempList);
+      await ChatMessageHandler().saveChatMessages(messages: tempList);
 
       chatMessagePagination.count = result['count'];
       chatMessagePagination.next = result['next'];

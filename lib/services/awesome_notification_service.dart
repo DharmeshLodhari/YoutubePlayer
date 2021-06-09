@@ -204,6 +204,7 @@ class AwesomeNotificationService {
         } else if (receivedNotification.buttonKeyPressed == "accept_nudge") {
           saveNudgeNotification(receivedNotification.payload);
         } else {
+          debugPrint("===> ${receivedNotification.toMap()}");
           saveNotification(payload);
         }
       });

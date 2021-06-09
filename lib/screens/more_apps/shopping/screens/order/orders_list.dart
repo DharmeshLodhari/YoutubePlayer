@@ -82,8 +82,12 @@ class _OrdersListState extends State<OrdersList> {
         _refreshController.refreshCompleted();
       } else {
         Toast.show(
-            AppLocalization.of(context).internetConnectionNotAvailable, context,
-            gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+          AppLocalization.of(context).internetConnectionNotAvailable,
+          context,
+          gravity: Toast.BOTTOM,
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+        );
         _refreshController.refreshCompleted();
       }
     });
@@ -300,10 +304,12 @@ class _OrdersListState extends State<OrdersList> {
                   });
             } else {
               Toast.show(
-                  AppLocalization.of(context).internetConnectionNotAvailable,
-                  context,
-                  gravity: Toast.BOTTOM,
-                  backgroundColor: darkBlue());
+                AppLocalization.of(context).internetConnectionNotAvailable,
+                context,
+                gravity: Toast.BOTTOM,
+                backgroundColor: Colors.black,
+                textColor: Colors.white,
+              );
             }
           });
         },

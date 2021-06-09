@@ -107,7 +107,8 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
       } else {
         Toast.show(
             AppLocalization.of(context).internetConnectionNotAvailable, context,
-            gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+            gravity: Toast.BOTTOM,  backgroundColor: Colors.black,
+          textColor: Colors.white,);
         _refreshController.refreshCompleted();
       }
     });

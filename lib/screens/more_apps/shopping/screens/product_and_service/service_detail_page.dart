@@ -788,10 +788,14 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                 ),
           onTap: () {
             Clipboard.setData(new ClipboardData(text: service.qrCode));
-            Toast.show(AppLocalization.of(context).copied, context,
-                gravity: Toast.CENTER,
-                duration: Toast.LENGTH_LONG,
-                backgroundColor: darkBlue());
+            Toast.show(
+              AppLocalization.of(context).copied,
+              context,
+              gravity: Toast.CENTER,
+              duration: Toast.LENGTH_LONG,
+              backgroundColor: Colors.black,
+              textColor: Colors.white,
+            );
           },
         ),
       ),
