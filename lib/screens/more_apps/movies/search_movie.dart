@@ -52,8 +52,12 @@ class _SearchMovieState extends State<SearchMovie> {
         _refreshController.refreshCompleted();
       } else {
         Toast.show(
-            AppLocalization.of(context).internetConnectionNotAvailable, context,
-            gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+          AppLocalization.of(context).internetConnectionNotAvailable,
+          context,
+          gravity: Toast.BOTTOM,
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+        );
         _refreshController.refreshCompleted();
       }
     });

@@ -8,6 +8,7 @@ class GroupDetailModel {
   String conversationId;
   String fullName;
   bool isGroupConversation;
+  String createdAt;
   List<String> mutedParticipants;
   List<Participant> participants;
   String type;
@@ -25,6 +26,7 @@ class GroupDetailModel {
       this.mutedParticipants = const [],
       this.participants = const [],
       this.type,
+      this.createdAt,
       this.username,
       this.owner,
       this.description});
@@ -40,6 +42,7 @@ class GroupDetailModel {
             : [],
         conversationId: json['conversation_id'],
         fullName: json['full_name'],
+        createdAt: json['created_at'],
         isGroupConversation: json['is_group_conversation'],
         mutedParticipants: json['muted_participants'] != null
             ? new List<String>.from(json['muted_participants'])
@@ -66,6 +69,7 @@ class GroupDetailModel {
         isGroupConversation: chatConversation.isGroupConversation,
         mutedParticipants: chatConversation.mutedParticipants,
         participants: [],
+        createdAt: chatConversation.createdAt,
         type: chatConversation.type,
         username: chatConversation.userName,
         owner: chatConversation.owner,
@@ -82,6 +86,7 @@ class GroupDetailModel {
     data['username'] = this.username;
     data['owner'] = this.owner;
     data['description'] = this.description;
+    data['created_at'] = this.createdAt;
     if (this.adminUsers != null) {
       data['admin_users'] = this.adminUsers;
     }

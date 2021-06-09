@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:Slydo/data/socket_provider.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatUserModel.dart';
@@ -32,23 +33,29 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      mainSocketProvider =
-          Provider.of<MainSocketProvider>(context, listen: false);
+      try {
+        if (mounted) {
+          mainSocketProvider =
+              Provider.of<MainSocketProvider>(context, listen: false);
 
-      streamSubscription = mainSocketProvider.listen((message) {
-        Map<String, dynamic> messageData = jsonDecode(message);
-        if (messageData["type"] == "user_typing_message" &&
-            messageData["conversation_id"] == widget.user.conversationId) {
-          isTyping = true;
-          typingMessage = messageData["message"];
-          if (mounted) setState(() {});
-          Future.delayed(Duration(milliseconds: 500)).then((value) {
-            isTyping = false;
-            typingMessage = "";
-            if (mounted) setState(() {});
+          streamSubscription = mainSocketProvider.listen((message) {
+            Map<String, dynamic> messageData = jsonDecode(message);
+            if (messageData["type"] == "user_typing_message" &&
+                messageData["conversation_id"] == widget.user.conversationId) {
+              isTyping = true;
+              typingMessage = messageData["message"];
+              if (mounted) setState(() {});
+              Future.delayed(Duration(milliseconds: 500)).then((value) {
+                isTyping = false;
+                typingMessage = "";
+                if (mounted) setState(() {});
+              });
+            }
           });
         }
-      });
+      } catch (error) {
+        debugPrint("ERROR10 :- $error");
+      }
     });
 
     super.initState();
@@ -137,21 +144,25 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
   }
 
   Widget getTrailing() {
-    return FutureBuilder<ChatUserModel>(
-        future: ChatUserManager().getUser(widget.user.conversationId),
+    return StreamBuilder(
+        stream: ChatMessageSynchronizer().getChatMessageCountStream,
         builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Container(
-              width: 0,
-              height: 0,
-            );
-          } else if (snapshot.hasData) {
-            return getBadgeAndGroupLabel(snapshot.data.messageCount);
-          }
-          return Container(
-            width: 0,
-            height: 0,
-          );
+          return FutureBuilder<ChatUserModel>(
+              future: ChatUserManager().getUser(widget.user.conversationId),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return Container(
+                    width: 0,
+                    height: 0,
+                  );
+                } else if (snapshot.hasData) {
+                  return getBadgeAndGroupLabel(snapshot.data.messageCount);
+                }
+                return Container(
+                  width: 0,
+                  height: 0,
+                );
+              });
         });
   }
 
@@ -194,7 +205,7 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
       child: Text(
         "Group",
         style: TextStyle(
-            fontSize: 12, fontWeight: FontWeight.w600, color: naturalGreen),
+            fontSize: 11, fontWeight: FontWeight.w600, color: naturalGreen),
       ),
     );
   }

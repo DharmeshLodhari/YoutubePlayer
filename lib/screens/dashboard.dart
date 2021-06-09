@@ -1,16 +1,25 @@
 import 'dart:async';
+import 'dart:convert';
 
+import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_message_handler.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/nudge_notification/NudgeNotification.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/checkout_shopping_cart.dart';
+import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/screens/search_module.dart';
 import 'package:Slydo/screens/user_dashboard.dart';
+import 'package:Slydo/services/awesome_notification_service.dart';
 import 'package:Slydo/services/fcm_push_notification.dart';
 import 'package:Slydo/services/list_refresher.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/keep_alive_page.dart';
 import 'package:badges/badges.dart';
@@ -21,6 +30,7 @@ import 'package:provider/provider.dart';
 
 import '../utils/colors.dart';
 import 'home.dart';
+import 'more_apps/messaging/chat/helpers/connection_list_synchronizer.dart';
 import 'more_apps/payment_and_banking/screens/payment/request_payments_list.dart';
 
 // ignore: must_be_immutable
@@ -66,10 +76,39 @@ class _DashboardState extends State<Dashboard> {
       });
     }
 
-    registerPushNotification();
-
-    ListRefresher().initialize();
     super.initState();
+
+    PushNotificationService().initialize();
+    ListRefresher().initialize();
+
+    fetchConnections();
+
+    checkNotificationToNavigate();
+
+    listenNotificationTap();
+  }
+
+  void fetchConnections() async {
+    ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
+        myGlobals.navigationKey.currentContext,
+        listen: false);
+
+    int result = await connectionListBloc.getConnectionsCount();
+    debugPrint("CONNECTION LIST LENGTH:- $result");
+    if (result == 0) {
+      await ConnectionSynchronizer().fetch(isRefresh: true);
+
+      int result = await connectionListBloc.getConnectionsCount();
+      debugPrint("CONNECTION LIST LENGTH:- $result");
+
+      connectionListBloc.connectionUsers.forEach((conversation) async {
+        await ChatMessageSynchronizer()
+            .getMessages(chatConversation: conversation, isFirstTime: true);
+      });
+    } else {
+      await ConnectionSynchronizer().update();
+      await ChatMessageSynchronizer().update();
+    }
   }
 
   void initializeListener() {
@@ -89,8 +128,123 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
-  void registerPushNotification() async {
-    await PushNotificationService().login();
+  void checkNotificationToNavigate() async {
+    NudgeNotification nudgeNotification =
+        await DatabaseHelper().getNudgeNotification();
+    if (nudgeNotification != null) {
+      debugPrint("NOTIFICATION FOUND :- ${nudgeNotification.toJson()}");
+      showDialog(
+          context: context,
+          builder: (context) => Center(child: CircularLoadingIndicator()));
+
+      UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+
+      await DatabaseHelper().deleteNudgeNotification();
+
+      ChatConversation chatConversation = await UserAuth()
+          .fetchContactProfile(nudgeNotification.recipientUsername);
+
+      MainSocketMessageHandler().sendNudgeAcknowledgement(
+          author: chatConversation, currentUser: userBloc, type: "Accepted");
+
+      /// if User is not added in database
+      try {
+        ConnectionListBloc connectionListBloc =
+            Provider.of<ConnectionListBloc>(context, listen: false);
+
+        connectionListBloc.setConnectionUsers(users: [chatConversation]);
+
+        ChatUserManager().addUsers([chatConversation]);
+      } catch (error) {
+        debugPrint("ERRORR:- $error");
+      }
+
+      if (chatConversation == null) {
+        Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
+        return;
+      }
+      Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
+      Navigator.pushNamed(context, '/chat-screen',
+          arguments: {"searchedUser": chatConversation});
+      return;
+    } else {
+      Map<String, dynamic> notificationList =
+          await DatabaseHelper().getNotification();
+
+      if (notificationList == null) return;
+
+      Map<String, dynamic> notification =
+          jsonDecode(notificationList['notification']);
+
+      if (notification['type'] == "chatroom_message") {
+        String recipientUsername =
+            notification['actions'].replaceAll("/chat-screen/", "");
+        print("Recipient user name = $recipientUsername");
+
+        if (recipientUsername != null) {
+          showDialog(
+              context: MyGlobals().navigationKey.currentContext,
+              builder: (context) => Center(child: CircularLoadingIndicator()));
+
+          await DatabaseHelper().deleteNotification();
+
+          ChatConversation chatConversation =
+              await UserAuth().fetchContactProfile(recipientUsername);
+
+          if (chatConversation == null) {
+            Navigator.of(MyGlobals().navigationKey.currentContext)
+                .popUntil(ModalRoute.withName('/dashboard'));
+            return;
+          }
+          Navigator.of(MyGlobals().navigationKey.currentContext)
+              .popUntil(ModalRoute.withName('/dashboard'));
+          Navigator.pushNamed(
+              MyGlobals().navigationKey.currentContext, '/chat-screen',
+              arguments: {"searchedUser": chatConversation});
+        }
+      } else if (notification['type'] == "request-payment") {
+        await DatabaseHelper().deleteNotification();
+        Navigator.of(MyGlobals().navigationKey.currentContext)
+            .popUntil(ModalRoute.withName('/dashboard'));
+        DashboardBloc _dashboardBloc = Provider.of<DashboardBloc>(
+            MyGlobals().navigationKey.currentContext,
+            listen: false);
+        _dashboardBloc.index = 1;
+      } else if (notification['type'] == "transaction") {
+        await DatabaseHelper().deleteNotification();
+        Navigator.of(MyGlobals().navigationKey.currentContext)
+            .popUntil(ModalRoute.withName('/dashboard'));
+        Navigator.of(MyGlobals().navigationKey.currentContext)
+            .pushNamed('/transactions');
+      } else if (notification['type'] == "connection-request") {
+        await DatabaseHelper().deleteNotification();
+        Navigator.of(MyGlobals().navigationKey.currentContext)
+            .popUntil(ModalRoute.withName('/dashboard'));
+        Navigator.of(MyGlobals().navigationKey.currentContext)
+            .pushNamed('/friends-dashboard', arguments: {"index": 1});
+      } else if (notification['type'] == "friends-dashboard") {
+        await DatabaseHelper().deleteNotification();
+        Navigator.of(MyGlobals().navigationKey.currentContext)
+            .popUntil(ModalRoute.withName('/dashboard'));
+        Navigator.of(MyGlobals().navigationKey.currentContext)
+            .pushNamed('/friends-dashboard', arguments: {"index": 0});
+      } else if (notification['type'] == "detail_message") {
+        await DatabaseHelper().deleteNotification();
+        //this variable will fetch the id of message from the response
+        String idOfMessage =
+            notification['actions'].replaceAll("/detail_message/", "");
+        Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
+        Navigator.of(context).pushNamed('/detail_message', arguments: {
+          'id': idOfMessage,
+        });
+      }
+    }
+  }
+
+  void listenNotificationTap() {
+    AwesomeNotificationService().notificationActionStream.listen((event) {
+      debugPrint("<=====> $event");
+    });
   }
 
   Widget goToBasket() {

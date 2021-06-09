@@ -39,8 +39,6 @@ class _GetUserConnectionListState extends State<GetUserConnectionList> {
   bool isLoading = false;
   bool noItemInList = false;
 
-  RefreshBlocForConnectionDashboard _refreshBloc;
-
   @protected
   void initState() {
     this.getList();
@@ -286,7 +284,7 @@ class _GetUserConnectionListState extends State<GetUserConnectionList> {
 }
 
 class ShareToUserTile extends StatefulWidget {
-  ChatConversation user;
+  final ChatConversation user;
 
   ShareToUserTile({this.user});
 

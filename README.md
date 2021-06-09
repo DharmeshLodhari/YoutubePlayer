@@ -1,6 +1,10 @@
 # slydo
 
-A new Flutter application.
+Slydo Mobile app
+
+[![pipeline status](https://code.slydo.co/mobile-team/slydo/badges/master/pipeline.svg)](https://code.slydo.co/mobile-team/slydo/-/commits/master)
+
+[![coverage report](https://code.slydo.co/mobile-team/slydo/badges/master/coverage.svg)](https://code.slydo.co/mobile-team/slydo/-/commits/master)
 
 ## Getting Started
 
@@ -19,6 +23,7 @@ samples, guidance on mobile development, and a full API reference.
 rm -rf ~/Developer/flutter/bin/cache
 flutter doctor -v 
 flutter clean     
+
 
 ### COMMANDS TO CREATE LOCALIZATION FILES 
 
@@ -68,4 +73,33 @@ OR
 
 2> THEN RUN
     `flutter pub run flutter_launcher_icons:main`
+
+
+### FASTLANE
+
+## Build the release binaries (aab and apk)
+```
+bundle exec fastlane build_android
+```
+
+## Deploy (Upload to play store)
+
+# Production deploy:
+```
+bundle exec fastlane deploy_android production:true`
+```    
+
+# Beta deploy:
+```
+bundle exec fastlane deploy_android beta:true`
+```
     
+# Alpha deploy:
+```
+bundle exec fastlane deploy_android alpha:true`
+```
+    
+# Internal track deploy:
+```
+bundle exec fastlane deploy_android internal:true`
+```

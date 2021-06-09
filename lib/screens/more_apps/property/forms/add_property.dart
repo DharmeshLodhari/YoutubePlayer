@@ -2184,19 +2184,19 @@ class _AddPropertyState extends State<AddProperty> {
       return true;
     } else if (selectedPropertyType == null && propertyCity == null) {
       Toast.show("Please select Property type and Property City", context,
-          backgroundColor: darkBlue(),
+          backgroundColor: Colors.black,
           textColor: Colors.white,
           gravity: Toast.CENTER);
       return false;
     } else if (selectedPropertyType == null && propertyCity != null) {
       Toast.show("Please select Property type", context,
-          backgroundColor: darkBlue(),
+          backgroundColor: Colors.black,
           textColor: Colors.white,
           gravity: Toast.CENTER);
       return false;
     } else {
       Toast.show("Please select Property city", context,
-          backgroundColor: darkBlue(),
+          backgroundColor: Colors.black,
           textColor: Colors.white,
           gravity: Toast.CENTER);
       return false;

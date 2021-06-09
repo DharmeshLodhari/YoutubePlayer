@@ -153,7 +153,7 @@ class _UserProfileTileForChatState extends State<UserProfileTileForChat> {
 }
 
 class UserProfileTile extends StatefulWidget {
-  CustomerProfile user;
+  final CustomerProfile user;
 
   UserProfileTile({this.user});
 

@@ -88,8 +88,12 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
         _refreshController.refreshCompleted();
       } else {
         Toast.show(
-            AppLocalization.of(context).internetConnectionNotAvailable, context,
-            gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+          AppLocalization.of(context).internetConnectionNotAvailable,
+          context,
+          gravity: Toast.BOTTOM,
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+        );
         _refreshController.refreshCompleted();
       }
     });
@@ -149,19 +153,6 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
       ),
     );
   }
-
-  /// Respose
-  /// {id: 95,
-  /// from_user: {full_name: Black Striker Enterprise,
-  /// username: black,
-  /// avatar: https://slydo-assets.s3.amazonaws.com/media/customer/avatar/60c6a5761e6b403e8c7745241844ab4b.jpg,
-  /// qr_code: https://slydo-assets.s3.amazonaws.com/media/customer/qr-code/eae6ec308ace4edca0ff4a16889be3dd.png,
-  /// type: Developer},
-  /// to_user: {full_name: Tamara entertains,
-  /// username: abiola.rasheed.2,
-  /// avatar: https://slydo-assets.s3.amazonaws.com/media/customer/avatar/42cfa1076d64401790101f08769317cf.jpg,
-  /// qr_code: https://slydo-assets.s3.amazonaws.com/media/customer/qr-code/e4c0e4414add41f59a3c676defb4c9d3.png,
-  /// type: Business}}
 
   void getList() async {
     if (!isLoading) {

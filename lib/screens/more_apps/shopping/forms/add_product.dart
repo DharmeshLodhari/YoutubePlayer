@@ -645,7 +645,7 @@ class _AddProductState extends State<AddProduct> {
           product.shortDescription = productShortDescription;
           product.category = productCategory;
           product.condition = productCondition;
-          product.price = productPrice;
+          product.price = moneyInputNormalizer(productPrice).toString();
           product.isAvailable = productIsAvailable;
           product.manufacturer = productManufacturer;
           product.availableFrom = productAvailableFrom;
@@ -655,19 +655,21 @@ class _AddProductState extends State<AddProduct> {
             Toast.show(
               AppLocalization.of(context).productAddedSuccessfully,
               context,
+              backgroundColor: Colors.black,
               textColor: Colors.white,
-              backgroundColor: darkBlue(),
               duration: 3,
             );
           }).catchError((error) {
             debugPrint(error.toString());
             Toast.show(error.toString(), context,
-                textColor: Colors.white, backgroundColor: darkBlue());
+              backgroundColor: Colors.black,
+              textColor: Colors.white,);
           });
         }
       } else {
         Toast.show(AppLocalization.of(context).pleaseAddImage, context,
-            textColor: Colors.white, backgroundColor: darkBlue());
+          backgroundColor: Colors.black,
+          textColor: Colors.white,);
       }
     }
   }
@@ -679,7 +681,7 @@ class _AddProductState extends State<AddProduct> {
       Toast.show(
           AppLocalization.of(context).pleaseSelectProductCategoryAndCondition,
           context,
-          backgroundColor: darkBlue(),
+          backgroundColor: Colors.black,
           textColor: Colors.white,
           gravity: Toast.CENTER);
       return false;

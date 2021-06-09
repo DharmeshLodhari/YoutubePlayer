@@ -47,10 +47,11 @@ class _UserLoginState extends State<UserLogin> {
 
   final FocusNode _pinPutFocusNode = FocusNode();
 
-  Country _selectedDialogCountry = CountryPickerUtils.getCountryByIsoCode('NG');
+  Country _selectedDialogCountry;
 
   @override
   void initState() {
+    _selectedDialogCountry = CountryPickerUtils.getCountryByIsoCode('NG');
     getSharedPreference();
     phoneNumberController = TextEditingController();
     passwordController = TextEditingController();
@@ -60,31 +61,28 @@ class _UserLoginState extends State<UserLogin> {
   Future<void> getSharedPreference() async {
     _sharedPreferences = await SharedPreferences.getInstance();
 
-    if (_sharedPreferences != null) {
-      if (mounted) {
-        setState(() {
-          isChecked = _sharedPreferences.getBool('isChecked') ?? false;
-        });
-      }
-      isRemember = isChecked;
+    isChecked = _sharedPreferences.getBool('isChecked') ?? false;
 
-      if (isChecked) {
-        countryFromPref = _sharedPreferences.getString('country') ?? "NG";
-        _selectedDialogCountry =
-            CountryPickerUtils.getCountryByIsoCode(countryFromPref);
+    isRemember = isChecked;
 
-        SecureUser secureUser = await SecureStorage().getUser();
-        phoneNumberFromPref = secureUser.phoneNumber ?? "";
-        passwordFromPref = secureUser.password ?? "";
+    if (isChecked) {
+      countryFromPref = _sharedPreferences.getString('country');
 
-        //setting fetched userdata into screen
-        phoneNumberController.text = phoneNumberFromPref;
-        passwordController.text = passwordFromPref;
-        phoneNumber =
-            "+" + _selectedDialogCountry.phoneCode + phoneNumberFromPref;
-        password = passwordFromPref;
-      }
+      _selectedDialogCountry =
+          CountryPickerUtils.getCountryByIsoCode(countryFromPref);
+
+      SecureUser secureUser = await SecureStorage().getUser();
+      phoneNumberFromPref = secureUser.phoneNumber;
+      passwordFromPref = secureUser.password;
+
+      //setting fetched userdata into screen
+      phoneNumberController.text = phoneNumberFromPref;
+      passwordController.text = passwordFromPref;
+      phoneNumber =
+          "+" + _selectedDialogCountry.phoneCode + phoneNumberFromPref;
+      password = passwordFromPref;
     }
+    if (mounted) setState(() {});
   }
 
   @override
@@ -232,7 +230,9 @@ class _UserLoginState extends State<UserLogin> {
           child: ListTile(
             dense: true,
             contentPadding: EdgeInsets.fromLTRB(8, 0, 0, 0),
-            onTap: _openCountryPickerDialog,
+            onTap: () {
+              _openCountryPickerDialog(isForLogin: true);
+            },
             title: _buildDialogItem(_selectedDialogCountry),
           ),
         ),
@@ -281,25 +281,28 @@ class _UserLoginState extends State<UserLogin> {
           ),
         ),
         SizedBox(width: 8.0),
-        Text(
-          "(" + country.name + ")",
-          overflow: TextOverflow.fade,
-          softWrap: false,
-          style: TextStyle(
-            fontSize: 16,
-            color: blackFont,
-            fontWeight: FontWeight.w600,
+        Expanded(
+          child: Text(
+            "(" + country.name + ")",
+            overflow: TextOverflow.fade,
+            softWrap: false,
+            style: TextStyle(
+              fontSize: 16,
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         )
       ],
     );
   }
 
-  void _openCountryPickerDialog() => showDialog(
+  void _openCountryPickerDialog({bool isForLogin = false}) => showDialog(
         context: context,
         builder: (context) => Theme(
           data: Theme.of(context).copyWith(primaryColor: navyBlue),
           child: CountryPickerDialog(
+            isForLogin: isForLogin,
             titlePadding: EdgeInsets.all(8.0),
             searchCursorColor: navyBlue,
             searchInputDecoration: InputDecoration(
@@ -496,7 +499,7 @@ class _UserLoginState extends State<UserLogin> {
           "+" + _selectedDialogCountry.phoneCode + phoneNumberFromTextField;
       password = passwordController.text.trim();
 
-      _auth.authenticate(phoneNumber, password).then((value) async {
+      await _auth.authenticate(phoneNumber, password).then((value) async {
         _user = value;
         if (_user.fullName != null) {
           //method call for storing user info into shared preference
@@ -511,14 +514,13 @@ class _UserLoginState extends State<UserLogin> {
 
           // Get user's bank account if user is logged in
           if (_user != null) {
-            PaymentAndBankingAuth().getBankAccounts().then((accounts) {
-              try {
+            await PaymentAndBankingAuth().getBankAccounts().then((accounts) {
+              if (accounts.isNotEmpty) {
                 _bankAccount = accounts[0];
-                if (_bankAccount != null) {
-                  bankAccountBloc.bankAccount = _bankAccount;
-                }
-              } catch (e) {
-                debugPrint(e.toString());
+              }
+
+              if (_bankAccount != null) {
+                bankAccountBloc.bankAccount = _bankAccount;
               }
             });
           }
@@ -546,9 +548,9 @@ class _UserLoginState extends State<UserLogin> {
   }
 
   void isRememberChecked() async {
+    await _sharedPreferences.clear();
     bool isLoggedOut = await _sharedPreferences.setBool('isLoggedOut', false);
     if (isRemember) {
-      await _sharedPreferences.clear();
       bool isCheckedSet =
           await _sharedPreferences.setBool('isChecked', isChecked);
 

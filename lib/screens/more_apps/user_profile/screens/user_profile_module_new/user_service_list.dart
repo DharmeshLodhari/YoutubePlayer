@@ -57,8 +57,12 @@ class _UserServiceListState extends State<UserServiceList> {
         _servicesRefreshController.refreshCompleted();
       } else {
         Toast.show(
-            AppLocalization.of(context).internetConnectionNotAvailable, context,
-            gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+          AppLocalization.of(context).internetConnectionNotAvailable,
+          context,
+          gravity: Toast.BOTTOM,
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+        );
         _servicesRefreshController.refreshCompleted();
       }
     });

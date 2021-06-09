@@ -307,15 +307,20 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
           Navigator.pop(context);
         } catch (e) {
           debugPrint(e);
-          Toast.show(e, context,
-              gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+          Toast.show(
+            e,
+            context,
+            gravity: Toast.BOTTOM,
+            backgroundColor: Colors.black,
+            textColor: Colors.white,
+          );
         }
       } else {
         Toast.show(
           AppLocalization.of(context).invalidRecipient,
           context,
+          backgroundColor: Colors.black,
           textColor: Colors.white,
-          backgroundColor: darkBlue(),
         );
       }
     }

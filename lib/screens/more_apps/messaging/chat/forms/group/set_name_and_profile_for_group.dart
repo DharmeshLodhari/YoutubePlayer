@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/AddGroupModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
@@ -13,6 +14,7 @@ import 'package:Slydo/widget/image_crop.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
 class SetNameAndProfileOfGroup extends StatefulWidget {
@@ -295,9 +297,13 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
               child: CircularLoadingIndicator(),
             ));
 
-    MessageAuth().createGroupChat(group: groupModel).then((value) {
+    MessageAuth().createGroupChat(group: groupModel).then((value) async {
       Navigator.pop(context);
-      if (value) {
+      if (value != null) {
+        ConnectionListBloc connectionListBloc =
+            Provider.of<ConnectionListBloc>(context, listen: false);
+        connectionListBloc.addConnectionUser(chatConversation: value);
+
         Navigator.popUntil(context, ModalRoute.withName("/friends-dashboard"));
       }
     }).catchError((error) {

@@ -376,14 +376,14 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
           basketBloc.addItemToCart(item: service, type: type);
           var mapData;
           basketBloc.items.forEach((element) {
-            if (element["item"].id == service.id) {
+            if (element["item"].messageId == service.id) {
               mapData = element;
               return;
             }
           });
           Map data = {
             "type": type,
-            "id": mapData["item"].id,
+            "id": mapData["item"].messageId,
             "qty": mapData["qty"],
           };
           debugPrint("Data From Service Page : $data");
@@ -788,10 +788,14 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                 ),
           onTap: () {
             Clipboard.setData(new ClipboardData(text: service.qrCode));
-            Toast.show(AppLocalization.of(context).copied, context,
-                gravity: Toast.CENTER,
-                duration: Toast.LENGTH_LONG,
-                backgroundColor: darkBlue());
+            Toast.show(
+              AppLocalization.of(context).copied,
+              context,
+              gravity: Toast.CENTER,
+              duration: Toast.LENGTH_LONG,
+              backgroundColor: Colors.black,
+              textColor: Colors.white,
+            );
           },
         ),
       ),

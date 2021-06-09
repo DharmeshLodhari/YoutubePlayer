@@ -88,6 +88,8 @@ class CountryPickerDialog extends StatefulWidget {
   ///Set popOnPick to false to prevent this behaviour.
   final bool popOnPick;
 
+  final bool isForLogin;
+
   CountryPickerDialog({
     Key key,
     this.onValuePicked,
@@ -105,6 +107,7 @@ class CountryPickerDialog extends StatefulWidget {
     ),
     this.isSearchable = false,
     this.popOnPick = true,
+    this.isForLogin = false,
     this.searchInputDecoration,
     this.searchCursorColor,
     this.searchEmptyView,
@@ -123,8 +126,15 @@ class SingleChoiceDialogState extends State<CountryPickerDialog> {
 
   @override
   void initState() {
-    _allCountries =
-        countryList.where(widget.itemFilter ?? acceptAllCountries).toList();
+    if (widget.isForLogin) {
+      _allCountries = countryListForLogin
+          .where(widget.itemFilter ?? acceptAllCountries)
+          .toList();
+    } else {
+      _allCountries = countryListForRegistration
+          .where(widget.itemFilter ?? acceptAllCountries)
+          .toList();
+    }
 
     if (widget.sortComparator != null) {
       _allCountries.sort(widget.sortComparator);

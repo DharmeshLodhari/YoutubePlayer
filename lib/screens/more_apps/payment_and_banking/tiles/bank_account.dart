@@ -1,6 +1,7 @@
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
@@ -44,13 +45,9 @@ class _BankAccountTileState extends State<BankAccountTile> {
                 ? Icon(
                     Icons.account_balance,
                     size: 45,
-                    color: darkBlue(),
+                    color: blackFont,
                   )
-                : CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    valueColor: AlwaysStoppedAnimation(Colors.white),
-                    backgroundColor: lightBlue(),
-                  ),
+                : CircularLoadingIndicator(),
           ),
         ),
         onTap: () {

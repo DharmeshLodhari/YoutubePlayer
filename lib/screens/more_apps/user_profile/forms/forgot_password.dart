@@ -165,7 +165,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
   Widget getVerificationOTPWidget() {
     return TextFormField(
-      cursorColor: darkBlue(),
+      cursorColor: blackFont,
       autofocus: false,
       obscureText: false,
       keyboardType: TextInputType.phone,
@@ -175,7 +175,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
           filled: true,
           hintText: AppLocalization.of(context).enterYourOtpHere,
           labelStyle: TextStyle(
-            color: darkBlue(),
+            color: blackFont,
             fontSize: 16,
           ),
           border: OutlineInputBorder(

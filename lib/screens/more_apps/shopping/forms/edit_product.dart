@@ -124,7 +124,7 @@ class _EditProductState extends State<EditProduct> {
       Toast.show(
         error.toString(),
         context,
-        backgroundColor: darkBlue(),
+        backgroundColor: Colors.black,
         textColor: Colors.white,
         gravity: Toast.CENTER,
       );
@@ -855,7 +855,7 @@ class _EditProductState extends State<EditProduct> {
           currentProduct.description = productDescription;
           currentProduct.category = productCategory;
           currentProduct.condition = productCondition;
-          currentProduct.price = productPrice;
+          currentProduct.price = moneyInputNormalizer(productPrice).toString();
           currentProduct.localImages =
               productLocalImages.map((file) => File(file.path)).toList();
           currentProduct.serverImages = productImagesFromServer;
@@ -866,17 +866,28 @@ class _EditProductState extends State<EditProduct> {
 
           _auth.editProduct(currentProduct).then((value) {
             Toast.show(
-                AppLocalization.of(context).productEditedSuccessfully, context,
-                textColor: Colors.white, backgroundColor: darkBlue());
+              AppLocalization.of(context).productEditedSuccessfully,
+              context,
+              backgroundColor: Colors.black,
+              textColor: Colors.white,
+            );
             Navigator.pop(context);
           }).catchError((error) {
-            Toast.show(error.toString(), context,
-                textColor: Colors.white, backgroundColor: darkBlue());
+            Toast.show(
+              error.toString(),
+              context,
+              backgroundColor: Colors.black,
+              textColor: Colors.white,
+            );
           });
         }
       } else {
-        Toast.show(AppLocalization.of(context).pleaseAddImage, context,
-            textColor: Colors.white, backgroundColor: darkBlue());
+        Toast.show(
+          AppLocalization.of(context).pleaseAddImage,
+          context,
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+        );
       }
     }
   }
@@ -888,7 +899,7 @@ class _EditProductState extends State<EditProduct> {
       Toast.show(
           AppLocalization.of(context).pleaseSelectProductCategoryAndCondition,
           context,
-          backgroundColor: darkBlue(),
+          backgroundColor: Colors.black,
           textColor: Colors.white,
           gravity: Toast.CENTER);
       return false;
@@ -961,13 +972,13 @@ class _EditProductState extends State<EditProduct> {
         Toast.show(
           AppLocalization.of(context).productDeletedSuccessfully,
           context,
-          backgroundColor: darkBlue(),
+          backgroundColor: Colors.black,
           textColor: Colors.white,
           duration: 3,
         );
       }).catchError((error) {
         Toast.show(error.toString(), context,
-            backgroundColor: darkBlue(),
+            backgroundColor: Colors.black,
             textColor: Colors.white,
             duration: Toast.LENGTH_LONG);
       });

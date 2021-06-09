@@ -12,14 +12,6 @@ class HexColor extends Color {
   HexColor(final String hexColor) : super(_getColorFromHex(hexColor));
 }
 
-HexColor lightBlue() {
-  return HexColor('#0099df');
-}
-
-HexColor darkBlue() {
-  return HexColor('#0d1b46');
-}
-
 Color navyBlue = HexColor("#3F61DB");
 Color navyBlueLight = HexColor("#BEC2F4");
 Color naturalGreen = HexColor("#46CE7C");

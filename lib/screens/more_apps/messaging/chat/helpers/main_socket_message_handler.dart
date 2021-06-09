@@ -3,12 +3,15 @@ import 'dart:convert';
 
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_group_action_manager.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_shake_detection.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/db_socket_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/MainSocketMessageModel.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatTextMessage.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -52,76 +55,151 @@ class MainSocketMessageHandler {
   void handleMessageAccordingToType() {
     Map<String, dynamic> messageData = jsonDecode(message);
 
-    /// TODO: check the logs for this code :- Starts
-
     MainSocketProvider mainSocketProvider = Provider.of<MainSocketProvider>(
         myGlobals.scaffoldKey.currentContext,
         listen: false);
 
     mainSocketProvider.removeFromTheQueue(message: message);
 
-    /// Ends
+    String messageType = messageData["type"];
 
-    if (messageData["type"] == "chatroom_message") {
-      debugPrint(
-          " Message Data==> ${messageData.containsKey("conversation")}  ${messageData.containsKey("conversation_id")}");
-      if (messageData.containsKey("conversation") ||
-          messageData.containsKey("conversation_id")) {
-        MainSocketProvider mainSocketProvider = Provider.of<MainSocketProvider>(
-            myGlobals.scaffoldKey.currentContext,
+    switch (messageType) {
+      case "chatroom_message":
+        if (messageData.containsKey("conversation") ||
+            messageData.containsKey("conversation_id")) {
+          MainSocketProvider mainSocketProvider =
+              Provider.of<MainSocketProvider>(
+                  myGlobals.scaffoldKey.currentContext,
+                  listen: false);
+
+          String conversationId = (messageData.containsKey("conversation")
+              ? messageData["conversation"]
+              : messageData["conversation_id"]);
+
+          /// checking if the recipient is in the current chat screen then we will not update message count
+          if (mainSocketProvider.currentConversationId != conversationId) {
+            saveAndUpdateUserMessageCount(messageData: messageData);
+          }
+
+          /// update message in the local message db
+          // {"created_at": "2021-05-07 10:05:26.332872Z", "check_id": "337e4aa6-039d-4c13-b438-34905cbcb3b3", "author": "brijesh.sakariya", "text": "10", "kind": "text", "meta_data": {}, "read_by_author": true, "read_by_recipient": false, "delivered": true, "type": "chatroom_message", "conversation_id": "9ae68069-b342-4e04-b568-602bde6fe901"}
+          ChatMessage chatMessage = ChatMessage.fromJson(messageData);
+          ChatMessageHandler().updateChatMessage(chatMessage: chatMessage);
+
+          /// update ConnectionList order by last recive time
+          updateConnectionListOrder(
+              conversationId: conversationId, messageData: messageData);
+
+          ///delete message from ChatTextMessage table in db if message came back from socket
+
+          String chatMessageKind = messageData['kind'];
+
+          switch (chatMessageKind) {
+            case "text":
+              DBSocketMessageHandler().deleteSocketQueueChatMessage(
+                  message: SocketQueueChatMessage.fromJson(messageData));
+              break;
+            case "user_location":
+              DBSocketMessageHandler().deleteSocketQueueChatMessage(
+                  message: SocketQueueChatMessage.fromJson(messageData));
+              break;
+            case "gif_image":
+              DBSocketMessageHandler().deleteSocketQueueChatMessage(
+                  message: SocketQueueChatMessage.fromJson(messageData));
+              break;
+            default:
+              debugPrint(
+                  "UNKNOWN==> KIND:- ${messageData['kind']}  message:- $messageData");
+          }
+        } else {
+          debugPrint("UNKNOWN==> chatroom_message $messageData");
+        }
+        break;
+
+      case "read_by_recipient":
+        ChatMessageHandler().updateReadByRecipientChatMessage(
+            checkId: messageData["check_id"],
+            conversationId: messageData["conversation_id"]);
+        break;
+
+      case "delete_message":
+        ChatMessageHandler().deleteChatMessage(
+            checkId: messageData["check_id"],
+            conversationId: messageData["conversation_id"]);
+        break;
+
+      case "edit_message":
+        ChatMessageHandler().updateEditedChatMessage(
+            checkId: messageData["check_id"],
+            conversationId: messageData["conversation_id"],
+            wasEdited: messageData['was_edited'],
+            text: messageData['text']);
+        break;
+
+      case "nudge_user":
+        showNudgeAlertToUser(messageData: messageData);
+        break;
+
+      case "stop_nudging":
+        stopNudgeAlertToUser(messageData: messageData);
+        break;
+
+      case "conversation_created":
+        addChatConversation(messageData: messageData);
+        break;
+
+      case "group_conversation_admin_actions":
+        UserBloc user = Provider.of<UserBloc>(
+            MyGlobals().navigationKey.currentContext,
             listen: false);
 
-        String conversationId = (messageData.containsKey("conversation")
-            ? messageData["conversation"]
-            : messageData["conversation_id"]);
-
-        /// checking if the recipient is in the current chat screen then we will not update message count
-        if (mainSocketProvider.currentConversationId != conversationId) {
-          saveAndUpdateUserMessageCount(messageData: messageData);
+        if (messageData['meta_data']['author'] != user.user.userName) {
+          ChatGroupActionManager(message: messageData);
         }
 
-        /// update ConnectionList order by last recive time
-        updateConnectionListOrder(
-            conversationId: conversationId, messageData: messageData);
+        break;
 
-        ///delete message from ChatTextMessage table in db if message came back from socket
-
-        if (messageData['kind'] == "text") {
-          DBSocketMessageHandler().deleteChatTextMessage(
-              message: ChatTextMessage.fromJson(messageData));
-        } else if (messageData['kind'] == "user_location") {
-          DBSocketMessageHandler().deleteChatTextMessage(
-              message: ChatTextMessage.fromJson(messageData));
-        } else if (messageData['kind'] == "gif_image") {
-          DBSocketMessageHandler().deleteChatTextMessage(
-              message: ChatTextMessage.fromJson(messageData));
-        } else {
-          debugPrint(
-              "Unimplemented KIND:- ${messageData['kind']}  message:- $messageData");
+      default:
+        if (messageType != "pong") {
+          debugPrint("UNHANDLED MESSAGE GOT IN SOCKET:-  $messageData");
         }
-      } else {
-        debugPrint("UNIMPLEMENTED for $messageData");
-      }
-    } else if (messageData["type"] == "nudge_user") {
-      showNudgeAlertToUser(messageData: messageData);
-    } else if (messageData["type"] == "stop_nudging") {
-      stopNudgeAlertToUser(messageData: messageData);
     }
   }
 
-  void saveAndUpdateUserMessageCount({Map<String, dynamic> messageData}) {
+  void addChatConversation({Map<String, dynamic> messageData}) {
+    ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
+        MyGlobals().navigationKey.currentContext,
+        listen: false);
+
+    Map<String, dynamic> json;
+
+    if (messageData['meta_data'] is String) {
+      json = jsonDecode(messageData['meta_data']);
+    } else {
+      json = messageData['meta_data'];
+    }
+
+    ChatConversation chatConversation = ChatConversation.fromJson(json);
+    connectionListBloc.addConnectionUser(chatConversation: chatConversation);
+  }
+
+  Future<void> saveAndUpdateUserMessageCount(
+      {Map<String, dynamic> messageData}) async {
+    debugPrint("MESSAGEDATA:- $messageData");
+
     MainSocketMessageModel messageModel =
-        MainSocketMessageModel.fromJson(jsonDecode(message));
+        MainSocketMessageModel.fromJson(messageData);
 
-    String hashedMessage = generateHashedMessage(message);
+    String hashedMessage = generateHashedMessage(jsonEncode(messageData));
 
-    ChatUserManager().addUser(
+    await ChatUserManager().addUser(
         conversationId:
             messageData["conversation"] ?? messageData["conversation_id"]);
 
-    ChatUserManager().updateChatUserMessageCount(
+    await ChatUserManager().updateChatUserMessageCount(
         conversationId: messageModel.conversation,
         hashedMessage: hashedMessage);
+    return;
   }
 
   void showNudgeAlertToUser({Map<String, dynamic> messageData}) async {
@@ -253,6 +331,7 @@ class MainSocketMessageHandler {
       "check_id": Uuid().v4(),
       "conversation_id": author.conversationId,
       "author": currentUser.user.userName,
+      "author_avatar": currentUser.user.avatar,
       "recipient": author.userName,
       "created_at": DateTime.now().toUtc().toString(),
       "acknowledgement_type": type,
@@ -328,7 +407,7 @@ class MainSocketMessageHandler {
 
   void updateConnectionListOrder(
       {String conversationId, Map<String, dynamic> messageData}) {
-    debugPrint("MessageData:- $messageData");
+    // debugPrint("MessageData:- $messageData");
 
     if (messageData.containsKey("created_at")) {
       DateTime dateTime = DateTime.parse(messageData["created_at"]).toLocal();

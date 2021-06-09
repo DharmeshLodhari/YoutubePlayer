@@ -1,12 +1,15 @@
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/SecureUser.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/secure_storage.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/country_picker/country.dart';
 import 'package:Slydo/utils/country_picker/utils.dart';
+import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:connectivity/connectivity.dart';
@@ -39,64 +42,43 @@ class _SplashScreenState extends State<SplashScreen> {
 
   // bool for to check if internet connection is available or not
   var hasConnection = true;
-
-  Widget splashLogo = Scaffold(
-      body: Container(
-    height: double.infinity,
-    width: double.infinity,
-    color: navyBlue,
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Image.asset(
-          "assets/images/app_logo.png",
-          color: Colors.white,
-          fit: BoxFit.fill,
-          height: 75,
-        ),
-        SizedBox(
-          height: 16,
-        ),
-        Text(
-          "Slydo",
-          style: TextStyle(
-              fontFamily: "CircularStd",
-              fontSize: 52,
-              color: Colors.white,
-              fontWeight: FontWeight.w600),
-        ),
-      ],
-    ),
-  ));
+  String errorText = "";
 
   @override
   void initState() {
     checkConnection();
-    initPlatformState();
+    try {
+      initPlatformState();
+    } catch (error) {
+      debugPrint("ERROR2:- $error");
+      if (mounted) setState(() {});
+    }
+    WidgetsFlutterBinding.ensureInitialized();
     super.initState();
   }
 
-  void checkConnection() {
-    Connectivity().checkConnectivity().then((value) {
+  void checkConnection() async {
+    await Connectivity().checkConnectivity().then((value) async {
       var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
-        if (mounted) {
-          setState(() {
-            hasConnection = true;
-          });
+        hasConnection = true;
+        if (mounted) setState(() {});
+        try {
+          await getLoggedInUser();
+        } catch (error) {
+          debugPrint("ERROR1:- $error");
         }
-
-        getLoggedInUser();
       } else {
         Toast.show(
             AppLocalization.of(context).internetConnectionNotAvailable, context,
-            gravity: Toast.BOTTOM, backgroundColor: darkBlue());
-        if (mounted) {
-          setState(() {
-            hasConnection = false;
-          });
-        }
+            gravity: Toast.BOTTOM,
+            backgroundColor: Colors.black,
+            duration: Toast.LENGTH_LONG,
+            textColor: Colors.white);
+
+        hasConnection = false;
+        if (mounted) setState(() {});
       }
     });
   }
@@ -158,7 +140,45 @@ class _SplashScreenState extends State<SplashScreen> {
     return WillPopScope(
       onWillPop: () async => Future.value(false),
       child: hasConnection
-          ? splashLogo
+          ? Scaffold(
+              body: Container(
+              height: double.infinity,
+              width: double.infinity,
+              color: navyBlue,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    "assets/images/app_logo.png",
+                    color: Colors.white,
+                    fit: BoxFit.fill,
+                    height: 75,
+                  ),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  Text(
+                    "Slydo",
+                    style: TextStyle(
+                        fontFamily: "CircularStd",
+                        fontSize: 52,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600),
+                  ),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  Text(
+                    errorText,
+                    style: TextStyle(
+                        fontFamily: "CircularStd",
+                        fontSize: 14,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600),
+                  )
+                ],
+              ),
+            ))
           : Scaffold(
               backgroundColor: Colors.white,
               appBar: AppBar(
@@ -194,104 +214,240 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> getLoggedInUser() async {
-    await Future.delayed(Duration(milliseconds: 500));
+    // await Future.delayed(Duration(milliseconds: 500));
     _sharedPreferences = await SharedPreferences.getInstance();
+
     final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
     final MainSocketProvider socketProvider =
         Provider.of<MainSocketProvider>(context, listen: false);
     final BankAccountBloc bankAccountBloc = Provider.of(context, listen: false);
     final _auth = AuthService();
 
-    if (_sharedPreferences != null) {
-      isChecked = _sharedPreferences.getBool('isChecked') ?? false;
-      isLoggedOut = _sharedPreferences.getBool('isLoggedOut') ?? false;
-      if (isLoggedOut) {
-        debugPrint("IsLoggedOyut:- $isLoggedOut");
-        Navigator.pop(context);
-        Navigator.of(context).pushNamed("/index");
-      } else {
-        countryFromPref = _sharedPreferences.getString('country') ?? "NG";
-        Country country =
-            CountryPickerUtils.getCountryByIsoCode(countryFromPref);
+    isLoggedOut = _sharedPreferences.getBool('isLoggedOut') ?? false;
+    if (isLoggedOut) {
+      debugPrint("IsLoggedOut:- $isLoggedOut");
+      Navigator.pop(MyGlobals().navigationKey.currentContext);
+      Navigator.of(MyGlobals().navigationKey.currentContext)
+          .pushNamed("/index");
+      return;
+    }
 
-        SecureUser secureUser = await SecureStorage().getUser();
-        userPhoneNumber = secureUser.phoneNumber ?? "";
-        userPassword = secureUser.password ?? "";
+    isChecked = _sharedPreferences.getBool('isChecked') ?? false;
 
-        await _sharedPreferences.setBool('isLoggedOut', isLoggedOut);
-        await _sharedPreferences.setBool('isChecked', isChecked);
-        await _sharedPreferences.setString('country', countryFromPref);
+    // if (isChecked) {
+    //   countryFromPref = _sharedPreferences.getString('country');
+    //   errorText += "countryFromPref = $countryFromPref\n";
+    //   Country country1;
+    //   try {
+    //     country1 = CountryPickerUtils.getCountryByIsoCode("NG");
+    //   } catch (error) {
+    //     errorText += "error while fetching country1 = $error\n";
+    //   }
+    //   if (country1 != null) {
+    //     errorText += "country1 phoneCode ${country1.phoneCode}\n";
+    //     errorText += "country1 name ${country1.name}\n";
+    //     errorText += "country1 isoCode ${country1.isoCode}\n";
+    //     errorText += "country1 iso3Code ${country1.iso3Code}\n";
+    //   }
+    //
+    //   Country country2;
+    //   try {
+    //     country2 = CountryPickerUtils.getCountryByIsoCode(countryFromPref);
+    //   } catch (error) {
+    //     errorText += "error while fetching country2 = $error\n";
+    //   }
+    //   if (country2 != null) {
+    //     errorText += "country2 phoneCode ${country2.phoneCode}\n";
+    //     errorText += "country2 name ${country2.name}\n";
+    //     errorText += "country2 isoCode ${country2.isoCode}\n";
+    //     errorText += "country2 iso3Code ${country2.iso3Code}\n";
+    //
+    //     SecureUser secureUser = await SecureStorage().getUser();
+    //     userPhoneNumber = secureUser.phoneNumber;
+    //     userPassword = secureUser.password;
+    //
+    //     var phoneNumber = "+" + country2.phoneCode + userPhoneNumber;
+    //     var password = userPassword;
+    //
+    //     errorText += "phoneNumber $phoneNumber\n";
+    //     errorText += "password $password\n";
+    //
+    //     User user;
+    //     try {
+    //       user = await _auth.authenticate(phoneNumber, password);
+    //     } catch (e) {
+    //       errorText += "ERROR while fetching USER:- $e\n";
+    //     }
+    //     if (user != null) {
+    //       errorText += "User:- ${user.toJson()}\n";
+    //
+    //       List<BankAccount> accounts;
+    //
+    //       try {
+    //         accounts = await PaymentAndBankingAuth().getBankAccounts();
+    //       } catch (e) {
+    //         errorText += "ERROR while fetching ACCOUNTS:- $e\n";
+    //       }
+    //
+    //       if (accounts != null) {
+    //         errorText += "accounts:- ${accounts.length}\n";
+    //         accounts.forEach((element) {
+    //           errorText +=
+    //               "element:- ${element.accountName} ${element.isDefault} \n";
+    //         });
+    //       } else {
+    //         errorText += "accounts not found\n";
+    //       }
+    //     } else {
+    //       errorText += "User not found\n";
+    //     }
+    //   }
+    //   if (mounted) setState(() {});
+    // } else {
+    //   Navigator.pop(MyGlobals().navigationKey.currentContext);
+    //   Navigator.of(MyGlobals().navigationKey.currentContext)
+    //       .pushNamed("/index");
+    //   return Future.value(null);
+    // }
 
-        var phoneNumber = "+" + country.phoneCode + userPhoneNumber;
-        var password = userPassword;
+    try {
+      if (isChecked) {
+        countryFromPref = _sharedPreferences.getString('country');
+        if (countryFromPref != null || countryFromPref != "") {
+          Country country;
+          try {
+            country = CountryPickerUtils.getCountryByIsoCode(countryFromPref);
+          } catch (error) {
+            debugPrint("ERROR3:- $error countryFromPref= $countryFromPref");
+          }
+          if (country != null) {
+            SecureUser secureUser = await SecureStorage().getUser();
+            userPhoneNumber = secureUser.phoneNumber;
+            userPassword = secureUser.password;
 
-        if (userPhoneNumber != "" && userPassword != "") {
-          var _user;
-          var _bankAccount;
-          _auth.authenticate(phoneNumber, password).then((value) {
-            _user = value;
+            var phoneNumber = "+" + country.phoneCode + userPhoneNumber;
+            var password = userPassword;
 
-            if (_user.fullName != null) {
-              userBloc.user = _user;
-              socketProvider.currentUser = _user;
+            if (userPhoneNumber != "" && userPassword != "") {
+              var _user;
+              var _bankAccount;
 
-              if (_user != null) {
-                PaymentAndBankingAuth().getBankAccounts().then((accounts) {
-                  try {
-                    if (accounts.isNotEmpty) {
-                      _bankAccount = accounts[0];
-                    }
+              User user;
 
-                    if (_bankAccount != null) {
-                      bankAccountBloc.bankAccount = _bankAccount;
-                      if (_user.isVerified == true) {
-                        //initialize shoppingcart
-                        initializeShoppingCart();
-                        Navigator.of(context).pushNamedAndRemoveUntil(
-                          "/dashboard",
-                          (Route<dynamic> route) => false,
-                        );
-                      }
-                    } else {
+              try {
+                user = await _auth.authenticate(phoneNumber, password);
+              } catch (error) {
+                debugPrint("ERROR5:- $error");
+                Navigator.pop(MyGlobals().navigationKey.currentContext);
+                Navigator.of(MyGlobals().navigationKey.currentContext)
+                    .pushNamed("/index");
+                return;
+              }
+
+              if (user != null) {
+                _user = user;
+
+                userBloc.user = _user;
+                socketProvider.currentUser = _user;
+
+                List<BankAccount> accounts;
+
+                try {
+                  accounts = await PaymentAndBankingAuth().getBankAccounts();
+                } catch (error) {
+                  debugPrint("ERROR4:- $error");
+                  Navigator.pop(MyGlobals().navigationKey.currentContext);
+                  Navigator.of(MyGlobals().navigationKey.currentContext)
+                      .pushNamed("/index");
+                  return;
+                }
+
+                if (accounts != null && accounts.isNotEmpty) {
+                  _bankAccount = accounts[0];
+                  if (_bankAccount != null) {
+                    bankAccountBloc.bankAccount = _bankAccount;
+                    if (_user.isVerified == true) {
                       //initialize shoppingcart
                       initializeShoppingCart();
-                      Navigator.of(context).pushNamedAndRemoveUntil(
+                      Navigator.of(MyGlobals().navigationKey.currentContext)
+                          .pushNamedAndRemoveUntil(
                         "/dashboard",
                         (Route<dynamic> route) => false,
                       );
+                      return;
                     }
-                  } catch (e) {
-                    debugPrint(e.toString());
-                    Navigator.pop(context);
-                    Navigator.of(context).pushNamed("/index");
+                  } else {
+                    //initialize shoppingcart
+                    initializeShoppingCart();
+                    Navigator.of(MyGlobals().navigationKey.currentContext)
+                        .pushNamedAndRemoveUntil(
+                      "/dashboard",
+                      (Route<dynamic> route) => false,
+                    );
+                    return;
                   }
-                });
+                } else {
+                  initializeShoppingCart();
+                  Navigator.of(MyGlobals().navigationKey.currentContext)
+                      .pushNamedAndRemoveUntil(
+                    "/dashboard",
+                    (Route<dynamic> route) => false,
+                  );
+                  return;
+                }
+              } else {
+                Navigator.pop(MyGlobals().navigationKey.currentContext);
+                Navigator.of(MyGlobals().navigationKey.currentContext)
+                    .pushNamed("/index");
+                return;
               }
             } else {
-              Navigator.pop(context);
-              Navigator.of(context).pushNamed("/index");
+              Navigator.pop(MyGlobals().navigationKey.currentContext);
+              Navigator.of(MyGlobals().navigationKey.currentContext)
+                  .pushNamed("/index");
+              return;
             }
-          }).catchError((error) {
-            Navigator.pop(context);
-            Navigator.of(context).pushNamed("/index");
-          });
+          } else {
+            Navigator.pop(MyGlobals().navigationKey.currentContext);
+            Navigator.of(MyGlobals().navigationKey.currentContext)
+                .pushNamed("/index");
+            return;
+          }
         } else {
-          Navigator.pop(context);
-          Navigator.of(context).pushNamed("/index");
+          Navigator.pop(MyGlobals().navigationKey.currentContext);
+          Navigator.of(MyGlobals().navigationKey.currentContext)
+              .pushNamed("/index");
+          return;
         }
+      } else {
+        debugPrint(
+            "ERROr11:- countryFromPref = $countryFromPref isChecked = $isChecked isLoggedOut = $isLoggedOut");
+        Navigator.pop(MyGlobals().navigationKey.currentContext);
+        Navigator.of(MyGlobals().navigationKey.currentContext)
+            .pushNamed("/index");
+        return;
       }
-    } else {
-      Navigator.pop(context);
-      Navigator.of(context).pushNamed("/index");
+    } catch (error) {
+      debugPrint("ERROR7:- $error");
+      Navigator.of(MyGlobals().navigationKey.currentContext)
+          .pushNamed("/index");
+      return;
     }
+    Navigator.pop(MyGlobals().navigationKey.currentContext);
+    Navigator.of(MyGlobals().navigationKey.currentContext).pushNamed("/index");
+    return;
   }
 
   void initializeShoppingCart() async {
-    debugPrint("initializeShoppingCart called");
-    List items = await ShoppingAuthService().getShoppingCart();
-    items.forEach((element) {
-      String type = element is Product ? "product" : "service";
-      basketBloc.addItemToCart(item: element, type: type);
-    });
+    try {
+      debugPrint("initializeShoppingCart called");
+      List items = await ShoppingAuthService().getShoppingCart();
+      items.forEach((element) {
+        String type = element is Product ? "product" : "service";
+        basketBloc.addItemToCart(item: element, type: type);
+      });
+    } catch (e) {
+      debugPrint("ERROR:- while loading shopping cart ITEM");
+    }
   }
 }

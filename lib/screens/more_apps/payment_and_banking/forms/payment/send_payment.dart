@@ -159,6 +159,15 @@ class _SendPaymentState extends State<SendPayment> {
     }
   }
 
+  Future<String> getAccountBalance() async {
+    Map<String, dynamic> data =
+        await PaymentAndBankingAuth().getAccountBalance();
+    int spendableBalance = data["spendable_balance"];
+
+    String accountBalance = moneyDisplayNormalizer(spendableBalance);
+    return accountBalance;
+  }
+
   void fetchCategory() async {
     _auth.getPaymentCategory().then((result) {
       if (mounted) {
@@ -904,6 +913,25 @@ class _SendPaymentState extends State<SendPayment> {
                     userLocation = await locationService.getLocation();
                   }
 
+                  String accountBalance = await getAccountBalance();
+
+                  double currentBalance = double.parse(accountBalance);
+                  double transactionalAmount = double.parse(amount.toString());
+                  debugPrint("ACCOUNT BALANCE:- $accountBalance");
+                  debugPrint("AMOUNT:- ${amount.toString()}");
+
+                  if (transactionalAmount > currentBalance) {
+                    Navigator.pop(context);
+
+                    errorMessage = "Insufficient funds !!";
+                    setState(() {});
+                    Toast.show(errorMessage, context,
+                        gravity: Toast.BOTTOM,
+                        backgroundColor: Colors.black,
+                        textColor: Colors.white);
+                    return;
+                  }
+
                   deviceData = await getDeviceInfo();
                   var data = {
                     "from_customer": userBloc.user.userName,
@@ -953,10 +981,13 @@ class _SendPaymentState extends State<SendPayment> {
                       Navigator.pop(context);
                       setState(() {
                         errorMessage = AppLocalization.of(context).serverError;
-                        Toast.show(errorMessage, context,
-                            gravity: Toast.TOP,
-                            backgroundColor: darkBlue(),
-                            textColor: Colors.white);
+                        Toast.show(
+                          errorMessage,
+                          context,
+                          gravity: Toast.TOP,
+                          backgroundColor: Colors.black,
+                          textColor: Colors.white,
+                        );
                       });
                     }
                     // else if (response.statusCode == 800) {
@@ -968,10 +999,13 @@ class _SendPaymentState extends State<SendPayment> {
                       setState(() {
                         errorMessage =
                             AppLocalization.of(context).somethingWentWrong;
-                        Toast.show(errorMessage, context,
-                            gravity: Toast.TOP,
-                            backgroundColor: darkBlue(),
-                            textColor: Colors.white);
+                        Toast.show(
+                          errorMessage,
+                          context,
+                          gravity: Toast.TOP,
+                          backgroundColor: Colors.black,
+                          textColor: Colors.white,
+                        );
                       });
                     }
                   });
@@ -984,24 +1018,32 @@ class _SendPaymentState extends State<SendPayment> {
                 });
           } catch (e) {
             debugPrint(e);
-            Toast.show(e, context,
-                gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+            Toast.show(
+              e,
+              context,
+              gravity: Toast.BOTTOM,
+              backgroundColor: Colors.black,
+              textColor: Colors.white,
+            );
           }
         } else {
           Toast.show(
             AppLocalization.of(context).invalidRecipient,
             context,
+            backgroundColor: Colors.black,
             textColor: Colors.white,
-            backgroundColor: darkBlue(),
           );
         }
       }
     } else {
       var msg = AppLocalization.of(context).invalidRecipient;
-      Toast.show(msg, context,
-          gravity: Toast.CENTER,
-          backgroundColor: darkBlue(),
-          textColor: Colors.white);
+      Toast.show(
+        msg,
+        context,
+        gravity: Toast.CENTER,
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+      );
     }
   }
 

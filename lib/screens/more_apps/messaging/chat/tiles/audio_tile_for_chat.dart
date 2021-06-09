@@ -25,13 +25,6 @@ class _AudioTileForChatState extends State<AudioTileForChat> {
   UserBloc userBloc;
   @override
   void initState() {
-    ///{id: 0d1fb784-db82-481a-9fd8-b775bba2a18e, check_id: 17769da5-1a06-457d-ae11-47c8475e62fc,
-    /// conversation: d60887a8-1dce-4e2d-8c54-432c3365abd3, author: black,
-    /// text: , read_by_author: true, read_by_recipient: false, was_edited: false,
-    /// media: https://slydo-assets.s3.amazonaws.com/media/1b434eab-edf3-450f-a9cc-b796a92edf5c.mp3,
-    /// poster: null, updated_at: 2021-01-20T13:38:59.276192+01:00, created_at: 2021-01-20T13:38:59.276228+01:00,
-    /// kind: audio, deleted_for_recipient: false, deleted_for_author: false, delivered: true, meta_data: {}}
-
     super.initState();
   }
 

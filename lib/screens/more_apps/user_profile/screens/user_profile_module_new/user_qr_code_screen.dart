@@ -179,7 +179,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
     return IconButton(
       icon: Icon(
         Icons.message,
-        color: darkBlue(),
+        color: blackFont,
       ),
       onPressed: () {
         UserAuth().fetchCustomerProfile(user.userName).then((fetchedUser) {
@@ -244,13 +244,14 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
                             child: InkWell(
                               onTap: () {
                                 Toast.show(
-                                    "${user.fullName} " +
-                                        AppLocalization.of(context).isBlocked,
-                                    context,
-                                    gravity: Toast.CENTER,
-                                    duration: Toast.LENGTH_LONG,
-                                    backgroundColor: darkBlue(),
-                                    textColor: Colors.white);
+                                  "${user.fullName} " +
+                                      AppLocalization.of(context).isBlocked,
+                                  context,
+                                  gravity: Toast.CENTER,
+                                  duration: Toast.LENGTH_LONG,
+                                  backgroundColor: Colors.black,
+                                  textColor: Colors.white,
+                                );
                               },
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -426,19 +427,23 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
         UserAuth().removeFromContactList(user).then((value) {
           if (value) {
             Toast.show(
-                "Connection Remove From Your Connection List Successfully .",
-                context,
-                gravity: Toast.CENTER,
-                duration: Toast.LENGTH_LONG,
-                backgroundColor: darkBlue());
+              "Connection Remove From Your Connection List Successfully .",
+              context,
+              gravity: Toast.CENTER,
+              duration: Toast.LENGTH_LONG,
+              backgroundColor: Colors.black,
+              textColor: Colors.white,
+            );
             checkCurrentUserState();
           } else {
             Toast.show(
-                "Connection is Removed From Your Connection List Unsuccessfully .",
-                context,
-                gravity: Toast.CENTER,
-                duration: Toast.LENGTH_LONG,
-                backgroundColor: darkBlue());
+              "Connection is Removed From Your Connection List Unsuccessfully .",
+              context,
+              gravity: Toast.CENTER,
+              duration: Toast.LENGTH_LONG,
+              backgroundColor: Colors.black,
+              textColor: Colors.white,
+            );
           }
         });
       };
@@ -446,15 +451,23 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
       return () {
         UserAuth().rejectContactRequest(user).then((value) {
           if (value) {
-            Toast.show("Connection request Canceled", context,
-                gravity: Toast.CENTER,
-                duration: Toast.LENGTH_LONG,
-                backgroundColor: darkBlue());
+            Toast.show(
+              "Connection request Canceled",
+              context,
+              gravity: Toast.CENTER,
+              duration: Toast.LENGTH_LONG,
+              backgroundColor: Colors.black,
+              textColor: Colors.white,
+            );
           } else {
-            Toast.show("Connection request Canceled unsuccessfully", context,
-                gravity: Toast.CENTER,
-                duration: Toast.LENGTH_LONG,
-                backgroundColor: darkBlue());
+            Toast.show(
+              "Connection request Canceled unsuccessfully",
+              context,
+              gravity: Toast.CENTER,
+              duration: Toast.LENGTH_LONG,
+              backgroundColor: Colors.black,
+              textColor: Colors.white,
+            );
           }
           checkCurrentUserState();
         });
@@ -464,16 +477,24 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
     return () {
       UserAuth().makeContactRequest(user).then((value) {
         if (value) {
-          Toast.show("Connection Request Sent !!", context,
-              gravity: Toast.CENTER,
-              duration: Toast.LENGTH_LONG,
-              backgroundColor: darkBlue());
+          Toast.show(
+            "Connection Request Sent !!",
+            context,
+            gravity: Toast.CENTER,
+            duration: Toast.LENGTH_LONG,
+            backgroundColor: Colors.black,
+            textColor: Colors.white,
+          );
         } else {
           checkCurrentUserIsInContact();
-          Toast.show("Request Not Sent.. ", context,
-              gravity: Toast.CENTER,
-              duration: Toast.LENGTH_LONG,
-              backgroundColor: darkBlue());
+          Toast.show(
+            "Request Not Sent.. ",
+            context,
+            gravity: Toast.CENTER,
+            duration: Toast.LENGTH_LONG,
+            backgroundColor: Colors.black,
+            textColor: Colors.white,
+          );
         }
         checkCurrentUserState();
       });
@@ -625,10 +646,12 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
                   .pushNamed('/scan-qr', arguments: {'isRequest': false});
             } else {
               Toast.show(
-                  AppLocalization.of(context).internetConnectionNotAvailable,
-                  context,
-                  gravity: Toast.BOTTOM,
-                  backgroundColor: darkBlue());
+                AppLocalization.of(context).internetConnectionNotAvailable,
+                context,
+                gravity: Toast.BOTTOM,
+                backgroundColor: Colors.black,
+                textColor: Colors.white,
+              );
             }
           });
         },
@@ -657,11 +680,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
             filterQuality: FilterQuality.high,
             placeholder: (context, url) => userBloc.user.avatar == ""
                 ? Icon(Icons.person)
-                : CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    valueColor: AlwaysStoppedAnimation(Colors.white),
-                    backgroundColor: lightBlue(),
-                  ),
+                : CircularLoadingIndicator(),
           ),
         ),
       ),

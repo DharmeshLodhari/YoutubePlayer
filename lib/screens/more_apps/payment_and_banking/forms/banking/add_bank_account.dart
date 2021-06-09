@@ -299,10 +299,13 @@ class _AddAccountState extends State<AddAccount> {
       }
     } else {
       var msg = AppLocalization.of(context).errorMsg2;
-      Toast.show(msg, context,
-          gravity: Toast.BOTTOM,
-          backgroundColor: darkBlue(),
-          textColor: Colors.white);
+      Toast.show(
+        msg,
+        context,
+        gravity: Toast.BOTTOM,
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+      );
     }
   }
 

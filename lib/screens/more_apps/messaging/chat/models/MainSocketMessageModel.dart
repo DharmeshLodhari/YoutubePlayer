@@ -35,7 +35,7 @@ class MainSocketMessageModel {
   factory MainSocketMessageModel.fromJson(Map<String, dynamic> json) {
     return MainSocketMessageModel(
       author: json['author'],
-      conversation: json['conversation'],
+      conversation: json['conversation'] ?? json['conversation_id'],
       createdAt: json['created_at'],
       deletedForAuthor: json['deleted_for_author'],
       deletedForRecipient: json['deleted_for_recipient'],

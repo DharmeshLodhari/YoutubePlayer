@@ -102,8 +102,12 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         _refreshController.refreshCompleted();
       } else {
         Toast.show(
-            AppLocalization.of(context).internetConnectionNotAvailable, context,
-            gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+          AppLocalization.of(context).internetConnectionNotAvailable,
+          context,
+          gravity: Toast.BOTTOM,
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+        );
         _refreshController.refreshCompleted();
       }
     });
@@ -446,10 +450,12 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
                   });
             } else {
               Toast.show(
-                  AppLocalization.of(context).internetConnectionNotAvailable,
-                  context,
-                  gravity: Toast.BOTTOM,
-                  backgroundColor: darkBlue());
+                AppLocalization.of(context).internetConnectionNotAvailable,
+                context,
+                gravity: Toast.BOTTOM,
+                backgroundColor: Colors.black,
+                textColor: Colors.white,
+              );
             }
           });
         },
@@ -549,10 +555,13 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
                 });
               }
             } else if (response.statusCode == 500) {
-              Toast.show(AppLocalization.of(context).serverError, context,
-                  gravity: Toast.TOP,
-                  backgroundColor: darkBlue(),
-                  textColor: Colors.white);
+              Toast.show(
+                AppLocalization.of(context).serverError,
+                context,
+                gravity: Toast.TOP,
+                backgroundColor: Colors.black,
+                textColor: Colors.white,
+              );
             }
             // else if (response.statusCode == 800) {
             //   Navigator.pushNamed(context, "/add-document");

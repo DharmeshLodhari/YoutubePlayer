@@ -669,23 +669,34 @@ class _EditServiceState extends State<EditService> {
           currentService.serverImages = serviceImagesFromServer;
           currentService.category = serviceCategory;
           currentService.shortDescription = serviceShortDescription;
-          currentService.price = servicePrice;
+          currentService.price = moneyInputNormalizer(servicePrice).toString();
           currentService.isAvailable = serviceIsAvailable;
           currentService.availableFrom = serviceAvailableFrom;
 
           _auth.editService(currentService).then((value) {
             Toast.show(
-                AppLocalization.of(context).serviceEditedSuccessfully, context,
-                textColor: Colors.white, backgroundColor: darkBlue());
+              AppLocalization.of(context).serviceEditedSuccessfully,
+              context,
+              backgroundColor: Colors.black,
+              textColor: Colors.white,
+            );
             Navigator.pop(context);
           }).catchError((error) {
-            Toast.show(error.toString(), context,
-                textColor: Colors.white, backgroundColor: darkBlue());
+            Toast.show(
+              error.toString(),
+              context,
+              backgroundColor: Colors.black,
+              textColor: Colors.white,
+            );
           });
         }
       } else {
-        Toast.show(AppLocalization.of(context).pleaseAddImage, context,
-            textColor: Colors.white, backgroundColor: darkBlue());
+        Toast.show(
+          AppLocalization.of(context).pleaseAddImage,
+          context,
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+        );
       }
     }
   }
@@ -695,7 +706,7 @@ class _EditServiceState extends State<EditService> {
       return true;
     } else {
       Toast.show(AppLocalization.of(context).selectCategory, context,
-          backgroundColor: darkBlue(),
+          backgroundColor: Colors.black,
           textColor: Colors.white,
           gravity: Toast.CENTER);
       return false;
@@ -768,13 +779,13 @@ class _EditServiceState extends State<EditService> {
         Toast.show(
           AppLocalization.of(context).serviceDeletedSuccessfully,
           context,
-          backgroundColor: darkBlue(),
+          backgroundColor: Colors.black,
           textColor: Colors.white,
           duration: 3,
         );
       }).catchError((error) {
         Toast.show(error.toString(), context,
-            backgroundColor: darkBlue(),
+            backgroundColor: Colors.black,
             textColor: Colors.white,
             duration: Toast.LENGTH_LONG);
       });

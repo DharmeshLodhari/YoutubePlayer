@@ -1,10 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_synchronizer.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/db_socket_message_handler.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatTextMessage.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/services/auth.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/io.dart';
@@ -13,7 +16,6 @@ class MainSocketProvider extends ChangeNotifier {
   static IOWebSocketChannel _channel;
 
   static User _currentUser;
-  static String _socketUrl = "wss://slydo.co/ws/main";
   static var _headers;
   static String _currentConversationId;
 
@@ -35,6 +37,8 @@ class MainSocketProvider extends ChangeNotifier {
     _isChatOnScreen = value;
     notifyListeners();
   }
+
+  List<String> get queueMessages => _queueMessages;
 
   String get currentConversationId => _currentConversationId;
 
@@ -87,7 +91,7 @@ class MainSocketProvider extends ChangeNotifier {
             await connect().then((value) async {
               if (_isConnected) {
                 await addDataInTheCorrectOrder();
-                debugPrint("Clearing Pending Messages !!");
+                debugPrint("Clearing Pending Messages 1!!");
                 _queueMessages.clear();
               } else {
                 debugPrint(
@@ -157,6 +161,10 @@ class MainSocketProvider extends ChangeNotifier {
           _lastSent = DateTime.now();
           print("ping Done!!");
           _isConnected = false;
+
+          ///TODO: UNCOMMENT THIS WHEN IT IS DONE
+          await ConnectionSynchronizer().update();
+          await ChatMessageSynchronizer().update();
         });
       }
     }
@@ -168,7 +176,7 @@ class MainSocketProvider extends ChangeNotifier {
 
     /// change socket url according to recipient user url
     // var finalUrl = "$_socketUrl";
-    var finalUrl = "$_socketUrl/${_currentUser.userName}/";
+    var finalUrl = "$socketUrl/${_currentUser.userName}/";
 
     // Set auth headers or socket will be closed
     _headers = await MessageAuth().getAuthHeaders();
@@ -284,9 +292,19 @@ class MainSocketProvider extends ChangeNotifier {
 
   /// for adding data into user socket
   Future<bool> add(Map<String, dynamic> data) async {
+    bool isDataAlreadyInQueue = false;
     String _data = jsonEncode(data);
 
-    _queueMessages.add(_data);
+    for (int i = 0; i < _queueMessages.length; i++) {
+      if (_data == _queueMessages[i]) {
+        isDataAlreadyInQueue = true;
+        break;
+      }
+    }
+
+    if (!isDataAlreadyInQueue) {
+      _queueMessages.add(_data);
+    }
 
     return await addDataInTheCorrectOrder();
   }
@@ -305,7 +323,7 @@ class MainSocketProvider extends ChangeNotifier {
         debugPrint("Data added in webSocket :- $_queueMessages");
 
         if (await checkConnection()) {
-          debugPrint("Clearing Pending Messages !!");
+          debugPrint("Clearing Pending Messages 2!!");
           _queueMessages.clear();
         } else {
           debugPrint("Failed to clear Pending Messages 1!!");
@@ -374,8 +392,8 @@ class MainSocketProvider extends ChangeNotifier {
   }
 
   void sendPendingQueueMessages() async {
-    List<ChatTextMessage> pendingMessages =
-        await DBSocketMessageHandler().getChatTextMessage();
+    List<SocketQueueChatMessage> pendingMessages =
+        await DBSocketMessageHandler().getSocketQueueChatMessage();
 
     int count = 0;
     pendingMessages.forEach((element) async {
@@ -410,7 +428,7 @@ class MainSocketProvider extends ChangeNotifier {
 
     _channel = null;
     debugPrint(
-        "WebSocket disconnected to $_socketUrl for user ${currentUser.userName}");
+        "WebSocket disconnected to $socketUrl for user ${currentUser?.userName}");
     notifyListeners();
   }
 }

@@ -299,8 +299,8 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
                   Toast.show(
                       "Request sent !! Your Profile Will Be Updated Soon !!",
                       context,
-                      textColor: Colors.white,
-                      backgroundColor: darkBlue());
+                    backgroundColor: Colors.black,
+                    textColor: Colors.white,);
 
                   _auth
                       .authenticate(
@@ -323,7 +323,8 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
                   });
                 } else {
                   Toast.show("Something Went Wrong !!", context,
-                      textColor: Colors.white, backgroundColor: darkBlue());
+                    backgroundColor: Colors.black,
+                    textColor: Colors.white,);
                 }
               });
             },
