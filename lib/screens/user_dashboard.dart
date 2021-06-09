@@ -495,6 +495,7 @@ class _UserDashboardState extends State<UserDashboard> {
     //   value.dispose();
     // });
 
+    // ChatMessageSynchronizer().dispose();
     CacheManager().deleteCache(clearAll: true);
     await socketProvider?.close();
 
@@ -531,33 +532,6 @@ class _UserDashboardState extends State<UserDashboard> {
         setState(() {});
       }
     });
-  }
-
-  Widget iconButton(var icon, String title, GestureTapCallback tap) {
-    return Card(
-      color: Colors.white,
-      child: Container(
-        width: MediaQuery.of(context).size.width / 3,
-        padding: EdgeInsets.all(6),
-        child: InkWell(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Center(
-                child: Icon(icon, size: 45, color: darkBlue()),
-              ),
-              Center(
-                child: Text(
-                  textTrimmer(title),
-                  style: TextStyle(fontSize: 12, color: darkBlue()),
-                ),
-              ),
-            ],
-          ),
-          onTap: tap,
-        ),
-      ),
-    );
   }
 
   String textTrimmer(String title) {
@@ -661,7 +635,7 @@ class _UserDashboardState extends State<UserDashboard> {
                     return RadioListTile(
                       selected: language.languageCode == data.languageCode,
                       title: Text(data.name),
-                      activeColor: darkBlue(),
+                      activeColor: navyBlue,
                       groupValue: language,
                       value: data,
                       onChanged: (lang) {
@@ -702,8 +676,8 @@ class _UserDashboardState extends State<UserDashboard> {
         AppLocalization.of(context).languageSwitchedTo + " ${language.name}",
         context,
         duration: Toast.LENGTH_LONG,
+        backgroundColor: Colors.black,
         textColor: Colors.white,
-        backgroundColor: darkBlue(),
       );
     });
   }

@@ -5,16 +5,22 @@ import 'dart:io';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_group_action_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_action_handler.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_handler.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_shake_detection.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_synchronizer.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/db_socket_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/message_sound_player.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatMessageAction.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/Participant.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatTextMessage.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessagePagination.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/EditOrReplyMessageUI.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/audio_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/envelope_tile_for_chat.dart';
@@ -45,6 +51,8 @@ import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/image_crop.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:Slydo/widget/sticky_grouped_list/src/item_positions_listener.dart';
+import 'package:Slydo/widget/sticky_grouped_list/sticky_grouped_list.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
@@ -53,6 +61,7 @@ import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:giphy_picker/giphy_picker.dart';
@@ -63,7 +72,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:sticky_grouped_list/sticky_grouped_list.dart';
 import 'package:swipe_to/swipe_to.dart';
 import 'package:toast/toast.dart';
 import 'package:uuid/uuid.dart';
@@ -103,7 +111,6 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   String previous = "";
 
   /// Message scrolling variables
-  // ScrollController messageScrollController;
   bool fabIsVisible = false;
 
   /// User typing state variables
@@ -205,18 +212,22 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   bool isUserMuted = false;
   bool isUserBlocked = false;
 
-  GroupedItemScrollController messageListController =
-      GroupedItemScrollController();
+  GroupedItemScrollController messageListController;
+  ItemPositionsListener messageListPositionListener;
+  bool isUserNudging = false;
 
   @override
   void initState() {
+    messageListController = GroupedItemScrollController();
+    messageListPositionListener = ItemPositionsListener.create();
+
     messageController = TextEditingController();
     searchItemTextController = TextEditingController();
     messageFocus = FocusNode();
 
     chatConversation = widget.arguments["searchedUser"];
 
-    // setupScrollController();
+    setupScrollController();
 
     messageController.addListener(sendUserTypingState);
 
@@ -266,14 +277,15 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       isChatConversationLoading = true;
       if (mounted) setState(() {});
 
-      chatConversation = await UserAuth()
-          .fetchContactProfile(widget.arguments["recipientUserName"]);
+      chatConversation =
+          await UserAuth().fetchContactProfile(recipientUserName);
 
       isChatConversationLoading = false;
       if (mounted) setState(() {});
     }
 
-    getPreviousMessages();
+    getDBMessage();
+
     getUserStatus();
     initializeSocket();
     setUpAudioRecorder();
@@ -282,7 +294,83 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         listen: false);
     setupShakeDetector();
     determineIfConversationIsGroup();
-    await setupNetworkConnectionListener();
+    // await setupNetworkConnectionListener();
+
+    ChatUserManager().clearChatUserMessageCount(
+        conversationId: chatConversation.conversationId);
+  }
+
+  void getDBMessage() async {
+    List<ChatMessage> messages = await ChatMessageHandler()
+        .getChatMessages(chatConversation: chatConversation);
+
+    if (messages.isEmpty) {
+      ChatMessagePagination chatMessagePagination = ChatMessagePagination(
+          conversationId: chatConversation.conversationId,
+          count: count,
+          next: next,
+          previous: previous);
+      await ChatMessageHandler().saveChatMessagePagination(
+          chatMessagePagination: chatMessagePagination);
+      getPreviousMessages();
+    } else {
+      ChatMessagePagination chatMessagePagination = await ChatMessageHandler()
+          .getChatMessagePagination(
+              conversationId: chatConversation.conversationId);
+
+      count = chatMessagePagination.count;
+      next = chatMessagePagination.next;
+      previous = chatMessagePagination.previous;
+
+      messages
+          .map((element) => jsonEncode(element.toJson()))
+          .toList()
+          .forEach((element) {
+        messageList.add(element);
+      });
+
+      isLoading = false;
+
+      if (mounted) setState(() {});
+
+      checkMessageForRead();
+    }
+  }
+
+  void getMissedMessageFromDB() async {
+    List<ChatMessage> messages = await ChatMessageHandler()
+        .getChatMessages(chatConversation: chatConversation);
+
+    messages.forEach((message) {
+      bool isPresent = false;
+      for (int i = 0; i < messageList.length; i++) {
+        Map<String, dynamic> decodePresentMessage = jsonDecode(messageList[i]);
+        ChatMessage decodedMessage = ChatMessage.fromJson(decodePresentMessage);
+
+        if (message.checkId == decodedMessage.checkId &&
+            message.conversationId == decodedMessage.conversationId) {
+          isPresent = true;
+        }
+      }
+
+      if (!isPresent) {
+        debugPrint("MESSAGE ADDED:--- ${message.text}");
+        String encodedMessage = jsonEncode(message.toJson());
+        messageList.add(encodedMessage);
+        storeMessagesTemporary(message: encodedMessage);
+      }
+    });
+
+    // messages
+    //     .map((element) => jsonEncode(element.toJson()))
+    //     .toList()
+    //     .forEach((element) {
+    //   messageList.add(element);
+    // });
+
+    if (mounted) setState(() {});
+
+    acknowledgeThatMessageAreRead();
 
     ChatUserManager().clearChatUserMessageCount(
         conversationId: chatConversation.conversationId);
@@ -452,8 +540,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   void acknowledgeThatMessageAreRead() {
     if (mainSocketProvider.isChatOnScreen) {
       if (temporaryMessages.isNotEmpty) {
-        temporaryMessages.forEach((element) {
-          messageReadByRecipient(jsonDecode(element));
+        temporaryMessages.forEach((element) async {
+          await messageReadByRecipient(jsonDecode(element));
         });
 
         debugPrint("Clearing temporary Message");
@@ -512,24 +600,154 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     }
   }
 
-  // void setupScrollController() {
-  //
-  //   messageScrollController.addListener(() {
-  //     /// for floating button to show scroll to bottom
-  //
-  //     fabIsVisible = messageScrollController.position.userScrollDirection ==
-  //         ScrollDirection.reverse;
-  //     if (messageScrollController.position.pixels ==
-  //         messageScrollController.position.minScrollExtent) {
-  //       fabIsVisible = false;
-  //     }
-  //
-  //     if (mounted) setState(() {});
-  //   });
-  // }
+  void setupScrollController() {
+    messageListPositionListener.itemPositions.addListener(() {
+      // print('test' +
+      //     messageListPositionListener.itemPositions.value.last.itemTrailingEdge
+      //         .toString());
+      // if (messageListPositionListener
+      //         .itemPositions.value.last.itemTrailingEdge <
+      //     1) {
+      //   print("bottom?" +
+      //       messageListPositionListener
+      //           .itemPositions.value.last.itemTrailingEdge
+      //           .toString() +
+      //       '    ---- > ' +
+      //       messageListPositionListener.itemPositions.value.last.index
+      //           .toString());
+      //   if (messageListPositionListener.itemPositions.value.last.index > 1) {
+      //     print('fetch ');
+      //   }
+      // }
 
+      // ignore: null_aware_before_operator
+      if (messageListPositionListener
+              ?.itemPositions?.value?.first?.itemTrailingEdge <
+          1) {
+        // print("top?" +
+        //     messageListPositionListener
+        //         .itemPositions.value.first.itemTrailingEdge
+        //         .toString() +
+        //     '    ---- > ' +
+        //     messageListPositionListener.itemPositions.value.first.index
+        //         .toString());
+        if (messageListPositionListener.itemPositions.value.first.index == 0) {
+          if (fabIsVisible) {
+            // debugPrint(
+            //     'fetch first ${messageListPositionListener.itemPositions.value.last.index}');
+            fabIsVisible = false;
+            if (mounted) setState(() {});
+          }
+        } else {
+          if (fabIsVisible != true && !isReplyingMessage && !isEditingMessage) {
+            fabIsVisible = true;
+            // debugPrint(
+            //     "fetch last ${messageListPositionListener.itemPositions.value.last.index}");
+            if (mounted) setState(() {});
+          }
+        }
+      }
+    });
+
+    // messageListScrollController = ScrollController();
+    //
+    // messageListScrollController.addListener(() {
+    //   /// for floating button to show scroll to bottom
+    //
+    //   fabIsVisible = messageListScrollController.position.userScrollDirection ==
+    //       ScrollDirection.reverse;
+    //   if (messageListScrollController.position.pixels ==
+    //       messageListScrollController.position.minScrollExtent) {
+    //     fabIsVisible = false;
+    //   }
+    //
+    //   if (mounted) setState(() {});
+    // });
+  }
+
+  // void getPreviousMessages({bool showLoading = true}) async {
+  //   debugPrint("Fetching previous messages !!");
+  //   if (!isLoading) {
+  //     if (next != null && !isLoading) {
+  //       bool isFirstTime;
+  //       if (mounted) {
+  //         if (showLoading) {
+  //           isLoading = true;
+  //           setState(() {});
+  //         }
+  //       }
+  //
+  //       if (messageList.isEmpty) {
+  //         isFirstTime = true;
+  //       } else {
+  //         isFirstTime = false;
+  //       }
+  //       debugPrint(
+  //           "recipient conversationID:- ${chatConversation.conversationId}");
+  //
+  //       Map<String, dynamic> result = await MessageAuth()
+  //           .getChatMessages(next, previous,
+  //               conversionId: chatConversation.conversationId)
+  //           .catchError((error) {
+  //         isLoading = false;
+  //         if (mounted) setState(() {});
+  //         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+  //           if (mounted) {
+  //             debugPrint("ERROR:- $error");
+  //           }
+  //         });
+  //       });
+  //       if (isLoading == false) {
+  //         return;
+  //       }
+  //
+  //       count = result['count'];
+  //       next = result['next'];
+  //       previous = result['previous'];
+  //       List<String> tempList = result['results'];
+  //
+  //       isLoading = false;
+  //       if (mounted) setState(() {});
+  //
+  //       messageList.addAll(tempList);
+  //
+  //       if (mounted) setState(() {});
+  //
+  //
+  //       checkMessageForRead();
+  //
+  //       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+  //         if (isFirstTime &&
+  //             MediaQuery.of(myGlobals.scaffoldKey.currentContext).size.height >
+  //                 704) {
+  //           debugPrint("height:- " +
+  //               MediaQuery.of(myGlobals.scaffoldKey.currentContext)
+  //                   .size
+  //                   .height
+  //                   .toString());
+  //           getPreviousMessages();
+  //         }
+  //       });
+  //     }
+  //     if (messageList.isEmpty) {
+  //       if (mounted) {
+  //         /// set flag if chat is empty
+  //         setState(() {});
+  //       }
+  //     }
+  //   }
+  // }
   void getPreviousMessages({bool showLoading = true}) async {
     debugPrint("Fetching previous messages !!");
+
+    ChatMessagePagination chatMessagePagination = await ChatMessageHandler()
+        .getChatMessagePagination(
+            conversationId: chatConversation.conversationId);
+
+    count = chatMessagePagination.count;
+    next = chatMessagePagination.next;
+    previous = chatMessagePagination.previous;
+
     if (!isLoading) {
       if (next != null && !isLoading) {
         bool isFirstTime;
@@ -564,15 +782,34 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           return;
         }
 
-        count = result['count'];
-        next = result['next'];
-        previous = result['previous'];
         List<String> tempList = result['results'];
 
-        isLoading = false;
-        if (mounted) setState(() {});
+        List<ChatMessage> messages =
+            await ChatMessageHandler().saveChatMessages(messages: tempList);
 
-        messageList.addAll(tempList);
+        chatMessagePagination.count = result['count'];
+        chatMessagePagination.next = result['next'];
+        chatMessagePagination.previous = result['previous'];
+
+        await ChatMessageHandler().updateChatMessagePagination(
+            chatMessagePagination: chatMessagePagination);
+
+        // List<ChatMessage> messages = await ChatMessageHandler()
+        //     .getChatMessages(chatConversation: chatConversation);
+
+        messageList.addAll(
+            messages.map((element) => jsonEncode(element.toJson())).toList());
+
+        // messages
+        //     .map((element) => jsonEncode(element.toJson()))
+        //     .toList()
+        //     .forEach((element) {
+        //   if (!messageList.contains(element)) {
+        //     messageList.add(element);
+        //   }
+        // });
+
+        isLoading = false;
 
         if (mounted) setState(() {});
 
@@ -670,8 +907,89 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         updateEditedMessageInMessageList(message: messageData);
         break;
 
+      case "nudge_user":
+        isUserNudging = true;
+        if (mounted) setState(() {});
+
+        Future.delayed(Duration(seconds: 11)).then((value) {
+          isUserNudging = false;
+          if (mounted) setState(() {});
+        });
+
+        break;
+
+      case "stop_nudging":
+        isUserNudging = false;
+        if (mounted) setState(() {});
+
+        break;
+
+      case "group_conversation_admin_actions":
+        if (messageData['meta_data']['conversation_id'] ==
+            chatConversation.conversationId) {
+          if (messageData['meta_data']['action'] == "delete_group") {
+            Toast.show(
+                "${messageData['meta_data']['author']} has deleted this group !!",
+                context,
+                textColor: Colors.white,
+                backgroundColor: Colors.black,
+                duration: Toast.LENGTH_LONG);
+
+            Navigator.popUntil(
+                context, ModalRoute.withName("/friends-dashboard"));
+            return;
+          } else if (messageData['meta_data']['action'] == "remove_user") {
+            List users = messageData['meta_data']['users'];
+            if (users.isEmpty) return;
+
+            if (users.first == null || users.first == "") return;
+            String user = users.first.toString();
+
+            if (user == userBloc.user.userName) {
+              Toast.show(
+                  "${messageData['meta_data']['author']} has removed you from group !!",
+                  context,
+                  textColor: Colors.white,
+                  backgroundColor: Colors.black,
+                  duration: Toast.LENGTH_LONG);
+
+              Navigator.popUntil(
+                  context, ModalRoute.withName("/friends-dashboard"));
+              return;
+            }
+          }
+        }
+
+        var result =
+            ChatGroupActionManagerForLiveConversation(message: messageData)
+                .handleMessageAction(chatConversation: chatConversation);
+
+        if (result != null) {
+          if (result is ChatConversation) {
+            chatConversation = result;
+            if (chatConversation.isGroupConversation)
+              groupDetail =
+                  GroupDetailModel.fromChatConversation(chatConversation);
+
+            updateParticipantRights();
+            if (mounted) setState(() {});
+          }
+        }
+
+        break;
+
       default:
         debugPrint("Message type:- ${messageData['type'] ?? messageData}");
+    }
+  }
+
+  void updateParticipantRights() {
+    if (!chatConversation.mutedParticipants.contains(userBloc.user.userName)) {
+      isUserMuted = false;
+    }
+    if (!chatConversation.blockedParticipants
+        .contains(userBloc.user.userName)) {
+      isUserBlocked = false;
     }
   }
 
@@ -729,7 +1047,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     }
   }
 
-  void updateMessageReadMark({String message}) {
+  void updateMessageReadMark({String message}) async {
     Map<String, dynamic> messageData = jsonDecode(message);
 
     for (int i = 0; i < messageList.length; i++) {
@@ -765,7 +1083,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     await mainSocketProvider.add(data);
   }
 
-  void messageReadByRecipient(Map<String, dynamic> message) async {
+  Future<void> messageReadByRecipient(Map<String, dynamic> message) async {
     if (message["author"] != userBloc.user.userName) {
       if (mainSocketProvider.isChatOnScreen) {
         var data = {
@@ -779,14 +1097,16 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     }
   }
 
-  // void scrollToBottom() {
-  //   debugPrint("Scrolling to Bottom");
-  //   messageScrollController.animateTo(
-  //       messageScrollController.position.minScrollExtent,
-  //       duration: Duration(microseconds: 100),
-  //       curve: Curves.easeOut);
-  // }
-  //
+  void scrollToBottom() {
+    debugPrint("Scrolling to Bottom");
+    fabIsVisible = false;
+    if (mounted) setState(() {});
+    messageListController.scrollToBottom(
+        index: 0,
+        duration: Duration(milliseconds: 500),
+        curve: Curves.fastLinearToSlowEaseIn);
+  }
+
   // void scrollToTopWithTopSpace() {
   //   messageScrollController.animateTo(
   //       messageScrollController.position.minScrollExtent + 10,
@@ -865,29 +1185,29 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         backgroundColor: Colors.white,
         appBar: appBar(),
         body: scaffoldBody(),
-        // floatingActionButton: Padding(
-        //   padding: EdgeInsets.only(bottom: 48),
-        //   child: AnimatedSwitcher(
-        //     duration: Duration(milliseconds: 100),
-        //     child: fabIsVisible
-        //         ? FloatingActionButton(
-        //             mini: true,
-        //             backgroundColor: dividerColor,
-        //             child: Icon(
-        //               Icons.keyboard_arrow_down_rounded,
-        //               size: 28,
-        //               color: blackFont,
-        //             ),
-        //             tooltip: "Increment",
-        //             onPressed: scrollToBottom,
-        //           )
-        //         : Container(
-        //             height: 0,
-        //             width: 0,
-        //           ),
-        //   ),
-        // ),
-        // floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+        floatingActionButton: Padding(
+          padding: EdgeInsets.only(bottom: 48),
+          child: AnimatedSwitcher(
+            duration: Duration(milliseconds: 100),
+            child: fabIsVisible
+                ? FloatingActionButton(
+                    mini: true,
+                    backgroundColor: dividerColor,
+                    child: Icon(
+                      Icons.keyboard_arrow_down_rounded,
+                      size: 28,
+                      color: blackFont,
+                    ),
+                    tooltip: "Increment",
+                    onPressed: scrollToBottom,
+                  )
+                : Container(
+                    height: 0,
+                    width: 0,
+                  ),
+          ),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       ),
     );
   }
@@ -926,7 +1246,16 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         },
         child: Row(
           children: [
-            getUserIcon(),
+            StreamBuilder<Object>(
+                initialData: false,
+                stream: ChatMessageSynchronizer().getChatMessageStream,
+                builder: (context, snapshot) {
+                  if (snapshot.data == true) {
+                    ChatMessageSynchronizer().setStreamFalse();
+                    getMissedMessageFromDB();
+                  }
+                  return getUserIcon();
+                }),
             SizedBox(
               width: 12,
             ),
@@ -967,7 +1296,60 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           ],
         ),
       ),
+      actions: [
+        // synchronizeContactBtn(),
+        // SizedBox(width: 8),
+        // getNudgeUserBtn(),
+        // SizedBox(width: 16)
+      ],
     );
+  }
+
+  Widget synchronizeContactBtn() {
+    return RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
+      icon: Icon(
+        Icons.sync,
+        size: 24,
+        color: blackFont,
+      ),
+      onTap: () async {
+        await ConnectionSynchronizer().update();
+        await ChatMessageSynchronizer().update();
+      },
+      backgroundColor: lightGrey,
+      enableMargin: true,
+    );
+  }
+
+  Widget getNudgeUserBtn() {
+    if (chatConversation.isGroupConversation) {
+      return Container();
+    }
+
+    return isUserNudging
+        ? Container(
+            margin: EdgeInsets.only(top: 8, bottom: 8),
+            child: Center(child: CircularLoadingIndicator()))
+        : IconButton(
+            icon: Icon(Icons.vibration_outlined),
+            color: navyBlue,
+            onPressed: () {
+              isUserNudging = true;
+              if (mounted) setState(() {});
+              Map<String, dynamic> data = {
+                "check_id": Uuid().v4(),
+                "conversation_id": chatConversation.conversationId,
+                "author": userBloc.user.userName,
+                "author_avatar": userBloc.user.avatar,
+                "recipient": chatConversation.userName,
+                "created_at": DateTime.now().toUtc().toIso8601String(),
+                "type": "nudge_user",
+              };
+              sendDataToSocket(data);
+            },
+          );
   }
 
   void navigateToGroupDetailScreen() async {
@@ -990,6 +1372,12 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void getUserStatus() async {
+    if (chatConversation.isGroupConversation) {
+      userStatus = "${chatConversation.participants.length} Members";
+      if (mounted) setState(() {});
+      return;
+    }
+
     var data = await MessageAuth()
         .getChatUserStatus(chatConversation.userName)
         .catchError((error) {
@@ -1000,6 +1388,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
     if (data["status"] == "Online") {
       userStatus = "Online";
+      if (mounted) setState(() {});
+      return;
     } else {
       DateTime now = new DateTime.now();
       DateTime today = new DateTime(now.year, now.month, now.day);
@@ -1015,11 +1405,13 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
       if (today == lastSeenDate) {
         userStatus = 'last seen today at ' + lastSeenTime;
+        if (mounted) setState(() {});
         return;
       }
 
       if (yesterday == lastSeenDate) {
         userStatus = 'last seen yesterday at ' + lastSeenTime;
+        if (mounted) setState(() {});
         return;
       }
       //Todo: Add within last 7 day (last seen Monday at 1.30 AM)
@@ -1096,6 +1488,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     if (!chatConversation.isGroupConversation) {
       return false;
     }
+
     if (chatConversation.mutedParticipants.contains(userBloc.user.userName)) {
       isUserMuted = true;
     }
@@ -1260,11 +1653,14 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                   text: "Product/ Service",
                   child: searchProductAndServiceBtn()),
               flexibleSpace(),
-              assignTitleToAction(text: "Location", child: sendUserLocation()),
+              assignTitleToAction(
+                  text: "Magic\nEnvelope", child: sendEnvelopeButton()),
               flexibleSpace(),
-              assignTitleToAction(text: "GIF", child: sendGIFButton()),
+              assignTitleToAction(
+                  text: "Empty\nEnvelope", child: sendEmptyEnvelopeButton()),
               flexibleSpace(),
-              assignTitleToAction(text: "Sticker", child: sendStickersButton()),
+              assignTitleToAction(
+                  text: "Location\n", child: sendUserLocation()),
             ],
           ),
           SizedBox(
@@ -1272,12 +1668,9 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           ),
           Row(
             children: <Widget>[
-              assignTitleToAction(
-                  text: "Envelope", child: sendEnvelopeButton()),
+              assignTitleToAction(text: "GIF", child: sendGIFButton()),
               flexibleSpace(),
-              Container(
-                constraints: BoxConstraints(maxWidth: 60),
-              ),
+              assignTitleToAction(text: "Sticker", child: sendStickersButton()),
               flexibleSpace(),
               Container(
                 constraints: BoxConstraints(maxWidth: 60),
@@ -1303,9 +1696,11 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           Center(
             child: Text(text,
                 style: TextStyle(
-                    color: blackFont,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600)),
+                  color: blackFont,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+                textAlign: TextAlign.center),
           )
         ],
       ),
@@ -1338,7 +1733,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         getGroupDetailFromServer();
       }
 
-      selectedUser = await selectRecipientForAction();
+      CustomerProfile user = await selectRecipientForAction();
+      selectedUser = user.userName;
     } else {
       selectedUser = chatConversation.userName;
     }
@@ -1361,8 +1757,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     }
   }
 
-  Future<String> selectRecipientForAction() async {
-    return await showModalBottomSheet<String>(
+  Future<CustomerProfile> selectRecipientForAction() async {
+    return await showModalBottomSheet<CustomerProfile>(
         backgroundColor: Colors.transparent,
         context: context,
         builder: (BuildContext context) {
@@ -1426,7 +1822,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
         return GestureDetector(
           onTap: () {
-            Navigator.pop(context, user.userName);
+            Navigator.pop(context, user);
           },
           child: UserTile(user: user),
         );
@@ -1461,7 +1857,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         getGroupDetailFromServer();
       }
 
-      selectedUser = await selectRecipientForAction();
+      CustomerProfile user = await selectRecipientForAction();
+      selectedUser = user.userName;
     } else {
       selectedUser = chatConversation.userName;
     }
@@ -1617,11 +2014,15 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void pickGIF() async {
+    stopShakeDetector();
     GiphyGif gif = await GiphyPicker.pickGif(
         context: context,
         apiKey: gifApiKey,
         showPreviewPage: false,
         sticker: false,
+        onError: (error) {
+          debugPrint("ERROR IN GIPHY PICKER:- $error");
+        },
         title: Text(
           "Slydo GIPHY",
           style: TextStyle(
@@ -1630,16 +2031,21 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           ),
         ));
 
+    setupShakeDetector();
     if (gif != null) {
       sendGIFToSocket(urlOfGIF: gif.images.original.url);
     }
   }
 
   void pickSticker() async {
+    stopShakeDetector();
     GiphyGif gif = await GiphyPicker.pickGif(
         context: context,
         apiKey: gifApiKey,
         showPreviewPage: false,
+        onError: (error) {
+          debugPrint("ERROR IN GIPHY PICKER:- $error");
+        },
         sticker: true,
         searchText: "Search Sticker",
         title: Text(
@@ -1649,7 +2055,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
             fontWeight: FontWeight.w600,
           ),
         ));
-
+    setupShakeDetector();
     if (gif != null) {
       sendGIFToSocket(urlOfGIF: gif.images.original.url);
     }
@@ -1672,20 +2078,20 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
         if (mounted) setState(() {});
 
-        String selectedUser;
+        CustomerProfile user;
 
         if (chatConversation.isGroupConversation) {
           if (groupDetail.participants.isEmpty) {
             getGroupDetailFromServer();
           }
 
-          selectedUser = await selectRecipientForAction();
+          user = await selectRecipientForAction();
         } else {
-          selectedUser = chatConversation.userName;
+          user = CustomerProfile.fromChatConversation(chatConversation);
         }
 
-        if (selectedUser != null) {
-          getEnvelopeAmount();
+        if (user != null) {
+          getEnvelopeAmount(recipient: user);
         }
       },
     );
@@ -1699,24 +2105,44 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       icon: Container(
         margin: EdgeInsets.symmetric(vertical: 14),
         child: Image.asset(
-          "assets/images/envelope/envelope_blue.png",
+          "assets/images/envelope/envelope_blue_empty.png",
         ),
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
-      onTap: () {
+      onTap: () async {
         showMoreAction = false;
 
         if (mounted) setState(() {});
 
-        getEnvelopeAmount(isEmpty: true);
+        CustomerProfile user;
+
+        if (chatConversation.isGroupConversation) {
+          if (groupDetail.participants.isEmpty) {
+            getGroupDetailFromServer();
+          }
+
+          user = await selectRecipientForAction();
+        } else {
+          user = CustomerProfile.fromChatConversation(chatConversation);
+        }
+
+        if (user != null) {
+          getEnvelopeAmount(recipient: user, isEmpty: true);
+        }
       },
     );
   }
 
-  void getEnvelopeAmount({bool isEmpty = false}) async {
+  void getEnvelopeAmount(
+      {bool isEmpty = false, CustomerProfile recipient}) async {
+    Map<String, dynamic> arguments = {};
+
+    arguments['isEmptyEnvelope'] = isEmpty;
+    arguments['recipient'] = recipient;
+
     stopShakeDetector();
     var result = await Navigator.of(context)
-        .pushNamed("/send-envelope", arguments: {"isEmptyEnvelope": isEmpty});
+        .pushNamed("/send-envelope", arguments: arguments);
     setupShakeDetector();
     debugPrint("Result From send Envelope :- $result");
   }
@@ -1826,7 +2252,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       "author": userBloc.user.userName,
       "message": url,
       "kind": item is Product ? "product" : "service",
-      "created_at": DateTime.now().toUtc().toString(),
+      "created_at": DateTime.now().toUtc().toIso8601String(),
       "type": "chatroom_message",
     };
 
@@ -1840,6 +2266,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void addMediaToMessage() async {
+    stopShakeDetector();
     showMoreAction = false;
     if (mounted) setState(() {});
 
@@ -1855,10 +2282,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       File file = File(pickedMedia.files.single.path);
       String mediaType = getFileType(pickedMedia);
       if (mediaType == "") {
+        setupShakeDetector();
         return;
       }
 
-      stopShakeDetector();
       var result = await Navigator.of(context).pushNamed(
         "/send-media-to-chat-message",
         arguments: {
@@ -1967,8 +2394,12 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void captureImageOrVideo() async {
+    stopShakeDetector();
     String mediaType = await selectMediaType();
-    if (mediaType == null) return;
+    if (mediaType == null) {
+      setupShakeDetector();
+      return;
+    }
 
     String capturedMediaPath;
 
@@ -1977,6 +2408,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     } else if (mediaType == "video") {
       capturedMediaPath = await captureVideo();
     } else {
+      setupShakeDetector();
       return;
     }
 
@@ -2136,7 +2568,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     _data['read_by_author'] = true;
     _data['read_by_recipient'] = false;
     _data["delivered"] = false;
-    _data['created_at'] = DateTime.now().toUtc().toString();
+    _data['created_at'] = DateTime.now().toUtc().toIso8601String();
     _data['type'] = "chatroom_message";
     _data["conversation"] = chatConversation.conversationId;
     _data["author"] = userBloc.user.userName;
@@ -2245,7 +2677,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     return SwipeTo(
       child: ui,
       animationDuration: Duration(milliseconds: 200),
-      offsetDx: 0.2,
+      offsetDx: 0.1,
       onLeftSwipe: isSend
           ? () {
               debugPrint("left Swipe");
@@ -2280,7 +2712,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       "read_by_author": true,
       "read_by_recipient": false,
       "delivered": false,
-      "created_at": DateTime.now().toUtc().toString(),
+      "created_at": DateTime.now().toUtc().toIso8601String(),
       "type": "chatroom_message",
     };
 
@@ -2288,13 +2720,19 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         "recipientUser = $chatConversation  recipientUser.conversationId = ${chatConversation.conversationId}");
     if (chatConversation != null && chatConversation.conversationId != null) {
       DBSocketMessageHandler()
-          .saveMessageToDb(message: ChatTextMessage.fromJson(data));
+          .saveMessageToDb(message: SocketQueueChatMessage.fromJson(data));
 
       String payload = convertServerPayload(data);
 
       addMessageToChat(message: payload);
 
       if (mounted) setState(() {});
+
+      ChatMessage chatMessage = convertToChatMessage(data);
+
+      await ChatMessageHandler().addChatMessage(chatMessage: chatMessage);
+
+      scrollToBottom();
 
       updateConnectionList(
           messageData: data, conversationId: chatConversation.conversationId);
@@ -2340,7 +2778,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       "read_by_author": true,
       "read_by_recipient": false,
       "delivered": false,
-      "created_at": DateTime.now().toUtc().toString(),
+      "created_at": DateTime.now().toUtc().toIso8601String(),
       "type": "chatroom_message",
     };
 
@@ -2348,13 +2786,19 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         "recipientUser = $chatConversation  recipientUser.conversationId = ${chatConversation.conversationId}");
     if (chatConversation != null && chatConversation.conversationId != null) {
       DBSocketMessageHandler()
-          .saveMessageToDb(message: ChatTextMessage.fromJson(data));
+          .saveMessageToDb(message: SocketQueueChatMessage.fromJson(data));
 
       String payload = convertServerPayload(data);
 
       addMessageToChat(message: payload);
 
       if (mounted) setState(() {});
+
+      ChatMessage chatMessage = convertToChatMessage(data);
+
+      await ChatMessageHandler().addChatMessage(chatMessage: chatMessage);
+
+      scrollToBottom();
 
       updateConnectionList(
           messageData: data, conversationId: chatConversation.conversationId);
@@ -2386,7 +2830,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       "read_by_author": true,
       "read_by_recipient": false,
       "delivered": false,
-      "created_at": DateTime.now().toUtc().toString(),
+      "created_at": DateTime.now().toUtc().toIso8601String(),
       "type": "chatroom_message",
     };
 
@@ -2394,7 +2838,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         "recipientUser = $chatConversation  recipientUser.conversationId = ${chatConversation.conversationId}");
     if (chatConversation != null && chatConversation.conversationId != null) {
       DBSocketMessageHandler()
-          .saveMessageToDb(message: ChatTextMessage.fromJson(data));
+          .saveMessageToDb(message: SocketQueueChatMessage.fromJson(data));
 
       String payload = convertServerPayload(data);
 
@@ -2402,6 +2846,12 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
       messageController.text = "";
       if (mounted) setState(() {});
+
+      ChatMessage chatMessage = convertToChatMessage(data);
+
+      await ChatMessageHandler().addChatMessage(chatMessage: chatMessage);
+
+      scrollToBottom();
 
       updateConnectionList(
           messageData: data, conversationId: chatConversation.conversationId);
@@ -2434,6 +2884,30 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     newData["replied_to"] = data["replied_to"] ?? {};
 
     return jsonEncode(newData);
+  }
+
+  ChatMessage convertToChatMessage(Map<String, dynamic> data) {
+    Map<String, dynamic> newData = {};
+    newData["check_id"] = data["check_id"];
+    newData["conversation"] = data["conversation_id"];
+    newData["author"] = data["author"];
+    newData["author_full_name"] = data["author_full_name"];
+    newData["author_avatar"] = data["author_avatar"];
+    newData["text"] = data["message"];
+    newData["kind"] = data["kind"];
+    newData["read_by_author"] = data["read_by_author"];
+    newData["read_by_recipient"] = data["read_by_recipient"];
+    newData["delivered"] = data["delivered"];
+    newData["created_at"] = data["created_at"];
+    newData["updated_at"] = data["updated_at"];
+    newData["type"] = data["type"];
+    newData["was_edited"] = false;
+    newData["deleted_for_recipient"] = false;
+    newData["deleted_for_author"] = false;
+    newData["meta_data"] = {};
+    newData["replied_to"] = data["replied_to"] ?? {};
+
+    return ChatMessage.fromJson(newData);
   }
 
   Widget scaffoldBody() {
@@ -2569,19 +3043,22 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   //   );
   // }
   Widget messageListBuilder() {
-    return LazyLoadScrollView(
-      isLoading: isLoading,
-      onEndOfPage: getPreviousMessages,
-      child: isLoading && messageList.isEmpty
-          ? Center(
-              child: CircularLoadingIndicator(),
-            )
-          : getGroupMessage(),
-    );
+    return isLoading && messageList.isEmpty
+        ? Center(
+            child: CircularLoadingIndicator(),
+          )
+        : Container(
+            child: LazyLoadScrollView(
+              isLoading: isLoading,
+              onEndOfPage: getPreviousMessages,
+              child: getGroupMessage(),
+            ),
+          );
   }
 
   Widget getGroupMessage() {
     return StickyGroupedListView<String, DateTime>(
+      itemPositionsListener: messageListPositionListener,
       elements: messageList,
       groupBy: (String element) {
         Map<String, dynamic> message = jsonDecode(element);
@@ -2617,7 +3094,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                 margin: EdgeInsets.only(bottom: 4),
                 padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                    color: navyBlue, borderRadius: BorderRadius.circular(25)),
+                    color: navyBlue.withOpacity(0.5),
+                    borderRadius: BorderRadius.circular(25)),
                 child: Text(
                   isLoading ? "Loading ..." : "$formattedDate",
                   style: TextStyle(
@@ -2815,14 +3293,14 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         basketBloc.addItemToCart(item: item, type: type);
         var mapData;
         basketBloc.items.forEach((element) {
-          if (element["item"].id == item.id) {
+          if (element["item"].messageId == item.messageId) {
             mapData = element;
             return;
           }
         });
         Map data = {
           "type": type,
-          "id": mapData["item"].id,
+          "id": mapData["item"].messageId,
           "qty": mapData["qty"],
         };
         debugPrint("Data From Product Page : $data");
@@ -2862,6 +3340,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void showSearchProductAndServiceBottomSheet() async {
+    stopShakeDetector();
     var result = await showModalBottomSheet<String>(
         backgroundColor: Colors.transparent,
         context: context,
@@ -2901,6 +3380,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           });
         });
     bottomSheetMounted = false;
+    setupShakeDetector();
     if (result == null) {
       if (itemSearchTypeSelectionMenu.isMenuOpen) {
         itemSearchTypeSelectionMenu.closeMenu();
@@ -3239,7 +3719,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       } else {
         Toast.show(
             AppLocalization.of(context).internetConnectionNotAvailable, context,
-            gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+            gravity: Toast.BOTTOM,  backgroundColor: Colors.black,
+          textColor: Colors.white,);
         _refreshController.refreshCompleted();
       }
     });
@@ -3501,6 +3982,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
     editingMessage = message;
     isEditingMessage = true;
+    fabIsVisible = false;
     if (mounted) setState(() {});
     // }
   }
@@ -3597,6 +4079,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
     replayingMessage = message;
     isReplyingMessage = true;
+    fabIsVisible = false;
     if (mounted) setState(() {});
   }
 
@@ -3621,7 +4104,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       "read_by_author": true,
       "read_by_recipient": false,
       "delivered": false,
-      "created_at": DateTime.now().toUtc().toString(),
+      "created_at": DateTime.now().toUtc().toIso8601String(),
       "type": "reply_message",
       "replied_to": replayingMessage
     };
@@ -3630,7 +4113,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         "recipientUser = $chatConversation  recipientUser.conversationId = ${chatConversation.conversationId}");
     if (chatConversation != null && chatConversation.conversationId != null) {
       DBSocketMessageHandler()
-          .saveMessageToDb(message: ChatTextMessage.fromJson(data));
+          .saveMessageToDb(message: SocketQueueChatMessage.fromJson(data));
 
       String payload = convertServerPayload(data);
 
@@ -3642,6 +4125,11 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       replayingMessage = null;
       isReplyingMessage = false;
       if (mounted) setState(() {});
+
+      ChatMessage chatMessage = convertToChatMessage(data);
+
+      await ChatMessageHandler().addChatMessage(chatMessage: chatMessage);
+      scrollToBottom();
 
       updateConnectionList(
           messageData: data, conversationId: chatConversation.conversationId);

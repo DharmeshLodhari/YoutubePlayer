@@ -19,7 +19,7 @@ String messageDecoderWithEmoji(String text) {
 
 Future<bool> sendDataToSocket(Map<String, dynamic> data) async {
   MainSocketProvider mainSocketProvider = Provider.of<MainSocketProvider>(
-      myGlobals.scaffoldKey.currentContext,
+      myGlobals.navigationKey.currentContext,
       listen: false);
 
   await mainSocketProvider.add(data);

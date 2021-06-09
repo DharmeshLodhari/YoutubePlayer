@@ -276,109 +276,109 @@ List<ProductCategory> productCategories = <ProductCategory>[
       'Auto & Large Appliances',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ProductCategory(
       'Automotive',
       Icon(
         Icons.movie,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ProductCategory(
       "Baby & Kids",
       Icon(
         Icons.directions_car,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ProductCategory(
       'Beauty & Spas',
       Icon(
         Icons.home,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ProductCategory(
       'Electronics',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ProductCategory(
       'Entertainment',
       Icon(
         Icons.movie,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ProductCategory(
       "Food & Drink",
       Icon(
         Icons.directions_car,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ProductCategory(
       'Grocery & Household',
       Icon(
         Icons.home,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ProductCategory(
       'Health & Beauty',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ProductCategory(
       'Health & Fitness',
       Icon(
         Icons.movie,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ProductCategory(
       "Home & Garden",
       Icon(
         Icons.directions_car,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ProductCategory(
       'Jewellery & Watches',
       Icon(
         Icons.home,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ProductCategory(
       "Men's Fashion",
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ProductCategory(
       'Personalised',
       Icon(
         Icons.movie,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ProductCategory(
       "Pet Supplies",
       Icon(
         Icons.directions_car,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ProductCategory(
       'Sports & Outdoors',
       Icon(
         Icons.home,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ProductCategory(
       "Toys",
       Icon(
         Icons.directions_car,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ProductCategory(
       "Women’s Fashion",
       Icon(
         Icons.home,
-        color: darkBlue(),
+        color: blackFont,
       )),
 ];
 
@@ -503,319 +503,319 @@ List<ServiceCatagory> serviceCategories = <ServiceCatagory>[
       'Alarms – Security & Fire',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Appliance Repairs',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Architect',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Block laye',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Brick layer',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Builder - General',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Builder - Ground Works',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Builder - House Extensions',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Builder - New Builds',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Building Surveyor',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'CCTV Cameras',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Carpenter/Joiner',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Carpet fitter',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Civil Engineer',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Cleaning Service',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Computer Systems',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Conservatories & Sunrooms',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Curtain maker',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Drain & Sewer Cleaning',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Electrician',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Fencing Contractor',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Fitter/Welder',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Flooring',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Gardening/Landscaping',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Gas Fitter',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'General Work/Miscellaneous Work',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Gutters Fascia & Soffit',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Handyman',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Heating Contractor',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Insulation - Pumped',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Insulation Contractor',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Interior Designer',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Kitchens & Fitted Furniture',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Locks & Locksmiths',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Mechanic',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Painter/Decorator',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Paving Contractor',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Phone Systems',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Plasterer',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Plumber',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Quantity Surveyor',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Removal & Storage',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Roofer',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Slabbing Contractor',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Solar Panels',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Steel Erector',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Stone Mason',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Tiler',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Tree Surgeon',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Underfloor Heating',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Upholsterer',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Window & Door Repairs,Other',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
   ServiceCatagory(
       'Window Installer',
       Icon(
         Icons.fastfood,
-        color: darkBlue(),
+        color: blackFont,
       )),
 ];
 

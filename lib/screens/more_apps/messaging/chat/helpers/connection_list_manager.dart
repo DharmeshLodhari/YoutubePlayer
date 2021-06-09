@@ -9,6 +9,19 @@ class ConnectionListManager {
   ///Store Connections in to the db
   Future<void> saveConnectionsToDB({List<ChatConversation> connections}) async {
     await _db.saveUserConnections(connections);
+    return Future.value();
+  }
+
+  ///Store Missed connection in the  db
+  Future<void> saveMissedConnectionsToDB(
+      {List<ChatConversation> connections}) async {
+    await _db.saveMissedUserConnections(connections);
+    return;
+  }
+
+  ///Store Single Connection to db
+  Future<int> addConnectionToDB({ChatConversation chatConversation}) async {
+    return await _db.addUserConnection(chatConversation: chatConversation);
   }
 
   ///Clear stored connections From db
@@ -40,6 +53,10 @@ class ConnectionListManager {
 
   Future<int> deleteChatConversation({String conversationId}) async {
     return await _db.deleteChatConversation(conversationId: conversationId);
+  }
+
+  Future<ChatConversation> getLastChatConversation() async {
+    return await _db.getLastChatConversation();
   }
 
   ///Get Searched Connections From db

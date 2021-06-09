@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/Participant.dart';
+import 'package:Slydo/utils/date_time_and_money_converter.dart';
 
 /// Model for user's connection list
 class ChatConversation {
@@ -13,6 +14,7 @@ class ChatConversation {
   String fullName;
   bool isGroupConversation;
   List<String> mutedParticipants;
+  String createdAt;
   String owner;
   List<String> participants;
   String qrCode;
@@ -26,6 +28,7 @@ class ChatConversation {
       this.conversationId,
       this.description,
       this.fullName,
+      this.createdAt,
       this.isGroupConversation,
       this.mutedParticipants = const [],
       this.owner,
@@ -39,22 +42,23 @@ class ChatConversation {
     return ChatConversation(
       adminUsers: json['admin_users'] != null
           ? new List<String>.from(json['admin_users'])
-          : null,
+          : [],
       avatar: json['avatar'],
       blockedParticipants: json['blocked_participants'] != null
           ? new List<String>.from(json['blocked_participants'])
-          : null,
+          : [],
       conversationId: json['conversation_id'],
       description: json['description'] ?? "",
       fullName: json['full_name'],
       isGroupConversation: json['is_group_conversation'],
+      createdAt: json['created_at'] ?? DateTime.now().toUtc().toIso8601String(),
       mutedParticipants: json['muted_participants'] != null
           ? new List<String>.from(json['muted_participants'])
-          : null,
+          : [],
       owner: json['owner'] == "" || json['owner'] == null ? '' : json['owner'],
       participants: json['participants'] != null
           ? new List<String>.from(json['participants'])
-          : null,
+          : [],
       qrCode: json['qr_code'] == "" || json['qr_code'] == null
           ? ''
           : json['qr_code'],
@@ -73,6 +77,7 @@ class ChatConversation {
     data['is_group_conversation'] = this.isGroupConversation;
     data['owner'] = this.owner;
     data['qr_code'] = this.qrCode;
+    data['created_at'] = this.createdAt;
     data['type'] = this.type;
     data['username'] = this.userName;
     if (this.adminUsers != null) {
@@ -103,6 +108,7 @@ class ChatConversation {
       conversationId: json['conversation_id'],
       description: json['description'],
       fullName: json['full_name'],
+      createdAt: convertMillisecondsSinceEpochToString(json['created_at']),
       isGroupConversation: json['is_group_conversation'] == 1 ? true : false,
       mutedParticipants: json['muted_participants'] != null
           ? new List<String>.from(jsonDecode(json['muted_participants']))
@@ -129,6 +135,7 @@ class ChatConversation {
     data['qr_code'] = this.qrCode;
     data['type'] = this.type;
     data['username'] = this.userName;
+    data['created_at'] = convertStringToMillisecondsSinceEpoch(this.createdAt);
     if (this.adminUsers != null) {
       data['admin_users'] = jsonEncode(this.adminUsers);
     }
@@ -157,6 +164,7 @@ class ChatConversation {
       fullName: groupDetailModel.fullName,
       isGroupConversation: groupDetailModel.isGroupConversation,
       mutedParticipants: groupDetailModel.mutedParticipants,
+      createdAt: groupDetailModel.createdAt,
       owner: groupDetailModel.owner,
       participants: getParticipants(groupDetailModel.participants),
       qrCode: "",

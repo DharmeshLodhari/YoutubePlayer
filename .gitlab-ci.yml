@@ -1,0 +1,136 @@
+image: cirrusci/flutter:1.22.5
+
+stages:
+  - Test
+  - Build Android
+  - Deploy
+
+before_script:
+  - flutter pub get
+  - flutter clean
+  - touch android/key.properties
+  - cat $KEYFILE >> android/key.properties
+  - cat $SERVICE_FILE >> android/fastlane/slydo_play_console.json
+
+
+test:
+  stage: Test
+  script:
+    - flutter test
+
+  tags:
+    - flutter
+
+
+android:build:
+  stage: Build Android
+  dependencies:
+    - test
+
+  before_script:
+    - gem install bundler
+#    - export WD=$(pwd) && cd android && gem install fastlane && cd $WD
+    - flutter pub get
+    - flutter clean
+    - touch android/key.properties
+    - cat $KEYFILE >> android/key.properties
+
+  script:
+    # Flutter local configuration
+    - echo flutter.sdk=$FLUTTER_PATH > android/local.properties
+    - echo sdk.dir=$ANDROID_SDK_PATH >> android/local.properties
+    - echo flutter.buildMode=release >> android/local.properties
+#    - touch android/key.properties
+#    - cat $KEYFILE >> android/key.properties
+    - cd android
+    - bundle install
+    - fastlane env
+    - bundle exec fastlane build_android
+    - rm -f local.properties
+    - rm -f key.properties
+
+  artifacts:
+    paths:
+      - build/app/outputs/flutter-apk/app-release.apk
+      - build/app/outputs/bundle/release/app-release.aab
+    expire_in: 1 week
+  interruptible: true
+
+  tags:
+    - flutter
+
+#  only:
+#    - tags
+
+internal:android:deploy:
+  stage: Deploy
+  tags:
+    - flutter
+
+  before_script:
+    - gem install bundler
+    - cat $SERVICE_FILE >> android/fastlane/slydo_play_console.json
+
+  script:
+    - cd android
+    - bundle install
+    - bundle exec fastlane deploy_android internal:true
+    - rm fastlane/slydo_play_console.json
+  when: manual
+  dependencies:
+    - android:build
+
+alpha:android:deploy:
+  stage: Deploy
+  tags:
+    - flutter
+
+  before_script:
+    - gem install bundler
+    - cat $SERVICE_FILE >> android/fastlane/slydo_play_console.json
+
+  script:
+    - cd android
+    - bundle install
+    - bundle exec fastlane deploy_android alpha:true
+    - rm fastlane/slydo_play_console.json
+  when: manual
+  dependencies:
+    - android:build
+
+beta:android:deploy:
+  stage: Deploy
+  tags:
+    - flutter
+
+  before_script:
+    - gem install bundler
+    - cat $SERVICE_FILE >> android/fastlane/slydo_play_console.json
+
+  script:
+    - cd android
+    - bundle install
+    - bundle exec fastlane deploy_android beta:true
+    - rm fastlane/slydo_play_console.json
+  when: manual
+  dependencies:
+    - android:build
+
+
+prod:android:deploy:
+  stage: Deploy
+  tags:
+    - flutter
+
+  before_script:
+    - gem install bundler
+    - cat $SERVICE_FILE >> android/fastlane/slydo_play_console.json
+
+  script:
+    - cd android
+    - bundle install
+    - bundle exec fastlane deploy_android production:true
+    - rm fastlane/slydo_play_console.json
+  when: manual
+  dependencies:
+    - android:build

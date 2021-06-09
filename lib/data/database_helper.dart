@@ -3,8 +3,12 @@ import 'dart:io' as io;
 
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatUserModel.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatTextMessage.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessagePagination.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/nudge_notification/NudgeNotification.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import "package:collection/collection.dart";
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -16,6 +20,8 @@ class DatabaseHelper {
   factory DatabaseHelper() => _instance;
 
   static Database _db;
+
+  static int _databaseVersion = 1;
 
   /// if _db fail to get this data then we will return this variables
   User _user;
@@ -32,9 +38,12 @@ class DatabaseHelper {
 
   initDb() async {
     io.Directory documentsDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentsDirectory.path, "main.db");
+    String path = join(documentsDirectory.path, "main2.db");
     var theDb = await openDatabase(path,
-        version: 10, onCreate: _onCreate, onUpgrade: _onUpgrade);
+        version: _databaseVersion,
+        onCreate: _onCreate,
+        onUpgrade: _onUpgrade,
+        onConfigure: _onConfigure);
     return theDb;
   }
 
@@ -45,60 +54,66 @@ class DatabaseHelper {
       // when we upgrade and database has changed we should put our migration statement over here
       // db.execute("ALTER TABLE table_name ADD column_name TEXT;")  adding column
       // db.execute("ALTER TABLE table_name DROP column_name;")  adding column
-//      db.execute("ALTER TABLE User ADD is_verified INTEGER;");
+      // db.execute("ALTER TABLE User ADD is_verified INTEGER;");
 
     } else {
       debugPrint("No migrations to apply");
     }
   }
 
+  // To configure foreign key support in SQFLITE
+  FutureOr<void> _onConfigure(Database db) async {
+    await db.execute('PRAGMA foreign_keys = ON');
+    return;
+  }
+
   // Create this database tables when we initialize app
   void _onCreate(Database db, int version) async {
-    // Create the user table
-    await db.execute("""CREATE TABLE "User" (
-        "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
-        "uuid"	TEXT,
-        "fullName"	TEXT,
-        "userName"	TEXT,
-        "phoneNumber"	TEXT,
-        "password"	TEXT,
-        "avatar"	TEXT,
-        "qrCode"	TEXT,
-        "url"	TEXT,
-        "currency"	TEXT
-    );""");
+    try {
+      // Create the user table
+      await db.execute("""CREATE TABLE "User" (
+      "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
+      "uuid"	TEXT,
+      "fullName"	TEXT,
+      "userName"	TEXT,
+      "phoneNumber"	TEXT,
+      "password"	TEXT,
+      "avatar"	TEXT,
+      "qrCode"	TEXT,
+      "url"	TEXT,
+      "currency"	TEXT);
+    """);
 
-    // Create the jwt table
-    await db.execute('''CREATE TABLE "Jwt" (
-                "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
-                "access"	TEXT,
-                "refresh"	TEXT,
-                "expiration"	TEXT
-            );
+      // Create the jwt table
+      await db.execute('''CREATE TABLE "Jwt" (
+      "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
+      "access"	TEXT,
+      "refresh"	TEXT,
+      "expiration"	TEXT);
     ''');
 
-    // Create the device table
-    await db.execute('''CREATE TABLE "Device" (
-                "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
-                "firebaseToken"	TEXT,
-                "type"	TEXT,
-                "mode"	TEXT,
-                "deviceId"	TEXT,
-                "deviceName"	TEXT
-             );
+      // Create the device table
+      await db.execute('''CREATE TABLE "Device" (
+      "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
+      "firebaseToken"	TEXT,
+      "type"	TEXT,
+      "mode"	TEXT,
+      "deviceId"	TEXT,
+      "deviceName"	TEXT);
       ''');
 
-    // Create the ChatUser table
-    await db
-        .execute('''CREATE TABLE "ChatUser" ("conversationId" TEXT PRIMARY KEY,
-                     "messageCount" INTEGER,
-                     "hashedMessage" TEXT UNIQUE     
-              );
+      // Create the ChatUser table which will handle count of the messages in user connection
+      await db.execute('''CREATE TABLE "ChatUser" (
+      "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
+      "conversationId" TEXT UNIQUE,
+      "messageCount" INTEGER,
+      "hashedMessage" TEXT UNIQUE);
     ''');
 
-    // Create the ChatTextMessage table
-    await db.execute('''CREATE TABLE "ChatTextMessage" (
-      "check_id" TEXT PRIMARY KEY,
+      // Create the SocketQueueChatMessage table which will store all the sent messages when user is offline
+      await db.execute('''CREATE TABLE "SocketQueueChatMessage" (
+      "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+      "check_id" TEXT UNIQUE,
       "conversation_id" TEXT,
       "author" TEXT,
       "author_full_name" TEXT,
@@ -113,15 +128,8 @@ class DatabaseHelper {
       "replied_to" TEXT);
     ''');
 
-    ///{full_name: Iyalaje Stores,
-    /// username: olabisi.abraham.1,
-    /// avatar: https://slydo-assets.s3.amazonaws.com/media/customer/avatar/c06810e3dc334d088cc864c16655f974.jpg,
-    /// qr_code: https://slydo-assets.s3.amazonaws.com/media/customer/qr-code/ed2ee782326a4526a1d804c410f2336b.png,
-    /// conversation_id: 0fa8952a-e6a5-4aee-bf2a-ec074254ab46,
-    /// type: Business}
-
-    // Create the userConnections table
-    await db.execute('''CREATE TABLE "UserConnection" (
+      // Create the userConnections table
+      await db.execute('''CREATE TABLE "UserConnection" (
       "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
       "conversation_id" TEXT UNIQUE,
       "full_name" TEXT,
@@ -129,6 +137,7 @@ class DatabaseHelper {
       "avatar" TEXT,
       "qr_code" TEXT,
       "type" TEXT,
+      "created_at" INTEGER,
       "admin_users" TEXT,
       "blocked_participants" TEXT,
       "description" TEXT,
@@ -139,6 +148,73 @@ class DatabaseHelper {
       "last_message_time" INTEGER
    );
     ''');
+
+      // Create the ChatMessage table
+      await db.execute('''CREATE TABLE "ChatMessage" (
+      "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
+      "author" TEXT,
+      "author_full_name" TEXT,
+      "check_id" TEXT,
+      "created_at" INTEGER,
+      "updated_at" INTEGER,
+      "meta_data" TEXT,
+      "deleted_for_author" INTEGER,
+      "deleted_for_recipient" INTEGER,
+      "delivered" INTEGER,
+      "message_id" TEXT,
+      "kind" TEXT,
+      "media" TEXT,
+      "poster" TEXT,
+      "read_by_author" INTEGER,
+      "read_by_recipient" INTEGER,
+      "replied_to" TEXT,
+      "text" TEXT,
+      "type" TEXT,
+      "was_edited" INTEGER,
+      "conversation_id" TEXT,
+      FOREIGN KEY(conversation_id) REFERENCES UserConnection(conversation_id) ON DELETE CASCADE,
+      UNIQUE(check_id,conversation_id)
+   );
+    ''');
+
+      // Create the ChatMessagePagination table
+      await db.execute('''CREATE TABLE "ChatMessagePagination" (
+      "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
+      "conversation_id" TEXT UNIQUE,
+      "count" INTEGER,
+      "next" TEXT,
+      "previous" TEXT
+    );
+    ''');
+
+      // Create the NUDGENOTIFICATION table
+      await db.execute('''CREATE TABLE "NUDGENOTIFICATION" (     
+            "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
+            "check_id" TEXT,
+            "conversation_id" TEXT,
+            "notification_id" TEXT,
+            "author" TEXT,
+            "recipient" TEXT,
+            "created_at" TEXT,
+            "acknowledgement_type" TEXT,
+            "author_avatar" TEXT,
+            "actions" TEXT,
+            "type" TEXT,
+            "recipient_username" TEXT
+          );
+    ''');
+
+      // Create the NOTIFICATION table
+      await db.execute('''CREATE TABLE "NOTIFICATION" (     
+            "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
+            "notification" TEXT
+          );
+    ''');
+
+      debugPrint("DATABASE:- Tables are created !!");
+    } catch (e) {
+      debugPrint("DATABASE:- ERROR: while creating tables: $e");
+    }
   }
 
   // Close connect to the db
@@ -153,11 +229,11 @@ class DatabaseHelper {
     int res;
     try {
       res = await dbClient.insert("User", user.toMap());
-      debugPrint("User saved to db");
+      debugPrint("DATABASE:- User saved to db");
     } catch (error) {
       await dbClient.delete("User");
       res = await dbClient.insert("User", user.toMap());
-      debugPrint("User saved to db");
+      debugPrint("DATABASE:- User saved to db");
     }
     return res;
   }
@@ -167,7 +243,7 @@ class DatabaseHelper {
     var dbClient = await db;
     _user = null;
     int res = await dbClient.delete("User");
-    debugPrint("User deleted from db");
+    debugPrint("DATABASE:- User deleted from db");
     return res;
   }
 
@@ -183,7 +259,7 @@ class DatabaseHelper {
     // Get the user
     var dbClient = await db;
     List<Map<String, dynamic>> res = await dbClient.query("User");
-//    List<User> users = [];
+
     var user;
     if (res != null && res.length > 0) {
       var obj = res.first;
@@ -212,7 +288,7 @@ class DatabaseHelper {
     var dbClient = await db;
     _jwt = data;
     int res = await dbClient.insert("Jwt", data);
-    debugPrint("Jwt saved to db");
+    debugPrint("DATABASE:- Jwt saved to db");
     return res;
   }
 
@@ -221,7 +297,7 @@ class DatabaseHelper {
     var dbClient = await db;
     _jwt = null;
     int res = await dbClient.delete("Jwt");
-    debugPrint("Jwt deleted from db");
+    debugPrint("DATABASE:- Jwt deleted from db");
     return res;
   }
 
@@ -275,6 +351,8 @@ class DatabaseHelper {
     return res;
   }
 
+  /// ChatUser Operation
+
   Future<Map<String, dynamic>> getChatUser(String conversationId) async {
     Database dbClient = await db;
 
@@ -284,9 +362,7 @@ class DatabaseHelper {
     return result.first;
   }
 
-  /// ChatUsers Operation
-
-  void saveChatUsers(List<ChatUserModel> users) async {
+  void saveChatUserCount(List<ChatUserModel> users) async {
     Database dbClient = await db;
 
     Batch insertUserBatch = dbClient.batch();
@@ -299,13 +375,13 @@ class DatabaseHelper {
     await insertUserBatch.commit();
   }
 
-  void saveChatUser(ChatUserModel user) async {
+  Future<void> saveChatUser(ChatUserModel user) async {
     Database dbClient = await db;
 
     int res = await dbClient.insert("ChatUser", user.toJson(),
         conflictAlgorithm: ConflictAlgorithm.ignore);
     if (res != null) {
-      debugPrint("Save Chat User !!");
+      debugPrint("DATABASE:- Save Chat User !!");
     }
 
     return;
@@ -315,7 +391,7 @@ class DatabaseHelper {
   Future<int> deleteChatUsers() async {
     var dbClient = await db;
     int res = await dbClient.delete("ChatUser");
-    debugPrint("ChatUsers deleted from db");
+    debugPrint("DATABASE:- ChatUsers deleted from db");
     return res;
   }
 
@@ -323,7 +399,7 @@ class DatabaseHelper {
     var dbClient = await db;
     int res = await dbClient.delete("ChatUser",
         where: "conversationId = ?", whereArgs: [conversationId]);
-    debugPrint("ChatUser $conversationId is Deleted !!");
+    debugPrint("DATABASE:- ChatUser $conversationId is Deleted !!");
     return res;
   }
 
@@ -334,9 +410,10 @@ class DatabaseHelper {
       await dbClient.execute(
           "UPDATE ChatUser SET messageCount = messageCount + 1 , hashedMessage = ? where conversationId = ? AND hashedMessage != ?",
           [hashedMessage, conversationId, hashedMessage]);
-      debugPrint("Chat message count updated from db");
+      debugPrint(
+          "DATABASE:- Chat message count updated from db $conversationId");
     } catch (e) {
-      debugPrint("ERROR:- while updating the Chat Message count $e");
+      debugPrint("DATABASE:- ERROR:- while updating the Chat Message count $e");
     }
 
     return;
@@ -351,9 +428,9 @@ class DatabaseHelper {
       // await dbClient.execute(
       //     "UPDATE ChatUser SET messageCount = 0 where conversationId = ?", [conversationId]);
     } catch (e) {
-      debugPrint("ERROR:- while Clearing MessageCount $e");
+      debugPrint("DATABASE:- ERROR:- while Clearing MessageCount $e");
     }
-    debugPrint("ChatUsers MessageCount clear from db");
+    debugPrint("DATABASE:- ChatUsers MessageCount clear from db");
     return result;
   }
 
@@ -368,44 +445,48 @@ class DatabaseHelper {
     return 0;
   }
 
-  /// ChatTextMessage
+  /// SocketQueueChatMessage
 
-  Future<List<ChatTextMessage>> getChatTextMessages() async {
+  Future<List<SocketQueueChatMessage>> getSocketQueueChatMessages() async {
     var dbClient = await db;
-    List<Map<String, dynamic>> res = await dbClient.query("ChatTextMessage");
+    List<Map<String, dynamic>> res =
+        await dbClient.query("SocketQueueChatMessage");
 
     if (res != null && res.length > 0) {
-      List<ChatTextMessage> chatTextMessages =
-          res.map((element) => ChatTextMessage.fromJson(element)).toList();
-      return chatTextMessages;
+      List<SocketQueueChatMessage> socketQueueChatMessages = res
+          .map((element) => SocketQueueChatMessage.fromJson(element))
+          .toList();
+      return socketQueueChatMessages;
     }
     return [];
   }
 
-  Future<int> saveChatTextMessage({ChatTextMessage message}) async {
+  Future<int> saveSocketQueueChatMessage(
+      {SocketQueueChatMessage message}) async {
     Database dbClient = await db;
 
-    int res = await dbClient.insert("ChatTextMessage", message.toJson(),
+    int res = await dbClient.insert("SocketQueueChatMessage", message.toJson(),
         conflictAlgorithm: ConflictAlgorithm.ignore);
     if (res != null) {
-      debugPrint("<<<<< ChatTextMessage Added !! $res");
+      debugPrint("DATABASE:- <<<<< SocketQueueChatMessage Added !! $res");
     }
 
     return res;
   }
 
-  Future<int> deleteChatTextMessage({ChatTextMessage message}) async {
+  Future<int> deleteSocketQueueChatMessage(
+      {SocketQueueChatMessage message}) async {
     var dbClient = await db;
-    int res = await dbClient.delete("ChatTextMessage",
+    int res = await dbClient.delete("SocketQueueChatMessage",
         where: "check_id = ?", whereArgs: [message.checkId]);
-    debugPrint(">>>> ChatTextMessage deleted !!");
+    debugPrint("DATABASE:- >>>> SocketQueueChatMessage deleted !!");
     return res;
   }
 
-  Future<int> clearChatTextMessage() async {
+  Future<int> clearSocketQueueChatMessage() async {
     var dbClient = await db;
-    int res = await dbClient.delete("ChatTextMessage");
-    debugPrint("ChatTextMessage Cleared !!");
+    int res = await dbClient.delete("SocketQueueChatMessage");
+    debugPrint("DATABASE:- SocketQueueChatMessage Cleared !!");
     return res;
   }
 
@@ -433,14 +514,78 @@ class DatabaseHelper {
 
       /// if ChatConversation is new then we will set last_message_time as 0
       if (!isChatConversationIsExist) {
-        data["last_message_time"] = 0;
+        data["last_message_time"] = data['created_at'];
       }
 
       insertUserBatch.insert("UserConnection", data,
-          conflictAlgorithm: ConflictAlgorithm.replace);
+          conflictAlgorithm: ConflictAlgorithm.ignore);
     });
 
-    await insertUserBatch.commit();
+    return await insertUserBatch.commit();
+  }
+
+  Future<dynamic> saveMissedUserConnections(
+      List<ChatConversation> chatConversations) async {
+    Database dbClient = await db;
+
+    List<ChatConversation> existingChatConversation =
+        await getUserConnections();
+
+    Batch insertUserBatch = dbClient.batch();
+
+    chatConversations.forEach((user) {
+      Map<String, dynamic> data = user.toDBJson();
+
+      /// for checking if the chatConversation is already stored in the db
+      bool isChatConversationIsExist = false;
+      for (int i = 0; i < existingChatConversation.length; i++) {
+        if (user.conversationId == existingChatConversation[i].conversationId) {
+          isChatConversationIsExist = true;
+          break;
+        }
+      }
+
+      /// if ChatConversation is new then we will set last_message_time as 0
+      if (!isChatConversationIsExist) {
+        data["last_message_time"] = data['created_at'];
+      }
+
+      insertUserBatch.insert("UserConnection", data,
+          conflictAlgorithm: ConflictAlgorithm.ignore);
+    });
+
+    var result = await insertUserBatch.commit();
+    debugPrint("Result From Batch:- $result");
+
+    return result;
+  }
+
+  Future<int> addUserConnection({ChatConversation chatConversation}) async {
+    Database dbClient = await db;
+
+    List<ChatConversation> existingChatConversation =
+        await getUserConnections();
+
+    Map<String, dynamic> data = chatConversation.toDBJson();
+
+    /// for checking if the chatConversation is already stored in the db
+    bool isChatConversationIsExist = false;
+    for (int i = 0; i < existingChatConversation.length; i++) {
+      if (chatConversation.conversationId ==
+          existingChatConversation[i].conversationId) {
+        isChatConversationIsExist = true;
+        break;
+      }
+    }
+
+    /// if ChatConversation is new then we will set last_message_time as 0
+    if (!isChatConversationIsExist) {
+      DateTime dateTime = DateTime.now();
+      data["last_message_time"] = dateTime.millisecondsSinceEpoch;
+    }
+
+    return await dbClient.insert("UserConnection", data,
+        conflictAlgorithm: ConflictAlgorithm.ignore);
   }
 
   Future<List<ChatConversation>> getUserConnections() async {
@@ -452,6 +597,7 @@ class DatabaseHelper {
     if (res != null && res.length > 0) {
       List<ChatConversation> connectionList =
           res.map((element) => ChatConversation.fromDBJson(element)).toList();
+
       return connectionList;
     }
     return [];
@@ -495,7 +641,10 @@ class DatabaseHelper {
   Future<int> clearUserConnections() async {
     var dbClient = await db;
     int res = await dbClient.delete("UserConnection");
-    debugPrint("UserConnection Cleared !!");
+
+    // await deleteChatMessagePagination();
+    // await deleteChatMessage();
+    debugPrint("DATABASE:- UserConnection Cleared !!");
     return res;
   }
 
@@ -513,7 +662,332 @@ class DatabaseHelper {
     int res = await dbClient.delete("UserConnection",
         where: "conversation_id = ?", whereArgs: [conversationId]);
     debugPrint("UserConnection $conversationId is Deleted !!");
-    await deleteSingleChatUsers();
+    await deleteSingleChatUsers(conversationId: conversationId);
+    await deleteSingleUserChatMessage(conversationId: conversationId);
     return res;
+  }
+
+  Future<ChatConversation> getLastChatConversation(
+      {String conversationId}) async {
+    Database dbClient = await db;
+
+    List<Map<String, dynamic>> res = await dbClient.query("UserConnection",
+        orderBy: "created_at DESC", limit: 1);
+
+    if (res != null && res.length > 0) {
+      ChatConversation chatConversation =
+          ChatConversation.fromDBJson(res.first);
+      return chatConversation;
+    }
+    return null;
+  }
+
+  /// ChatMessage Operations
+  Future<List<ChatMessage>> saveChatMessage(
+      List<ChatMessage> chatMessages) async {
+    Database dbClient = await db;
+
+    Batch insertUserBatch = dbClient.batch();
+
+    chatMessages.forEach((chatMessage) {
+      Map<String, dynamic> data = chatMessage.toDBJson();
+
+      insertUserBatch.insert("ChatMessage", data,
+          conflictAlgorithm: ConflictAlgorithm.ignore);
+    });
+
+    List<dynamic> result = await insertUserBatch.commit();
+
+    List<ChatMessage> insertedMessages = await getInsertedChatMessages(result);
+    debugPrint("Batch Result:- $result");
+    return insertedMessages;
+  }
+
+  Future<List<ChatMessage>> getInsertedChatMessages(
+      List<dynamic> idList) async {
+    Database dbClient = await db;
+    String idListString = idList.toString();
+
+    String firstRemove = idListString.replaceFirst("[", "(");
+    String secondRemove = firstRemove.replaceFirst("]", ")");
+
+    List<Map<String, dynamic>> result = await dbClient.rawQuery(
+        "SELECT * FROM ChatMessage WHERE id IN $secondRemove ORDER BY created_at DESC");
+
+    if (result != null && result.length > 0) {
+      List<ChatMessage> chatMessages = result.map((element) {
+        // debugPrint(
+        //     "ELEMENT ID:- ${element['id']} TEXT ${element['text']} CREATED AT:- ${convertMillisecondsSinceEpochToString(element['created_at'])}");
+        return ChatMessage.fromDBJson(element);
+      }).toList();
+      return chatMessages;
+    }
+    return [];
+  }
+
+  Future<List> insertMissedMessage(List<ChatMessage> chatMessages) async {
+    Database dbClient = await db;
+
+    Batch insertUserBatch = dbClient.batch();
+
+    chatMessages.forEach((chatMessage) {
+      Map<String, dynamic> data = chatMessage.toDBJson();
+
+      insertUserBatch.insert("ChatMessage", data,
+          conflictAlgorithm: ConflictAlgorithm.replace);
+    });
+
+    List<dynamic> result = await insertUserBatch.commit();
+
+    debugPrint("Batch Result:- $result");
+
+    return result;
+  }
+
+  Future<List<ChatMessage>> getChatMessages(
+      {ChatConversation chatConversation}) async {
+    Database dbClient = await db;
+
+    List<Map<String, dynamic>> res = await dbClient.query("ChatMessage",
+        orderBy: "created_at DESC",
+        where: "conversation_id = ?",
+        whereArgs: [chatConversation.conversationId]);
+
+    if (res != null && res.length > 0) {
+      List<ChatMessage> chatMessages = res.map((element) {
+        return ChatMessage.fromDBJson(element);
+      }).toList();
+      return chatMessages;
+    }
+    return [];
+  }
+
+  Future<int> deleteChatMessages() async {
+    Database dbClient = await db;
+    int res = await dbClient.delete("ChatMessage");
+    await deleteChatMessagePagination();
+    return res;
+  }
+
+  Future<int> deleteChatMessage(String checkId, String conversationId) async {
+    Database dbClient = await db;
+    int res = await dbClient.delete("ChatMessage",
+        where: "conversation_id = ? AND check_id = ?",
+        whereArgs: [conversationId, checkId]);
+    return res;
+  }
+
+  Future<int> updateEditedChatMessage(String checkId, String conversationId,
+      bool wasEdited, String text) async {
+    Database dbClient = await db;
+    var result = await dbClient.update(
+        "ChatMessage", {"was_edited": wasEdited == true ? 1 : 0, "text": text},
+        where: "conversation_id = ? AND check_id = ?",
+        whereArgs: [conversationId, checkId]);
+    return result;
+  }
+
+  Future<int> deleteSingleUserChatMessage({String conversationId}) async {
+    var dbClient = await db;
+    int res = await dbClient.delete("ChatMessage",
+        where: "conversation_id = ?", whereArgs: [conversationId]);
+    debugPrint("DATABASE:- ChatMessage $conversationId is Deleted !!");
+
+    await deleteSingleChatMessagePagination(conversationId: conversationId);
+    return res;
+  }
+
+  Future<int> updateChatMessageReadByRecipient(
+      String checkId, String conversationId) async {
+    Database dbClient = await db;
+    var result = await dbClient.update("ChatMessage", {"read_by_recipient": 1},
+        where: "conversation_id = ? AND check_id = ?",
+        whereArgs: [conversationId, checkId]);
+
+    return result;
+  }
+
+  Future<int> insertSingleChatMessage(ChatMessage chatMessage) async {
+    Database dbClient = await db;
+
+    return await dbClient.insert("ChatMessage", chatMessage.toDBJson());
+  }
+
+  Future<List<ChatMessage>> getLastChatMessage() async {
+    Database dbClient = await db;
+
+    // List<Map<String, dynamic>> res = await dbClient.query(
+    //   "ChatMessage",
+    //   where: "delivered = ?",
+    //   whereArgs: [1],
+    //   orderBy: "created_at DESC",
+    //   groupBy: "conversation_id",
+    // );
+
+    List<Map<String, dynamic>> res = await dbClient.rawQuery(
+        "SELECT * FROM ChatMessage where delivered=? order by created_at DESC;",
+        [1]);
+
+    if (res != null && res.length > 0) {
+      var newMap = groupBy(res, (obj) => obj['conversation_id']);
+      // debugPrint("==> $newMap");
+      List<Map<String, dynamic>> messages = List<Map<String, dynamic>>();
+      newMap.forEach((key, value) {
+        messages.add(value[0]);
+      });
+
+      List<ChatMessage> chatMessages = List<ChatMessage>();
+      messages.forEach((message) {
+        chatMessages.add(ChatMessage.fromDBJson(message));
+      });
+      debugPrint("Messages from DB:- ${chatMessages.length}");
+      return chatMessages;
+    }
+    return null;
+  }
+
+  Future<int> updateSingleChatMessage(ChatMessage chatMessage) async {
+    Database dbClient = await db;
+    var result = await dbClient.update("ChatMessage", chatMessage.toDBJson(),
+        where: "conversation_id = ? AND check_id = ?",
+        whereArgs: [chatMessage.conversationId, chatMessage.checkId]);
+    if (result == 0) {
+      await dbClient.insert("ChatMessage", chatMessage.toDBJson());
+    }
+    return result;
+  }
+
+  ///save ChatMessagePagination
+
+  Future<void> saveChatMessagePagination(
+      ChatMessagePagination chatMessagePagination) async {
+    Database dbClient = await db;
+
+    int res = await dbClient.insert(
+        "ChatMessagePagination", chatMessagePagination.toJson(),
+        conflictAlgorithm: ConflictAlgorithm.ignore);
+    if (res != null) {
+      debugPrint("DATABASE:- Save ChatMessagePagination !!");
+    }
+
+    return;
+  }
+
+  Future<ChatMessagePagination> getChatMessagePagination(
+      String conversationId) async {
+    Database dbClient = await db;
+
+    List<Map<String, dynamic>> result = await dbClient.query(
+        "ChatMessagePagination",
+        where: "conversation_id = ?",
+        whereArgs: [conversationId]);
+
+    if (result != null && result.length > 0) {
+      ChatMessagePagination chatMessagePagination =
+          ChatMessagePagination.fromJson(result.first);
+      return chatMessagePagination;
+    }
+
+    return ChatMessagePagination(conversationId: conversationId);
+  }
+
+  Future<int> updateChatMessagePagination(
+      ChatMessagePagination chatMessagePagination) async {
+    Database dbClient = await db;
+
+    return await dbClient.update(
+        "ChatMessagePagination", chatMessagePagination.toJson(),
+        where: "conversation_id = ?",
+        whereArgs: [chatMessagePagination.conversationId]);
+  }
+
+  Future<int> deleteChatMessagePagination() async {
+    Database dbClient = await db;
+    int res = await dbClient.delete("ChatMessagePagination");
+    return res;
+  }
+
+  Future<int> deleteSingleChatMessagePagination({String conversationId}) async {
+    var dbClient = await db;
+    int res = await dbClient.delete("ChatMessagePagination",
+        where: "conversation_id = ?", whereArgs: [conversationId]);
+    debugPrint(
+        "DATABASE:- ChatMessagePagination $conversationId is Deleted !!");
+    return res;
+  }
+
+  /// NOTIFICATION OPERATION
+
+  Future<int> saveNudgeNotification(NudgeNotification nudgeNotification) async {
+    Database dbClient = await db;
+
+    int res = await dbClient.insert(
+        "NUDGENOTIFICATION", nudgeNotification.toJson(),
+        conflictAlgorithm: ConflictAlgorithm.ignore);
+    if (res != null) {
+      debugPrint("DATABASE:- Save NUDGE NOTIFICATION !!");
+      return res;
+    }
+    return null;
+  }
+
+  Future<int> deleteNudgeNotification() async {
+    Database dbClient = await db;
+
+    int res = await dbClient.delete("NUDGENOTIFICATION");
+    if (res != null) {
+      debugPrint("DATABASE:- DELETE NUDGE NOTIFICATION !!");
+      return res;
+    }
+    return null;
+  }
+
+  Future<NudgeNotification> getNudgeNotification() async {
+    Database dbClient = await db;
+
+    List<Map<String, dynamic>> notifications =
+        await dbClient.query("NUDGENOTIFICATION");
+    if (notifications != null) {
+      if (notifications.length > 0)
+        return NudgeNotification.fromJson(notifications.first);
+    }
+    return null;
+  }
+
+  Future<int> saveNotification(String notification) async {
+    Database dbClient = await db;
+
+    await deleteNotification();
+
+    int res = await dbClient.insert(
+        "NOTIFICATION", {"notification": notification},
+        conflictAlgorithm: ConflictAlgorithm.replace);
+    if (res != null) {
+      debugPrint("DATABASE:- Save NOTIFICATION !!");
+      return res;
+    }
+    return null;
+  }
+
+  Future<int> deleteNotification() async {
+    Database dbClient = await db;
+
+    int res = await dbClient.delete("NOTIFICATION");
+    if (res != null) {
+      debugPrint("DATABASE:- DELETE NOTIFICATION !!");
+      return res;
+    }
+    return null;
+  }
+
+  Future<Map<String, dynamic>> getNotification() async {
+    Database dbClient = await db;
+
+    List<Map<String, dynamic>> notifications =
+        await dbClient.query("NOTIFICATION");
+    if (notifications != null) {
+      if (notifications.length > 0) return notifications.first;
+    }
+    return null;
   }
 }

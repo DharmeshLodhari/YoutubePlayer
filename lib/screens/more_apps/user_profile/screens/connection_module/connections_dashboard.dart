@@ -1,4 +1,6 @@
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_synchronizer.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
@@ -177,6 +179,10 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
 
   List<Widget> getActions() {
     List<Widget> list = [
+      // synchronizeContactBtn(),
+      // SizedBox(
+      //   width: 8,
+      // ),
       createGroupBtn(),
       SizedBox(
         width: 16,
@@ -203,6 +209,23 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
     );
   }
 
+  Widget synchronizeContactBtn() {
+    return RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
+      icon: Icon(
+        Icons.sync,
+        size: 24,
+        color: blackFont,
+      ),
+      onTap: () async {
+        await ConnectionSynchronizer().update();
+        await ChatMessageSynchronizer().update();
+      },
+      backgroundColor: lightGrey,
+      enableMargin: true,
+    );
+  }
 
   Widget tabViews() {
     return IndexedStack(

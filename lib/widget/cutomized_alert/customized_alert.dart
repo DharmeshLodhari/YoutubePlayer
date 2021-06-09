@@ -82,7 +82,7 @@ class CustomizedAlert {
                             height: 12,
                           ),
                           Text(
-                            title,
+                            title ?? "",
                             style: TextStyle(
                                 color: blackFont,
                                 fontWeight: FontWeight.bold,
@@ -98,7 +98,7 @@ class CustomizedAlert {
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 40),
                                   child: Text(
-                                    desc,
+                                    desc ?? "",
                                     style: TextStyle(
                                         color: blackFont, fontSize: 16.0),
                                     textAlign: TextAlign.center,

@@ -346,7 +346,6 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
           webInfo.description,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
-          // textAlign: TextAlign.justify,
           style: TextStyle(color: blackFont, fontSize: 14),
         ),
         const SizedBox(height: 8),
@@ -602,29 +601,6 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
     );
   }
 
-  // Widget renderImageMedia(
-  //     {Map<String, dynamic> message, bool isSend, bool isRepliedSend}) {
-  //   return Container(
-  //     decoration: BoxDecoration(
-  //       border: Border(
-  //         left: BorderSide(
-  //             width: 2.0,
-  //             color: getDividerColor(
-  //                 isSend: isSend, isRepliedSend: isRepliedSend)),
-  //       ),
-  //     ),
-  //     padding: EdgeInsets.symmetric(horizontal: 12),
-  //     child: ClipRRect(
-  //       borderRadius: BorderRadius.circular(3),
-  //       child: CachedNetworkImage(
-  //         width: double.infinity,
-  //         fit: BoxFit.cover,
-  //         imageUrl: message["media"],
-  //       ),
-  //     ),
-  //   );
-  // }
-
   Widget renderImageMedia(
       {Map<String, dynamic> message, bool isSend, bool isRepliedSend}) {
     return Container(
@@ -687,47 +663,6 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
       ),
     );
   }
-
-  // Widget renderVideoMedia(
-  //     {Map<String, dynamic> message, bool isSend, bool isRepliedSend}) {
-  //   return Container(
-  //     decoration: BoxDecoration(
-  //       border: Border(
-  //         left: BorderSide(
-  //             width: 2.0,
-  //             color: getDividerColor(
-  //                 isSend: isSend, isRepliedSend: isRepliedSend)),
-  //       ),
-  //     ),
-  //     padding: EdgeInsets.symmetric(horizontal: 12),
-  //     child: ClipRRect(
-  //       borderRadius: BorderRadius.circular(3),
-  //       child: Stack(
-  //         children: [
-  //           CachedNetworkImage(
-  //             width: double.infinity,
-  //             fit: BoxFit.cover,
-  //             imageUrl: message["poster"],
-  //           ),
-  //           Center(
-  //             child: ClipOval(
-  //               child: Container(
-  //                 height: 60,
-  //                 width: 60,
-  //                 color: Colors.white12,
-  //                 child: Icon(
-  //                   SlydoAppIcon.music_play_1,
-  //                   color: Colors.white,
-  //                   size: 16,
-  //                 ),
-  //               ),
-  //             ),
-  //           )
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
 
   Widget renderVideoMedia(
       {Map<String, dynamic> message, bool isSend, bool isRepliedSend}) {

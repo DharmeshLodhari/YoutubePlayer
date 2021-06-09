@@ -55,9 +55,9 @@ class _ExploreListState extends State<ExploreList> {
       child: Scaffold(
         key: key,
         resizeToAvoidBottomInset: true,
-        backgroundColor: lightBlue(),
+        backgroundColor: whiteBackground,
         appBar: AppBar(
-          backgroundColor: darkBlue(),
+          backgroundColor: navyBlue,
           title: AnimatedSwitcher(
             duration: Duration(milliseconds: 500),
             transitionBuilder: (Widget child, Animation<double> animation) =>
@@ -113,12 +113,12 @@ class _ExploreListState extends State<ExploreList> {
           child: ListTile(
             title: Text(service[0],
                 style: TextStyle(
-                    color: darkBlue(),
+                    color: navyBlue,
                     fontWeight: FontWeight.bold,
                     fontSize: 15)),
             leading: Icon(
               service[1],
-              color: darkBlue(),
+              color: navyBlue,
             ),
             onTap: () {},
           ),

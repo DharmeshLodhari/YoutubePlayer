@@ -324,7 +324,8 @@ class _EditInvoiceItemState extends State<EditInvoiceItem> {
       } catch (e) {
         debugPrint(e);
         Toast.show(e, context,
-            gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+            gravity: Toast.BOTTOM,  backgroundColor: Colors.black,
+          textColor: Colors.white,);
       }
     }
   }

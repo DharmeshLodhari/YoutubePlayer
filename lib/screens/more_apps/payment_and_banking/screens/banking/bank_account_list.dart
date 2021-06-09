@@ -77,8 +77,12 @@ class _BankAccountListState extends State<BankAccountList> {
         _refreshController.refreshCompleted();
       } else {
         Toast.show(
-            AppLocalization.of(context).internetConnectionNotAvailable, context,
-            gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+          AppLocalization.of(context).internetConnectionNotAvailable,
+          context,
+          gravity: Toast.BOTTOM,
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+        );
         _refreshController.refreshCompleted();
       }
     });
@@ -154,8 +158,11 @@ class _BankAccountListState extends State<BankAccountList> {
           Navigator.of(context).pushNamed('/add-account');
         } else {
           Toast.show(
-              AppLocalization.of(context).youCanAddMaximumTwoAccount, context,
-              textColor: Colors.white, backgroundColor: darkBlue());
+            AppLocalization.of(context).youCanAddMaximumTwoAccount,
+            context,
+            backgroundColor: Colors.black,
+            textColor: Colors.white,
+          );
         }
       },
       backgroundColor: iconBtnGrey,
@@ -347,11 +354,12 @@ class _BankAccountListState extends State<BankAccountList> {
           onTap: account.isDefault
               ? () {
                   Toast.show(
-                      AppLocalization.of(context)
-                          .thisAccountIsAlreadyDefaultAccount,
-                      context,
-                      textColor: Colors.white,
-                      backgroundColor: darkBlue());
+                    AppLocalization.of(context)
+                        .thisAccountIsAlreadyDefaultAccount,
+                    context,
+                    backgroundColor: Colors.black,
+                    textColor: Colors.white,
+                  );
                 }
               : () {
                   updateBankAccount(account);
@@ -382,7 +390,7 @@ class _BankAccountListState extends State<BankAccountList> {
         Toast.show(
           AppLocalization.of(context).youCanNotDeleteOnlyBankAccount,
           context,
-          backgroundColor: darkBlue(),
+          backgroundColor: Colors.black,
           textColor: Colors.white,
         );
       } else {
@@ -391,7 +399,7 @@ class _BankAccountListState extends State<BankAccountList> {
             Toast.show(
               AppLocalization.of(context).accountDeletedSuccessfully,
               context,
-              backgroundColor: darkBlue(),
+              backgroundColor: Colors.black,
               textColor: Colors.white,
             );
             _onRefresh();
@@ -399,7 +407,7 @@ class _BankAccountListState extends State<BankAccountList> {
             Toast.show(
               AppLocalization.of(context).accountIsNotDeleted,
               context,
-              backgroundColor: darkBlue(),
+              backgroundColor: Colors.black,
               textColor: Colors.white,
             );
           }
@@ -407,7 +415,7 @@ class _BankAccountListState extends State<BankAccountList> {
           Toast.show(
             error.toString(),
             context,
-            backgroundColor: darkBlue(),
+            backgroundColor: Colors.black,
             textColor: Colors.white,
           );
         });
@@ -429,7 +437,7 @@ class _BankAccountListState extends State<BankAccountList> {
         Toast.show(
           AppLocalization.of(context).accountUpdatedSuccessfully,
           context,
-          backgroundColor: darkBlue(),
+          backgroundColor: Colors.black,
           textColor: Colors.white,
         );
         _auth.getBankAccounts().then((accounts) {
@@ -442,7 +450,7 @@ class _BankAccountListState extends State<BankAccountList> {
         Toast.show(
           AppLocalization.of(context).accountIsNotUpdated,
           context,
-          backgroundColor: darkBlue(),
+          backgroundColor: Colors.black,
           textColor: Colors.white,
         );
       }
@@ -450,7 +458,7 @@ class _BankAccountListState extends State<BankAccountList> {
       Toast.show(
         error.toString(),
         context,
-        backgroundColor: darkBlue(),
+        backgroundColor: Colors.black,
         textColor: Colors.white,
       );
     });

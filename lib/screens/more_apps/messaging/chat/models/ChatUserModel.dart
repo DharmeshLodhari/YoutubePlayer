@@ -22,7 +22,7 @@ class ChatUserModel {
 
   factory ChatUserModel.fromJson(Map<String, dynamic> json) {
     return ChatUserModel(
-        conversationId: json['id'],
+        conversationId: json['conversationId'],
         messageCount: json['messageCount'],
         hashedMessage: json['hashedMessage']);
   }

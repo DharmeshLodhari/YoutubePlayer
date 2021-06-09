@@ -71,11 +71,16 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
               isSend ? Container() : Container(width: 20),
               Container(
                 constraints: BoxConstraints(
-                  maxWidth: MediaQuery.of(context).size.width / 1.30,
-                  minWidth: MediaQuery.of(context).size.width / 1.30,
+                  // maxWidth: MediaQuery.of(context).size.width / 1.30,
+                  // minWidth: MediaQuery.of(context).size.width / 1.30,
+                  // maxHeight: product.seller == userBloc.user.userName
+                  //     ? MediaQuery.of(context).size.width / 2
+                  //     : MediaQuery.of(context).size.width / 1.65,
+                  maxWidth: MediaQuery.of(context).size.width / 1.50,
+                  minWidth: MediaQuery.of(context).size.width / 1.50,
                   maxHeight: product.seller == userBloc.user.userName
-                      ? MediaQuery.of(context).size.width / 2
-                      : MediaQuery.of(context).size.width / 1.65,
+                      ? MediaQuery.of(context).size.width / 2.5
+                      : MediaQuery.of(context).size.width / 2,
                 ),
                 decoration: BoxDecoration(
                   color: widget.chatConversation.isGroupConversation
@@ -341,14 +346,14 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
         basketBloc.addItemToCart(item: item, type: type);
         var mapData;
         basketBloc.items.forEach((element) {
-          if (element["item"].id == item.id) {
+          if (element["item"].messageId == item.messageId) {
             mapData = element;
             return;
           }
         });
         Map data = {
           "type": type,
-          "id": mapData["item"].id,
+          "id": mapData["item"].messageId,
           "qty": mapData["qty"],
         };
         debugPrint("Data From Product Page : $data");
@@ -409,11 +414,16 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
               isSend ? Container() : Container(width: 20),
               Container(
                 constraints: BoxConstraints(
-                  maxWidth: MediaQuery.of(context).size.width / 1.30,
-                  minWidth: MediaQuery.of(context).size.width / 1.30,
+                  // maxWidth: MediaQuery.of(context).size.width / 1.30,
+                  // minWidth: MediaQuery.of(context).size.width / 1.30,
+                  // maxHeight: service.provider == userBloc.user.userName
+                  //     ? MediaQuery.of(context).size.width / 2
+                  //     : MediaQuery.of(context).size.width / 1.65,
+                  maxWidth: MediaQuery.of(context).size.width / 1.50,
+                  minWidth: MediaQuery.of(context).size.width / 1.50,
                   maxHeight: service.provider == userBloc.user.userName
-                      ? MediaQuery.of(context).size.width / 2
-                      : MediaQuery.of(context).size.width / 1.65,
+                      ? MediaQuery.of(context).size.width / 2.5
+                      : MediaQuery.of(context).size.width / 2,
                 ),
                 decoration: BoxDecoration(
                   color: widget.chatConversation.isGroupConversation
@@ -677,14 +687,14 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
         basketBloc.addItemToCart(item: item, type: type);
         var mapData;
         basketBloc.items.forEach((element) {
-          if (element["item"].id == item.id) {
+          if (element["item"].messageId == item.messageId) {
             mapData = element;
             return;
           }
         });
         Map data = {
           "type": type,
-          "id": mapData["item"].id,
+          "id": mapData["item"].messageId,
           "qty": mapData["qty"],
         };
         debugPrint("Data From Product Page : $data");

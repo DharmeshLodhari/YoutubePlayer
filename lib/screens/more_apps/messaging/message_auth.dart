@@ -2,8 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:Slydo/screens/more_apps/messaging/chat/models/AddGroupModel.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/UpdateGroupDetailModel.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/models/message.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/auth.dart';
@@ -234,11 +236,11 @@ class MessageAuth extends AuthService {
     var response = await http.get(url, headers: headers);
 
     if (response.statusCode == 200) {
+      debugPrint("URL:- $url RESPONSE STATUS CODE:- ${response.statusCode} ");
       List<String> previousMessages = [];
       var jsonData = json.decode(response.body);
       for (var item in jsonData["results"])
         previousMessages.add(jsonEncode(item));
-
       Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
@@ -304,7 +306,7 @@ class MessageAuth extends AuthService {
     }
   }
 
-  Future<bool> createGroupChat({AddGroupModel group}) async {
+  Future<ChatConversation> createGroupChat({AddGroupModel group}) async {
     var url = secureBaseUrl + "/api/v1/user/group-conversation/";
     // debugPrint("URL:- $url");
     var headers = await getAuthHeaders();
@@ -351,7 +353,10 @@ class MessageAuth extends AuthService {
       debugPrint(
           "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
 
-      return true;
+      ChatConversation chatConversation =
+          ChatConversation.fromJson(jsonDecode(responseBody));
+
+      return chatConversation;
     } else {
       debugPrint("DATA:- ${request.fields}");
       debugPrint(
@@ -391,8 +396,6 @@ class MessageAuth extends AuthService {
     if (response.statusCode == 413) {
       return Future.error(
           "Please upload smaller image, Your image is too large.");
-
-      ///{"group_name":"Slydo Testing","description":null,"banner":"https://slydo-assets.s3.amazonaws.com/media/image_cropper_1619614137991.jpg","owner":"black"}
     }
     var responseBody = await response.stream.bytesToString();
     debugPrint("$responseBody");
@@ -420,7 +423,6 @@ class MessageAuth extends AuthService {
 
     if (response.statusCode == 200) {
       Map<String, dynamic> jsonData = json.decode(response.body);
-
       GroupDetailModel groupDetailModel = GroupDetailModel.fromJson(jsonData);
       return groupDetailModel;
     } else {
@@ -626,12 +628,15 @@ class MessageAuth extends AuthService {
         "/api/v1/user/group-conversation/delete-group/" +
         conversationId +
         "/";
-    debugPrint("Delete url:- $url");
     var headers = await getAuthHeaders();
 
     var response = await http.delete(url, headers: headers);
 
-    if (response.statusCode == 200 || response.statusCode == 201) {
+    if (response.statusCode == 200 ||
+        response.statusCode == 201 ||
+        response.statusCode == 204) {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
       return true;
     } else {
       debugPrint(
@@ -672,6 +677,57 @@ class MessageAuth extends AuthService {
       debugPrint(
           "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
       return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  void sendStopNudge({Map<String, dynamic> dataToSend}) async {
+    var url = secureBaseUrl + "/api/v1/chat/conversation/stop-nudge/";
+    var headers = await getAuthHeaders();
+
+    var response =
+        await http.post(url, headers: headers, body: jsonEncode(dataToSend));
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<Map<String, dynamic>> fetchMissedMessages(
+      {List<ChatMessage> chatMessages}) async {
+    var url = secureBaseUrl + "/api/v1/chat/fetch-missed-messages/";
+
+    debugPrint("URL:- $url");
+    var headers = await getAuthHeaders();
+
+    List<Map<String, dynamic>> dataToBeSent = [];
+
+    chatMessages.forEach((element) {
+      dataToBeSent.add({
+        "conversation_id": element.conversationId,
+        "created_at":
+            DateTime.parse(element.createdAt).toUtc().toIso8601String(),
+        "check_id": element.checkId
+      });
+    });
+
+    Map<String, dynamic> data = {"data": dataToBeSent};
+
+    debugPrint("DATA SENT:- $data");
+
+    var response =
+        await http.post(url, headers: headers, body: jsonEncode(data));
+
+    if (response.statusCode == 200) {
+      debugPrint(
+          "STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return jsonDecode(response.body);
+    } else {
+      debugPrint(
+          "URL:- $url STATUSCODE:- ${response.statusCode} BODY:- ${response.body}");
+      return null;
     }
   }
 }

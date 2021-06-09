@@ -840,19 +840,21 @@ class _AddInvoiceState extends State<AddInvoice> {
               }
             }).catchError((error) {
               Toast.show(error.toString(), context,
-                  gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+                  gravity: Toast.BOTTOM,  backgroundColor: Colors.black,
+                textColor: Colors.white,);
             });
           } catch (e) {
             debugPrint(e);
             Toast.show(e, context,
-                gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+                gravity: Toast.BOTTOM,  backgroundColor: Colors.black,
+              textColor: Colors.white,);
           }
         } else {
           Toast.show(
             AppLocalization.of(context).invalidRecipient,
             context,
+            backgroundColor: Colors.black,
             textColor: Colors.white,
-            backgroundColor: darkBlue(),
           );
         }
       }
@@ -860,8 +862,8 @@ class _AddInvoiceState extends State<AddInvoice> {
       var msg = AppLocalization.of(context).invalidRecipient;
       Toast.show(msg, context,
           gravity: Toast.CENTER,
-          backgroundColor: darkBlue(),
-          textColor: Colors.white);
+        backgroundColor: Colors.black,
+        textColor: Colors.white,);
     }
   }
 

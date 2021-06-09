@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
@@ -29,15 +28,18 @@ class ChatShakeDetection extends ChangeNotifier {
         listen: false);
     _detector = ShakeDetector.autoStart(
       onPhoneShake: () {
-        // debugPrint("Shake Detected:- ${detector.mShakeCount}");
+        debugPrint("Shake Detected:- ${_detector.mShakeCount}");
         if (_detector.mShakeCount == 5) {
           ///send Nudge to Recipient
           _nudgeRecipient();
         }
       },
-      shakeSlopTimeMS: Platform.isIOS ? 500 : 150,
+      // shakeSlopTimeMS: Platform.isIOS ? 500 : 150,
+      // shakeCountResetTime: 1000,
+      // shakeThresholdGravity: Platform.isIOS ? 2 : 1.5,
+      shakeSlopTimeMS: 200,
       shakeCountResetTime: 1000,
-      shakeThresholdGravity: Platform.isIOS ? 2 : 1.5,
+      shakeThresholdGravity: 1.8,
     );
   }
 
@@ -53,15 +55,18 @@ class ChatShakeDetection extends ChangeNotifier {
   void _resetShakeDetector() {
     _detector = ShakeDetector.autoStart(
       onPhoneShake: () {
-        // debugPrint("Shake Detected:- ${detector.mShakeCount}");
+        debugPrint("Shake Detected:- ${_detector.mShakeCount}");
         if (_detector.mShakeCount == 5) {
           ///send Nudge to Recipient
           _nudgeRecipient();
         }
       },
-      shakeSlopTimeMS: Platform.isIOS ? 500 : 150,
+      // shakeSlopTimeMS: Platform.isIOS ? 500 : 150,
+      // shakeCountResetTime: 1000,
+      // shakeThresholdGravity: Platform.isIOS ? 2 : 1.5,
+      shakeSlopTimeMS: 200,
       shakeCountResetTime: 1000,
-      shakeThresholdGravity: Platform.isIOS ? 2 : 1.5,
+      shakeThresholdGravity: 1.8,
     );
   }
 
@@ -211,6 +216,7 @@ class ChatShakeDetection extends ChangeNotifier {
       "check_id": Uuid().v4(),
       "conversation_id": _recipientUser.conversationId,
       "author": _userBloc.user.userName,
+      "author_avatar": _userBloc.user.avatar,
       "recipient": _recipientUser.userName,
       "created_at": DateTime.now().toUtc().toString(),
       "type": "nudge_user",
@@ -225,6 +231,7 @@ class ChatShakeDetection extends ChangeNotifier {
       "check_id": Uuid().v4(),
       "conversation_id": _recipientUser.conversationId,
       "author": _userBloc.user.userName,
+      "author_avatar": _userBloc.user.avatar,
       "recipient": _recipientUser.userName,
       "created_at": DateTime.now().toUtc().toString(),
       "type": "stop_nudging",

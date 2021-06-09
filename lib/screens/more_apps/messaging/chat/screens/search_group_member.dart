@@ -1,10 +1,16 @@
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_group_action_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/Participant.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/user_tile_for_group_detail.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/noItemInList.dart';
@@ -48,6 +54,10 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
 
   SlidableController _slideController;
   UserBloc userBloc;
+
+  /// Socket
+  MainSocketProvider mainSocketProvider;
+  StreamSubscription streamSubscription;
 
   @protected
   void initState() {
@@ -99,11 +109,47 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
     super.initState();
   }
 
+  void initializeListener() {
+    streamSubscription?.cancel();
+    streamSubscription = mainSocketProvider.socketStream.listen((event) {
+      determineMessageType(event);
+    });
+  }
+
+  void determineMessageType(String message) async {
+    Map<String, dynamic> messageData = jsonDecode(message);
+
+    switch (messageData['type']) {
+      case "group_conversation_admin_actions":
+        UserBloc user = Provider.of<UserBloc>(
+            MyGlobals().navigationKey.currentContext,
+            listen: false);
+
+        if (messageData['meta_data']['author'] != user.user.userName) {
+          var result =
+              ChatGroupActionManagerForLiveConversation(message: messageData)
+                  .handleMessageAction(groupDetailModel: groupDetail);
+
+          if (result != null) {
+            if (result is GroupDetailModel) {
+              groupDetail = result;
+              if (mounted) setState(() {});
+            }
+          }
+        }
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+    mainSocketProvider = Provider.of<MainSocketProvider>(context);
+
+    initializeListener();
     return WillPopScope(
       onWillPop: () async {
+        mainSocketProvider.removeStreamSubscription(streamSubscription);
         Navigator.pop(context, groupDetail);
         return Future.value(false);
       },
@@ -241,6 +287,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
   @override
   void dispose() {
     _scrollController?.dispose();
+    streamSubscription?.cancel();
     super.dispose();
   }
 

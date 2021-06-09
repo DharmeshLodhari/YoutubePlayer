@@ -80,7 +80,7 @@ class _QRCodeViewState extends State<QRCodeView> {
         overlay: QrScannerOverlayShape(
           //overlayColor: Colors.transparent,
           borderRadius: 10,
-          borderColor: lightBlue(),
+          borderColor: navyBlue,
           borderLength: 30,
           borderWidth: 10,
           cutOutSize: 300,

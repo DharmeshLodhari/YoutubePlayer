@@ -63,7 +63,8 @@ class _MixCartItemState extends State<MixCartItem> {
       } else {
         Toast.show(
             AppLocalization.of(context).internetConnectionNotAvailable, context,
-            gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+            gravity: Toast.BOTTOM,  backgroundColor: Colors.black,
+          textColor: Colors.white,);
         _refreshController.refreshCompleted();
       }
     });
@@ -334,8 +335,8 @@ class _MixCartItemState extends State<MixCartItem> {
                     Toast.show(
                         AppLocalization.of(context).pleaseAddSomeItemsFirst,
                         context,
+                        backgroundColor: Colors.black,
                         textColor: Colors.white,
-                        backgroundColor: darkBlue(),
                         duration: Toast.LENGTH_LONG,
                         gravity: Toast.CENTER);
                   }
@@ -588,7 +589,7 @@ class _MixCartItemState extends State<MixCartItem> {
                       AppLocalization.of(context).serverError,
                       context,
                       gravity: Toast.TOP,
-                      backgroundColor: darkBlue(),
+                      backgroundColor: Colors.black,
                       textColor: Colors.white,
                     );
                   }

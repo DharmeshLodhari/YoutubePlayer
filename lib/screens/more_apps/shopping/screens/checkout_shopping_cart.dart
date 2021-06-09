@@ -57,8 +57,12 @@ class _ShoppingCartState extends State<ShoppingCart> {
         _refreshController.refreshCompleted();
       } else {
         Toast.show(
-            AppLocalization.of(context).internetConnectionNotAvailable, context,
-            gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+          AppLocalization.of(context).internetConnectionNotAvailable,
+          context,
+          gravity: Toast.BOTTOM,
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+        );
         _refreshController.refreshCompleted();
       }
     });
@@ -205,8 +209,8 @@ class _ShoppingCartState extends State<ShoppingCart> {
                     Toast.show(
                         AppLocalization.of(context).pleaseAddSomeItemsFirst,
                         context,
+                        backgroundColor: Colors.black,
                         textColor: Colors.white,
-                        backgroundColor: darkBlue(),
                         duration: Toast.LENGTH_LONG,
                         gravity: Toast.CENTER);
                   }
@@ -299,14 +303,15 @@ class _ShoppingCartState extends State<ShoppingCart> {
 
     var mapData;
     basketBloc.items.forEach((element) {
-      if (element["item"].id == basketBloc.items[index]["item"].id) {
+      if (element["item"].messageId ==
+          basketBloc.items[index]["item"].messageId) {
         mapData = element;
         return;
       }
     });
     Map data = {
       "type": type,
-      "id": mapData["item"].id,
+      "id": mapData["item"].messageId,
       "qty": mapData["qty"] - 1,
     };
 
@@ -381,7 +386,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
           content: Container(
             child: Text(
               AppLocalization.of(context).areYouSureWantToPlaceThisOrderFor +
-                  '(${worldCurrencies[userBloc.user.currency]} ${basketBloc.total})?',
+                  '(${worldCurrencies[userBloc.user.currency]} ${moneyDisplayNormalizer(basketBloc.total)})?',
               style: TextStyle(
                 fontSize: 16,
                 color: blackFont,
@@ -464,7 +469,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
                       AppLocalization.of(context).serverError,
                       context,
                       gravity: Toast.TOP,
-                      backgroundColor: darkBlue(),
+                      backgroundColor: Colors.black,
                       textColor: Colors.white,
                     );
                   }

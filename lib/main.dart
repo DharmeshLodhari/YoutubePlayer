@@ -5,12 +5,16 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_generator.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_shake_detection.dart';
 import 'package:Slydo/services/app_life_cycle.dart';
+import 'package:Slydo/services/awesome_notification_service.dart';
+import 'package:Slydo/services/local_notification_service.dart';
 import 'package:Slydo/services/route_observer.dart';
 import 'package:Slydo/services/route_provider.dart';
 import 'package:Slydo/services/timer_service.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/global_key.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -28,7 +32,17 @@ void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
 
+  await LocalNotificationService().init();
+
   await Firebase.initializeApp();
+
+  AwesomeNotificationService().init();
+
+  if (kDebugMode) {
+    await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
+  } else {
+    await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
+  }
 
   // Pass all uncaught errors to Crashlytics.
   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
@@ -156,6 +170,7 @@ class MyApp extends StatelessWidget {
         return OrientationBuilder(builder: (context, orientation) {
           SizerUtil().init(constraints, orientation);
           return MaterialApp(
+            navigatorKey: MyGlobals().navigationKey,
             localizationsDelegates: [
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,

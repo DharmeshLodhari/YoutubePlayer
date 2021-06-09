@@ -268,31 +268,45 @@ class _ComposeMessageState extends State<ComposeMessage> {
               } else {
                 Navigator.pop(context);
                 var msg = AppLocalization.of(context).error;
-                Toast.show(msg, context,
-                    gravity: Toast.CENTER,
-                    backgroundColor: darkBlue(),
-                    textColor: Colors.white);
+                Toast.show(
+                  msg,
+                  context,
+                  gravity: Toast.CENTER,
+                  backgroundColor: Colors.black,
+                  textColor: Colors.white,
+                );
               }
             });
           } catch (e) {
             Navigator.pop(context);
-            Toast.show(e, context,
-                gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+            Toast.show(
+              e,
+              context,
+              gravity: Toast.BOTTOM,
+              backgroundColor: Colors.black,
+              textColor: Colors.white,
+            );
           }
         } else {
           var msg = AppLocalization.of(context).invalidRecipient;
-          Toast.show(msg, context,
-              gravity: Toast.CENTER,
-              backgroundColor: darkBlue(),
-              textColor: Colors.white);
+          Toast.show(
+            msg,
+            context,
+            gravity: Toast.CENTER,
+            backgroundColor: Colors.black,
+            textColor: Colors.white,
+          );
         }
       }
     } else {
       var msg = AppLocalization.of(context).invalidRecipient;
-      Toast.show(msg, context,
-          gravity: Toast.CENTER,
-          backgroundColor: darkBlue(),
-          textColor: Colors.white);
+      Toast.show(
+        msg,
+        context,
+        gravity: Toast.CENTER,
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+      );
     }
   }
 
@@ -321,12 +335,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
               if (userBloc.user.userName != recipient) {
                 showDialog(
                     context: context,
-                    builder: (context) => Center(
-                            child: CircularProgressIndicator(
-                          strokeWidth: 2.5,
-                          valueColor: AlwaysStoppedAnimation(Colors.white),
-                          backgroundColor: lightBlue(),
-                        )));
+                    builder: (context) => CircularLoadingIndicator());
                 try {
                   var data = {
                     "sender": userBloc.user.userName,
@@ -344,31 +353,45 @@ class _ComposeMessageState extends State<ComposeMessage> {
                     } else {
                       Navigator.pop(context);
                       var msg = AppLocalization.of(context).error;
-                      Toast.show(msg, context,
-                          gravity: Toast.CENTER,
-                          backgroundColor: darkBlue(),
-                          textColor: Colors.white);
+                      Toast.show(
+                        msg,
+                        context,
+                        gravity: Toast.CENTER,
+                        backgroundColor: Colors.black,
+                        textColor: Colors.white,
+                      );
                     }
                   });
                 } catch (e) {
                   Navigator.pop(context);
-                  Toast.show(e, context,
-                      gravity: Toast.BOTTOM, backgroundColor: darkBlue());
+                  Toast.show(
+                    e,
+                    context,
+                    gravity: Toast.BOTTOM,
+                    backgroundColor: Colors.black,
+                    textColor: Colors.white,
+                  );
                 }
               } else {
                 var msg = AppLocalization.of(context).invalidRecipient;
-                Toast.show(msg, context,
-                    gravity: Toast.CENTER,
-                    backgroundColor: darkBlue(),
-                    textColor: Colors.white);
+                Toast.show(
+                  msg,
+                  context,
+                  gravity: Toast.CENTER,
+                  backgroundColor: Colors.black,
+                  textColor: Colors.white,
+                );
               }
             }
           } else {
             var msg = AppLocalization.of(context).invalidRecipient;
-            Toast.show(msg, context,
-                gravity: Toast.CENTER,
-                backgroundColor: darkBlue(),
-                textColor: Colors.white);
+            Toast.show(
+              msg,
+              context,
+              gravity: Toast.CENTER,
+              backgroundColor: Colors.black,
+              textColor: Colors.white,
+            );
           }
         });
   }

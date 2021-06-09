@@ -34,12 +34,13 @@ class PaymentAndBankingAuth extends AuthService {
       }
       return accounts;
     } else {
-      throw "Can't get https.";
+      return Future.error(
+          "ERROR while calling $url StatusCode:- ${response.statusCode} Body:- ${jsonDecode(response.body)}");
     }
   }
 
   // Get Account Balance
-  Future<Map> getAccountBalance() async {
+  Future<Map<String, dynamic>> getAccountBalance() async {
     var url = secureBaseUrl + "/api/v1/transactions/check-account-balance/";
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);

@@ -2,6 +2,7 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 
+// ignore: must_be_immutable
 class SearchTextField extends StatefulWidget {
   final TextEditingController textEditingController;
   final Function onSubmit;

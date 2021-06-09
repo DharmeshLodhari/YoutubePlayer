@@ -1,0 +1,29 @@
+<h2>Slydo</h2> is a digital payment and lifestyle app. Send and receive money, buy and sell products and services, connect and chat with friends and customers, and do much more.
+
+<b>QR PAYMENT:</b> Send and receive money by QR scan. Pay for products and services at shops by scanning their QR. Accept payment with QR technology that works! Connect and pay friends and family.
+
+<b>CASHLESS TRANSACTIONS:</b> Paste your QR on your shop and get paid for your products and services.
+
+<b>CONTACTLESS PAYMENT:</b> Stay safe with less physical human interaction. Send and receive payment requests. Make and accept payment wherever you are.
+
+<b>FINANCE MANAGEMENT:</b> See a breakdown of your daily and weekly transactions in colorful graphs.
+
+<b>EASY TOP UP:</b> Top up your wallet easily with easy options.
+
+<b>BANK CASH OUT:</b> Transfer money from your wallet to your connected bank accounts to get cash.
+
+<b>COOL MESSAGING:</b> Send or request money during a chat with friends. Buy or sell products and services during the chat.
+
+<b>SUPER SEARCH:</b> Find people, businesses, products & services easily through the search feature.
+
+<b>MULTI-FUNCTION APP:</b> No need to switch between apps for payment, chat, shopping, product and service search. All features operate seamlessly.
+
+<b>SECURE OPERATION:</b> Your wallet is built with layers of security to avoid unauthorized access to your wallet.
+
+<b>PRIVACY PROTECTION:</b> Your personal data is end-to-end encrypted to protect your privacy.
+
+Sign up for Slydo and experience a new payment solution that is fast, secure, social and reliable.
+
+For more information, see our FAQs or send us an email: <a href="mailto:fixit@slydo.co">fixit@slydo.co</a>
+Help and Support
+For feedback and suggestions, please mail us via <a href="mailto:fixit@slydo.co">fixit@slydo.co</a>
