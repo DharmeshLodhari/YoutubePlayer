@@ -59,3 +59,4 @@ ios/fastlane/metadata/trade_representative_contact_information
 /android/app/keystore.jks
 /android/upload_certificate.pem
 /android/app/keystore.jks
+/ios/Podfile.lock
