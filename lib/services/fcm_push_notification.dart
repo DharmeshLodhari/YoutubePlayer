@@ -5,6 +5,7 @@ import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_handler.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
@@ -15,6 +16,7 @@ import 'package:Slydo/services/device_info.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/date_time_and_money_converter.dart';
 import 'package:Slydo/utils/global_key.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -67,6 +69,11 @@ Future<dynamic> fcmBackgroundMessageHandler(
 
         ConnectionListManager()
             .updateLastMessageTime(conversationId: conversationId, time: time);
+
+        String hashedMessage = generateHashedMessage(jsonEncode(data['data']));
+
+        ChatUserManager().updateChatUserMessageCount(
+            conversationId: conversationId, hashedMessage: hashedMessage);
 
         AwesomeNotificationService().showNotification(message: data);
       }
@@ -333,6 +340,20 @@ Map<String, dynamic> getAndroidNotification(Map<String, dynamic> message) {
   notification['image'] = message['data']['image'];
 
   notification["data"] = message['data']['data'];
+
+  try {
+    if (message['data']['notification'] != null) {
+      Map<String, dynamic> notificationFromMessage =
+          jsonDecode(message['data']['notification']);
+
+      notification["body"] = notificationFromMessage['body'] ?? "";
+      notification["title"] = notificationFromMessage['title'] ?? "";
+      notification['image'] = notificationFromMessage['image'] ?? "";
+      notification["actions"] = notificationFromMessage['actions'] ?? "";
+    }
+  } catch (error) {
+    debugPrint("ERROR:- $error");
+  }
 
   print("notification from android $notification");
   return notification;

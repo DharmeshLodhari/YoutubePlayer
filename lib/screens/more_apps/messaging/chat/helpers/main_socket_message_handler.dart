@@ -18,7 +18,6 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
-import 'package:crypto/crypto.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -44,11 +43,6 @@ class MainSocketMessageHandler {
     if (message != null) {
       handleMessageAccordingToType();
     }
-  }
-
-  ///generate hash of the message
-  String generateHashedMessage(String input) {
-    return md5.convert(utf8.encode(input)).toString();
   }
 
   ///Handle message according to message type

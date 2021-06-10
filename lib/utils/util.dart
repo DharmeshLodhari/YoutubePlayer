@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
 import 'package:Slydo/utils/date_time_and_money_converter.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
@@ -253,4 +255,9 @@ Future<String> saveImage(BuildContext context, Image image) {
   }));
 
   return completer.future;
+}
+
+///generate hash of the message
+String generateHashedMessage(String input) {
+  return md5.convert(utf8.encode(input)).toString();
 }
