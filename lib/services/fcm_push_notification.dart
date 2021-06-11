@@ -126,6 +126,16 @@ class PushNotificationService {
     //to stop automatically recreates the token when we deregister user in logout
     _fcm.setAutoInitEnabled(false);
 
+    if (Platform.isIOS) {
+      // request permissions if we're on android
+      _fcm.requestNotificationPermissions(
+          const IosNotificationSettings(sound: true, badge: true, alert: true));
+
+      _fcm.onIosSettingsRegistered.listen((IosNotificationSettings settings) {
+        // debugPrint("Settings registered: $settings");
+      });
+    }
+
     var data = await getDeviceInfo();
     await _fcm.getToken().then((String token) async {
       data["token"] = token;
@@ -149,16 +159,6 @@ class PushNotificationService {
       // register device with the backend
       await _auth.registerDevice(data);
     });
-
-    if (Platform.isIOS) {
-      // request permissions if we're on android
-      _fcm.requestNotificationPermissions(
-          const IosNotificationSettings(sound: true, badge: true, alert: true));
-
-      _fcm.onIosSettingsRegistered.listen((IosNotificationSettings settings) {
-        // debugPrint("Settings registered: $settings");
-      });
-    }
 
     _fcm.configure(
         // Called when the app is in the foreground and we receive a push notification
