@@ -40,8 +40,6 @@ android:build:
     - echo flutter.sdk=$FLUTTER_PATH > android/local.properties
     - echo sdk.dir=$ANDROID_SDK_PATH >> android/local.properties
     - echo flutter.buildMode=release >> android/local.properties
-#    - touch android/key.properties
-#    - cat $KEYFILE >> android/key.properties
     - cd android
     - bundle install
     - fastlane env
