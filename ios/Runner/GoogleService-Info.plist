@@ -3,21 +3,21 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>809041130173-719m4tie7b55vv90cfc7l9bcpkmhcvvl.apps.googleusercontent.com</string>
+	<string>580706438195-hl63sb1tmk5ld8pa7uut9jv41tn602he.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.809041130173-719m4tie7b55vv90cfc7l9bcpkmhcvvl</string>
+	<string>com.googleusercontent.apps.580706438195-hl63sb1tmk5ld8pa7uut9jv41tn602he</string>
 	<key>API_KEY</key>
-	<string>AIzaSyBtL938d5g98JwkVoukMeRtiqxoDVQSzvU</string>
+	<string>AIzaSyBqyeLcf5oqUpzr3lFTWCKlBuP2rAbbgPA</string>
 	<key>GCM_SENDER_ID</key>
-	<string>809041130173</string>
+	<string>580706438195</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.iostest</string>
+	<string>com.slydo.slydo</string>
 	<key>PROJECT_ID</key>
-	<string>ios-test-55eb5</string>
+	<string>slydo-94bb2</string>
 	<key>STORAGE_BUCKET</key>
-	<string>ios-test-55eb5.appspot.com</string>
+	<string>slydo-94bb2.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,8 +29,8 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:809041130173:ios:34490d3a57fe3d82db3dd4</string>
+	<string>1:580706438195:ios:2a705569475c5aa60ce746</string>
 	<key>DATABASE_URL</key>
-	<string>https://ios-test-55eb5.firebaseio.com</string>
+	<string>https://slydo-94bb2.firebaseio.com</string>
 </dict>
 </plist>
