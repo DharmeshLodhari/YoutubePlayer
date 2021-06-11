@@ -56,6 +56,5 @@ ios/fastlane/report.xml
 ios/fastlane/Preview.html
 ios/fastlane/metadata/review_information
 ios/fastlane/metadata/trade_representative_contact_information
-/android/app/keystore.jks
 /android/upload_certificate.pem
 /ios/Podfile.lock

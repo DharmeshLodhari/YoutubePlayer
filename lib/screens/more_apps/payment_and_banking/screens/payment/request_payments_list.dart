@@ -79,10 +79,8 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       ..addListener(() {
         if (_refreshBloc.isRefresh) {
           debugPrint("refreshing !!");
-          if (mounted) {
-            _onRefresh();
-            _refreshBloc.isRefresh = false;
-          }
+          if (mounted) _onRefresh();
+          _refreshBloc.isRefresh = false;
         }
       });
   }

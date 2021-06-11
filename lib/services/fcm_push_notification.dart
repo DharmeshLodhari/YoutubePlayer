@@ -218,8 +218,7 @@ class PushNotificationService {
           _navigateToItemDetail(
               notification, myGlobals.scaffoldKey.currentContext);
         },
-        onBackgroundMessage:
-            Platform.isIOS ? null : fcmBackgroundMessageHandler);
+        onBackgroundMessage: fcmBackgroundMessageHandler);
   }
 
   // ignore: missing_return
@@ -304,7 +303,6 @@ class PushNotificationService {
 
   void showAlertMessage(
       {Map<String, dynamic> notification, BuildContext context}) async {
-    print("Notification From onMessage:  $notification");
     // show the notification in the dialog
     bool result = await showDialogBoxWithImage(
       context: context,
@@ -329,13 +327,6 @@ Map<String, dynamic> getAndroidNotification(Map<String, dynamic> message) {
   Map<String, dynamic> notification = {};
   notification["body"] = message['notification']['body'] ?? "Hello";
   notification["title"] = message['notification']['title'];
-  notification["vibrate"] = message['data']['vibrate'];
-  notification["icon"] = message['data']['icon'];
-  notification["badge"] = message['data']['badge'];
-  notification["sound"] = message['data']['sound'];
-  notification["link"] = message['data']['link'];
-  notification["tag"] = message['data']['tag'];
-  notification["dir"] = message['data']['dir'];
   notification["actions"] = message['data']['actions'];
   notification['image'] = message['data']['image'];
 
@@ -361,14 +352,16 @@ Map<String, dynamic> getAndroidNotification(Map<String, dynamic> message) {
 
 Map<String, dynamic> getIosNotification(Map<String, dynamic> message) {
   Map<String, dynamic> notification = {};
-  notification["body"] = message['notification']['body'];
-  notification["title"] = message['notification']['title'];
-  notification["vibrate"] = message['vibrate'];
-  notification["icon"] = message['notification']['icon'];
-  notification["tag"] = message['notification']['tag'];
-  notification["dir"] = message['dir'];
-  notification["actions"] = message['actions'];
-  notification['image'] = message['image'];
-  debugPrint("notification from IOS $notification");
+  try {
+    Map<String, dynamic> notificationFromMessage =
+        jsonDecode(message['notification']);
+    notification["body"] = notificationFromMessage['body'];
+    notification["title"] = notificationFromMessage['title'];
+    notification["actions"] = notificationFromMessage['actions'];
+    notification['image'] = notificationFromMessage['image'];
+    debugPrint("notification from IOS $notification");
+  } catch (error) {
+    debugPrint("ERROR:- $error");
+  }
   return notification;
 }
