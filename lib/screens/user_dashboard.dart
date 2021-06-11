@@ -803,8 +803,18 @@ class _UserDashboardState extends State<UserDashboard> {
                       BottomSheetPassCode(
                           context: context,
                           isValidCallback: () {
-                            Navigator.pop(context);
-                            Navigator.pushNamed(context, "/payout");
+                            if (bankAccountBloc.bankAccount != null ||
+                                bankAccountBloc.bankAccount.bankName == null) {
+                              Navigator.pop(context);
+                              Toast.show(
+                                  "Please add bank account first !!", context,
+                                  backgroundColor: Colors.black,
+                                  textColor: Colors.white,
+                                  duration: Toast.LENGTH_LONG);
+                            } else {
+                              Navigator.pop(context);
+                              Navigator.pushNamed(context, "/payout");
+                            }
                           },
                           cancelCallBack: () {
                             Navigator.pop(context);

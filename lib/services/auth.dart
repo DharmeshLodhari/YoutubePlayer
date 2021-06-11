@@ -224,8 +224,15 @@ class AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
 
+    debugPrint("DATA SENT FOR REGISTER NOTIFICATION :->>> $_data");
+
     var response = await http.post(url, headers: headers, body: _data);
-    return response.statusCode == 200;
+    if (response.statusCode == 200) {
+      return true;
+    }
+    debugPrint(
+        "URL:- $url STATUSCODE:- ${response.statusCode} RESPONSEBODY:- ${response.body}");
+    return false;
   }
 
   // it will unregister the device from server
@@ -237,7 +244,9 @@ class AuthService {
     try {
       response = await http.patch(url, headers: headers, body: _data);
     } catch (e) {
-      debugPrint(e.toString());
+      debugPrint(
+          "URL:- $url STATUSCODE:- ${response.statusCode} RESPONSEBODY:- ${response.body}");
+      debugPrint("ERROR: WHILE UNREGISTERING DEVICE :-" + e.toString());
     }
     return response.statusCode == 200;
   }
@@ -251,6 +260,8 @@ class AuthService {
     try {
       response = await http.patch(url, headers: headers, body: _data);
     } catch (e) {
+      debugPrint(
+          "URL:- $url STATUSCODE:- ${response.statusCode} RESPONSEBODY:- ${response.body}");
       debugPrint("updateAppState : " + e.toString());
     }
     if (response != null) {
