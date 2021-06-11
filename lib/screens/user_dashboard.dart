@@ -803,7 +803,7 @@ class _UserDashboardState extends State<UserDashboard> {
                       BottomSheetPassCode(
                           context: context,
                           isValidCallback: () {
-                            if (bankAccountBloc.bankAccount != null ||
+                            if (bankAccountBloc.bankAccount == null ||
                                 bankAccountBloc.bankAccount.bankName == null) {
                               Navigator.pop(context);
                               Toast.show(
