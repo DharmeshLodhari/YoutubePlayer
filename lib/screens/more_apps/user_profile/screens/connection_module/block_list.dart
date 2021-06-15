@@ -101,7 +101,7 @@ class _BlockListState extends State<BlockList> {
   @override
   Widget build(BuildContext context) {
     // refresh the list when lifecycle called onResume method
-    _onRefreshOnResume();
+    // _onRefreshOnResume();
 
     return Scaffold(
       key: _scaffoldBlockListKey,
@@ -160,7 +160,12 @@ class _BlockListState extends State<BlockList> {
           });
         }
         Map<String, dynamic> result =
-            await UserAuth().listBlockUsers(next, previous);
+            await UserAuth().listBlockUsers(next, previous).catchError((error) {
+          debugPrint("ERROR:- $error");
+          return;
+        });
+        if (result == null) return;
+
         count = result['count'];
         next = result['next'];
         previous = result['previous'];

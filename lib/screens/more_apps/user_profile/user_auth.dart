@@ -508,8 +508,8 @@ class UserAuth extends AuthService {
       };
       return result;
     } else {
-      var jsonData = json.decode(response.body);
-      throw jsonData;
+      return Future.error(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
     }
   }
 
@@ -561,8 +561,8 @@ class UserAuth extends AuthService {
       };
       return result;
     } else {
-      var jsonData = response.body;
-      throw jsonData;
+      return Future.error(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
     }
   }
 

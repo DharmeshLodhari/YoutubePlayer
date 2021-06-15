@@ -104,7 +104,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
     userBloc = Provider.of<UserBloc>(context);
 
     // refresh the list when lifecycle called onResume method
-    _onRefreshOnResume();
+    // _onRefreshOnResume();
     return Scaffold(
       key: _scaffoldContactRequestListKey,
       backgroundColor: lightGrey,
@@ -162,8 +162,13 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
             isLoading = true;
           });
         }
-        Map<String, dynamic> result =
-            await UserAuth().listContactRequests(next, previous);
+        Map<String, dynamic> result = await UserAuth()
+            .listContactRequests(next, previous)
+            .catchError((error) {
+          debugPrint("ERROR:- $error");
+          return;
+        });
+        if (result == null) return;
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
@@ -329,12 +334,19 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
             context,
             "${user.fullName} " +
                 AppLocalization.of(context).isAddedToYourContactList);
-        setState(() {
-          connectionRequestList.removeAt(index);
-          if (connectionRequestList.length <= 9) {
-            getList();
-          }
-        });
+
+        connectionRequestList.removeAt(index);
+
+        RefreshBlocForConnectionDashboard refreshBloc =
+            Provider.of<RefreshBlocForConnectionDashboard>(context,
+                listen: false);
+
+        refreshBloc.isRefresh = true;
+        setState(() {});
+
+        if (connectionRequestList.length <= 9) {
+          getList();
+        }
       } else {
         _showSnackBar(context, AppLocalization.of(context).error);
       }

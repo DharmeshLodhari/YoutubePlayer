@@ -440,6 +440,20 @@ class _UserDashboardState extends State<UserDashboard> {
         SizedBox(
           width: 12,
         ),
+        Expanded(
+            child: UserDashboardItemTile(
+          icon: SlydoAppIcon.utility,
+          title: "Utility",
+          onTap: () {
+            Navigator.pushNamed(context, "/utility-dashboard");
+          },
+          iconColor: HexColor("#FFAB00"),
+        )),
+
+        SizedBox(
+          width: 12,
+        ),
+        Expanded(child: Container()),
         // Expanded(
         //     child: UserDashboardItemTile(
         //   icon: SlydoAppIcon.more,
@@ -449,11 +463,6 @@ class _UserDashboardState extends State<UserDashboard> {
         //   },
         //   iconColor: HexColor("#374677"),
         // )),
-        Expanded(child: Container()),
-        SizedBox(
-          width: 12,
-        ),
-        Expanded(child: Container()),
       ],
     );
   }

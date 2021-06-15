@@ -48,6 +48,8 @@ class _ConnectionListState extends State<ConnectionList> {
   bool isUserIsSearching = false;
   List<ChatConversation> searchedChatConnection = [];
 
+  RefreshBlocForConnectionDashboard _refreshBloc;
+
   @protected
   void initState() {
     fetchConnectionListFromDbIfAvailable();
@@ -114,7 +116,7 @@ class _ConnectionListState extends State<ConnectionList> {
   @override
   Widget build(BuildContext context) {
     // refresh the list when lifecycle called onResume method
-    // _onRefreshOnResume();
+    _onRefreshOnResume();
 
     _connectionListBloc = Provider.of<ConnectionListBloc>(context);
 
@@ -151,7 +153,20 @@ class _ConnectionListState extends State<ConnectionList> {
     );
   }
 
+  // refresh the list when lifecycle called onResume method
+  void _onRefreshOnResume() {
+    _refreshBloc = Provider.of<RefreshBlocForConnectionDashboard>(context);
+    _refreshBloc
+      ..addListener(() {
+        if (_refreshBloc.isRefresh) {
+          refreshList();
+          _refreshBloc.isRefresh = false;
+        }
+      });
+  }
+
   Future<void> refreshList() async {
+    debugPrint("=====> Refresh");
     await ConnectionSynchronizer().fetch(isRefresh: true);
   }
 

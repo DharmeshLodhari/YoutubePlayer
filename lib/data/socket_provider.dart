@@ -206,7 +206,11 @@ class MainSocketProvider extends ChangeNotifier {
     if (_isConnected) {
       debugPrint("Listener called!!");
 
-      _streamController.addStream(_channel.stream);
+      try {
+        _streamController.addStream(_channel.stream);
+      } catch (error) {
+        debugPrint("Stream is already in Adding state $error");
+      }
       notifyListeners();
 
       streamSubscription?.cancel();

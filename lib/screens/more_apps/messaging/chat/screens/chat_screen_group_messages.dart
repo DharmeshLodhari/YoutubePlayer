@@ -361,13 +361,6 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       }
     });
 
-    // messages
-    //     .map((element) => jsonEncode(element.toJson()))
-    //     .toList()
-    //     .forEach((element) {
-    //   messageList.add(element);
-    // });
-
     if (mounted) setState(() {});
 
     acknowledgeThatMessageAreRead();
@@ -648,95 +641,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         }
       }
     });
-
-    // messageListScrollController = ScrollController();
-    //
-    // messageListScrollController.addListener(() {
-    //   /// for floating button to show scroll to bottom
-    //
-    //   fabIsVisible = messageListScrollController.position.userScrollDirection ==
-    //       ScrollDirection.reverse;
-    //   if (messageListScrollController.position.pixels ==
-    //       messageListScrollController.position.minScrollExtent) {
-    //     fabIsVisible = false;
-    //   }
-    //
-    //   if (mounted) setState(() {});
-    // });
   }
 
-  // void getPreviousMessages({bool showLoading = true}) async {
-  //   debugPrint("Fetching previous messages !!");
-  //   if (!isLoading) {
-  //     if (next != null && !isLoading) {
-  //       bool isFirstTime;
-  //       if (mounted) {
-  //         if (showLoading) {
-  //           isLoading = true;
-  //           setState(() {});
-  //         }
-  //       }
-  //
-  //       if (messageList.isEmpty) {
-  //         isFirstTime = true;
-  //       } else {
-  //         isFirstTime = false;
-  //       }
-  //       debugPrint(
-  //           "recipient conversationID:- ${chatConversation.conversationId}");
-  //
-  //       Map<String, dynamic> result = await MessageAuth()
-  //           .getChatMessages(next, previous,
-  //               conversionId: chatConversation.conversationId)
-  //           .catchError((error) {
-  //         isLoading = false;
-  //         if (mounted) setState(() {});
-  //         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-  //           if (mounted) {
-  //             debugPrint("ERROR:- $error");
-  //           }
-  //         });
-  //       });
-  //       if (isLoading == false) {
-  //         return;
-  //       }
-  //
-  //       count = result['count'];
-  //       next = result['next'];
-  //       previous = result['previous'];
-  //       List<String> tempList = result['results'];
-  //
-  //       isLoading = false;
-  //       if (mounted) setState(() {});
-  //
-  //       messageList.addAll(tempList);
-  //
-  //       if (mounted) setState(() {});
-  //
-  //
-  //       checkMessageForRead();
-  //
-  //       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-  //         if (isFirstTime &&
-  //             MediaQuery.of(myGlobals.scaffoldKey.currentContext).size.height >
-  //                 704) {
-  //           debugPrint("height:- " +
-  //               MediaQuery.of(myGlobals.scaffoldKey.currentContext)
-  //                   .size
-  //                   .height
-  //                   .toString());
-  //           getPreviousMessages();
-  //         }
-  //       });
-  //     }
-  //     if (messageList.isEmpty) {
-  //       if (mounted) {
-  //         /// set flag if chat is empty
-  //         setState(() {});
-  //       }
-  //     }
-  //   }
-  // }
   void getPreviousMessages({bool showLoading = true}) async {
     debugPrint("Fetching previous messages !!");
 
@@ -794,20 +700,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         await ChatMessageHandler().updateChatMessagePagination(
             chatMessagePagination: chatMessagePagination);
 
-        // List<ChatMessage> messages = await ChatMessageHandler()
-        //     .getChatMessages(chatConversation: chatConversation);
-
         messageList.addAll(
             messages.map((element) => jsonEncode(element.toJson())).toList());
-
-        // messages
-        //     .map((element) => jsonEncode(element.toJson()))
-        //     .toList()
-        //     .forEach((element) {
-        //   if (!messageList.contains(element)) {
-        //     messageList.add(element);
-        //   }
-        // });
 
         isLoading = false;
 
@@ -1106,13 +1000,6 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         duration: Duration(milliseconds: 500),
         curve: Curves.fastLinearToSlowEaseIn);
   }
-
-  // void scrollToTopWithTopSpace() {
-  //   messageScrollController.animateTo(
-  //       messageScrollController.position.minScrollExtent + 10,
-  //       duration: Duration(microseconds: 100),
-  //       curve: Curves.easeOut);
-  // }
 
   void menuItemSelectionChange(String value, int index) {
     selectedMenuItemIndex = index;
@@ -2020,6 +1907,19 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         apiKey: gifApiKey,
         showPreviewPage: false,
         sticker: false,
+        decorator: GiphyDecorator(
+          showAppBar: false,
+          searchElevation: 4,
+          giphyTheme: ThemeData.light().copyWith(
+            inputDecorationTheme: InputDecorationTheme(
+              border: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              contentPadding: EdgeInsets.zero,
+            ),
+            cursorColor: navyBlue,
+          ),
+        ),
         onError: (error) {
           debugPrint("ERROR IN GIPHY PICKER:- $error");
         },
@@ -2046,6 +1946,19 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         onError: (error) {
           debugPrint("ERROR IN GIPHY PICKER:- $error");
         },
+        decorator: GiphyDecorator(
+          showAppBar: false,
+          searchElevation: 4,
+          giphyTheme: ThemeData.light().copyWith(
+            inputDecorationTheme: InputDecorationTheme(
+              border: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              contentPadding: EdgeInsets.zero,
+            ),
+            cursorColor: navyBlue,
+          ),
+        ),
         sticker: true,
         searchText: "Search Sticker",
         title: Text(
@@ -3718,9 +3631,12 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         _refreshController.refreshCompleted();
       } else {
         Toast.show(
-            AppLocalization.of(context).internetConnectionNotAvailable, context,
-            gravity: Toast.BOTTOM,  backgroundColor: Colors.black,
-          textColor: Colors.white,);
+          AppLocalization.of(context).internetConnectionNotAvailable,
+          context,
+          gravity: Toast.BOTTOM,
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+        );
         _refreshController.refreshCompleted();
       }
     });

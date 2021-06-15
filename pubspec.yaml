@@ -135,6 +135,7 @@ flutter:
     - assets/images/appIcon/
     - assets/images/no_result_found_2.png
     - assets/sounds/
+    - assets/images/utility/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

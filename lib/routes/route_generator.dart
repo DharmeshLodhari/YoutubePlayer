@@ -98,6 +98,11 @@ import 'package:Slydo/screens/more_apps/user_profile/forms/verify_reset_password
 import 'package:Slydo/screens/more_apps/user_profile/screens/connection_module/connections_dashboard.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/search_users_product_and_service.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_profile_screen.dart';
+import 'package:Slydo/screens/more_apps/utility/cable/forms/select_plan_for_cable.dart';
+import 'package:Slydo/screens/more_apps/utility/cable/screens/cable_plan_payment_detail.dart';
+import 'package:Slydo/screens/more_apps/utility/cable/screens/select_cabel_provider.dart';
+import 'package:Slydo/screens/more_apps/utility/utility_dashboard.dart';
+import 'package:Slydo/screens/more_apps/utility/utility_history.dart';
 import 'package:Slydo/screens/scan_qr_code.dart';
 import 'package:Slydo/screens/search_module.dart';
 import 'package:Slydo/screens/user_dashboard.dart';
@@ -678,6 +683,48 @@ class RouteGenerator {
           child: InvoiceDetail(
             arguments: settings.arguments,
           ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      ///    Utility Route     ///
+
+      case '/utility-dashboard':
+        return PageTransition(
+          child: UtilityDashboard(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case '/utility-history':
+        return PageTransition(
+          child: UtilityHistory(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case '/cable-provider':
+        return PageTransition(
+          child: SelectCableProvider(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case '/select-plan-for-cable':
+        return PageTransition(
+          child: SelectPlanForCable(arguments: settings.arguments),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case '/cable-plan-payment-detail':
+        return PageTransition(
+          child: CablePlanPaymentDetail(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

@@ -23,6 +23,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+bool isDialogueOpen = false;
+
 Future<dynamic> fcmBackgroundMessageHandler(
     Map<String, dynamic> message) async {
 // await Firebase.initializeApp();
@@ -184,9 +186,23 @@ class PushNotificationService {
             print("notification data type = ${notification["data"] is String}");
             // MainSocketMessageHandler(message: notification["data"]);
           } else {
-            showAlertMessage(
-                notification: notification,
-                context: myGlobals.scaffoldKey.currentContext);
+            if ((notification["body"].toString().toLowerCase() == "hello" ||
+                        notification["body"].toString().toLowerCase() ==
+                            "null") &&
+                    notification['title'] == "" ||
+                notification["body"] == "" && notification['title'] == "") {
+              print("ERROR:- notification data = $notification");
+              return;
+            }
+            if (isDialogueOpen) {
+              Navigator.pop(myGlobals.scaffoldKey.currentContext);
+              isDialogueOpen = false;
+            }
+            if (!isDialogueOpen) {
+              showAlertMessage(
+                  notification: notification,
+                  context: myGlobals.scaffoldKey.currentContext);
+            }
           }
         },
 
@@ -304,6 +320,7 @@ class PushNotificationService {
   void showAlertMessage(
       {Map<String, dynamic> notification, BuildContext context}) async {
     // show the notification in the dialog
+    isDialogueOpen = true;
     bool result = await showDialogBoxWithImage(
       context: context,
       actionOneBgColor: greyBorderColor,
@@ -317,16 +334,22 @@ class PushNotificationService {
       actionOne: AppLocalization.of(context).cancel,
       actionTwo: "View",
     );
-    if (result) {
-      _navigateToItemDetail(notification, context);
+
+    if (result != null) {
+      if (result) {
+        isDialogueOpen = false;
+        _navigateToItemDetail(notification, context);
+      } else {
+        isDialogueOpen = false;
+      }
     }
   }
 }
 
 Map<String, dynamic> getAndroidNotification(Map<String, dynamic> message) {
   Map<String, dynamic> notification = {};
-  notification["body"] = message['notification']['body'] ?? "Hello";
-  notification["title"] = message['notification']['title'];
+  notification["body"] = message['notification']['body'] ?? "";
+  notification["title"] = message['notification']['title'] ?? "";
   notification["actions"] = message['data']['actions'];
   notification['image'] = message['data']['image'];
 
@@ -355,8 +378,8 @@ Map<String, dynamic> getIosNotification(Map<String, dynamic> message) {
   try {
     Map<String, dynamic> notificationFromMessage =
         jsonDecode(message['notification']);
-    notification["body"] = notificationFromMessage['body'];
-    notification["title"] = notificationFromMessage['title'];
+    notification["body"] = notificationFromMessage['body'] ?? "";
+    notification["title"] = notificationFromMessage['title'] ?? "";
     notification["actions"] = notificationFromMessage['actions'];
     notification['image'] = notificationFromMessage['image'];
     debugPrint("notification from IOS $notification");

@@ -594,7 +594,9 @@ class ShoppingAuthService extends AuthService {
     if (response.statusCode == 200) {
       return getCartItems(jsonData);
     }
-    throw jsonData;
+    debugPrint(
+        "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+    return Future.error("ERROR:- ${response.body}");
   }
 
   Future<bool> addItemToShoppingCart(Map data) async {

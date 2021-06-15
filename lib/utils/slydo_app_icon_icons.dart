@@ -267,4 +267,24 @@ class SlydoAppIcon {
       IconData(0xe875, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData unmute =
       IconData(0xe876, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData clock =
+      IconData(0xe877, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData subscription_status =
+      IconData(0xe878, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData utility_airtime =
+      IconData(0xe879, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData utility_betting =
+      IconData(0xe87a, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData utility_electricity =
+      IconData(0xe87b, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData utility_history =
+      IconData(0xe87c, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData utility_svg =
+      IconData(0xe87d, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData utility_tax =
+      IconData(0xe87e, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData utility_toll =
+      IconData(0xe87f, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData utility =
+      IconData(0xe880, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }
