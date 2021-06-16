@@ -153,6 +153,10 @@ class MainSocketMessageHandler {
 
         break;
 
+      case "conversation_actions":
+        handleConversationActions(messageData: messageData);
+        break;
+
       default:
         if (messageType != "pong") {
           debugPrint("UNHANDLED MESSAGE GOT IN SOCKET:-  $messageData");
@@ -175,6 +179,38 @@ class MainSocketMessageHandler {
 
     ChatConversation chatConversation = ChatConversation.fromJson(json);
     connectionListBloc.addConnectionUser(chatConversation: chatConversation);
+  }
+
+  void handleConversationActions({Map<String, dynamic> messageData}) {
+    ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
+        MyGlobals().navigationKey.currentContext,
+        listen: false);
+
+    Map<String, dynamic> metaData;
+
+    if (messageData['meta_data'] is String) {
+      metaData = jsonDecode(messageData['meta_data']);
+    } else {
+      metaData = messageData['meta_data'];
+    }
+
+    if (!messageData.containsKey("meta_data")) {
+      metaData = messageData;
+    }
+    String action = metaData['action'];
+
+    switch (action) {
+      case "delete_conversation":
+        connectionListBloc.deleteChatConversation(
+            conversationId: metaData['conversation_id']);
+        DBSocketMessageHandler().deleteSocketQueueForSpecificConversation(
+            conversationId: metaData['conversation_id']);
+        break;
+
+      default:
+        debugPrint(
+            "UNHANDLED MESSAGE ACTION FOUNT:- $action MESSAGE:- $messageData");
+    }
   }
 
   Future<void> saveAndUpdateUserMessageCount(

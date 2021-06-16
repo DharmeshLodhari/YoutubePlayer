@@ -157,9 +157,9 @@ class _ConnectionListState extends State<ConnectionList> {
   void _onRefreshOnResume() {
     _refreshBloc = Provider.of<RefreshBlocForConnectionDashboard>(context);
     _refreshBloc
-      ..addListener(() {
+      ..addListener(() async {
         if (_refreshBloc.isRefresh) {
-          refreshList();
+          await refreshList();
           _refreshBloc.isRefresh = false;
         }
       });
@@ -453,9 +453,6 @@ class _ConnectionListState extends State<ConnectionList> {
         connectionListBloc.deleteChatConversation(
             conversationId: chatConversation.conversationId);
 
-        // if (connectionsList.length <= 9) {
-        //   getList();
-        // }
         setState(() {});
       } else {
         _showSnackBar(context, AppLocalization.of(context).error);

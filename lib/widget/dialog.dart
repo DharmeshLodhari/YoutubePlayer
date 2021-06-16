@@ -92,6 +92,35 @@ Future<bool> showDialogBoxWithImage({
   ).show();
 }
 
+Future<bool> showDialogBoxWithImageWithOneAction({
+  BuildContext context,
+  String title,
+  String description,
+  String actionOne,
+  String image,
+  Color actionOneBgColor,
+  Color actionOneTextColor,
+}) {
+  return CustomizedAlert(
+    context: context,
+    title: title,
+    desc: description,
+    image: image,
+    style: AlertStyle(
+      isOverlayTapDismiss: true,
+      isCloseButton: true,
+    ),
+    buttons: [
+      DialogButton(
+        onPressed: () => Navigator.pop(context, true),
+        textColor: actionOneTextColor,
+        text: actionOne,
+        backgroundColor: actionOneBgColor,
+      ),
+    ],
+  ).show();
+}
+
 Future<bool> showDialogBoxWithImageForNudge({
   BuildContext context,
   String title,

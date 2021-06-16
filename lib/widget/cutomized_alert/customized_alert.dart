@@ -143,15 +143,16 @@ class CustomizedAlert {
           child: buttons[0],
         ),
       );
-
-      var btnTwo = Expanded(
-        child: Padding(
-          padding: EdgeInsets.only(left: 8.0),
-          child: buttons[1],
-        ),
-      );
       expandedButtons.add(btnOne);
-      expandedButtons.add(btnTwo);
+      if (buttons.length > 1) {
+        var btnTwo = Expanded(
+          child: Padding(
+            padding: EdgeInsets.only(left: 8.0),
+            child: buttons[1],
+          ),
+        );
+        expandedButtons.add(btnTwo);
+      }
     }
 
     return expandedButtons;

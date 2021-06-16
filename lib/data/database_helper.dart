@@ -483,6 +483,16 @@ class DatabaseHelper {
     return res;
   }
 
+  Future<int> deleteSocketQueueForSpecificConversation(
+      {String conversationId}) async {
+    var dbClient = await db;
+    int res = await dbClient.delete("SocketQueueChatMessage",
+        where: "conversation_id = ?", whereArgs: [conversationId]);
+    debugPrint(
+        "DATABASE:- >>>> SocketQueueChatMessage deleted for Conversation $conversationId !!");
+    return res;
+  }
+
   Future<int> clearSocketQueueChatMessage() async {
     var dbClient = await db;
     int res = await dbClient.delete("SocketQueueChatMessage");

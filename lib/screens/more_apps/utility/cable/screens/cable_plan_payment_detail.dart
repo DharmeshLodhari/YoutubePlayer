@@ -22,10 +22,16 @@ class _CablePlanPaymentDetailState extends State<CablePlanPaymentDetail> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: lightGrey,
-      appBar: appBar(),
-      body: scaffoldBody(),
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.of(context).popAndPushNamed("/utility-history");
+        return false;
+      },
+      child: Scaffold(
+        backgroundColor: lightGrey,
+        appBar: appBar(),
+        body: scaffoldBody(),
+      ),
     );
   }
 
@@ -42,7 +48,7 @@ class _CablePlanPaymentDetailState extends State<CablePlanPaymentDetail> {
           size: 24,
         ),
         onPressed: () {
-          Navigator.pop(context);
+          Navigator.of(context).popAndPushNamed("/utility-history");
         },
       ),
       title: Text(

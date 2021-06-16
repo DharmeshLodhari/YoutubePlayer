@@ -60,6 +60,8 @@ class ChatMessageSynchronizer {
         debugPrint("ERROR:- $error");
       });
 
+      if (result == null) return;
+
       List<String> tempList = result['results'];
 
       await ChatMessageHandler().saveChatMessages(messages: tempList);

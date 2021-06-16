@@ -446,7 +446,9 @@ class _RequestPaymentState extends State<RequestPayment> {
     return CustomizedTextFormField(
       labelText: "Amount",
       isAmount: true,
-      keyboardType: TextInputType.number,
+      keyboardType: Platform.isIOS
+          ? TextInputType.numberWithOptions(decimal: true)
+          : TextInputType.number,
       // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       onChanged: (val) {
         if (mounted) {

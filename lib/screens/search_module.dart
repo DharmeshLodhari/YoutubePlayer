@@ -394,6 +394,12 @@ class _SearchModuleState extends State<SearchModule> {
             .catchError((error) {
           debugPrint("ERROR:- $error");
         });
+        if (result == null) {
+          isLoading = false;
+          if (mounted) setState(() {});
+          return;
+        }
+
         count = result['count'];
         next = result['next'];
         previous = result['previous'];

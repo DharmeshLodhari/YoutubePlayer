@@ -537,7 +537,9 @@ class _SendPaymentState extends State<SendPayment> {
       labelText: "Amount",
       isAmount: true,
       enabled: product == null && service == null,
-      keyboardType: TextInputType.number,
+      keyboardType: Platform.isIOS
+          ? TextInputType.numberWithOptions(decimal: true)
+          : TextInputType.number,
       // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       controller: _amountController,
       onChanged: (val) {

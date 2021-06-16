@@ -408,6 +408,26 @@ class MainSocketProvider extends ChangeNotifier {
     debugPrint("Sending $count Pending Text Message !!");
   }
 
+  void deleteQueueMessagesForSpecificConversation({String conversationId}) {
+    List<int> messagesIndex = [];
+    for (int i = 0; i < _queueMessages.length; i++) {
+      Map<String, dynamic> message = jsonDecode(_queueMessages[i]);
+
+      if (message.containsKey("conversation_id")) {
+        if (message['conversation_id'] == conversationId) {
+          messagesIndex.add(i);
+        }
+      }
+    }
+
+    if (messagesIndex.isNotEmpty) {
+      debugPrint("Messages related To Conversation id found at $messagesIndex");
+      messagesIndex.forEach((element) {
+        _queueMessages.removeAt(element);
+      });
+    }
+  }
+
   /// checking internet connectivity
   Future<bool> checkConnection() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
@@ -426,6 +446,8 @@ class MainSocketProvider extends ChangeNotifier {
     _streamSubscriptions.forEach((element) async {
       await element?.cancel();
     });
+
+    _queueMessages.clear();
 
     await networkConnectionSubscription?.cancel();
     _streamController = null;

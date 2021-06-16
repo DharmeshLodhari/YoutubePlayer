@@ -4,6 +4,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
+import 'package:toast/toast.dart';
 
 // ignore: must_be_immutable
 class SelectPlanForCable extends StatefulWidget {
@@ -373,12 +374,21 @@ class _SelectPlanForCableState extends State<SelectPlanForCable> {
 
   Widget submitButton() {
     return CurvedButton(
-      onPressed: () {
-        Navigator.of(context).pushNamed("/cable-plan-payment-detail");
+      onPressed: () async {
+        Toast.show("Payment Completed Successfully !", context,
+            backgroundColor: Colors.black,
+            textColor: Colors.white,
+            duration: Toast.LENGTH_LONG);
+
+        await Future.delayed(Duration(seconds: 2)).then((value) {
+          Navigator.popUntil(
+              context, ModalRoute.withName("/utility-dashboard"));
+          Navigator.of(context).pushNamed("/cable-plan-payment-detail");
+        });
       },
       backgroundColor: navyBlue,
       textColor: Colors.white,
-      text: "Payout",
+      text: "Pay",
     );
   }
 }

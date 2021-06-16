@@ -407,33 +407,6 @@ class _HomeState extends State<Home> {
             Provider.of<ConnectionListBloc>(context, listen: false);
         await connectionListBloc.clearConnectionList();
 
-        // LocalNotificationService().showNotification(
-        //     {"id": 1, "payload": "Hello 1"},
-        //     "Hello Notification sound",
-        //     "slydo_notification");
-
-        // showOngoingNotification(
-        //     LocalNotificationService().flutterLocalNotificationsPlugin,
-        //     title: "Sound Notification",
-        //     body: "Hello custom sound");
-
-        // showImageNotification(
-        //   context,
-        //   LocalNotificationService().flutterLocalNotificationsPlugin,
-        //   title: "Nudge From User",
-        //   body: "Black is Nudging you",
-        //   picture: Image.network(
-        //       "https://files.wallpaperpass.com/2019/10/black%20panther%20wallpaper%2018%20-%205120x2880.jpg"),
-        // );
-
-        // LocalNotificationService().showNotification(
-        //     {"id": 2, "payload": "Hello 2"}, "Hello ping sound", "slydo_nudge");
-
-        // AwesomeNotificationService().showNotification({
-        //   "id": 1234,
-        //   "payload": {"data": "test"}
-        // }, "Hello Notification");
-
         // Navigator.pushNamed(
         //   context,
         //   '/nfc-reader',

@@ -48,6 +48,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
+import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/image_crop.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
@@ -207,6 +208,9 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   /// variables for replying message
   bool isReplyingMessage = false;
   String replayingMessage;
+
+  /// variables for recipient has removed you info dialogue
+  bool isRecipientRemovedDialogueIsOpen = false;
 
   /// variables for group chat message
   GroupDetailModel groupDetail;
@@ -820,62 +824,108 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         break;
 
       case "group_conversation_admin_actions":
-        if (messageData['meta_data']['conversation_id'] ==
-            chatConversation.conversationId) {
-          if (messageData['meta_data']['action'] == "delete_group") {
-            Toast.show(
-                "${messageData['meta_data']['author']} has deleted this group !!",
-                context,
-                textColor: Colors.white,
-                backgroundColor: Colors.black,
-                duration: Toast.LENGTH_LONG);
+        handleGroupConversationAdminActions(messageData: messageData);
 
-            Navigator.popUntil(
-                context, ModalRoute.withName("/friends-dashboard"));
-            return;
-          } else if (messageData['meta_data']['action'] == "remove_user") {
-            List users = messageData['meta_data']['users'];
-            if (users.isEmpty) return;
+        break;
 
-            if (users.first == null || users.first == "") return;
-            String user = users.first.toString();
-
-            if (user == userBloc.user.userName) {
-              Toast.show(
-                  "${messageData['meta_data']['author']} has removed you from group !!",
-                  context,
-                  textColor: Colors.white,
-                  backgroundColor: Colors.black,
-                  duration: Toast.LENGTH_LONG);
-
-              Navigator.popUntil(
-                  context, ModalRoute.withName("/friends-dashboard"));
-              return;
-            }
-          }
-        }
-
-        var result =
-            ChatGroupActionManagerForLiveConversation(message: messageData)
-                .handleMessageAction(chatConversation: chatConversation);
-
-        if (result != null) {
-          if (result is ChatConversation) {
-            chatConversation = result;
-            if (chatConversation.isGroupConversation)
-              groupDetail =
-                  GroupDetailModel.fromChatConversation(chatConversation);
-
-            updateParticipantRights();
-            if (mounted) setState(() {});
-          }
-        }
+      case "conversation_actions":
+        handleConversationAction(messageData: messageData);
 
         break;
 
       default:
         debugPrint("Message type:- ${messageData['type'] ?? messageData}");
     }
+  }
+
+  void handleGroupConversationAdminActions({Map<String, dynamic> messageData}) {
+    if (messageData['meta_data']['conversation_id'] ==
+        chatConversation.conversationId) {
+      if (messageData['meta_data']['action'] == "delete_group") {
+        Toast.show(
+            "${messageData['meta_data']['author']} has deleted this group !!",
+            context,
+            textColor: Colors.white,
+            backgroundColor: Colors.black,
+            duration: Toast.LENGTH_LONG);
+
+        Navigator.popUntil(context, ModalRoute.withName("/friends-dashboard"));
+        return;
+      } else if (messageData['meta_data']['action'] == "remove_user") {
+        List users = messageData['meta_data']['users'];
+        if (users.isEmpty) return;
+
+        if (users.first == null || users.first == "") return;
+        String user = users.first.toString();
+
+        if (user == userBloc.user.userName) {
+          Toast.show(
+              "${messageData['meta_data']['author']} has removed you from group !!",
+              context,
+              textColor: Colors.white,
+              backgroundColor: Colors.black,
+              duration: Toast.LENGTH_LONG);
+
+          Navigator.popUntil(
+              context, ModalRoute.withName("/friends-dashboard"));
+          return;
+        }
+      }
+    }
+
+    var result = ChatGroupActionManagerForLiveConversation(message: messageData)
+        .handleMessageAction(chatConversation: chatConversation);
+
+    if (result != null) {
+      if (result is ChatConversation) {
+        chatConversation = result;
+        if (chatConversation.isGroupConversation)
+          groupDetail = GroupDetailModel.fromChatConversation(chatConversation);
+
+        updateParticipantRights();
+        if (mounted) setState(() {});
+      }
+    }
+  }
+
+  void handleConversationAction({Map<String, dynamic> messageData}) {
+    Map<String, dynamic> metaData;
+
+    if (messageData['meta_data'] is String) {
+      metaData = jsonDecode(messageData['meta_data']);
+    } else {
+      metaData = messageData['meta_data'];
+    }
+
+    if (!messageData.containsKey("meta_data")) {
+      metaData = messageData;
+    }
+    String action = metaData['action'];
+
+    switch (action) {
+      case "delete_conversation":
+        String conversationId = metaData['conversation_id'];
+        if (chatConversation.conversationId == conversationId) {
+          if (!isRecipientRemovedDialogueIsOpen) {
+            showRecipientHasRemovedYouDialogue();
+          }
+        }
+        break;
+    }
+  }
+
+  void showRecipientHasRemovedYouDialogue() async {
+    isRecipientRemovedDialogueIsOpen = true;
+    bool result = await showDialogBoxWithImageWithOneAction(
+      context: context,
+      actionOneBgColor: greyBorderColor,
+      actionOneTextColor: blackFont,
+      title: "Connection Removed",
+      description: "${chatConversation.fullName} has removed you from Contact.",
+      image: chatConversation.avatar,
+      actionOne: "Ok",
+    );
+    Navigator.pop(context);
   }
 
   void updateParticipantRights() {
@@ -1060,10 +1110,11 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     }
 
     return ColorfulSafeArea(
-      bottom: Platform.isAndroid?false:true,
-      top: false,color: Colors.white,
+      bottom: Platform.isAndroid ? false : true,
+      top: false,
+      color: Colors.white,
       left: false,
-        right:false,
+      right: false,
       child: WillPopScope(
         onWillPop: () async {
           disposeAudioPlayers();
