@@ -66,6 +66,8 @@ class _SendPaymentState extends State<SendPayment> {
   String recipient;
   final locationService = LocationService();
 
+  String conversationId;
+
   //variables for categorie
   bool isLoading = true;
   List<String> paymentCategories = List();
@@ -91,6 +93,11 @@ class _SendPaymentState extends State<SendPayment> {
             ? widget.arguments['isFromChat']
             : false
         : false;
+    conversationId = widget.arguments != null
+        ? widget.arguments['conversationId'] != null
+            ? widget.arguments['conversationId']
+            : null
+        : null;
     product = widget.arguments != null ? widget.arguments['product'] : null;
     service = widget.arguments != null ? widget.arguments['service'] : null;
     itemIndex = widget.arguments != null ? widget.arguments['itemIndex'] : null;
@@ -949,6 +956,10 @@ class _SendPaymentState extends State<SendPayment> {
                     "is_anonymous": sendMoneyAnonymous,
                     "made_from_chat": isFromChat ?? false,
                   };
+
+                  if (conversationId != null) {
+                    data["conversation_id"] = conversationId;
+                  }
 
                   debugPrint("Data:- $data");
                   _auth.makePayment(data).then((value) {

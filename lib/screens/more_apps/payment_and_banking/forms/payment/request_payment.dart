@@ -65,6 +65,8 @@ class _RequestPaymentState extends State<RequestPayment> {
 
   bool showMoreOption = false;
 
+  String conversationId;
+
   //variables for categories
   bool isLoading = true;
 
@@ -86,6 +88,11 @@ class _RequestPaymentState extends State<RequestPayment> {
             ? widget.arguments['isFromChat']
             : false
         : false;
+    conversationId = widget.arguments != null
+        ? widget.arguments['conversationId'] != null
+            ? widget.arguments['conversationId']
+            : null
+        : null;
 
     /* adding listener on recipientFocus when user unFocus
     From Recipient Field then value of that field should be in lowerCase */
@@ -738,6 +745,9 @@ class _RequestPaymentState extends State<RequestPayment> {
                     "longitude": Platform.isIOS ? userLocation.longitude : "",
                     "made_from_chat": isFromChat ?? false,
                   };
+                  if (conversationId != null) {
+                    data["conversation_id"] = conversationId;
+                  }
 
                   _auth.createPaymentRequests(data).then((value) {
                     response = value;

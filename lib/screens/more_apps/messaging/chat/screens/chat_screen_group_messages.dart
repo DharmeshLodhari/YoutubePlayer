@@ -1693,9 +1693,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       stopShakeDetector();
       await Navigator.of(context).pushNamed(
         '/request-payment',
-        arguments: <String, bool>{
+        arguments: <String, dynamic>{
           'isFromProfile': false,
           'isFromChat': true,
+          'conversationId': chatConversation.conversationId
         },
       );
       setupShakeDetector();
@@ -1817,9 +1818,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       stopShakeDetector();
       await Navigator.of(context).pushNamed(
         '/send-payment',
-        arguments: <String, bool>{
+        arguments: <String, dynamic>{
           'isFromProfile': false,
           'isFromChat': true,
+          'conversationId': chatConversation.conversationId
         },
       );
       setupShakeDetector();
