@@ -3,7 +3,17 @@ import 'dart:async';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_generator.dart';
+import 'package:Slydo/screens/more_apps/bus/bus_dashboard_bloc.dart';
+import 'package:Slydo/screens/more_apps/events/event_dashboard_bloc.dart';
+import 'package:Slydo/screens/more_apps/flight/flight_dashboard_bloc.dart';
+import 'package:Slydo/screens/more_apps/hotels/hotel_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_shake_detection.dart';
+import 'package:Slydo/screens/more_apps/movies/movie_dashboard_bloc.dart';
+import 'package:Slydo/screens/more_apps/music/music_dashboard_bloc.dart';
+import 'package:Slydo/screens/more_apps/music/music_player.dart';
+import 'package:Slydo/screens/more_apps/property/property_dashboard_bloc.dart';
+import 'package:Slydo/screens/more_apps/shopping/screens/shopping/shopping_dashboard_bloc.dart';
+import 'package:Slydo/screens/more_apps/train/train_dashboard_bloc.dart';
 import 'package:Slydo/services/app_life_cycle.dart';
 import 'package:Slydo/services/awesome_notification_service.dart';
 import 'package:Slydo/services/local_notification_service.dart';
@@ -92,39 +102,39 @@ void main() async {
           ),
 
           ///Uncomment this when we implement this functionality
-          // ChangeNotifierProvider<MovieDashboardBloc>.value(
-          //   value: MovieDashboardBloc(),
-          // ),
-          // ChangeNotifierProvider<BusDashboardBloc>.value(
-          //   value: BusDashboardBloc(),
-          // ),
-          // ChangeNotifierProvider<TrainDashboardBloc>.value(
-          //   value: TrainDashboardBloc(),
-          // ),
-          // ChangeNotifierProvider<FlightDashboardBloc>.value(
-          //   value: FlightDashboardBloc(),
-          // ),
-          // ChangeNotifierProvider<EventDashboardBloc>.value(
-          //   value: EventDashboardBloc(),
-          // ),
-          // ChangeNotifierProvider<ShoppingDashboardBloc>.value(
-          //   value: ShoppingDashboardBloc(),
-          // ),
-          // ChangeNotifierProvider<HotelDashboardBloc>.value(
-          //   value: HotelDashboardBloc(),
-          // ),
-          // ChangeNotifierProvider<PropertyDashboardBloc>.value(
-          //   value: PropertyDashboardBloc(),
-          // ),
-          // ChangeNotifierProvider<PropertyFilterBloc>.value(
-          //   value: PropertyFilterBloc(),
-          // ),
-          // ChangeNotifierProvider<MusicDashboardBloc>.value(
-          //   value: MusicDashboardBloc(),
-          // ),
-          // ChangeNotifierProvider<MusicPlayer>.value(
-          //   value: MusicPlayer(),
-          // ),
+          ChangeNotifierProvider<MovieDashboardBloc>.value(
+            value: MovieDashboardBloc(),
+          ),
+          ChangeNotifierProvider<BusDashboardBloc>.value(
+            value: BusDashboardBloc(),
+          ),
+          ChangeNotifierProvider<TrainDashboardBloc>.value(
+            value: TrainDashboardBloc(),
+          ),
+          ChangeNotifierProvider<FlightDashboardBloc>.value(
+            value: FlightDashboardBloc(),
+          ),
+          ChangeNotifierProvider<EventDashboardBloc>.value(
+            value: EventDashboardBloc(),
+          ),
+          ChangeNotifierProvider<ShoppingDashboardBloc>.value(
+            value: ShoppingDashboardBloc(),
+          ),
+          ChangeNotifierProvider<HotelDashboardBloc>.value(
+            value: HotelDashboardBloc(),
+          ),
+          ChangeNotifierProvider<PropertyDashboardBloc>.value(
+            value: PropertyDashboardBloc(),
+          ),
+          ChangeNotifierProvider<PropertyFilterBloc>.value(
+            value: PropertyFilterBloc(),
+          ),
+          ChangeNotifierProvider<MusicDashboardBloc>.value(
+            value: MusicDashboardBloc(),
+          ),
+          ChangeNotifierProvider<MusicPlayer>.value(
+            value: MusicPlayer(),
+          ),
 
           ChangeNotifierProvider<AddInvoiceBloc>.value(
             value: AddInvoiceBloc(),
