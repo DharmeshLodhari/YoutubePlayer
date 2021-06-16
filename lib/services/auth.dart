@@ -66,6 +66,7 @@ class AuthService {
 
     Map _body = {"password": password, "phone_number": phoneNumber};
     var data = await getDeviceInfo();
+    data['device_id'] = "CB52C6A6-4C0E-4FE0-A753-C9A936AEA8BB";
     _body.addAll(data);
 
     debugPrint("=> $_body");

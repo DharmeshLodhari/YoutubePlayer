@@ -55,6 +55,7 @@ import 'package:Slydo/widget/sticky_grouped_list/src/item_positions_listener.dar
 import 'package:Slydo/widget/sticky_grouped_list/sticky_grouped_list.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flare_flutter/flare_actor.dart';
@@ -1058,43 +1059,49 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       if (mounted) setState(() {});
     }
 
-    return WillPopScope(
-      onWillPop: () async {
-        disposeAudioPlayers();
-        mainSocketProvider.removeStreamSubscription(streamSubscription);
-        mainSocketProvider.currentConversationId = null;
-        mainSocketProvider.isChatOnScreen = false;
+    return ColorfulSafeArea(
+      bottom: Platform.isAndroid?false:true,
+      top: false,color: Colors.white,
+      left: false,
+        right:false,
+      child: WillPopScope(
+        onWillPop: () async {
+          disposeAudioPlayers();
+          mainSocketProvider.removeStreamSubscription(streamSubscription);
+          mainSocketProvider.currentConversationId = null;
+          mainSocketProvider.isChatOnScreen = false;
 
-        return Future.value(true);
-      },
-      child: Scaffold(
-        key: chatScreenKey,
-        backgroundColor: Colors.white,
-        appBar: appBar(),
-        body: scaffoldBody(),
-        floatingActionButton: Padding(
-          padding: EdgeInsets.only(bottom: 48),
-          child: AnimatedSwitcher(
-            duration: Duration(milliseconds: 100),
-            child: fabIsVisible
-                ? FloatingActionButton(
-                    mini: true,
-                    backgroundColor: dividerColor,
-                    child: Icon(
-                      Icons.keyboard_arrow_down_rounded,
-                      size: 28,
-                      color: blackFont,
+          return Future.value(true);
+        },
+        child: Scaffold(
+          key: chatScreenKey,
+          backgroundColor: Colors.white,
+          appBar: appBar(),
+          body: scaffoldBody(),
+          floatingActionButton: Padding(
+            padding: EdgeInsets.only(bottom: 48),
+            child: AnimatedSwitcher(
+              duration: Duration(milliseconds: 100),
+              child: fabIsVisible
+                  ? FloatingActionButton(
+                      mini: true,
+                      backgroundColor: dividerColor,
+                      child: Icon(
+                        Icons.keyboard_arrow_down_rounded,
+                        size: 28,
+                        color: blackFont,
+                      ),
+                      tooltip: "Increment",
+                      onPressed: scrollToBottom,
+                    )
+                  : Container(
+                      height: 0,
+                      width: 0,
                     ),
-                    tooltip: "Increment",
-                    onPressed: scrollToBottom,
-                  )
-                : Container(
-                    height: 0,
-                    width: 0,
-                  ),
+            ),
           ),
+          floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       ),
     );
   }
