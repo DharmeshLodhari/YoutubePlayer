@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/business/models/Item.dart';
@@ -206,8 +208,10 @@ class _EditInvoiceItemState extends State<EditInvoiceItem> {
     return CustomizedTextFormField(
       labelText: "Amount",
       isAmount: true,
-      keyboardType: TextInputType.number,
-      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+      keyboardType: Platform.isIOS
+          ? TextInputType.numberWithOptions(decimal: true)
+          : TextInputType.number,
+      // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       controller: _amountController,
       onChanged: (val) {
         if (mounted) {
@@ -323,9 +327,13 @@ class _EditInvoiceItemState extends State<EditInvoiceItem> {
         Navigator.pop(context);
       } catch (e) {
         debugPrint(e);
-        Toast.show(e, context,
-            gravity: Toast.BOTTOM,  backgroundColor: Colors.black,
-          textColor: Colors.white,);
+        Toast.show(
+          e,
+          context,
+          gravity: Toast.BOTTOM,
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+        );
       }
     }
   }

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/utils/colors.dart';
@@ -176,7 +178,9 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
           labelText: "Amount",
           isAmount: true,
           // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          keyboardType: TextInputType.number,
+          keyboardType: Platform.isIOS
+              ? TextInputType.numberWithOptions(decimal: true)
+              : TextInputType.number,
           onChanged: (val) {
             amount = val.toString();
             setState(() {});

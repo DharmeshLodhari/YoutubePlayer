@@ -522,8 +522,12 @@ class _UserDashboardState extends State<UserDashboard> {
     }
 
     if (mounted) {
-      Navigator.pushNamedAndRemoveUntil(context, "/index", (r) => false,
-          arguments: {'isIntroDone': true});
+      Navigator.of(context).popUntil(ModalRoute.withName('/splash'));
+
+      Navigator.of(context)
+          .pushNamed("/index", arguments: {'isIntroDone': true});
+      // Navigator.pushNamedAndRemoveUntil(context, "/index", (r) => false,
+      //     arguments: {'isIntroDone': true});
     }
   }
 

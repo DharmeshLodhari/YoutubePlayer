@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:flutter/material.dart';
@@ -181,7 +183,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
               widget.inputFormatters != null ? widget.inputFormatters : [],
           validator: widget.validator,
           controller: widget.controller,
-          keyboardType: widget.keyboardType,
+          keyboardType: getKeyBoardType(widget.keyboardType),
           obscureText: widget.obscureText,
           maxLength: widget.maxLength,
           maxLines: widget.maxLines,
@@ -197,5 +199,14 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
         ),
       ],
     );
+  }
+
+  TextInputType getKeyBoardType(TextInputType textInputType) {
+    if (textInputType == TextInputType.number) {
+      return Platform.isIOS
+          ? TextInputType.numberWithOptions(decimal: true)
+          : TextInputType.number;
+    }
+    return textInputType;
   }
 }

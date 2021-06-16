@@ -596,7 +596,9 @@ class _AddProductState extends State<AddProduct> {
   Widget getAmountField() {
     return CustomizedTextFormField(
       labelText: AppLocalization.of(context).price,
-      keyboardType: TextInputType.number,
+      keyboardType: Platform.isIOS
+          ? TextInputType.numberWithOptions(decimal: true)
+          : TextInputType.number,
       isAmount: true,
       onChanged: (val) {
         if (val.isNotEmpty) {
@@ -661,15 +663,21 @@ class _AddProductState extends State<AddProduct> {
             );
           }).catchError((error) {
             debugPrint(error.toString());
-            Toast.show(error.toString(), context,
+            Toast.show(
+              error.toString(),
+              context,
               backgroundColor: Colors.black,
-              textColor: Colors.white,);
+              textColor: Colors.white,
+            );
           });
         }
       } else {
-        Toast.show(AppLocalization.of(context).pleaseAddImage, context,
+        Toast.show(
+          AppLocalization.of(context).pleaseAddImage,
+          context,
           backgroundColor: Colors.black,
-          textColor: Colors.white,);
+          textColor: Colors.white,
+        );
       }
     }
   }

@@ -601,7 +601,9 @@ class _EditServiceState extends State<EditService> {
   Widget getAmountField() {
     return CustomizedTextFormField(
       controller: servicePriceController,
-      keyboardType: TextInputType.number,
+      keyboardType: Platform.isIOS
+          ? TextInputType.numberWithOptions(decimal: true)
+          : TextInputType.number,
       isAmount: true,
       labelText: "Price of service",
       onChanged: (val) {

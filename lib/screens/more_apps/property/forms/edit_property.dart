@@ -2075,7 +2075,9 @@ class _EditPropertyState extends State<EditProperty> {
   Widget getAmountField() {
     return CustomizedTextFormField(
       labelText: AppLocalization.of(context).price,
-      keyboardType: TextInputType.number,
+      keyboardType: Platform.isIOS
+          ? TextInputType.numberWithOptions(decimal: true)
+          : TextInputType.number,
       isAmount: true,
       onChanged: (val) {
         if (val.isNotEmpty) {

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/business/models/Invoice.dart';
@@ -536,8 +538,10 @@ class _AddInvoiceState extends State<AddInvoice> {
     return CustomizedTextFormField(
       labelText: "Amount",
       isAmount: true,
-      keyboardType: TextInputType.number,
-      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+      keyboardType: Platform.isIOS
+          ? TextInputType.numberWithOptions(decimal: true)
+          : TextInputType.number,
+      // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       controller: _amountController,
       onChanged: (val) {
         if (mounted) {
@@ -839,15 +843,23 @@ class _AddInvoiceState extends State<AddInvoice> {
                 Navigator.pop(context);
               }
             }).catchError((error) {
-              Toast.show(error.toString(), context,
-                  gravity: Toast.BOTTOM,  backgroundColor: Colors.black,
-                textColor: Colors.white,);
+              Toast.show(
+                error.toString(),
+                context,
+                gravity: Toast.BOTTOM,
+                backgroundColor: Colors.black,
+                textColor: Colors.white,
+              );
             });
           } catch (e) {
             debugPrint(e);
-            Toast.show(e, context,
-                gravity: Toast.BOTTOM,  backgroundColor: Colors.black,
-              textColor: Colors.white,);
+            Toast.show(
+              e,
+              context,
+              gravity: Toast.BOTTOM,
+              backgroundColor: Colors.black,
+              textColor: Colors.white,
+            );
           }
         } else {
           Toast.show(
@@ -860,10 +872,13 @@ class _AddInvoiceState extends State<AddInvoice> {
       }
     } else {
       var msg = AppLocalization.of(context).invalidRecipient;
-      Toast.show(msg, context,
-          gravity: Toast.CENTER,
+      Toast.show(
+        msg,
+        context,
+        gravity: Toast.CENTER,
         backgroundColor: Colors.black,
-        textColor: Colors.white,);
+        textColor: Colors.white,
+      );
     }
   }
 

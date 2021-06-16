@@ -1,7 +1,9 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
 import 'package:toast/toast.dart';
@@ -375,16 +377,32 @@ class _SelectPlanForCableState extends State<SelectPlanForCable> {
   Widget submitButton() {
     return CurvedButton(
       onPressed: () async {
-        Toast.show("Payment Completed Successfully !", context,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-            duration: Toast.LENGTH_LONG);
+        FocusScope.of(context).unfocus();
 
-        await Future.delayed(Duration(seconds: 2)).then((value) {
-          Navigator.popUntil(
-              context, ModalRoute.withName("/utility-dashboard"));
-          Navigator.of(context).pushNamed("/cable-plan-payment-detail");
-        });
+        await Future.delayed(Duration(milliseconds: 500));
+
+        BottomSheetPassCode(
+            context: context,
+            isValidCallback: () async {
+              showDialog(
+                  context: context,
+                  builder: (context) =>
+                      Center(child: CircularLoadingIndicator()));
+
+              await Future.delayed(Duration(seconds: 2)).then((value) {
+                Toast.show("Payment Completed Successfully !", context,
+                    backgroundColor: Colors.black,
+                    textColor: Colors.white,
+                    duration: Toast.LENGTH_LONG);
+
+                Navigator.popUntil(
+                    context, ModalRoute.withName("/utility-dashboard"));
+                Navigator.of(context).pushNamed("/cable-plan-payment-detail");
+              });
+            },
+            cancelCallBack: () {
+              Navigator.pop(context);
+            });
       },
       backgroundColor: navyBlue,
       textColor: Colors.white,

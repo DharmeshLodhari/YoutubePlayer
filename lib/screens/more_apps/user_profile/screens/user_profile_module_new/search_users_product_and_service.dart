@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
@@ -363,7 +365,9 @@ class _SearchUsersProductAndServiceState
       labelText: "Min amount",
       isAmount: true,
       controller: minAmountTextController,
-      keyboardType: TextInputType.number,
+      keyboardType: Platform.isIOS
+          ? TextInputType.numberWithOptions(decimal: true)
+          : TextInputType.number,
       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       onChanged: (val) {
         if (val.toString() == "") {
@@ -398,7 +402,9 @@ class _SearchUsersProductAndServiceState
       labelText: "Max amount",
       controller: maxAmountTextController,
       isAmount: true,
-      keyboardType: TextInputType.number,
+      keyboardType: Platform.isIOS
+          ? TextInputType.numberWithOptions(decimal: true)
+          : TextInputType.number,
       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       onChanged: (val) {
         if (val.toString() == "") {

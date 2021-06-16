@@ -429,7 +429,9 @@ class _AddServiceState extends State<AddService> {
 
   Widget getAmountField() {
     return CustomizedTextFormField(
-      keyboardType: TextInputType.number,
+      keyboardType: Platform.isIOS
+          ? TextInputType.numberWithOptions(decimal: true)
+          : TextInputType.number,
       isAmount: true,
       labelText: "Price of service",
       onChanged: (val) {
