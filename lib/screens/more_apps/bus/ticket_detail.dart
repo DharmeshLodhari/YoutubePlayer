@@ -1,4 +1,3 @@
-import 'package:Slydo/screens/more_apps/bus/bus_dashboard_bloc.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -6,7 +5,6 @@ import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import 'bus_auth.dart';
 import 'models/Ticket.dart';
@@ -17,7 +15,7 @@ class TicketDetail extends StatefulWidget {
 }
 
 class _TicketDetailState extends State<TicketDetail> {
-  BusDashboardBloc _busDashboardBloc;
+  // BusDashboardBloc _busDashboardBloc;
 
   bool isSwap = false;
 
@@ -62,7 +60,7 @@ class _TicketDetailState extends State<TicketDetail> {
           size: 24,
         ),
         onPressed: () {
-          _busDashboardBloc.index = 0;
+          // _busDashboardBloc.index = 0;
           Navigator.pop(context);
         },
       ),
@@ -75,7 +73,7 @@ class _TicketDetailState extends State<TicketDetail> {
   }
 
   Widget scaffoldBody() {
-    _busDashboardBloc = Provider.of<BusDashboardBloc>(context);
+    // _busDashboardBloc = Provider.of<BusDashboardBloc>(context);
     return isLoading
         ? Center(
             child: CircularLoadingIndicator(),

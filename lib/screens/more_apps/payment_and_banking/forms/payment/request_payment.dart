@@ -696,6 +696,8 @@ class _RequestPaymentState extends State<RequestPayment> {
   void onSubmit() async {
     FocusScope.of(context).unfocus();
 
+    await Future.delayed(Duration(milliseconds: 500));
+
     if (!isValidPayee) {
       if (mounted) {
         setState(() {

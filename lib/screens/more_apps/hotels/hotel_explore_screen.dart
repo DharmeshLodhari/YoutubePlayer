@@ -390,7 +390,7 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
             ),
           ),
           Container(
-            height: 210,
+            height: 230,
             color: Colors.white,
             child: isMostRecentDiscoveryLoading
                 ? Center(

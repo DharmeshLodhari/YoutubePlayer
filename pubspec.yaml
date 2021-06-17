@@ -67,7 +67,7 @@ dependencies:
   flutter_sound: ^7.4.16+3
   flare_flutter: ^2.0.6
   lazy_load_scrollview: ^1.2.0
-  permission_handler: ^5.0.1+1
+  permission_handler: ^5.0.1+2
   shake: ^0.1.0
   sizer: ^1.1.8
   colorful_safe_area: ^0.2.1

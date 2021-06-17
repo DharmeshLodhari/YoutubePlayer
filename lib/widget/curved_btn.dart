@@ -34,6 +34,7 @@ class CurvedButton extends StatelessWidget {
         ),
         color: backgroundColor,
         onPressed: onPressed,
+        disabledColor: darkGrey.withOpacity(0.5),
       ),
     );
   }

@@ -585,7 +585,6 @@ class _EventDetailPageState extends State<EventDetailPage> {
         ),
         Container(
           height: 180,
-          width: 335,
           decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
           child: CachedNetworkImage(
             imageUrl:

@@ -166,15 +166,6 @@ class _SendPaymentState extends State<SendPayment> {
     }
   }
 
-  Future<String> getAccountBalance() async {
-    Map<String, dynamic> data =
-        await PaymentAndBankingAuth().getAccountBalance();
-    int spendableBalance = data["spendable_balance"];
-
-    String accountBalance = moneyDisplayNormalizer(spendableBalance);
-    return accountBalance;
-  }
-
   void fetchCategory() async {
     _auth.getPaymentCategory().then((result) {
       if (mounted) {
@@ -888,6 +879,8 @@ class _SendPaymentState extends State<SendPayment> {
       FocusScope.of(context).unfocus();
     }
 
+    await Future.delayed(Duration(milliseconds: 500));
+
     if (!isValidPayee) {
       setState(() {
         errorMessage = AppLocalization.of(context).invalidRecipient;
@@ -922,11 +915,10 @@ class _SendPaymentState extends State<SendPayment> {
                     userLocation = await locationService.getLocation();
                   }
 
-                  String accountBalance = await getAccountBalance();
+                  double currentBalance = await getAccountBalance();
 
-                  double currentBalance = double.parse(accountBalance);
                   double transactionalAmount = double.parse(amount.toString());
-                  debugPrint("ACCOUNT BALANCE:- $accountBalance");
+
                   debugPrint("AMOUNT:- ${amount.toString()}");
 
                   if (transactionalAmount > currentBalance) {
@@ -1003,10 +995,12 @@ class _SendPaymentState extends State<SendPayment> {
                         );
                       });
                     }
-                    // else if (response.statusCode == 800) {
-                    //   Navigator.pop(context);
-                    //   Navigator.pushNamed(context, "/add-document");
-                    // }
+
+                    /// else if (response.statusCode == 800) {
+                    ///   Navigator.pop(context);
+                    ///   Navigator.pushNamed(context, "/add-document");
+                    /// }
+                    ///
                     else {
                       Navigator.pop(context);
                       setState(() {

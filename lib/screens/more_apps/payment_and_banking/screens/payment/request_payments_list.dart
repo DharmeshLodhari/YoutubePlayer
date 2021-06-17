@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
@@ -5,6 +7,7 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/tiles/transaction.da
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
@@ -509,6 +512,34 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
     ];
   }
 
+  Future<bool> checkAccountBalance(PaymentRequest paymentRequest) async {
+    BankAccountBloc bankAccountBloc =
+        Provider.of<BankAccountBloc>(context, listen: false);
+    if (bankAccountBloc.bankAccount == null ||
+        bankAccountBloc.bankAccount.bankName == null) {
+      Navigator.of(context).pop();
+      Toast.show("Please add bank account first !!", context,
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+          duration: Toast.LENGTH_LONG);
+      return false;
+    } else {
+      double accountBalance = await getAccountBalance();
+      Navigator.of(context).pop();
+      debugPrint("accountBalance:- $accountBalance");
+      double spendingAmount = paymentRequest.amount / 100;
+      debugPrint("spendingAmount:- $spendingAmount");
+      if (spendingAmount > accountBalance) {
+        Toast.show("You don't have enough money in Slydo account!!", context,
+            backgroundColor: Colors.black,
+            textColor: Colors.white,
+            duration: Toast.LENGTH_LONG);
+        return false;
+      }
+    }
+    return true;
+  }
+
   void acceptPaymentRequestAlert(
       PaymentRequest paymentRequest, int index) async {
     bool result = await showDialogBox(
@@ -540,6 +571,15 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       BottomSheetPassCode(
           context: context,
           isValidCallback: () async {
+            showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) =>
+                    Center(child: CircularLoadingIndicator()));
+
+            bool result = await checkAccountBalance(paymentRequest);
+            if (!result) return;
+
             var response = await _auth.acceptPaymentRequests(paymentRequest);
             if (response.statusCode == 200) {
               _showSnackBar(
@@ -565,7 +605,12 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
             //   Navigator.pushNamed(context, "/add-document");
             // }
             else {
-              _showSnackBar(context, AppLocalization.of(context).error);
+              Map<String, dynamic> errorData = jsonDecode(response.body);
+              String error = "Error";
+              if (errorData.containsKey("errors")) {
+                error = errorData['errors'];
+              }
+              _showSnackBar(context, error);
             }
           },
           cancelCallBack: () {

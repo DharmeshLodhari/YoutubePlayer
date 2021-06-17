@@ -634,8 +634,10 @@ class ShoppingAuthService extends AuthService {
     var jsonData = jsonDecode(response.body);
     if (response.statusCode == 201) {
       return jsonData;
+    } else {
+      debugPrint(
+          "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     }
-    return null;
   }
 
   List<dynamic> getCartItems(var jsonResponse) {

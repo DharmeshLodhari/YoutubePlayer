@@ -91,7 +91,7 @@ class EventAuthService extends AuthService {
       "owner_name": "Bond street dojo",
       "owner_user_name": "brijesh.sakariya",
       "owner_avatar":
-          "https://cdn.thewhistler.ng/wp-content/uploads/2020/06/ChiNna-Okoroafor-2.jpg",
+          "https://d2qp0siotla746.cloudfront.net/img/use-cases/profile-picture/template_3.jpg",
       "about":
           "Excepteur sint occaecat cupidatat non proident,sunt in culpa qui officia deserunt mollit anim id est laborum. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pa.Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pa.",
       "location": [

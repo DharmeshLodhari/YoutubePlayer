@@ -500,7 +500,7 @@ class PartialHotelRoomItemTile extends StatelessWidget {
         margin: EdgeInsets.zero,
         elevation: 0,
         child: Container(
-          width: 160,
+          width: 180,
           decoration: decorateBox(borderColor: selectedListItemBackgroundBlue),
           child: Container(
             padding: EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
@@ -512,8 +512,8 @@ class PartialHotelRoomItemTile extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                   child: CachedNetworkImage(
                     imageUrl: hotelRoom.image,
-                    height: 130,
-                    width: 130,
+                    height: 150,
+                    width: 150,
                     fit: BoxFit.fill,
                   ),
                 ),
@@ -665,7 +665,7 @@ class ReviewTile extends StatelessWidget {
                     child: ClipOval(
                       child: CachedNetworkImage(
                         imageUrl:
-                            "https://cdn.thewhistler.ng/wp-content/uploads/2020/06/ChiNna-Okoroafor-2.jpg",
+                            "https://d2qp0siotla746.cloudfront.net/img/use-cases/profile-picture/template_3.jpg",
                         fit: BoxFit.fill,
                         width: double.infinity,
                         height: double.infinity,
@@ -773,7 +773,7 @@ class PartnerTile extends StatelessWidget {
             child: ClipOval(
               child: CachedNetworkImage(
                 imageUrl:
-                    "https://cdn.thewhistler.ng/wp-content/uploads/2020/06/ChiNna-Okoroafor-2.jpg",
+                    "https://d2qp0siotla746.cloudfront.net/img/use-cases/profile-picture/template_3.jpg",
                 fit: BoxFit.fill,
                 width: double.infinity,
                 height: double.infinity,

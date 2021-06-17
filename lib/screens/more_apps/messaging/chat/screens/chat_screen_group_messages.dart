@@ -2716,15 +2716,24 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     }
   }
 
-  void sendUserLocationToSocket() async {
-    showMoreAction = false;
-    if (mounted) setState(() {});
+  Future<Map<String, dynamic>> getUserLocation() async {
+    bool isLocationPermissionGranted = await Permission.location.isGranted;
+    bool isLocationPermissionUnknown = await Permission.location.isUndetermined;
+
+    if (!isLocationPermissionGranted || isLocationPermissionUnknown) {
+      bool result = await showInAppLocationAlertPopUp(context: context);
+      if (result == null) return null;
+      if (result == false) return null;
+
+      PermissionStatus permissionStatus = await Permission.location.request();
+      if (permissionStatus != PermissionStatus.granted) {
+        return null;
+      }
+    }
 
     final locationService = LocationService();
-    UserLocation userLocation;
-    await locationService.getLocation().then((value) {
-      userLocation = value;
-    }).catchError((error) {
+    UserLocation userLocation =
+        await locationService.getLocation().catchError((error) {
       Toast.show("$error", context,
           backgroundColor: Colors.black,
           textColor: Colors.white,
@@ -2732,13 +2741,24 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     });
 
     if (userLocation == null) {
-      return;
+      return null;
     }
 
     Map<String, double> locationCoordinate = {
       "latitude": userLocation.latitude,
       "longitude": userLocation.longitude,
     };
+
+    return locationCoordinate;
+  }
+
+  void sendUserLocationToSocket() async {
+    showMoreAction = false;
+    if (mounted) setState(() {});
+
+    Map<String, double> locationCoordinate = await getUserLocation();
+
+    if (locationCoordinate == null) return;
 
     Map<String, dynamic> data = {
       "check_id": Uuid().v4(),

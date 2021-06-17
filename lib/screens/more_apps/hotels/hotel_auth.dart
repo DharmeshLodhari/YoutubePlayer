@@ -49,7 +49,7 @@ class HotelAuthService extends AuthService {
             "name": "Lake side cottage",
             "image": image,
             "short_description": "3 beds in London",
-            "price": "34.00",
+            "price": "3600.00",
             "currency": "NGN"
           }),
         )
@@ -81,7 +81,7 @@ class HotelAuthService extends AuthService {
       "owner_name": "Bond street dojo",
       "owner_user_name": "brijesh.sakariya",
       "owner_avatar":
-          "https://cdn.thewhistler.ng/wp-content/uploads/2020/06/ChiNna-Okoroafor-2.jpg",
+          "https://d2qp0siotla746.cloudfront.net/img/use-cases/profile-picture/template_3.jpg",
       "about":
           "Excepteur sint occaecat cupidatat non proident,sunt in culpa qui officia deserunt mollit anim id est laborum. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pa.Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pa.",
       "location": [
@@ -92,7 +92,7 @@ class HotelAuthService extends AuthService {
           "name": "Jamé Smith",
           "star": 4,
           "user_avatar":
-              "https://cdn.thewhistler.ng/wp-content/uploads/2020/06/ChiNna-Okoroafor-2.jpg",
+              "https://d2qp0siotla746.cloudfront.net/img/use-cases/profile-picture/template_3.jpg",
           "detail":
               "Very knowledgeable about all the history, really friendly, always smile, and always up for a chat.",
           "date": "20 Aug"
@@ -101,7 +101,7 @@ class HotelAuthService extends AuthService {
           "name": "Jamé Smith",
           "star": 4,
           "user_avatar":
-              "https://cdn.thewhistler.ng/wp-content/uploads/2020/06/ChiNna-Okoroafor-2.jpg",
+              "https://d2qp0siotla746.cloudfront.net/img/use-cases/profile-picture/template_3.jpg",
           "detail":
               "Very knowledgeable about all the history, really friendly, always smile, and always up for a chat.",
           "date": "20 Aug"
@@ -110,7 +110,7 @@ class HotelAuthService extends AuthService {
           "name": "Jamé Smith",
           "star": 4,
           "user_avatar":
-              "https://cdn.thewhistler.ng/wp-content/uploads/2020/06/ChiNna-Okoroafor-2.jpg",
+              "https://d2qp0siotla746.cloudfront.net/img/use-cases/profile-picture/template_3.jpg",
           "detail":
               "Very knowledgeable about all the history, really friendly, always smile, and always up for a chat.",
           "date": "20 Aug"
@@ -120,7 +120,7 @@ class HotelAuthService extends AuthService {
         {
           "name": "Bond street dojo",
           "user_avatar":
-              "https://cdn.thewhistler.ng/wp-content/uploads/2020/06/ChiNna-Okoroafor-2.jpg",
+              "https://d2qp0siotla746.cloudfront.net/img/use-cases/profile-picture/template_3.jpg",
           "star": "7.8",
           "user_tag": "Renter Friendly"
         },

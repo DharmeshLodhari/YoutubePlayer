@@ -31,9 +31,36 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
 
   String amount = "";
 
+  String bankName;
+  String bankAvatar;
+  String bankAccountName;
+  String bankAccountNumber;
+
+  bool isLoading = false;
+  bool isAccountExist = false;
+
   @override
   void initState() {
+    getSlydoAccount();
     super.initState();
+  }
+
+  void getSlydoAccount() async {
+    isLoading = true;
+    setState(() {});
+
+    Map<String, dynamic> bankDetail =
+        await PaymentAndBankingAuth().getSlydoBankAccountDetail({});
+
+    isLoading = false;
+    isAccountExist = bankDetail['isAccountExist'] ?? false;
+    if (isAccountExist) {
+      bankName = bankDetail['data']["bank_name"];
+      bankAvatar = bankDetail['data']["bank_avatar"];
+      bankAccountName = bankDetail['data']["account_name"];
+      bankAccountNumber = bankDetail['data']["account_number"];
+    }
+    setState(() {});
   }
 
   @override
@@ -80,43 +107,49 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
   }
 
   Widget scaffoldBody() {
-    return SingleChildScrollView(
-      child: Container(
-        height: MediaQuery.of(context).size.height -
-            (AppBar().preferredSize.height +
-                MediaQuery.of(context).padding.top),
-        width: MediaQuery.of(context).size.width,
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        child: Form(
-          key: _formKeyTwo,
-          child: Column(
-            children: <Widget>[
-              displayAmountField(),
-              SizedBox(
-                height: 60,
+    return isLoading
+        ? Center(child: CircularLoadingIndicator())
+        : SingleChildScrollView(
+            child: Container(
+              height: MediaQuery.of(context).size.height -
+                  (AppBar().preferredSize.height +
+                      MediaQuery.of(context).padding.top),
+              width: MediaQuery.of(context).size.width,
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              child: Form(
+                key: _formKeyTwo,
+                child: Column(
+                  children: <Widget>[
+                    getUserBankAccountSlydo(),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    displayAmountField(),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    amountUserGetMsg(),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    amountUserGet(),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    getReferenceButton(),
+                    SizedBox(
+                      height: 24,
+                    ),
+                    noteForUser(),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    // alreadyHaveReference()
+                  ],
+                ),
               ),
-              amountUserGetMsg(),
-              SizedBox(
-                height: 20,
-              ),
-              amountUserGet(),
-              SizedBox(
-                height: 60,
-              ),
-              getReferenceButton(),
-              SizedBox(
-                height: 24,
-              ),
-              noteForUser(),
-              SizedBox(
-                height: 20,
-              ),
-              alreadyHaveReference()
-            ],
-          ),
-        ),
-      ),
-    );
+            ),
+          );
   }
 
   Widget showBackArrow() {
@@ -203,10 +236,12 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
 
   Widget getReferenceButton() {
     return CurvedButton(
-      onPressed: onSubmit,
+      // onPressed: onSubmit,
+      onPressed: isAccountExist ? onSubmit : null,
       backgroundColor: navyBlue,
       textColor: Colors.white,
-      text: "Get reference",
+      text: "TOP UP",
+      // text: "Get reference",
     );
   }
 
@@ -223,7 +258,7 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
         builder: (context) => Center(child: CircularLoadingIndicator()));
 
     if (_formKeyTwo.currentState.validate()) {
-      PaymentAndBankingAuth().topUpAccountByBank(data).then((value) {
+      await PaymentAndBankingAuth().topUpAccountByBank(data).then((value) {
         if (value != null) {
           Navigator.pop(context);
           var result = value;
@@ -251,6 +286,106 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
             color: darkGrey,
             fontWeight: FontWeight.w400,
             height: 1.5),
+      ),
+    );
+  }
+
+  Widget getUserBankAccountSlydo() {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: EdgeInsets.zero,
+      shadowColor: boxShadowTwo,
+      elevation: 0,
+      child: Container(
+        decoration: decorateBox(),
+        child: !isAccountExist
+            ? ListTile(
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 5, horizontal: 16),
+                title: Text(
+                  "Your account is still in processing\nplease come back later !!",
+                  style: TextStyle(
+                      fontSize: 14,
+                      color: navyBlue,
+                      fontWeight: FontWeight.w600),
+                  textAlign: TextAlign.center,
+                ),
+              )
+            : Column(
+                children: [
+                  ListTile(
+                    title: Text(bankName ?? "",
+                        style: TextStyle(
+                            fontSize: 14,
+                            color: blackFont,
+                            fontWeight: FontWeight.w600)),
+                    leading: CachedNetworkImage(
+                      imageUrl: bankAvatar ?? "",
+                      height: 36,
+                      width: 36,
+                    ),
+                  ),
+                  Divider(
+                    thickness: 1,
+                    color: dividerColor,
+                  ),
+                  Container(
+                    padding: EdgeInsets.only(
+                        left: 16, right: 16, top: 16, bottom: 20),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                "Account name",
+                                style: TextStyle(
+                                    color: blackFont,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400),
+                              ),
+                            ),
+                            Expanded(
+                              child: Text(
+                                bankAccountName ?? "",
+                                style: TextStyle(
+                                    color: blackFont,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 14),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 8,
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'Account number',
+                                style: TextStyle(
+                                    color: blackFont,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400),
+                              ),
+                            ),
+                            Expanded(
+                              child: Text(
+                                bankAccountNumber ?? "",
+                                style: TextStyle(
+                                    color: blackFont,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 14),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
       ),
     );
   }

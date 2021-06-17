@@ -1,3 +1,5 @@
+import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/cutomized_alert/alert_style.dart';
 import 'package:Slydo/widget/cutomized_alert/customized_alert.dart';
 import 'package:Slydo/widget/cutomized_alert/dialog_button.dart';
@@ -246,4 +248,117 @@ void showHoldHintCard({BuildContext context}) {
       ),
     ),
   );
+}
+
+Future<bool> showInAppLocationAlertPopUp(
+    {BuildContext context, bool isForChat = true}) async {
+  bool result = await showDialog<bool>(
+    barrierDismissible: false,
+    context: context,
+    builder: (context) => WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context, false);
+        return false;
+      },
+      child: Dialog(
+        elevation: 0,
+        insetPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            child: Column(
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: IconButton(
+                      icon: Icon(Icons.arrow_back),
+                      onPressed: () {
+                        Navigator.pop(context, false);
+                      }),
+                ),
+                Expanded(
+                    child: Container(
+                  height: 10,
+                )),
+                Icon(
+                  SlydoAppIcon.location,
+                  size: 35,
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Text(
+                  "Use your location",
+                  style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
+                      color: blackFont),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Text(
+                  "Slydo collects location data to enable you to share your location with your friends.",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Image.asset("assets/images/location-disclosure.png"),
+                SizedBox(
+                  height: 20,
+                ),
+                Expanded(
+                    child: Container(
+                  height: 10,
+                )),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context, false);
+                      },
+                      child: Text(
+                        "No thanks",
+                        style: TextStyle(
+                            color: navyBlue,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 15),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context, true);
+                      },
+                      child: Text(
+                        "Turn on",
+                        style: TextStyle(
+                            color: navyBlue,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 15),
+                      ),
+                    )
+                  ],
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+  if (result != null) {
+    if (result) {
+      return true;
+    }
+    return false;
+  }
+  return false;
 }

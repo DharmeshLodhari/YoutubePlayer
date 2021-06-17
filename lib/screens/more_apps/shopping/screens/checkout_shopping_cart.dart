@@ -444,6 +444,8 @@ class _ShoppingCartState extends State<ShoppingCart> {
                   ),
                 );
 
+                await checkAccountBalance();
+
                 // Create the orders
                 var userOrder =
                     await ShoppingAuthService().placeOrderOfShoppingCart(data);
@@ -497,6 +499,32 @@ class _ShoppingCartState extends State<ShoppingCart> {
         }
       }
     });
+  }
+
+  Future<void> checkAccountBalance() async {
+    BankAccountBloc bankAccountBloc =
+        Provider.of<BankAccountBloc>(context, listen: false);
+    if (bankAccountBloc.bankAccount == null ||
+        bankAccountBloc.bankAccount.bankName == null) {
+      Navigator.of(context).pop();
+      Toast.show("Please add bank account first !!", context,
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+          duration: Toast.LENGTH_LONG);
+    } else {
+      double accountBalance = await getAccountBalance();
+      Navigator.of(context).pop();
+      debugPrint("accountBalance:- $accountBalance");
+      double spendingAmount = basketBloc.total / 100;
+      debugPrint("spendingAmount:- $spendingAmount");
+      if (spendingAmount > accountBalance) {
+        Toast.show("You don't have enough money in Slydo account!!", context,
+            backgroundColor: Colors.black,
+            textColor: Colors.white,
+            duration: Toast.LENGTH_LONG);
+        return;
+      }
+    }
   }
 
   @override

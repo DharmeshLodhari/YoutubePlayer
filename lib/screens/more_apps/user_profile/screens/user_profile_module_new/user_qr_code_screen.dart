@@ -1,5 +1,6 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/auth.dart';
@@ -43,16 +44,24 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
   UserAbout userAbout;
   bool isAboutLoading = false;
 
+  BankAccountBloc bankAccountBloc;
+
+  int accountBalance = 0;
+
   @override
   void initState() {
-    fetchUserAboutDetail();
+    initialize();
     super.initState();
   }
 
-  void fetchUserAboutDetail() {
+  void initialize() async {
+    fetchUserAboutDetail();
+  }
+
+  void fetchUserAboutDetail() async {
     isAboutLoading = true;
     if (mounted) setState(() {});
-    UserAuth().fetchUserAboutInfo(userName: user.userName).then((value) {
+    await UserAuth().fetchUserAboutInfo(userName: user.userName).then((value) {
       userAbout = value;
       isAboutLoading = false;
       if (mounted) setState(() {});
@@ -116,6 +125,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
   @override
   Widget build(BuildContext context) {
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
+    bankAccountBloc = Provider.of<BankAccountBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
     if (counter == 0) {
       checkCurrentUserState();
@@ -692,14 +702,49 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
       return userBloc.user.type == "User"
           ? CurvedButton(
               backgroundColor: navyBlue,
-              onPressed: () {
-                Navigator.pushNamed(context, "/upgrade-user-profile");
-              },
+              onPressed: upgradeAccount,
               text: "Upgrade Profile",
               textColor: Colors.white,
             )
           : Container();
     }
     return Container();
+  }
+
+  void upgradeAccount() async {
+    if (bankAccountBloc.bankAccount == null ||
+        bankAccountBloc.bankAccount.bankName == null) {
+      Toast.show("Please add bank account first !!", context,
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+          duration: Toast.LENGTH_LONG);
+    } else {
+      debugPrint("accountBalance:- $accountBalance");
+      await getAccountBalance();
+      if (accountBalance > 0) {
+        Navigator.pushNamed(context, "/upgrade-user-profile");
+      } else {
+        Toast.show("You don't have money in Slydo account!!", context,
+            backgroundColor: Colors.black,
+            textColor: Colors.white,
+            duration: Toast.LENGTH_LONG);
+      }
+    }
+  }
+
+  Future<void> getAccountBalance() async {
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) => Center(child: CircularLoadingIndicator()));
+
+    await PaymentAndBankingAuth().getAccountBalance().then((value) {
+      var data = value;
+      var spendableBalance = data["spendable_balance"];
+      debugPrint("DATA:- $value");
+      accountBalance = spendableBalance;
+      Navigator.of(context).pop();
+      if (mounted) setState(() {});
+    });
   }
 }

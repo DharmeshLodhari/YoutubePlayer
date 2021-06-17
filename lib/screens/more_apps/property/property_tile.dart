@@ -561,7 +561,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                                     child: ClipOval(
                                       child: CachedNetworkImage(
                                         imageUrl:
-                                            "https://cdn.thewhistler.ng/wp-content/uploads/2020/06/ChiNna-Okoroafor-2.jpg",
+                                            "https://d2qp0siotla746.cloudfront.net/img/use-cases/profile-picture/template_3.jpg",
                                         fit: BoxFit.fill,
                                         width: double.infinity,
                                         height: double.infinity,
@@ -1016,7 +1016,7 @@ class _RentPropertyTileWithoutHeartState
                                     child: ClipOval(
                                       child: CachedNetworkImage(
                                         imageUrl:
-                                            "https://cdn.thewhistler.ng/wp-content/uploads/2020/06/ChiNna-Okoroafor-2.jpg",
+                                            "https://d2qp0siotla746.cloudfront.net/img/use-cases/profile-picture/template_3.jpg",
                                         fit: BoxFit.fill,
                                         width: double.infinity,
                                         height: double.infinity,
@@ -1439,7 +1439,7 @@ class ReviewTile extends StatelessWidget {
                     child: ClipOval(
                       child: CachedNetworkImage(
                         imageUrl:
-                            "https://cdn.thewhistler.ng/wp-content/uploads/2020/06/ChiNna-Okoroafor-2.jpg",
+                            "https://d2qp0siotla746.cloudfront.net/img/use-cases/profile-picture/template_3.jpg",
                         fit: BoxFit.fill,
                         width: double.infinity,
                         height: double.infinity,
@@ -1547,7 +1547,7 @@ class PartnerTile extends StatelessWidget {
             child: ClipOval(
               child: CachedNetworkImage(
                 imageUrl:
-                    "https://cdn.thewhistler.ng/wp-content/uploads/2020/06/ChiNna-Okoroafor-2.jpg",
+                    "https://d2qp0siotla746.cloudfront.net/img/use-cases/profile-picture/template_3.jpg",
                 fit: BoxFit.fill,
                 width: double.infinity,
                 height: double.infinity,

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/utils/date_time_and_money_converter.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crypto/crypto.dart';
@@ -260,4 +261,14 @@ Future<String> saveImage(BuildContext context, Image image) {
 ///generate hash of the message
 String generateHashedMessage(String input) {
   return md5.convert(utf8.encode(input)).toString();
+}
+
+Future<double> getAccountBalance() async {
+  Map<String, dynamic> data = await PaymentAndBankingAuth().getAccountBalance();
+  int spendableBalance = data["spendable_balance"];
+
+  double accountBalanceConverted = spendableBalance / 100;
+  debugPrint("ACCOUNT BALANCE:- $accountBalanceConverted");
+
+  return accountBalanceConverted;
 }

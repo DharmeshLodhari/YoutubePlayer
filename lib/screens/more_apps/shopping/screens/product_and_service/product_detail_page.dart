@@ -377,14 +377,14 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           basketBloc.addItemToCart(item: product, type: type);
           var mapData;
           basketBloc.items.forEach((element) {
-            if (element["item"].messageId == product.id) {
+            if (element["item"].id == product.id) {
               mapData = element;
               return;
             }
           });
           Map data = {
             "type": type,
-            "id": mapData["item"].messageId,
+            "id": mapData["item"].id,
             "qty": mapData["qty"],
           };
           debugPrint("Data From Product Page : $data");

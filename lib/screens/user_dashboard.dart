@@ -732,13 +732,15 @@ class _UserDashboardState extends State<UserDashboard> {
                     bottomSheetItem(
                       title: "My profile",
                       icon: SlydoAppIcon.user,
-                      onTap: () {
-                        UserAuth()
+                      onTap: () async {
+                        await UserAuth()
                             .fetchCustomerProfile(userBloc.user.userName)
                             .then((user) {
-                          Navigator.pop(context);
-                          Navigator.pushNamed(context, '/profile',
-                              arguments: {"searchedUserName": user.userName});
+                          if (mounted) {
+                            Navigator.pop(context);
+                            Navigator.pushNamed(context, '/profile',
+                                arguments: {"searchedUserName": user.userName});
+                          }
                         });
                       },
                     ),

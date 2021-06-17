@@ -11,7 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'hotel_dashboard_bloc.dart';
-
 import 'hotel_tile.dart';
 
 class HotelDetailPage extends StatefulWidget {
@@ -724,7 +723,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
             ),
           ),
           Container(
-            height: 242,
+            height: 262,
             color: Colors.white,
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -845,7 +844,6 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
         ),
         Container(
           height: 180,
-          width: 335,
           decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
           child: CachedNetworkImage(
             imageUrl:

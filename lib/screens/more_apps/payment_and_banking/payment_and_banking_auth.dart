@@ -180,7 +180,6 @@ class PaymentAndBankingAuth extends AuthService {
   Future<http.Response> acceptPaymentRequests(PaymentRequest paymentRequest,
       {String messageId}) async {
     var url = secureBaseUrl + "/api/v1/transactions/request-payment/accept/";
-    debugPrint("messageId:- $messageId");
 
     if (messageId != null) {
       url += "?message-id=$messageId";
@@ -465,6 +464,34 @@ class PaymentAndBankingAuth extends AuthService {
       return jsonDecode(response.body);
     } else {
       return Future.error("${response.body}");
+    }
+  }
+
+  Future<Map<String, dynamic>> getSlydoBankAccountDetail(
+      Map<String, dynamic> data) async {
+    var url = secureBaseUrl + "/api/v1/transactions/get-slydo-account/";
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await http.post(url, headers: headers, body: _data);
+    debugPrint(
+        "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+
+    if (response.statusCode != 404) {
+      Map<String, dynamic> data = {"isAccountExist": false};
+      return data;
+    } else {
+      Map<String, dynamic> data = {
+        "isAccountExist": true,
+        "data": {
+          "bank_avatar":
+              "https://slydo-assets.s3.amazonaws.com/media/bank-logo/scb.jpeg",
+          "bank_name": "Standard Chartered Bank Nigeria Ltd",
+          "account_name": "Amodu Abubakar",
+          "account_number": "8752146397"
+        }
+      };
+      // return jsonDecode(response.body);
+      return data;
     }
   }
 
