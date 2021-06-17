@@ -124,26 +124,26 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
                     SizedBox(
                       height: 20,
                     ),
-                    displayAmountField(),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    amountUserGetMsg(),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    amountUserGet(),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    getReferenceButton(),
-                    SizedBox(
-                      height: 24,
-                    ),
-                    noteForUser(),
-                    SizedBox(
-                      height: 20,
-                    ),
+                    // displayAmountField(),
+                    // SizedBox(
+                    //   height: 20,
+                    // ),
+                    // amountUserGetMsg(),
+                    // SizedBox(
+                    //   height: 20,
+                    // ),
+                    // amountUserGet(),
+                    // SizedBox(
+                    //   height: 20,
+                    // ),
+                    // getReferenceButton(),
+                    // SizedBox(
+                    //   height: 24,
+                    // ),
+                    // noteForUser(),
+                    // SizedBox(
+                    //   height: 20,
+                    // ),
                     // alreadyHaveReference()
                   ],
                 ),

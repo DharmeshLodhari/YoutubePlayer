@@ -469,14 +469,14 @@ class PaymentAndBankingAuth extends AuthService {
 
   Future<Map<String, dynamic>> getSlydoBankAccountDetail(
       Map<String, dynamic> data) async {
-    var url = secureBaseUrl + "/api/v1/transactions/get-slydo-account/";
+    var url = secureBaseUrl + "/api/v1/transactions/get-virtual-account-info/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.post(url, headers: headers, body: _data);
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
-    if (response.statusCode != 404) {
+    if (response.statusCode == 404) {
       Map<String, dynamic> data = {"isAccountExist": false};
       return data;
     } else {
@@ -490,6 +490,16 @@ class PaymentAndBankingAuth extends AuthService {
           "account_number": "8752146397"
         }
       };
+
+      //     {
+      //
+      //        "bank_logo":
+      //        "https://slydo-assets.s3.amazonaws.com/media/bank-logo/scb.jpeg",
+      //        "bank_name": "Standard Chartered Bank Nigeria Ltd",
+      //        "account_name": "Amodu Abubakar",
+      //        "account_number": "8752146397"
+      //
+      // };
       // return jsonDecode(response.body);
       return data;
     }
