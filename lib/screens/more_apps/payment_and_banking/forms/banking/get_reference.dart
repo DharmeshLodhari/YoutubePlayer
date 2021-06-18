@@ -101,7 +101,7 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
         },
       ),
       title: Text(
-        "Topup",
+        "Account Detail",
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),

@@ -302,13 +302,10 @@ class _SplashScreenState extends State<SplashScreen> {
 
             setState(() {});
 
-            await initializeShoppingCart();
+            initializeShoppingCart();
 
             setState(() {});
 
-            // debugPrint("LOGS:- $errorText");
-
-            await Future.delayed(Duration(seconds: 5));
             Navigator.of(MyGlobals().navigationKey.currentContext)
                 .pushNamedAndRemoveUntil(
               "/dashboard",
