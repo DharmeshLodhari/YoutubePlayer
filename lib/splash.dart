@@ -302,7 +302,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
             setState(() {});
 
-            initializeShoppingCart();
+            await initializeShoppingCart();
 
             setState(() {});
 
