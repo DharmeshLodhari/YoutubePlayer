@@ -50,15 +50,17 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
     setState(() {});
 
     Map<String, dynamic> bankDetail =
-        await PaymentAndBankingAuth().getSlydoBankAccountDetail({});
+        await PaymentAndBankingAuth().getVirtualAccountDetail({});
 
     isLoading = false;
-    isAccountExist = bankDetail['isAccountExist'] ?? false;
-    if (isAccountExist) {
-      bankName = bankDetail['data']["bank_name"];
-      bankAvatar = bankDetail['data']["bank_avatar"];
-      bankAccountName = bankDetail['data']["account_name"];
-      bankAccountNumber = bankDetail['data']["account_number"];
+    if (bankDetail == null) {
+      isAccountExist = false;
+    } else {
+      isAccountExist = true;
+      bankName = bankDetail["financial_institution"]["name"];
+      bankAvatar = bankDetail['financial_institution']["logo"];
+      bankAccountName = bankDetail["account_name"];
+      bankAccountNumber = bankDetail["account_number"];
     }
     setState(() {});
   }

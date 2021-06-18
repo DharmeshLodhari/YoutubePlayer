@@ -467,7 +467,7 @@ class PaymentAndBankingAuth extends AuthService {
     }
   }
 
-  Future<Map<String, dynamic>> getSlydoBankAccountDetail(
+  Future<Map<String, dynamic>> getVirtualAccountDetail(
       Map<String, dynamic> data) async {
     var url = secureBaseUrl + "/api/v1/transactions/get-virtual-account-info/";
     var headers = await getAuthHeaders();
@@ -476,33 +476,21 @@ class PaymentAndBankingAuth extends AuthService {
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
-    if (response.statusCode == 404) {
-      Map<String, dynamic> data = {"isAccountExist": false};
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      Map<String, dynamic> data = jsonDecode(response.body);
       return data;
     } else {
-      Map<String, dynamic> data = {
-        "isAccountExist": true,
-        "data": {
-          "bank_avatar":
-              "https://slydo-assets.s3.amazonaws.com/media/bank-logo/scb.jpeg",
-          "bank_name": "Standard Chartered Bank Nigeria Ltd",
-          "account_name": "Amodu Abubakar",
-          "account_number": "8752146397"
-        }
-      };
-
-      //     {
-      //
-      //        "bank_logo":
-      //        "https://slydo-assets.s3.amazonaws.com/media/bank-logo/scb.jpeg",
-      //        "bank_name": "Standard Chartered Bank Nigeria Ltd",
-      //        "account_name": "Amodu Abubakar",
-      //        "account_number": "8752146397"
-      //
-      // };
-      // return jsonDecode(response.body);
-      return data;
+      return null;
     }
+
+    /// {'accountNo': '9962430626',
+    ///  'accountName': 'Brijesh Sakariya',
+    ///  'accountEmail': None,
+    ///  'transientMode': False,
+    ///  'balance': None,
+    ///  'availableBalance': None,
+    ///  'currentBalance': None,
+    ///  'initiatorRef': 'black'}
   }
 
   Future<Map<String, dynamic>> verifyReferenceNumber(

@@ -165,17 +165,17 @@ class _SplashScreenState extends State<SplashScreen> {
                         color: Colors.white,
                         fontWeight: FontWeight.w600),
                   ),
-                  SizedBox(
-                    height: 16,
-                  ),
-                  Text(
-                    errorText,
-                    style: TextStyle(
-                        fontFamily: "CircularStd",
-                        fontSize: 14,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600),
-                  )
+                  // SizedBox(
+                  //   height: 16,
+                  // ),
+                  // Text(
+                  //   errorText,
+                  //   style: TextStyle(
+                  //       fontFamily: "CircularStd",
+                  //       fontSize: 14,
+                  //       color: Colors.white,
+                  //       fontWeight: FontWeight.w600),
+                  // )
                 ],
               ),
             ))
@@ -234,211 +234,231 @@ class _SplashScreenState extends State<SplashScreen> {
 
     isChecked = _sharedPreferences.getBool('isChecked') ?? false;
 
-    // if (isChecked) {
-    //   countryFromPref = _sharedPreferences.getString('country');
-    //   errorText += "countryFromPref = $countryFromPref\n";
-    //   Country country1;
-    //   try {
-    //     country1 = CountryPickerUtils.getCountryByIsoCode("NG");
-    //   } catch (error) {
-    //     errorText += "error while fetching country1 = $error\n";
-    //   }
-    //   if (country1 != null) {
-    //     errorText += "country1 phoneCode ${country1.phoneCode}\n";
-    //     errorText += "country1 name ${country1.name}\n";
-    //     errorText += "country1 isoCode ${country1.isoCode}\n";
-    //     errorText += "country1 iso3Code ${country1.iso3Code}\n";
-    //   }
-    //
-    //   Country country2;
-    //   try {
-    //     country2 = CountryPickerUtils.getCountryByIsoCode(countryFromPref);
-    //   } catch (error) {
-    //     errorText += "error while fetching country2 = $error\n";
-    //   }
-    //   if (country2 != null) {
-    //     errorText += "country2 phoneCode ${country2.phoneCode}\n";
-    //     errorText += "country2 name ${country2.name}\n";
-    //     errorText += "country2 isoCode ${country2.isoCode}\n";
-    //     errorText += "country2 iso3Code ${country2.iso3Code}\n";
-    //
-    //     SecureUser secureUser = await SecureStorage().getUser();
-    //     userPhoneNumber = secureUser.phoneNumber;
-    //     userPassword = secureUser.password;
-    //
-    //     var phoneNumber = "+" + country2.phoneCode + userPhoneNumber;
-    //     var password = userPassword;
-    //
-    //     errorText += "phoneNumber $phoneNumber\n";
-    //     errorText += "password $password\n";
-    //
-    //     User user;
-    //     try {
-    //       user = await _auth.authenticate(phoneNumber, password);
-    //     } catch (e) {
-    //       errorText += "ERROR while fetching USER:- $e\n";
-    //     }
-    //     if (user != null) {
-    //       errorText += "User:- ${user.toJson()}\n";
-    //
-    //       List<BankAccount> accounts;
-    //
-    //       try {
-    //         accounts = await PaymentAndBankingAuth().getBankAccounts();
-    //       } catch (e) {
-    //         errorText += "ERROR while fetching ACCOUNTS:- $e\n";
-    //       }
-    //
-    //       if (accounts != null) {
-    //         errorText += "accounts:- ${accounts.length}\n";
-    //         accounts.forEach((element) {
-    //           errorText +=
-    //               "element:- ${element.accountName} ${element.isDefault} \n";
-    //         });
-    //       } else {
-    //         errorText += "accounts not found\n";
-    //       }
-    //     } else {
-    //       errorText += "User not found\n";
-    //     }
-    //   }
-    //   if (mounted) setState(() {});
-    // } else {
-    //   Navigator.pop(MyGlobals().navigationKey.currentContext);
-    //   Navigator.of(MyGlobals().navigationKey.currentContext)
-    //       .pushNamed("/index");
-    //   return Future.value(null);
-    // }
+    if (isChecked) {
+      countryFromPref = _sharedPreferences.getString('country');
+      errorText += "countryFromPref = $countryFromPref\n";
+      Country country1;
+      try {
+        country1 = CountryPickerUtils.getCountryByIsoCode("NG");
+      } catch (error) {
+        errorText += "error while fetching country1 = $error\n";
+      }
+      if (country1 != null) {
+        errorText += "country1 phoneCode ${country1.phoneCode}\n";
+        errorText += "country1 name ${country1.name}\n";
+        errorText += "country1 isoCode ${country1.isoCode}\n";
+        errorText += "country1 iso3Code ${country1.iso3Code}\n";
+      }
 
-    try {
-      if (isChecked) {
-        countryFromPref = _sharedPreferences.getString('country');
-        if (countryFromPref != null || countryFromPref != "") {
-          Country country;
+      Country country2;
+      try {
+        country2 = CountryPickerUtils.getCountryByIsoCode(countryFromPref);
+      } catch (error) {
+        errorText += "error while fetching country2 = $error\n";
+      }
+      if (country2 != null) {
+        errorText += "country2 phoneCode ${country2.phoneCode}\n";
+        errorText += "country2 name ${country2.name}\n";
+        errorText += "country2 isoCode ${country2.isoCode}\n";
+        errorText += "country2 iso3Code ${country2.iso3Code}\n";
+
+        SecureUser secureUser = await SecureStorage().getUser();
+        userPhoneNumber = secureUser.phoneNumber;
+        userPassword = secureUser.password;
+
+        var phoneNumber = "+" + country2.phoneCode + userPhoneNumber;
+        var password = userPassword;
+
+        errorText += "phoneNumber $phoneNumber\n";
+        errorText += "password $password\n";
+
+        User user;
+        try {
+          user = await _auth.authenticate(phoneNumber, password);
+        } catch (e) {
+          errorText += "ERROR while fetching USER:- $e\n";
+        }
+        if (user != null) {
+          errorText += "User:- ${user.toJson()}\n";
+
+          List<BankAccount> accounts;
+
           try {
-            country = CountryPickerUtils.getCountryByIsoCode(countryFromPref);
-          } catch (error) {
-            debugPrint("ERROR3:- $error countryFromPref= $countryFromPref");
+            accounts = await PaymentAndBankingAuth().getBankAccounts();
+          } catch (e) {
+            errorText += "ERROR while fetching ACCOUNTS:- $e\n";
           }
-          if (country != null) {
-            SecureUser secureUser = await SecureStorage().getUser();
-            userPhoneNumber = secureUser.phoneNumber;
-            userPassword = secureUser.password;
 
-            var phoneNumber = "+" + country.phoneCode + userPhoneNumber;
-            var password = userPassword;
+          if (accounts != null) {
+            errorText += "accounts:- ${accounts.length}\n";
+            accounts.forEach((element) {
+              errorText +=
+                  "element:- ${element.accountName} ${element.isDefault} \n";
+            });
 
-            if (userPhoneNumber != "" && userPassword != "") {
-              var _user;
-              var _bankAccount;
+            bankAccountBloc.bankAccount = accounts.first;
+            userBloc.user = user;
+            socketProvider.currentUser = user;
 
-              User user;
+            setState(() {});
 
-              try {
-                user = await _auth.authenticate(phoneNumber, password);
-              } catch (error) {
-                debugPrint("ERROR5:- $error");
-                Navigator.pop(MyGlobals().navigationKey.currentContext);
-                Navigator.of(MyGlobals().navigationKey.currentContext)
-                    .pushNamed("/index");
-                return;
-              }
+            await initializeShoppingCart();
 
-              if (user != null) {
-                _user = user;
+            setState(() {});
 
-                userBloc.user = _user;
-                socketProvider.currentUser = _user;
+            // debugPrint("LOGS:- $errorText");
 
-                List<BankAccount> accounts;
-
-                try {
-                  accounts = await PaymentAndBankingAuth().getBankAccounts();
-                } catch (error) {
-                  debugPrint("ERROR4:- $error");
-                  Navigator.pop(MyGlobals().navigationKey.currentContext);
-                  Navigator.of(MyGlobals().navigationKey.currentContext)
-                      .pushNamed("/index");
-                  return;
-                }
-
-                if (accounts != null && accounts.isNotEmpty) {
-                  _bankAccount = accounts[0];
-                  if (_bankAccount != null) {
-                    bankAccountBloc.bankAccount = _bankAccount;
-                    if (_user.isVerified == true) {
-                      //initialize shoppingcart
-                      initializeShoppingCart();
-                      Navigator.of(MyGlobals().navigationKey.currentContext)
-                          .pushNamedAndRemoveUntil(
-                        "/dashboard",
-                        (Route<dynamic> route) => false,
-                      );
-                      return;
-                    }
-                  } else {
-                    //initialize shoppingcart
-                    initializeShoppingCart();
-                    Navigator.of(MyGlobals().navigationKey.currentContext)
-                        .pushNamedAndRemoveUntil(
-                      "/dashboard",
-                      (Route<dynamic> route) => false,
-                    );
-                    return;
-                  }
-                } else {
-                  initializeShoppingCart();
-                  Navigator.of(MyGlobals().navigationKey.currentContext)
-                      .pushNamedAndRemoveUntil(
-                    "/dashboard",
-                    (Route<dynamic> route) => false,
-                  );
-                  return;
-                }
-              } else {
-                Navigator.pop(MyGlobals().navigationKey.currentContext);
-                Navigator.of(MyGlobals().navigationKey.currentContext)
-                    .pushNamed("/index");
-                return;
-              }
-            } else {
-              Navigator.pop(MyGlobals().navigationKey.currentContext);
-              Navigator.of(MyGlobals().navigationKey.currentContext)
-                  .pushNamed("/index");
-              return;
-            }
-          } else {
-            Navigator.pop(MyGlobals().navigationKey.currentContext);
+            await Future.delayed(Duration(seconds: 5));
             Navigator.of(MyGlobals().navigationKey.currentContext)
-                .pushNamed("/index");
+                .pushNamedAndRemoveUntil(
+              "/dashboard",
+              (Route<dynamic> route) => false,
+            );
             return;
+          } else {
+            errorText += "accounts not found\n";
           }
         } else {
-          Navigator.pop(MyGlobals().navigationKey.currentContext);
-          Navigator.of(MyGlobals().navigationKey.currentContext)
-              .pushNamed("/index");
-          return;
+          errorText += "User not found\n";
         }
-      } else {
-        debugPrint(
-            "ERROr11:- countryFromPref = $countryFromPref isChecked = $isChecked isLoggedOut = $isLoggedOut");
-        Navigator.pop(MyGlobals().navigationKey.currentContext);
-        Navigator.of(MyGlobals().navigationKey.currentContext)
-            .pushNamed("/index");
-        return;
       }
-    } catch (error) {
-      debugPrint("ERROR7:- $error");
+      if (mounted) setState(() {});
+    } else {
+      Navigator.pop(MyGlobals().navigationKey.currentContext);
       Navigator.of(MyGlobals().navigationKey.currentContext)
           .pushNamed("/index");
-      return;
+      return Future.value(null);
     }
-    Navigator.pop(MyGlobals().navigationKey.currentContext);
-    Navigator.of(MyGlobals().navigationKey.currentContext).pushNamed("/index");
-    return;
+
+    // try {
+    //   if (isChecked) {
+    //     countryFromPref = _sharedPreferences.getString('country');
+    //     if (countryFromPref != null || countryFromPref != "") {
+    //       Country country;
+    //       try {
+    //         country = CountryPickerUtils.getCountryByIsoCode(countryFromPref);
+    //       } catch (error) {
+    //         debugPrint("ERROR3:- $error countryFromPref= $countryFromPref");
+    //       }
+    //       if (country != null) {
+    //         SecureUser secureUser = await SecureStorage().getUser();
+    //         userPhoneNumber = secureUser.phoneNumber;
+    //         userPassword = secureUser.password;
+    //
+    //         var phoneNumber = "+" + country.phoneCode + userPhoneNumber;
+    //         var password = userPassword;
+    //
+    //         if (userPhoneNumber != "" && userPassword != "") {
+    //           var _user;
+    //           var _bankAccount;
+    //
+    //           User user;
+    //
+    //           try {
+    //             user = await _auth.authenticate(phoneNumber, password);
+    //           } catch (error) {
+    //             debugPrint("ERROR5:- $error");
+    //             Navigator.pop(MyGlobals().navigationKey.currentContext);
+    //             Navigator.of(MyGlobals().navigationKey.currentContext)
+    //                 .pushNamed("/index");
+    //             return;
+    //           }
+    //
+    //           if (user != null) {
+    //             _user = user;
+    //
+    //             userBloc.user = _user;
+    //             socketProvider.currentUser = _user;
+    //
+    //             List<BankAccount> accounts;
+    //
+    //             try {
+    //               accounts = await PaymentAndBankingAuth().getBankAccounts();
+    //             } catch (error) {
+    //               debugPrint("ERROR4:- $error");
+    //               Navigator.pop(MyGlobals().navigationKey.currentContext);
+    //               Navigator.of(MyGlobals().navigationKey.currentContext)
+    //                   .pushNamed("/index");
+    //               return;
+    //             }
+    //
+    //             if (accounts != null && accounts.isNotEmpty) {
+    //               _bankAccount = accounts[0];
+    //               if (_bankAccount != null) {
+    //                 bankAccountBloc.bankAccount = _bankAccount;
+    //                 if (_user.isVerified == true) {
+    //                   //initialize shoppingcart
+    //                   initializeShoppingCart();
+    //                   Navigator.of(MyGlobals().navigationKey.currentContext)
+    //                       .pushNamedAndRemoveUntil(
+    //                     "/dashboard",
+    //                     (Route<dynamic> route) => false,
+    //                   );
+    //                   return;
+    //                 }
+    //               } else {
+    //                 //initialize shoppingcart
+    //                 initializeShoppingCart();
+    //                 Navigator.of(MyGlobals().navigationKey.currentContext)
+    //                     .pushNamedAndRemoveUntil(
+    //                   "/dashboard",
+    //                   (Route<dynamic> route) => false,
+    //                 );
+    //                 return;
+    //               }
+    //             } else {
+    //               initializeShoppingCart();
+    //               Navigator.of(MyGlobals().navigationKey.currentContext)
+    //                   .pushNamedAndRemoveUntil(
+    //                 "/dashboard",
+    //                 (Route<dynamic> route) => false,
+    //               );
+    //               return;
+    //             }
+    //           } else {
+    //             Navigator.pop(MyGlobals().navigationKey.currentContext);
+    //             Navigator.of(MyGlobals().navigationKey.currentContext)
+    //                 .pushNamed("/index");
+    //             return;
+    //           }
+    //         } else {
+    //           Navigator.pop(MyGlobals().navigationKey.currentContext);
+    //           Navigator.of(MyGlobals().navigationKey.currentContext)
+    //               .pushNamed("/index");
+    //           return;
+    //         }
+    //       } else {
+    //         Navigator.pop(MyGlobals().navigationKey.currentContext);
+    //         Navigator.of(MyGlobals().navigationKey.currentContext)
+    //             .pushNamed("/index");
+    //         return;
+    //       }
+    //     } else {
+    //       Navigator.pop(MyGlobals().navigationKey.currentContext);
+    //       Navigator.of(MyGlobals().navigationKey.currentContext)
+    //           .pushNamed("/index");
+    //       return;
+    //     }
+    //   } else {
+    //     debugPrint(
+    //         "ERROr11:- countryFromPref = $countryFromPref isChecked = $isChecked isLoggedOut = $isLoggedOut");
+    //     Navigator.pop(MyGlobals().navigationKey.currentContext);
+    //     Navigator.of(MyGlobals().navigationKey.currentContext)
+    //         .pushNamed("/index");
+    //     return;
+    //   }
+    // } catch (error) {
+    //   debugPrint("ERROR7:- $error");
+    //   Navigator.of(MyGlobals().navigationKey.currentContext)
+    //       .pushNamed("/index");
+    //   return;
+    // }
+    // Navigator.pop(MyGlobals().navigationKey.currentContext);
+    // Navigator.of(MyGlobals().navigationKey.currentContext).pushNamed("/index");
+    // return;
   }
 
-  void initializeShoppingCart() async {
+  Future<void> initializeShoppingCart() async {
     try {
       debugPrint("initializeShoppingCart called");
       List items = await ShoppingAuthService().getShoppingCart();
@@ -447,6 +467,7 @@ class _SplashScreenState extends State<SplashScreen> {
         basketBloc.addItemToCart(item: element, type: type);
       });
     } catch (e) {
+      errorText += "ERROR:- while loading shopping cart ITEM\n";
       debugPrint("ERROR:- while loading shopping cart ITEM");
     }
   }
