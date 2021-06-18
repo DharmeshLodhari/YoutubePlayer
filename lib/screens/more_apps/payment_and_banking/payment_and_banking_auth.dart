@@ -467,12 +467,10 @@ class PaymentAndBankingAuth extends AuthService {
     }
   }
 
-  Future<Map<String, dynamic>> getVirtualAccountDetail(
-      Map<String, dynamic> data) async {
+  Future<Map<String, dynamic>> getVirtualAccountDetail() async {
     var url = secureBaseUrl + "/api/v1/transactions/get-virtual-account-info/";
     var headers = await getAuthHeaders();
-    var _data = jsonEncode(data);
-    var response = await http.post(url, headers: headers, body: _data);
+    var response = await http.get(url, headers: headers);
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 

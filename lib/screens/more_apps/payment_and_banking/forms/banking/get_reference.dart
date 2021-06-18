@@ -50,7 +50,7 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
     setState(() {});
 
     Map<String, dynamic> bankDetail =
-        await PaymentAndBankingAuth().getVirtualAccountDetail({});
+        await PaymentAndBankingAuth().getVirtualAccountDetail();
 
     isLoading = false;
     if (bankDetail == null) {
