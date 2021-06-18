@@ -62,7 +62,7 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
       bankAccountName = bankDetail["account_name"];
       bankAccountNumber = bankDetail["account_number"];
     }
-    setState(() {});
+    if(mounted) setState(() {});
   }
 
   @override
@@ -305,7 +305,7 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
                 contentPadding:
                     EdgeInsets.symmetric(vertical: 5, horizontal: 16),
                 title: Text(
-                  "Your account is still in processing\nplease come back later !!",
+                  "Account not available now.\nCheck back later.",
                   style: TextStyle(
                       fontSize: 14,
                       color: navyBlue,

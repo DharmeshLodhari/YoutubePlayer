@@ -43,6 +43,11 @@ class _MoreAppsState extends State<MoreApps> {
                   height: 12,
                 ),
                 forthRowOfUserDashboardItem(),
+                SizedBox(
+                  height: 12,
+                ),
+                fifthRowOfUserDashboardItem(),
+
               ],
             ),
           ),
@@ -80,12 +85,12 @@ class _MoreAppsState extends State<MoreApps> {
       children: [
         Expanded(
             child: UserDashboardItemTile(
-          icon: SlydoAppIcon.movies_moreapps,
-          title: "Movies",
+          icon: SlydoAppIcon.utility,
+          title: "Utility",
           onTap: () {
-            Navigator.of(context).pushNamed("/movies");
+            Navigator.pushNamed(context, "/utility-dashboard");
           },
-          iconColor: HexColor("#9B51E0"),
+          iconColor: HexColor("#FFAB00"),
           height: 126,
         )),
         SizedBox(
@@ -243,6 +248,37 @@ class _MoreAppsState extends State<MoreApps> {
           title: "Wealth",
           onTap: () {},
           iconColor: HexColor("#FFC42E"),
+          height: 126,
+        )),
+      ],
+    );
+  }
+
+  Widget fifthRowOfUserDashboardItem() {
+    return Row(
+      children: [
+        Expanded(
+            child: UserDashboardItemTile(
+          icon: SlydoAppIcon.movies_moreapps,
+          title: "Movies",
+          onTap: () {
+            Navigator.of(context).pushNamed("/movies");
+          },
+          iconColor: HexColor("#9B51E0"),
+          height: 126,
+        )),
+        SizedBox(
+          width: 12,
+        ),
+        Expanded(
+            child: Container(
+          height: 126,
+        )),
+        SizedBox(
+          width: 12,
+        ),
+        Expanded(
+            child: Container(
           height: 126,
         )),
       ],

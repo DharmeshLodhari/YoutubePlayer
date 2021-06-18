@@ -389,12 +389,12 @@ class _UserDashboardState extends State<UserDashboard> {
         ),
         Expanded(
             child: UserDashboardItemTile(
-          icon: SlydoAppIcon.bank,
-          title: "Bank",
+          icon: SlydoAppIcon.naira,
+          title: "Pay out",
           onTap: () {
             bankAndroidSheet();
           },
-          iconColor: HexColor("#F35B46"),
+          iconColor: HexColor("#46CE7C"),
         )),
         SizedBox(
           width: 12,
@@ -413,12 +413,12 @@ class _UserDashboardState extends State<UserDashboard> {
         // )),
         Expanded(
             child: UserDashboardItemTile(
-          icon: SlydoAppIcon.naira,
-          title: "Topup",
+          icon: SlydoAppIcon.bank,
+          title: "Bank",
           onTap: () {
             Navigator.of(context).pushNamed('/add-money-to-slydo-one');
           },
-          iconColor: HexColor("#46CE7C"),
+          iconColor: HexColor("#F35B46"),
         )),
       ],
     );
@@ -442,20 +442,6 @@ class _UserDashboardState extends State<UserDashboard> {
         ),
         Expanded(
             child: UserDashboardItemTile(
-          icon: SlydoAppIcon.utility,
-          title: "Utility",
-          onTap: () {
-            Navigator.pushNamed(context, "/utility-dashboard");
-          },
-          iconColor: HexColor("#FFAB00"),
-        )),
-
-        SizedBox(
-          width: 12,
-        ),
-        // Expanded(child: Container()),
-        Expanded(
-            child: UserDashboardItemTile(
           icon: SlydoAppIcon.more,
           title: "More",
           onTap: () {
@@ -463,6 +449,10 @@ class _UserDashboardState extends State<UserDashboard> {
           },
           iconColor: HexColor("#374677"),
         )),
+        SizedBox(
+          width: 12,
+        ),
+        Expanded(child: Container()),
       ],
     );
   }
