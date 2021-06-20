@@ -2117,7 +2117,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     // var result = await Navigator.of(context)
     //     .pushNamed("/send-envelope", arguments: arguments);
 
-    await MessageAuth().sendEnvelope().catchError((error) {
+    await MessageAuth().sendEnvelope(isEmpty:isEmpty).catchError((error) {
       Toast.show("ERROR:- $error", context, duration: 2);
     });
 

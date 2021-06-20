@@ -731,8 +731,12 @@ class MessageAuth extends AuthService {
     }
   }
 
-  Future<bool> sendEnvelope() async {
+  Future<bool> sendEnvelope({bool isEmpty}) async {
     var url = secureBaseUrl + "/api/v1/transactions/magic-envelop/";
+
+    if (isEmpty) {
+      url = secureBaseUrl + "/api/v1/transactions/empty-envelop/";
+    }
     Map<String, dynamic> data = {
       "from_customer": "abiola.rasheed.19",
       "to_customer": "abiola.rasheed.2",
@@ -747,6 +751,20 @@ class MessageAuth extends AuthService {
       "title": "Happy Fathers day",
       "conversation_id": "41d835fd-968d-4424-945a-e51c97db6924"
     };
+
+    if (isEmpty) {
+      data = {
+        "from_customer": "abiola.rasheed.19",
+        "to_customer": "abiola.rasheed.2",
+        "notes": "",
+        "description": "",
+        "is_anonymous": false,
+        "made_from_chat": true,
+        "message": "Happy Fathers day",
+        "title": "Happy Fathers day",
+        "conversation_id": "41d835fd-968d-4424-945a-e51c97db6924"
+      };
+    }
 
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
