@@ -2114,10 +2114,15 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     arguments['recipient'] = recipient;
 
     stopShakeDetector();
-    var result = await Navigator.of(context)
-        .pushNamed("/send-envelope", arguments: arguments);
+    // var result = await Navigator.of(context)
+    //     .pushNamed("/send-envelope", arguments: arguments);
+
+    await MessageAuth().sendEnvelope().catchError((error) {
+      Toast.show("ERROR:- $error", context, duration: 2);
+    });
+
     setupShakeDetector();
-    debugPrint("Result From send Envelope :- $result");
+    // debugPrint("Result From send Envelope :- $result");
   }
 
   Widget textMessageField() {

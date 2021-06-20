@@ -730,4 +730,35 @@ class MessageAuth extends AuthService {
       return null;
     }
   }
+
+  Future<bool> sendEnvelope() async {
+    var url = secureBaseUrl + "/api/v1/transactions/magic-envelop/";
+    Map<String, dynamic> data = {
+      "from_customer": "abiola.rasheed.19",
+      "to_customer": "abiola.rasheed.2",
+      "currency": "NGN",
+      "amount": 1000000,
+      "category": "General",
+      "notes": "",
+      "description": "",
+      "is_anonymous": false,
+      "made_from_chat": true,
+      "message": "Happy Fathers day",
+      "title": "Happy Fathers day",
+      "conversation_id": "41d835fd-968d-4424-945a-e51c97db6924"
+    };
+
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+
+    var response = await http.post(url, headers: headers, body: _data);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
 }
