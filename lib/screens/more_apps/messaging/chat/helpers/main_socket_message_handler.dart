@@ -101,6 +101,10 @@ class MainSocketMessageHandler {
               DBSocketMessageHandler().deleteSocketQueueChatMessage(
                   message: SocketQueueChatMessage.fromJson(messageData));
               break;
+
+            case "envelope":
+              break;
+
             default:
               debugPrint(
                   "UNKNOWN==> KIND:- ${messageData['kind']}  message:- $messageData");

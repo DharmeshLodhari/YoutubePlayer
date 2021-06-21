@@ -415,6 +415,7 @@ class UserAuth extends AuthService {
       debugPrint("STATUS CODE:- ${response.statusCode}");
       debugPrint("response from fetchCustomer = $jsonData");
       ChatConversation customerProfile = ChatConversation.fromJson(jsonData);
+      debugPrint("ChatConversation => ${customerProfile.conversationId}");
       return customerProfile;
     } else {
       debugPrint(

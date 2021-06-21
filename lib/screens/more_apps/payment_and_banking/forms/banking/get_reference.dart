@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/VirtualAccount.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -31,13 +33,10 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
 
   String amount = "";
 
-  String bankName;
-  String bankAvatar;
-  String bankAccountName;
-  String bankAccountNumber;
-
   bool isLoading = false;
   bool isAccountExist = false;
+
+  VirtualAccount virtualAccount;
 
   @override
   void initState() {
@@ -48,21 +47,24 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
   void getSlydoAccount() async {
     isLoading = true;
     setState(() {});
+    bool isFromServer = false;
 
-    Map<String, dynamic> bankDetail =
-        await PaymentAndBankingAuth().getVirtualAccountDetail();
+    virtualAccount = await DatabaseHelper().getVirtualAccount();
+    if (virtualAccount == null) {
+      virtualAccount = await PaymentAndBankingAuth().getVirtualAccountDetail();
+      isFromServer = true;
+    }
 
     isLoading = false;
-    if (bankDetail == null) {
+    if (virtualAccount == null) {
       isAccountExist = false;
     } else {
       isAccountExist = true;
-      bankName = bankDetail["financial_institution"]["name"];
-      bankAvatar = bankDetail['financial_institution']["logo"];
-      bankAccountName = bankDetail["account_name"];
-      bankAccountNumber = bankDetail["account_number"];
+      if (isFromServer) {
+        await DatabaseHelper().saveVirtualAccount(virtualAccount);
+      }
     }
-    if(mounted) setState(() {});
+    if (mounted) setState(() {});
   }
 
   @override
@@ -316,13 +318,13 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
             : Column(
                 children: [
                   ListTile(
-                    title: Text(bankName ?? "",
+                    title: Text(virtualAccount.financialInstitution.name ?? "",
                         style: TextStyle(
                             fontSize: 14,
                             color: blackFont,
                             fontWeight: FontWeight.w600)),
                     leading: CachedNetworkImage(
-                      imageUrl: bankAvatar ?? "",
+                      imageUrl: virtualAccount.financialInstitution.logo ?? "",
                       height: 36,
                       width: 36,
                     ),
@@ -349,7 +351,7 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
                             ),
                             Expanded(
                               child: Text(
-                                bankAccountName ?? "",
+                                virtualAccount.accountName ?? "",
                                 style: TextStyle(
                                     color: blackFont,
                                     fontWeight: FontWeight.w600,
@@ -374,7 +376,7 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
                             ),
                             Expanded(
                               child: Text(
-                                bankAccountNumber ?? "",
+                                virtualAccount.accountNumber ?? "",
                                 style: TextStyle(
                                     color: blackFont,
                                     fontWeight: FontWeight.w600,

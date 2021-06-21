@@ -2,7 +2,8 @@ import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -12,6 +13,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:toast/toast.dart';
 
 // ignore: must_be_immutable
 class SendEnvelope extends StatefulWidget {
@@ -37,13 +39,13 @@ class _SendEnvelopeState extends State<SendEnvelope> {
 
   bool isEmptyEnvelope;
 
-  CustomerProfile recipientUser;
+  ChatConversation chatConversation;
 
   @override
   void initState() {
     isEmptyEnvelope =
         widget.arguments != null ? widget.arguments["isEmptyEnvelope"] : false;
-    recipientUser = widget.arguments["recipient"];
+    chatConversation = widget.arguments["chatConversation"];
 
     super.initState();
   }
@@ -93,13 +95,13 @@ class _SendEnvelopeState extends State<SendEnvelope> {
   Widget getDisplayCard() {
     var avatarImage;
     var qrCodeImage;
-    if (recipientUser != null) {
+    if (chatConversation != null) {
       avatarImage = Container(
         height: 48,
         width: 48,
         child: ClipOval(
           child: CachedNetworkImage(
-            imageUrl: recipientUser.avatar,
+            imageUrl: chatConversation.avatar,
             colorBlendMode: BlendMode.darken,
             fit: BoxFit.fill,
             filterQuality: FilterQuality.high,
@@ -107,14 +109,14 @@ class _SendEnvelopeState extends State<SendEnvelope> {
         ),
       );
 
-      qrCodeImage = CachedNetworkImage(
-        height: 48,
-        width: 48,
-        imageUrl: recipientUser.qrCode ?? "",
-        colorBlendMode: BlendMode.darken,
-        fit: BoxFit.fill,
-        filterQuality: FilterQuality.high,
-      );
+      // qrCodeImage = CachedNetworkImage(
+      //   height: 48,
+      //   width: 48,
+      //   imageUrl: chatConversation.qrCode ?? "",
+      //   colorBlendMode: BlendMode.darken,
+      //   fit: BoxFit.fill,
+      //   filterQuality: FilterQuality.high,
+      // );
     }
 
     return Column(
@@ -124,7 +126,7 @@ class _SendEnvelopeState extends State<SendEnvelope> {
           child: ListTile(
             contentPadding: EdgeInsets.zero,
             title: Text(
-              recipientUser.fullName,
+              chatConversation.fullName,
               style: TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
@@ -133,16 +135,16 @@ class _SendEnvelopeState extends State<SendEnvelope> {
               maxLines: 1,
             ),
             subtitle: Text(
-              recipientUser.userName,
+              chatConversation.userName,
               style: TextStyle(fontSize: 14, color: darkGrey),
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
             ),
             leading: avatarImage,
-            trailing: qrCodeImage,
+            // trailing: qrCodeImage,
             onTap: () {
               Navigator.pushNamed(context, '/profile',
-                  arguments: {"searchedUserName": recipientUser.userName});
+                  arguments: {"searchedUserName": chatConversation.userName});
             },
           ),
         ),
@@ -334,11 +336,30 @@ class _SendEnvelopeState extends State<SendEnvelope> {
       BottomSheetPassCode(
           context: context,
           isValidCallback: () async {
-            Navigator.pop(context, {
-              "amount": moneyInputNormalizer(amount.toString()),
+            Map<String, dynamic> data = {
+              "from_customer": userBloc.user.userName,
+              "to_customer": chatConversation.userName,
+              "notes": "",
+              "description": "",
+              "is_anonymous": false,
+              "made_from_chat": true,
               "message": _messageController.text.trim(),
-              "title": _titleController.text.trim()
+              "title": _titleController.text.trim(),
+              "conversation_id": chatConversation.conversationId
+            };
+            if (!isEmptyEnvelope) {
+              data["currency"] = userBloc.user.currency;
+              data["amount"] = moneyInputNormalizer(amount.toString());
+              data["category"] = "General";
+            }
+
+            await MessageAuth()
+                .sendEnvelope(isEmpty: isEmptyEnvelope, data: data)
+                .catchError((error) {
+              Toast.show("ERROR:- $error", context, duration: 2);
             });
+
+            Navigator.pop(context);
           },
           cancelCallBack: () {
             _sendEnvelopeScaffold.currentState.showSnackBar(SnackBar(

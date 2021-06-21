@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/AddGroupModel.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatUserModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile.dart';
@@ -285,7 +287,7 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
     );
   }
 
-  void createGroup() {
+  void createGroup() async {
     groupModel.users = selectedConnectionList;
     groupModel.groupName = groupNameController.text.trim();
     groupModel.groupDescription = groupDescriptionController.text.trim();
@@ -297,9 +299,13 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
               child: CircularLoadingIndicator(),
             ));
 
-    MessageAuth().createGroupChat(group: groupModel).then((value) async {
+    await MessageAuth().createGroupChat(group: groupModel).then((value) async {
       Navigator.pop(context);
       if (value != null) {
+        ChatUserModel chatUserModel = ChatUserModel.fromChatConversation(value);
+        ChatUserManager().addUser(conversationId: chatUserModel.conversationId);
+        if (mounted) setState(() {});
+
         ConnectionListBloc connectionListBloc =
             Provider.of<ConnectionListBloc>(context, listen: false);
         connectionListBloc.addConnectionUser(chatConversation: value);

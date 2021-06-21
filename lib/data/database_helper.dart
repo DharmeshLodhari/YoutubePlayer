@@ -7,6 +7,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/Chat
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessagePagination.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/nudge_notification/NudgeNotification.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/VirtualAccount.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import "package:collection/collection.dart";
 import 'package:flutter/material.dart';
@@ -208,6 +209,20 @@ class DatabaseHelper {
       await db.execute('''CREATE TABLE "NOTIFICATION" (     
             "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
             "notification" TEXT
+          );
+    ''');
+
+      // Create the Virtual Bank Account table
+      await db.execute('''CREATE TABLE "VirtualAccount" (     
+            "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
+            "account_number" TEXT,
+            "financial_institution" TEXT,
+            "account_name" TEXT,
+            "customer_username" TEXT,
+            "is_active" INTEGER,
+            "created_at" TEXT,
+            "updated_at" TEXT,
+            "note" TEXT
           );
     ''');
 
@@ -702,6 +717,12 @@ class DatabaseHelper {
     chatMessages.forEach((chatMessage) {
       Map<String, dynamic> data = chatMessage.toDBJson();
 
+      if (chatMessage.kind == "envelope" ||
+          chatMessage.kind == "magic_envelope") {
+        debugPrint("======> $data");
+      }
+
+      debugPrint("");
       insertUserBatch.insert("ChatMessage", data,
           conflictAlgorithm: ConflictAlgorithm.ignore);
     });
@@ -997,6 +1018,43 @@ class DatabaseHelper {
         await dbClient.query("NOTIFICATION");
     if (notifications != null) {
       if (notifications.length > 0) return notifications.first;
+    }
+    return null;
+  }
+
+  /// VirtualAccount OPERATION
+
+  Future<int> saveVirtualAccount(VirtualAccount virtualAccount) async {
+    Database dbClient = await db;
+
+    int res = await dbClient.insert("VirtualAccount", virtualAccount.toDBJson(),
+        conflictAlgorithm: ConflictAlgorithm.ignore);
+    if (res != null) {
+      debugPrint("DATABASE:- Saved Virtual Account !!");
+      return res;
+    }
+    return null;
+  }
+
+  Future<VirtualAccount> getVirtualAccount() async {
+    Database dbClient = await db;
+
+    List<Map<String, dynamic>> virtualAccounts =
+        await dbClient.query("VirtualAccount");
+    if (virtualAccounts != null) {
+      if (virtualAccounts.length > 0)
+        return VirtualAccount.fromDBJson(virtualAccounts.first);
+    }
+    return null;
+  }
+
+  Future<int> deleteVirtualAccount() async {
+    Database dbClient = await db;
+
+    int res = await dbClient.delete("VirtualAccount");
+    if (res != null) {
+      debugPrint("DATABASE:- DELETE VirtualAccount !!");
+      return res;
     }
     return null;
   }

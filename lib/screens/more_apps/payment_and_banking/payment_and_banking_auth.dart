@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/VirtualAccount.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
@@ -467,7 +468,7 @@ class PaymentAndBankingAuth extends AuthService {
     }
   }
 
-  Future<Map<String, dynamic>> getVirtualAccountDetail() async {
+  Future<VirtualAccount> getVirtualAccountDetail() async {
     var url = secureBaseUrl + "/api/v1/transactions/get-virtual-account-info/";
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
@@ -475,20 +476,12 @@ class PaymentAndBankingAuth extends AuthService {
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      Map<String, dynamic> data = jsonDecode(response.body);
-      return data;
+      VirtualAccount virtualAccount =
+          VirtualAccount.fromJson(jsonDecode(response.body));
+      return virtualAccount;
     } else {
       return null;
     }
-
-    /// {'accountNo': '9962430626',
-    ///  'accountName': 'Brijesh Sakariya',
-    ///  'accountEmail': None,
-    ///  'transientMode': False,
-    ///  'balance': None,
-    ///  'availableBalance': None,
-    ///  'currentBalance': None,
-    ///  'initiatorRef': 'black'}
   }
 
   Future<Map<String, dynamic>> verifyReferenceNumber(

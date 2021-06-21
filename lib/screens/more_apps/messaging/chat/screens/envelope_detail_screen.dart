@@ -39,6 +39,8 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
 
   bool isUserIsSimpleUser = false;
 
+  Map<String, dynamic> data;
+
   @override
   void initState() {
     initializeVariables();
@@ -47,6 +49,8 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
   }
 
   void initializeVariables() async {
+    data = arguments['data'];
+    debugPrint("DATA FOR ENVELOPE:===> $data");
     await getSearchedUser();
 
     if (mounted) {
@@ -162,7 +166,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
                     color: navyBlue),
               ),
               Text(
-                "97.0",
+                data['amount'] ?? "",
                 style: TextStyle(
                     fontSize: 32, fontWeight: FontWeight.w700, color: navyBlue),
               ),

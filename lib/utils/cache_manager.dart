@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_manager.dart';
@@ -26,6 +27,7 @@ class CacheManager {
     await ChatUserManager().clearChatUsers();
     await ConnectionListManager().clearConnections();
     DBSocketMessageHandler().clearSocketQueueChatMessage();
+    await DatabaseHelper().deleteVirtualAccount();
 
     debugPrint("Cache cleared");
   }

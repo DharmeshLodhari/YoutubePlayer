@@ -2064,7 +2064,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         }
 
         if (user != null) {
-          getEnvelopeAmount(recipient: user);
+          sendEnvelope(recipient: user);
         }
       },
     );
@@ -2100,29 +2100,25 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         }
 
         if (user != null) {
-          getEnvelopeAmount(recipient: user, isEmpty: true);
+          sendEnvelope(recipient: user, isEmpty: true);
         }
       },
     );
   }
 
-  void getEnvelopeAmount(
-      {bool isEmpty = false, CustomerProfile recipient}) async {
+  void sendEnvelope({bool isEmpty = false, CustomerProfile recipient}) async {
     Map<String, dynamic> arguments = {};
 
     arguments['isEmptyEnvelope'] = isEmpty;
-    arguments['recipient'] = recipient;
+
+    arguments['chatConversation'] = chatConversation;
 
     stopShakeDetector();
-    // var result = await Navigator.of(context)
-    //     .pushNamed("/send-envelope", arguments: arguments);
-
-    await MessageAuth().sendEnvelope(isEmpty:isEmpty).catchError((error) {
-      Toast.show("ERROR:- $error", context, duration: 2);
-    });
+    var result = await Navigator.of(context)
+        .pushNamed("/send-envelope", arguments: arguments);
 
     setupShakeDetector();
-    // debugPrint("Result From send Envelope :- $result");
+    debugPrint("Result From send Envelope :- $result");
   }
 
   Widget textMessageField() {
@@ -2639,6 +2635,12 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
             message: messageData, chatConversation: chatConversation);
 
         break;
+
+      case "envelope":
+        finalUI = renderEnvelopeUI(
+            message: messageData, chatConversation: chatConversation);
+        break;
+
       default:
         debugPrint("Unknown Message Kind 1: $messageType Message:- $message");
         Widget getErrorRenderTypeUI = unKnownMessageType();
@@ -4136,47 +4138,6 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           messageData: data, conversationId: chatConversation.conversationId);
       await sendDataToSocket(data);
     }
-  }
-
-  void sendEnvelopeToSocket() async {
-    // showMoreAction = false;
-    // if (mounted) setState(() {});
-    //
-    // Map<String, dynamic> data = {
-    //   "check_id": Uuid().v4(),
-    //   "conversation_id": recipientUser.conversationId,
-    //   "author": userBloc.user.userName,
-    //   "author_full_name": userBloc.user.fullName,
-    //   "author_avatar": userBloc.user.avatar,
-    //   "message": message,
-    //   "kind": "text",
-    //   "read_by_author": true,
-    //   "read_by_recipient": false,
-    //   "delivered": false,
-    //   "created_at": DateTime.now().toUtc().toString(),
-    //   "type": "chatroom_message",
-    // };
-    //
-    // debugPrint(
-    //     "recipientUser = $recipientUser  recipientUser.conversationId = ${recipientUser.conversationId}");
-    // if (recipientUser != null && recipientUser.conversationId != null) {
-    //   DBSocketMessageHandler()
-    //       .saveMessageToDb(message: ChatTextMessage.fromJson(data));
-    //
-    //   String payload = convertServerPayload(data);
-    //
-    //   addMessageToChat(message: payload);
-    //
-    //   messageController.text = "";
-    //   if (mounted) setState(() {});
-    //
-    //   updateConnectionList(
-    //       messageData: data, conversationId: recipientUser.conversationId);
-    //   await sendDataToSocket(data);
-    // } else {
-    //   Toast.show("Please check your connection !!", context,
-    //       textColor: Colors.white);
-    // }
   }
 
   void updateConnectionList(

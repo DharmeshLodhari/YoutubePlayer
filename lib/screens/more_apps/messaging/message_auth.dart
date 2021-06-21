@@ -731,39 +731,11 @@ class MessageAuth extends AuthService {
     }
   }
 
-  Future<bool> sendEnvelope({bool isEmpty}) async {
+  Future<bool> sendEnvelope({bool isEmpty, Map<String, dynamic> data}) async {
     var url = secureBaseUrl + "/api/v1/transactions/magic-envelop/";
 
     if (isEmpty) {
       url = secureBaseUrl + "/api/v1/transactions/empty-envelop/";
-    }
-    Map<String, dynamic> data = {
-      "from_customer": "abiola.rasheed.19",
-      "to_customer": "abiola.rasheed.2",
-      "currency": "NGN",
-      "amount": 1000000,
-      "category": "General",
-      "notes": "",
-      "description": "",
-      "is_anonymous": false,
-      "made_from_chat": true,
-      "message": "Happy Fathers day",
-      "title": "Happy Fathers day",
-      "conversation_id": "41d835fd-968d-4424-945a-e51c97db6924"
-    };
-
-    if (isEmpty) {
-      data = {
-        "from_customer": "abiola.rasheed.19",
-        "to_customer": "abiola.rasheed.2",
-        "notes": "",
-        "description": "",
-        "is_anonymous": false,
-        "made_from_chat": true,
-        "message": "Happy Fathers day",
-        "title": "Happy Fathers day",
-        "conversation_id": "41d835fd-968d-4424-945a-e51c97db6924"
-      };
     }
 
     var headers = await getAuthHeaders();
@@ -772,6 +744,8 @@ class MessageAuth extends AuthService {
     var response = await http.post(url, headers: headers, body: _data);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
       return true;
     } else {
       debugPrint(

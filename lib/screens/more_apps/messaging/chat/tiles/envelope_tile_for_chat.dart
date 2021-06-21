@@ -1,8 +1,9 @@
-import 'dart:math';
+import 'dart:convert';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/Envelope.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
@@ -24,27 +25,29 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
 
   CustomerProfile customerProfile;
 
+  Envelope envelope;
+
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
 
-    // Map<String, dynamic> data;
-    //
-    // if (widget.message['meta_data'] is String) {
-    //   data = jsonDecode(widget.message['meta_data']);
-    // } else if (widget.message['meta_data'] is Map) {
-    //   data = widget.message['meta_data'];
-    // }
-    //
+    Map<String, dynamic> data;
+
+    if (widget.message['meta_data'] is String) {
+      data = jsonDecode(widget.message['meta_data']);
+    } else if (widget.message['meta_data'] is Map) {
+      data = widget.message['meta_data'];
+    }
+
+    // debugPrint("data=> $data");
+
+    envelope = Envelope.fromJson(data);
+
     // customerProfile = CustomerProfile.fromJson(data);
 
     bool isSend = widget.message["author"] == userBloc.user.userName;
 
     Map<String, dynamic> message = widget.message;
-
-    bool isEnvelopeClosed = Random().nextBool();
-
-    bool isEnvelopeRejected = Random().nextBool();
 
     return Column(
       children: [
@@ -60,10 +63,7 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
                   minWidth: MediaQuery.of(context).size.width / 1.30,
                   minHeight: 50),
               child: getEnvelopeUI(
-                  message: message,
-                  isSend: isSend,
-                  isEnvelopeRejected: isEnvelopeRejected,
-                  isEnvelopeClosed: isEnvelopeClosed),
+                  message: message, envelope: envelope, isSend: isSend),
             ),
             isSend
                 ? Container(
@@ -106,18 +106,16 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
   }
 
   Widget getEnvelopeUI(
-      {Map<String, dynamic> message,
-      bool isSend,
-      bool isEnvelopeRejected,
-      bool isEnvelopeClosed}) {
+      {Map<String, dynamic> message, Envelope envelope, bool isSend}) {
+    bool isEmptyEnvelope = false;
+
+    if (envelope.type == "empty-envelop") {
+      isEmptyEnvelope = true;
+    }
     return GestureDetector(
       child: Container(
         decoration: BoxDecoration(
-          color: isEnvelopeClosed
-              ? naturalGreenLight
-              : isEnvelopeRejected
-                  ? mateRedLight
-                  : naturalGreenLight,
+          color: isEmptyEnvelope ? brownLight : naturalGreenLight,
           borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(!isSend ? 0 : 10),
             bottomRight: Radius.circular(isSend ? 0 : 10),
@@ -129,11 +127,11 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
         child: Row(
           children: <Widget>[
             Image.asset(
-              isEnvelopeClosed
-                  ? "assets/images/envelope/envelope_green.png"
-                  : isEnvelopeRejected
-                      ? "assets/images/envelope/envelope_red.png"
-                      : "assets/images/envelope/envelope_green_open.png",
+              isEmptyEnvelope
+                  ? "assets/images/envelope/envelope_brown.png"
+                  : envelope.isOpen
+                      ? "assets/images/envelope/envelope_green_open.png"
+                      : "assets/images/envelope/envelope_green.png",
               height: MediaQuery.of(context).size.width / 7,
               width: MediaQuery.of(context).size.width / 7,
               fit: BoxFit.fill,
@@ -146,7 +144,7 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Envelope",
+                    isEmptyEnvelope ? "Empty Envelope" : "Envelope",
                     style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
@@ -158,11 +156,13 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
                     height: 4,
                   ),
                   Text(
-                    isEnvelopeClosed
+                    isEmptyEnvelope
                         ? message["author_full_name"] ?? message["author"]
-                        : isEnvelopeRejected
-                            ? "Rejected"
-                            : "Opened",
+                        : isSend
+                            ? envelope.isOpen
+                                ? "Opened"
+                                : "Closed"
+                            : message["author_full_name"] ?? message["author"],
                     style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
@@ -177,8 +177,16 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
         ),
       ),
       onTap: () {
-        Navigator.of(context).pushNamed("/envelope-detail",
-            arguments: {"searchedUserName": message["author"]});
+
+        if(isEmptyEnvelope)
+          {
+
+          }
+
+        Navigator.of(context).pushNamed("/envelope-detail", arguments: {
+          "searchedUserName": message["author"],
+          "data": message
+        });
       },
     );
   }
