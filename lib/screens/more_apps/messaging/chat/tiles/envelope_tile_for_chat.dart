@@ -177,16 +177,21 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
         ),
       ),
       onTap: () {
-
-        if(isEmptyEnvelope)
-          {
-
-          }
+        if (isEmptyEnvelope) {
+          Navigator.of(context).pushNamed("/put-money-in-envelope", arguments: {
+            "chatConversation": widget.chatConversation,
+            "message": message,
+            "envelope": envelope
+          });
+          return;
+        }
 
         Navigator.of(context).pushNamed("/envelope-detail", arguments: {
           "searchedUserName": message["author"],
-          "data": message
+          "data": message,
+          "envelope": envelope
         });
+        return;
       },
     );
   }

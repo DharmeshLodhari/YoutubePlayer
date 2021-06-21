@@ -27,6 +27,7 @@ import 'package:Slydo/screens/more_apps/hotels/specific_category_hotel_list.dart
 import 'package:Slydo/screens/more_apps/messaging/chat/forms/add_media_to_chat_message.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/forms/group/set_name_and_profile_for_group.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/forms/group/update_group_name_and_profile.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/forms/put_money_in_envelope.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/forms/send_envelope.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/screens/add_chat_group/select_user_for_group.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/screens/chat_screen_group_messages.dart';
@@ -568,6 +569,14 @@ class RouteGenerator {
       case '/envelope-detail':
         return PageTransition(
           child: EnvelopeDetailScreen(arguments: settings.arguments),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case '/put-money-in-envelope':
+        return PageTransition(
+          child: PutMoneyInEnvelope(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

@@ -1,4 +1,6 @@
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/Envelope.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/colors.dart';
@@ -8,6 +10,7 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:toast/toast.dart';
 
 // ignore: must_be_immutable
 class EnvelopeDetailScreen extends StatefulWidget {
@@ -41,15 +44,27 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
 
   Map<String, dynamic> data;
 
+  Envelope envelope;
+
   @override
   void initState() {
+    openEnvelope();
     initializeVariables();
 
     super.initState();
   }
 
+  void openEnvelope() async {
+    envelope = arguments['envelope'];
+
+    await MessageAuth().openEnvelope(envelope: envelope).catchError((error) {
+      Toast.show("ERROR:- $error", context);
+    });
+  }
+
   void initializeVariables() async {
     data = arguments['data'];
+
     debugPrint("DATA FOR ENVELOPE:===> $data");
     await getSearchedUser();
 

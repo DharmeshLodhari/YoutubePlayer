@@ -46,13 +46,14 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   void initState() {
-    checkConnection();
     try {
       initPlatformState();
     } catch (error) {
       debugPrint("ERROR2:- $error");
       if (mounted) setState(() {});
     }
+    checkConnection();
+
     WidgetsFlutterBinding.ensureInitialized();
     super.initState();
   }
@@ -68,6 +69,10 @@ class _SplashScreenState extends State<SplashScreen> {
           await getLoggedInUser();
         } catch (error) {
           debugPrint("ERROR1:- $error");
+          Navigator.pop(MyGlobals().navigationKey.currentContext);
+          Navigator.of(MyGlobals().navigationKey.currentContext)
+              .pushNamed("/index");
+          return Future.value(null);
         }
       } else {
         Toast.show(
@@ -320,12 +325,10 @@ class _SplashScreenState extends State<SplashScreen> {
         }
       }
       if (mounted) setState(() {});
-    } else {
-      Navigator.pop(MyGlobals().navigationKey.currentContext);
-      Navigator.of(MyGlobals().navigationKey.currentContext)
-          .pushNamed("/index");
-      return Future.value(null);
     }
+    Navigator.pop(MyGlobals().navigationKey.currentContext);
+    Navigator.of(MyGlobals().navigationKey.currentContext).pushNamed("/index");
+    return Future.value(null);
 
     // try {
     //   if (isChecked) {

@@ -7,6 +7,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.d
 import 'package:Slydo/screens/more_apps/messaging/chat/models/UpdateGroupDetailModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/models/message.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/Envelope.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/util.dart';
@@ -742,6 +743,46 @@ class MessageAuth extends AuthService {
     var _data = jsonEncode(data);
 
     var response = await http.post(url, headers: headers, body: _data);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<bool> putMoneyInEnvelope(
+      {Map<String, dynamic> data, Envelope envelope}) async {
+    var url =
+        secureBaseUrl + "/api/v1/transactions/empty-envelop/${envelope.id}/";
+
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+
+    var response = await http.post(url, headers: headers, body: _data);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<bool> openEnvelope({Envelope envelope}) async {
+    var url =
+        secureBaseUrl + "/api/v1/transactions/magic-envelop/${envelope.id}/";
+
+    var headers = await getAuthHeaders();
+
+    var response = await http.get(url, headers: headers);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       debugPrint(
