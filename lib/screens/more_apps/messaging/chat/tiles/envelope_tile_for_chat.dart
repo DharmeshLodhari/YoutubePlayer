@@ -111,6 +111,12 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
 
     if (envelope.type == "empty-envelop") {
       isEmptyEnvelope = true;
+      // if (envelope.magicEnvelope != null || envelope.magicEnvelope != "{}") {
+      //   isEmptyEnvelope = false;
+      //   Envelope magicEnvelope =
+      //       Envelope.fromJson(jsonDecode(envelope.magicEnvelope));
+      //   envelope = magicEnvelope;
+      // }
     }
     return GestureDetector(
       child: Container(

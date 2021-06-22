@@ -763,6 +763,8 @@ class MessageAuth extends AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
 
+    debugPrint("Data sent => $data");
+
     var response = await http.patch(url, headers: headers, body: _data);
 
     if (response.statusCode == 200 || response.statusCode == 201) {

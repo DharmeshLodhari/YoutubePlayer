@@ -427,7 +427,6 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
                 barrierDismissible: false,
                 builder: (context) =>
                     Center(child: CircularLoadingIndicator()));
-
             Map<String, dynamic> data = {
               "from_customer": userBloc.user.userName,
               "to_customer": chatConversation.userName,
@@ -442,6 +441,10 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
             data["currency"] = userBloc.user.currency;
             data["amount"] = moneyInputNormalizer(amount.toString());
             data["category"] = "General";
+
+            // {"id": "62123d67-57ed-46f2-a8aa-02e2b3b25972", "check_id": "50b746e6-9360-4f57-9ee2-d99fc5967d1f",
+
+            data['check_id'] = message['check_id'];
 
             await MessageAuth()
                 .putMoneyInEnvelope(data: data, envelope: envelope)
