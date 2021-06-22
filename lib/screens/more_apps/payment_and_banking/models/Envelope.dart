@@ -1,18 +1,21 @@
+import 'dart:convert';
+
 class Envelope {
-  int amount;
+  String amount;
   String createdAt;
   String currency;
   String fromCustomer;
-  int id;
+  String id;
   bool isOpen;
   bool isPaid;
   String message;
   String openAt;
   String paidAt;
   String payOutTransaction;
+  String magicEnvelope;
   String title;
   String toCustomer;
-  int transaction;
+  String transaction;
   String type;
 
   Envelope(
@@ -30,26 +33,42 @@ class Envelope {
       this.title,
       this.toCustomer,
       this.transaction,
+      this.magicEnvelope,
       this.type});
 
   factory Envelope.fromJson(Map<String, dynamic> json) {
+    // debugPrint("json[amount] => is int ${json['amount'] is int}");
+    // debugPrint("json[transaction] => is int ${json['transaction'] is int}");
+    // debugPrint("json[id] => is int ${json['id'] is int}");
+    // debugPrint("DATA=> = ${json}");
+    // debugPrint("isOPen = ${json['is_open']}");
     return Envelope(
-      amount: json['amount'],
-      createdAt: json['created_at'],
-      currency: json['currency'],
-      fromCustomer: json['from_customer'],
-      id: json['id'],
-      isOpen: json['is_open'],
-      isPaid: json['is_paid'],
-      message: json['message'],
-      openAt: json['open_at'],
-      paidAt: json['paid_at'],
-      payOutTransaction: json['pay_out_transaction'],
-      title: json['title'],
-      toCustomer: json['to_customer'],
-      transaction: json['transaction'],
-      type: json['type'],
-    );
+        amount: json['amount'].toString(),
+        createdAt: json['created_at'],
+        currency: json['currency'],
+        fromCustomer: json['from_customer'],
+        id: json['id'].toString(),
+        isOpen: json['is_open'],
+        isPaid: json['is_paid'],
+        message: json['message'],
+        openAt: json['open_at'],
+        paidAt: json['paid_at'],
+        payOutTransaction: json['pay_out_transaction'].toString(),
+        title: json['title'],
+        toCustomer: json['to_customer'],
+        transaction: json['transaction'].toString(),
+        type: json['type'],
+        magicEnvelope: getMagicEnvelope(json['magic_envelope']));
+  }
+
+  static String getMagicEnvelope(var magicEnvelope) {
+    if (magicEnvelope == null) {
+      return null;
+    }
+    if (magicEnvelope is String) {
+      return magicEnvelope;
+    }
+    return jsonEncode(magicEnvelope);
   }
 
   Map<String, dynamic> toJson() {
@@ -69,6 +88,7 @@ class Envelope {
     data['to_customer'] = this.toCustomer;
     data['transaction'] = this.transaction;
     data['type'] = this.type;
+    data['magic_envelope'] = this.magicEnvelope;
     return data;
   }
 }

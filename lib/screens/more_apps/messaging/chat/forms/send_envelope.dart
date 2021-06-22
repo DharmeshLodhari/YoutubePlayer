@@ -6,6 +6,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.d
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
@@ -312,9 +313,20 @@ class _SendEnvelopeState extends State<SendEnvelope> {
   }
 
   Widget getConditionText() {
-    return Text("This service will cost you ₦ 4",
-        style: TextStyle(
-            fontSize: 14, fontWeight: FontWeight.w400, color: darkGrey));
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text("This service will cost you ",
+            style: TextStyle(
+                fontSize: 14, fontWeight: FontWeight.w400, color: darkGrey)),
+        Text("₦ 4",
+            style: TextStyle(
+                fontFamily: "Roberto",
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: darkGrey)),
+      ],
+    );
   }
 
   Widget getSubmitButton() {
@@ -336,6 +348,12 @@ class _SendEnvelopeState extends State<SendEnvelope> {
       BottomSheetPassCode(
           context: context,
           isValidCallback: () async {
+            showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) =>
+                    Center(child: CircularLoadingIndicator()));
+
             Map<String, dynamic> data = {
               "from_customer": userBloc.user.userName,
               "to_customer": chatConversation.userName,
@@ -359,7 +377,7 @@ class _SendEnvelopeState extends State<SendEnvelope> {
               Toast.show("ERROR:- $error", context, duration: 2);
             });
 
-            Navigator.pop(context);
+            Navigator.popUntil(context, ModalRoute.withName("/chat-screen"));
           },
           cancelCallBack: () {
             _sendEnvelopeScaffold.currentState.showSnackBar(SnackBar(

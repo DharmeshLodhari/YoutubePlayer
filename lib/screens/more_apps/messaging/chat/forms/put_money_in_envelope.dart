@@ -229,14 +229,14 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
                                 padding: EdgeInsets.symmetric(horizontal: 20),
                                 child: Column(
                                   children: [
-                                    Column(
-                                      children: [
-                                        SizedBox(
-                                          height: 20,
-                                        ),
-                                        displayAmountField(),
-                                      ],
+                                    SizedBox(
+                                      height: 20,
                                     ),
+                                    getEnvelopeTitleAndMessage(),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    displayAmountField(),
                                     SizedBox(
                                       height: 20,
                                     ),
@@ -300,6 +300,41 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
     );
   }
 
+  Widget getEnvelopeTitleAndMessage() {
+    return Container(
+      child: Column(
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                  flex: 1,
+                  child: Text(
+                    "Title",
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                  )),
+              Expanded(flex: 4, child: Text("${envelope.title}")),
+            ],
+          ),
+          SizedBox(
+            height: 8,
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                  child: Text(
+                "Message",
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+              )),
+              Expanded(flex: 4, child: Text("${envelope.message}")),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget displayAmountField() {
     return CustomizedTextFormField(
       labelText: "Amount",
@@ -352,9 +387,20 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
   }
 
   Widget getConditionText() {
-    return Text("This service will cost you ₦ 4",
-        style: TextStyle(
-            fontSize: 14, fontWeight: FontWeight.w400, color: darkGrey));
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text("This service will cost you ",
+            style: TextStyle(
+                fontSize: 14, fontWeight: FontWeight.w400, color: darkGrey)),
+        Text("₦ 4",
+            style: TextStyle(
+                fontFamily: "Roberto",
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: darkGrey)),
+      ],
+    );
   }
 
   Widget getSubmitButton() {
@@ -376,6 +422,12 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
       BottomSheetPassCode(
           context: context,
           isValidCallback: () async {
+            showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) =>
+                    Center(child: CircularLoadingIndicator()));
+
             Map<String, dynamic> data = {
               "from_customer": userBloc.user.userName,
               "to_customer": chatConversation.userName,
@@ -392,12 +444,12 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
             data["category"] = "General";
 
             await MessageAuth()
-                .putMoneyInEnvelope(data: data)
+                .putMoneyInEnvelope(data: data, envelope: envelope)
                 .catchError((error) {
               Toast.show("ERROR:- $error", context, duration: 2);
             });
 
-            Navigator.pop(context);
+            Navigator.popUntil(context, ModalRoute.withName("/chat-screen"));
           },
           cancelCallBack: () {
             _putMoneyInEnvelopeScaffold.currentState.showSnackBar(SnackBar(

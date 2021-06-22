@@ -763,7 +763,7 @@ class MessageAuth extends AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
 
-    var response = await http.post(url, headers: headers, body: _data);
+    var response = await http.patch(url, headers: headers, body: _data);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       debugPrint(
@@ -776,9 +776,9 @@ class MessageAuth extends AuthService {
     }
   }
 
-  Future<bool> openEnvelope({Envelope envelope}) async {
-    var url =
-        secureBaseUrl + "/api/v1/transactions/magic-envelop/${envelope.id}/";
+  Future<Envelope> getEnvelope({Envelope envelope, String id}) async {
+    var url = secureBaseUrl +
+        "/api/v1/transactions/magic-envelop/${envelope.id.toString()}/?message_id=$id";
 
     var headers = await getAuthHeaders();
 
@@ -787,7 +787,9 @@ class MessageAuth extends AuthService {
     if (response.statusCode == 200 || response.statusCode == 201) {
       debugPrint(
           "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
-      return true;
+      Envelope envelope = Envelope.fromJson(jsonDecode(response.body));
+
+      return envelope;
     } else {
       debugPrint(
           "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");

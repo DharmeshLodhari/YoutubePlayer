@@ -144,11 +144,12 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    isEmptyEnvelope ? "Empty Envelope" : "Envelope",
+                    messageDecoderWithEmoji("${envelope.title ?? ""}"),
                     style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: blackFont),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: blackFont,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),

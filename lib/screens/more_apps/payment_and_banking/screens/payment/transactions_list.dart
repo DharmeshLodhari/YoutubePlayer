@@ -97,13 +97,17 @@ class _TransactionListState extends State<TransactionList> {
         previous = "";
         transactionList = [];
         noItemInList = false;
+        if (mounted) setState(() {});
         getList();
         _refreshController.refreshCompleted();
       } else {
         Toast.show(
-            AppLocalization.of(context).internetConnectionNotAvailable, context,
-            gravity: Toast.BOTTOM,  backgroundColor: Colors.black,
-          textColor: Colors.white,);
+          AppLocalization.of(context).internetConnectionNotAvailable,
+          context,
+          gravity: Toast.BOTTOM,
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+        );
         _refreshController.refreshCompleted();
       }
     });
