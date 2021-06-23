@@ -37,11 +37,6 @@ class Envelope {
       this.type});
 
   factory Envelope.fromJson(Map<String, dynamic> json) {
-    // debugPrint("json[amount] => is int ${json['amount'] is int}");
-    // debugPrint("json[transaction] => is int ${json['transaction'] is int}");
-    // debugPrint("json[id] => is int ${json['id'] is int}");
-    // debugPrint("DATA=> = ${json}");
-    // debugPrint("isOPen = ${json['is_open']}");
     return Envelope(
         amount: json['amount'].toString(),
         createdAt: json['created_at'],

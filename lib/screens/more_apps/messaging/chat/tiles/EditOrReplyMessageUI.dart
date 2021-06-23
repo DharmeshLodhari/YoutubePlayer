@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/Envelope.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/colors.dart';
@@ -80,12 +81,16 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
         Widget getServiceUI = renderService(message: messageData);
         return getServiceUI;
         break;
+
       case "user-profile":
         Widget getUserProfileUI = renderUserProfile(message: messageData);
         return getUserProfileUI;
+        break;
+
       case "user_location":
         Widget getUserLocationUI = renderUserLocationUI(message: messageData);
         return getUserLocationUI;
+        break;
 
       case "gif_image":
         if (gifController == null) {
@@ -94,6 +99,11 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
         }
         Widget getGIFImageUI = renderGIFImageUI(message: messageData);
         return getGIFImageUI;
+
+      case "envelope":
+        Widget getEnvelopeUI = renderEnvelope(message: messageData);
+        return getEnvelopeUI;
+        break;
 
       default:
         debugPrint(
@@ -640,6 +650,80 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               ],
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget renderEnvelope({Map<String, dynamic> message}) {
+    Envelope envelope;
+    bool isSend = message["author"] == userBloc.user.userName;
+    bool isEmptyEnvelope = false;
+
+    if (message['meta_data'] is String) {
+      envelope = Envelope.fromJson(jsonDecode(message['meta_data']));
+    } else if (message['meta_data'] is Map) {
+      envelope = Envelope.fromJson(message['meta_data']);
+    }
+
+    if (envelope.type == "empty-envelop") {
+      isEmptyEnvelope = true;
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(
+          left: BorderSide(width: 2.0, color: blackFont),
+        ),
+      ),
+      padding: EdgeInsets.only(left: 12),
+      child: Row(
+        children: <Widget>[
+          ClipRRect(
+            borderRadius: BorderRadius.circular(3),
+            child: Image.asset(
+              isEmptyEnvelope
+                  ? "assets/images/envelope/envelope_brown.png"
+                  : envelope.isOpen
+                      ? "assets/images/envelope/envelope_green_open.png"
+                      : "assets/images/envelope/envelope_green.png",
+              height: MediaQuery.of(context).size.width / 8,
+              width: MediaQuery.of(context).size.width / 8,
+              fit: BoxFit.fill,
+            ),
+          ),
+          SizedBox(
+            width: 12,
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  messageDecoderWithEmoji("${envelope.title ?? ""}"),
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: blackFont,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                SizedBox(
+                  height: 4,
+                ),
+                Text(
+                  "Envelope",
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                      color: blackFont),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          )
         ],
       ),
     );

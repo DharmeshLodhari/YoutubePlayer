@@ -2111,7 +2111,16 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
     arguments['isEmptyEnvelope'] = isEmpty;
 
-    arguments['chatConversation'] = chatConversation;
+    ChatConversation _chatConversation = ChatConversation.fromChatConversation(chatConversation);
+
+    if (chatConversation.isGroupConversation) {
+      _chatConversation.userName = recipient.userName;
+      _chatConversation.fullName = recipient.fullName;
+      _chatConversation.avatar = recipient.avatar;
+      _chatConversation.qrCode = recipient.qrCode;
+    }
+
+    arguments['chatConversation'] = _chatConversation;
 
     stopShakeDetector();
     var result = await Navigator.of(context)
@@ -2578,7 +2587,6 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       case "text":
         finalUI = renderMessage(
             message: messageData, chatConversation: chatConversation);
-
         break;
 
       case "image":
