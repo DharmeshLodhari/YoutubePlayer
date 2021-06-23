@@ -41,7 +41,7 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
     } else if (widget.message['text'] is Map) {
       data = widget.message['text'];
     }
-
+    debugPrint("Text:- ${widget.message['text']}");
     bool isCredit = widget.userBloc.user.userName == data['to_customer'];
 
     data['is_credit'] = isCredit;
@@ -387,58 +387,118 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                           height: 12,
                         )
                       : Container(),
-                  paymentActionStatus == "None"
-                      ? Container(
-                          child: isSend
-                              ? Row(
-                                  children: <Widget>[
-                                    Expanded(
-                                      child: CurvedButton(
-                                        text: "CANCEL",
-                                        height: 36,
-                                        backgroundColor: mateRed,
-                                        textColor: Colors.white,
-                                        borderRadius: 10,
-                                        onPressed: rejectOrCancelPaymentRequest,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: 16,
-                                    ),
-                                    Expanded(
-                                      child: Container(),
-                                    ),
-                                  ],
+                  widget.chatConversation.isGroupConversation
+                      ? paymentActionStatus == "None"
+                          ? paymentRequest.toCustomer ==
+                                  widget.userBloc.user.userName
+                              ? Container(
+                                  child: isSend
+                                      ? Row(
+                                          children: <Widget>[
+                                            Expanded(
+                                              child: CurvedButton(
+                                                text: "CANCEL",
+                                                height: 36,
+                                                backgroundColor: mateRed,
+                                                textColor: Colors.white,
+                                                borderRadius: 10,
+                                                onPressed:
+                                                    rejectOrCancelPaymentRequest,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              width: 16,
+                                            ),
+                                            Expanded(
+                                              child: Container(),
+                                            ),
+                                          ],
+                                        )
+                                      : Row(
+                                          children: <Widget>[
+                                            Expanded(
+                                              child: CurvedButton(
+                                                height: 36,
+                                                text: "REJECT",
+                                                backgroundColor: mateRed,
+                                                borderRadius: 10,
+                                                textColor: Colors.white,
+                                                onPressed:
+                                                    rejectOrCancelPaymentRequest,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              width: 16,
+                                            ),
+                                            Expanded(
+                                              child: CurvedButton(
+                                                text: "PAY",
+                                                height: 36,
+                                                backgroundColor: navyBlue,
+                                                textColor: Colors.white,
+                                                borderRadius: 10,
+                                                onPressed: acceptPaymentRequest,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                 )
-                              : Row(
-                                  children: <Widget>[
-                                    Expanded(
-                                      child: CurvedButton(
-                                        height: 36,
-                                        text: "REJECT",
-                                        backgroundColor: mateRed,
-                                        borderRadius: 10,
-                                        textColor: Colors.white,
-                                        onPressed: rejectOrCancelPaymentRequest,
-                                      ),
+                              : Container()
+                          : Container()
+                      : paymentActionStatus == "None"
+                          ? Container(
+                              child: isSend
+                                  ? Row(
+                                      children: <Widget>[
+                                        Expanded(
+                                          child: CurvedButton(
+                                            text: "CANCEL",
+                                            height: 36,
+                                            backgroundColor: mateRed,
+                                            textColor: Colors.white,
+                                            borderRadius: 10,
+                                            onPressed:
+                                                rejectOrCancelPaymentRequest,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 16,
+                                        ),
+                                        Expanded(
+                                          child: Container(),
+                                        ),
+                                      ],
+                                    )
+                                  : Row(
+                                      children: <Widget>[
+                                        Expanded(
+                                          child: CurvedButton(
+                                            height: 36,
+                                            text: "REJECT",
+                                            backgroundColor: mateRed,
+                                            borderRadius: 10,
+                                            textColor: Colors.white,
+                                            onPressed:
+                                                rejectOrCancelPaymentRequest,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 16,
+                                        ),
+                                        Expanded(
+                                          child: CurvedButton(
+                                            text: "PAY",
+                                            height: 36,
+                                            backgroundColor: navyBlue,
+                                            textColor: Colors.white,
+                                            borderRadius: 10,
+                                            onPressed: acceptPaymentRequest,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    SizedBox(
-                                      width: 16,
-                                    ),
-                                    Expanded(
-                                      child: CurvedButton(
-                                        text: "PAY",
-                                        height: 36,
-                                        backgroundColor: navyBlue,
-                                        textColor: Colors.white,
-                                        borderRadius: 10,
-                                        onPressed: acceptPaymentRequest,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                        )
-                      : Container(),
+                            )
+                          : Container(),
                   paymentActionStatus != "None"
                       ? SizedBox(
                           height: 12,

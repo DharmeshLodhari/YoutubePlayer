@@ -130,56 +130,101 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
           ),
         ),
         padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-        child: Row(
-          children: <Widget>[
-            Image.asset(
-              isEmptyEnvelope
-                  ? "assets/images/envelope/envelope_brown.png"
-                  : envelope.isOpen
-                      ? "assets/images/envelope/envelope_green_open.png"
-                      : "assets/images/envelope/envelope_green.png",
-              height: MediaQuery.of(context).size.width / 7,
-              width: MediaQuery.of(context).size.width / 7,
-              fit: BoxFit.fill,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // widget.chatConversation.isGroupConversation
+            //     ? envelope.fromCustomer != userBloc.user.userName
+            //         ? Column(
+            //             children: [
+            //               Text(
+            //                 envelope.fromCustomer,
+            //                 style: TextStyle(
+            //                     color: isSend ? Colors.white : navyBlue,
+            //                     fontSize: 12,
+            //                     fontWeight: FontWeight.w700),
+            //               ),
+            //               SizedBox(
+            //                 height: 4,
+            //               ),
+            //             ],
+            //           )
+            //         : Container(
+            //             width: 0,
+            //           )
+            //     : Container(
+            //         width: 0,
+            //       ),
+            Row(
+              children: <Widget>[
+                Image.asset(
+                  isEmptyEnvelope
+                      ? "assets/images/envelope/envelope_brown.png"
+                      : envelope.isOpen
+                          ? "assets/images/envelope/envelope_green_open.png"
+                          : "assets/images/envelope/envelope_green.png",
+                  height: MediaQuery.of(context).size.width / 7,
+                  width: MediaQuery.of(context).size.width / 7,
+                  fit: BoxFit.fill,
+                ),
+                SizedBox(
+                  width: 12,
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        messageDecoderWithEmoji("${envelope.title ?? ""}"),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: blackFont,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      SizedBox(
+                        height:
+                            widget.chatConversation.isGroupConversation ? 2 : 4,
+                      ),
+                      Text(
+                        isEmptyEnvelope
+                            ? message["author_full_name"] ?? message["author"]
+                            : isSend
+                                ? envelope.isOpen
+                                    ? "Opened"
+                                    : "Closed"
+                                : message["author_full_name"] ??
+                                    message["author"],
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: blackFont),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      SizedBox(
+                        height:
+                            widget.chatConversation.isGroupConversation ? 2 : 0,
+                      ),
+                      widget.chatConversation.isGroupConversation
+                          ? Text(
+                              envelope.toCustomer,
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                  color: navyBlue),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            )
+                          : Container(),
+                    ],
+                  ),
+                )
+              ],
             ),
-            SizedBox(
-              width: 12,
-            ),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    messageDecoderWithEmoji("${envelope.title ?? ""}"),
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: blackFont,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  SizedBox(
-                    height: 4,
-                  ),
-                  Text(
-                    isEmptyEnvelope
-                        ? message["author_full_name"] ?? message["author"]
-                        : isSend
-                            ? envelope.isOpen
-                                ? "Opened"
-                                : "Closed"
-                            : message["author_full_name"] ?? message["author"],
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                        color: blackFont),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            )
           ],
         ),
       ),
