@@ -256,12 +256,22 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
       onTap: () {
         if (isEmptyEnvelope) {
           if (envelope.toCustomer == userBloc.user.userName) {
-            Navigator.of(context)
-                .pushNamed("/put-money-in-envelope", arguments: {
-              "chatConversation": widget.chatConversation,
-              "message": message,
-              "envelope": envelope
-            });
+            ChatConversation _chatConversation =
+                ChatConversation.fromChatConversation(widget.chatConversation);
+
+            if (widget.chatConversation.isGroupConversation) {
+              _chatConversation.userName = userBloc.user.userName;
+              _chatConversation.fullName = userBloc.user.fullName;
+              _chatConversation.avatar = userBloc.user.avatar;
+              _chatConversation.qrCode = userBloc.user.qrCode;
+            }
+
+            Navigator.of(context).pushNamed("/put-money-in-envelope",
+                arguments: {
+                  "chatConversation": _chatConversation,
+                  "message": message,
+                  "envelope": envelope
+                });
           }
           return;
         }
