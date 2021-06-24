@@ -34,6 +34,10 @@ class Transaction {
   int amount;
   bool isCredit;
   bool isAnonymous;
+  String fromCustomer;
+  String fromCustomerAvatar;
+  String toCustomer;
+  String toCustomerAvatar;
 
   // Pass in as named parameter in constructor
   Transaction(
@@ -47,6 +51,10 @@ class Transaction {
       this.userType = "User",
       this.category,
       this.note,
+      this.toCustomer = "",
+      this.fromCustomer = "",
+      this.fromCustomerAvatar = "",
+      this.toCustomerAvatar = "",
       this.latitude,
       this.longitude,
       this.isAnonymous,
@@ -74,7 +82,13 @@ class Transaction {
         longitude: json['longitude'] ?? "",
         amount: json['amount'],
         isAnonymous: json['is_anonymous'] ?? false,
-        isCredit: isCredit);
+        isCredit: isCredit,
+        fromCustomer: json['from_customer'],
+        fromCustomerAvatar: json['from_customer_avatar'] ??
+            "https://slydo-assets.s3.amazonaws.com/media/customer/avatar/b1a8773527284446a45e9dd31924c5e8.jpg",
+        toCustomer: json['to_customer'],
+        toCustomerAvatar: json['to_customer_avatar'] ??
+            "https://slydo-assets.s3.amazonaws.com/media/customer/avatar/4f4470b6dbf44b62859ddf2b945d7472.jpg");
   }
 }
 

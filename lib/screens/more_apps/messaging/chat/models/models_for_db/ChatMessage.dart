@@ -68,7 +68,9 @@ class ChatMessage {
       repliedTo: json['replied_to'] is Map
           ? jsonEncode(json['replied_to'])
           : json['replied_to'] ?? "{}",
-      text: json['text'] is Map ? jsonEncode(json['text']) : json['text'],
+      text: json['text'] is Map
+          ? jsonEncode(json['text'])
+          : json['text'].toString(),
       type: json['type'],
       updatedAt: json['updated_at'],
       wasEdited: json['was_edited'],

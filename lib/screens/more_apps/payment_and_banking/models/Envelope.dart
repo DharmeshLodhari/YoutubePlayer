@@ -17,6 +17,8 @@ class Envelope {
   String toCustomer;
   String transaction;
   String type;
+  String fromCustomerAvatar;
+  String toCustomerAvatar;
 
   Envelope(
       {this.amount,
@@ -30,6 +32,8 @@ class Envelope {
       this.openAt,
       this.paidAt,
       this.payOutTransaction,
+      this.fromCustomerAvatar = "",
+      this.toCustomerAvatar = "",
       this.title,
       this.toCustomer,
       this.transaction,
@@ -53,6 +57,10 @@ class Envelope {
         toCustomer: json['to_customer'],
         transaction: json['transaction'].toString(),
         type: json['type'],
+        fromCustomerAvatar: json['from_customer_avatar'] ??
+            "https://slydo-assets.s3.amazonaws.com/media/customer/avatar/b1a8773527284446a45e9dd31924c5e8.jpg",
+        toCustomerAvatar: json['to_customer_avatar'] ??
+            "https://slydo-assets.s3.amazonaws.com/media/customer/avatar/4f4470b6dbf44b62859ddf2b945d7472.jpg",
         magicEnvelope: getMagicEnvelope(json['magic_envelope']));
   }
 
@@ -84,6 +92,8 @@ class Envelope {
     data['transaction'] = this.transaction;
     data['type'] = this.type;
     data['magic_envelope'] = this.magicEnvelope;
+    data['from_customer_avatar'] = this.fromCustomerAvatar;
+    data['to_customer_avatar'] = this.toCustomerAvatar;
     return data;
   }
 }

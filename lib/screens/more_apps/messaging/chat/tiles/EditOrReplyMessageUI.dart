@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/Envelope.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -17,8 +18,9 @@ import '../utils.dart';
 // ignore: must_be_immutable
 class EditOrReplyMessageUI extends StatefulWidget {
   final Map<String, dynamic> messageData;
+  final ChatConversation chatConversation;
 
-  EditOrReplyMessageUI({this.messageData});
+  EditOrReplyMessageUI({this.messageData, this.chatConversation});
 
   @override
   _EditOrReplyMessageUIState createState() => _EditOrReplyMessageUIState();
@@ -322,44 +324,56 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
         ),
       ),
       padding: EdgeInsets.symmetric(horizontal: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          Text(
-            transaction["description"] == ""
-                ? getAuthorName(message: message, currentUser: userBloc.user)
-                : transaction["description"] ??
-                    getAuthorName(message: message, currentUser: userBloc.user),
-            style: TextStyle(
-                color: blackFont, fontSize: 14, fontWeight: FontWeight.w600),
-            overflow: TextOverflow.ellipsis,
-            maxLines: 1,
-            softWrap: false,
-          ),
-          SizedBox(
-            height: 4,
-          ),
-          Row(
-            children: [
-              Text(
-                "₦ ",
-                style: TextStyle(
-                    fontFamily: "Roberto",
-                    color: darkGrey,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w400),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              Text(
-                moneyDisplayNormalizer(
-                    int.parse(transaction['amount'].toString())),
-                style: TextStyle(
-                    color: darkGrey, fontSize: 12, fontWeight: FontWeight.w400),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  transaction["description"] == ""
+                      ? getAuthorName(
+                          message: message, currentUser: userBloc.user)
+                      : transaction["description"] ??
+                          getAuthorName(
+                              message: message, currentUser: userBloc.user),
+                  style: TextStyle(
+                      color: blackFont,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  softWrap: false,
+                ),
+                SizedBox(
+                  height: 4,
+                ),
+                Row(
+                  children: [
+                    Text(
+                      "₦ ",
+                      style: TextStyle(
+                          fontFamily: "Roberto",
+                          color: darkGrey,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(
+                      moneyDisplayNormalizer(
+                          int.parse(transaction['amount'].toString())),
+                      style: TextStyle(
+                          color: darkGrey,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -723,7 +737,54 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
                 ),
               ],
             ),
-          )
+          ),
+          widget.chatConversation.isGroupConversation
+              ? Container(
+                  height: 50,
+                  width: 80,
+                  child: Stack(
+                    overflow: Overflow.visible,
+                    children: [
+                      Positioned(
+                        left: 30,
+                        child: Container(
+                          height: 40,
+                          width: 40,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(100),
+                              border: Border.all(color: navyBlue, width: 2)),
+                          child: ClipOval(
+                            child: CachedNetworkImage(
+                              height: 40,
+                              width: 40,
+                              fit: BoxFit.fill,
+                              imageUrl: envelope.toCustomerAvatar,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        height: 40,
+                        width: 40,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(100),
+                            border: Border.all(color: naturalGreen, width: 2)),
+                        child: ClipOval(
+                          child: CachedNetworkImage(
+                            height: 40,
+                            width: 40,
+                            fit: BoxFit.fill,
+                            imageUrl: envelope.fromCustomerAvatar,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : Container(
+                  width: 1,
+                  height: 1,
+                ),
         ],
       ),
     );

@@ -28,6 +28,8 @@ class CacheManager {
     await ConnectionListManager().clearConnections();
     DBSocketMessageHandler().clearSocketQueueChatMessage();
     await DatabaseHelper().deleteVirtualAccount();
+    await DatabaseHelper().deleteNotification();
+    await DatabaseHelper().deleteNudgeNotification();
 
     debugPrint("Cache cleared");
   }

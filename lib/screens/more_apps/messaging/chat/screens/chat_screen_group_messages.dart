@@ -2958,7 +2958,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                     ),
                     onPressed: () {}),
                 Expanded(
-                  child: EditOrReplyMessageUI(messageData: messageData),
+                  child: EditOrReplyMessageUI(messageData: messageData,chatConversation:chatConversation),
                 ),
                 IconButton(
                     icon: Icon(

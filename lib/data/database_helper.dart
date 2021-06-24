@@ -717,12 +717,6 @@ class DatabaseHelper {
     chatMessages.forEach((chatMessage) {
       Map<String, dynamic> data = chatMessage.toDBJson();
 
-      if (chatMessage.kind == "envelope" ||
-          chatMessage.kind == "magic_envelope") {
-        debugPrint("======> $data");
-      }
-
-      debugPrint("");
       insertUserBatch.insert("ChatMessage", data,
           conflictAlgorithm: ConflictAlgorithm.ignore);
     });

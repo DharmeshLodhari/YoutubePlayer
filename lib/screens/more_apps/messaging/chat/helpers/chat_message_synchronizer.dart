@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_handler.dart';
@@ -63,6 +64,14 @@ class ChatMessageSynchronizer {
       if (result == null) return;
 
       List<String> tempList = result['results'];
+
+      tempList.forEach((element) {
+        Map<String, dynamic> decodedMessage = jsonDecode(element);
+        if (decodedMessage['kind'] == "transaction" ||
+            decodedMessage['kind'] == "payment-request") {
+          debugPrint("Message===> $element");
+        }
+      });
 
       await ChatMessageHandler().saveChatMessages(messages: tempList);
 

@@ -1267,7 +1267,54 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                 ),
               ],
             ),
-          )
+          ),
+          widget.chatConversation.isGroupConversation
+              ? Container(
+                  height: 50,
+                  width: 80,
+                  child: Stack(
+                    overflow: Overflow.visible,
+                    children: [
+                      Positioned(
+                        left: 30,
+                        child: Container(
+                          height: 40,
+                          width: 40,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(100),
+                              border: Border.all(color: navyBlue, width: 2)),
+                          child: ClipOval(
+                            child: CachedNetworkImage(
+                              height: 40,
+                              width: 40,
+                              fit: BoxFit.fill,
+                              imageUrl: envelope.toCustomerAvatar,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        height: 40,
+                        width: 40,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(100),
+                            border: Border.all(color: naturalGreen, width: 2)),
+                        child: ClipOval(
+                          child: CachedNetworkImage(
+                            height: 40,
+                            width: 40,
+                            fit: BoxFit.fill,
+                            imageUrl: envelope.fromCustomerAvatar,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : Container(
+                  width: 1,
+                  height: 1,
+                ),
         ],
       ),
     );

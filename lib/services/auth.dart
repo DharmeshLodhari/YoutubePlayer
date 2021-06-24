@@ -169,6 +169,7 @@ class AuthService {
     }
 
     String bearer = "Bearer " + tokenData["access"];
+    // debugPrint("Token:- $bearer");
     var uuid = Uuid();
     var transactionId = uuid.v4();
     var headers = {

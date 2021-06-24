@@ -7,6 +7,7 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/models/Envelope.dart
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -134,28 +135,6 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // widget.chatConversation.isGroupConversation
-            //     ? envelope.fromCustomer != userBloc.user.userName
-            //         ? Column(
-            //             children: [
-            //               Text(
-            //                 envelope.fromCustomer,
-            //                 style: TextStyle(
-            //                     color: isSend ? Colors.white : navyBlue,
-            //                     fontSize: 12,
-            //                     fontWeight: FontWeight.w700),
-            //               ),
-            //               SizedBox(
-            //                 height: 4,
-            //               ),
-            //             ],
-            //           )
-            //         : Container(
-            //             width: 0,
-            //           )
-            //     : Container(
-            //         width: 0,
-            //       ),
             Row(
               children: <Widget>[
                 Image.asset(
@@ -205,24 +184,66 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      SizedBox(
-                        height:
-                            widget.chatConversation.isGroupConversation ? 2 : 0,
-                      ),
-                      widget.chatConversation.isGroupConversation
-                          ? Text(
-                              envelope.toCustomer,
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400,
-                                  color: navyBlue),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            )
-                          : Container(),
+                      // SizedBox(
+                      //   height:
+                      //       widget.chatConversation.isGroupConversation ? 2 : 0,
+                      // ),
+                      // widget.chatConversation.isGroupConversation
+                      //     ? Text(
+                      //         envelope.toCustomer,
+                      //         style: TextStyle(
+                      //             fontSize: 14,
+                      //             fontWeight: FontWeight.w400,
+                      //             color: navyBlue),
+                      //         maxLines: 1,
+                      //         overflow: TextOverflow.ellipsis,
+                      //       )
+                      //     : Container(),
                     ],
                   ),
-                )
+                ),
+                widget.chatConversation.isGroupConversation?Container(
+                  height: 50,
+                  width: 90,
+                  child: Stack(
+                    overflow: Overflow.visible,
+                    children: [
+                      Positioned(
+                        left: 40,
+                        child: Container(
+                          height: 50,
+                          width: 50,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(100),
+                              border: Border.all(color: navyBlue, width: 2)),
+                          child: ClipOval(
+                            child: CachedNetworkImage(
+                              height: 50,
+                              width: 50,
+                              fit: BoxFit.fill,
+                              imageUrl: envelope.toCustomerAvatar,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        height: 50,
+                        width: 50,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(100),
+                            border: Border.all(color: naturalGreen, width: 2)),
+                        child: ClipOval(
+                          child: CachedNetworkImage(
+                            height: 50,
+                            width: 50,
+                            fit: BoxFit.fill,
+                            imageUrl: envelope.fromCustomerAvatar,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ):Container(),
               ],
             ),
           ],
