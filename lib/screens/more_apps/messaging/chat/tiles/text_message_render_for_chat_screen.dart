@@ -1288,7 +1288,8 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                               height: 40,
                               width: 40,
                               fit: BoxFit.fill,
-                              imageUrl: envelope.toCustomerAvatar,
+                              imageUrl: message['to_customer_avatar'] ??
+                                  "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png",
                             ),
                           ),
                         ),
@@ -1304,7 +1305,8 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                             height: 40,
                             width: 40,
                             fit: BoxFit.fill,
-                            imageUrl: envelope.fromCustomerAvatar,
+                            imageUrl: message['from_customer_avatar'] ??
+                                "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png",
                           ),
                         ),
                       ),

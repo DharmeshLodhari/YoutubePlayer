@@ -93,8 +93,8 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
                                           height: 50,
                                           width: 50,
                                           fit: BoxFit.fill,
-                                          imageUrl:
-                                              transaction.toCustomerAvatar,
+                                          imageUrl: widget
+                                              .message['to_customer_avatar'],
                                         ),
                                       ),
                                     ),
@@ -112,8 +112,8 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
                                         height: 50,
                                         width: 50,
                                         fit: BoxFit.fill,
-                                        imageUrl:
-                                            transaction.fromCustomerAvatar,
+                                        imageUrl: widget
+                                            .message['from_customer_avatar'],
                                       ),
                                     ),
                                   ),
@@ -282,8 +282,8 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
                                           height: 50,
                                           width: 50,
                                           fit: BoxFit.fill,
-                                          imageUrl:
-                                              transaction.toCustomerAvatar,
+                                          imageUrl: widget
+                                              .message['to_customer_avatar'],
                                         ),
                                       ),
                                     ),
@@ -301,8 +301,8 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
                                         height: 50,
                                         width: 50,
                                         fit: BoxFit.fill,
-                                        imageUrl:
-                                            transaction.fromCustomerAvatar,
+                                        imageUrl: widget
+                                            .message['from_customer_avatar'],
                                       ),
                                     ),
                                   ),

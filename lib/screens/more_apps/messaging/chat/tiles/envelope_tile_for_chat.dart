@@ -202,48 +202,52 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
                     ],
                   ),
                 ),
-                widget.chatConversation.isGroupConversation?Container(
-                  height: 50,
-                  width: 90,
-                  child: Stack(
-                    overflow: Overflow.visible,
-                    children: [
-                      Positioned(
-                        left: 40,
-                        child: Container(
-                          height: 50,
-                          width: 50,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(100),
-                              border: Border.all(color: navyBlue, width: 2)),
-                          child: ClipOval(
-                            child: CachedNetworkImage(
+                widget.chatConversation.isGroupConversation
+                    ? Container(
+                        height: 50,
+                        width: 90,
+                        child: Stack(
+                          overflow: Overflow.visible,
+                          children: [
+                            Positioned(
+                              left: 40,
+                              child: Container(
+                                height: 50,
+                                width: 50,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(100),
+                                    border:
+                                        Border.all(color: navyBlue, width: 2)),
+                                child: ClipOval(
+                                  child: CachedNetworkImage(
+                                    height: 50,
+                                    width: 50,
+                                    fit: BoxFit.fill,
+                                    imageUrl: message['to_customer_avatar'],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Container(
                               height: 50,
                               width: 50,
-                              fit: BoxFit.fill,
-                              imageUrl: envelope.toCustomerAvatar,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(100),
+                                  border: Border.all(
+                                      color: naturalGreen, width: 2)),
+                              child: ClipOval(
+                                child: CachedNetworkImage(
+                                  height: 50,
+                                  width: 50,
+                                  fit: BoxFit.fill,
+                                  imageUrl: message['from_customer_avatar'],
+                                ),
+                              ),
                             ),
-                          ),
+                          ],
                         ),
-                      ),
-                      Container(
-                        height: 50,
-                        width: 50,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(100),
-                            border: Border.all(color: naturalGreen, width: 2)),
-                        child: ClipOval(
-                          child: CachedNetworkImage(
-                            height: 50,
-                            width: 50,
-                            fit: BoxFit.fill,
-                            imageUrl: envelope.fromCustomerAvatar,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ):Container(),
+                      )
+                    : Container(),
               ],
             ),
           ],
@@ -251,19 +255,26 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
       ),
       onTap: () {
         if (isEmptyEnvelope) {
-          Navigator.of(context).pushNamed("/put-money-in-envelope", arguments: {
-            "chatConversation": widget.chatConversation,
-            "message": message,
-            "envelope": envelope
-          });
+          if (envelope.toCustomer == userBloc.user.userName) {
+            Navigator.of(context)
+                .pushNamed("/put-money-in-envelope", arguments: {
+              "chatConversation": widget.chatConversation,
+              "message": message,
+              "envelope": envelope
+            });
+          }
           return;
         }
 
-        Navigator.of(context).pushNamed("/envelope-detail", arguments: {
-          "searchedUserName": message["author"],
-          "data": message,
-          "envelope": envelope
-        });
+        if (userBloc.user.userName == envelope.toCustomer ||
+            userBloc.user.userName == envelope.fromCustomer) {
+          Navigator.of(context).pushNamed("/envelope-detail", arguments: {
+            "searchedUserName": message["author"],
+            "data": message,
+            "envelope": envelope
+          });
+        }
+
         return;
       },
     );

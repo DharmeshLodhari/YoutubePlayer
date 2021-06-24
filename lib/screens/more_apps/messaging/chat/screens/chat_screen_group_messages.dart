@@ -2111,7 +2111,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
     arguments['isEmptyEnvelope'] = isEmpty;
 
-    ChatConversation _chatConversation = ChatConversation.fromChatConversation(chatConversation);
+    ChatConversation _chatConversation =
+        ChatConversation.fromChatConversation(chatConversation);
 
     if (chatConversation.isGroupConversation) {
       _chatConversation.userName = recipient.userName;
@@ -2958,7 +2959,9 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                     ),
                     onPressed: () {}),
                 Expanded(
-                  child: EditOrReplyMessageUI(messageData: messageData,chatConversation:chatConversation),
+                  child: EditOrReplyMessageUI(
+                      messageData: messageData,
+                      chatConversation: chatConversation),
                 ),
                 IconButton(
                     icon: Icon(
@@ -3000,7 +3003,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                     ),
                     onPressed: () {}),
                 Expanded(
-                  child: EditOrReplyMessageUI(messageData: messageData),
+                  child: EditOrReplyMessageUI(
+                    messageData: messageData,
+                    chatConversation: chatConversation,
+                  ),
                 ),
                 Container(
                   width: 48,

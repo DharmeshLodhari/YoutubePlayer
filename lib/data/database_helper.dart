@@ -168,6 +168,8 @@ class DatabaseHelper {
       "poster" TEXT,
       "read_by_author" INTEGER,
       "read_by_recipient" INTEGER,
+      "from_customer_avatar" TEXT,
+      "to_customer_avatar" TEXT,
       "replied_to" TEXT,
       "text" TEXT,
       "type" TEXT,

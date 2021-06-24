@@ -323,7 +323,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
           left: BorderSide(width: 2.0, color: blackFont),
         ),
       ),
-      padding: EdgeInsets.symmetric(horizontal: 12),
+      padding: EdgeInsets.only(left: 12),
       child: Row(
         children: [
           Expanded(
@@ -375,6 +375,53 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               ],
             ),
           ),
+          widget.chatConversation.isGroupConversation
+              ? Container(
+                  height: 50,
+                  width: 70,
+                  child: Stack(
+                    overflow: Overflow.visible,
+                    children: [
+                      Positioned(
+                        left: 30,
+                        child: Container(
+                          height: 40,
+                          width: 40,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(100),
+                              border: Border.all(color: navyBlue, width: 2)),
+                          child: ClipOval(
+                            child: CachedNetworkImage(
+                              height: 40,
+                              width: 40,
+                              fit: BoxFit.fill,
+                              imageUrl: message['to_customer_avatar'],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        height: 40,
+                        width: 40,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(100),
+                            border: Border.all(color: naturalGreen, width: 2)),
+                        child: ClipOval(
+                          child: CachedNetworkImage(
+                            height: 40,
+                            width: 40,
+                            fit: BoxFit.fill,
+                            imageUrl: message['from_customer_avatar'],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : Container(
+                  width: 1,
+                  height: 1,
+                ),
         ],
       ),
     );
@@ -395,46 +442,106 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
           left: BorderSide(width: 2.0, color: blackFont),
         ),
       ),
-      padding: EdgeInsets.symmetric(horizontal: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      padding: EdgeInsets.only(left: 12),
+      child: Row(
         children: [
-          Text(
-            paymentRequest["description"] == ""
-                ? getAuthorName(message: message, currentUser: userBloc.user)
-                : paymentRequest["description"] ??
-                    getAuthorName(message: message, currentUser: userBloc.user),
-            style: TextStyle(
-                color: blackFont, fontSize: 14, fontWeight: FontWeight.w600),
-            overflow: TextOverflow.ellipsis,
-            maxLines: 1,
-            softWrap: false,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  paymentRequest["description"] == ""
+                      ? getAuthorName(
+                          message: message, currentUser: userBloc.user)
+                      : paymentRequest["description"] ??
+                          getAuthorName(
+                              message: message, currentUser: userBloc.user),
+                  style: TextStyle(
+                      color: blackFont,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  softWrap: false,
+                ),
+                SizedBox(
+                  height: 4,
+                ),
+                Row(
+                  children: [
+                    Text(
+                      "₦ ",
+                      style: TextStyle(
+                          fontFamily: "Roberto",
+                          color: darkGrey,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(
+                      moneyDisplayNormalizer(
+                          double.parse(paymentRequest['amount'].toString())
+                              .toInt()),
+                      style: TextStyle(
+                          color: darkGrey,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-          SizedBox(
-            height: 4,
-          ),
-          Row(
-            children: [
-              Text(
-                "₦ ",
-                style: TextStyle(
-                    fontFamily: "Roberto",
-                    color: darkGrey,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w400),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              Text(
-                moneyDisplayNormalizer(
-                    double.parse(paymentRequest['amount'].toString()).toInt()),
-                style: TextStyle(
-                    color: darkGrey, fontSize: 12, fontWeight: FontWeight.w400),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-          ),
+          widget.chatConversation.isGroupConversation
+              ? Container(
+                  height: 50,
+                  width: 70,
+                  child: Stack(
+                    overflow: Overflow.visible,
+                    children: [
+                      Positioned(
+                        left: 30,
+                        child: Container(
+                          height: 40,
+                          width: 40,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(100),
+                              border: Border.all(color: navyBlue, width: 2)),
+                          child: ClipOval(
+                            child: CachedNetworkImage(
+                              height: 40,
+                              width: 40,
+                              fit: BoxFit.fill,
+                              imageUrl: message['to_customer_avatar'],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        height: 40,
+                        width: 40,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(100),
+                            border: Border.all(color: naturalGreen, width: 2)),
+                        child: ClipOval(
+                          child: CachedNetworkImage(
+                            height: 40,
+                            width: 40,
+                            fit: BoxFit.fill,
+                            imageUrl: message['from_customer_avatar'],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : Container(
+                  width: 1,
+                  height: 1,
+                ),
         ],
       ),
     );
@@ -758,7 +865,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
                               height: 40,
                               width: 40,
                               fit: BoxFit.fill,
-                              imageUrl: envelope.toCustomerAvatar,
+                              imageUrl: message['to_customer_avatar'],
                             ),
                           ),
                         ),
@@ -774,7 +881,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
                             height: 40,
                             width: 40,
                             fit: BoxFit.fill,
-                            imageUrl: envelope.fromCustomerAvatar,
+                            imageUrl: message['from_customer_avatar'],
                           ),
                         ),
                       ),
