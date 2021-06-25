@@ -116,9 +116,10 @@ class AuthService {
   Future<void> logOut() async {
     var url = secureBaseUrl + "/api/v1/user/auth/logout/";
     var headers = await getAuthHeaders();
-    await http.get(url, headers: headers);
-    await deleteUsers();
-    await deleteDevice();
+    debugPrint("URL:- $url Called !!");
+    var response = await http.get(url, headers: headers);
+    debugPrint(
+        "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     await unRegisterDevice();
   }
 
@@ -240,14 +241,17 @@ class AuthService {
     var url = secureBaseUrl + "/api/v1/notification/unregister-device/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode({});
+    debugPrint("URL:- $url Called !!");
     var response;
     try {
       response = await http.patch(url, headers: headers, body: _data);
     } catch (e) {
       debugPrint(
-          "URL:- $url STATUSCODE:- ${response.statusCode} RESPONSEBODY:- ${response.body}");
+          "URL:- $url STATUS CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
       debugPrint("ERROR: WHILE UNREGISTERING DEVICE :-" + e.toString());
     }
+    debugPrint(
+        "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     return response.statusCode == 200;
   }
 

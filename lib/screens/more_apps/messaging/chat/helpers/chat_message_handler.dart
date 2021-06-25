@@ -36,6 +36,15 @@ class ChatMessageHandler {
     return chatMessages;
   }
 
+  Future<List<ChatMessage>> getLimitedChatMessages(
+      {String conversationId, int limit}) async {
+    List<ChatMessage> chatMessages;
+
+    chatMessages = await _db.getLimitedChatMessages(
+        conversationId: conversationId, limit: limit);
+    return chatMessages;
+  }
+
   Future<int> updateReadByRecipientChatMessage(
       {String checkId, String conversationId}) async {
     return await _db.updateChatMessageReadByRecipient(checkId, conversationId);

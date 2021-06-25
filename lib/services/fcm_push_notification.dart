@@ -171,20 +171,23 @@ class PushNotificationService {
             ? getAndroidNotification(message)
             : getIosNotification(message);
 
-        ///{body: Slydo Nudge Message,
-        /// title: Slydo Notification,
-        /// vibrate: [200,100,200,100,200,100,400],
-        /// icon: null,
-        /// badge: null,
-        /// sound: null, link: null,
-        /// tag: null, dir: auto,
-        /// actions: /chat-screen/brijesh.sakariya,
-        /// image: null, data: {"type":"nudge_user"}}
-
         if (notification["data"] != null) {
           print("notification data = ${notification["data"]}");
           print("notification data type = ${notification["data"] is String}");
-          // MainSocketMessageHandler(message: notification["data"]);
+          Map<String, dynamic> decodeMessage;
+          try {
+            decodeMessage = notification["data"] is Map
+                ? notification["data"]
+                : jsonDecode(notification["data"]);
+          } catch (error) {
+            debugPrint(
+                "ERROR:- while adding data to db from FCM $notification");
+          }
+          if (decodeMessage != null) {
+            if (decodeMessage.isNotEmpty) {
+              // MainSocketMessageHandler(message: notification["data"]);
+            }
+          }
         } else {
           if ((notification["body"].toString().toLowerCase() == "hello" ||
                       notification["body"].toString().toLowerCase() ==

@@ -343,6 +343,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void getMissedMessageFromDB() async {
+    debugPrint("Get missed messages Called !!");
     List<ChatMessage> messages = await ChatMessageHandler()
         .getChatMessages(chatConversation: chatConversation);
 
@@ -1261,7 +1262,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       ),
       onTap: () async {
         await ConnectionSynchronizer().update();
-        await ChatMessageSynchronizer().update();
+        await ChatMessageSynchronizer().updateMessages();
       },
       backgroundColor: lightGrey,
       enableMargin: true,
@@ -1329,7 +1330,11 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       debugPrint("ERROR:- $error");
     });
 
-    if (data == null) return;
+    if (data == null)
+      {
+        userStatus = "";
+        return;
+      }
 
     if (data["status"] == "Online") {
       userStatus = "Online";

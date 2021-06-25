@@ -8,6 +8,7 @@ import 'package:Slydo/utils/common.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -44,6 +45,8 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
 
   Envelope envelope;
 
+  bool isEmptyEnvelope = false;
+
   @override
   void initState() {
     getEnvelopeAndUserData();
@@ -58,15 +61,21 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
     if (mounted) setState(() {});
     // debugPrint("DATA:- $data");
 
-    Envelope envelopeFromServer = await MessageAuth()
-        .getEnvelope(envelope: envelope, id: data['id'])
-        .catchError((error) {
-      debugPrint("ERROR1:- $error");
-      Toast.show("ERROR1:- $error", context);
-    });
+    debugPrint("envelope ${envelope.toJson()}");
     await getSearchedUser();
-    if (envelopeFromServer != null) {
-      envelope = envelopeFromServer;
+    if (envelope.type != "empty-envelop") {
+      Envelope envelopeFromServer = await MessageAuth()
+          .getEnvelope(envelope: envelope, id: data['id'])
+          .catchError((error) {
+        debugPrint("ERROR1:- $error");
+        Toast.show("ERROR1:- $error", context);
+      });
+
+      if (envelopeFromServer != null) {
+        envelope = envelopeFromServer;
+      }
+    } else {
+      isEmptyEnvelope = true;
     }
 
     isLoading = false;
@@ -139,10 +148,10 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
               height: 20,
             ),
             getEnvelopeDetail(),
-            // SizedBox(
-            //   height: 60,
-            // ),
-            // getEnvelopeActions(),
+            SizedBox(
+              height: 60,
+            ),
+            getEnvelopeActions(),
           ],
         ),
       ),
@@ -168,24 +177,29 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "₦ ",
-                style: TextStyle(
-                    fontFamily: "Roberto",
-                    fontSize: 32,
-                    fontWeight: FontWeight.w700,
-                    color: navyBlue),
-              ),
-              Text(
-                "${moneyDisplayNormalizer(int.parse(envelope.amount))}" ?? "",
-                style: TextStyle(
-                    fontSize: 32, fontWeight: FontWeight.w700, color: navyBlue),
-              ),
-            ],
-          ),
+          isEmptyEnvelope
+              ? Container()
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "₦ ",
+                      style: TextStyle(
+                          fontFamily: "Roberto",
+                          fontSize: 32,
+                          fontWeight: FontWeight.w700,
+                          color: navyBlue),
+                    ),
+                    Text(
+                      "${moneyDisplayNormalizer(int.parse(envelope.amount))}" ??
+                          "",
+                      style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.w700,
+                          color: navyBlue),
+                    ),
+                  ],
+                ),
           SizedBox(
             height: 12,
           ),
@@ -209,36 +223,43 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
 
   Widget getEnvelopeActions() {
     return isAuthor
-        ? Container()
-        : Container(
-            child: Row(
-              children: <Widget>[
-                Expanded(
-                  child: CurvedButton(
-                    backgroundColor: mateRed,
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    text: "Reject",
-                    textColor: Colors.white,
-                  ),
-                ),
-                SizedBox(
-                  width: 16,
-                ),
-                Expanded(
-                  child: CurvedButton(
-                    backgroundColor: navyBlue,
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    text: "Accept",
-                    textColor: Colors.white,
-                  ),
-                ),
-              ],
+        ? Container(
+            child: CurvedButton(
+              backgroundColor: mateRed,
+              onPressed: cancelEmptyEnvelope,
+              text: "Cancel",
+              textColor: Colors.white,
             ),
-          );
+          )
+        : Container();
+  }
+
+  void cancelEmptyEnvelope() async {
+    BottomSheetPassCode(
+        context: context,
+        isValidCallback: () async {
+          showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => Center(child: CircularLoadingIndicator()));
+
+          var result = await MessageAuth()
+              .cancelEmptyEnvelope(envelope: envelope)
+              .catchError((error) {
+            Toast.show("ERROR:- $error", context, duration: 2);
+          });
+
+          if (result != null) {
+            if (result) {
+              Navigator.popUntil(context, ModalRoute.withName("/chat-screen"));
+            } else {
+              Toast.show("Failed to cancel Envelope", context, duration: 2);
+            }
+          }
+        },
+        cancelCallBack: () {
+          Navigator.pop(context);
+        });
   }
 
   Widget getAppbar(var context) {

@@ -1,3 +1,5 @@
+import 'package:Slydo/data/database_helper.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_message_settings.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
@@ -303,6 +305,14 @@ class _SplashScreenState extends State<SplashScreen> {
 
             bankAccountBloc.bankAccount = accounts.first;
             userBloc.user = user;
+
+            /// get user settings from DB
+            Map<String, dynamic> settings =
+                await DatabaseHelper().getGeneralSettings();
+            ChatMessageSettings chatMessageSettings =
+                ChatMessageSettings.fromDBJson(settings);
+            userBloc.chatMessageSettings = chatMessageSettings;
+
             socketProvider.currentUser = user;
 
             setState(() {});

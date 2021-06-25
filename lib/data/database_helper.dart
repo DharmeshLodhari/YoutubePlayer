@@ -39,7 +39,7 @@ class DatabaseHelper {
 
   initDb() async {
     io.Directory documentsDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentsDirectory.path, "main2.db");
+    String path = join(documentsDirectory.path, "initial.db");
     var theDb = await openDatabase(path,
         version: _databaseVersion,
         onCreate: _onCreate,
@@ -225,6 +225,14 @@ class DatabaseHelper {
             "created_at" TEXT,
             "updated_at" TEXT,
             "note" TEXT
+          );
+    ''');
+
+      // Create the General Settings table
+      await db.execute('''CREATE TABLE "GeneralSettings" (     
+            "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
+            "playIncomingMessageSound" INTEGER,
+            "playOutgoingMessageSound" INTEGER
           );
     ''');
 
@@ -789,6 +797,25 @@ class DatabaseHelper {
     return [];
   }
 
+  Future<List<ChatMessage>> getLimitedChatMessages(
+      {String conversationId, int limit = 10}) async {
+    Database dbClient = await db;
+
+    List<Map<String, dynamic>> res = await dbClient.query("ChatMessage",
+        orderBy: "created_at DESC",
+        where: "conversation_id = ? AND delivered = ?",
+        whereArgs: [conversationId, 1],
+        limit: limit);
+
+    if (res != null && res.length > 0) {
+      List<ChatMessage> chatMessages = res.map((element) {
+        return ChatMessage.fromDBJson(element);
+      }).toList();
+      return chatMessages;
+    }
+    return [];
+  }
+
   Future<int> deleteChatMessages() async {
     Database dbClient = await db;
     int res = await dbClient.delete("ChatMessage");
@@ -1050,6 +1077,53 @@ class DatabaseHelper {
     int res = await dbClient.delete("VirtualAccount");
     if (res != null) {
       debugPrint("DATABASE:- DELETE VirtualAccount !!");
+      return res;
+    }
+    return null;
+  }
+
+  /// GeneralSettings OPERATION
+
+  Future<int> saveGeneralSettings(Map<String, dynamic> data) async {
+    Database dbClient = await db;
+
+    int res = await dbClient.insert("GeneralSettings", data,
+        conflictAlgorithm: ConflictAlgorithm.ignore);
+    if (res != null) {
+      debugPrint("DATABASE:- Saved GeneralSettings !!");
+      return res;
+    }
+    return null;
+  }
+
+  Future<int> updateGeneralSettings(Map<String, dynamic> data) async {
+    Database dbClient = await db;
+
+    int res = await dbClient.update("GeneralSettings", data);
+    if (res != null) {
+      debugPrint("DATABASE:- Update GeneralSettings !!");
+      return res;
+    }
+    return null;
+  }
+
+  Future<Map<String, dynamic>> getGeneralSettings() async {
+    Database dbClient = await db;
+
+    List<Map<String, dynamic>> generalSettings =
+        await dbClient.query("GeneralSettings");
+    if (generalSettings != null) {
+      if (generalSettings.length > 0) return generalSettings.first;
+    }
+    return null;
+  }
+
+  Future<int> deleteGeneralSettings() async {
+    Database dbClient = await db;
+
+    int res = await dbClient.delete("GeneralSettings");
+    if (res != null) {
+      debugPrint("DATABASE:- DELETE GeneralSettings !!");
       return res;
     }
     return null;

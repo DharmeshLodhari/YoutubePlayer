@@ -1,3 +1,4 @@
+import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
@@ -509,6 +510,8 @@ class _UserLoginState extends State<UserLogin> {
           storeUserData();
 
           userBloc.user = _user;
+
+          DatabaseHelper().saveGeneralSettings(userBloc.chatMessageSettings.toDBJson());
 
           socketProvider.currentUser = _user;
 

@@ -38,6 +38,11 @@ class ChatMessageSynchronizer {
     _chatMessageStream.sink.add(false);
   }
 
+  void setStreamTrue() {
+    debugPrint("Stream called !!!");
+    _chatMessageStream.sink.add(true);
+  }
+
   Future<void> getMessages(
       {ChatConversation chatConversation, bool isFirstTime}) async {
     debugPrint("Fetching previous messages !!");
@@ -87,7 +92,7 @@ class ChatMessageSynchronizer {
     return;
   }
 
-  Future<void> update() async {
+  Future<void> updateMessages() async {
     List<ChatMessage> chatMessages =
         await ChatMessageHandler().getLastChatMessage();
 
@@ -135,6 +140,117 @@ class ChatMessageSynchronizer {
 
     Map<String, dynamic> resultData = await MessageAuth()
         .fetchMissedMessages(chatMessages: chatMessages)
+        .catchError((error) {
+      debugPrint("ERROR:- While calling Message Synchronizer $error");
+    });
+
+    if (resultData == null) return;
+    List connectionList = resultData['results'];
+
+    List<ChatMessage> messageList = List<ChatMessage>();
+    if (connectionList.isNotEmpty) {
+      connectionList.forEach((element) {
+        String conversationId = element.keys.first;
+
+        List messages = element[conversationId];
+
+        messages.forEach((message) {
+          ChatMessage chatMessage = ChatMessage.fromJson(message);
+          debugPrint(
+              "<==== ${chatMessage.text}   <===== ${chatMessage.createdAt}");
+          messageList.add(chatMessage);
+        });
+      });
+    }
+
+    if (messageList.isNotEmpty) {
+      await ChatMessageHandler().insertMissedChatMessage(messages: messageList);
+
+      _chatMessageStream.sink.add(true);
+
+      messageList.forEach((message) async {
+        await MainSocketMessageHandler()
+            .saveAndUpdateUserMessageCount(messageData: message.toJson());
+        _chatMessageCountStream.sink.add(true);
+      });
+    }
+
+    return Future.value();
+  }
+
+  Future<void> syncMessages(
+      {@required ChatConversation chatConversation}) async {
+    List<ChatMessage> chatMessages =
+        await ChatMessageHandler().getLastChatMessage();
+
+    if (chatMessages == null || chatMessages.isEmpty) return;
+
+    // chatMessages.forEach((element) {
+    //   debugPrint("Message:- ${element.text}  createdAt:- ${element.createdAt}");
+    // });
+
+    MyGlobals myGlobals = MyGlobals();
+    BuildContext context = myGlobals.navigationKey.currentContext;
+
+    ConnectionListBloc connectionListBloc =
+        Provider.of<ConnectionListBloc>(context, listen: false);
+
+    List<ChatMessage> newConnections = List<ChatMessage>();
+
+    connectionListBloc.connectionUsers.forEach((chatConversation) {
+      ChatMessage chatMessage;
+      chatMessages.forEach((message) {
+        if (message.conversationId == chatConversation.conversationId) {
+          chatMessage = message;
+        }
+      });
+
+      if (chatMessage == null) {
+        newConnections.add(ChatMessage(
+            text: chatConversation.fullName,
+            conversationId: chatConversation.conversationId,
+            createdAt: chatConversation.createdAt,
+            checkId: null));
+      }
+    });
+
+    chatMessages.addAll(newConnections);
+
+    newConnections.forEach((element) {
+      debugPrint("New Conversation ${element.toJson()}");
+    });
+
+    debugPrint(
+        "Messages after adding new Conversation:- ${chatMessages.length}");
+
+    if (chatMessages == null) return;
+
+    List<Map<String, dynamic>> dataToBeSent = [];
+
+    chatMessages.forEach((element) async {
+      List<ChatMessage> lastFewMessages = await ChatMessageHandler()
+          .getLimitedChatMessages(
+              conversationId: element.conversationId, limit: 10);
+
+      List<String> checkIds = [];
+      if (lastFewMessages != null) {
+        if (lastFewMessages.isNotEmpty) {
+          lastFewMessages.forEach((element) {
+            checkIds.add(element.checkId);
+          });
+        }
+      }
+
+      dataToBeSent.add({
+        "conversation_id": element.conversationId,
+        // "created_at":
+        //     DateTime.parse(element.createdAt).toUtc().toIso8601String(),
+        "check_ids": checkIds
+      });
+    });
+
+    Map<String, dynamic> resultData = await MessageAuth()
+        .fetchMissedMessagesTest(data: dataToBeSent)
         .catchError((error) {
       debugPrint("ERROR:- While calling Message Synchronizer $error");
     });

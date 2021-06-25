@@ -45,11 +45,17 @@ class MessageSoundPlayer {
 
       if (messageData["author"] == userBloc.user.userName) {
         if (messageData["delivered"] == true) {
-          return messageOutgoingSound;
+          if (userBloc.chatMessageSettings.playOutgoingMessageSound) {
+            return messageOutgoingSound;
+          }
+          return null;
         }
         return null;
       } else {
-        return messageIncomingSound;
+        if (userBloc.chatMessageSettings.playIncomingMessageSound) {
+          return messageIncomingSound;
+        }
+        return null;
       }
     } else if (messageData["type"] == "nudge_user") {
       return nudgeUserSound;

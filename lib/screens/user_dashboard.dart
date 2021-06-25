@@ -164,10 +164,10 @@ class _UserDashboardState extends State<UserDashboard> {
         style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
       ),
       actions: <Widget>[
-        // settingBtn(),
-        // SizedBox(
-        //   width: 6,
-        // ),
+        settingBtn(),
+        SizedBox(
+          width: 6,
+        ),
         logoutBtn(),
       ],
     );

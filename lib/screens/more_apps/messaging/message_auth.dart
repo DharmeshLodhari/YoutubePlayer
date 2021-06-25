@@ -732,6 +732,55 @@ class MessageAuth extends AuthService {
     }
   }
 
+  Future<Map<String, dynamic>> fetchMissedMessagesTest(
+      {List<Map<String, dynamic>> data}) async {
+    var url = secureBaseUrl + "/api/v1/chat/fetch-missed-messages/";
+
+    debugPrint("URL:- $url");
+    var headers = await getAuthHeaders();
+
+    Map<String, dynamic> _data = {"data": data};
+
+    debugPrint("DATA SENT:- $_data");
+
+    var response =
+        await http.post(url, headers: headers, body: jsonEncode(_data));
+
+    if (response.statusCode == 200) {
+      debugPrint(
+          "STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return jsonDecode(response.body);
+    } else {
+      debugPrint(
+          "URL:- $url STATUSCODE:- ${response.statusCode} BODY:- ${response.body}");
+      return null;
+    }
+  }
+
+  Future<Map<String, dynamic>> syncMissedMessages({String dataToBeSent}) async {
+    var url = secureBaseUrl + "/api/v1/chat/sync-chat-messages/";
+
+    debugPrint("URL:- $url");
+    var headers = await getAuthHeaders();
+
+    Map<String, dynamic> data = {"data": dataToBeSent};
+
+    debugPrint("DATA SENT:- $data");
+
+    var response =
+        await http.post(url, headers: headers, body: jsonEncode(data));
+
+    if (response.statusCode == 200) {
+      debugPrint(
+          "STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return jsonDecode(response.body);
+    } else {
+      debugPrint(
+          "URL:- $url STATUSCODE:- ${response.statusCode} BODY:- ${response.body}");
+      return null;
+    }
+  }
+
   Future<bool> sendEnvelope({bool isEmpty, Map<String, dynamic> data}) async {
     var url = secureBaseUrl + "/api/v1/transactions/magic-envelop/";
 
@@ -792,6 +841,30 @@ class MessageAuth extends AuthService {
       Envelope envelope = Envelope.fromJson(jsonDecode(response.body));
 
       return envelope;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<bool> cancelEmptyEnvelope({Envelope envelope}) async {
+    var url =
+        secureBaseUrl + "/api/v1/transactions/empty-envelop/${envelope.id}/";
+
+    var headers = await getAuthHeaders();
+
+    var response = await http.delete(
+      url,
+      headers: headers,
+    );
+
+    if (response.statusCode == 200 ||
+        response.statusCode == 201 ||
+        response.statusCode == 204) {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return true;
     } else {
       debugPrint(
           "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");

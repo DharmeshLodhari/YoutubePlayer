@@ -217,7 +217,7 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
                         ),
                         Row(
                           children: [
-                            Text(isSend ? "You paid" : "You were paid",
+                            Text(getTransactionStatus(isSend: isSend),
                                 style: TextStyle(
                                     color: blackFont,
                                     fontWeight: isScreenSmall
@@ -354,6 +354,19 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
     String date = DateFormat("dd/MM/yy").format(requestTime);
     String time = DateFormat("hh:mm a").format(requestTime);
     return " • $date • $time";
+  }
+
+  String getTransactionStatus({bool isSend}) {
+    if (widget.chatConversation.isGroupConversation) {
+      if (widget.userBloc.user.userName == transaction.fromCustomer) {
+        return "You were paid";
+      }
+      if (widget.userBloc.user.userName == transaction.toCustomer) {
+        return "You have paid";
+      }
+      return "Payment made";
+    }
+    return isSend ? "You have paid" : "You were paid";
   }
 }
 
@@ -586,7 +599,9 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                   widget.chatConversation.isGroupConversation
                       ? paymentActionStatus == "None"
                           ? paymentRequest.toCustomer ==
-                                  widget.userBloc.user.userName
+                                      widget.userBloc.user.userName ||
+                                  paymentRequest.fromCustomer ==
+                                      widget.userBloc.user.userName
                               ? Container(
                                   child: isSend
                                       ? Row(
@@ -891,6 +906,15 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
     if (paymentActionStatus == "Rejected") {
       return "Request Rejected";
     } else if (paymentActionStatus == "Accepted") {
+      if (widget.chatConversation.isGroupConversation) {
+        if (widget.userBloc.user.userName == paymentRequest.fromCustomer) {
+          return "You were paid";
+        }
+        if (widget.userBloc.user.userName == paymentRequest.toCustomer) {
+          return "You have paid";
+        }
+        return "Request Accepted";
+      }
       return isSend ? "You were paid" : "You have paid";
     } else if (paymentActionStatus == "Canceled") {
       return "Request Canceled";

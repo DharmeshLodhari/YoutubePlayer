@@ -272,8 +272,8 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
                   "message": message,
                   "envelope": envelope
                 });
+            return;
           }
-          return;
         }
 
         if (userBloc.user.userName == envelope.toCustomer ||

@@ -164,7 +164,7 @@ class MainSocketProvider extends ChangeNotifier {
 
           ///TODO: UNCOMMENT THIS WHEN IT IS DONE
           await ConnectionSynchronizer().update();
-          await ChatMessageSynchronizer().update();
+          await ChatMessageSynchronizer().updateMessages();
         });
       }
     }

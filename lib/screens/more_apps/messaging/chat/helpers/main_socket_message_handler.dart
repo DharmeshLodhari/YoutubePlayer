@@ -5,6 +5,7 @@ import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_group_action_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_handler.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_shake_detection.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/db_socket_message_handler.dart';
@@ -46,7 +47,7 @@ class MainSocketMessageHandler {
   }
 
   ///Handle message according to message type
-  void handleMessageAccordingToType() {
+  void handleMessageAccordingToType() async {
     Map<String, dynamic> messageData = jsonDecode(message);
 
     MainSocketProvider mainSocketProvider = Provider.of<MainSocketProvider>(
@@ -78,7 +79,8 @@ class MainSocketMessageHandler {
           /// update message in the local message db
           // {"created_at": "2021-05-07 10:05:26.332872Z", "check_id": "337e4aa6-039d-4c13-b438-34905cbcb3b3", "author": "brijesh.sakariya", "text": "10", "kind": "text", "meta_data": {}, "read_by_author": true, "read_by_recipient": false, "delivered": true, "type": "chatroom_message", "conversation_id": "9ae68069-b342-4e04-b568-602bde6fe901"}
           ChatMessage chatMessage = ChatMessage.fromJson(messageData);
-          ChatMessageHandler().updateChatMessage(chatMessage: chatMessage);
+          await ChatMessageHandler()
+              .updateChatMessage(chatMessage: chatMessage);
 
           /// update ConnectionList order by last recive time
           updateConnectionListOrder(
@@ -87,6 +89,8 @@ class MainSocketMessageHandler {
           ///delete message from ChatTextMessage table in db if message came back from socket
 
           String chatMessageKind = messageData['kind'];
+
+          ChatMessageSynchronizer().setStreamTrue();
 
           switch (chatMessageKind) {
             case "text":
