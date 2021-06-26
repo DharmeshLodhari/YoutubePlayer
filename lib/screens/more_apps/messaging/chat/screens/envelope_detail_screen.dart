@@ -222,7 +222,8 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
   }
 
   Widget getEnvelopeActions() {
-    return isAuthor && !envelope.isOpen
+    return isAuthor && envelope.type == "empty-envelop" ||
+            isAuthor && !envelope.isOpen
         ? Container(
             child: CurvedButton(
               backgroundColor: mateRed,
@@ -250,12 +251,14 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
           });
 
           if (result != null) {
-            if (result) {
+            if (result == true) {
               Navigator.popUntil(context, ModalRoute.withName("/chat-screen"));
+              return;
             } else {
               Toast.show("Failed to cancel Envelope", context, duration: 2);
             }
           }
+          Navigator.pop(context);
         },
         cancelCallBack: () {
           Navigator.pop(context);
