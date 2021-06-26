@@ -222,11 +222,11 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
   }
 
   Widget getEnvelopeActions() {
-    return isAuthor
+    return isAuthor && !envelope.isOpen
         ? Container(
             child: CurvedButton(
               backgroundColor: mateRed,
-              onPressed: cancelEmptyEnvelope,
+              onPressed: cancelEnvelope,
               text: "Cancel",
               textColor: Colors.white,
             ),
@@ -234,7 +234,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
         : Container();
   }
 
-  void cancelEmptyEnvelope() async {
+  void cancelEnvelope() async {
     BottomSheetPassCode(
         context: context,
         isValidCallback: () async {
@@ -244,7 +244,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
               builder: (context) => Center(child: CircularLoadingIndicator()));
 
           var result = await MessageAuth()
-              .cancelEmptyEnvelope(envelope: envelope)
+              .cancelEnvelope(envelope: envelope, data: data)
               .catchError((error) {
             Toast.show("ERROR:- $error", context, duration: 2);
           });

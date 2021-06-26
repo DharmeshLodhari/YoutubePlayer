@@ -848,20 +848,25 @@ class MessageAuth extends AuthService {
     }
   }
 
-  Future<bool> cancelEmptyEnvelope({Envelope envelope}) async {
-    var url =
-        secureBaseUrl + "/api/v1/transactions/empty-envelop/${envelope.id}/";
+  Future<bool> cancelEnvelope(
+      {Envelope envelope, Map<String, dynamic> data}) async {
+    var type = envelope.type.replaceAll("-envelop", "");
+
+    var url = secureBaseUrl +
+        "/api/v1/transactions/cancel-envelop/$type/${envelope.id}/";
 
     var headers = await getAuthHeaders();
 
-    var response = await http.delete(
-      url,
-      headers: headers,
-    );
+    var _data = {
+      "check_id": data['check_id'],
+      "conversation_id": data["conversation"],
+    };
 
-    if (response.statusCode == 200 ||
-        response.statusCode == 201 ||
-        response.statusCode == 204) {
+    debugPrint("URL:- $url  DATA sent:- $_data}");
+    var response =
+        await http.patch(url, body: jsonEncode(_data), headers: headers);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
       debugPrint(
           "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
       return true;
