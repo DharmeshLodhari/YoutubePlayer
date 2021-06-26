@@ -1262,7 +1262,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       ),
       onTap: () async {
         await ConnectionSynchronizer().update();
-        await ChatMessageSynchronizer().updateMessages();
+        await ChatMessageSynchronizer().syncMessages();
       },
       backgroundColor: lightGrey,
       enableMargin: true,

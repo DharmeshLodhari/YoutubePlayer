@@ -738,6 +738,11 @@ class MessageAuth extends AuthService {
 
     debugPrint("URL:- $url");
     var headers = await getAuthHeaders();
+    // int counter = 0;
+    // data.forEach((element) {
+    //   debugPrint("$counter => $element");
+    //   counter++;
+    // });
 
     Map<String, dynamic> _data = {"data": data};
 
@@ -852,6 +857,8 @@ class MessageAuth extends AuthService {
       {Envelope envelope, Map<String, dynamic> data}) async {
     var type = envelope.type.replaceAll("-envelop", "");
 
+    // debugPrint("Message DATA:- $data");
+
     var url = secureBaseUrl +
         "/api/v1/transactions/cancel-envelop/$type/${envelope.id}/";
 
@@ -859,7 +866,7 @@ class MessageAuth extends AuthService {
 
     var _data = {
       "check_id": data['check_id'],
-      "conversation_id": data["conversation"],
+      "conversation_id": data["conversation_id"] ?? data["conversation"],
     };
 
     debugPrint("URL:- $url  DATA sent:- $_data}");

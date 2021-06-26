@@ -7,6 +7,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_manager.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
@@ -185,7 +186,7 @@ class PushNotificationService {
           }
           if (decodeMessage != null) {
             if (decodeMessage.isNotEmpty) {
-              // MainSocketMessageHandler(message: notification["data"]);
+              MainSocketMessageHandler(message: notification["data"]);
             }
           }
         } else {

@@ -216,9 +216,9 @@ class ChatMessageSynchronizer {
 
     chatMessages.addAll(newConnections);
 
-    newConnections.forEach((element) {
-      debugPrint("New Conversation ${element.toJson()}");
-    });
+    // newConnections.forEach((element) {
+    //   debugPrint("New Conversation ${element.toJson()}");
+    // });
 
     debugPrint(
         "Messages after adding new Conversation:- ${chatMessages.length}");
@@ -230,7 +230,7 @@ class ChatMessageSynchronizer {
     chatMessages.forEach((element) async {
       List<ChatMessage> lastFewMessages = await ChatMessageHandler()
           .getLimitedChatMessages(
-              conversationId: element.conversationId, limit: 10);
+              conversationId: element.conversationId, limit: 20);
 
       List<String> checkIds = [];
       if (lastFewMessages != null) {
