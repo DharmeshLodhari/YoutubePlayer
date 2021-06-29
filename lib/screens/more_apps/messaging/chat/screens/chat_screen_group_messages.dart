@@ -1330,11 +1330,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       debugPrint("ERROR:- $error");
     });
 
-    if (data == null)
-      {
-        userStatus = "";
-        return;
-      }
+    if (data == null) {
+      userStatus = "";
+      return;
+    }
 
     if (data["status"] == "Online") {
       userStatus = "Online";
@@ -1609,8 +1608,9 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
               assignTitleToAction(
                   text: "Empty\nEnvelope", child: sendEmptyEnvelopeButton()),
               flexibleSpace(),
-              assignTitleToAction(
-                  text: "Location\n", child: sendUserLocation()),
+              // assignTitleToAction(
+              //     text: "Location\n", child: sendUserLocation()),
+              assignTitleToAction(text: "GIF", child: sendGIFButton()),
             ],
           ),
           SizedBox(
@@ -1618,9 +1618,13 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           ),
           Row(
             children: <Widget>[
-              assignTitleToAction(text: "GIF", child: sendGIFButton()),
-              flexibleSpace(),
+              // assignTitleToAction(text: "GIF", child: sendGIFButton()),
+              // flexibleSpace(),
               assignTitleToAction(text: "Sticker", child: sendStickersButton()),
+              flexibleSpace(),
+              Container(
+                constraints: BoxConstraints(maxWidth: 60),
+              ),
               flexibleSpace(),
               Container(
                 constraints: BoxConstraints(maxWidth: 60),
@@ -3208,9 +3212,9 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         if (repliedTo['id'] == messageData['id'] ||
             repliedTo['check_id'] == messageData['check_id']) {
           debugPrint(
-              "${repliedTo['id']} == ${messageData['id']} =>  ${repliedTo['id'] == messageData['id']}");
+              "==> ${repliedTo['id']} == ${messageData['id']} =>  ${repliedTo['id'] == messageData['id']}");
           debugPrint(
-              "${repliedTo['check_id']} == ${messageData['check_id']} =>  ${repliedTo['check_id'] == messageData['check_id']}");
+              "==> ${repliedTo['check_id']} == ${messageData['check_id']} =>  ${repliedTo['check_id'] == messageData['check_id']}");
           index = i;
           break;
         }
@@ -3218,8 +3222,11 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
       if (index != null) {
         if (mounted) setState(() {});
+
         messageListController.scrollTo(
-            index: messageListLength - index - 4,
+            index: (messageListLength - index - 4) > 0
+                ? messageListLength - index - 4
+                : 0,
             duration: Duration(milliseconds: 500));
       }
     }

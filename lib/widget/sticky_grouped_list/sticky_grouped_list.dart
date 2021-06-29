@@ -222,6 +222,10 @@ class _StickyGroupedListViewState<T, E>
               );
             }
 
+            // if (actualIndex == -1) {
+            //   actualIndex = 0;
+            // }
+
             if (_isSeparator(index)) {
               E curr = widget.groupBy(_sortedElements[actualIndex]);
               E prev = widget.groupBy(
