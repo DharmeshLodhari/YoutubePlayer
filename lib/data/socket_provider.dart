@@ -401,10 +401,10 @@ class MainSocketProvider extends ChangeNotifier {
         await DBSocketMessageHandler().getSocketQueueChatMessage();
 
     int count = 0;
-    pendingMessages.forEach((element) async {
+    for (int i = 0; i < pendingMessages.length; i++) {
       count++;
-      await add(element.toJson(isForSendingToSocket: true));
-    });
+      await add(pendingMessages[i].toJson(isForSendingToSocket: true));
+    }
 
     debugPrint("Sending $count Pending Text Message !!");
   }
@@ -444,9 +444,9 @@ class MainSocketProvider extends ChangeNotifier {
     _timerForRetryConnection?.cancel();
     _timerForPingServer?.cancel();
 
-    _streamSubscriptions.forEach((element) async {
-      await element?.cancel();
-    });
+    for (int i = 0; i < _streamSubscriptions.length; i++) {
+      await _streamSubscriptions[i]?.cancel();
+    }
 
     _queueMessages.clear();
 

@@ -33,6 +33,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/tiles/text_message_render
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/transaction_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/user_profile_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/video_tile_for_chat.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
@@ -131,19 +132,6 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   /// User status
   String userStatus = "";
-
-  /// allowed message types
-  List<String> imageExtensions = ["jpg", "jpeg", "png", "gif", "webp"];
-  List<String> videoExtensions = [
-    "mp4",
-    "mov",
-    "wmv",
-    "flv",
-    "avi",
-    "webm",
-    "mkv"
-  ];
-  List<String> audioExtensions = ["m4a", "mp3", "ogg", "aac"];
 
   /// variables for product or service search
   bool isProductSearch = true;
@@ -2300,18 +2288,6 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       messageController.text = "";
       debugPrint("Result:- $result");
     }
-  }
-
-  String getFileType(FilePickerResult pickedMedia) {
-    debugPrint("File path :- ${pickedMedia.files.single.path}");
-    debugPrint("File name :- ${pickedMedia.files.single.name}");
-    debugPrint("File extension :- ${pickedMedia.files.single.extension}");
-    String extension = pickedMedia.files.single.extension;
-
-    if (imageExtensions.contains(extension)) return "image";
-    if (videoExtensions.contains(extension)) return "video";
-    if (audioExtensions.contains(extension)) return "audio";
-    return "";
   }
 
   Future<String> selectMediaType() async {

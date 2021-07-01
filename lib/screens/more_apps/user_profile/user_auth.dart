@@ -184,7 +184,9 @@ class UserAuth extends AuthService {
     if (response.statusCode == 200) {
       return true;
     }
-    debugPrint("Error:- ${response.body}");
+    debugPrint("DATA SENT:- $data");
+    debugPrint(
+        "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     return Future.error("Error:- ${response.body}");
   }
 
@@ -195,12 +197,16 @@ class UserAuth extends AuthService {
     var data = {
       "phone": phoneNumber,
     };
+
     var _data = jsonEncode(data);
     var response = await http.post(url, body: _data, headers: headers);
 
     if (response.statusCode == 200) {
       return true;
     } else {
+      debugPrint("DATA SENT:- $data");
+      debugPrint(
+          "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
       var jsonData = json.decode(response.body);
       return Future.error(jsonData["error"]);
     }
@@ -226,6 +232,9 @@ class UserAuth extends AuthService {
       var resetToken = jsonData['reset-token'];
       return resetToken;
     } else {
+      debugPrint("DATA SENT:- $data");
+      debugPrint(
+          "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
       throw jsonData;
     }
   }

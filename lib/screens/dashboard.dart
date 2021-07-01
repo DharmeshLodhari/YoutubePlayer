@@ -101,10 +101,11 @@ class _DashboardState extends State<Dashboard> {
       int result = await connectionListBloc.getConnectionsCount();
       debugPrint("CONNECTION LIST LENGTH:- $result");
 
-      connectionListBloc.connectionUsers.forEach((conversation) async {
-        await ChatMessageSynchronizer()
-            .getMessages(chatConversation: conversation, isFirstTime: true);
-      });
+      for (int i = 0; i < connectionListBloc.connectionUsers.length; i++) {
+        await ChatMessageSynchronizer().getMessages(
+            chatConversation: connectionListBloc.connectionUsers[i],
+            isFirstTime: true);
+      }
     } else {
       await ConnectionSynchronizer().update();
       await ChatMessageSynchronizer().syncMessages();
@@ -116,15 +117,6 @@ class _DashboardState extends State<Dashboard> {
     streamSubscription = mainSocketProvider?.socketStream?.listen((event) {
       MainSocketMessageHandler(message: event);
       if (mounted) setState(() {});
-
-      /// For count issue keep this code if count issue is not solved
-      // if (mainSocketProvider.currentConversationId !=
-      //         decodeMessage["conversation"] ||
-      //     mainSocketProvider.currentConversationId !=
-      //         decodeMessage["conversation_id"]) {
-      //   MainSocketMessageHandler(message: event);
-      //   if (mounted) setState(() {});
-      // }
     });
   }
 

@@ -53,6 +53,7 @@ class _TransactionListState extends State<TransactionList> {
   CustomizedPopUpMenu menu;
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
+  bool isFirstTime = true;
 
   @override
   void initState() {
@@ -97,7 +98,9 @@ class _TransactionListState extends State<TransactionList> {
         previous = "";
         transactionList = [];
         noItemInList = false;
+        isFirstTime = true;
         if (mounted) setState(() {});
+        isLoading = false;
         getList();
         _refreshController.refreshCompleted();
       } else {
@@ -316,7 +319,8 @@ class _TransactionListState extends State<TransactionList> {
 
         if (mounted) setState(() {});
 
-        if (next != null) {
+        if (isFirstTime && next != null && next != "") {
+          isFirstTime = false;
           getList();
         }
       }

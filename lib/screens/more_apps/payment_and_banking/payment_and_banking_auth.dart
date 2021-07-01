@@ -317,6 +317,7 @@ class PaymentAndBankingAuth extends AuthService {
       url = getSecureUrl(url: next);
     }
     var headers = await getAuthHeaders();
+    debugPrint("URL:- $url");
 
     var response = await http.get(url, headers: headers);
     if (response.statusCode == 200) {

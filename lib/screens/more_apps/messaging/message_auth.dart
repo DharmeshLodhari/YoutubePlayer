@@ -5,7 +5,6 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/AddGroupModel.dart
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/UpdateGroupDetailModel.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/models/message.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/Envelope.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -229,6 +228,7 @@ class MessageAuth extends AuthService {
       url = getSecureUrl(url: next);
     }
     var headers = await getAuthHeaders();
+    debugPrint("URL:- $url");
 
     // var response = await http
     //     .get(url, headers: headers)
@@ -237,7 +237,6 @@ class MessageAuth extends AuthService {
     var response = await http.get(url, headers: headers);
 
     if (response.statusCode == 200) {
-      debugPrint("URL:- $url RESPONSE STATUS CODE:- ${response.statusCode} ");
       List<String> previousMessages = [];
       var jsonData = json.decode(response.body);
       for (var item in jsonData["results"])
@@ -250,6 +249,8 @@ class MessageAuth extends AuthService {
       };
       return result;
     } else if (response.statusCode == 500) {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
       return Future.error("Server Error");
     } else {
       debugPrint(
@@ -697,52 +698,12 @@ class MessageAuth extends AuthService {
   }
 
   Future<Map<String, dynamic>> fetchMissedMessages(
-      {List<ChatMessage> chatMessages}) async {
-    var url = secureBaseUrl + "/api/v1/chat/fetch-missed-messages/";
-
-    debugPrint("URL:- $url");
-    var headers = await getAuthHeaders();
-
-    List<Map<String, dynamic>> dataToBeSent = [];
-
-    chatMessages.forEach((element) {
-      dataToBeSent.add({
-        "conversation_id": element.conversationId,
-        "created_at":
-            DateTime.parse(element.createdAt).toUtc().toIso8601String(),
-        "check_id": element.checkId
-      });
-    });
-
-    Map<String, dynamic> data = {"data": dataToBeSent};
-
-    debugPrint("DATA SENT:- $data");
-
-    var response =
-        await http.post(url, headers: headers, body: jsonEncode(data));
-
-    if (response.statusCode == 200) {
-      debugPrint(
-          "STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
-      return jsonDecode(response.body);
-    } else {
-      debugPrint(
-          "URL:- $url STATUSCODE:- ${response.statusCode} BODY:- ${response.body}");
-      return null;
-    }
-  }
-
-  Future<Map<String, dynamic>> fetchMissedMessagesTest(
       {List<Map<String, dynamic>> data}) async {
     var url = secureBaseUrl + "/api/v1/chat/fetch-missed-messages/";
 
     debugPrint("URL:- $url");
+
     var headers = await getAuthHeaders();
-    // int counter = 0;
-    // data.forEach((element) {
-    //   debugPrint("$counter => $element");
-    //   counter++;
-    // });
 
     Map<String, dynamic> _data = {"data": data};
 
