@@ -49,6 +49,7 @@ import 'package:Slydo/screens/more_apps/music/specific_category_music_list.dart'
 import 'package:Slydo/screens/more_apps/news/news_dashboard.dart';
 import 'package:Slydo/screens/more_apps/news/news_detail_page.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/add_bank_account.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/add_bvn_number.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/already_have_reference.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/get_reference.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/verify_reference.dart';
@@ -375,6 +376,14 @@ class RouteGenerator {
           settings: settings,
         );
 
+      case '/add-bvn-number':
+        return PageTransition(
+          child: AddBvnNumber(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
       case '/add-bank-account':
         return PageTransition(
           child: AddAccount(),
@@ -494,13 +503,6 @@ class RouteGenerator {
 
       /// Chat
 
-      // case '/chat-screen':
-      //   return PageTransition(
-      //     child: ChatScreen(arguments: settings.arguments),
-      //     type: PageTransitionType.bottomToTop,
-      //     curve: Curves.ease,
-      //     settings: settings,
-      //   );
       case '/chat-screen':
         return PageTransition(
           child: ChatScreenGroupMessage(arguments: settings.arguments),
