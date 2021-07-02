@@ -513,4 +513,20 @@ class PaymentAndBankingAuth extends AuthService {
       return Future.error(jsonDecode(response.body));
     }
   }
+
+  Future<bool> addBvnNumberAndIdProof(Map<String, dynamic> data) async {
+    // var url = secureBaseUrl + "/api/v1/transactions/topup-by-reference/";
+    // var headers = await getAuthHeaders();
+    // var _data = jsonEncode(data);
+    // var response = await http.post(url, headers: headers, body: _data);
+    // debugPrint("Response ${response.statusCode}");
+    // if (response.statusCode == 200 || response.statusCode == 201) {
+    //   return true;
+    // } else if (response.statusCode == 400) {
+    //   return Future.error(jsonDecode(response.body)["error"]);
+    // } else {
+    //   return Future.error(jsonDecode(response.body));
+    // }
+    return true;
+  }
 }

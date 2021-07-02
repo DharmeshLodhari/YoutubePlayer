@@ -1,10 +1,17 @@
+import 'dart:io';
+
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/image_crop.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:toast/toast.dart';
 
 // ignore: must_be_immutable
@@ -17,6 +24,16 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
   final _formKeyTwo = GlobalKey<FormState>();
 
   TextEditingController bvnNumberController;
+
+  Map<String, String> selectedIdType;
+
+  List<Map<String, String>> idTypes = [
+    {"name": "Nigerian Passport", "value": "passport"},
+    {"name": "NIN slip", "value": "nin_slip"},
+    {"name": "Driver's License", "value": "driving_license"},
+  ];
+
+  String pickedImage;
 
   @override
   void initState() {
@@ -74,8 +91,27 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
             children: <Widget>[
               addBvnNumberTextField(),
               SizedBox(
-                height: 28,
+                height: 16,
               ),
+              getIdTypeDropDown(),
+              SizedBox(
+                height: 16,
+              ),
+              selectedIdType != null
+                  ? Column(
+                      children: [
+                        getIdPhoto(),
+                        SizedBox(
+                          height: 16,
+                        ),
+                        getVerificationWarning(),
+                        SizedBox(
+                          height: 16,
+                        ),
+                        getSubmitButton()
+                      ],
+                    )
+                  : Container(),
             ],
           ),
         ),
@@ -92,12 +128,20 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
     );
   }
 
+  Widget getVerificationWarning() {
+    return Text(
+      "It will take up to 48 hours to verify user details",
+      style:
+          TextStyle(color: navyBlue, fontSize: 14, fontWeight: FontWeight.w600),
+    );
+  }
+
   Widget getSubmitButton() {
     return CurvedButton(
-      onPressed: onSubmit,
+      onPressed: pickedImage == null ? null : onSubmit,
       backgroundColor: navyBlue,
       textColor: Colors.white,
-      text: "Topup",
+      text: "SUBMIT",
     );
   }
 
@@ -107,13 +151,16 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
 
     showDialog(
         context: context,
+        barrierDismissible: false,
         builder: (context) => Center(child: CircularLoadingIndicator()));
 
     if (_formKeyTwo.currentState.validate()) {
-      var data = {"bvn_number": bvnNumberController.text};
-      PaymentAndBankingAuth()
-          .confirmTopUpWithReferenceNumber(data)
-          .then((value) {
+      var data = {
+        "bvn_number": bvnNumberController.text,
+        "government_id_type": selectedIdType["value"],
+        "government_id": pickedImage
+      };
+      PaymentAndBankingAuth().addBvnNumberAndIdProof(data).then((value) {
         if (value) {
           Navigator.pop(context);
           Navigator.popUntil(context, ModalRoute.withName("/dashboard"));
@@ -129,7 +176,221 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
   }
 
   Widget addBvnNumberTextField() {
-    return CustomizedTextFormField(controller: bvnNumberController);
+    return CustomizedTextFormField(
+      controller: bvnNumberController,
+      hintText: "Enter BVN Number",
+      labelText: "BVN Number",
+      keyboardType: TextInputType.number,
+      validator: (val) {
+        if (val.toString().length == 11) {
+          return null;
+        }
+        return "Invalid BVN number";
+      },
+    );
+  }
+
+  Widget getIdPhoto() {
+    return CustomBoxShadow(
+      child: Card(
+        elevation: 3,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shadowColor: boxShadowTwo,
+        margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+        child: Container(
+          width: MediaQuery.of(context).size.width - 32,
+          // height: MediaQuery.of(context).size.width - 32,
+          constraints:
+              BoxConstraints(minHeight: MediaQuery.of(context).size.width / 2),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: InkWell(
+              child: pickedImage != null
+                  ? Image.file(
+                      File(pickedImage),
+                      fit: BoxFit.fitWidth,
+                    )
+                  : Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Icon(
+                          SlydoAppIcon.add_image,
+                          color: darkGrey,
+                          size: 55,
+                        ),
+                        SizedBox(
+                          height: 16,
+                        ),
+                        Text(
+                          "Upload image",
+                          style: TextStyle(color: darkGrey, fontSize: 14),
+                        ),
+                      ],
+                    ),
+              onTap: () {
+                pickImage();
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void pickImage() async {
+    final imageSource = await showDialog<ImageSource>(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text(AppLocalization.of(context).selectTheImageSource),
+              actions: <Widget>[
+                MaterialButton(
+                  child: Text(AppLocalization.of(context).camera),
+                  onPressed: () => Navigator.pop(context, ImageSource.camera),
+                ),
+                MaterialButton(
+                  child: Text(AppLocalization.of(context).gallery),
+                  onPressed: () => Navigator.pop(context, ImageSource.gallery),
+                )
+              ],
+            ));
+
+    if (imageSource != null) {
+      ImagePicker().getImage(source: imageSource).then((value) async {
+        if (value != null) {
+          /// for cropping the image
+          String croppedImage = await ImageCrop().cropImage(value.path);
+          if (croppedImage == null) {
+            return;
+          }
+          if (mounted) setState(() {});
+
+          pickedImage = croppedImage;
+        }
+      });
+    }
+  }
+
+  Widget getIdTypeDropDown() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          "Government Id type",
+          style: TextStyle(color: darkGrey, fontSize: 14),
+        ),
+        SizedBox(
+          height: 6,
+        ),
+        Card(
+          elevation: 0,
+          color: Colors.white,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: BorderSide(color: greyBorderColor)),
+          margin: EdgeInsets.all(0),
+          borderOnForeground: true,
+          child: ListTile(
+            dense: true,
+            title: Text(
+              selectedIdType != null ? selectedIdType["name"] : "",
+              softWrap: false,
+              overflow: TextOverflow.fade,
+              style: TextStyle(
+                  color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+            trailing: Icon(
+              Icons.keyboard_arrow_down,
+              color: darkGrey,
+            ),
+            onTap: () {
+              selectIdType();
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  void selectIdType() async {
+    final pressedIdType = await showDialog<Map<String, String>>(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) => AlertDialog(
+              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              contentPadding: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              content: Container(
+                width: MediaQuery.of(context).size.width - 40,
+                child: Card(
+                  elevation: 2,
+                  shadowColor: Colors.transparent,
+                  margin: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: idTypes.map<Widget>((idType) {
+                          if (selectedIdType == null ||
+                              selectedIdType["name"] != idType["name"]) {
+                            return ListTile(
+                              title: Text(
+                                idType["name"],
+                                softWrap: false,
+                                overflow: TextOverflow.fade,
+                                style: TextStyle(
+                                    color: blackFont,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w400),
+                              ),
+                              dense: true,
+                              onTap: () {
+                                Navigator.pop(context, idType);
+                              },
+                            );
+                          }
+
+                          return Container(
+                            color: selectedListItemBackgroundBlue,
+                            child: ListTile(
+                              dense: true,
+                              title: Text(
+                                idType["name"],
+                                overflow: TextOverflow.fade,
+                                softWrap: false,
+                                style: TextStyle(
+                                    color: navyBlue,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600),
+                              ),
+                              trailing: Icon(
+                                SlydoAppIcon.checked,
+                                color: navyBlue,
+                                size: 12,
+                              ),
+                              onTap: () {
+                                Navigator.pop(context, idType);
+                              },
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ));
+    if (pressedIdType != null) {
+      selectedIdType = pressedIdType;
+      debugPrint("selected Id $selectedIdType");
+      setState(() {});
+    }
   }
 
   Widget userTopUpNote() {

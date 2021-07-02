@@ -18,12 +18,12 @@ import 'package:toast/toast.dart';
 
 import '../../payment_and_banking_auth.dart';
 
-class AddMoneyToSlydoOne extends StatefulWidget {
+class VirtualAccountDetail extends StatefulWidget {
   @override
-  _AddMoneyToSlydoOneState createState() => _AddMoneyToSlydoOneState();
+  _VirtualAccountDetailState createState() => _VirtualAccountDetailState();
 }
 
-class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
+class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
   final _formKeyTwo = GlobalKey<FormState>();
 
   UserBloc userBloc;
@@ -58,6 +58,7 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
     isLoading = false;
     if (virtualAccount == null) {
       isAccountExist = false;
+      Navigator.of(context).pushNamed("/add-bvn-number");
     } else {
       isAccountExist = true;
       if (isFromServer) {
@@ -128,27 +129,6 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
                     SizedBox(
                       height: 20,
                     ),
-                    // displayAmountField(),
-                    // SizedBox(
-                    //   height: 20,
-                    // ),
-                    // amountUserGetMsg(),
-                    // SizedBox(
-                    //   height: 20,
-                    // ),
-                    // amountUserGet(),
-                    // SizedBox(
-                    //   height: 20,
-                    // ),
-                    // getReferenceButton(),
-                    // SizedBox(
-                    //   height: 24,
-                    // ),
-                    // noteForUser(),
-                    // SizedBox(
-                    //   height: 20,
-                    // ),
-                    // alreadyHaveReference()
                   ],
                 ),
               ),

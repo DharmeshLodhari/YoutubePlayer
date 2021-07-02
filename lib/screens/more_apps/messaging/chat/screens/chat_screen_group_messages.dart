@@ -35,6 +35,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/tiles/user_profile_tile_f
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/video_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/Envelope.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -48,6 +49,7 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
+import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/image_crop.dart';
@@ -3014,131 +3016,120 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         ));
   }
 
-  // Widget messageListBuilder() {
-  //   return LazyLoadScrollView(
-  //     isLoading: isLoading,
-  //     onEndOfPage: getPreviousMessages,
-  //     child: ListView.builder(
-  //       reverse: true,
-  //       controller: messageScrollController,
-  //       padding: EdgeInsets.symmetric(vertical: 4),
-  //       //+1 for progressbar
-  //       itemCount: messageList.length + 1,
-  //       itemBuilder: (BuildContext context, int index) {
-  //         debugPrint("messageList[index]= ${messageList[index]}");
-  //         if (index == messageList.length) {
-  //           return _buildIndicator();
-  //         }
-  //         return Container(
-  //           child: GestureDetector(
-  //               onLongPress: () {
-  //                 showChatMessageAction(message: messageList[index]);
-  //               },
-  //               child: renderDataAccordingType(messageList[index])),
-  //           padding: EdgeInsets.only(bottom: 4),
-  //         );
-  //       },
-  //     ),
-  //   );
-  // }
   Widget messageListBuilder() {
-    return isLoading && messageList.isEmpty
-        ? Center(
-            child: CircularLoadingIndicator(),
-          )
-        : Container(
-            child: LazyLoadScrollView(
-              isLoading: isLoading,
-              onEndOfPage: getPreviousMessages,
-              child: getGroupMessage(),
-            ),
-          );
+    try {
+      return isLoading && messageList.isEmpty
+          ? Center(
+              child: CircularLoadingIndicator(),
+            )
+          : Container(
+              child: LazyLoadScrollView(
+                isLoading: isLoading,
+                onEndOfPage: getPreviousMessages,
+                child: getGroupMessage(),
+              ),
+            );
+    } catch (error) {
+      debugPrint("ERROR ====>1:- $error");
+      return Container(
+        color: Colors.white,
+      );
+    }
   }
 
   Widget getGroupMessage() {
-    return StickyGroupedListView<String, DateTime>(
-      itemPositionsListener: messageListPositionListener,
-      elements: messageList,
-      groupBy: (String element) {
-        Map<String, dynamic> message = jsonDecode(element);
-        DateTime dateTime = DateTime.parse(message['created_at']).toLocal();
-        DateTime date = DateTime(dateTime.year, dateTime.month, dateTime.day);
-        return date;
-      },
-      stickyHeaderBackgroundColor: Colors.transparent,
-      groupSeparatorBuilder: (String element) {
-        Map<String, dynamic> message = jsonDecode(element);
+    try {
+      return StickyGroupedListView<String, DateTime>(
+        itemPositionsListener: messageListPositionListener,
+        elements: messageList,
+        groupBy: (String element) {
+          Map<String, dynamic> message = jsonDecode(element);
+          DateTime dateTime = DateTime.parse(message['created_at']).toLocal();
+          DateTime date = DateTime(dateTime.year, dateTime.month, dateTime.day);
+          return date;
+        },
+        stickyHeaderBackgroundColor: Colors.transparent,
+        groupSeparatorBuilder: (String element) {
+          Map<String, dynamic> message = jsonDecode(element);
 
-        DateTime dateTime = DateTime.parse(message['created_at']).toLocal();
+          DateTime dateTime = DateTime.parse(message['created_at']).toLocal();
 
-        String formattedDate = formatDateInTwoDigit(dateTime);
+          String formattedDate = formatDateInTwoDigit(dateTime);
 
-        DateTime presentDate = DateTime.now().toLocal();
+          DateTime presentDate = DateTime.now().toLocal();
 
-        /// checking if git is today's Date
-        if (DateTime(presentDate.year, presentDate.month, presentDate.day)
-                .compareTo(
-                    DateTime(dateTime.year, dateTime.month, dateTime.day)) ==
-            0) {
-          formattedDate = "Today";
-        }
+          /// checking if git is today's Date
+          if (DateTime(presentDate.year, presentDate.month, presentDate.day)
+                  .compareTo(
+                      DateTime(dateTime.year, dateTime.month, dateTime.day)) ==
+              0) {
+            formattedDate = "Today";
+          }
 
-        return Container(
-          padding: EdgeInsets.only(top: 2),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                margin: EdgeInsets.only(bottom: 4),
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                    color: navyBlue.withOpacity(0.5),
-                    borderRadius: BorderRadius.circular(25)),
-                child: Text(
-                  isLoading ? "Loading ..." : "$formattedDate",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 10,
-                    fontWeight: FontWeight.w600,
+          return Container(
+            padding: EdgeInsets.only(top: 2),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  margin: EdgeInsets.only(bottom: 4),
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                      color: navyBlue.withOpacity(0.5),
+                      borderRadius: BorderRadius.circular(25)),
+                  child: Text(
+                    isLoading ? "Loading ..." : "$formattedDate",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
+          );
+        },
+        itemBuilder: (context, String element) => Container(
+          padding: EdgeInsets.only(bottom: 4),
+          child: GestureDetector(
+            onLongPress: () {
+              showChatMessageAction(message: element);
+            },
+            child: renderDataAccordingType(element),
           ),
-        );
-      },
-      itemBuilder: (context, String element) => Container(
-        padding: EdgeInsets.only(bottom: 4),
-        child: GestureDetector(
-          onLongPress: () {
-            showChatMessageAction(message: element);
-          },
-          child: renderDataAccordingType(element),
         ),
-      ),
-      itemComparator: (element1, element2) {
-        Map<String, dynamic> message1 = jsonDecode(element1);
-        Map<String, dynamic> message2 = jsonDecode(element2);
-        DateTime messageOneDateTime =
-            DateTime.parse(message1['created_at']).toLocal();
-        DateTime messageTwoDateTime =
-            DateTime.parse(message2['created_at']).toLocal();
+        itemComparator: (element1, element2) {
+          Map<String, dynamic> message1 = jsonDecode(element1);
+          Map<String, dynamic> message2 = jsonDecode(element2);
+          DateTime messageOneDateTime =
+              DateTime.parse(message1['created_at']).toLocal();
+          DateTime messageTwoDateTime =
+              DateTime.parse(message2['created_at']).toLocal();
 
-        return messageOneDateTime.compareTo(messageTwoDateTime);
-      }, // optional
-      itemScrollController: messageListController, // optional
+          return messageOneDateTime.compareTo(messageTwoDateTime);
+        },
+        // optional
+        itemScrollController: messageListController,
+        // optional
 
-      groupComparator: (dateTime1, dateTime2) {
-        DateTime groupOneDate =
-            DateTime(dateTime1.year, dateTime1.month, dateTime1.day);
-        DateTime groupTwoDate =
-            DateTime(dateTime2.year, dateTime2.month, dateTime2.day);
-        return groupOneDate.compareTo(groupTwoDate);
-      },
-      order: StickyGroupedListOrder.DESC,
-      reverse: true,
-    );
+        groupComparator: (dateTime1, dateTime2) {
+          DateTime groupOneDate =
+              DateTime(dateTime1.year, dateTime1.month, dateTime1.day);
+          DateTime groupTwoDate =
+              DateTime(dateTime2.year, dateTime2.month, dateTime2.day);
+          return groupOneDate.compareTo(groupTwoDate);
+        },
+        order: StickyGroupedListOrder.DESC,
+        reverse: true,
+      );
+    } catch (error) {
+      debugPrint("ERROR ====>2:- $error");
+      return Container(
+        color: Colors.white,
+      );
+    }
   }
 
   // Widget _buildIndicator() {
@@ -3828,8 +3819,6 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     DateTime messageCreatedTime =
         DateTime.parse(messageData["created_at"]).toLocal();
 
-    debugPrint("==> ${messageCreatedTime.toString()}");
-
     DateTime currentTime = DateTime.now();
 
     if (currentTime.difference(messageCreatedTime) < Duration(minutes: 1)) {
@@ -3869,8 +3858,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           title: "Delete",
           icon: SlydoAppIcon.delete,
           onTap: () {
-            deleteChatMessage(message: message);
             Navigator.pop(context);
+            deleteChatMessage(message: message);
           },
         ));
       }
@@ -3892,6 +3881,11 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   void deleteChatMessage({String message}) async {
     Map<String, dynamic> messageData = jsonDecode(message);
+
+    if (messageData['kind'] == "envelope") {
+      cancelEnvelope(messageData);
+      return;
+    }
 
     String messageId = messageData["check_id"];
 
@@ -4156,5 +4150,47 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       connectionListBloc.updateLastMessageTime(
           conversationId: conversationId, time: time);
     }
+  }
+
+  void cancelEnvelope(Map<String, dynamic> message) async {
+    Map<String, dynamic> data;
+
+    if (message['meta_data'] is String) {
+      data = jsonDecode(message['meta_data']);
+    } else if (message['meta_data'] is Map) {
+      data = message['meta_data'];
+    }
+
+    Envelope envelope = Envelope.fromJson(data);
+
+    BottomSheetPassCode(
+        context: context,
+        isValidCallback: () async {
+          showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => Center(child: CircularLoadingIndicator()));
+
+          var result = await MessageAuth()
+              .cancelEnvelope(envelope: envelope, data: message)
+              .catchError((error) {
+            Toast.show("ERROR:- $error", context, duration: 2);
+          });
+
+          if (result != null) {
+            if (result == true) {
+              Navigator.pop(context);
+              return;
+            } else {
+              Toast.show("Failed to cancel Envelope", context, duration: 2);
+            }
+          }
+          if (mounted) {
+            Navigator.pop(context);
+          }
+        },
+        cancelCallBack: () {
+          Navigator.pop(context);
+        });
   }
 }

@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
 import 'package:Slydo/utils/colors.dart';
-import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/cupertino.dart';
@@ -204,8 +203,8 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
       height: 34,
       width: 34,
       icon: Icon(
-        SlydoAppIcon.add,
-        size: 16,
+        Icons.group_add,
+        size: 20,
         color: blackFont,
       ),
       onTap: () {

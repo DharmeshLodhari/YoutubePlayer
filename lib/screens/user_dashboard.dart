@@ -440,15 +440,16 @@ class _UserDashboardState extends State<UserDashboard> {
         SizedBox(
           width: 12,
         ),
-        Expanded(
-            child: UserDashboardItemTile(
-          icon: SlydoAppIcon.more,
-          title: "More",
-          onTap: () {
-            Navigator.pushNamed(context, "/more-apps");
-          },
-          iconColor: HexColor("#374677"),
-        )),
+        Expanded(child: Container()),
+        // Expanded(
+        //     child: UserDashboardItemTile(
+        //   icon: SlydoAppIcon.more,
+        //   title: "More",
+        //   onTap: () {
+        //     Navigator.pushNamed(context, "/more-apps");
+        //   },
+        //   iconColor: HexColor("#374677"),
+        // )),
         SizedBox(
           width: 12,
         ),
@@ -462,30 +463,23 @@ class _UserDashboardState extends State<UserDashboard> {
   }
 
   Widget madeInLagosTile() {
-    return GestureDetector(
-      onTap: () {
-        // Navigator.of(context).pushNamed("/add-bvn-number");
-      },
-      child: Container(
-        color: Colors.transparent,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Text("Made in Nigeria",
-                style: TextStyle(
-                    color: navyBlue,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    shadows: [
-                      Shadow(
-                          color: boxShadow,
-                          blurRadius: 3,
-                          offset: Offset(1, 1)),
-                      Shadow(
-                          color: boxShadow, blurRadius: 3, offset: Offset(1, 1))
-                    ])),
-          ],
-        ),
+    return Container(
+      color: Colors.transparent,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Text("Made in Nigeria",
+              style: TextStyle(
+                  color: navyBlue,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  shadows: [
+                    Shadow(
+                        color: boxShadow, blurRadius: 3, offset: Offset(1, 1)),
+                    Shadow(
+                        color: boxShadow, blurRadius: 3, offset: Offset(1, 1))
+                  ])),
+        ],
       ),
     );
   }

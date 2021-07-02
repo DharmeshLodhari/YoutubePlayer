@@ -51,8 +51,8 @@ import 'package:Slydo/screens/more_apps/news/news_detail_page.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/add_bank_account.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/add_bvn_number.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/already_have_reference.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/get_reference.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/verify_reference.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/virtual_account_detail.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/payment/request_payment.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/payment/send_payment.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/bank_account_list.dart';
@@ -606,7 +606,7 @@ class RouteGenerator {
 
       case '/add-money-to-slydo-one':
         return PageTransition(
-          child: AddMoneyToSlydoOne(),
+          child: VirtualAccountDetail(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
