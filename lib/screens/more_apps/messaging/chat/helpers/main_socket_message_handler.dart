@@ -82,6 +82,9 @@ class MainSocketMessageHandler {
           await ChatMessageHandler()
               .updateChatMessage(chatMessage: chatMessage);
 
+          /// send acknowledgement to server that this message is received
+          sendAcknowledgementOfMessage(chatMessage: chatMessage);
+
           /// update ConnectionList order by last recive time
           updateConnectionListOrder(
               conversationId: conversationId, messageData: messageData);
@@ -458,8 +461,21 @@ class MainSocketMessageHandler {
           listen: false);
       connectionListBloc.updateLastMessageTime(
           conversationId: conversationId, time: time);
-      // ConnectionListManager()
-      //     .updateLastMessageTime(conversationId: conversationId, time: time);
     }
+  }
+
+  void sendAcknowledgementOfMessage({ChatMessage chatMessage}) {
+    UserBloc userBloc = Provider.of<UserBloc>(
+        myGlobals.navigationKey.currentContext,
+        listen: false);
+
+    Map<String, dynamic> data = {
+      "check_id": chatMessage.checkId,
+      "type": "acknowledge_message",
+      "conversation_id": chatMessage.conversationId,
+      "username": userBloc.user.userName
+    };
+
+    sendDataToSocket(data);
   }
 }

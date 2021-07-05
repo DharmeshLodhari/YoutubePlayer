@@ -108,7 +108,7 @@ class _DashboardState extends State<Dashboard> {
       }
     } else {
       await ConnectionSynchronizer().update();
-      await ChatMessageSynchronizer().syncMessages();
+      await ChatMessageSynchronizer().syncMessages(fetchFresh: true);
     }
   }
 

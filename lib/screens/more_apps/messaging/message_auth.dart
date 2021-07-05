@@ -378,7 +378,6 @@ class MessageAuth extends AuthService {
 
     request.fields["group_name"] = group.name;
     request.fields["description"] = group.description;
-
     if (group.avatar != null) {
       // Create multipart using filepath, string or bytes
       var multipartFile1 =
@@ -403,6 +402,8 @@ class MessageAuth extends AuthService {
     debugPrint("$responseBody");
 
     if (response.statusCode == 200) {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
       return jsonDecode(responseBody);
     } else {
       debugPrint(
@@ -698,33 +699,50 @@ class MessageAuth extends AuthService {
   }
 
   Future<Map<String, dynamic>> fetchMissedMessages(
-      {List<Map<String, dynamic>> data}) async {
-    var url = secureBaseUrl + "/api/v1/chat/fetch-missed-messages/";
+      {String next, String previous}) async {
+    var url = "";
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      url = secureBaseUrl + "/api/v1/chat/fetch-missed-messages/";
+    } else {
+      url = getSecureUrl(url: next);
+    }
 
     debugPrint("URL:- $url");
 
     var headers = await getAuthHeaders();
 
-    Map<String, dynamic> _data = {"data": data};
-
-    debugPrint("DATA SENT:- $_data");
-
-    var response =
-        await http.post(url, headers: headers, body: jsonEncode(_data));
+    var response = await http.get(url, headers: headers);
 
     if (response.statusCode == 200) {
       debugPrint(
           "STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
-      return jsonDecode(response.body);
+
+      List<String> missedMessages = [];
+      var jsonData = json.decode(response.body);
+      for (var item in jsonData["results"]) {
+        missedMessages.add(jsonEncode(item));
+      }
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": missedMessages
+      };
+      return result;
     } else {
       debugPrint(
-          "URL:- $url STATUSCODE:- ${response.statusCode} BODY:- ${response.body}");
+          "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
       return null;
     }
   }
 
-  Future<Map<String, dynamic>> syncMissedMessages({String dataToBeSent}) async {
-    var url = secureBaseUrl + "/api/v1/chat/sync-chat-messages/";
+  Future<Map<String, dynamic>> acknowledgeMessagesToServer(
+      {List<String> dataToBeSent}) async {
+    var url = secureBaseUrl + "/api/v1/chat/acknowledge-messages/";
 
     debugPrint("URL:- $url");
     var headers = await getAuthHeaders();
@@ -733,8 +751,28 @@ class MessageAuth extends AuthService {
 
     debugPrint("DATA SENT:- $data");
 
+    ///{id: 82860938-6308-4bb9-988d-1b2fc9f60f85,
+    /// check_id: 3161786e-5fb8-48ce-91fa-8677001e56e0,
+    /// conversation: ced68efb-dc48-4d20-9811-e2515aa47207,
+    /// author: abiola.rasheed.19, text: hi,
+    /// read_by_author: true, read_by_recipient: true,
+    /// was_edited: false,
+    /// updated_at: 2021-07-04T01:22:58.092910+01:00,
+    /// created_at: 2021-07-04T01:22:58.092936+01:00,
+    /// kind: text, deleted_for_recipient: false,
+    /// deleted_for_author: false,
+    /// delivered: true, meta_data: {},
+    /// replied_to: null,
+    /// from_customer_avatar: https://slydo-assets.s3.amazonaws.com/media/customer/avatar/4059d32af9974a66b898964736173075.jpg,
+    /// to_customer_avatar: , type: acknowledge_message, processed: acknowledge_message}
+
+    /// {"check_id": "6d2408ac-a2dc-4864-a306-600a702da378",
+    /// "conversation_id": "ced68efb-dc48-4d20-9811-e2515aa47207",
+    /// "username": "black",
+    /// "delivered": true, "type": "acknowledge_message"}
+
     var response =
-        await http.post(url, headers: headers, body: jsonEncode(data));
+        await http.patch(url, headers: headers, body: jsonEncode(data));
 
     if (response.statusCode == 200) {
       debugPrint(
@@ -742,7 +780,7 @@ class MessageAuth extends AuthService {
       return jsonDecode(response.body);
     } else {
       debugPrint(
-          "URL:- $url STATUSCODE:- ${response.statusCode} BODY:- ${response.body}");
+          "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
       return null;
     }
   }

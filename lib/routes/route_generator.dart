@@ -52,12 +52,12 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/add_ba
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/add_bvn_number.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/already_have_reference.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/verify_reference.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/virtual_account_detail.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/payment/request_payment.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/payment/send_payment.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/bank_account_list.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/card_payment_page.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/payout_transactions.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/virtual_account_detail.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/request_payments_list.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/transaction_detail_page.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/transaction_graph.dart';

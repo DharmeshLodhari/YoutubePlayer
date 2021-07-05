@@ -84,7 +84,7 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
             border: Border.all(color: borderColor, width: 2)),
         child: ClipOval(
           child: CachedNetworkImage(
-            imageUrl: widget.user.avatar == ""
+            imageUrl: widget.user.avatar == "" || widget.user.avatar == null
                 ? "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png"
                 : widget.user.avatar,
             colorBlendMode: BlendMode.darken,

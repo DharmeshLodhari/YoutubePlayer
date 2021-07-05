@@ -496,11 +496,13 @@ class _UserDashboardState extends State<UserDashboard> {
     // });
 
     // ChatMessageSynchronizer().dispose();
+
+    await _auth.logOut();
+
     CacheManager().deleteCache(clearAll: true);
     await socketProvider?.close();
 
     await PushNotificationService().logout();
-    await _auth.logOut();
 
     bankAccountBloc.bankAccount = BankAccount();
     dashboardBloc.index = 0;

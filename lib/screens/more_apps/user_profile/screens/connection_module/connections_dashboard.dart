@@ -225,7 +225,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
         color: blackFont,
       ),
       onTap: () async {
-        await ChatMessageSynchronizer().syncMessages();
+        await ChatMessageSynchronizer().syncMessages(fetchFresh: true);
       },
       backgroundColor: lightGrey,
       enableMargin: true,

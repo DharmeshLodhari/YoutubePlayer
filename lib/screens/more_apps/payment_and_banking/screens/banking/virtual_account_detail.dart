@@ -35,6 +35,7 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
 
   bool isLoading = false;
   bool isAccountExist = false;
+  bool isKYCInProcess = false;
 
   VirtualAccount virtualAccount;
 
@@ -65,6 +66,10 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
         await DatabaseHelper().saveVirtualAccount(virtualAccount);
       }
     }
+
+    /// TODO: REMOVE THIS COMMENT AND LINES WHEN IMPLEMENTATION DONE FOR KYC
+    // isKYCInProcess = true;
+    // isAccountExist = false;
     if (mounted) setState(() {});
   }
 
@@ -287,7 +292,9 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
                 contentPadding:
                     EdgeInsets.symmetric(vertical: 5, horizontal: 16),
                 title: Text(
-                  "Account not available now.\nCheck back later.",
+                  isKYCInProcess
+                      ? "Your KYC is in Process.\nCheck back later."
+                      : "Account not available now.\nCheck back later.",
                   style: TextStyle(
                       fontSize: 14,
                       color: navyBlue,

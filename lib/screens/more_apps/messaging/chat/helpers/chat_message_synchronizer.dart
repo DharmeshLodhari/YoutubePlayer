@@ -1,15 +1,13 @@
 import 'dart:async';
+import 'dart:convert';
 
-import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessagePagination.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
-import 'package:Slydo/utils/global_key.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:provider/provider.dart';
 
 class ChatMessageSynchronizer {
   static final ChatMessageSynchronizer _chatMessageSynchronizer =
@@ -33,6 +31,9 @@ class ChatMessageSynchronizer {
 
   static String _next = "";
   static String _previous = "";
+
+  static String _nextMissedMessages = "";
+  static String _previousMissedMessages = "";
 
   void setStreamFalse() {
     _chatMessageStream.sink.add(false);
@@ -92,66 +93,72 @@ class ChatMessageSynchronizer {
     return;
   }
 
-  Future<void> syncMessages(
-      {@required ChatConversation chatConversation}) async {
-    MyGlobals myGlobals = MyGlobals();
-    BuildContext context = myGlobals.navigationKey.currentContext;
-
-    ConnectionListBloc connectionListBloc =
-        Provider.of<ConnectionListBloc>(context, listen: false);
-
-    List<Map<String, dynamic>> dataToBeSent = [];
-
-    for (int i = 0; i < connectionListBloc.connectionUsers.length; i++) {
-      List<ChatMessage> lastFewMessages = await ChatMessageHandler()
-          .getLimitedChatMessages(
-              conversationId:
-                  connectionListBloc.connectionUsers[i].conversationId,
-              limit: 20);
-
-      List<String> checkIds = [];
-      if (lastFewMessages != null) {
-        if (lastFewMessages.isNotEmpty) {
-          lastFewMessages.forEach((element) {
-            if (element.checkId != null && element.checkId != "") {
-              checkIds.add(element.checkId);
-            }
-          });
-        }
-      }
-
-      dataToBeSent.add({
-        "conversation_id": connectionListBloc.connectionUsers[i].conversationId,
-        "check_ids": checkIds
-      });
+  Future<void> syncMessages({bool fetchFresh = false}) async {
+    if (fetchFresh) {
+      _nextMissedMessages = "";
+      _previousMissedMessages = "";
     }
 
+    // MyGlobals myGlobals = MyGlobals();
+    // BuildContext context = myGlobals.navigationKey.currentContext;
+    //
+    // ConnectionListBloc connectionListBloc =
+    //     Provider.of<ConnectionListBloc>(context, listen: false);
+    //
+    // List<Map<String, dynamic>> dataToBeSent = [];
+    //
+    // for (int i = 0; i < connectionListBloc.connectionUsers.length; i++) {
+    //   List<ChatMessage> lastFewMessages = await ChatMessageHandler()
+    //       .getLimitedChatMessages(
+    //           conversationId:
+    //               connectionListBloc.connectionUsers[i].conversationId,
+    //           limit: 20);
+    //
+    //   List<String> checkIds = [];
+    //   if (lastFewMessages != null) {
+    //     if (lastFewMessages.isNotEmpty) {
+    //       lastFewMessages.forEach((element) {
+    //         if (element.checkId != null && element.checkId != "") {
+    //           checkIds.add(element.checkId);
+    //         }
+    //       });
+    //     }
+    //   }
+    //
+    //   dataToBeSent.add({
+    //     "conversation_id": connectionListBloc.connectionUsers[i].conversationId,
+    //     "check_ids": checkIds
+    //   });
+    // }
+
     Map<String, dynamic> resultData = await MessageAuth()
-        .fetchMissedMessages(data: dataToBeSent)
+        .fetchMissedMessages(
+            next: _nextMissedMessages, previous: _previousMissedMessages)
         .catchError((error) {
       debugPrint("ERROR:- While calling Message Synchronizer $error");
     });
 
     if (resultData == null) return;
-    List connectionList = resultData['results'];
 
     List<ChatMessage> messageList = List<ChatMessage>();
-    if (connectionList.isNotEmpty) {
-      connectionList.forEach((element) {
-        String conversationId = element.keys.first;
 
-        List messages = element[conversationId];
+    List missedMessages = resultData['results'];
+    _nextMissedMessages = resultData['next'];
+    _previousMissedMessages = resultData['previous'];
 
-        messages.forEach((message) {
-          ChatMessage chatMessage = ChatMessage.fromJson(message);
-          debugPrint(
-              "<==== ${chatMessage.text}   <===== ${chatMessage.createdAt}");
-          messageList.add(chatMessage);
-        });
-      });
-    }
+    if (missedMessages == null) return;
+
+    if (missedMessages.isEmpty) return;
+
+    missedMessages.forEach((element) {
+      ChatMessage chatMessage = ChatMessage.fromJson(jsonDecode(element));
+      debugPrint("<==== ${chatMessage.text}   <===== ${chatMessage.createdAt}");
+      messageList.add(chatMessage);
+    });
 
     if (messageList.isNotEmpty) {
+      List<String> acknowledgedMessageIds = [];
+
       await ChatMessageHandler().insertMissedChatMessage(messages: messageList);
 
       _chatMessageStream.sink.add(true);
@@ -160,7 +167,19 @@ class ChatMessageSynchronizer {
         await MainSocketMessageHandler().saveAndUpdateUserMessageCount(
             messageData: messageList[i].toJson());
         _chatMessageCountStream.sink.add(true);
+
+        acknowledgedMessageIds.add(messageList[i].messageId);
       }
+
+      await MessageAuth()
+          .acknowledgeMessagesToServer(dataToBeSent: acknowledgedMessageIds)
+          .catchError((error) {
+        debugPrint("Error:- $error");
+      });
+    }
+
+    if (_nextMissedMessages != "") {
+      await syncMessages();
     }
 
     return Future.value();

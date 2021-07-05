@@ -41,10 +41,6 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
 
   UpdateGroupDetailModel groupModel;
 
-  bool isProfileChanged = false;
-  bool isGroupNameChanged = false;
-  bool isDescriptionChanged = false;
-
   @protected
   void initState() {
     groupNameController = TextEditingController();
@@ -54,15 +50,6 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
 
     groupNameController.text = groupDetail.fullName;
     groupDescriptionController.text = groupDetail.description;
-
-    groupDescriptionController.addListener(() {
-      if (groupDescriptionController.text != groupDetail.description) {
-        isDescriptionChanged = true;
-        if (mounted) setState(() {});
-      } else {
-        isDescriptionChanged = false;
-      }
-    });
 
     super.initState();
   }
@@ -96,17 +83,14 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
   }
 
   Widget getFloatingActionBtn() {
-    if (isGroupNameChanged || isDescriptionChanged || isProfileChanged) {
-      return FloatingActionButton(
-        backgroundColor: navyBlue,
-        onPressed: updateGroup,
-        child: Icon(
-          Icons.arrow_forward_rounded,
-          size: 28,
-        ),
-      );
-    }
-    return null;
+    return FloatingActionButton(
+      backgroundColor: navyBlue,
+      onPressed: updateGroup,
+      child: Icon(
+        Icons.arrow_forward_rounded,
+        size: 28,
+      ),
+    );
   }
 
   Widget getAppBar() {
@@ -186,13 +170,6 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
                 child: TextFormField(
               controller: groupNameController,
               cursorColor: blackFont,
-              onChanged: (value) {
-                if (groupNameController.text.trim() == groupDetail.fullName &&
-                    value.isNotEmpty) {
-                  isGroupNameChanged = true;
-                  setState(() {});
-                }
-              },
               validator: (value) {
                 if (value.isNotEmpty) return null;
                 return "Please Enter group name";
@@ -227,7 +204,10 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
                 width: 64,
                 color: chatBackgroundColor,
                 child: CachedNetworkImage(
-                  imageUrl: groupDetail.avatar,
+                  imageUrl: groupDetail.avatar == null ||
+                          groupDetail.avatar == ""
+                      ? "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png"
+                      : groupDetail.avatar,
                   fit: BoxFit.fill,
                 ),
               )
@@ -282,7 +262,6 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
         }
 
         groupModel.avatar = croppedImage;
-        isProfileChanged = true;
         if (mounted) setState(() {});
       }
     }

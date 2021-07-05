@@ -591,48 +591,53 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   void setupScrollController() {
     messageListPositionListener.itemPositions.addListener(() {
-      // print('test' +
-      //     messageListPositionListener.itemPositions.value.last.itemTrailingEdge
-      //         .toString());
-      // if (messageListPositionListener
-      //         .itemPositions.value.last.itemTrailingEdge <
-      //     1) {
-      //   print("bottom?" +
-      //       messageListPositionListener
-      //           .itemPositions.value.last.itemTrailingEdge
-      //           .toString() +
-      //       '    ---- > ' +
-      //       messageListPositionListener.itemPositions.value.last.index
-      //           .toString());
-      //   if (messageListPositionListener.itemPositions.value.last.index > 1) {
-      //     print('fetch ');
-      //   }
-      // }
-
-      // ignore: null_aware_before_operator
-      if (messageListPositionListener
-              ?.itemPositions?.value?.first?.itemTrailingEdge <
-          1) {
-        // print("top?" +
-        //     messageListPositionListener
-        //         .itemPositions.value.first.itemTrailingEdge
-        //         .toString() +
-        //     '    ---- > ' +
-        //     messageListPositionListener.itemPositions.value.first.index
+      if (messageList.length > 0) {
+        // print('test' +
+        //     messageListPositionListener.itemPositions.value.last.itemTrailingEdge
         //         .toString());
-        if (messageListPositionListener.itemPositions.value.first.index == 0) {
-          if (fabIsVisible) {
-            // debugPrint(
-            //     'fetch first ${messageListPositionListener.itemPositions.value.last.index}');
-            fabIsVisible = false;
-            if (mounted) setState(() {});
-          }
-        } else {
-          if (fabIsVisible != true && !isReplyingMessage && !isEditingMessage) {
-            fabIsVisible = true;
-            // debugPrint(
-            //     "fetch last ${messageListPositionListener.itemPositions.value.last.index}");
-            if (mounted) setState(() {});
+        // if (messageListPositionListener
+        //         .itemPositions.value.last.itemTrailingEdge <
+        //     1) {
+        //   print("bottom?" +
+        //       messageListPositionListener
+        //           .itemPositions.value.last.itemTrailingEdge
+        //           .toString() +
+        //       '    ---- > ' +
+        //       messageListPositionListener.itemPositions.value.last.index
+        //           .toString());
+        //   if (messageListPositionListener.itemPositions.value.last.index > 1) {
+        //     print('fetch ');
+        //   }
+        // }
+
+        // ignore: null_aware_before_operator
+        if (messageListPositionListener
+                ?.itemPositions?.value?.first?.itemTrailingEdge <
+            1) {
+          // print("top?" +
+          //     messageListPositionListener
+          //         .itemPositions.value.first.itemTrailingEdge
+          //         .toString() +
+          //     '    ---- > ' +
+          //     messageListPositionListener.itemPositions.value.first.index
+          //         .toString());
+          if (messageListPositionListener.itemPositions.value.first.index ==
+              0) {
+            if (fabIsVisible) {
+              // debugPrint(
+              //     'fetch first ${messageListPositionListener.itemPositions.value.last.index}');
+              fabIsVisible = false;
+              if (mounted) setState(() {});
+            }
+          } else {
+            if (fabIsVisible != true &&
+                !isReplyingMessage &&
+                !isEditingMessage) {
+              fabIsVisible = true;
+              // debugPrint(
+              //     "fetch last ${messageListPositionListener.itemPositions.value.last.index}");
+              if (mounted) setState(() {});
+            }
           }
         }
       }
@@ -1252,7 +1257,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       ),
       onTap: () async {
         await ConnectionSynchronizer().update();
-        await ChatMessageSynchronizer().syncMessages();
+        await ChatMessageSynchronizer().syncMessages(fetchFresh: true);
       },
       backgroundColor: lightGrey,
       enableMargin: true,
