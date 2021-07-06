@@ -157,17 +157,23 @@ class ChatMessageSynchronizer {
     });
 
     if (messageList.isNotEmpty) {
-      List<String> acknowledgedMessageIds = [];
-
-      await ChatMessageHandler().insertMissedChatMessage(messages: messageList);
+      // await ChatMessageHandler()
+      //     .insertMissedChatMessages(messages: messageList);
 
       _chatMessageStream.sink.add(true);
-
       for (int i = 0; i < messageList.length; i++) {
-        await MainSocketMessageHandler().saveAndUpdateUserMessageCount(
-            messageData: messageList[i].toJson());
-        _chatMessageCountStream.sink.add(true);
+        int result = await ChatMessageHandler()
+            .insertMissedChatMessage(chatMessage: messageList[i]);
 
+        if (result == 1) {
+          await MainSocketMessageHandler().saveAndUpdateUserMessageCount(
+              messageData: messageList[i].toJson());
+          _chatMessageCountStream.sink.add(true);
+        }
+      }
+
+      List<String> acknowledgedMessageIds = [];
+      for (int i = 0; i < messageList.length; i++) {
         acknowledgedMessageIds.add(messageList[i].messageId);
       }
 

@@ -289,7 +289,7 @@ class MainSocketProvider extends ChangeNotifier {
   void removeStreamSubscription(StreamSubscription streamSubscription) {
     _streamSubscriptions.forEach((element) {
       if (element == streamSubscription) {
-        element.cancel();
+        element?.cancel();
         // debugPrint("Stream Subscription removed successfully !");
       }
     });
@@ -375,11 +375,6 @@ class MainSocketProvider extends ChangeNotifier {
 
         if (decodeQueueMessage.containsKey("check_id") ?? false) {
           if (decodeQueueMessage["check_id"] == decodedMessage["check_id"]) {
-            debugPrint(
-                "CheckId matched:- ${decodeQueueMessage["check_id"]} == ${decodedMessage["check_id"]} = ${decodeQueueMessage["check_id"] == decodedMessage["check_id"]}");
-            debugPrint(
-                "Checking For Message:- ${_queueMessages[i]} == $message = ${_queueMessages[i] == message}");
-
             if (_queueMessages[i] == message) {
               index = i;
               break;

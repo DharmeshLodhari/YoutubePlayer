@@ -498,6 +498,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     // searchItemTextController.removeListener(searchProductOrService);
 
     messageController.dispose();
+    messageFocus.dispose();
 
     super.dispose();
   }
@@ -569,7 +570,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   void initializeListener() {
     streamSubscription?.cancel();
-    streamSubscription = mainSocketProvider.socketStream.listen((event) {
+    streamSubscription = mainSocketProvider?.socketStream?.listen((event) {
       determineMessageType(event);
     });
   }
@@ -829,6 +830,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
         break;
 
+      case "acknowledge_message":
+        handleAcknowledgementMessage(messageData: messageData);
+        break;
+
       default:
         debugPrint("Message type:- ${messageData['type'] ?? messageData}");
     }
@@ -910,6 +915,27 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     }
   }
 
+  void handleAcknowledgementMessage({Map<String, dynamic> messageData}) {
+    if (messageList.length > 0) {
+      for (int i = 0; i < messageList.length; i++) {
+        Map<String, dynamic> previousMessage = jsonDecode(messageList[i]);
+
+        if (messageData['check_id'] == previousMessage['check_id'] &&
+            messageData['conversation_id'] ==
+                previousMessage['conversation_id'] ) {
+//&& userBloc.user.userName != messageData["username"]
+          previousMessage["delivered"] = true;
+          messageList[i] = jsonEncode(previousMessage);
+          if (mounted) setState(() {});
+
+          ///PlaySoundAccordingToMessageType
+          MessageSoundPlayer(message: jsonEncode(previousMessage)).playSound();
+          break;
+        }
+      }
+    }
+  }
+
   void showRecipientHasRemovedYouDialogue() async {
     isRecipientRemovedDialogueIsOpen = true;
     bool result = await showDialogBoxWithImageWithOneAction(
@@ -953,7 +979,6 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         if (newMessage['check_id'] == previousMessage['check_id'] &&
             newMessageText.replaceAll(RegExp(r"\s+"), "") ==
                 previousMessageText.replaceAll(RegExp(r"\s+"), "")) {
-          newMessage["delivered"] = true;
           messageList[i] = jsonEncode(newMessage);
           if (mounted) setState(() {});
           isMatchFound = true;

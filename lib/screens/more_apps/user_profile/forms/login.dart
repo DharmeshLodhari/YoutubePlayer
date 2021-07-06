@@ -511,7 +511,8 @@ class _UserLoginState extends State<UserLogin> {
 
           userBloc.user = _user;
 
-          DatabaseHelper().saveGeneralSettings(userBloc.chatMessageSettings.toDBJson());
+          DatabaseHelper()
+              .saveGeneralSettings(userBloc.chatMessageSettings.toDBJson());
 
           socketProvider.currentUser = _user;
 
@@ -541,11 +542,13 @@ class _UserLoginState extends State<UserLogin> {
               textColor: Colors.white);
         }
       }).catchError((error) {
-        Navigator.pop(context);
-        Toast.show("$error", context,
-            gravity: Toast.BOTTOM,
-            backgroundColor: Colors.black,
-            textColor: Colors.white);
+        if (mounted) {
+          Navigator.pop(context);
+          Toast.show("$error", context,
+              gravity: Toast.BOTTOM,
+              backgroundColor: Colors.black,
+              textColor: Colors.white);
+        }
       });
     }
   }

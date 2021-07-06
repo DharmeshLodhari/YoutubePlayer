@@ -168,6 +168,10 @@ class MainSocketMessageHandler {
         handleConversationActions(messageData: messageData);
         break;
 
+      case "acknowledge_message":
+        handleAcknowledgementMessage(messageData: messageData);
+        break;
+
       default:
         if (messageType != "pong") {
           debugPrint("UNHANDLED MESSAGE GOT IN SOCKET:-  $messageData");
@@ -224,9 +228,23 @@ class MainSocketMessageHandler {
     }
   }
 
+  void handleAcknowledgementMessage({Map<String, dynamic> messageData}) async {
+    // {check_id: e0c64c88-262d-4428-8634-031762897556, conversation_id: 09700559-3aa6-4d71-bd4b-748322e49fdb, username: black, delivered: true, type: acknowledge_message}
+    UserBloc userBloc = Provider.of<UserBloc>(
+        MyGlobals().navigationKey.currentContext,
+        listen: false);
+
+    // if (userBloc.user.userName != messageData["username"]) {
+    await ChatMessageHandler().updateDeliverStatusOfChatMessage(
+        checkId: messageData['check_id'],
+        conversationId:
+            messageData['conversation_id'] ?? messageData['conversation']);
+    // }
+  }
+
   Future<void> saveAndUpdateUserMessageCount(
       {Map<String, dynamic> messageData}) async {
-    debugPrint("MESSAGEDATA:- $messageData");
+    debugPrint("MESSAGE DATA:- $messageData");
 
     MainSocketMessageModel messageModel =
         MainSocketMessageModel.fromJson(messageData);
@@ -469,13 +487,15 @@ class MainSocketMessageHandler {
         myGlobals.navigationKey.currentContext,
         listen: false);
 
-    Map<String, dynamic> data = {
-      "check_id": chatMessage.checkId,
-      "type": "acknowledge_message",
-      "conversation_id": chatMessage.conversationId,
-      "username": userBloc.user.userName
-    };
+    if (chatMessage.author != userBloc.user.userName) {
+      Map<String, dynamic> data = {
+        "check_id": chatMessage.checkId,
+        "type": "acknowledge_message",
+        "conversation_id": chatMessage.conversationId,
+        "username": userBloc.user.userName
+      };
 
-    sendDataToSocket(data);
+      sendDataToSocket(data);
+    }
   }
 }

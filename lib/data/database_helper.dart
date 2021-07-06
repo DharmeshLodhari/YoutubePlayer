@@ -567,7 +567,7 @@ class DatabaseHelper {
     return [];
   }
 
-  Future<List> insertMissedMessage(List<ChatMessage> chatMessages) async {
+  Future<List> insertMissedMessages(List<ChatMessage> chatMessages) async {
     Database dbClient = await db;
 
     Batch insertUserBatch = dbClient.batch();
@@ -584,6 +584,28 @@ class DatabaseHelper {
     debugPrint("Batch Result:- $result");
 
     return result;
+  }
+
+  Future<int> insertMissedMessage(ChatMessage chatMessage) async {
+    Database dbClient = await db;
+
+    List<Map<String, dynamic>> res = await dbClient.query(CHAT_MESSAGE_TABLE,
+        where: "conversation_id = ? AND check_id = ?",
+        whereArgs: [chatMessage.conversationId, chatMessage.checkId]);
+
+    if (res != null && res.length > 0) {
+      int result = await dbClient.update(
+          CHAT_MESSAGE_TABLE, chatMessage.toDBJson(),
+          where: "conversation_id = ? AND check_id = ?",
+          whereArgs: [chatMessage.conversationId, chatMessage.checkId]);
+      debugPrint("MISSED MESSAGE UPDATED $result");
+      return 0;
+    } else {
+      int result =
+          await dbClient.insert(CHAT_MESSAGE_TABLE, chatMessage.toDBJson());
+      debugPrint("MISSED MESSAGE INSERTED $result");
+      return 1;
+    }
   }
 
   Future<List<ChatMessage>> getChatMessages(
@@ -669,10 +691,37 @@ class DatabaseHelper {
     return result;
   }
 
+  Future<int> updateChatMessageDeliverStatus(
+      String checkId, String conversationId) async {
+    if (checkId == null || conversationId == null) return 0;
+    Database dbClient = await db;
+    var result = await dbClient.update(CHAT_MESSAGE_TABLE, {"delivered": 1},
+        where: "conversation_id = ? AND check_id = ?",
+        whereArgs: [conversationId, checkId]);
+
+    return result;
+  }
+
   Future<int> insertSingleChatMessage(ChatMessage chatMessage) async {
     Database dbClient = await db;
 
-    return await dbClient.insert(CHAT_MESSAGE_TABLE, chatMessage.toDBJson());
+    List<Map<String, dynamic>> res = await dbClient.query(CHAT_MESSAGE_TABLE,
+        where: "conversation_id = ? AND check_id = ?",
+        whereArgs: [chatMessage.conversationId, chatMessage.checkId]);
+
+    if (res != null && res.length > 0) {
+      int result = await dbClient.update(
+          CHAT_MESSAGE_TABLE, chatMessage.toDBJson(),
+          where: "conversation_id = ? AND check_id = ?",
+          whereArgs: [chatMessage.conversationId, chatMessage.checkId]);
+      debugPrint("MISSED MESSAGE UPDATED $result");
+      return 0;
+    } else {
+      int result =
+          await dbClient.insert(CHAT_MESSAGE_TABLE, chatMessage.toDBJson());
+      debugPrint("MISSED MESSAGE INSERTED $result");
+      return 1;
+    }
   }
 
   Future<List<ChatMessage>> getLastChatMessage() async {

@@ -239,8 +239,11 @@ class MessageAuth extends AuthService {
     if (response.statusCode == 200) {
       List<String> previousMessages = [];
       var jsonData = json.decode(response.body);
-      for (var item in jsonData["results"])
+      for (var item in jsonData["results"]) {
         previousMessages.add(jsonEncode(item));
+        debugPrint("==> $jsonData");
+      }
+
       Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],

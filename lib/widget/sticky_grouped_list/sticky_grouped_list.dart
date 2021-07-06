@@ -226,6 +226,15 @@ class _StickyGroupedListViewState<T, E>
             //   actualIndex = 0;
             // }
 
+            ///The following RangeError was thrown building:
+            // I/flutter (11091): RangeError (index): Invalid value: Only valid value is 0: 1
+            // I/flutter (11091):
+            // I/flutter (11091): When the exception was thrown, this was the stack:
+            // I/flutter (11091): #0      List.[] (dart:core-patch/growable_array.dart:177:60)
+            // I/flutter (11091): #1      _StickyGroupedListViewState.build.<anonymous closure> (package:Slydo/widget/sticky_grouped_list/sticky_grouped_list.dart:232:34)
+            // I/flutter (11091): #2      _PositionedListState._buildItem (package:Slydo/widget/sticky_grouped_list/src/positioned_list.dart:240:54)
+            // I/flutter (11091): #3      _PositionedListState.getItems.<anonymous closure> (package:Slydo/widget/sticky_grouped_list/src/positioned_list.dart:194:17)
+
             if (_isSeparator(index)) {
               E curr = widget.groupBy(_sortedElements[actualIndex]);
               E prev = widget.groupBy(

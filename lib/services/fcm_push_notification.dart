@@ -64,19 +64,24 @@ Future<dynamic> fcmBackgroundMessageHandler(
 
         ChatMessage textMessage = ChatMessage.fromJson(data['data']);
 
-        ChatMessageHandler().addChatMessage(chatMessage: textMessage);
+        int result =
+            await ChatMessageHandler().addChatMessage(chatMessage: textMessage);
 
-        int time = convertStringToMillisecondsSinceEpoch(textMessage.createdAt);
+        if (result == 1) {
+          int time =
+              convertStringToMillisecondsSinceEpoch(textMessage.createdAt);
 
-        String conversationId = textMessage.conversationId;
+          String conversationId = textMessage.conversationId;
 
-        ConnectionListManager()
-            .updateLastMessageTime(conversationId: conversationId, time: time);
+          ConnectionListManager().updateLastMessageTime(
+              conversationId: conversationId, time: time);
 
-        String hashedMessage = generateHashedMessage(jsonEncode(data['data']));
+          String hashedMessage =
+              generateHashedMessage(jsonEncode(data['data']));
 
-        ChatUserManager().updateChatUserMessageCount(
-            conversationId: conversationId, hashedMessage: hashedMessage);
+          ChatUserManager().updateChatUserMessageCount(
+              conversationId: conversationId, hashedMessage: hashedMessage);
+        }
 
         AwesomeNotificationService().showNotification(message: data);
       }
