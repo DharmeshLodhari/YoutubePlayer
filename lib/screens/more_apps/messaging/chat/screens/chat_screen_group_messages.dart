@@ -124,6 +124,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   bool isRecipientTyping = false;
   String typingMessage = "";
 
+  /// User online offline status
+  Timer _timerForUserStatus;
+  Duration userStatusCheckTimeDuration = Duration(seconds: 2);
+
   /// User Audio Recording state variables
   Timer _timerForCheckingAudioRecording;
   Duration userAudioRecordingCheckDuration = Duration(seconds: 2);
@@ -282,6 +286,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     getDBMessage();
 
     getUserStatus();
+    setUserStatusTimer();
     initializeSocket();
     setUpAudioRecorder();
     chatShakeDetection = Provider.of<ChatShakeDetection>(
@@ -293,6 +298,16 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
     ChatUserManager().clearChatUserMessageCount(
         conversationId: chatConversation.conversationId);
+  }
+
+  void setUserStatusTimer() {
+    if (_timerForUserStatus?.isActive ?? false) {
+      _timerForUserStatus.cancel();
+    }
+
+    _timerForUserStatus = Timer.periodic(userStatusCheckTimeDuration, (timer) {
+      if (mounted) getUserStatus();
+    });
   }
 
   void getDBMessage() async {
@@ -492,6 +507,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     audioRecorder = null;
 
     chatShakeDetection?.stopShakeDetector();
+
+    _timerForUserStatus?.cancel();
 
     messageController.removeListener(sendUserTypingState);
 
@@ -922,7 +939,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
         if (messageData['check_id'] == previousMessage['check_id'] &&
             messageData['conversation_id'] ==
-                previousMessage['conversation_id'] ) {
+                previousMessage['conversation_id']) {
 //&& userBloc.user.userName != messageData["username"]
           previousMessage["delivered"] = true;
           messageList[i] = jsonEncode(previousMessage);
@@ -1338,56 +1355,73 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void getUserStatus() async {
-    if (chatConversation.isGroupConversation) {
-      userStatus = "${chatConversation.participants.length} Members";
-      if (mounted) setState(() {});
-      return;
-    }
-
-    var data = await MessageAuth()
-        .getChatUserStatus(chatConversation.userName)
-        .catchError((error) {
-      debugPrint("ERROR:- $error");
-    });
-
-    if (data == null) {
-      userStatus = "";
-      return;
-    }
-
-    if (data["status"] == "Online") {
-      userStatus = "Online";
-      if (mounted) setState(() {});
-      return;
-    } else {
-      DateTime now = new DateTime.now();
-      DateTime today = new DateTime(now.year, now.month, now.day);
-      DateTime yesterday = now.subtract(Duration(days: 1));
-
-      DateTime lastSeenDateTime = DateTime.parse(data["last_seen"]).toLocal();
-      DateTime lastSeenDate = new DateTime(
-          lastSeenDateTime.year, lastSeenDateTime.month, lastSeenDateTime.day);
-
-      String lastSeenDateString =
-          DateFormat("dd/MM/yyyy").format(lastSeenDateTime);
-      String lastSeenTime = DateFormat("hh:mm a").format(lastSeenDateTime);
-
-      if (today == lastSeenDate) {
-        userStatus = 'last seen today at ' + lastSeenTime;
+    if (chatConversation != null) {
+      if (chatConversation.isGroupConversation) {
+        userStatus = "${chatConversation.participants.length} Members";
         if (mounted) setState(() {});
         return;
       }
 
-      if (yesterday == lastSeenDate) {
-        userStatus = 'last seen yesterday at ' + lastSeenTime;
-        if (mounted) setState(() {});
+      var data = await MessageAuth()
+          .getChatUserStatus(chatConversation.userName)
+          .catchError((error) {
+        debugPrint("ERROR:- $error");
+      });
+
+      if (data == null) {
+        userStatus = "";
         return;
       }
-      //Todo: Add within last 7 day (last seen Monday at 1.30 AM)
 
-      userStatus = 'last seen ' + lastSeenDateString + ' at ' + lastSeenTime;
+      if (data["status"] == "Online") {
+        userStatus = "Online";
+        if (mounted) setState(() {});
+        return;
+      } else {
+        DateTime now = new DateTime.now();
+        DateTime today = new DateTime(now.year, now.month, now.day);
+        DateTime yesterday = now.subtract(Duration(days: 1));
+
+        DateTime lastSeenDateTime = DateTime.parse(data["last_seen"]).toLocal();
+        DateTime lastSeenDate = new DateTime(lastSeenDateTime.year,
+            lastSeenDateTime.month, lastSeenDateTime.day);
+
+        String lastSeenDateString =
+            DateFormat("dd/MM/yyyy").format(lastSeenDateTime);
+        String lastSeenTime = DateFormat("hh:mm a").format(lastSeenDateTime);
+
+        if (today == lastSeenDate) {
+          if (lastSeenDateTime.difference(now) < Duration(minutes: 59)) {
+            Duration minuteDifference = lastSeenDateTime.difference(now);
+
+            if (minuteDifference.inMinutes.abs() == 0) {
+              userStatus = 'last seen today at ' + lastSeenTime;
+              if (mounted) setState(() {});
+              return;
+            }
+
+            userStatus =
+                'last seen ${minuteDifference.inMinutes.abs()} minutes ago';
+            if (mounted) setState(() {});
+            return;
+          }
+
+          userStatus = 'last seen today at ' + lastSeenTime;
+          if (mounted) setState(() {});
+          return;
+        }
+
+        if (yesterday == lastSeenDate) {
+          userStatus = 'last seen yesterday at ' + lastSeenTime;
+          if (mounted) setState(() {});
+          return;
+        }
+        //Todo: Add within last 7 day (last seen Monday at 1.30 AM)
+
+        userStatus = 'last seen ' + lastSeenDateString + ' at ' + lastSeenTime;
+      }
+      if (mounted) setState(() {});
     }
-    if (mounted) setState(() {});
   }
 
   Widget getUserIcon() {
