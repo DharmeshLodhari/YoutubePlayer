@@ -241,7 +241,6 @@ class MessageAuth extends AuthService {
       var jsonData = json.decode(response.body);
       for (var item in jsonData["results"]) {
         previousMessages.add(jsonEncode(item));
-        debugPrint("==> $jsonData");
       }
 
       Map<String, dynamic> result = {

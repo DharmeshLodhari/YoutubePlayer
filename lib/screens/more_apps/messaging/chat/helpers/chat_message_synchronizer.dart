@@ -1,13 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessagePagination.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
+import 'package:Slydo/utils/global_key.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:provider/provider.dart';
 
 class ChatMessageSynchronizer {
   static final ChatMessageSynchronizer _chatMessageSynchronizer =
@@ -160,7 +163,6 @@ class ChatMessageSynchronizer {
       // await ChatMessageHandler()
       //     .insertMissedChatMessages(messages: messageList);
 
-      _chatMessageStream.sink.add(true);
       for (int i = 0; i < messageList.length; i++) {
         int result = await ChatMessageHandler()
             .insertMissedChatMessage(chatMessage: messageList[i]);
@@ -172,16 +174,20 @@ class ChatMessageSynchronizer {
         }
       }
 
+      _chatMessageStream.sink.add(true);
+
       List<String> acknowledgedMessageIds = [];
       for (int i = 0; i < messageList.length; i++) {
         acknowledgedMessageIds.add(messageList[i].messageId);
       }
 
-      await MessageAuth()
+      Map<String, dynamic> acknowledgedMessages = await MessageAuth()
           .acknowledgeMessagesToServer(dataToBeSent: acknowledgedMessageIds)
           .catchError((error) {
         debugPrint("Error:- $error");
       });
+
+      debugPrint("==> $acknowledgedMessages");
     }
 
     if (_nextMissedMessages != "") {
@@ -189,6 +195,20 @@ class ChatMessageSynchronizer {
     }
 
     return Future.value();
+  }
+
+  void handleAcknowledgementMessage({Map<String, dynamic> messageData}) async {
+    // {check_id: e0c64c88-262d-4428-8634-031762897556, conversation_id: 09700559-3aa6-4d71-bd4b-748322e49fdb, username: black, delivered: true, type: acknowledge_message}
+    UserBloc userBloc = Provider.of<UserBloc>(
+        MyGlobals().navigationKey.currentContext,
+        listen: false);
+
+    if (userBloc.user.userName != messageData["username"]) {
+      await ChatMessageHandler().updateDeliverStatusOfChatMessage(
+          checkId: messageData['check_id'],
+          conversationId:
+              messageData['conversation_id'] ?? messageData['conversation']);
+    }
   }
 
   void dispose() {

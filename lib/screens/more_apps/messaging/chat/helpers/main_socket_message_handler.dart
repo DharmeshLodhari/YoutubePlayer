@@ -112,6 +112,12 @@ class MainSocketMessageHandler {
             case "envelope":
               break;
 
+            case "payment-request":
+              break;
+
+            case "transaction":
+              break;
+
             default:
               debugPrint(
                   "UNKNOWN==> KIND:- ${messageData['kind']}  message:- $messageData");
