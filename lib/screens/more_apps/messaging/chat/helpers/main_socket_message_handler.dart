@@ -178,10 +178,17 @@ class MainSocketMessageHandler {
         handleAcknowledgementMessage(messageData: messageData);
         break;
 
+      case "user_typing_message":
+        break;
+
+      case "pong":
+        break;
+
+      case "user_recording_audio_message":
+        break;
+
       default:
-        if (messageType != "pong") {
-          debugPrint("UNHANDLED MESSAGE GOT IN SOCKET:-  $messageData");
-        }
+        debugPrint("UNHANDLED MESSAGE GOT IN SOCKET:-  $messageData");
     }
   }
 
