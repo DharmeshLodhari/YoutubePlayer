@@ -228,7 +228,7 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
                 controller: messageController,
                 textInputAction: TextInputAction.send,
                 keyboardType: TextInputType.multiline,
-                autofocus: true,
+                autofocus: Platform.isIOS?false:  true,
                 onFieldSubmitted: (value) {
                   sendMessage();
                 },

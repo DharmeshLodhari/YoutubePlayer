@@ -41,10 +41,15 @@ class _AudioTileForChatState extends State<AudioTileForChat> {
     if (_audioPlayer == null || _audioPlayer?.id != widget.message["id"]) {
       _audioPlayer = AssetsAudioPlayer.withId(widget.message["id"]);
 
-      _audioPlayer.open(
-        Audio.network(widget.message["media"]),
+      debugPrint("==> ${widget.message["media"]}");
+      _audioPlayer
+          .open(
+        Audio.network(widget.message["media"],),
         autoStart: false,
-      );
+      )
+          .catchError((error) {
+        debugPrint("ERROR while playing:- $error");
+      });
     }
 
     return Column(
