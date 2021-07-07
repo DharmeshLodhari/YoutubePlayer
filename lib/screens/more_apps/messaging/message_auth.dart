@@ -5,8 +5,8 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/AddGroupModel.dart
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/UpdateGroupDetailModel.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/models/message.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/Envelope.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/util.dart';
@@ -228,6 +228,7 @@ class MessageAuth extends AuthService {
       url = getSecureUrl(url: next);
     }
     var headers = await getAuthHeaders();
+    debugPrint("URL:- $url");
 
     // var response = await http
     //     .get(url, headers: headers)
@@ -236,11 +237,12 @@ class MessageAuth extends AuthService {
     var response = await http.get(url, headers: headers);
 
     if (response.statusCode == 200) {
-      debugPrint("URL:- $url RESPONSE STATUS CODE:- ${response.statusCode} ");
       List<String> previousMessages = [];
       var jsonData = json.decode(response.body);
-      for (var item in jsonData["results"])
+      for (var item in jsonData["results"]) {
         previousMessages.add(jsonEncode(item));
+      }
+
       Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
@@ -249,6 +251,8 @@ class MessageAuth extends AuthService {
       };
       return result;
     } else if (response.statusCode == 500) {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
       return Future.error("Server Error");
     } else {
       debugPrint(
@@ -376,7 +380,6 @@ class MessageAuth extends AuthService {
 
     request.fields["group_name"] = group.name;
     request.fields["description"] = group.description;
-
     if (group.avatar != null) {
       // Create multipart using filepath, string or bytes
       var multipartFile1 =
@@ -401,6 +404,8 @@ class MessageAuth extends AuthService {
     debugPrint("$responseBody");
 
     if (response.statusCode == 200) {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
       return jsonDecode(responseBody);
     } else {
       debugPrint(
@@ -696,29 +701,80 @@ class MessageAuth extends AuthService {
   }
 
   Future<Map<String, dynamic>> fetchMissedMessages(
-      {List<ChatMessage> chatMessages}) async {
-    var url = secureBaseUrl + "/api/v1/chat/fetch-missed-messages/";
+      {String next, String previous}) async {
+    var url = "";
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      url = secureBaseUrl + "/api/v1/chat/fetch-missed-messages/";
+    } else {
+      url = getSecureUrl(url: next);
+    }
+
+    debugPrint("URL:- $url");
+
+    var headers = await getAuthHeaders();
+
+    var response = await http.get(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      debugPrint(
+          "STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+
+      List<String> missedMessages = [];
+      var jsonData = json.decode(response.body);
+      for (var item in jsonData["results"]) {
+        missedMessages.add(jsonEncode(item));
+      }
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": missedMessages
+      };
+      return result;
+    } else {
+      debugPrint(
+          "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+      return null;
+    }
+  }
+
+  Future<Map<String, dynamic>> acknowledgeMessagesToServer(
+      {List<String> dataToBeSent}) async {
+    var url = secureBaseUrl + "/api/v1/chat/acknowledge-messages/";
 
     debugPrint("URL:- $url");
     var headers = await getAuthHeaders();
-
-    List<Map<String, dynamic>> dataToBeSent = [];
-
-    chatMessages.forEach((element) {
-      dataToBeSent.add({
-        "conversation_id": element.conversationId,
-        "created_at":
-            DateTime.parse(element.createdAt).toUtc().toIso8601String(),
-        "check_id": element.checkId
-      });
-    });
 
     Map<String, dynamic> data = {"data": dataToBeSent};
 
     debugPrint("DATA SENT:- $data");
 
+    ///{id: 82860938-6308-4bb9-988d-1b2fc9f60f85,
+    /// check_id: 3161786e-5fb8-48ce-91fa-8677001e56e0,
+    /// conversation: ced68efb-dc48-4d20-9811-e2515aa47207,
+    /// author: abiola.rasheed.19, text: hi,
+    /// read_by_author: true, read_by_recipient: true,
+    /// was_edited: false,
+    /// updated_at: 2021-07-04T01:22:58.092910+01:00,
+    /// created_at: 2021-07-04T01:22:58.092936+01:00,
+    /// kind: text, deleted_for_recipient: false,
+    /// deleted_for_author: false,
+    /// delivered: true, meta_data: {},
+    /// replied_to: null,
+    /// from_customer_avatar: https://slydo-assets.s3.amazonaws.com/media/customer/avatar/4059d32af9974a66b898964736173075.jpg,
+    /// to_customer_avatar: , type: acknowledge_message, processed: acknowledge_message}
+
+    /// {"check_id": "6d2408ac-a2dc-4864-a306-600a702da378",
+    /// "conversation_id": "ced68efb-dc48-4d20-9811-e2515aa47207",
+    /// "username": "black",
+    /// "delivered": true, "type": "acknowledge_message"}
+
     var response =
-        await http.post(url, headers: headers, body: jsonEncode(data));
+        await http.patch(url, headers: headers, body: jsonEncode(data));
 
     if (response.statusCode == 200) {
       debugPrint(
@@ -726,8 +782,106 @@ class MessageAuth extends AuthService {
       return jsonDecode(response.body);
     } else {
       debugPrint(
-          "URL:- $url STATUSCODE:- ${response.statusCode} BODY:- ${response.body}");
+          "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
       return null;
+    }
+  }
+
+  Future<bool> sendEnvelope({bool isEmpty, Map<String, dynamic> data}) async {
+    var url = secureBaseUrl + "/api/v1/transactions/magic-envelop/";
+
+    if (isEmpty) {
+      url = secureBaseUrl + "/api/v1/transactions/empty-envelop/";
+    }
+
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+
+    var response = await http.post(url, headers: headers, body: _data);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<bool> putMoneyInEnvelope(
+      {Map<String, dynamic> data, Envelope envelope}) async {
+    var url =
+        secureBaseUrl + "/api/v1/transactions/empty-envelop/${envelope.id}/";
+
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+
+    debugPrint("Data sent => $data");
+
+    var response = await http.patch(url, headers: headers, body: _data);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<Envelope> getEnvelope({Envelope envelope, String id}) async {
+    var url = secureBaseUrl +
+        "/api/v1/transactions/magic-envelop/${envelope.id.toString()}/?message_id=$id";
+
+    var headers = await getAuthHeaders();
+
+    var response = await http.get(url, headers: headers);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      Envelope envelope = Envelope.fromJson(jsonDecode(response.body));
+
+      return envelope;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<bool> cancelEnvelope(
+      {Envelope envelope, Map<String, dynamic> data}) async {
+    var type = envelope.type.replaceAll("-envelop", "");
+
+    // debugPrint("Message DATA:- $data");
+
+    var url = secureBaseUrl +
+        "/api/v1/transactions/cancel-envelop/$type/${envelope.id}/";
+
+    var headers = await getAuthHeaders();
+
+    var _data = {
+      "check_id": data['check_id'],
+      "conversation_id": data["conversation_id"] ?? data["conversation"],
+    };
+
+    debugPrint("URL:- $url  DATA sent:- $_data}");
+    var response =
+        await http.patch(url, body: jsonEncode(_data), headers: headers);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
     }
   }
 }

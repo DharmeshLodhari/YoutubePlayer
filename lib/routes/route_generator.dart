@@ -27,6 +27,7 @@ import 'package:Slydo/screens/more_apps/hotels/specific_category_hotel_list.dart
 import 'package:Slydo/screens/more_apps/messaging/chat/forms/add_media_to_chat_message.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/forms/group/set_name_and_profile_for_group.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/forms/group/update_group_name_and_profile.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/forms/put_money_in_envelope.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/forms/send_envelope.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/screens/add_chat_group/select_user_for_group.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/screens/chat_screen_group_messages.dart';
@@ -48,14 +49,15 @@ import 'package:Slydo/screens/more_apps/music/specific_category_music_list.dart'
 import 'package:Slydo/screens/more_apps/news/news_dashboard.dart';
 import 'package:Slydo/screens/more_apps/news/news_detail_page.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/add_bank_account.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/add_bvn_number.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/already_have_reference.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/get_reference.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/verify_reference.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/payment/request_payment.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/payment/send_payment.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/bank_account_list.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/card_payment_page.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/payout_transactions.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/virtual_account_detail.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/request_payments_list.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/transaction_detail_page.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/transaction_graph.dart';
@@ -374,6 +376,14 @@ class RouteGenerator {
           settings: settings,
         );
 
+      case '/add-bvn-number':
+        return PageTransition(
+          child: AddBvnNumber(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
       case '/add-bank-account':
         return PageTransition(
           child: AddAccount(),
@@ -493,13 +503,6 @@ class RouteGenerator {
 
       /// Chat
 
-      // case '/chat-screen':
-      //   return PageTransition(
-      //     child: ChatScreen(arguments: settings.arguments),
-      //     type: PageTransitionType.bottomToTop,
-      //     curve: Curves.ease,
-      //     settings: settings,
-      //   );
       case '/chat-screen':
         return PageTransition(
           child: ChatScreenGroupMessage(arguments: settings.arguments),
@@ -573,6 +576,14 @@ class RouteGenerator {
           settings: settings,
         );
 
+      case '/put-money-in-envelope':
+        return PageTransition(
+          child: PutMoneyInEnvelope(arguments: settings.arguments),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
       case '/group-detail':
         return PageTransition(
           child: GroupDetailScreen(arguments: settings.arguments),
@@ -595,7 +606,7 @@ class RouteGenerator {
 
       case '/add-money-to-slydo-one':
         return PageTransition(
-          child: AddMoneyToSlydoOne(),
+          child: VirtualAccountDetail(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

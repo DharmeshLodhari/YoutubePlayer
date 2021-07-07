@@ -33,7 +33,9 @@ import 'package:Slydo/screens/more_apps/messaging/chat/tiles/text_message_render
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/transaction_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/user_profile_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/video_tile_for_chat.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/Envelope.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -47,6 +49,7 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
+import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/image_crop.dart';
@@ -131,19 +134,6 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   /// User status
   String userStatus = "";
-
-  /// allowed message types
-  List<String> imageExtensions = ["jpg", "jpeg", "png", "gif", "webp"];
-  List<String> videoExtensions = [
-    "mp4",
-    "mov",
-    "wmv",
-    "flv",
-    "avi",
-    "webm",
-    "mkv"
-  ];
-  List<String> audioExtensions = ["m4a", "mp3", "ogg", "aac"];
 
   /// variables for product or service search
   bool isProductSearch = true;
@@ -343,6 +333,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void getMissedMessageFromDB() async {
+    debugPrint("Get missed messages Called !!");
     List<ChatMessage> messages = await ChatMessageHandler()
         .getChatMessages(chatConversation: chatConversation);
 
@@ -507,6 +498,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     // searchItemTextController.removeListener(searchProductOrService);
 
     messageController.dispose();
+    messageFocus.dispose();
 
     super.dispose();
   }
@@ -578,7 +570,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   void initializeListener() {
     streamSubscription?.cancel();
-    streamSubscription = mainSocketProvider.socketStream.listen((event) {
+    streamSubscription = mainSocketProvider?.socketStream?.listen((event) {
       determineMessageType(event);
     });
   }
@@ -600,48 +592,53 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   void setupScrollController() {
     messageListPositionListener.itemPositions.addListener(() {
-      // print('test' +
-      //     messageListPositionListener.itemPositions.value.last.itemTrailingEdge
-      //         .toString());
-      // if (messageListPositionListener
-      //         .itemPositions.value.last.itemTrailingEdge <
-      //     1) {
-      //   print("bottom?" +
-      //       messageListPositionListener
-      //           .itemPositions.value.last.itemTrailingEdge
-      //           .toString() +
-      //       '    ---- > ' +
-      //       messageListPositionListener.itemPositions.value.last.index
-      //           .toString());
-      //   if (messageListPositionListener.itemPositions.value.last.index > 1) {
-      //     print('fetch ');
-      //   }
-      // }
-
-      // ignore: null_aware_before_operator
-      if (messageListPositionListener
-              ?.itemPositions?.value?.first?.itemTrailingEdge <
-          1) {
-        // print("top?" +
-        //     messageListPositionListener
-        //         .itemPositions.value.first.itemTrailingEdge
-        //         .toString() +
-        //     '    ---- > ' +
-        //     messageListPositionListener.itemPositions.value.first.index
+      if (messageList.length > 0) {
+        // print('test' +
+        //     messageListPositionListener.itemPositions.value.last.itemTrailingEdge
         //         .toString());
-        if (messageListPositionListener.itemPositions.value.first.index == 0) {
-          if (fabIsVisible) {
-            // debugPrint(
-            //     'fetch first ${messageListPositionListener.itemPositions.value.last.index}');
-            fabIsVisible = false;
-            if (mounted) setState(() {});
-          }
-        } else {
-          if (fabIsVisible != true && !isReplyingMessage && !isEditingMessage) {
-            fabIsVisible = true;
-            // debugPrint(
-            //     "fetch last ${messageListPositionListener.itemPositions.value.last.index}");
-            if (mounted) setState(() {});
+        // if (messageListPositionListener
+        //         .itemPositions.value.last.itemTrailingEdge <
+        //     1) {
+        //   print("bottom?" +
+        //       messageListPositionListener
+        //           .itemPositions.value.last.itemTrailingEdge
+        //           .toString() +
+        //       '    ---- > ' +
+        //       messageListPositionListener.itemPositions.value.last.index
+        //           .toString());
+        //   if (messageListPositionListener.itemPositions.value.last.index > 1) {
+        //     print('fetch ');
+        //   }
+        // }
+
+        // ignore: null_aware_before_operator
+        if (messageListPositionListener
+                ?.itemPositions?.value?.first?.itemTrailingEdge <
+            1) {
+          // print("top?" +
+          //     messageListPositionListener
+          //         .itemPositions.value.first.itemTrailingEdge
+          //         .toString() +
+          //     '    ---- > ' +
+          //     messageListPositionListener.itemPositions.value.first.index
+          //         .toString());
+          if (messageListPositionListener.itemPositions.value.first.index ==
+              0) {
+            if (fabIsVisible) {
+              // debugPrint(
+              //     'fetch first ${messageListPositionListener.itemPositions.value.last.index}');
+              fabIsVisible = false;
+              if (mounted) setState(() {});
+            }
+          } else {
+            if (fabIsVisible != true &&
+                !isReplyingMessage &&
+                !isEditingMessage) {
+              fabIsVisible = true;
+              // debugPrint(
+              //     "fetch last ${messageListPositionListener.itemPositions.value.last.index}");
+              if (mounted) setState(() {});
+            }
           }
         }
       }
@@ -833,6 +830,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
         break;
 
+      case "acknowledge_message":
+        handleAcknowledgementMessage(messageData: messageData);
+        break;
+
       default:
         debugPrint("Message type:- ${messageData['type'] ?? messageData}");
     }
@@ -914,6 +915,27 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     }
   }
 
+  void handleAcknowledgementMessage({Map<String, dynamic> messageData}) {
+    if (messageList.length > 0) {
+      for (int i = 0; i < messageList.length; i++) {
+        Map<String, dynamic> previousMessage = jsonDecode(messageList[i]);
+
+        if (messageData['check_id'] == previousMessage['check_id'] &&
+            messageData['conversation_id'] ==
+                previousMessage['conversation_id'] ) {
+//&& userBloc.user.userName != messageData["username"]
+          previousMessage["delivered"] = true;
+          messageList[i] = jsonEncode(previousMessage);
+          if (mounted) setState(() {});
+
+          ///PlaySoundAccordingToMessageType
+          MessageSoundPlayer(message: jsonEncode(previousMessage)).playSound();
+          break;
+        }
+      }
+    }
+  }
+
   void showRecipientHasRemovedYouDialogue() async {
     isRecipientRemovedDialogueIsOpen = true;
     bool result = await showDialogBoxWithImageWithOneAction(
@@ -957,7 +979,6 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         if (newMessage['check_id'] == previousMessage['check_id'] &&
             newMessageText.replaceAll(RegExp(r"\s+"), "") ==
                 previousMessageText.replaceAll(RegExp(r"\s+"), "")) {
-          newMessage["delivered"] = true;
           messageList[i] = jsonEncode(newMessage);
           if (mounted) setState(() {});
           isMatchFound = true;
@@ -1261,7 +1282,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       ),
       onTap: () async {
         await ConnectionSynchronizer().update();
-        await ChatMessageSynchronizer().update();
+        await ChatMessageSynchronizer().syncMessages(fetchFresh: true);
       },
       backgroundColor: lightGrey,
       enableMargin: true,
@@ -1329,7 +1350,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       debugPrint("ERROR:- $error");
     });
 
-    if (data == null) return;
+    if (data == null) {
+      userStatus = "";
+      return;
+    }
 
     if (data["status"] == "Online") {
       userStatus = "Online";
@@ -1604,8 +1628,9 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
               assignTitleToAction(
                   text: "Empty\nEnvelope", child: sendEmptyEnvelopeButton()),
               flexibleSpace(),
-              assignTitleToAction(
-                  text: "Location\n", child: sendUserLocation()),
+              // assignTitleToAction(
+              //     text: "Location\n", child: sendUserLocation()),
+              assignTitleToAction(text: "GIF", child: sendGIFButton()),
             ],
           ),
           SizedBox(
@@ -1613,9 +1638,13 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           ),
           Row(
             children: <Widget>[
-              assignTitleToAction(text: "GIF", child: sendGIFButton()),
-              flexibleSpace(),
+              // assignTitleToAction(text: "GIF", child: sendGIFButton()),
+              // flexibleSpace(),
               assignTitleToAction(text: "Sticker", child: sendStickersButton()),
+              flexibleSpace(),
+              Container(
+                constraints: BoxConstraints(maxWidth: 60),
+              ),
               flexibleSpace(),
               Container(
                 constraints: BoxConstraints(maxWidth: 60),
@@ -2064,7 +2093,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         }
 
         if (user != null) {
-          getEnvelopeAmount(recipient: user);
+          sendEnvelope(recipient: user);
         }
       },
     );
@@ -2100,22 +2129,33 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         }
 
         if (user != null) {
-          getEnvelopeAmount(recipient: user, isEmpty: true);
+          sendEnvelope(recipient: user, isEmpty: true);
         }
       },
     );
   }
 
-  void getEnvelopeAmount(
-      {bool isEmpty = false, CustomerProfile recipient}) async {
+  void sendEnvelope({bool isEmpty = false, CustomerProfile recipient}) async {
     Map<String, dynamic> arguments = {};
 
     arguments['isEmptyEnvelope'] = isEmpty;
-    arguments['recipient'] = recipient;
+
+    ChatConversation _chatConversation =
+        ChatConversation.fromChatConversation(chatConversation);
+
+    if (chatConversation.isGroupConversation) {
+      _chatConversation.userName = recipient.userName;
+      _chatConversation.fullName = recipient.fullName;
+      _chatConversation.avatar = recipient.avatar;
+      _chatConversation.qrCode = recipient.qrCode;
+    }
+
+    arguments['chatConversation'] = _chatConversation;
 
     stopShakeDetector();
     var result = await Navigator.of(context)
         .pushNamed("/send-envelope", arguments: arguments);
+
     setupShakeDetector();
     debugPrint("Result From send Envelope :- $result");
   }
@@ -2280,18 +2320,6 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       messageController.text = "";
       debugPrint("Result:- $result");
     }
-  }
-
-  String getFileType(FilePickerResult pickedMedia) {
-    debugPrint("File path :- ${pickedMedia.files.single.path}");
-    debugPrint("File name :- ${pickedMedia.files.single.name}");
-    debugPrint("File extension :- ${pickedMedia.files.single.extension}");
-    String extension = pickedMedia.files.single.extension;
-
-    if (imageExtensions.contains(extension)) return "image";
-    if (videoExtensions.contains(extension)) return "video";
-    if (audioExtensions.contains(extension)) return "audio";
-    return "";
   }
 
   Future<String> selectMediaType() async {
@@ -2577,7 +2605,6 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       case "text":
         finalUI = renderMessage(
             message: messageData, chatConversation: chatConversation);
-
         break;
 
       case "image":
@@ -2634,6 +2661,12 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
             message: messageData, chatConversation: chatConversation);
 
         break;
+
+      case "envelope":
+        finalUI = renderEnvelopeUI(
+            message: messageData, chatConversation: chatConversation);
+        break;
+
       default:
         debugPrint("Unknown Message Kind 1: $messageType Message:- $message");
         Widget getErrorRenderTypeUI = unKnownMessageType();
@@ -2943,7 +2976,9 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                     ),
                     onPressed: () {}),
                 Expanded(
-                  child: EditOrReplyMessageUI(messageData: messageData),
+                  child: EditOrReplyMessageUI(
+                      messageData: messageData,
+                      chatConversation: chatConversation),
                 ),
                 IconButton(
                     icon: Icon(
@@ -2985,7 +3020,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                     ),
                     onPressed: () {}),
                 Expanded(
-                  child: EditOrReplyMessageUI(messageData: messageData),
+                  child: EditOrReplyMessageUI(
+                    messageData: messageData,
+                    chatConversation: chatConversation,
+                  ),
                 ),
                 Container(
                   width: 48,
@@ -3008,131 +3046,120 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         ));
   }
 
-  // Widget messageListBuilder() {
-  //   return LazyLoadScrollView(
-  //     isLoading: isLoading,
-  //     onEndOfPage: getPreviousMessages,
-  //     child: ListView.builder(
-  //       reverse: true,
-  //       controller: messageScrollController,
-  //       padding: EdgeInsets.symmetric(vertical: 4),
-  //       //+1 for progressbar
-  //       itemCount: messageList.length + 1,
-  //       itemBuilder: (BuildContext context, int index) {
-  //         debugPrint("messageList[index]= ${messageList[index]}");
-  //         if (index == messageList.length) {
-  //           return _buildIndicator();
-  //         }
-  //         return Container(
-  //           child: GestureDetector(
-  //               onLongPress: () {
-  //                 showChatMessageAction(message: messageList[index]);
-  //               },
-  //               child: renderDataAccordingType(messageList[index])),
-  //           padding: EdgeInsets.only(bottom: 4),
-  //         );
-  //       },
-  //     ),
-  //   );
-  // }
   Widget messageListBuilder() {
-    return isLoading && messageList.isEmpty
-        ? Center(
-            child: CircularLoadingIndicator(),
-          )
-        : Container(
-            child: LazyLoadScrollView(
-              isLoading: isLoading,
-              onEndOfPage: getPreviousMessages,
-              child: getGroupMessage(),
-            ),
-          );
+    try {
+      return isLoading && messageList.isEmpty
+          ? Center(
+              child: CircularLoadingIndicator(),
+            )
+          : Container(
+              child: LazyLoadScrollView(
+                isLoading: isLoading,
+                onEndOfPage: getPreviousMessages,
+                child: getGroupMessage(),
+              ),
+            );
+    } catch (error) {
+      debugPrint("ERROR ====>1:- $error");
+      return Container(
+        color: Colors.white,
+      );
+    }
   }
 
   Widget getGroupMessage() {
-    return StickyGroupedListView<String, DateTime>(
-      itemPositionsListener: messageListPositionListener,
-      elements: messageList,
-      groupBy: (String element) {
-        Map<String, dynamic> message = jsonDecode(element);
-        DateTime dateTime = DateTime.parse(message['created_at']).toLocal();
-        DateTime date = DateTime(dateTime.year, dateTime.month, dateTime.day);
-        return date;
-      },
-      stickyHeaderBackgroundColor: Colors.transparent,
-      groupSeparatorBuilder: (String element) {
-        Map<String, dynamic> message = jsonDecode(element);
+    try {
+      return StickyGroupedListView<String, DateTime>(
+        itemPositionsListener: messageListPositionListener,
+        elements: messageList,
+        groupBy: (String element) {
+          Map<String, dynamic> message = jsonDecode(element);
+          DateTime dateTime = DateTime.parse(message['created_at']).toLocal();
+          DateTime date = DateTime(dateTime.year, dateTime.month, dateTime.day);
+          return date;
+        },
+        stickyHeaderBackgroundColor: Colors.transparent,
+        groupSeparatorBuilder: (String element) {
+          Map<String, dynamic> message = jsonDecode(element);
 
-        DateTime dateTime = DateTime.parse(message['created_at']).toLocal();
+          DateTime dateTime = DateTime.parse(message['created_at']).toLocal();
 
-        String formattedDate = formatDateInTwoDigit(dateTime);
+          String formattedDate = formatDateInTwoDigit(dateTime);
 
-        DateTime presentDate = DateTime.now().toLocal();
+          DateTime presentDate = DateTime.now().toLocal();
 
-        /// checking if git is today's Date
-        if (DateTime(presentDate.year, presentDate.month, presentDate.day)
-                .compareTo(
-                    DateTime(dateTime.year, dateTime.month, dateTime.day)) ==
-            0) {
-          formattedDate = "Today";
-        }
+          /// checking if git is today's Date
+          if (DateTime(presentDate.year, presentDate.month, presentDate.day)
+                  .compareTo(
+                      DateTime(dateTime.year, dateTime.month, dateTime.day)) ==
+              0) {
+            formattedDate = "Today";
+          }
 
-        return Container(
-          padding: EdgeInsets.only(top: 2),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                margin: EdgeInsets.only(bottom: 4),
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                    color: navyBlue.withOpacity(0.5),
-                    borderRadius: BorderRadius.circular(25)),
-                child: Text(
-                  isLoading ? "Loading ..." : "$formattedDate",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 10,
-                    fontWeight: FontWeight.w600,
+          return Container(
+            padding: EdgeInsets.only(top: 2),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  margin: EdgeInsets.only(bottom: 4),
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                      color: navyBlue.withOpacity(0.5),
+                      borderRadius: BorderRadius.circular(25)),
+                  child: Text(
+                    isLoading ? "Loading ..." : "$formattedDate",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
+          );
+        },
+        itemBuilder: (context, String element) => Container(
+          padding: EdgeInsets.only(bottom: 4),
+          child: GestureDetector(
+            onLongPress: () {
+              showChatMessageAction(message: element);
+            },
+            child: renderDataAccordingType(element),
           ),
-        );
-      },
-      itemBuilder: (context, String element) => Container(
-        padding: EdgeInsets.only(bottom: 4),
-        child: GestureDetector(
-          onLongPress: () {
-            showChatMessageAction(message: element);
-          },
-          child: renderDataAccordingType(element),
         ),
-      ),
-      itemComparator: (element1, element2) {
-        Map<String, dynamic> message1 = jsonDecode(element1);
-        Map<String, dynamic> message2 = jsonDecode(element2);
-        DateTime messageOneDateTime =
-            DateTime.parse(message1['created_at']).toLocal();
-        DateTime messageTwoDateTime =
-            DateTime.parse(message2['created_at']).toLocal();
+        itemComparator: (element1, element2) {
+          Map<String, dynamic> message1 = jsonDecode(element1);
+          Map<String, dynamic> message2 = jsonDecode(element2);
+          DateTime messageOneDateTime =
+              DateTime.parse(message1['created_at']).toLocal();
+          DateTime messageTwoDateTime =
+              DateTime.parse(message2['created_at']).toLocal();
 
-        return messageOneDateTime.compareTo(messageTwoDateTime);
-      }, // optional
-      itemScrollController: messageListController, // optional
+          return messageOneDateTime.compareTo(messageTwoDateTime);
+        },
+        // optional
+        itemScrollController: messageListController,
+        // optional
 
-      groupComparator: (dateTime1, dateTime2) {
-        DateTime groupOneDate =
-            DateTime(dateTime1.year, dateTime1.month, dateTime1.day);
-        DateTime groupTwoDate =
-            DateTime(dateTime2.year, dateTime2.month, dateTime2.day);
-        return groupOneDate.compareTo(groupTwoDate);
-      },
-      order: StickyGroupedListOrder.DESC,
-      reverse: true,
-    );
+        groupComparator: (dateTime1, dateTime2) {
+          DateTime groupOneDate =
+              DateTime(dateTime1.year, dateTime1.month, dateTime1.day);
+          DateTime groupTwoDate =
+              DateTime(dateTime2.year, dateTime2.month, dateTime2.day);
+          return groupOneDate.compareTo(groupTwoDate);
+        },
+        order: StickyGroupedListOrder.DESC,
+        reverse: true,
+      );
+    } catch (error) {
+      debugPrint("ERROR ====>2:- $error");
+      return Container(
+        color: Colors.white,
+      );
+    }
   }
 
   // Widget _buildIndicator() {
@@ -3182,9 +3209,9 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         if (repliedTo['id'] == messageData['id'] ||
             repliedTo['check_id'] == messageData['check_id']) {
           debugPrint(
-              "${repliedTo['id']} == ${messageData['id']} =>  ${repliedTo['id'] == messageData['id']}");
+              "==> ${repliedTo['id']} == ${messageData['id']} =>  ${repliedTo['id'] == messageData['id']}");
           debugPrint(
-              "${repliedTo['check_id']} == ${messageData['check_id']} =>  ${repliedTo['check_id'] == messageData['check_id']}");
+              "==> ${repliedTo['check_id']} == ${messageData['check_id']} =>  ${repliedTo['check_id'] == messageData['check_id']}");
           index = i;
           break;
         }
@@ -3192,8 +3219,11 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
       if (index != null) {
         if (mounted) setState(() {});
+
         messageListController.scrollTo(
-            index: messageListLength - index - 4,
+            index: (messageListLength - index - 4) > 0
+                ? messageListLength - index - 4
+                : 0,
             duration: Duration(milliseconds: 500));
       }
     }
@@ -3819,8 +3849,6 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     DateTime messageCreatedTime =
         DateTime.parse(messageData["created_at"]).toLocal();
 
-    debugPrint("==> ${messageCreatedTime.toString()}");
-
     DateTime currentTime = DateTime.now();
 
     if (currentTime.difference(messageCreatedTime) < Duration(minutes: 1)) {
@@ -3860,8 +3888,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           title: "Delete",
           icon: SlydoAppIcon.delete,
           onTap: () {
-            deleteChatMessage(message: message);
             Navigator.pop(context);
+            deleteChatMessage(message: message);
           },
         ));
       }
@@ -3883,6 +3911,11 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   void deleteChatMessage({String message}) async {
     Map<String, dynamic> messageData = jsonDecode(message);
+
+    if (messageData['kind'] == "envelope") {
+      cancelEnvelope(messageData);
+      return;
+    }
 
     String messageId = messageData["check_id"];
 
@@ -4133,47 +4166,6 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     }
   }
 
-  void sendEnvelopeToSocket() async {
-    // showMoreAction = false;
-    // if (mounted) setState(() {});
-    //
-    // Map<String, dynamic> data = {
-    //   "check_id": Uuid().v4(),
-    //   "conversation_id": recipientUser.conversationId,
-    //   "author": userBloc.user.userName,
-    //   "author_full_name": userBloc.user.fullName,
-    //   "author_avatar": userBloc.user.avatar,
-    //   "message": message,
-    //   "kind": "text",
-    //   "read_by_author": true,
-    //   "read_by_recipient": false,
-    //   "delivered": false,
-    //   "created_at": DateTime.now().toUtc().toString(),
-    //   "type": "chatroom_message",
-    // };
-    //
-    // debugPrint(
-    //     "recipientUser = $recipientUser  recipientUser.conversationId = ${recipientUser.conversationId}");
-    // if (recipientUser != null && recipientUser.conversationId != null) {
-    //   DBSocketMessageHandler()
-    //       .saveMessageToDb(message: ChatTextMessage.fromJson(data));
-    //
-    //   String payload = convertServerPayload(data);
-    //
-    //   addMessageToChat(message: payload);
-    //
-    //   messageController.text = "";
-    //   if (mounted) setState(() {});
-    //
-    //   updateConnectionList(
-    //       messageData: data, conversationId: recipientUser.conversationId);
-    //   await sendDataToSocket(data);
-    // } else {
-    //   Toast.show("Please check your connection !!", context,
-    //       textColor: Colors.white);
-    // }
-  }
-
   void updateConnectionList(
       {Map<String, dynamic> messageData, String conversationId}) {
     if (messageData.containsKey("created_at")) {
@@ -4188,5 +4180,47 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       connectionListBloc.updateLastMessageTime(
           conversationId: conversationId, time: time);
     }
+  }
+
+  void cancelEnvelope(Map<String, dynamic> message) async {
+    Map<String, dynamic> data;
+
+    if (message['meta_data'] is String) {
+      data = jsonDecode(message['meta_data']);
+    } else if (message['meta_data'] is Map) {
+      data = message['meta_data'];
+    }
+
+    Envelope envelope = Envelope.fromJson(data);
+
+    BottomSheetPassCode(
+        context: context,
+        isValidCallback: () async {
+          showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => Center(child: CircularLoadingIndicator()));
+
+          var result = await MessageAuth()
+              .cancelEnvelope(envelope: envelope, data: message)
+              .catchError((error) {
+            Toast.show("ERROR:- $error", context, duration: 2);
+          });
+
+          if (result != null) {
+            if (result == true) {
+              Navigator.pop(context);
+              return;
+            } else {
+              Toast.show("Failed to cancel Envelope", context, duration: 2);
+            }
+          }
+          if (mounted) {
+            Navigator.pop(context);
+          }
+        },
+        cancelCallBack: () {
+          Navigator.pop(context);
+        });
   }
 }

@@ -1,3 +1,4 @@
+import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
@@ -510,6 +511,9 @@ class _UserLoginState extends State<UserLogin> {
 
           userBloc.user = _user;
 
+          DatabaseHelper()
+              .saveGeneralSettings(userBloc.chatMessageSettings.toDBJson());
+
           socketProvider.currentUser = _user;
 
           // Get user's bank account if user is logged in
@@ -538,11 +542,13 @@ class _UserLoginState extends State<UserLogin> {
               textColor: Colors.white);
         }
       }).catchError((error) {
-        Navigator.pop(context);
-        Toast.show("$error", context,
-            gravity: Toast.BOTTOM,
-            backgroundColor: Colors.black,
-            textColor: Colors.white);
+        if (mounted) {
+          Navigator.pop(context);
+          Toast.show("$error", context,
+              gravity: Toast.BOTTOM,
+              backgroundColor: Colors.black,
+              textColor: Colors.white);
+        }
       });
     }
   }

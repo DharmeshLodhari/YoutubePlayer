@@ -1,10 +1,13 @@
+import 'package:Slydo/data/database_helper.dart';
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_message_settings.dart';
 import 'package:Slydo/utils/colors.dart';
-import 'package:Slydo/utils/slydo_app_icon_icons.dart';
-import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
+import 'package:provider/provider.dart';
 
 class GeneralSettingScreen extends StatefulWidget {
   @override
@@ -16,6 +19,8 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
       new GlobalKey<ScaffoldState>();
 
   bool isLoading = false;
+
+  UserBloc userBloc;
 
   PackageInfo _packageInfo = PackageInfo(
     appName: 'Unknown',
@@ -38,6 +43,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
   }
 
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
     return Scaffold(
       key: _scaffoldGeneralSettingKey,
       resizeToAvoidBottomInset: true,
@@ -50,12 +56,38 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
   Widget scaffoldBody() {
     return Column(
       children: [
-        Expanded(child: Container()),
+        Expanded(
+            child: Container(
+          padding: EdgeInsets.symmetric(vertical: 10),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                getChatSettingTitle(),
+                SizedBox(
+                  height: 8,
+                ),
+                getIncomingSoundTile(),
+                getOutGoingSoundTile(),
+              ],
+            ),
+          ),
+        )),
         _infoTile(),
         SizedBox(
           height: 20,
         ),
       ],
+    );
+  }
+
+  Widget getChatSettingTitle() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 20),
+      child: Text(
+        "Chat Settings",
+        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+      ),
     );
   }
 
@@ -99,33 +131,94 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
-      actions: <Widget>[
-        // paymentRequestBtn(),
-        // SizedBox(
-        //   width: 16,
-        // ),
-      ],
     );
   }
 
-  Widget paymentRequestBtn() {
-    return RoundedBackgroundIcon(
-      height: 34,
-      width: 34,
-      icon: Icon(
-        SlydoAppIcon.add,
-        size: 16,
-        color: blackFont,
+  Widget getIncomingSoundTile() {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      shadowColor: boxShadowTwo,
+      elevation: 0,
+      child: Container(
+        decoration: decorateBox(),
+        child: ListTile(
+          title: Text(
+            "Incoming Message Sound",
+            maxLines: 1,
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
+            overflow: TextOverflow.fade,
+            softWrap: false,
+          ),
+          trailing: Container(
+            width: 60,
+            child: Switch(
+              value: userBloc.chatMessageSettings.playIncomingMessageSound,
+              onChanged: (value) {
+                ChatMessageSettings chatMessageSettings = ChatMessageSettings();
+                chatMessageSettings.playOutgoingMessageSound =
+                    userBloc.chatMessageSettings.playOutgoingMessageSound;
+                chatMessageSettings.playIncomingMessageSound = value;
+                userBloc.chatMessageSettings = chatMessageSettings;
+                DatabaseHelper()
+                    .updateGeneralSettings(chatMessageSettings.toDBJson());
+              },
+              activeTrackColor: navyBlueLight,
+              activeColor: navyBlue,
+              inactiveTrackColor: navyBlueLight,
+            ),
+          ),
+          onTap: () {},
+        ),
       ),
-      onTap: () {
-        Navigator.of(context).pushNamed('/request-payment',
-            arguments: <String, bool>{
-              'isRequest': true,
-              'isFromProfile': true
-            });
-      },
-      backgroundColor: iconBtnGrey,
-      enableMargin: true,
+    );
+  }
+
+  Widget getOutGoingSoundTile() {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      shadowColor: boxShadowTwo,
+      elevation: 0,
+      child: Container(
+        decoration: decorateBox(),
+        child: ListTile(
+          title: Text(
+            "Outgoing Message Sound",
+            maxLines: 1,
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
+            overflow: TextOverflow.fade,
+            softWrap: false,
+          ),
+          trailing: Container(
+            width: 60,
+            child: Switch(
+              value: userBloc.chatMessageSettings.playOutgoingMessageSound,
+              onChanged: (value) {
+                ChatMessageSettings chatMessageSettings = ChatMessageSettings();
+                chatMessageSettings.playIncomingMessageSound =
+                    userBloc.chatMessageSettings.playIncomingMessageSound;
+                chatMessageSettings.playOutgoingMessageSound = value;
+                userBloc.chatMessageSettings = chatMessageSettings;
+                DatabaseHelper()
+                    .updateGeneralSettings(chatMessageSettings.toDBJson());
+              },
+              activeTrackColor: navyBlueLight,
+              activeColor: navyBlue,
+              inactiveTrackColor: navyBlueLight,
+            ),
+          ),
+          onTap: () {},
+        ),
+      ),
     );
   }
 }

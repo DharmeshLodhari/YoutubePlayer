@@ -16,6 +16,7 @@ Color navyBlue = HexColor("#3F61DB");
 Color navyBlueLight = HexColor("#BEC2F4");
 Color naturalGreen = HexColor("#46CE7C");
 Color naturalGreenLight = HexColor("#E9FFF2");
+Color brownLight = HexColor("#FFEFE0");
 Color whiteBackground = HexColor("#F9F8F8");
 Color blackFont = HexColor("#030F36");
 Color darkGrey = HexColor("#75818F");

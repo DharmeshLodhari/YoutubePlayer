@@ -62,16 +62,16 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
 
   // refresh the list when lifecycle called onResume method
   void _onRefreshOnResume() {
-    _refreshBloc = Provider.of<RefreshBlocForConnectionDashboard>(context);
-    _refreshBloc
-      ..addListener(() {
-        if (_refreshBloc.isRefresh) {
-          if (mounted) {
-            _onRefresh();
-            _refreshBloc.isRefresh = false;
-          }
-        }
-      });
+    // _refreshBloc = Provider.of<RefreshBlocForConnectionDashboard>(context);
+    // _refreshBloc
+    //   ..addListener(() {
+    //     if (_refreshBloc.isRefresh) {
+    //       if (mounted) {
+    //         _onRefresh();
+    //         _refreshBloc.isRefresh = false;
+    //       }
+    //     }
+    //   });
   }
 
   void _onRefresh() async {
@@ -341,8 +341,10 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
             Provider.of<RefreshBlocForConnectionDashboard>(context,
                 listen: false);
 
-        refreshBloc.isRefresh = true;
-        setState(() {});
+        if (mounted) {
+          _onRefresh();
+          refreshBloc.isRefresh = false;
+        }
 
         if (connectionRequestList.length <= 9) {
           getList();

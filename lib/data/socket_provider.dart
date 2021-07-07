@@ -164,7 +164,8 @@ class MainSocketProvider extends ChangeNotifier {
 
           ///TODO: UNCOMMENT THIS WHEN IT IS DONE
           await ConnectionSynchronizer().update();
-          await ChatMessageSynchronizer().update();
+          // await ChatMessageSynchronizer().updateMessages();
+          await ChatMessageSynchronizer().syncMessages(fetchFresh: true);
         });
       }
     }
@@ -288,7 +289,7 @@ class MainSocketProvider extends ChangeNotifier {
   void removeStreamSubscription(StreamSubscription streamSubscription) {
     _streamSubscriptions.forEach((element) {
       if (element == streamSubscription) {
-        element.cancel();
+        element?.cancel();
         // debugPrint("Stream Subscription removed successfully !");
       }
     });
@@ -374,11 +375,6 @@ class MainSocketProvider extends ChangeNotifier {
 
         if (decodeQueueMessage.containsKey("check_id") ?? false) {
           if (decodeQueueMessage["check_id"] == decodedMessage["check_id"]) {
-            debugPrint(
-                "CheckId matched:- ${decodeQueueMessage["check_id"]} == ${decodedMessage["check_id"]} = ${decodeQueueMessage["check_id"] == decodedMessage["check_id"]}");
-            debugPrint(
-                "Checking For Message:- ${_queueMessages[i]} == $message = ${_queueMessages[i] == message}");
-
             if (_queueMessages[i] == message) {
               index = i;
               break;
@@ -400,10 +396,10 @@ class MainSocketProvider extends ChangeNotifier {
         await DBSocketMessageHandler().getSocketQueueChatMessage();
 
     int count = 0;
-    pendingMessages.forEach((element) async {
+    for (int i = 0; i < pendingMessages.length; i++) {
       count++;
-      await add(element.toJson(isForSendingToSocket: true));
-    });
+      await add(pendingMessages[i].toJson(isForSendingToSocket: true));
+    }
 
     debugPrint("Sending $count Pending Text Message !!");
   }
@@ -443,9 +439,9 @@ class MainSocketProvider extends ChangeNotifier {
     _timerForRetryConnection?.cancel();
     _timerForPingServer?.cancel();
 
-    _streamSubscriptions.forEach((element) async {
-      await element?.cancel();
-    });
+    for (int i = 0; i < _streamSubscriptions.length; i++) {
+      await _streamSubscriptions[i]?.cancel();
+    }
 
     _queueMessages.clear();
 

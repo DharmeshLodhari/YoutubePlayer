@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/Envelope.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/colors.dart';
@@ -16,8 +18,9 @@ import '../utils.dart';
 // ignore: must_be_immutable
 class EditOrReplyMessageUI extends StatefulWidget {
   final Map<String, dynamic> messageData;
+  final ChatConversation chatConversation;
 
-  EditOrReplyMessageUI({this.messageData});
+  EditOrReplyMessageUI({this.messageData, this.chatConversation});
 
   @override
   _EditOrReplyMessageUIState createState() => _EditOrReplyMessageUIState();
@@ -80,12 +83,16 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
         Widget getServiceUI = renderService(message: messageData);
         return getServiceUI;
         break;
+
       case "user-profile":
         Widget getUserProfileUI = renderUserProfile(message: messageData);
         return getUserProfileUI;
+        break;
+
       case "user_location":
         Widget getUserLocationUI = renderUserLocationUI(message: messageData);
         return getUserLocationUI;
+        break;
 
       case "gif_image":
         if (gifController == null) {
@@ -94,6 +101,11 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
         }
         Widget getGIFImageUI = renderGIFImageUI(message: messageData);
         return getGIFImageUI;
+
+      case "envelope":
+        Widget getEnvelopeUI = renderEnvelope(message: messageData);
+        return getEnvelopeUI;
+        break;
 
       default:
         debugPrint(
@@ -311,46 +323,105 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
           left: BorderSide(width: 2.0, color: blackFont),
         ),
       ),
-      padding: EdgeInsets.symmetric(horizontal: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      padding: EdgeInsets.only(left: 12),
+      child: Row(
         children: [
-          Text(
-            transaction["description"] == ""
-                ? getAuthorName(message: message, currentUser: userBloc.user)
-                : transaction["description"] ??
-                    getAuthorName(message: message, currentUser: userBloc.user),
-            style: TextStyle(
-                color: blackFont, fontSize: 14, fontWeight: FontWeight.w600),
-            overflow: TextOverflow.ellipsis,
-            maxLines: 1,
-            softWrap: false,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  transaction["description"] == ""
+                      ? getAuthorName(
+                          message: message, currentUser: userBloc.user)
+                      : transaction["description"] ??
+                          getAuthorName(
+                              message: message, currentUser: userBloc.user),
+                  style: TextStyle(
+                      color: blackFont,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  softWrap: false,
+                ),
+                SizedBox(
+                  height: 4,
+                ),
+                Row(
+                  children: [
+                    Text(
+                      "₦ ",
+                      style: TextStyle(
+                          fontFamily: "Roberto",
+                          color: darkGrey,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(
+                      moneyDisplayNormalizer(
+                          int.parse(transaction['amount'].toString())),
+                      style: TextStyle(
+                          color: darkGrey,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-          SizedBox(
-            height: 4,
-          ),
-          Row(
-            children: [
-              Text(
-                "₦ ",
-                style: TextStyle(
-                    fontFamily: "Roberto",
-                    color: darkGrey,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w400),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              Text(
-                moneyDisplayNormalizer(
-                    int.parse(transaction['amount'].toString())),
-                style: TextStyle(
-                    color: darkGrey, fontSize: 12, fontWeight: FontWeight.w400),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-          ),
+          widget.chatConversation.isGroupConversation
+              ? Container(
+                  height: 50,
+                  width: 70,
+                  child: Stack(
+                    overflow: Overflow.visible,
+                    children: [
+                      Positioned(
+                        left: 30,
+                        child: Container(
+                          height: 40,
+                          width: 40,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(100),
+                              border: Border.all(color: navyBlue, width: 2)),
+                          child: ClipOval(
+                            child: CachedNetworkImage(
+                              height: 40,
+                              width: 40,
+                              fit: BoxFit.fill,
+                              imageUrl: message['to_customer_avatar'],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        height: 40,
+                        width: 40,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(100),
+                            border: Border.all(color: naturalGreen, width: 2)),
+                        child: ClipOval(
+                          child: CachedNetworkImage(
+                            height: 40,
+                            width: 40,
+                            fit: BoxFit.fill,
+                            imageUrl: message['from_customer_avatar'],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : Container(
+                  width: 1,
+                  height: 1,
+                ),
         ],
       ),
     );
@@ -371,46 +442,106 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
           left: BorderSide(width: 2.0, color: blackFont),
         ),
       ),
-      padding: EdgeInsets.symmetric(horizontal: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      padding: EdgeInsets.only(left: 12),
+      child: Row(
         children: [
-          Text(
-            paymentRequest["description"] == ""
-                ? getAuthorName(message: message, currentUser: userBloc.user)
-                : paymentRequest["description"] ??
-                    getAuthorName(message: message, currentUser: userBloc.user),
-            style: TextStyle(
-                color: blackFont, fontSize: 14, fontWeight: FontWeight.w600),
-            overflow: TextOverflow.ellipsis,
-            maxLines: 1,
-            softWrap: false,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  paymentRequest["description"] == ""
+                      ? getAuthorName(
+                          message: message, currentUser: userBloc.user)
+                      : paymentRequest["description"] ??
+                          getAuthorName(
+                              message: message, currentUser: userBloc.user),
+                  style: TextStyle(
+                      color: blackFont,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  softWrap: false,
+                ),
+                SizedBox(
+                  height: 4,
+                ),
+                Row(
+                  children: [
+                    Text(
+                      "₦ ",
+                      style: TextStyle(
+                          fontFamily: "Roberto",
+                          color: darkGrey,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(
+                      moneyDisplayNormalizer(
+                          double.parse(paymentRequest['amount'].toString())
+                              .toInt()),
+                      style: TextStyle(
+                          color: darkGrey,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-          SizedBox(
-            height: 4,
-          ),
-          Row(
-            children: [
-              Text(
-                "₦ ",
-                style: TextStyle(
-                    fontFamily: "Roberto",
-                    color: darkGrey,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w400),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              Text(
-                moneyDisplayNormalizer(
-                    double.parse(paymentRequest['amount'].toString()).toInt()),
-                style: TextStyle(
-                    color: darkGrey, fontSize: 12, fontWeight: FontWeight.w400),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-          ),
+          widget.chatConversation.isGroupConversation
+              ? Container(
+                  height: 50,
+                  width: 70,
+                  child: Stack(
+                    overflow: Overflow.visible,
+                    children: [
+                      Positioned(
+                        left: 30,
+                        child: Container(
+                          height: 40,
+                          width: 40,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(100),
+                              border: Border.all(color: navyBlue, width: 2)),
+                          child: ClipOval(
+                            child: CachedNetworkImage(
+                              height: 40,
+                              width: 40,
+                              fit: BoxFit.fill,
+                              imageUrl: message['to_customer_avatar'],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        height: 40,
+                        width: 40,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(100),
+                            border: Border.all(color: naturalGreen, width: 2)),
+                        child: ClipOval(
+                          child: CachedNetworkImage(
+                            height: 40,
+                            width: 40,
+                            fit: BoxFit.fill,
+                            imageUrl: message['from_customer_avatar'],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : Container(
+                  width: 1,
+                  height: 1,
+                ),
         ],
       ),
     );
@@ -640,6 +771,127 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               ],
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget renderEnvelope({Map<String, dynamic> message}) {
+    Envelope envelope;
+    bool isSend = message["author"] == userBloc.user.userName;
+    bool isEmptyEnvelope = false;
+
+    if (message['meta_data'] is String) {
+      envelope = Envelope.fromJson(jsonDecode(message['meta_data']));
+    } else if (message['meta_data'] is Map) {
+      envelope = Envelope.fromJson(message['meta_data']);
+    }
+
+    if (envelope.type == "empty-envelop") {
+      isEmptyEnvelope = true;
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(
+          left: BorderSide(width: 2.0, color: blackFont),
+        ),
+      ),
+      padding: EdgeInsets.only(left: 12),
+      child: Row(
+        children: <Widget>[
+          ClipRRect(
+            borderRadius: BorderRadius.circular(3),
+            child: Image.asset(
+              isEmptyEnvelope
+                  ? "assets/images/envelope/envelope_brown.png"
+                  : envelope.isOpen
+                      ? "assets/images/envelope/envelope_green_open.png"
+                      : "assets/images/envelope/envelope_green.png",
+              height: MediaQuery.of(context).size.width / 8,
+              width: MediaQuery.of(context).size.width / 8,
+              fit: BoxFit.fill,
+            ),
+          ),
+          SizedBox(
+            width: 12,
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  messageDecoderWithEmoji("${envelope.title ?? ""}"),
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: blackFont,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                SizedBox(
+                  height: 4,
+                ),
+                Text(
+                  "Envelope",
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                      color: blackFont),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          widget.chatConversation.isGroupConversation
+              ? Container(
+                  height: 50,
+                  width: 80,
+                  child: Stack(
+                    overflow: Overflow.visible,
+                    children: [
+                      Positioned(
+                        left: 30,
+                        child: Container(
+                          height: 40,
+                          width: 40,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(100),
+                              border: Border.all(color: navyBlue, width: 2)),
+                          child: ClipOval(
+                            child: CachedNetworkImage(
+                              height: 40,
+                              width: 40,
+                              fit: BoxFit.fill,
+                              imageUrl: message['to_customer_avatar'],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        height: 40,
+                        width: 40,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(100),
+                            border: Border.all(color: naturalGreen, width: 2)),
+                        child: ClipOval(
+                          child: CachedNetworkImage(
+                            height: 40,
+                            width: 40,
+                            fit: BoxFit.fill,
+                            imageUrl: message['from_customer_avatar'],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : Container(
+                  width: 1,
+                  height: 1,
+                ),
         ],
       ),
     );

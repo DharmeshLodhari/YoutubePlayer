@@ -1,13 +1,18 @@
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/Envelope.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/common.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:toast/toast.dart';
 
 // ignore: must_be_immutable
 class EnvelopeDetailScreen extends StatefulWidget {
@@ -27,53 +32,75 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
 
   _EnvelopeDetailScreenState({this.arguments});
 
-  CustomerProfile searchedUser;
-  String searchedUserName;
+  CustomerProfile senderCustomer;
 
   // this variable will responsible for is the user is owner of the products and add
   // edit button on the product if user is owner
   bool isAuthor = false;
   UserBloc userBloc;
 
-  CustomerProfileBloc customerProfileBloc;
-
   bool isUserIsSimpleUser = false;
+
+  Map<String, dynamic> data;
+
+  Envelope envelope;
+
+  bool isEmptyEnvelope = false;
 
   @override
   void initState() {
-    initializeVariables();
+    getEnvelopeAndUserData();
 
     super.initState();
   }
 
-  void initializeVariables() async {
-    await getSearchedUser();
+  void getEnvelopeAndUserData() async {
+    envelope = arguments['envelope'];
+    data = arguments['data'];
+    isLoading = true;
+    if (mounted) setState(() {});
+    // debugPrint("DATA:- $data");
 
-    if (mounted) {
-      setState(() {});
+    debugPrint("envelope ${envelope.toJson()}");
+    await getSearchedUser();
+    if (envelope.type != "empty-envelop") {
+      Envelope envelopeFromServer = await MessageAuth()
+          .getEnvelope(envelope: envelope, id: data['id'])
+          .catchError((error) {
+        debugPrint("ERROR1:- $error");
+        Toast.show("ERROR1:- $error", context);
+      });
+
+      if (envelopeFromServer != null) {
+        envelope = envelopeFromServer;
+      }
+    } else {
+      isEmptyEnvelope = true;
     }
+
+    isLoading = false;
+    if (mounted) setState(() {});
   }
 
   Future<void> getSearchedUser() async {
-    searchedUserName = arguments['searchedUserName'];
-    isLoading = true;
-    if (mounted) setState(() {});
+    CustomerProfile user = await UserAuth()
+        .fetchCustomerProfileWithAuth(envelope.fromCustomer)
+        .catchError((error) {
+      debugPrint("ERROR2:- $error");
+      Toast.show("ERROR2:- $error", context);
+    });
+    if (user != null) {
+      senderCustomer = user;
 
-    CustomerProfile user =
-        await UserAuth().fetchCustomerProfileWithAuth(searchedUserName);
-    searchedUser = user;
-    isLoading = false;
-    if (searchedUser.type.toLowerCase() == "user") {
-      isUserIsSimpleUser = true;
+      if (senderCustomer.type.toLowerCase() == "user") {
+        isUserIsSimpleUser = true;
+      }
     }
-
-    if (mounted) setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
 
     if (isLoading) {
       return Scaffold(
@@ -84,7 +111,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
       );
     }
 
-    if (userBloc.user.userName == searchedUser.userName) {
+    if (userBloc.user.userName == envelope.fromCustomer) {
       isAuthor = true;
     }
 
@@ -133,7 +160,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
 
   Widget getTitle() {
     return Text(
-      "Envelope from ${isAuthor ? "you" : searchedUser.fullName}",
+      "Envelope from ${isAuthor ? "you" : senderCustomer.fullName}",
       style: TextStyle(
           fontSize: 18, fontWeight: FontWeight.w700, color: blackFont),
     );
@@ -150,29 +177,42 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "₦ ",
-                style: TextStyle(
-                    fontFamily: "Roberto",
-                    fontSize: 32,
-                    fontWeight: FontWeight.w700,
-                    color: navyBlue),
-              ),
-              Text(
-                "97.0",
-                style: TextStyle(
-                    fontSize: 32, fontWeight: FontWeight.w700, color: navyBlue),
-              ),
-            ],
+          isEmptyEnvelope
+              ? Container()
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "₦ ",
+                      style: TextStyle(
+                          fontFamily: "Roberto",
+                          fontSize: 32,
+                          fontWeight: FontWeight.w700,
+                          color: navyBlue),
+                    ),
+                    Text(
+                      "${moneyDisplayNormalizer(int.parse(envelope.amount))}" ??
+                          "",
+                      style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.w700,
+                          color: navyBlue),
+                    ),
+                  ],
+                ),
+          SizedBox(
+            height: 12,
+          ),
+          Text(
+            messageDecoderWithEmoji("${envelope.title ?? ""}"),
+            style: TextStyle(
+                fontSize: 16, fontWeight: FontWeight.w700, color: blackFont),
           ),
           SizedBox(
             height: 12,
           ),
           Text(
-            "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries.",
+            messageDecoderWithEmoji("${envelope.message ?? ""}"),
             style: TextStyle(
                 fontSize: 14, fontWeight: FontWeight.w400, color: blackFont),
           ),
@@ -182,37 +222,47 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
   }
 
   Widget getEnvelopeActions() {
-    return isAuthor
-        ? Container()
-        : Container(
-            child: Row(
-              children: <Widget>[
-                Expanded(
-                  child: CurvedButton(
-                    backgroundColor: mateRed,
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    text: "Reject",
-                    textColor: Colors.white,
-                  ),
-                ),
-                SizedBox(
-                  width: 16,
-                ),
-                Expanded(
-                  child: CurvedButton(
-                    backgroundColor: navyBlue,
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    text: "Accept",
-                    textColor: Colors.white,
-                  ),
-                ),
-              ],
+    return isAuthor && envelope.type == "empty-envelop" ||
+            isAuthor && !envelope.isOpen
+        ? Container(
+            child: CurvedButton(
+              backgroundColor: mateRed,
+              onPressed: cancelEnvelope,
+              text: "Cancel",
+              textColor: Colors.white,
             ),
-          );
+          )
+        : Container();
+  }
+
+  void cancelEnvelope() async {
+    BottomSheetPassCode(
+        context: context,
+        isValidCallback: () async {
+          showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => Center(child: CircularLoadingIndicator()));
+
+          var result = await MessageAuth()
+              .cancelEnvelope(envelope: envelope, data: data)
+              .catchError((error) {
+            Toast.show("ERROR:- $error", context, duration: 2);
+          });
+
+          if (result != null) {
+            if (result == true) {
+              Navigator.popUntil(context, ModalRoute.withName("/chat-screen"));
+              return;
+            } else {
+              Toast.show("Failed to cancel Envelope", context, duration: 2);
+            }
+          }
+          Navigator.pop(context);
+        },
+        cancelCallBack: () {
+          Navigator.pop(context);
+        });
   }
 
   Widget getAppbar(var context) {
@@ -236,7 +286,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
               size: 26,
             ),
             onPressed: () {
-              searchedUser = null;
+              senderCustomer = null;
               Navigator.pop(context);
             },
           ),
@@ -298,7 +348,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
                 backgroundColor: Colors.transparent,
               ),
             )
-          : searchedUser.userAbout == null
+          : senderCustomer.userAbout == null
               ? Center(
                   child: CircularProgressIndicator(
                     strokeWidth: 2.5,
@@ -306,7 +356,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
                     backgroundColor: Colors.transparent,
                   ),
                 )
-              : searchedUser.userAbout.wallpaper == ""
+              : senderCustomer.userAbout.wallpaper == ""
                   ? Image.asset(
                       "assets/images/home_screen_background.png",
                       width: double.infinity,
@@ -315,7 +365,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
                   : CachedNetworkImage(
                       width: double.infinity,
                       height: double.infinity,
-                      imageUrl: searchedUser.userAbout.wallpaper,
+                      imageUrl: senderCustomer.userAbout.wallpaper,
                       fit: BoxFit.cover,
                       placeholder: (context, url) =>
                           Center(child: CircularLoadingIndicator()),
@@ -327,7 +377,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
   }
 
   Widget getProfilePhoto() {
-    Color borderColor = getUserTypeColor(user: searchedUser);
+    Color borderColor = getUserTypeColor(user: senderCustomer);
 
     return Container(
       alignment: Alignment.bottomLeft,
@@ -348,7 +398,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
                   width: 88,
                   fit: BoxFit.fill,
                   filterQuality: FilterQuality.high,
-                  imageUrl: searchedUser.avatar,
+                  imageUrl: senderCustomer.avatar,
                 ),
               ),
             ),
@@ -371,7 +421,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
           size: 24,
         ),
         onPressed: () {
-          searchedUser = null;
+          senderCustomer = null;
           Navigator.pop(context);
         },
       ),

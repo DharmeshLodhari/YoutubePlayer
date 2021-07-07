@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatMessageAction.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/Envelope.dart';
 import 'package:flutter/material.dart';
 
 class GetChatMessageActions {
@@ -96,6 +97,12 @@ class GetChatMessageActions {
 
       case "gif_image":
         chatMessageAction = _getGIFImageActions(
+            message: _message,
+            isAuthorPerformingAction: isAuthorPerformingAction);
+        return chatMessageAction;
+
+      case "envelope":
+        chatMessageAction = _getEnvelopeActions(
             message: _message,
             isAuthorPerformingAction: isAuthorPerformingAction);
         return chatMessageAction;
@@ -232,6 +239,32 @@ class GetChatMessageActions {
 
     if (isAuthorPerformingAction) {
       chatMessageAction.isDeletable = true;
+    }
+    chatMessageAction.isReplyable = true;
+
+    return chatMessageAction;
+  }
+
+  ChatMessageAction _getEnvelopeActions(
+      {@required String message, bool isAuthorPerformingAction}) {
+    ChatMessageAction chatMessageAction = ChatMessageAction(message: message);
+
+    Map<String, dynamic> messageData = jsonDecode(message);
+
+    Map<String, dynamic> data;
+
+    if (messageData['meta_data'] is String) {
+      data = jsonDecode(messageData['meta_data']);
+    } else if (messageData['meta_data'] is Map) {
+      data = messageData['meta_data'];
+    }
+
+    Envelope envelope = Envelope.fromJson(data);
+
+    if (isAuthorPerformingAction) {
+      if (!envelope.isOpen) {
+        chatMessageAction.isDeletable = true;
+      }
     }
     chatMessageAction.isReplyable = true;
 

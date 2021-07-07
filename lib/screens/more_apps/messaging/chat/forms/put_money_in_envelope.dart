@@ -4,6 +4,9 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/Envelope.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -17,38 +20,72 @@ import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
 // ignore: must_be_immutable
-class SendEnvelope extends StatefulWidget {
+class PutMoneyInEnvelope extends StatefulWidget {
   final arguments;
 
-  SendEnvelope({this.arguments});
+  PutMoneyInEnvelope({this.arguments});
 
   @override
-  _SendEnvelopeState createState() => _SendEnvelopeState();
+  _PutMoneyInEnvelopeState createState() => _PutMoneyInEnvelopeState();
 }
 
-class _SendEnvelopeState extends State<SendEnvelope> {
+class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
   TextEditingController _amountController = TextEditingController();
   TextEditingController _messageController = TextEditingController();
   TextEditingController _titleController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
-  final _sendEnvelopeScaffold = GlobalKey<ScaffoldState>();
+  final _putMoneyInEnvelopeScaffold = GlobalKey<ScaffoldState>();
   UserBloc userBloc;
 
   double amount;
   String errorMessage = "";
 
-  bool isEmptyEnvelope;
+  Map<String, dynamic> message;
+
+  Envelope envelope;
 
   ChatConversation chatConversation;
 
+  bool isLoading = false;
+  CustomerProfile customerProfile;
+
+  /// {"id": "f608d81c-6a49-4679-b6fa-f064d3d5fb20",
+  /// "check_id": "b46c11fb-1c21-4fda-b797-a0e5b040c563",
+  /// "conversation": "f1da3859-3206-4669-acce-78db308899ac",
+  /// "author": "black", "text": "", "read_by_author": true,
+  /// "read_by_recipient": false, "was_edited": false,
+  /// "media": null, "poster": null,
+  /// "updated_at": "2021-06-21T13:20:46.458541+01:00",
+  /// "created_at": "2021-06-21T13:20:46.458572+01:00",
+  /// "kind": "envelope", "deleted_for_recipient":
+  /// false, "deleted_for_author": false, "delivered": true,
+  /// "meta_data":
+  /// {"id": 11, "type": "empty-envelop",
+  /// "magic_envelop": null, "from_customer": "black",
+  /// "to_customer": "brijesh.sakariya",
+  /// "message": "Test", "title": "Hello",
+  /// "created_at": "2021-06-21T13:20:46.333352+01:00"},
+  /// "replied_to": null, "type": "chatroom_message"}
+
   @override
   void initState() {
-    isEmptyEnvelope =
-        widget.arguments != null ? widget.arguments["isEmptyEnvelope"] : false;
+    message = widget.arguments["message"];
+    envelope = widget.arguments["envelope"];
     chatConversation = widget.arguments["chatConversation"];
+    fetchSenderDetail();
 
     super.initState();
+  }
+
+  void fetchSenderDetail() async {
+    isLoading = true;
+    if (mounted) setState(() {});
+
+    customerProfile =
+        await UserAuth().fetchCustomerProfile(envelope.fromCustomer);
+    isLoading = false;
+    if (mounted) setState(() {});
   }
 
   @override
@@ -61,7 +98,7 @@ class _SendEnvelopeState extends State<SendEnvelope> {
       },
       child: Scaffold(
         backgroundColor: Colors.white,
-        key: _sendEnvelopeScaffold,
+        key: _putMoneyInEnvelopeScaffold,
         resizeToAvoidBottomInset: true,
         appBar: appBar(),
         body: scaffoldBody(),
@@ -86,7 +123,7 @@ class _SendEnvelopeState extends State<SendEnvelope> {
         },
       ),
       title: Text(
-        isEmptyEnvelope ? "Send empty envelope" : "Send magic envelope",
+        "Send money in envelope",
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -96,13 +133,13 @@ class _SendEnvelopeState extends State<SendEnvelope> {
   Widget getDisplayCard() {
     var avatarImage;
     var qrCodeImage;
-    if (chatConversation != null) {
+    if (customerProfile != null) {
       avatarImage = Container(
         height: 48,
         width: 48,
         child: ClipOval(
           child: CachedNetworkImage(
-            imageUrl: chatConversation.avatar,
+            imageUrl: customerProfile.avatar,
             colorBlendMode: BlendMode.darken,
             fit: BoxFit.fill,
             filterQuality: FilterQuality.high,
@@ -110,14 +147,14 @@ class _SendEnvelopeState extends State<SendEnvelope> {
         ),
       );
 
-      // qrCodeImage = CachedNetworkImage(
-      //   height: 48,
-      //   width: 48,
-      //   imageUrl: chatConversation.qrCode ?? "",
-      //   colorBlendMode: BlendMode.darken,
-      //   fit: BoxFit.fill,
-      //   filterQuality: FilterQuality.high,
-      // );
+      qrCodeImage = CachedNetworkImage(
+        height: 48,
+        width: 48,
+        imageUrl: customerProfile.qrCode ?? "",
+        colorBlendMode: BlendMode.darken,
+        fit: BoxFit.fill,
+        filterQuality: FilterQuality.high,
+      );
     }
 
     return Column(
@@ -127,7 +164,7 @@ class _SendEnvelopeState extends State<SendEnvelope> {
           child: ListTile(
             contentPadding: EdgeInsets.zero,
             title: Text(
-              chatConversation.fullName,
+              customerProfile.fullName,
               style: TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
@@ -136,16 +173,16 @@ class _SendEnvelopeState extends State<SendEnvelope> {
               maxLines: 1,
             ),
             subtitle: Text(
-              chatConversation.userName,
+              customerProfile.userName,
               style: TextStyle(fontSize: 14, color: darkGrey),
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
             ),
             leading: avatarImage,
-            // trailing: qrCodeImage,
+            trailing: qrCodeImage,
             onTap: () {
               Navigator.pushNamed(context, '/profile',
-                  arguments: {"searchedUserName": chatConversation.userName});
+                  arguments: {"searchedUserName": customerProfile.userName});
             },
           ),
         ),
@@ -161,95 +198,97 @@ class _SendEnvelopeState extends State<SendEnvelope> {
   Widget scaffoldBody() {
     bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
 
-    return SingleChildScrollView(
-      child: Container(
-        padding: EdgeInsets.symmetric(
-            horizontal: 16, vertical: isScreenIsSmall ? 8 : 16),
-        child: Column(
-          children: [
-            Card(
-              elevation: 2,
-              margin: EdgeInsets.zero,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              shadowColor: iconBtnGrey,
-              child: Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: iconBtnGrey, width: 1)),
-                child: Form(
-                  key: _formKey,
-                  child: Container(
-                    child: Column(
-                      children: <Widget>[
-                        getDisplayCard(),
-                        Container(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
+    return isLoading
+        ? Center(
+            child: CircularLoadingIndicator(),
+          )
+        : SingleChildScrollView(
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                  horizontal: 16, vertical: isScreenIsSmall ? 8 : 16),
+              child: Column(
+                children: [
+                  Card(
+                    elevation: 2,
+                    margin: EdgeInsets.zero,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    shadowColor: iconBtnGrey,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: iconBtnGrey, width: 1)),
+                      child: Form(
+                        key: _formKey,
+                        child: Container(
                           child: Column(
-                            children: [
-                              isEmptyEnvelope
-                                  ? Container()
-                                  : Column(
-                                      children: [
-                                        SizedBox(
-                                          height: 20,
-                                        ),
-                                        displayAmountField(),
-                                      ],
-                                    ),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              getTitleField(),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              getMessageField(),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              errorMessage == ""
-                                  ? Container()
-                                  : Text(
-                                      errorMessage,
-                                      style: TextStyle(
-                                          color: mateRed,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16),
-                                    ),
-                              errorMessage == ""
-                                  ? Container()
-                                  : SizedBox(
+                            children: <Widget>[
+                              getDisplayCard(),
+                              Container(
+                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                child: Column(
+                                  children: [
+                                    SizedBox(
                                       height: 20,
                                     ),
+                                    getEnvelopeTitleAndMessage(),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    displayAmountField(),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    getTitleField(),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    getMessageField(),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    errorMessage == ""
+                                        ? Container()
+                                        : Text(
+                                            errorMessage,
+                                            style: TextStyle(
+                                                color: mateRed,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16),
+                                          ),
+                                    errorMessage == ""
+                                        ? Container()
+                                        : SizedBox(
+                                            height: 20,
+                                          ),
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
                         ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: 20,
+                        ),
+                        getSubmitButton(),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        getConditionText(),
                       ],
                     ),
                   ),
-                ),
-              ),
-            ),
-            Container(
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 20,
-                  ),
-                  getSubmitButton(),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  getConditionText(),
                 ],
               ),
             ),
-          ],
-        ),
-      ),
-    );
+          );
   }
 
   Widget showBackArrow() {
@@ -258,6 +297,41 @@ class _SendEnvelopeState extends State<SendEnvelope> {
       onPressed: () {
         Navigator.pop(context);
       },
+    );
+  }
+
+  Widget getEnvelopeTitleAndMessage() {
+    return Container(
+      child: Column(
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                  flex: 1,
+                  child: Text(
+                    "Title",
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                  )),
+              Expanded(flex: 4, child: Text("${envelope.title}")),
+            ],
+          ),
+          SizedBox(
+            height: 8,
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                  child: Text(
+                "Message",
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+              )),
+              Expanded(flex: 4, child: Text("${envelope.message}")),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -353,7 +427,6 @@ class _SendEnvelopeState extends State<SendEnvelope> {
                 barrierDismissible: false,
                 builder: (context) =>
                     Center(child: CircularLoadingIndicator()));
-
             Map<String, dynamic> data = {
               "from_customer": userBloc.user.userName,
               "to_customer": chatConversation.userName,
@@ -365,14 +438,14 @@ class _SendEnvelopeState extends State<SendEnvelope> {
               "title": _titleController.text.trim(),
               "conversation_id": chatConversation.conversationId
             };
-            if (!isEmptyEnvelope) {
-              data["currency"] = userBloc.user.currency;
-              data["amount"] = moneyInputNormalizer(amount.toString());
-              data["category"] = "General";
-            }
+            data["currency"] = userBloc.user.currency;
+            data["amount"] = moneyInputNormalizer(amount.toString());
+            data["category"] = "General";
+
+            data['check_id'] = message['check_id'];
 
             await MessageAuth()
-                .sendEnvelope(isEmpty: isEmptyEnvelope, data: data)
+                .putMoneyInEnvelope(data: data, envelope: envelope)
                 .catchError((error) {
               Toast.show("ERROR:- $error", context, duration: 2);
             });
@@ -380,7 +453,7 @@ class _SendEnvelopeState extends State<SendEnvelope> {
             Navigator.popUntil(context, ModalRoute.withName("/chat-screen"));
           },
           cancelCallBack: () {
-            _sendEnvelopeScaffold.currentState.showSnackBar(SnackBar(
+            _putMoneyInEnvelopeScaffold.currentState.showSnackBar(SnackBar(
               content: Text(AppLocalization.of(context).invalidPassword),
             ));
           });

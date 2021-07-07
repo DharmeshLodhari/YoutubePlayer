@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/Envelope.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/colors.dart';
@@ -526,6 +527,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
             message: messageData, isSend: isSend, isRepliedSend: isRepliedSend);
         return getServiceUI;
         break;
+
       case "user-profile":
         Widget getUserProfileUI = renderUserProfile(
             message: messageData, isSend: isSend, isRepliedSend: isRepliedSend);
@@ -547,6 +549,11 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
             message: messageData, isSend: isSend, isRepliedSend: isRepliedSend);
         return getGIFImageUI;
         break;
+
+      case "envelope":
+        Widget getEnvelopeUI = renderEnvelope(
+            message: messageData, isSend: isSend, isRepliedSend: isRepliedSend);
+        return getEnvelopeUI;
 
       default:
         debugPrint(
@@ -1176,6 +1183,140 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
               ],
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget renderEnvelope(
+      {Map<String, dynamic> message, bool isSend, bool isRepliedSend}) {
+    Envelope envelope;
+
+    bool isEmptyEnvelope = false;
+
+    if (message['meta_data'] is String) {
+      envelope = Envelope.fromJson(jsonDecode(message['meta_data']));
+    } else if (message['meta_data'] is Map) {
+      envelope = Envelope.fromJson(message['meta_data']);
+    }
+
+    if (envelope.type == "empty-envelop") {
+      isEmptyEnvelope = true;
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(
+          left: BorderSide(
+              width: 2.0,
+              color: getDividerColor(
+                  isSend: isSend, isRepliedSend: isRepliedSend)),
+        ),
+      ),
+      padding: EdgeInsets.symmetric(horizontal: 12),
+      child: Row(
+        children: <Widget>[
+          ClipRRect(
+              borderRadius: BorderRadius.circular(3),
+              child: Image.asset(
+                isEmptyEnvelope
+                    ? "assets/images/envelope/envelope_brown.png"
+                    : envelope.isOpen
+                        ? "assets/images/envelope/envelope_green_open.png"
+                        : "assets/images/envelope/envelope_green.png",
+                height: MediaQuery.of(context).size.width / 8,
+                width: MediaQuery.of(context).size.width / 8,
+                fit: BoxFit.fill,
+              )),
+          SizedBox(
+            width: 12,
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  messageDecoderWithEmoji("${envelope.title ?? ""}"),
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: getDividerColor(
+                        isSend: isSend, isRepliedSend: isRepliedSend),
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                SizedBox(
+                  height: 4,
+                ),
+                Text(
+                  isEmptyEnvelope
+                      ? message["author_full_name"] ?? message["author"]
+                      : isSend
+                          ? envelope.isOpen
+                              ? "Opened"
+                              : "Closed"
+                          : message["author_full_name"] ?? message["author"],
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                      color: getDescriptionColor(
+                          isSend: isSend, isRepliedSend: isRepliedSend)),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          widget.chatConversation.isGroupConversation
+              ? Container(
+                  height: 50,
+                  width: 80,
+                  child: Stack(
+                    overflow: Overflow.visible,
+                    children: [
+                      Positioned(
+                        left: 30,
+                        child: Container(
+                          height: 40,
+                          width: 40,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(100),
+                              border: Border.all(color: navyBlue, width: 2)),
+                          child: ClipOval(
+                            child: CachedNetworkImage(
+                              height: 40,
+                              width: 40,
+                              fit: BoxFit.fill,
+                              imageUrl: message['to_customer_avatar'] ??
+                                  "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png",
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        height: 40,
+                        width: 40,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(100),
+                            border: Border.all(color: naturalGreen, width: 2)),
+                        child: ClipOval(
+                          child: CachedNetworkImage(
+                            height: 40,
+                            width: 40,
+                            fit: BoxFit.fill,
+                            imageUrl: message['from_customer_avatar'] ??
+                                "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png",
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : Container(
+                  width: 1,
+                  height: 1,
+                ),
         ],
       ),
     );

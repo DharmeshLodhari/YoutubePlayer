@@ -176,4 +176,27 @@ class ChatConversation {
   static List<String> getParticipants(List<Participant> participants) {
     return participants.map((e) => e.userName).toList();
   }
+
+  static ChatConversation fromChatConversation(
+      ChatConversation chatConversation) {
+    ChatConversation _chatConversation = ChatConversation();
+    _chatConversation.adminUsers = chatConversation.adminUsers;
+    _chatConversation.avatar = chatConversation.avatar;
+    _chatConversation.blockedParticipants =
+        chatConversation.blockedParticipants;
+    _chatConversation.conversationId = chatConversation.conversationId;
+    _chatConversation.description = chatConversation.description;
+    _chatConversation.fullName = chatConversation.fullName;
+    _chatConversation.isGroupConversation =
+        chatConversation.isGroupConversation;
+    _chatConversation.createdAt = chatConversation.createdAt;
+    _chatConversation.mutedParticipants = chatConversation.mutedParticipants;
+    _chatConversation.owner = chatConversation.owner;
+    _chatConversation.participants = chatConversation.participants;
+    _chatConversation.qrCode = chatConversation.qrCode;
+    _chatConversation.type = chatConversation.type;
+    _chatConversation.userName = chatConversation.userName;
+
+    return _chatConversation;
+  }
 }

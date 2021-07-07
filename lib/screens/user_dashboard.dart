@@ -164,10 +164,10 @@ class _UserDashboardState extends State<UserDashboard> {
         style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
       ),
       actions: <Widget>[
-        // settingBtn(),
-        // SizedBox(
-        //   width: 6,
-        // ),
+        settingBtn(),
+        SizedBox(
+          width: 6,
+        ),
         logoutBtn(),
       ],
     );
@@ -389,12 +389,12 @@ class _UserDashboardState extends State<UserDashboard> {
         ),
         Expanded(
             child: UserDashboardItemTile(
-          icon: SlydoAppIcon.bank,
-          title: "Bank",
+          icon: SlydoAppIcon.naira,
+          title: "Pay out",
           onTap: () {
             bankAndroidSheet();
           },
-          iconColor: HexColor("#F35B46"),
+          iconColor: HexColor("#46CE7C"),
         )),
         SizedBox(
           width: 12,
@@ -413,12 +413,12 @@ class _UserDashboardState extends State<UserDashboard> {
         // )),
         Expanded(
             child: UserDashboardItemTile(
-          icon: SlydoAppIcon.naira,
-          title: "Topup",
+          icon: SlydoAppIcon.bank,
+          title: "Bank",
           onTap: () {
             Navigator.of(context).pushNamed('/add-money-to-slydo-one');
           },
-          iconColor: HexColor("#46CE7C"),
+          iconColor: HexColor("#F35B46"),
         )),
       ],
     );
@@ -440,29 +440,20 @@ class _UserDashboardState extends State<UserDashboard> {
         SizedBox(
           width: 12,
         ),
-        Expanded(
-            child: UserDashboardItemTile(
-          icon: SlydoAppIcon.utility,
-          title: "Utility",
-          onTap: () {
-            Navigator.pushNamed(context, "/utility-dashboard");
-          },
-          iconColor: HexColor("#FFAB00"),
-        )),
-
+        Expanded(child: Container()),
+        // Expanded(
+        //     child: UserDashboardItemTile(
+        //   icon: SlydoAppIcon.more,
+        //   title: "More",
+        //   onTap: () {
+        //     Navigator.pushNamed(context, "/more-apps");
+        //   },
+        //   iconColor: HexColor("#374677"),
+        // )),
         SizedBox(
           width: 12,
         ),
-        // Expanded(child: Container()),
-        Expanded(
-            child: UserDashboardItemTile(
-          icon: SlydoAppIcon.more,
-          title: "More",
-          onTap: () {
-            Navigator.pushNamed(context, "/more-apps");
-          },
-          iconColor: HexColor("#374677"),
-        )),
+        Expanded(child: Container()),
       ],
     );
   }
@@ -505,11 +496,13 @@ class _UserDashboardState extends State<UserDashboard> {
     // });
 
     // ChatMessageSynchronizer().dispose();
+
+    await _auth.logOut();
+
     CacheManager().deleteCache(clearAll: true);
     await socketProvider?.close();
 
     await PushNotificationService().logout();
-    await _auth.logOut();
 
     bankAccountBloc.bankAccount = BankAccount();
     dashboardBloc.index = 0;

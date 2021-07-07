@@ -1,6 +1,46 @@
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+
+/// allowed message types
+List<String> imageExtensions = ["jpg", "jpeg", "png", "gif", "webp"];
+List<String> videoExtensions = [
+  "mp4",
+  "mov",
+  "wmv",
+  "flv",
+  "avi",
+  "webm",
+  "mkv"
+];
+List<String> audioExtensions = ["m4a", "mp3", "ogg", "aac"];
+
+String getFileType(FilePickerResult pickedMedia) {
+  debugPrint("File path :- ${pickedMedia.files.single.path}");
+  debugPrint("File name :- ${pickedMedia.files.single.name}");
+  debugPrint("File extension :- ${pickedMedia.files.single.extension}");
+  String extension = pickedMedia.files.single.extension;
+  debugPrint(
+      " pickedMedia.files.single.path => ${pickedMedia.files.single.path}");
+
+  if (imageExtensions.contains(extension)) return "image";
+  if (videoExtensions.contains(extension)) return "video";
+  if (audioExtensions.contains(extension)) return "audio";
+  return "";
+}
+
+String getFileExtension(FilePickerResult pickedMedia) {
+  debugPrint("File path :- ${pickedMedia.files.single.path}");
+  debugPrint("File name :- ${pickedMedia.files.single.name}");
+  debugPrint("File extension :- ${pickedMedia.files.single.extension}");
+  String extension = pickedMedia.files.single.extension;
+
+  if (imageExtensions.contains(extension)) return "image";
+  if (videoExtensions.contains(extension)) return "video";
+  if (audioExtensions.contains(extension)) return "audio";
+  return "";
+}
 
 Color getMessageTickColor({Map<String, dynamic> message}) {
   return message['delivered']

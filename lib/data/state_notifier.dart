@@ -2,6 +2,7 @@ import 'package:Slydo/screens/more_apps/business/models/Item.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_message_settings.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -19,6 +20,15 @@ class UserBloc extends ChangeNotifier {
       qrCode: null,
       password: null,
       currency: null);
+
+  ChatMessageSettings _chatMessageSettings = ChatMessageSettings();
+
+  ChatMessageSettings get chatMessageSettings => _chatMessageSettings;
+
+  set chatMessageSettings(ChatMessageSettings val) {
+    _chatMessageSettings = val;
+    notifyListeners();
+  }
 
   // Getter
   User get user => _user;

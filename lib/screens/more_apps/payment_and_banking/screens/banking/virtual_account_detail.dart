@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/VirtualAccount.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -16,12 +18,12 @@ import 'package:toast/toast.dart';
 
 import '../../payment_and_banking_auth.dart';
 
-class AddMoneyToSlydoOne extends StatefulWidget {
+class VirtualAccountDetail extends StatefulWidget {
   @override
-  _AddMoneyToSlydoOneState createState() => _AddMoneyToSlydoOneState();
+  _VirtualAccountDetailState createState() => _VirtualAccountDetailState();
 }
 
-class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
+class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
   final _formKeyTwo = GlobalKey<FormState>();
 
   UserBloc userBloc;
@@ -31,13 +33,11 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
 
   String amount = "";
 
-  String bankName;
-  String bankAvatar;
-  String bankAccountName;
-  String bankAccountNumber;
-
   bool isLoading = false;
   bool isAccountExist = false;
+  bool isKYCInProcess = false;
+
+  VirtualAccount virtualAccount;
 
   @override
   void initState() {
@@ -48,21 +48,29 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
   void getSlydoAccount() async {
     isLoading = true;
     setState(() {});
+    bool isFromServer = false;
 
-    Map<String, dynamic> bankDetail =
-        await PaymentAndBankingAuth().getVirtualAccountDetail();
+    virtualAccount = await DatabaseHelper().getVirtualAccount();
+    if (virtualAccount == null) {
+      virtualAccount = await PaymentAndBankingAuth().getVirtualAccountDetail();
+      isFromServer = true;
+    }
 
     isLoading = false;
-    if (bankDetail == null) {
+    if (virtualAccount == null) {
       isAccountExist = false;
+      Navigator.of(context).pushNamed("/add-bvn-number");
     } else {
       isAccountExist = true;
-      bankName = bankDetail["financial_institution"]["name"];
-      bankAvatar = bankDetail['financial_institution']["logo"];
-      bankAccountName = bankDetail["account_name"];
-      bankAccountNumber = bankDetail["account_number"];
+      if (isFromServer) {
+        await DatabaseHelper().saveVirtualAccount(virtualAccount);
+      }
     }
-    setState(() {});
+
+    /// TODO: REMOVE THIS COMMENT AND LINES WHEN IMPLEMENTATION DONE FOR KYC
+    // isKYCInProcess = true;
+    // isAccountExist = false;
+    if (mounted) setState(() {});
   }
 
   @override
@@ -126,27 +134,6 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
                     SizedBox(
                       height: 20,
                     ),
-                    // displayAmountField(),
-                    // SizedBox(
-                    //   height: 20,
-                    // ),
-                    // amountUserGetMsg(),
-                    // SizedBox(
-                    //   height: 20,
-                    // ),
-                    // amountUserGet(),
-                    // SizedBox(
-                    //   height: 20,
-                    // ),
-                    // getReferenceButton(),
-                    // SizedBox(
-                    //   height: 24,
-                    // ),
-                    // noteForUser(),
-                    // SizedBox(
-                    //   height: 20,
-                    // ),
-                    // alreadyHaveReference()
                   ],
                 ),
               ),
@@ -305,7 +292,9 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
                 contentPadding:
                     EdgeInsets.symmetric(vertical: 5, horizontal: 16),
                 title: Text(
-                  "Your account is still in processing\nplease come back later !!",
+                  isKYCInProcess
+                      ? "Your KYC is in Process.\nCheck back later."
+                      : "Account not available now.\nCheck back later.",
                   style: TextStyle(
                       fontSize: 14,
                       color: navyBlue,
@@ -316,13 +305,13 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
             : Column(
                 children: [
                   ListTile(
-                    title: Text(bankName ?? "",
+                    title: Text(virtualAccount.financialInstitution.name ?? "",
                         style: TextStyle(
                             fontSize: 14,
                             color: blackFont,
                             fontWeight: FontWeight.w600)),
                     leading: CachedNetworkImage(
-                      imageUrl: bankAvatar ?? "",
+                      imageUrl: virtualAccount.financialInstitution.logo ?? "",
                       height: 36,
                       width: 36,
                     ),
@@ -349,7 +338,7 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
                             ),
                             Expanded(
                               child: Text(
-                                bankAccountName ?? "",
+                                virtualAccount.accountName ?? "",
                                 style: TextStyle(
                                     color: blackFont,
                                     fontWeight: FontWeight.w600,
@@ -374,7 +363,7 @@ class _AddMoneyToSlydoOneState extends State<AddMoneyToSlydoOne> {
                             ),
                             Expanded(
                               child: Text(
-                                bankAccountNumber ?? "",
+                                virtualAccount.accountNumber ?? "",
                                 style: TextStyle(
                                     color: blackFont,
                                     fontWeight: FontWeight.w600,

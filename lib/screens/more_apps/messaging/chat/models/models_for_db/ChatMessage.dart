@@ -23,6 +23,8 @@ class ChatMessage {
   String type;
   String updatedAt;
   bool wasEdited;
+  String fromCustomerAvatar;
+  String toCustomerAvatar;
 
   ChatMessage(
       {this.author,
@@ -44,7 +46,11 @@ class ChatMessage {
       this.text,
       this.type,
       this.updatedAt,
-      this.wasEdited});
+      this.wasEdited,
+      this.toCustomerAvatar =
+          "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png",
+      this.fromCustomerAvatar =
+          "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png"});
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) {
     return ChatMessage(
@@ -68,10 +74,16 @@ class ChatMessage {
       repliedTo: json['replied_to'] is Map
           ? jsonEncode(json['replied_to'])
           : json['replied_to'] ?? "{}",
-      text: json['text'] is Map ? jsonEncode(json['text']) : json['text'],
+      text: json['text'] is Map
+          ? jsonEncode(json['text'])
+          : json['text'].toString(),
       type: json['type'],
       updatedAt: json['updated_at'],
       wasEdited: json['was_edited'],
+      fromCustomerAvatar: json['from_customer_avatar'] ??
+          "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png",
+      toCustomerAvatar: json['to_customer_avatar'] ??
+          "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png",
     );
   }
 
@@ -98,7 +110,13 @@ class ChatMessage {
       updatedAt: json['updated_at'] != null
           ? convertMillisecondsSinceEpochToString(json['updated_at'])
           : "",
-      wasEdited: convertIntToBool(json['was_edited']),
+      fromCustomerAvatar: json['from_customer_avatar'] ??
+          "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png",
+      toCustomerAvatar: json['to_customer_avatar'] ??
+          "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png",
+      wasEdited: convertIntToBool(
+        json['was_edited'],
+      ),
     );
   }
 
@@ -124,6 +142,8 @@ class ChatMessage {
     data['type'] = this.type;
     data['updated_at'] = this.updatedAt;
     data['was_edited'] = this.wasEdited;
+    data["to_customer_avatar"] = this.toCustomerAvatar;
+    data["from_customer_avatar"] = this.fromCustomerAvatar;
     return data;
   }
 
@@ -153,6 +173,10 @@ class ChatMessage {
     data['type'] = this.type ?? "chatroom_message";
     data['updated_at'] = convertStringToMillisecondsSinceEpoch(this.updatedAt);
     data['was_edited'] = convertBoolToInt(this.wasEdited, defaultValue: false);
+    data["to_customer_avatar"] = this.toCustomerAvatar ??
+        "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png";
+    data["from_customer_avatar"] = this.fromCustomerAvatar ??
+        "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png";
     return data;
   }
 

@@ -34,6 +34,8 @@ class Transaction {
   int amount;
   bool isCredit;
   bool isAnonymous;
+  String fromCustomer;
+  String toCustomer;
 
   // Pass in as named parameter in constructor
   Transaction(
@@ -45,6 +47,8 @@ class Transaction {
       this.currency,
       this.createdAt,
       this.userType = "User",
+      this.toCustomer = "",
+      this.fromCustomer = "",
       this.category,
       this.note,
       this.latitude,
@@ -73,6 +77,8 @@ class Transaction {
         latitude: json['latitude'] ?? "",
         longitude: json['longitude'] ?? "",
         amount: json['amount'],
+        fromCustomer: json['from_customer'] ?? "",
+        toCustomer: json['to_customer'] ?? "",
         isAnonymous: json['is_anonymous'] ?? false,
         isCredit: isCredit);
   }
@@ -83,6 +89,12 @@ class PaymentRequest {
   String id;
   String description;
   String payee;
+  String fromCustomer;
+  String fromCustomerAvatar;
+  String toCustomer;
+  String toCustomerAvatar;
+  bool madeFromChat;
+  String conversationId;
   String avatar;
   String currency;
   String createdAt;
@@ -101,6 +113,12 @@ class PaymentRequest {
       this.currency,
       this.userType = "User",
       this.amount,
+      this.toCustomer = "",
+      this.fromCustomer = "",
+      this.conversationId = "",
+      this.fromCustomerAvatar = "",
+      this.madeFromChat = false,
+      this.toCustomerAvatar = "",
       this.isCredit});
 
   factory PaymentRequest.fromJson(Map<String, dynamic> json,
@@ -124,6 +142,12 @@ class PaymentRequest {
         currency: json['currency'],
         createdAt: json['created_at'],
         amount: json['amount'],
-        isCredit: isCredit);
+        isCredit: isCredit,
+        conversationId: json['conversation_id'],
+        fromCustomer: json['from_customer'],
+        fromCustomerAvatar: json['from_customer_avatar'],
+        madeFromChat: json['made_from_chat'],
+        toCustomer: json['to_customer'],
+        toCustomerAvatar: json['to_customer_avatar']);
   }
 }

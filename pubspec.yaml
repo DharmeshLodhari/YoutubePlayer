@@ -1,6 +1,6 @@
 name: Slydo
 description: The slydo application.
-version: 1.0.0+5
+version: 1.0.0+7
 
 environment:
   sdk: ">=2.2.0 <3.0.0"
@@ -80,6 +80,7 @@ dependencies:
   flutter_gifimage: ^1.0.1
   awesome_notifications: ^0.0.5+5
   flutter_local_notifications: ^4.0.1+2
+  sqflite_migration: ^0.2.0
 
 
 
