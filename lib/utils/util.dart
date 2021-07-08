@@ -98,6 +98,19 @@ List monthName = [
   "November",
   "December"
 ];
+List dayName = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday"
+];
+
+String getDayName({@required int day}) {
+  return dayName[day - 1];
+}
 
 String formatTime(String date) {
   DateTime dateTime = DateTime.parse(date).toLocal();

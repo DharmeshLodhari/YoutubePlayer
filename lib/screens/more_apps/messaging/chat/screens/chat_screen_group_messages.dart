@@ -936,10 +936,11 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       for (int i = 0; i < messageList.length; i++) {
         Map<String, dynamic> previousMessage = jsonDecode(messageList[i]);
 
+        String conversationId =
+            messageData['conversation_id'] ?? messageData['conversation'];
+
         if (messageData['check_id'] == previousMessage['check_id'] &&
-            messageData['conversation_id'] ==
-                previousMessage['conversation_id']) {
-//&& userBloc.user.userName != messageData["username"]
+            conversationId == previousMessage['conversation_id']) {
           previousMessage["delivered"] = true;
           messageList[i] = jsonEncode(previousMessage);
           if (mounted) setState(() {});
@@ -1415,8 +1416,14 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           if (mounted) setState(() {});
           return;
         }
-        //Todo: Add within last 7 day (last seen Monday at 1.30 AM)
 
+        if (lastSeenDateTime.difference(now).inDays.abs() < 7) {
+          int weekDay = lastSeenDateTime.weekday;
+          String dayName = getDayName(day: weekDay);
+          userStatus = 'last seen ' + dayName + ' at ' + lastSeenTime;
+          if (mounted) setState(() {});
+          return;
+        }
         userStatus = 'last seen ' + lastSeenDateString + ' at ' + lastSeenTime;
       }
       if (mounted) setState(() {});
@@ -3918,8 +3925,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     if (isDeletable) {
       if (chatMessageAction.isDeletable) {
         elements.add(bottomSheetItem(
-          title: "Delete",
-          icon: SlydoAppIcon.delete,
+          title: messageData['kind'] == "envelope" ? "Cancel" : "Delete",
+          icon: messageData['kind'] == "envelope"
+              ? SlydoAppIcon.remove
+              : SlydoAppIcon.delete,
           onTap: () {
             Navigator.pop(context);
             deleteChatMessage(message: message);

@@ -3,9 +3,7 @@ import 'dart:io';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/db_socket_message_handler.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -399,13 +397,13 @@ class _HomeState extends State<Home> {
         ),
       ),
       onTap: () async {
-        DBSocketMessageHandler().clearSocketQueueChatMessage();
-        ChatUserManager().clearChatUsers();
-        ChatMessageHandler().deleteChatMessages();
-
-        ConnectionListBloc connectionListBloc =
-            Provider.of<ConnectionListBloc>(context, listen: false);
-        await connectionListBloc.clearConnectionList();
+        // DBSocketMessageHandler().clearSocketQueueChatMessage();
+        // ChatUserManager().clearChatUsers();
+        // ChatMessageHandler().deleteChatMessages();
+        //
+        // ConnectionListBloc connectionListBloc =
+        //     Provider.of<ConnectionListBloc>(context, listen: false);
+        // await connectionListBloc.clearConnectionList();
 
         // Navigator.pushNamed(
         //   context,
