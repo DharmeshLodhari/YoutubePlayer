@@ -8,7 +8,6 @@ import 'package:Slydo/utils/common.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
-import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -236,33 +235,54 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
   }
 
   void cancelEnvelope() async {
-    BottomSheetPassCode(
+    showDialog(
         context: context,
-        isValidCallback: () async {
-          showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) => Center(child: CircularLoadingIndicator()));
+        barrierDismissible: false,
+        builder: (context) => Center(child: CircularLoadingIndicator()));
 
-          var result = await MessageAuth()
-              .cancelEnvelope(envelope: envelope, data: data)
-              .catchError((error) {
-            Toast.show("ERROR:- $error", context, duration: 2);
-          });
+    var result = await MessageAuth()
+        .cancelEnvelope(envelope: envelope, data: data)
+        .catchError((error) {
+      Toast.show("ERROR:- $error", context, duration: 2);
+    });
 
-          if (result != null) {
-            if (result == true) {
-              Navigator.popUntil(context, ModalRoute.withName("/chat-screen"));
-              return;
-            } else {
-              Toast.show("Failed to cancel Envelope", context, duration: 2);
-            }
-          }
-          Navigator.pop(context);
-        },
-        cancelCallBack: () {
-          Navigator.pop(context);
-        });
+    if (result != null) {
+      if (result == true) {
+        Navigator.popUntil(context, ModalRoute.withName("/chat-screen"));
+        return;
+      } else {
+        Navigator.pop(context);
+        Toast.show("Failed to cancel Envelope", context, duration: 2);
+      }
+    }
+
+    // BottomSheetPassCode(
+    //     context: context,
+    //     isValidCallback: () async {
+    //       showDialog(
+    //           context: context,
+    //           barrierDismissible: false,
+    //           builder: (context) => Center(child: CircularLoadingIndicator()));
+    //
+    //       var result = await MessageAuth()
+    //           .cancelEnvelope(envelope: envelope, data: data)
+    //           .catchError((error) {
+    //         Toast.show("ERROR:- $error", context, duration: 2);
+    //       });
+    //
+    //       if (result != null) {
+    //         if (result == true) {
+    //           Navigator.popUntil(context, ModalRoute.withName("/chat-screen"));
+    //           return;
+    //         } else {
+    //           Toast.show("Failed to cancel Envelope", context, duration: 2);
+    //         }
+    //       }
+    //       Navigator.pop(context);
+    //     },
+    //     cancelCallBack: () {
+    //       Navigator.pop(context);
+    //     });
   }
 
   Widget getAppbar(var context) {

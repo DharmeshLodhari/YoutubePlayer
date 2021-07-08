@@ -334,6 +334,11 @@ class _StickyGroupedListViewState<T, E>
   Widget _showFixedGroupHeader(int index) {
     if (widget.elements.length > 0) {
       _groupHeaderKey = GlobalKey();
+
+      if (_sortedElements.length == index) {
+        index = _sortedElements.length - 1;
+      }
+
       return Container(
         key: _groupHeaderKey,
         color:
@@ -342,6 +347,7 @@ class _StickyGroupedListViewState<T, E>
         child: widget.groupSeparatorBuilder(_sortedElements[index]),
       );
     }
+
     return Container();
   }
 }
