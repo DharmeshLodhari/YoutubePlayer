@@ -9,6 +9,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
@@ -118,7 +119,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
       onWillPop: () async {
         return await Future.value(true);
       },
-      child: SafeArea(
+      child: ColorfulSafeArea(
         bottom: false,
         child: Scaffold(
           backgroundColor: Colors.white,

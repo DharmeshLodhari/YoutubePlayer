@@ -608,7 +608,6 @@ class ShoppingAuthService extends AuthService {
     debugPrint("sent data: " + _data.toString());
     if (response.statusCode == 200) {
       debugPrint("response" + jsonData.toString());
-
       return true;
     }
     return false;
@@ -620,6 +619,8 @@ class ShoppingAuthService extends AuthService {
     var headers = await getAuthHeaders();
     var response = await http.patch(url, headers: headers, body: _data);
     if (response.statusCode == 200) {
+      var jsonData = jsonDecode(response.body);
+      debugPrint("response" + jsonData.toString());
       return true;
     } else
       return false;

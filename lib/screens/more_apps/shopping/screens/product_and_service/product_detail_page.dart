@@ -341,7 +341,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       height: 44,
       width: 44,
       icon: Icon(
-        SlydoAppIcon.text_message,
+        SlydoAppIcon.message,
         color: navyBlue,
         size: 22,
       ),

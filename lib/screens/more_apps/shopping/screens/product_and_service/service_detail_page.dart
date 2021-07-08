@@ -340,7 +340,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       height: 44,
       width: 44,
       icon: Icon(
-        SlydoAppIcon.text_message,
+        SlydoAppIcon.message,
         color: navyBlue,
         size: 22,
       ),
