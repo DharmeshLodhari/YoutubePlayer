@@ -49,7 +49,6 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
-import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/image_crop.dart';
@@ -1391,7 +1390,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         String lastSeenTime = DateFormat("hh:mm a").format(lastSeenDateTime);
 
         if (today == lastSeenDate) {
-          if (lastSeenDateTime.difference(now) < Duration(minutes: 59)) {
+          if (lastSeenDateTime.difference(now).inMinutes.abs() < 59) {
             Duration minuteDifference = lastSeenDateTime.difference(now);
 
             if (minuteDifference.inMinutes.abs() == 0) {
@@ -4227,34 +4226,25 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
     Envelope envelope = Envelope.fromJson(data);
 
-    BottomSheetPassCode(
+    showDialog(
         context: context,
-        isValidCallback: () async {
-          showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) => Center(child: CircularLoadingIndicator()));
+        barrierDismissible: false,
+        builder: (context) => Center(child: CircularLoadingIndicator()));
 
-          var result = await MessageAuth()
-              .cancelEnvelope(envelope: envelope, data: message)
-              .catchError((error) {
-            Toast.show("ERROR:- $error", context, duration: 2);
-          });
+    var result = await MessageAuth()
+        .cancelEnvelope(envelope: envelope, data: message)
+        .catchError((error) {
+      Toast.show("ERROR:- $error", context, duration: 2);
+    });
 
-          if (result != null) {
-            if (result == true) {
-              Navigator.pop(context);
-              return;
-            } else {
-              Toast.show("Failed to cancel Envelope", context, duration: 2);
-            }
-          }
-          if (mounted) {
-            Navigator.pop(context);
-          }
-        },
-        cancelCallBack: () {
-          Navigator.pop(context);
-        });
+    if (result != null) {
+      if (result == true) {
+        Navigator.pop(context);
+        return;
+      } else {
+        Navigator.pop(context);
+        Toast.show("Failed to cancel Envelope", context, duration: 2);
+      }
+    }
   }
 }
