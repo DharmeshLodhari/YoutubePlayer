@@ -117,6 +117,12 @@ class MainSocketMessageHandler {
 
             case "transaction":
               break;
+            case "audio":
+              break;
+            case "video":
+              break;
+            case "image":
+              break;
 
             default:
               debugPrint(

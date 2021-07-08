@@ -43,13 +43,10 @@ class _AudioTileForChatState extends State<AudioTileForChat> {
 
       debugPrint("==> ${widget.message["media"]}");
 
+      /// "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/f133a23f344e2e96b275800d505011f54a4dc20f/Burna-Boy-Monsters-You-Made-ft-Chris-Martin.mp3" ??
       _audioPlayer
-          .open(
-              Audio.network(
-                widget.message["media"],
-              ),
-              autoStart: false,
-              showNotification: false)
+          .open(Audio.network(widget.message["media"]),
+              autoStart: false, showNotification: false)
           .catchError((error) {
         debugPrint("ERROR while playing:- $error");
       });

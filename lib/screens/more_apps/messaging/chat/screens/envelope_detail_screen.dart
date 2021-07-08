@@ -68,7 +68,10 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
           .getEnvelope(envelope: envelope, id: data['id'])
           .catchError((error) {
         debugPrint("ERROR1:- $error");
-        Toast.show("ERROR1:- $error", context);
+        Toast.show("$error", context);
+        if (mounted) {
+          Navigator.pop(context);
+        }
       });
 
       if (envelopeFromServer != null) {
