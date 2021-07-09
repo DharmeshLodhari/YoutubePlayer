@@ -191,17 +191,23 @@ class _DetailedMessageState extends State<DetailedMessage> {
         // border: Border.all(color: borderColor, width: 2),
         border: Border.all(color: Colors.transparent, width: 0),
       ),
-      child: ClipOval(
-        child: CachedNetworkImage(
-          imageUrl: message.senderAvatar,
-          height: 48,
-          width: 48,
-          colorBlendMode: BlendMode.darken,
-          fit: BoxFit.cover,
-          filterQuality: FilterQuality.high,
-          placeholder: (context, url) => message.senderAvatar == ""
-              ? Icon(Icons.person)
-              : CircularLoadingIndicator(),
+      child: GestureDetector(
+        onTap: () {
+          Navigator.of(context)
+              .pushNamed("/photo-viewer", arguments: message.senderAvatar);
+        },
+        child: ClipOval(
+          child: CachedNetworkImage(
+            imageUrl: message.senderAvatar,
+            height: 48,
+            width: 48,
+            colorBlendMode: BlendMode.darken,
+            fit: BoxFit.cover,
+            filterQuality: FilterQuality.high,
+            placeholder: (context, url) => message.senderAvatar == ""
+                ? Icon(Icons.person)
+                : CircularLoadingIndicator(),
+          ),
         ),
       ),
     );

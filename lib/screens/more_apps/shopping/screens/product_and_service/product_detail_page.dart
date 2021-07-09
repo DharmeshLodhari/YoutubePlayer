@@ -707,14 +707,20 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         child: InkWell(
           child: product.qrCode == ""
               ? Center(child: CircularLoadingIndicator())
-              : CachedNetworkImage(
-                  imageUrl: product.qrCode,
-                  height: 40,
-                  width: 40,
-                  filterQuality: FilterQuality.high,
-                  fit: BoxFit.fill,
-                  placeholder: (context, url) =>
-                      Center(child: CircularLoadingIndicator()),
+              : GestureDetector(
+                  onTap: () {
+                    Navigator.of(context)
+                        .pushNamed("/photo-viewer", arguments: product.qrCode);
+                  },
+                  child: CachedNetworkImage(
+                    imageUrl: product.qrCode,
+                    height: 40,
+                    width: 40,
+                    filterQuality: FilterQuality.high,
+                    fit: BoxFit.fill,
+                    placeholder: (context, url) =>
+                        Center(child: CircularLoadingIndicator()),
+                  ),
                 ),
           onTap: () {
             Clipboard.setData(new ClipboardData(text: product.qrCode));
@@ -846,15 +852,21 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               ListTile(
                 contentPadding:
                     EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                leading: Container(
-                  height: 48,
-                  width: 48,
-                  child: ClipOval(
-                    child: CachedNetworkImage(
-                      imageUrl: product.sellerAvatar,
-                      fit: BoxFit.fill,
-                      errorWidget: imageErrorWidget,
-                      filterQuality: FilterQuality.high,
+                leading: GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pushNamed("/photo-viewer",
+                        arguments: product.sellerAvatar);
+                  },
+                  child: Container(
+                    height: 48,
+                    width: 48,
+                    child: ClipOval(
+                      child: CachedNetworkImage(
+                        imageUrl: product.sellerAvatar,
+                        fit: BoxFit.fill,
+                        errorWidget: imageErrorWidget,
+                        filterQuality: FilterQuality.high,
+                      ),
                     ),
                   ),
                 ),

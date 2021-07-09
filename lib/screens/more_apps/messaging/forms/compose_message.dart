@@ -419,12 +419,18 @@ class _ComposeMessageState extends State<ComposeMessage> {
               25,
             ),
             border: Border.all(color: borderColor, width: 2)),
-        child: ClipOval(
-          child: CachedNetworkImage(
-            imageUrl: messageReceiver.avatar,
-            colorBlendMode: BlendMode.darken,
-            fit: BoxFit.fill,
-            filterQuality: FilterQuality.high,
+        child: GestureDetector(
+          onTap: () {
+            Navigator.of(context)
+                .pushNamed("/photo-viewer", arguments: messageReceiver.avatar);
+          },
+          child: ClipOval(
+            child: CachedNetworkImage(
+              imageUrl: messageReceiver.avatar,
+              colorBlendMode: BlendMode.darken,
+              fit: BoxFit.fill,
+              filterQuality: FilterQuality.high,
+            ),
           ),
         ),
       );

@@ -510,32 +510,38 @@ class _SearchModuleState extends State<SearchModule> {
   Widget getUserLeading(CustomerProfile user) {
     Color borderColor = getUserTypeColor(user: user);
 
-    return Container(
-        height: 48,
-        width: 48,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(
-              25,
-            ),
-            border: Border.all(color: borderColor, width: 2)),
-        child: ClipOval(
-          child: CachedNetworkImage(
-            imageUrl: user.avatar == ""
-                ? "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png"
-                : user.avatar,
-            colorBlendMode: BlendMode.darken,
-            fit: BoxFit.cover,
-            height: double.infinity,
-            filterQuality: FilterQuality.high,
-            placeholder: (context, _) => CachedNetworkImage(
-              imageUrl:
-                  "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png",
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context)
+            .pushNamed("/photo-viewer", arguments: user.avatar);
+      },
+      child: Container(
+          height: 48,
+          width: 48,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(
+                25,
+              ),
+              border: Border.all(color: borderColor, width: 2)),
+          child: ClipOval(
+            child: CachedNetworkImage(
+              imageUrl: user.avatar == ""
+                  ? "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png"
+                  : user.avatar,
               colorBlendMode: BlendMode.darken,
-              fit: BoxFit.fitWidth,
+              fit: BoxFit.cover,
+              height: double.infinity,
               filterQuality: FilterQuality.high,
+              placeholder: (context, _) => CachedNetworkImage(
+                imageUrl:
+                    "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png",
+                colorBlendMode: BlendMode.darken,
+                fit: BoxFit.fitWidth,
+                filterQuality: FilterQuality.high,
+              ),
             ),
-          ),
-        ));
+          )),
+    );
   }
 
   Widget getProductTile(var object) {
@@ -596,6 +602,7 @@ class _SearchModuleState extends State<SearchModule> {
 
   Widget getLeading(Product product, var object) {
     var imageUrl = "";
+
     try {
       imageUrl = object["cover"] ??
           "https://homepages.cae.wisc.edu/~ece533/images/peppers.png";
@@ -605,16 +612,21 @@ class _SearchModuleState extends State<SearchModule> {
     if (imageUrl == "") {
       imageUrl = "https://homepages.cae.wisc.edu/~ece533/images/peppers.png";
     }
-    return ClipOval(
-      child: CachedNetworkImage(
-        imageUrl: imageUrl,
-        height: 48,
-        width: 48,
-        colorBlendMode: BlendMode.darken,
-        fit: BoxFit.fill,
-        filterQuality: FilterQuality.high,
-        placeholder: (context, url) =>
-            imageUrl == "" ? Icon(Icons.person) : CircularLoadingIndicator(),
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).pushNamed("/photo-viewer", arguments: imageUrl);
+      },
+      child: ClipOval(
+        child: CachedNetworkImage(
+          imageUrl: imageUrl,
+          height: 48,
+          width: 48,
+          colorBlendMode: BlendMode.darken,
+          fit: BoxFit.fill,
+          filterQuality: FilterQuality.high,
+          placeholder: (context, url) =>
+              imageUrl == "" ? Icon(Icons.person) : CircularLoadingIndicator(),
+        ),
       ),
     );
   }
@@ -756,16 +768,22 @@ class _SearchModuleState extends State<SearchModule> {
     if (imageUrl == "") {
       imageUrl = "https://homepages.cae.wisc.edu/~ece533/images/peppers.png";
     }
-    return ClipOval(
-      child: CachedNetworkImage(
-          imageUrl: imageUrl,
-          height: 48,
-          width: 48,
-          colorBlendMode: BlendMode.darken,
-          fit: BoxFit.fill,
-          filterQuality: FilterQuality.high,
-          placeholder: (context, url) =>
-              imageUrl == "" ? Icon(Icons.person) : CircularLoadingIndicator()),
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).pushNamed("/photo-viewer", arguments: imageUrl);
+      },
+      child: ClipOval(
+        child: CachedNetworkImage(
+            imageUrl: imageUrl,
+            height: 48,
+            width: 48,
+            colorBlendMode: BlendMode.darken,
+            fit: BoxFit.fill,
+            filterQuality: FilterQuality.high,
+            placeholder: (context, url) => imageUrl == ""
+                ? Icon(Icons.person)
+                : CircularLoadingIndicator()),
+      ),
     );
   }
 

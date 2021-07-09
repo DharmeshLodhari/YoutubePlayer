@@ -267,22 +267,28 @@ class _ShoppingCartTileForServiceState
   }
 
   Widget getLeading() {
-    return ClipOval(
-      child: CachedNetworkImage(
-        height: 48,
-        width: 48,
-        imageUrl: widget.item?.cover ??
-            "https://homepages.cae.wisc.edu/~ece533/images/peppers.png",
-        colorBlendMode: BlendMode.darken,
-        fit: BoxFit.cover,
-        filterQuality: FilterQuality.high,
-        placeholder: (context, url) => widget.item?.cover == null ?? true
-            ? Icon(Icons.widgets)
-            : CircularProgressIndicator(
-                strokeWidth: 2.5,
-                valueColor: AlwaysStoppedAnimation(Colors.white),
-                backgroundColor: navyBlue,
-              ),
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context)
+            .pushNamed("/photo-viewer", arguments: widget.item?.cover);
+      },
+      child: ClipOval(
+        child: CachedNetworkImage(
+          height: 48,
+          width: 48,
+          imageUrl: widget.item?.cover ??
+              "https://homepages.cae.wisc.edu/~ece533/images/peppers.png",
+          colorBlendMode: BlendMode.darken,
+          fit: BoxFit.cover,
+          filterQuality: FilterQuality.high,
+          placeholder: (context, url) => widget.item?.cover == null ?? true
+              ? Icon(Icons.widgets)
+              : CircularProgressIndicator(
+                  strokeWidth: 2.5,
+                  valueColor: AlwaysStoppedAnimation(Colors.white),
+                  backgroundColor: navyBlue,
+                ),
+        ),
       ),
     );
   }

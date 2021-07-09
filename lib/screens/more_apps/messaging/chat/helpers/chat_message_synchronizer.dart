@@ -3,11 +3,13 @@ import 'dart:convert';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_handler.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessagePagination.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
+import 'package:Slydo/utils/date_time_and_money_converter.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
@@ -160,9 +162,6 @@ class ChatMessageSynchronizer {
     });
 
     if (messageList.isNotEmpty) {
-      // await ChatMessageHandler()
-      //     .insertMissedChatMessages(messages: messageList);
-
       for (int i = 0; i < messageList.length; i++) {
         int result = await ChatMessageHandler()
             .insertMissedChatMessage(chatMessage: messageList[i]);
@@ -170,9 +169,23 @@ class ChatMessageSynchronizer {
         if (result == 1) {
           await MainSocketMessageHandler().saveAndUpdateUserMessageCount(
               messageData: messageList[i].toJson());
+
+          int time =
+              convertStringToMillisecondsSinceEpoch(messageList[i].createdAt);
+
+          String conversationId = messageList[i].conversationId;
+
+          await ConnectionListManager().updateLastMessageTime(
+              conversationId: conversationId, time: time);
+
           _chatMessageCountStream.sink.add(true);
         }
       }
+
+      ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
+          myGlobals.navigationKey.currentContext,
+          listen: false);
+      await connectionListBloc.getConnectionsCount();
 
       _chatMessageStream.sink.add(true);
 

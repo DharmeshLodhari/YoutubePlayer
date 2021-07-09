@@ -12,11 +12,17 @@ import 'package:provider/provider.dart';
 import '../../../../utils/colors.dart';
 
 // ignore: must_be_immutable
-class OrderTile extends StatelessWidget {
-  UserBloc userBloc;
+class OrderTile extends StatefulWidget {
   final Order order;
 
   OrderTile({this.order});
+
+  @override
+  _OrderTileState createState() => _OrderTileState();
+}
+
+class _OrderTileState extends State<OrderTile> {
+  UserBloc userBloc;
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +43,7 @@ class OrderTile extends StatelessWidget {
                   dense: true,
                   leading: getLeading(),
                   title: getTitle(context),
-                  trailing: order.totalPrice.toString().length > 6
+                  trailing: widget.order.totalPrice.toString().length > 6
                       ? null
                       : getTrailing(),
                   subtitle: getSubtitle(context)),
@@ -49,22 +55,22 @@ class OrderTile extends StatelessWidget {
   }
 
   String getCustomerOrMerchant() {
-    var customerOrMerchant = order.customer == userBloc.user.userName
-        ? order.merchant
-        : order.customer;
+    var customerOrMerchant = widget.order.customer == userBloc.user.userName
+        ? widget.order.merchant
+        : widget.order.customer;
     return customerOrMerchant;
   }
 
   String getAvatar() {
-    return order.customer == userBloc.user.userName
-        ? order.merchantAvatar
-        : order.customerAvatar;
+    return widget.order.customer == userBloc.user.userName
+        ? widget.order.merchantAvatar
+        : widget.order.customerAvatar;
   }
 
   String getAvatarType() {
-    return order.customer == userBloc.user.userName
-        ? order.merchantType
-        : order.customerType;
+    return widget.order.customer == userBloc.user.userName
+        ? widget.order.merchantType
+        : widget.order.customerType;
   }
 
   Widget getLeading() {
@@ -78,17 +84,23 @@ class OrderTile extends StatelessWidget {
         // border: Border.all(color: borderColor, width: 2),
         border: Border.all(color: Colors.transparent, width: 0),
       ),
-      child: ClipOval(
-        child: CachedNetworkImage(
-          imageUrl: getAvatar(),
-          height: 48,
-          width: 48,
-          colorBlendMode: BlendMode.darken,
-          fit: BoxFit.cover,
-          filterQuality: FilterQuality.high,
-          placeholder: (context, url) => getAvatar() == ""
-              ? Icon(Icons.person)
-              : CircularLoadingIndicator(),
+      child: GestureDetector(
+        onTap: () {
+          Navigator.of(context)
+              .pushNamed("/photo-viewer", arguments: getAvatar());
+        },
+        child: ClipOval(
+          child: CachedNetworkImage(
+            imageUrl: getAvatar(),
+            height: 48,
+            width: 48,
+            colorBlendMode: BlendMode.darken,
+            fit: BoxFit.cover,
+            filterQuality: FilterQuality.high,
+            placeholder: (context, url) => getAvatar() == ""
+                ? Icon(Icons.person)
+                : CircularLoadingIndicator(),
+          ),
         ),
       ),
     );
@@ -98,7 +110,7 @@ class OrderTile extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.only(bottom: 2),
       child: Text(
-        AppLocalization.of(context).ref + " # : ${order.id}",
+        AppLocalization.of(context).ref + " # : ${widget.order.id}",
         style: TextStyle(
             color: blackFont, fontWeight: FontWeight.bold, fontSize: 15),
       ),
@@ -110,7 +122,7 @@ class OrderTile extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          worldCurrencies[order.currency],
+          worldCurrencies[widget.order.currency],
           style: TextStyle(
               fontFamily: "Roboto",
               color: navyBlue,
@@ -118,7 +130,7 @@ class OrderTile extends StatelessWidget {
               fontSize: 14),
         ),
         Text(
-          moneyDisplayNormalizer(order.totalPrice),
+          moneyDisplayNormalizer(widget.order.totalPrice),
           style: TextStyle(
             color: navyBlue,
             fontWeight: FontWeight.bold,
@@ -141,14 +153,16 @@ class OrderTile extends StatelessWidget {
         SizedBox(
           height: 2,
         ),
-        order.totalPrice.toString().length > 6 ? getTrailing() : Container(),
+        widget.order.totalPrice.toString().length > 6
+            ? getTrailing()
+            : Container(),
         getDateTime(context)
       ],
     );
   }
 
   Widget getDateTime(BuildContext context) {
-    DateTime orderTime = DateTime.parse(order.createdAt).toLocal();
+    DateTime orderTime = DateTime.parse(widget.order.createdAt).toLocal();
     String date = DateFormat("hh:mm a").format(orderTime);
     String time = DateFormat("dd/MM/yyyy").format(orderTime);
     return Text(

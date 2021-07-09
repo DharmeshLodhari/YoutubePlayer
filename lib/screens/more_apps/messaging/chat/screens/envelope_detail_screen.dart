@@ -386,16 +386,22 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
                       width: double.infinity,
                       fit: BoxFit.cover,
                     )
-                  : CachedNetworkImage(
-                      width: double.infinity,
-                      height: double.infinity,
-                      imageUrl: senderCustomer.userAbout.wallpaper,
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) =>
-                          Center(child: CircularLoadingIndicator()),
-                      color: blackFont.withOpacity(0.4),
-                      colorBlendMode: BlendMode.darken,
-                      filterQuality: FilterQuality.high,
+                  : GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pushNamed("/photo-viewer",
+                            arguments: senderCustomer.userAbout.wallpaper);
+                      },
+                      child: CachedNetworkImage(
+                        width: double.infinity,
+                        height: double.infinity,
+                        imageUrl: senderCustomer.userAbout.wallpaper,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) =>
+                            Center(child: CircularLoadingIndicator()),
+                        color: blackFont.withOpacity(0.4),
+                        colorBlendMode: BlendMode.darken,
+                        filterQuality: FilterQuality.high,
+                      ),
                     ),
     );
   }
@@ -415,14 +421,20 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
                 shape: BoxShape.circle),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(50),
-              child: Container(
-                color: Colors.white,
-                child: CachedNetworkImage(
-                  height: 88,
-                  width: 88,
-                  fit: BoxFit.fill,
-                  filterQuality: FilterQuality.high,
-                  imageUrl: senderCustomer.avatar,
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.of(context).pushNamed("/photo-viewer",
+                      arguments: senderCustomer.avatar);
+                },
+                child: Container(
+                  color: Colors.white,
+                  child: CachedNetworkImage(
+                    height: 88,
+                    width: 88,
+                    fit: BoxFit.fill,
+                    filterQuality: FilterQuality.high,
+                    imageUrl: senderCustomer.avatar,
+                  ),
                 ),
               ),
             ),

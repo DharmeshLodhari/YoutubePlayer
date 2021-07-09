@@ -789,24 +789,8 @@ class _UserDashboardState extends State<UserDashboard> {
                     },
                   ),
                   bottomSheetItem(
-                    title: "Payout list",
-                    icon: SlydoAppIcon.payout_list,
-                    onTap: () {
-                      BottomSheetPassCode(
-                          context: context,
-                          isValidCallback: () {
-                            Navigator.pop(context);
-                            Navigator.pushNamed(context, "/payout-list");
-                          },
-                          cancelCallBack: () {
-                            Navigator.pop(context);
-                          });
-                    },
-                  ),
-                  bottomSheetItem(
                     title: "Payout",
                     icon: SlydoAppIcon.payout,
-                    isLast: true,
                     onTap: () {
                       BottomSheetPassCode(
                           context: context,
@@ -823,6 +807,22 @@ class _UserDashboardState extends State<UserDashboard> {
                               Navigator.pop(context);
                               Navigator.pushNamed(context, "/payout");
                             }
+                          },
+                          cancelCallBack: () {
+                            Navigator.pop(context);
+                          });
+                    },
+                  ),
+                  bottomSheetItem(
+                    title: "Payout list",
+                    icon: SlydoAppIcon.payout_list,
+                    isLast: true,
+                    onTap: () {
+                      BottomSheetPassCode(
+                          context: context,
+                          isValidCallback: () {
+                            Navigator.pop(context);
+                            Navigator.pushNamed(context, "/payout-list");
                           },
                           cancelCallBack: () {
                             Navigator.pop(context);

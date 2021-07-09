@@ -166,7 +166,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   /// variables for  text message and audio message btn switcher
   bool messageIsText = false;
 
-  /// variable for audioREcording
+  /// variable for audio Recording
   FlutterSoundRecorder audioRecorder = FlutterSoundRecorder();
   bool isAudioRecorderInitialized = false;
   String audioUuid;
@@ -955,7 +955,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   void showRecipientHasRemovedYouDialogue() async {
     isRecipientRemovedDialogueIsOpen = true;
-    bool result = await showDialogBoxWithImageWithOneAction(
+    await showDialogBoxWithImageWithOneAction(
       context: context,
       actionOneBgColor: greyBorderColor,
       actionOneTextColor: blackFont,
@@ -1447,16 +1447,25 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
               25,
             ),
             border: Border.all(color: borderColor, width: 2)),
-        child: ClipOval(
-          child: CachedNetworkImage(
-            imageUrl: chatConversation != null
-                ? chatConversation.avatar ??
-                    "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png"
-                : "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png",
-            colorBlendMode: BlendMode.darken,
-            fit: BoxFit.fill,
-            filterQuality: FilterQuality.high,
-            errorWidget: imageErrorWidget,
+        child: GestureDetector(
+          onTap: () {
+            Navigator.of(context).pushNamed("/photo-viewer",
+                arguments: chatConversation != null
+                    ? chatConversation.avatar ??
+                        "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png"
+                    : "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png");
+          },
+          child: ClipOval(
+            child: CachedNetworkImage(
+              imageUrl: chatConversation != null
+                  ? chatConversation.avatar ??
+                      "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png"
+                  : "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png",
+              colorBlendMode: BlendMode.darken,
+              fit: BoxFit.fill,
+              filterQuality: FilterQuality.high,
+              errorWidget: imageErrorWidget,
+            ),
           ),
         ),
       ),

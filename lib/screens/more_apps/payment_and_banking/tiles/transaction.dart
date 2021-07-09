@@ -55,27 +55,33 @@ class _PaymentRequestTileState extends State<PaymentRequestTile> {
   }
 
   Widget getLeading() {
-    return Container(
-      height: 48,
-      width: 48,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(
-          25,
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).pushNamed("/photo-viewer",
+            arguments: widget.paymentRequest.avatar);
+      },
+      child: Container(
+        height: 48,
+        width: 48,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(
+            25,
+          ),
+          // border: Border.all(color: borderColor, width: 2),
+          border: Border.all(color: Colors.transparent, width: 0),
         ),
-        // border: Border.all(color: borderColor, width: 2),
-        border: Border.all(color: Colors.transparent, width: 0),
-      ),
-      child: ClipOval(
-        child: CachedNetworkImage(
-          imageUrl: widget.paymentRequest.avatar,
-          height: 48,
-          width: 48,
-          colorBlendMode: BlendMode.darken,
-          fit: BoxFit.cover,
-          filterQuality: FilterQuality.high,
-          placeholder: (context, url) => widget.paymentRequest.avatar == ""
-              ? Icon(Icons.person)
-              : CircularLoadingIndicator(),
+        child: ClipOval(
+          child: CachedNetworkImage(
+            imageUrl: widget.paymentRequest.avatar,
+            height: 48,
+            width: 48,
+            colorBlendMode: BlendMode.darken,
+            fit: BoxFit.cover,
+            filterQuality: FilterQuality.high,
+            placeholder: (context, url) => widget.paymentRequest.avatar == ""
+                ? Icon(Icons.person)
+                : CircularLoadingIndicator(),
+          ),
         ),
       ),
     );
@@ -238,17 +244,23 @@ class _TransactionTileState extends State<TransactionTile> {
               // border: Border.all(color: borderColor, width: 2),
               border: Border.all(color: Colors.transparent, width: 0),
             ),
-            child: ClipOval(
-              child: CachedNetworkImage(
-                imageUrl: widget.transaction.avatar,
-                height: 48,
-                width: 48,
-                colorBlendMode: BlendMode.darken,
-                fit: BoxFit.cover,
-                filterQuality: FilterQuality.high,
-                placeholder: (context, url) => widget.transaction.avatar == ""
-                    ? Icon(Icons.person)
-                    : CircularLoadingIndicator(),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context).pushNamed("/photo-viewer",
+                    arguments: widget.transaction.avatar);
+              },
+              child: ClipOval(
+                child: CachedNetworkImage(
+                  imageUrl: widget.transaction.avatar,
+                  height: 48,
+                  width: 48,
+                  colorBlendMode: BlendMode.darken,
+                  fit: BoxFit.cover,
+                  filterQuality: FilterQuality.high,
+                  placeholder: (context, url) => widget.transaction.avatar == ""
+                      ? Icon(Icons.person)
+                      : CircularLoadingIndicator(),
+                ),
               ),
             ),
           );

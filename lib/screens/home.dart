@@ -342,18 +342,24 @@ class _HomeState extends State<Home> {
                       MediaQuery.of(context).size.height > 600 ? false : true,
                   contentPadding:
                       EdgeInsets.symmetric(horizontal: 16, vertical: 4.0),
-                  leading: Container(
-                    height: 48,
-                    width: 48,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(
-                          25,
+                  leading: GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).pushNamed("/photo-viewer",
+                          arguments: userBloc.user.avatar);
+                    },
+                    child: Container(
+                      height: 48,
+                      width: 48,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(
+                            25,
+                          ),
+                          border: Border.all(color: borderColor, width: 2)),
+                      child: ClipOval(
+                        child: CachedNetworkImage(
+                          imageUrl: userBloc.user.avatar,
+                          fit: BoxFit.fill,
                         ),
-                        border: Border.all(color: borderColor, width: 2)),
-                    child: ClipOval(
-                      child: CachedNetworkImage(
-                        imageUrl: userBloc.user.avatar,
-                        fit: BoxFit.fill,
                       ),
                     ),
                   ),

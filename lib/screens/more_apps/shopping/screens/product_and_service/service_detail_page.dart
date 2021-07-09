@@ -590,15 +590,21 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
               ListTile(
                 contentPadding:
                     EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                leading: Container(
-                  height: 48,
-                  width: 48,
-                  child: ClipOval(
-                    child: CachedNetworkImage(
-                      imageUrl: service.providerAvatar,
-                      fit: BoxFit.fill,
-                      errorWidget: imageErrorWidget,
-                      filterQuality: FilterQuality.high,
+                leading: GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pushNamed("/photo-viewer",
+                        arguments: service.providerAvatar);
+                  },
+                  child: Container(
+                    height: 48,
+                    width: 48,
+                    child: ClipOval(
+                      child: CachedNetworkImage(
+                        imageUrl: service.providerAvatar,
+                        fit: BoxFit.fill,
+                        errorWidget: imageErrorWidget,
+                        filterQuality: FilterQuality.high,
+                      ),
                     ),
                   ),
                 ),
@@ -777,14 +783,20 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         child: InkWell(
           child: service.qrCode == ""
               ? Center(child: CircularLoadingIndicator())
-              : CachedNetworkImage(
-                  imageUrl: service.qrCode,
-                  height: 40,
-                  width: 40,
-                  filterQuality: FilterQuality.high,
-                  fit: BoxFit.fill,
-                  placeholder: (context, url) =>
-                      Center(child: CircularLoadingIndicator()),
+              : GestureDetector(
+                  onTap: () {
+                    Navigator.of(context)
+                        .pushNamed("/photo-viewer", arguments: service.qrCode);
+                  },
+                  child: CachedNetworkImage(
+                    imageUrl: service.qrCode,
+                    height: 40,
+                    width: 40,
+                    filterQuality: FilterQuality.high,
+                    fit: BoxFit.fill,
+                    placeholder: (context, url) =>
+                        Center(child: CircularLoadingIndicator()),
+                  ),
                 ),
           onTap: () {
             Clipboard.setData(new ClipboardData(text: service.qrCode));

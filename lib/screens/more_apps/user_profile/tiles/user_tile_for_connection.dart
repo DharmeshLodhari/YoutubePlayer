@@ -74,25 +74,31 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
 
     Color borderColor = getUserTypeColorByType(type: widget.user.type);
 
-    avatarImage = Container(
-        height: 48,
-        width: 48,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(
-              25,
+    avatarImage = GestureDetector(
+      onTap: () {
+        Navigator.of(context)
+            .pushNamed("/photo-viewer", arguments: widget.user.avatar);
+      },
+      child: Container(
+          height: 48,
+          width: 48,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(
+                25,
+              ),
+              border: Border.all(color: borderColor, width: 2)),
+          child: ClipOval(
+            child: CachedNetworkImage(
+              imageUrl: widget.user.avatar == "" || widget.user.avatar == null
+                  ? "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png"
+                  : widget.user.avatar,
+              colorBlendMode: BlendMode.darken,
+              fit: BoxFit.fill,
+              filterQuality: FilterQuality.high,
+              errorWidget: imageErrorWidget,
             ),
-            border: Border.all(color: borderColor, width: 2)),
-        child: ClipOval(
-          child: CachedNetworkImage(
-            imageUrl: widget.user.avatar == "" || widget.user.avatar == null
-                ? "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png"
-                : widget.user.avatar,
-            colorBlendMode: BlendMode.darken,
-            fit: BoxFit.fill,
-            filterQuality: FilterQuality.high,
-            errorWidget: imageErrorWidget,
-          ),
-        ));
+          )),
+    );
 
     Widget tile = Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),

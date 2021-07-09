@@ -312,16 +312,22 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                       width: double.infinity,
                       fit: BoxFit.cover,
                     )
-                  : CachedNetworkImage(
-                      width: double.infinity,
-                      height: double.infinity,
-                      imageUrl: searchedUser.userAbout.wallpaper,
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) =>
-                          Center(child: CircularLoadingIndicator()),
-                      color: blackFont.withOpacity(0.4),
-                      colorBlendMode: BlendMode.darken,
-                      filterQuality: FilterQuality.high,
+                  : GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pushNamed("/photo-viewer",
+                            arguments: searchedUser.userAbout.wallpaper);
+                      },
+                      child: CachedNetworkImage(
+                        width: double.infinity,
+                        height: double.infinity,
+                        imageUrl: searchedUser.userAbout.wallpaper,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) =>
+                            Center(child: CircularLoadingIndicator()),
+                        color: blackFont.withOpacity(0.4),
+                        colorBlendMode: BlendMode.darken,
+                        filterQuality: FilterQuality.high,
+                      ),
                     ),
     );
   }
@@ -339,16 +345,22 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             decoration: BoxDecoration(
                 border: Border.all(color: borderColor, width: 3),
                 shape: BoxShape.circle),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(50),
-              child: Container(
-                color: Colors.white,
-                child: CachedNetworkImage(
-                  height: 88,
-                  width: 88,
-                  fit: BoxFit.fill,
-                  filterQuality: FilterQuality.high,
-                  imageUrl: searchedUser.avatar,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context)
+                    .pushNamed("/photo-viewer", arguments: searchedUser.avatar);
+              },
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(50),
+                child: Container(
+                  color: Colors.white,
+                  child: CachedNetworkImage(
+                    height: 88,
+                    width: 88,
+                    fit: BoxFit.fill,
+                    filterQuality: FilterQuality.high,
+                    imageUrl: searchedUser.avatar,
+                  ),
                 ),
               ),
             ),

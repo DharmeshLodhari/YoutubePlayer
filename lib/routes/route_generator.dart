@@ -109,6 +109,7 @@ import 'package:Slydo/screens/scan_qr_code.dart';
 import 'package:Slydo/screens/search_module.dart';
 import 'package:Slydo/screens/user_dashboard.dart';
 import 'package:Slydo/splash.dart';
+import 'package:Slydo/widget/photo_viewer.dart';
 import 'package:Slydo/widget/video_recorder.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
@@ -1115,6 +1116,14 @@ class RouteGenerator {
       case "/general-setting":
         return PageTransition(
           child: GeneralSettingScreen(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case "/photo-viewer":
+        return PageTransition(
+          child: PhotoViewer(imageUrl: settings.arguments),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

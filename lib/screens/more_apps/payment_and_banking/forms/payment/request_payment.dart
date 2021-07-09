@@ -363,23 +363,35 @@ class _RequestPaymentState extends State<RequestPayment> {
               25,
             ),
             border: Border.all(color: borderColor, width: 2)),
-        child: ClipOval(
-          child: CachedNetworkImage(
-            imageUrl: _payee.avatar,
-            colorBlendMode: BlendMode.darken,
-            fit: BoxFit.fill,
-            filterQuality: FilterQuality.high,
+        child: GestureDetector(
+          onTap: () {
+            Navigator.of(context)
+                .pushNamed("/photo-viewer", arguments: _payee.avatar);
+          },
+          child: ClipOval(
+            child: CachedNetworkImage(
+              imageUrl: _payee.avatar,
+              colorBlendMode: BlendMode.darken,
+              fit: BoxFit.fill,
+              filterQuality: FilterQuality.high,
+            ),
           ),
         ),
       );
 
-      qrCodeImage = CachedNetworkImage(
-        height: 48,
-        width: 48,
-        imageUrl: _payee.qrCode,
-        colorBlendMode: BlendMode.darken,
-        fit: BoxFit.fill,
-        filterQuality: FilterQuality.high,
+      qrCodeImage = GestureDetector(
+        onTap: () {
+          Navigator.of(context)
+              .pushNamed("/photo-viewer", arguments: _payee.qrCode);
+        },
+        child: CachedNetworkImage(
+          height: 48,
+          width: 48,
+          imageUrl: _payee.qrCode,
+          colorBlendMode: BlendMode.darken,
+          fit: BoxFit.fill,
+          filterQuality: FilterQuality.high,
+        ),
       );
     }
 
