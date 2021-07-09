@@ -58,14 +58,12 @@ class ImageTileForChat extends StatelessWidget {
                   color: chatConversation.isGroupConversation
                       ? isSend
                           ? isMessageEmpty
-                              ? Colors.transparent
+                              ? navyBlue
                               : navyBlue
                           : chatBackgroundColor
-                      : isMessageEmpty
-                          ? Colors.transparent
-                          : isSend
-                              ? navyBlue
-                              : chatBackgroundColor,
+                      : isSend
+                          ? navyBlue
+                          : chatBackgroundColor,
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(!isSend ? 0 : 10),
                     bottomRight: Radius.circular(isSend ? 0 : 10),
@@ -76,28 +74,32 @@ class ImageTileForChat extends StatelessWidget {
                 padding: EdgeInsets.only(
                     top: chatConversation.isGroupConversation
                         ? isSend
-                            ? 0
+                            ? 4
                             : 8
                         : isMessageEmpty
-                            ? 0
+                            ? 4
                             : 8,
                     bottom: chatConversation.isGroupConversation
                         ? isSend
-                            ? 0
+                            ? 4
                             : 8
                         : isMessageEmpty
-                            ? 0
+                            ? 4
                             : 8,
                     left: chatConversation.isGroupConversation
                         ? isSend
-                            ? 0
+                            ? 4
                             : 8
-                        : 0,
+                        : isMessageEmpty
+                            ? 4
+                            : 0,
                     right: chatConversation.isGroupConversation
                         ? isSend
-                            ? 0
+                            ? 4
                             : 8
-                        : 0),
+                        : isMessageEmpty
+                            ? 4
+                            : 0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: isSend
