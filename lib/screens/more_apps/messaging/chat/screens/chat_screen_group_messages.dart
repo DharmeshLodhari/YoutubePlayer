@@ -608,55 +608,59 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   void setupScrollController() {
     messageListPositionListener.itemPositions.addListener(() {
-      if (messageList.length > 0) {
-        // print('test' +
-        //     messageListPositionListener.itemPositions.value.last.itemTrailingEdge
-        //         .toString());
-        // if (messageListPositionListener
-        //         .itemPositions.value.last.itemTrailingEdge <
-        //     1) {
-        //   print("bottom?" +
-        //       messageListPositionListener
-        //           .itemPositions.value.last.itemTrailingEdge
-        //           .toString() +
-        //       '    ---- > ' +
-        //       messageListPositionListener.itemPositions.value.last.index
-        //           .toString());
-        //   if (messageListPositionListener.itemPositions.value.last.index > 1) {
-        //     print('fetch ');
-        //   }
-        // }
-
-        // ignore: null_aware_before_operator
-        if (messageListPositionListener
-                ?.itemPositions?.value?.first?.itemTrailingEdge <
-            1) {
-          // print("top?" +
-          //     messageListPositionListener
-          //         .itemPositions.value.first.itemTrailingEdge
-          //         .toString() +
-          //     '    ---- > ' +
-          //     messageListPositionListener.itemPositions.value.first.index
+      try {
+        if (messageList.length > 0) {
+          // print('test' +
+          //     messageListPositionListener.itemPositions.value.last.itemTrailingEdge
           //         .toString());
-          if (messageListPositionListener.itemPositions.value.first.index ==
-              0) {
-            if (fabIsVisible) {
-              // debugPrint(
-              //     'fetch first ${messageListPositionListener.itemPositions.value.last.index}');
-              fabIsVisible = false;
-              if (mounted) setState(() {});
-            }
-          } else {
-            if (fabIsVisible != true &&
-                !isReplyingMessage &&
-                !isEditingMessage) {
-              fabIsVisible = true;
-              // debugPrint(
-              //     "fetch last ${messageListPositionListener.itemPositions.value.last.index}");
-              if (mounted) setState(() {});
+          // if (messageListPositionListener
+          //         .itemPositions.value.last.itemTrailingEdge <
+          //     1) {
+          //   print("bottom?" +
+          //       messageListPositionListener
+          //           .itemPositions.value.last.itemTrailingEdge
+          //           .toString() +
+          //       '    ---- > ' +
+          //       messageListPositionListener.itemPositions.value.last.index
+          //           .toString());
+          //   if (messageListPositionListener.itemPositions.value.last.index > 1) {
+          //     print('fetch ');
+          //   }
+          // }
+
+          // ignore: null_aware_before_operator
+          if (messageListPositionListener
+                  ?.itemPositions?.value?.first?.itemTrailingEdge <
+              1) {
+            // print("top?" +
+            //     messageListPositionListener
+            //         .itemPositions.value.first.itemTrailingEdge
+            //         .toString() +
+            //     '    ---- > ' +
+            //     messageListPositionListener.itemPositions.value.first.index
+            //         .toString());
+            if (messageListPositionListener.itemPositions.value.first.index ==
+                0) {
+              if (fabIsVisible) {
+                // debugPrint(
+                //     'fetch first ${messageListPositionListener.itemPositions.value.last.index}');
+                fabIsVisible = false;
+                if (mounted) setState(() {});
+              }
+            } else {
+              if (fabIsVisible != true &&
+                  !isReplyingMessage &&
+                  !isEditingMessage) {
+                fabIsVisible = true;
+                // debugPrint(
+                //     "fetch last ${messageListPositionListener.itemPositions.value.last.index}");
+                if (mounted) setState(() {});
+              }
             }
           }
         }
+      } catch (error) {
+        debugPrint("ERROR:- $error\nmessageList.length => ${messageList.length}\nmessageListPositionListener => $messageListPositionListener\nmessageListPositionListener.itemPositions => ${messageListPositionListener.itemPositions}\nmessageListPositionListener.itemPositions.value => ${messageListPositionListener.itemPositions.value}");
       }
     });
   }
@@ -1084,10 +1088,17 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     debugPrint("Scrolling to Bottom");
     fabIsVisible = false;
     if (mounted) setState(() {});
-    messageListController.scrollToBottom(
-        index: 0,
-        duration: Duration(milliseconds: 500),
-        curve: Curves.fastLinearToSlowEaseIn);
+
+    if(messageList.isNotEmpty)
+      {
+        messageListController.scrollToBottom(
+            index: 0,
+            duration: Duration(milliseconds: 500),
+            curve: Curves.fastLinearToSlowEaseIn);
+      }else{
+      debugPrint("ERROR:- ===> scroll to bottom called when list is empty");
+    }
+
   }
 
   void menuItemSelectionChange(String value, int index) {

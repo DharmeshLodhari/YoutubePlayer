@@ -31,7 +31,12 @@ class ConnectionSynchronizer {
     ConnectionListBloc connectionListBloc =
         Provider.of<ConnectionListBloc>(context, listen: false);
     if (_next != null) {
-      Map<String, dynamic> result = await UserAuth().contacts(_next, _previous);
+      Map<String, dynamic> result =
+          await UserAuth().contacts(_next, _previous).catchError((error) {
+        debugPrint("ERROR:- $error");
+      });
+
+      if (result == null) return;
       _next = result['next'];
       _previous = result['previous'];
 

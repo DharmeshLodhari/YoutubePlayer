@@ -16,6 +16,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -184,16 +185,63 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
         onPressed: () {
           Navigator.of(context).pop(groupDetail);
         },
-      ),
-      title: Text(
-        groupDetail.fullName,
-        style: TextStyle(
-            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
-        overflow: TextOverflow.fade,
-        softWrap: false,
-        maxLines: 1,
+      ),leadingWidth: 40,
+      title: Row(
+        children: [
+          getUserIcon(),
+          SizedBox(
+            width: 12,
+          ),
+          Text(
+            groupDetail.fullName,
+            style: TextStyle(
+                color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+            overflow: TextOverflow.fade,
+            softWrap: false,
+            maxLines: 1,
+          ),
+        ],
       ),
       actions: getGroupActions(),
+    );
+  }
+
+  Widget getUserIcon() {
+    Color borderColor = getUserTypeColorByType(type: groupDetail.type);
+
+    return Container(
+      height: 36,
+      width: 36,
+      child: Container(
+        height: 36,
+        width: 36,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(
+              25,
+            ),
+            border: Border.all(color: borderColor, width: 2)),
+        child: GestureDetector(
+          onTap: () {
+            Navigator.of(context).pushNamed("/photo-viewer",
+                arguments: groupDetail != null
+                    ? groupDetail.avatar ??
+                        "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png"
+                    : "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png");
+          },
+          child: ClipOval(
+            child: CachedNetworkImage(
+              imageUrl: groupDetail != null
+                  ? groupDetail.avatar ??
+                      "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png"
+                  : "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png",
+              colorBlendMode: BlendMode.darken,
+              fit: BoxFit.fill,
+              filterQuality: FilterQuality.high,
+              errorWidget: imageErrorWidget,
+            ),
+          ),
+        ),
+      ),
     );
   }
 
