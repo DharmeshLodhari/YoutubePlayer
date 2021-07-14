@@ -4,6 +4,7 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.
 import 'package:Slydo/screens/more_apps/payment_and_banking/tiles/transaction.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/secure_screen.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
@@ -57,6 +58,7 @@ class _TransactionListState extends State<TransactionList> {
 
   @override
   void initState() {
+    secureScreen();
     getList();
 
     super.initState();
@@ -421,6 +423,7 @@ class _TransactionListState extends State<TransactionList> {
 
   @override
   void dispose() {
+    unsecureScreen();
     _refreshController.dispose();
     _scrollController.dispose();
     super.dispose();

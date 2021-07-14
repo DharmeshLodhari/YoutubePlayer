@@ -14,6 +14,7 @@ class Product {
   String cover;
   String seller;
   String sellerAvatar;
+  String sellerFullName;
   String condition;
   String qrCode;
   String category;
@@ -34,6 +35,7 @@ class Product {
       this.seller,
       this.cover = "",
       this.sellerAvatar,
+      this.sellerFullName,
       this.qrCode,
       this.condition,
       this.category,
@@ -68,6 +70,7 @@ class Product {
     this.cover = object["cover"] ?? "";
     this.seller = object["seller"] ?? "";
     this.sellerAvatar = object["seller_avatar"] ?? "";
+    this.sellerFullName = object["seller_full_name"];
     this.qrCode = object["qr_code"] ?? "";
     this.condition = object["condition"] ?? "";
     this.category = object["category"] ?? "";
@@ -135,6 +138,7 @@ class Service {
   String cover;
   String provider;
   String providerAvatar;
+  String providerFullName;
   String qrCode;
   String category;
   bool isAvailable;
@@ -153,6 +157,7 @@ class Service {
     this.cover = "",
     this.provider,
     this.providerAvatar,
+    this.providerFullName,
     this.qrCode,
     this.category,
     this.isAvailable,
@@ -206,6 +211,7 @@ class Service {
     this.cover = object["cover"] ?? "";
     this.provider = object["provider"] ?? "";
     this.providerAvatar = object["provider_avatar"] ?? "";
+    this.providerFullName = object["provider_full_name"];
     this.qrCode = object["qr_code"] ?? "";
     this.category = object["category"] ?? "";
     this.isAvailable = object["is_available"] ?? false;

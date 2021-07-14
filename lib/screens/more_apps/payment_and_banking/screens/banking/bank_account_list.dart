@@ -1,6 +1,7 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
+import 'package:Slydo/utils/secure_screen.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -44,6 +45,7 @@ class _BankAccountListState extends State<BankAccountList> {
 
   @override
   void initState() {
+    secureScreen();
     this.getList();
 
     super.initState();
@@ -477,6 +479,7 @@ class _BankAccountListState extends State<BankAccountList> {
 
   @override
   void dispose() {
+    unsecureScreen();
     _scrollController.dispose();
     _refreshController.dispose();
     super.dispose();

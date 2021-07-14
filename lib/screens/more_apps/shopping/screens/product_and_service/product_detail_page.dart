@@ -871,7 +871,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   ),
                 ),
                 title: Text(
-                  product.seller,
+                  product.sellerFullName ?? product.seller,
                   style: TextStyle(
                     fontSize: 14,
                     color: blackFont,

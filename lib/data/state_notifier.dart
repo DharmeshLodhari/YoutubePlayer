@@ -6,6 +6,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_message_setti
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/utils/secure_screen.dart';
 import 'package:flutter/material.dart';
 
 class UserBloc extends ChangeNotifier {
@@ -267,6 +268,11 @@ class DashboardBloc extends ChangeNotifier {
   PageController get pageController => _pageController;
 
   set index(int value) {
+    if (value == 1) {
+      secureScreen();
+    } else {
+      unsecureScreen();
+    }
     _index = value;
     _pageController.animateToPage(_index,
         duration: Duration(milliseconds: 1), curve: Curves.linear);

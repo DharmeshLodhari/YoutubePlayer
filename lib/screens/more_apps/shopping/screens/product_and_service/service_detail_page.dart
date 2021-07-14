@@ -609,7 +609,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                   ),
                 ),
                 title: Text(
-                  service.provider,
+                  service.providerFullName ?? service.provider,
                   style: TextStyle(
                     fontSize: 14,
                     color: blackFont,

@@ -660,7 +660,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           }
         }
       } catch (error) {
-        debugPrint("ERROR:- $error\nmessageList.length => ${messageList.length}\nmessageListPositionListener => $messageListPositionListener\nmessageListPositionListener.itemPositions => ${messageListPositionListener.itemPositions}\nmessageListPositionListener.itemPositions.value => ${messageListPositionListener.itemPositions.value}");
+        debugPrint(
+            "ERROR:- $error\nmessageList.length => ${messageList.length}\nmessageListPositionListener => $messageListPositionListener\nmessageListPositionListener.itemPositions => ${messageListPositionListener.itemPositions}\nmessageListPositionListener.itemPositions.value => ${messageListPositionListener.itemPositions.value}");
       }
     });
   }
@@ -1089,16 +1090,14 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     fabIsVisible = false;
     if (mounted) setState(() {});
 
-    if(messageList.isNotEmpty)
-      {
-        messageListController.scrollToBottom(
-            index: 0,
-            duration: Duration(milliseconds: 500),
-            curve: Curves.fastLinearToSlowEaseIn);
-      }else{
+    if (messageList.isNotEmpty) {
+      messageListController.scrollToBottom(
+          index: 0,
+          duration: Duration(milliseconds: 500),
+          curve: Curves.fastLinearToSlowEaseIn);
+    } else {
       debugPrint("ERROR:- ===> scroll to bottom called when list is empty");
     }
-
   }
 
   void menuItemSelectionChange(String value, int index) {
@@ -1688,9 +1687,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
               assignTitleToAction(
                   text: "Empty\nEnvelope", child: sendEmptyEnvelopeButton()),
               flexibleSpace(),
-              // assignTitleToAction(
-              //     text: "Location\n", child: sendUserLocation()),
-              assignTitleToAction(text: "GIF", child: sendGIFButton()),
+              assignTitleToAction(
+                  text: "Location\n", child: sendUserLocation()),
             ],
           ),
           SizedBox(
@@ -1698,13 +1696,9 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           ),
           Row(
             children: <Widget>[
-              // assignTitleToAction(text: "GIF", child: sendGIFButton()),
-              // flexibleSpace(),
-              assignTitleToAction(text: "Sticker", child: sendStickersButton()),
+              assignTitleToAction(text: "GIF", child: sendGIFButton()),
               flexibleSpace(),
-              Container(
-                constraints: BoxConstraints(maxWidth: 60),
-              ),
+              assignTitleToAction(text: "Sticker", child: sendStickersButton()),
               flexibleSpace(),
               Container(
                 constraints: BoxConstraints(maxWidth: 60),

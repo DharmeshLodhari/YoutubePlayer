@@ -58,6 +58,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
 
   @protected
   void initState() {
+    // secureScreen();
     this.getList();
     super.initState();
     _scrollController.addListener(() {
@@ -728,6 +729,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   void dispose() {
     _refreshController.dispose();
     _scrollController.dispose();
+    // unsecureScreen();
     super.dispose();
   }
 }

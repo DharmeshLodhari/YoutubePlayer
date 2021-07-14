@@ -1,5 +1,6 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/tiles/payout_tile.dart';
+import 'package:Slydo/utils/secure_screen.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:connectivity/connectivity.dart';
@@ -31,6 +32,7 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
 
   @override
   void initState() {
+    secureScreen();
     this.getList();
 
     super.initState();
@@ -193,6 +195,7 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
 
   @override
   void dispose() {
+    unsecureScreen();
     _refreshController.dispose();
     _scrollController.dispose();
     super.dispose();
