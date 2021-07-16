@@ -36,6 +36,7 @@ class User {
   String phoneNumber;
   String fullName;
   String userName;
+  String nickName;
   String type;
   String avatar;
   String qrCode;
@@ -53,6 +54,7 @@ class User {
     this.phoneNumber = "",
     this.fullName = "",
     this.userName = "",
+    this.nickName = "",
     this.type = "",
     this.avatar = "",
     this.qrCode = "",

@@ -35,6 +35,9 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
   TextEditingController bioController;
   TextEditingController addressController;
   TextEditingController contactNumberController;
+  TextEditingController _fullNameController;
+  TextEditingController _userNameController;
+  TextEditingController _nicknameController;
 
   List<String> openingHoursDays = [
     "Monday",
@@ -108,12 +111,18 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     bioController = TextEditingController();
     addressController = TextEditingController();
     contactNumberController = TextEditingController();
+    _userNameController = TextEditingController();
+    _nicknameController = TextEditingController();
+    _fullNameController = TextEditingController();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       userBioDetail = userBloc.userAbout;
       bioController.text = userBioDetail.bio;
       addressController.text = userBioDetail.address;
       contactNumberController.text = userBioDetail.contact;
+      _nicknameController.text = userBloc.user.nickName;
+      _userNameController.text = userBloc.user.userName;
+      _fullNameController.text = userBloc.user.fullName;
       if (userBioDetail.openingHours.isNotEmpty) {
         addUserAddedOpeningHour();
       }
@@ -184,35 +193,134 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
         : SingleChildScrollView(
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 20),
-              child: Center(
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      SizedBox(height: 20),
-                      addBioField(),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      addAddressField(),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      addContactNumberField(),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      addOpeningHour(),
-                      SizedBox(height: 20),
-                      getSubmitButton(),
-                      SizedBox(height: 40),
-                    ],
-                  ),
-                ),
+              child: Column(
+                children: [
+                  getUserPersonalDetail(),
+                  isUserIsSimpleUser ? Container() : getUserBioDetails()
+                ],
               ),
             ),
           );
+  }
+
+  Widget getUserBioDetails() {
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          SizedBox(height: 20),
+          addBioField(),
+          SizedBox(
+            height: 20,
+          ),
+          addAddressField(),
+          SizedBox(
+            height: 20,
+          ),
+          addContactNumberField(),
+          SizedBox(
+            height: 20,
+          ),
+          addOpeningHour(),
+          SizedBox(height: 20),
+          getSubmitButton(),
+          SizedBox(height: 40),
+        ],
+      ),
+    );
+  }
+
+  Widget getUserPersonalDetail() {
+    return Column(
+      children: [
+        SizedBox(height: 20),
+        fullNameField(),
+        SizedBox(height: 20),
+        userNameField(),
+        SizedBox(height: 20),
+        nickNameField(),
+      ],
+    );
+  }
+
+  Widget fullNameField() {
+    return CustomizedTextFormField(
+      controller: _fullNameController,
+      labelColor: darkGrey,
+      labelText: "Full name",
+      keyboardType: TextInputType.name,
+      validator: fullNameValidator,
+    );
+  }
+
+  String fullNameValidator(String enteredName) {
+    List<String> nameList = enteredName.split(" ");
+
+    /// For not allowing user to put any profession title
+    List<String> notValidProfessionTitles = [
+      "mr",
+      "mrs",
+      "miss",
+      "ms",
+      "chief",
+      "dr",
+      "prof",
+      "engr",
+      "evang",
+    ];
+
+    RegExp regExp = RegExp(r"^[A-Za-z\s]{1,}[A-Za-z\s]{0,}$");
+
+    if (!regExp.hasMatch(enteredName)) {
+      return "Please enter valid name";
+    }
+    if (nameList.length < 2) {
+      return "Please enter full name";
+    }
+    if (notValidProfessionTitles.contains(nameList[0].toLowerCase())) {
+      return "Please remove ${nameList[0]} from name";
+    }
+    if (nameList[0].length < 2 || nameList[1].length < 2) {
+      return "Please enter valid name";
+    }
+
+    return null;
+  }
+
+  Widget userNameField() {
+    return CustomizedTextFormField(
+      controller: _userNameController,
+      labelColor: darkGrey,
+      labelText: "Username",
+      keyboardType: TextInputType.text,
+      validator: userNameValidator,
+    );
+  }
+
+  String userNameValidator(String username) {
+    // alphanumeric and -_.
+    RegExp validCharacters =
+        RegExp(r'^[a-z0-9]([._-](?![._-])|[a-z0-9]){3,18}[a-z0-9]$');
+
+    if (!validCharacters.hasMatch(username)) {
+      return "Username is not valid";
+    }
+
+    return null;
+  }
+
+  Widget nickNameField() {
+    return CustomizedTextFormField(
+      controller: _nicknameController,
+      labelColor: darkGrey,
+      labelText: "Nick name",
+      keyboardType: TextInputType.name,
+    );
+  }
+
+  String nickNameValidator(String nickName) {
+    return null;
   }
 
   Widget getAppbar(var context) {

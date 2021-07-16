@@ -166,18 +166,13 @@ class UserAuth extends AuthService {
   }
 
   // Register the user with the backend servers
-  Future<bool> userRegistration(Map _body) async {
-    var data = {};
+  Future<bool> userRegistration(Map<String, dynamic> _body) async {
+    Map<String, dynamic> data = {};
     var url = secureBaseUrl + "/api/v1/user/account/";
     var headers = getNonAuthHeader();
     headers.remove("Content-type");
-
-    // Convert to what the server is expecting
-    data["password1"] = _body["password1"];
-    data["password2"] = _body["password2"];
-    data["full_name"] = _body["fullName"];
-    data["phone_number"] = _body["phoneNumber"];
     var _data = await getDeviceInfo();
+    data.addAll(_body);
     data.addAll(_data);
 
     var response = await http.post(url, headers: headers, body: data);
@@ -250,6 +245,19 @@ class UserAuth extends AuthService {
       "reset-token": resetToken,
       "phone-number": phoneNumber,
     };
+    var _data = jsonEncode(data);
+    var response = await http.patch(url, body: _data, headers: headers);
+    var jsonData = json.decode(response.body);
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      throw jsonData;
+    }
+  }
+
+  Future<bool> changePassword(Map<String, dynamic> data) async {
+    var url = secureBaseUrl + "/api/v1/user/auth/change-password/";
+    var headers = getNonAuthHeader();
     var _data = jsonEncode(data);
     var response = await http.patch(url, body: _data, headers: headers);
     var jsonData = json.decode(response.body);

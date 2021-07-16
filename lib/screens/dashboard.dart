@@ -93,6 +93,9 @@ class _DashboardState extends State<Dashboard> {
         myGlobals.navigationKey.currentContext,
         listen: false);
 
+    BackgroundFetchBloc backgroundFetchBloc = Provider.of<BackgroundFetchBloc>(
+        myGlobals.navigationKey.currentContext);
+
     int result = await connectionListBloc.getConnectionsCount();
     debugPrint("CONNECTION LIST LENGTH:- $result");
     if (result == 0) {
@@ -102,9 +105,13 @@ class _DashboardState extends State<Dashboard> {
       debugPrint("CONNECTION LIST LENGTH:- $result");
 
       for (int i = 0; i < connectionListBloc.connectionUsers.length; i++) {
-        await ChatMessageSynchronizer().getMessages(
-            chatConversation: connectionListBloc.connectionUsers[i],
-            isFirstTime: true);
+        if (backgroundFetchBloc.isAllowed) {
+          await ChatMessageSynchronizer().getMessages(
+              chatConversation: connectionListBloc.connectionUsers[i],
+              isFirstTime: true);
+        } else {
+          break;
+        }
       }
     } else {
       await ConnectionSynchronizer().update();

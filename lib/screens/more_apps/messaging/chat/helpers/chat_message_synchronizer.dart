@@ -104,38 +104,6 @@ class ChatMessageSynchronizer {
       _previousMissedMessages = "";
     }
 
-    // MyGlobals myGlobals = MyGlobals();
-    // BuildContext context = myGlobals.navigationKey.currentContext;
-    //
-    // ConnectionListBloc connectionListBloc =
-    //     Provider.of<ConnectionListBloc>(context, listen: false);
-    //
-    // List<Map<String, dynamic>> dataToBeSent = [];
-    //
-    // for (int i = 0; i < connectionListBloc.connectionUsers.length; i++) {
-    //   List<ChatMessage> lastFewMessages = await ChatMessageHandler()
-    //       .getLimitedChatMessages(
-    //           conversationId:
-    //               connectionListBloc.connectionUsers[i].conversationId,
-    //           limit: 20);
-    //
-    //   List<String> checkIds = [];
-    //   if (lastFewMessages != null) {
-    //     if (lastFewMessages.isNotEmpty) {
-    //       lastFewMessages.forEach((element) {
-    //         if (element.checkId != null && element.checkId != "") {
-    //           checkIds.add(element.checkId);
-    //         }
-    //       });
-    //     }
-    //   }
-    //
-    //   dataToBeSent.add({
-    //     "conversation_id": connectionListBloc.connectionUsers[i].conversationId,
-    //     "check_ids": checkIds
-    //   });
-    // }
-
     Map<String, dynamic> resultData = await MessageAuth()
         .fetchMissedMessages(
             next: _nextMissedMessages, previous: _previousMissedMessages)

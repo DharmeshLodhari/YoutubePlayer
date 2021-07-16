@@ -12,6 +12,7 @@ import 'package:Slydo/services/fcm_push_notification.dart';
 import 'package:Slydo/services/secure_storage.dart';
 import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
@@ -485,6 +486,12 @@ class _UserDashboardState extends State<UserDashboard> {
   }
 
   void logoutUser() async {
+    BackgroundFetchBloc backgroundFetchBloc = Provider.of<BackgroundFetchBloc>(
+        myGlobals.navigationKey.currentContext,
+        listen: false);
+
+    backgroundFetchBloc.isAllowed = false;
+
     emptyBasketCart();
     SharedPreferences _sharedPreferences;
 

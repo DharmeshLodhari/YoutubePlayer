@@ -87,6 +87,7 @@ import 'package:Slydo/screens/more_apps/train/search_train.dart';
 import 'package:Slydo/screens/more_apps/train/train_dashboard.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/add_document.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/add_or_edit_user_bio.dart';
+import 'package:Slydo/screens/more_apps/user_profile/forms/change_password.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/forgot_password.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/login.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/reset_device.dart';
@@ -434,6 +435,13 @@ class RouteGenerator {
           child: ResetPassword(
             arguments: settings.arguments,
           ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case '/change-password':
+        return PageTransition(
+          child: ChangePassword(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

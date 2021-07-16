@@ -40,7 +40,7 @@ class DBSocketMessageHandler {
         conversationId: conversationId);
   }
 
-  void clearSocketQueueChatMessage() async {
-    await _db.clearSocketQueueChatMessage();
+  Future<int> clearSocketQueueChatMessage() async {
+    return await _db.clearSocketQueueChatMessage();
   }
 }

@@ -1,0 +1,236 @@
+import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:flutter/material.dart';
+
+import '../../../../utils/colors.dart';
+import '../user_auth.dart';
+
+// ignore: must_be_immutable
+class ChangePassword extends StatefulWidget {
+  @override
+  _ChangePasswordState createState() => _ChangePasswordState();
+}
+
+class _ChangePasswordState extends State<ChangePassword> {
+  final _formKey = GlobalKey<FormState>();
+  String newPassword = "";
+  String oldPassword = "";
+  String confirmPassword = "";
+
+  TextEditingController _newPasswordController;
+  TextEditingController _oldPasswordController;
+  TextEditingController _confirmPasswordController;
+
+  @override
+  void initState() {
+    _newPasswordController = TextEditingController();
+    _oldPasswordController = TextEditingController();
+    _confirmPasswordController = TextEditingController();
+
+    super.initState();
+  }
+
+  Widget build(BuildContext context) {
+    return WillPopScope(
+        onWillPop: () async {
+          return true;
+        },
+        child: Scaffold(
+            backgroundColor: Colors.white,
+            resizeToAvoidBottomInset: true,
+            appBar: appBar(),
+            body: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                height: MediaQuery.of(context).size.height -
+                    (AppBar().preferredSize.height +
+                        MediaQuery.of(context).padding.top),
+                width: MediaQuery.of(context).size.width,
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      SizedBox(
+                        height: 20,
+                      ),
+                      oldPasswordWidget(),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      newPasswordWidget(),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      confirmPasswordWidget(),
+                      SizedBox(
+                        height: 40,
+                      ),
+                      changePasswordBtn(),
+                    ],
+                  ),
+                ),
+              ),
+            )));
+  }
+
+  Widget appBar() {
+    return AppBar(
+      elevation: 0,
+      backgroundColor: Colors.white,
+      titleSpacing: 0,
+      automaticallyImplyLeading: false,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      title: Text(
+        "Change password",
+        style: TextStyle(
+            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
+  Widget oldPasswordWidget() {
+    return CustomizedTextFormField(
+      maxLength: 6,
+      obscureText: true,
+      keyboardType: TextInputType.number,
+      labelText: "Old password",
+      controller: _oldPasswordController,
+      isPassword: true,
+      validator: validateOldEnteredPassword,
+      onChanged: (val) {
+        oldPassword = val;
+      },
+    );
+  }
+
+  Widget newPasswordWidget() {
+    return CustomizedTextFormField(
+      maxLength: 6,
+      obscureText: true,
+      keyboardType: TextInputType.number,
+      labelText: "New password",
+      controller: _newPasswordController,
+      isPassword: true,
+      validator: validateEnteredPassword,
+      onChanged: (val) {
+        newPassword = val;
+      },
+    );
+  }
+
+  Widget confirmPasswordWidget() {
+    return CustomizedTextFormField(
+      obscureText: true,
+      maxLength: 6,
+      labelText: "Confirm password",
+      isPassword: true,
+      controller: _confirmPasswordController,
+      keyboardType: TextInputType.number,
+      validator: validateEnteredConfirmPassword,
+      onChanged: (val) {
+        confirmPassword = val;
+      },
+    );
+  }
+
+  // validate old password
+  String validateOldEnteredPassword(String val) {
+    if (val.length != 6) {
+      return AppLocalization.of(context).invalidPassword;
+    }
+    return null;
+  }
+
+  String validateEnteredPassword(String val) {
+    ///regexp for repeated number
+    var matcher = RegExp(
+      r'^(.)\1{1,}$',
+      caseSensitive: true,
+    );
+    if (val.length != 6) {
+      return AppLocalization.of(context).invalidPassword;
+    } else if ("0123456789".contains(val)) {
+      return "you can not set this type of password";
+    } else if ("9876543210".contains(val)) {
+      return "you can not set this type of password";
+    } else if (matcher.hasMatch(val)) {
+      return "you can not set this type of password";
+    }
+    return null;
+  }
+
+  // validate confirm password
+  String validateEnteredConfirmPassword(String val) {
+    var matcher = RegExp(
+      r'^(.)\1{1,}$',
+      caseSensitive: true,
+    );
+    if (val.length != 6) {
+      return AppLocalization.of(context).invalidPassword;
+    } else if (val != _newPasswordController.text) {
+      return AppLocalization.of(context).passwordMismatch;
+    } else if ("0123456789".contains(val)) {
+      return "you can not set this type of password";
+    } else if ("9876543210".contains(val)) {
+      return "you can not set this type of password";
+    } else if (matcher.hasMatch(val)) {
+      return "you can not set this type of password";
+    }
+    return null;
+  }
+
+  Widget changePasswordBtn() {
+    return CurvedButton(
+      onPressed: verifyPassword,
+      textColor: Colors.white,
+      backgroundColor: navyBlue,
+      text: "Change Password",
+    );
+  }
+
+  void verifyPassword() async {
+    //for closing the keypad if it is open
+    if (FocusScope.of(context).hasFocus) {
+      FocusScope.of(context).unfocus();
+    }
+
+    if (_formKey.currentState.validate()) {
+      var data = {
+        "password1": newPassword,
+        "password2": confirmPassword,
+        "old-password": oldPassword,
+      };
+
+      showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => Center(
+                child: CircularLoadingIndicator(),
+              ));
+
+      await UserAuth().changePassword(data).then((value) {
+        if (value) {
+          Navigator.popUntil(context, ModalRoute.withName('/dashboard'));
+        } else {
+          Navigator.pop(context);
+        }
+      }).catchError((error) {
+        Navigator.pop(context);
+        debugPrint("ERROR:- $error");
+      });
+    }
+  }
+}

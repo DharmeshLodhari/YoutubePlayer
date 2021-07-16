@@ -32,6 +32,8 @@ class _SignUpState extends State<SignUp> {
   String password = '';
 
   TextEditingController _fullNameController;
+  TextEditingController _nickNameController;
+  TextEditingController _userNameController;
   TextEditingController _phoneNumberController;
   TextEditingController _passwordController;
   TextEditingController _confirmPasswordController;
@@ -45,6 +47,8 @@ class _SignUpState extends State<SignUp> {
     _phoneNumberController = TextEditingController();
     _phoneNumberController.text = phoneNumber;
     _fullNameController = TextEditingController();
+    _nickNameController = TextEditingController();
+    _userNameController = TextEditingController();
     _passwordController = TextEditingController();
     _confirmPasswordController = TextEditingController();
     super.initState();
@@ -78,65 +82,63 @@ class _SignUpState extends State<SignUp> {
         body: SingleChildScrollView(
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 20),
-            height: MediaQuery.of(context).size.height -
-                (AppBar().preferredSize.height +
-                    MediaQuery.of(context).padding.top),
-            width: MediaQuery.of(context).size.width,
-            child: Column(
-              children: <Widget>[
-                Expanded(
-                  child: Form(
-                    key: _registrationFormKey,
-                    child: Container(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          appIcon(),
-                          flexibleSpace(
-                            flex: 1,
-                          ),
-                          registerTitle(),
-                          flexibleSpace(
-                            flex: 5,
-                          ),
-                          phoneNumberField(),
-                          flexibleSpace(
-                            flex: 2,
-                          ),
-                          fullNameField(),
-                          flexibleSpace(
-                            flex: 1,
-                          ),
-                          nameInstructionNote(),
-                          flexibleSpace(
-                            flex: 2,
-                          ),
-                          passwordField(),
-                          flexibleSpace(
-                            flex: 1,
-                          ),
-                          passwordInstruction(),
-                          flexibleSpace(
-                            flex: 2,
-                          ),
-                          confirmPasswordField(),
-                          flexibleSpace(
-                            flex: 2,
-                          ),
-                          registrationTermsAndCondition(),
-                          flexibleSpace(
-                            flex: 4,
-                          ),
-                          registerBtn(),
-                          flexibleSpace(
-                            flex: 4,
-                          ),
-                        ],
-                      ),
+            child: Form(
+              key: _registrationFormKey,
+              child: Container(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    appIcon(),
+                    SizedBox(
+                      height: 10,
                     ),
-                  ),
+                    registerTitle(),
+                    SizedBox(
+                      height: 40,
+                    ),
+                    phoneNumberField(),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    fullNameField(),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    nameInstructionNote(),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    userNameField(),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    nickNameField(),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    passwordField(),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    passwordInstruction(),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    confirmPasswordField(),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    registrationTermsAndCondition(),
+                    SizedBox(
+                      height: 40,
+                    ),
+                    registerBtn(),
+                    SizedBox(
+                      height: 40,
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),
@@ -198,7 +200,7 @@ class _SignUpState extends State<SignUp> {
       controller: _fullNameController,
       labelColor: darkGrey,
       labelText: "Full name",
-      keyboardType: TextInputType.text,
+      keyboardType: TextInputType.name,
       validator: fullNameValidator,
     );
   }
@@ -237,6 +239,41 @@ class _SignUpState extends State<SignUp> {
     return null;
   }
 
+  Widget userNameField() {
+    return CustomizedTextFormField(
+      controller: _userNameController,
+      labelColor: darkGrey,
+      labelText: "Username",
+      keyboardType: TextInputType.text,
+      validator: userNameValidator,
+    );
+  }
+
+  String userNameValidator(String username) {
+    // alphanumeric and -_.
+    RegExp validCharacters =
+        RegExp(r'^[a-z0-9]([._-](?![._-])|[a-z0-9]){3,18}[a-z0-9]$');
+
+    if (!validCharacters.hasMatch(username)) {
+      return "Username is not valid";
+    }
+
+    return null;
+  }
+
+  Widget nickNameField() {
+    return CustomizedTextFormField(
+      controller: _nickNameController,
+      labelColor: darkGrey,
+      labelText: "Nick name",
+      keyboardType: TextInputType.name,
+    );
+  }
+
+  String nickNameValidator(String nickName) {
+    return null;
+  }
+
   Widget passwordInstruction() {
     return Container(
       child: Text(
@@ -251,7 +288,7 @@ class _SignUpState extends State<SignUp> {
     return CustomizedTextFormField(
       controller: _passwordController,
       labelColor: darkGrey,
-      labelText: "New Password",
+      labelText: "New password",
       keyboardType: TextInputType.number,
       obscureText: true,
       maxLength: 6,
@@ -354,8 +391,10 @@ class _SignUpState extends State<SignUp> {
       password = _passwordController.text.trim();
 
       Map data = {
-        "phoneNumber": _phoneNumberController.text.trim(),
-        "fullName": _fullNameController.text.trim(),
+        "phone_number": _phoneNumberController.text.trim(),
+        "full_name": _fullNameController.text.trim(),
+        "user_name": _userNameController.text.trim(),
+        "nick_name": _nickNameController.text.trim(),
         "password1": _passwordController.text.trim(),
         "password2": _confirmPasswordController.text.trim(),
       };

@@ -10,7 +10,7 @@ import 'package:Slydo/utils/secure_screen.dart';
 import 'package:flutter/material.dart';
 
 class UserBloc extends ChangeNotifier {
-  // This block notify's the change in user status and pass it round the app.
+  // This block notify the change in user status and pass it round the app.
   User _user = User(
       uuid: null,
       url: null,
@@ -163,6 +163,17 @@ class RefreshBlocForConnectionDashboard extends ChangeNotifier {
 
   set isRefresh(bool value) {
     _isRefresh = value;
+    notifyListeners();
+  }
+}
+
+class BackgroundFetchBloc extends ChangeNotifier {
+  bool _isAllowed = true;
+
+  bool get isAllowed => _isAllowed;
+
+  set isAllowed(bool value) {
+    _isAllowed = value;
     notifyListeners();
   }
 }

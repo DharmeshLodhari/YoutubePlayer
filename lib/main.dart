@@ -157,6 +157,10 @@ void main() async {
           ChangeNotifierProvider<ConnectionListBloc>.value(
             value: ConnectionListBloc(),
           ),
+
+          ChangeNotifierProvider<BackgroundFetchBloc>.value(
+            value: BackgroundFetchBloc(),
+          ),
         ], child: MyApp()),
       );
     }, onError: (exception, stack) {

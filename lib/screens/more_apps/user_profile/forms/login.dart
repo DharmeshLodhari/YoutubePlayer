@@ -2,6 +2,10 @@ import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_handler.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_manager.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/db_socket_message_handler.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
@@ -13,6 +17,7 @@ import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/country_picker/country.dart';
 import 'package:Slydo/utils/country_picker/country_picker_dialog.dart';
 import 'package:Slydo/utils/country_picker/utils.dart';
+import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -530,6 +535,15 @@ class _UserLoginState extends State<UserLogin> {
           }
 
           initializeShoppingCart();
+          await clearDBMessages();
+
+          BackgroundFetchBloc backgroundFetchBloc =
+              Provider.of<BackgroundFetchBloc>(
+                  myGlobals.navigationKey.currentContext,
+                  listen: false);
+
+          backgroundFetchBloc.isAllowed = true;
+
           Navigator.of(context).pushNamedAndRemoveUntil(
             "/dashboard",
             (Route<dynamic> route) => false,
@@ -596,6 +610,14 @@ class _UserLoginState extends State<UserLogin> {
       String type = element is Product ? "product" : "service";
       basketBloc.addItemToCart(item: element, type: type);
     });
+  }
+
+  Future<void> clearDBMessages() async {
+    await ChatMessageHandler().deleteChatMessages();
+    await ChatUserManager().clearChatUsers();
+    await ConnectionListManager().clearConnections();
+    await DBSocketMessageHandler().clearSocketQueueChatMessage();
+    await DatabaseHelper().deleteVirtualAccount();
   }
 
   @override

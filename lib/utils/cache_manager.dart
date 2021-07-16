@@ -27,7 +27,7 @@ class CacheManager {
     await ChatMessageHandler().deleteChatMessages();
     await ChatUserManager().clearChatUsers();
     await ConnectionListManager().clearConnections();
-    DBSocketMessageHandler().clearSocketQueueChatMessage();
+    await DBSocketMessageHandler().clearSocketQueueChatMessage();
     await DatabaseHelper().deleteVirtualAccount();
     await DatabaseHelper().deleteGeneralSettings();
     await DatabaseHelper().deleteNotification();
