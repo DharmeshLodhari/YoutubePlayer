@@ -228,7 +228,7 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
                 controller: messageController,
                 textInputAction: TextInputAction.send,
                 keyboardType: TextInputType.multiline,
-                autofocus: Platform.isIOS?false:  true,
+                autofocus: Platform.isIOS ? false : true,
                 onFieldSubmitted: (value) {
                   sendMessage();
                 },
@@ -330,7 +330,7 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
       poster = File(posterPath);
     }
 
-    MessageAuth()
+    await MessageAuth()
         .sendSocketMessage(_data, mediaFile, poster: poster)
         .then((value) {
       Navigator.pop(context);

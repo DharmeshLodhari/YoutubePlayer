@@ -69,7 +69,6 @@ class MessageAuth extends AuthService {
           "Please upload smaller image, Your image is too large.");
     }
     var responseBody = await response.stream.bytesToString();
-    debugPrint("$responseBody");
     if (response.statusCode == 201) {
       return true;
     } else {

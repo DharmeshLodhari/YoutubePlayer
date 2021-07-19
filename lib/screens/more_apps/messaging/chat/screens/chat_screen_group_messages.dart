@@ -51,7 +51,6 @@ import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/dialog.dart';
-import 'package:Slydo/widget/image_crop.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/sticky_grouped_list/src/item_positions_listener.dart';
@@ -360,6 +359,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         if (message.checkId == decodedMessage.checkId &&
             message.conversationId == decodedMessage.conversationId) {
           isPresent = true;
+          messageList[i] = jsonEncode(message.toJson());
         }
       }
 
@@ -2492,16 +2492,18 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   Future<String> captureImage() async {
-    PickedFile media = await ImagePicker().getImage(source: ImageSource.camera);
+    debugPrint("=======>   <=======");
+    PickedFile media = await ImagePicker()
+        .getImage(source: ImageSource.camera, imageQuality: 85);
 
     if (media == null) return null;
 
-    String croppedImage = await ImageCrop().cropImage(media.path);
-    if (croppedImage == null) {
-      return null;
-    }
+    // String croppedImage = await ImageCrop().cropImage(media.path);
+    // if (croppedImage == null) {
+    //   return null;
+    // }
 
-    return croppedImage;
+    return media.path;
   }
 
   Future<String> captureVideo() async {
@@ -4257,6 +4259,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     var result = await MessageAuth()
         .cancelEnvelope(envelope: envelope, data: message)
         .catchError((error) {
+      Navigator.pop(context);
       Toast.show("ERROR:- $error", context, duration: 2);
     });
 

@@ -239,6 +239,14 @@ String moneyDisplayNormalizer(int amount) {
   }
 }
 
+int moneyDisplayNormalizerForGraph(int amount) {
+  // Format the money into double as server returns money in integer
+  // amount = 1050500;
+
+  int formattedAmount = (double.parse(amount.toString()) / 100).truncate();
+  return formattedAmount;
+}
+
 String getSecureUrl({String url}) {
   String secureUrl;
   if (!url.startsWith("https://")) {

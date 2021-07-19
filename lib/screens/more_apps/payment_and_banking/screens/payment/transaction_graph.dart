@@ -102,7 +102,8 @@ class _TransactionGraphState extends State<TransactionGraph> {
 
     expenditure.forEach((data) {
       secondData[data["day"] - 1] =
-          GraphData(day: data["day"] - 1, amount: data["amount"]);
+          // GraphData(day: data["day"] - 1, amount: 1000000000);
+      GraphData(day: data["day"] - 1, amount: data["amount"]);
     });
   }
 
@@ -353,7 +354,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
         ]);
   }
 
-  charts.LineChart chartBuilder() {
+  Widget chartBuilder() {
     var series = [
       charts.Series<GraphData, int>(
           id: "income",
@@ -435,7 +436,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
             labelStyle: new charts.TextStyleSpec(
                 fontSize: 12, // size in Pts.
                 color: charts.Color.fromHex(code: "#485465")),
-
+            labelOffsetFromAxisPx: -10,
             // Change the line colors to match text color.
             lineStyle: new charts.LineStyleSpec(
               color: charts.Color.fromHex(code: "#EBEDFC"),
@@ -714,5 +715,8 @@ class GraphData {
   int day;
   int amount;
 
-  GraphData({this.day, this.amount});
+  GraphData({@required int day, @required int amount}) {
+    this.day = day;
+    this.amount = moneyDisplayNormalizerForGraph(amount);
+  }
 }

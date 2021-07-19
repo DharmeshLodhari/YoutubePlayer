@@ -1,4 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/Envelope.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -67,8 +68,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
       Envelope envelopeFromServer = await MessageAuth()
           .getEnvelope(envelope: envelope, id: data['id'])
           .catchError((error) {
-        debugPrint("ERROR1:- $error");
-        Toast.show("$error", context);
+        deleteChatMessage();
         if (mounted) {
           Navigator.pop(context);
         }
@@ -246,9 +246,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
 
     var result = await MessageAuth()
         .cancelEnvelope(envelope: envelope, data: data)
-        .catchError((error) {
-      Toast.show("ERROR:- $error", context, duration: 2);
-    });
+        .catchError((error) {});
 
     if (result != null) {
       if (result == true) {
@@ -258,35 +256,10 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
         Navigator.pop(context);
         Toast.show("Failed to cancel Envelope", context, duration: 2);
       }
+    } else {
+      deleteChatMessage();
+      Navigator.pop(context);
     }
-
-    // BottomSheetPassCode(
-    //     context: context,
-    //     isValidCallback: () async {
-    //       showDialog(
-    //           context: context,
-    //           barrierDismissible: false,
-    //           builder: (context) => Center(child: CircularLoadingIndicator()));
-    //
-    //       var result = await MessageAuth()
-    //           .cancelEnvelope(envelope: envelope, data: data)
-    //           .catchError((error) {
-    //         Toast.show("ERROR:- $error", context, duration: 2);
-    //       });
-    //
-    //       if (result != null) {
-    //         if (result == true) {
-    //           Navigator.popUntil(context, ModalRoute.withName("/chat-screen"));
-    //           return;
-    //         } else {
-    //           Toast.show("Failed to cancel Envelope", context, duration: 2);
-    //         }
-    //       }
-    //       Navigator.pop(context);
-    //     },
-    //     cancelCallBack: () {
-    //       Navigator.pop(context);
-    //     });
   }
 
   Widget getAppbar(var context) {
@@ -372,7 +345,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
                 backgroundColor: Colors.transparent,
               ),
             )
-          : senderCustomer.userAbout == null
+          : senderCustomer == null
               ? Center(
                   child: CircularProgressIndicator(
                     strokeWidth: 2.5,
@@ -380,67 +353,81 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
                     backgroundColor: Colors.transparent,
                   ),
                 )
-              : senderCustomer.userAbout.wallpaper == ""
-                  ? Image.asset(
-                      "assets/images/home_screen_background.png",
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    )
-                  : GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).pushNamed("/photo-viewer",
-                            arguments: senderCustomer.userAbout.wallpaper);
-                      },
-                      child: CachedNetworkImage(
-                        width: double.infinity,
-                        height: double.infinity,
-                        imageUrl: senderCustomer.userAbout.wallpaper,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) =>
-                            Center(child: CircularLoadingIndicator()),
-                        color: blackFont.withOpacity(0.4),
-                        colorBlendMode: BlendMode.darken,
-                        filterQuality: FilterQuality.high,
+              : senderCustomer.userAbout == null
+                  ? Center(
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.5,
+                        valueColor: AlwaysStoppedAnimation(Colors.white),
+                        backgroundColor: Colors.transparent,
                       ),
-                    ),
+                    )
+                  : senderCustomer.userAbout.wallpaper == ""
+                      ? Image.asset(
+                          "assets/images/home_screen_background.png",
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        )
+                      : GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).pushNamed("/photo-viewer",
+                                arguments: senderCustomer.userAbout.wallpaper);
+                          },
+                          child: CachedNetworkImage(
+                            width: double.infinity,
+                            height: double.infinity,
+                            imageUrl: senderCustomer.userAbout.wallpaper,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) =>
+                                Center(child: CircularLoadingIndicator()),
+                            color: blackFont.withOpacity(0.4),
+                            colorBlendMode: BlendMode.darken,
+                            filterQuality: FilterQuality.high,
+                          ),
+                        ),
     );
   }
 
   Widget getProfilePhoto() {
-    Color borderColor = getUserTypeColor(user: senderCustomer);
+    if (senderCustomer != null) {
+      Color borderColor = getUserTypeColor(user: senderCustomer);
 
-    return Container(
-      alignment: Alignment.bottomLeft,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          AnimatedContainer(
-            duration: Duration(milliseconds: 500),
-            decoration: BoxDecoration(
-                border: Border.all(color: borderColor, width: 3),
-                shape: BoxShape.circle),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(50),
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.of(context).pushNamed("/photo-viewer",
-                      arguments: senderCustomer.avatar);
-                },
-                child: Container(
-                  color: Colors.white,
-                  child: CachedNetworkImage(
-                    height: 88,
-                    width: 88,
-                    fit: BoxFit.fill,
-                    filterQuality: FilterQuality.high,
-                    imageUrl: senderCustomer.avatar,
+      return Container(
+        alignment: Alignment.bottomLeft,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AnimatedContainer(
+              duration: Duration(milliseconds: 500),
+              decoration: BoxDecoration(
+                  border: Border.all(color: borderColor, width: 3),
+                  shape: BoxShape.circle),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(50),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pushNamed("/photo-viewer",
+                        arguments: senderCustomer.avatar);
+                  },
+                  child: Container(
+                    color: Colors.white,
+                    child: CachedNetworkImage(
+                      height: 88,
+                      width: 88,
+                      fit: BoxFit.fill,
+                      filterQuality: FilterQuality.high,
+                      imageUrl: senderCustomer.avatar,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
+      );
+    }
+    return Container(
+      height: 1,
+      width: 1,
     );
   }
 
@@ -470,5 +457,20 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
         maxLines: 1,
       ),
     );
+  }
+
+  void deleteChatMessage() async {
+    ChatMessage chatMessage = ChatMessage.fromJson(data);
+
+    Map<String, dynamic> deleteMessage = Map<String, dynamic>();
+
+    deleteMessage["check_id"] = chatMessage.checkId;
+    deleteMessage["conversation_id"] = chatMessage.conversationId;
+    deleteMessage["type"] = "delete_message";
+    deleteMessage["text"] = "delete_message";
+
+    FocusScope.of(context).unfocus();
+
+    await sendDataToSocket(deleteMessage);
   }
 }

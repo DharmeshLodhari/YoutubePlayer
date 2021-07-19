@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/auth.dart';
@@ -256,15 +257,39 @@ class UserAuth extends AuthService {
   }
 
   Future<bool> changePassword(Map<String, dynamic> data) async {
-    var url = secureBaseUrl + "/api/v1/user/auth/change-password/";
-    var headers = getNonAuthHeader();
+    var url = secureBaseUrl + "/api/v1/user/change-password/";
+    var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await http.patch(url, body: _data, headers: headers);
-    var jsonData = json.decode(response.body);
+    debugPrint(
+        "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+
     if (response.statusCode == 200) {
+      // Because the jwt expires every 5 minutes we will take note of the time they
+      // where  created and the use that to compute the expiration time of the
+      // token. So that we will only use the token if its still valid.
+      // We play safe and use 4 minutes
+      DateTime now = DateTime.now();
+      int expirationTime =
+          getEpochTime(now.add(Duration(seconds: 220))); // 3.66667 Minute
+
+      Map<String, String> data = {};
+      var jsonResponse = json.decode(response.body);
+      debugPrint("===> $jsonResponse");
+
+      data["access"] = jsonResponse[
+          "access"]; // Get `access` and `refresh` Tokens from response
+      data["refresh"] = jsonResponse["refresh"];
+      data["expiration"] =
+          expirationTime.toString(); // Convert expirationTime int to string .
+
+      // Delete jwt from db if one exist
+      await deleteJwt();
+      await DatabaseHelper().saveJwt(data);
+
       return true;
     } else {
-      throw jsonData;
+      return Future.error("ERROR: -");
     }
   }
 
