@@ -18,6 +18,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.d
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatMessageAction.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/Participant.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/GIFModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessagePagination.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
@@ -209,6 +210,13 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   bool isUserMuted = false;
   bool isUserBlocked = false;
 
+  /// variables for GIF Message
+  List<GIFModel> _gifs = [];
+  bool _isMessageIsGIFOrSticker = false;
+  bool _isMessageIsSticker = false;
+  bool _isGIFLoading = false;
+  TextEditingController _gifController = TextEditingController();
+
   GroupedItemScrollController messageListController;
   ItemPositionsListener messageListPositionListener;
   bool isUserNudging = false;
@@ -231,6 +239,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     // searchItemTextController.addListener(searchProductOrService);
 
     WidgetsFlutterBinding.ensureInitialized();
+
+    _gifController.addListener(searchGiFListener);
 
     checkNetworkConnectivity();
 
@@ -511,6 +521,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
     messageController.removeListener(sendUserTypingState);
 
+    _gifController.removeListener(searchGiFListener);
+
     // searchItemTextController.removeListener(searchProductOrService);
 
     messageController.dispose();
@@ -603,6 +615,12 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       _timerForUserTypingState = Timer(userMessageTypingStateUpdateTime, () {
         sendUserTypingState();
       });
+    }
+  }
+
+  void searchGiFListener() {
+    if (_gifController.text != "") {
+      getGIFs();
     }
   }
 
@@ -1532,23 +1550,106 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   Widget getSearchBarLayout() {
+    // return Column(
+    //   children: [
+    //     Container(
+    //       constraints: BoxConstraints(minHeight: 54, maxHeight: 100),
+    //       child: Row(
+    //         children: <Widget>[
+    //           isAudioMessage ? getAudioCancelBtn() : moreActionBtn(),
+    //           Expanded(
+    //             child:
+    //                 isAudioMessage ? getAudioRecordingUi() : textMessageField(),
+    //           ),
+    //           sendMessageBtn(),
+    //         ],
+    //       ),
+    //     ),
+    //     showMoreAction ? moreActionsBtn() : Container(),
+    //   ],
+    // );
     return Column(
-      children: [
-        Container(
-          constraints: BoxConstraints(minHeight: 54, maxHeight: 100),
-          child: Row(
-            children: <Widget>[
-              isAudioMessage ? getAudioCancelBtn() : moreActionBtn(),
-              Expanded(
-                child:
-                    isAudioMessage ? getAudioRecordingUi() : textMessageField(),
-              ),
-              sendMessageBtn(),
-            ],
-          ),
+      children: getSearchBarItems(),
+    );
+  }
+
+  List<Widget> getSearchBarItems() {
+    List<Widget> items = [];
+
+    if (_isMessageIsGIFOrSticker) {
+      items.add(Container(
+        constraints: BoxConstraints(minHeight: 54, maxHeight: 100),
+        child: Row(
+          children: <Widget>[
+            getSearchGIFCancelBtn(),
+            Expanded(
+              child: searchGIFTextField(),
+            ),
+            searchGIFBtn(),
+          ],
         ),
-        showMoreAction ? moreActionsBtn() : Container()
-      ],
+      ));
+      items.add(gifPreviewList());
+      return items;
+    }
+
+    items.add(Container(
+      constraints: BoxConstraints(minHeight: 54, maxHeight: 100),
+      child: Row(
+        children: <Widget>[
+          isAudioMessage ? getAudioCancelBtn() : moreActionBtn(),
+          Expanded(
+            child: isAudioMessage ? getAudioRecordingUi() : textMessageField(),
+          ),
+          sendMessageBtn(),
+        ],
+      ),
+    ));
+
+    if (showMoreAction) {
+      items.add(moreActionsBtn());
+    }
+
+    return items;
+  }
+
+  Widget gifPreviewList() {
+    return Container(
+      height: MediaQuery.of(context).size.height / 3,
+      child: _isGIFLoading
+          ? Center(child: CircularLoadingIndicator())
+          : GridView.builder(
+              padding: EdgeInsets.symmetric(horizontal: 4),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 2,
+                mainAxisSpacing: 4,
+                crossAxisSpacing: 4,
+              ),
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: () {
+                    sendGIFToSocket(urlOfGIF: _gifs[index].images.original.url);
+                    _isMessageIsGIFOrSticker = !_isMessageIsGIFOrSticker;
+                    _isMessageIsSticker = false;
+                    _gifController.clear();
+                    if (mounted) setState(() {});
+                  },
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(3),
+                    child: CachedNetworkImage(
+                      width: MediaQuery.of(context).size.width / 2,
+                      imageUrl: _gifs[index].images.preview_gif.url,
+                      fit: BoxFit.fill,
+                      placeholder: (context, url) => Container(
+                          width: MediaQuery.of(context).size.width / 2,
+                          child: Center(child: CircularLoadingIndicator())),
+                    ),
+                  ),
+                );
+              },
+              itemCount: _gifs.length,
+            ),
     );
   }
 
@@ -1587,6 +1688,21 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
             await stopRecorder(sendToServer: false);
             if (mounted) setState(() {});
           }
+        });
+  }
+
+  Widget getSearchGIFCancelBtn() {
+    return IconButton(
+        icon: Icon(
+          SlydoAppIcon.close_2,
+          color: navyBlue,
+          size: 20,
+        ),
+        onPressed: () async {
+          _gifController.clear();
+          _isMessageIsGIFOrSticker = !_isMessageIsGIFOrSticker;
+          _isMessageIsSticker = false;
+          if (mounted) setState(() {});
         });
   }
 
@@ -2014,10 +2130,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       backgroundColor: navyBlue.withOpacity(0.08),
       onTap: () {
         showMoreAction = false;
-
+        _isMessageIsGIFOrSticker = !_isMessageIsGIFOrSticker;
+        getGIFs(isRandom: true);
         if (mounted) setState(() {});
-
-        pickGIF();
+        // pickGIF();
       },
     );
   }
@@ -2035,10 +2151,11 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       backgroundColor: navyBlue.withOpacity(0.08),
       onTap: () {
         showMoreAction = false;
-
+        _isMessageIsGIFOrSticker = !_isMessageIsGIFOrSticker;
+        _isMessageIsSticker = !_isMessageIsSticker;
+        getGIFs(isRandom: true);
         if (mounted) setState(() {});
-
-        pickSticker();
+        // pickSticker();
       },
     );
   }
@@ -2303,6 +2420,111 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     );
   }
 
+  Widget searchGIFTextField() {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(3),
+      child: Container(
+        color: chatBackgroundColor,
+        child: Theme(
+            data: ThemeData(highlightColor: navyBlue.withOpacity(0.3)),
+            child: Scrollbar(
+              radius: Radius.circular(12),
+              thickness: 2.5,
+              child: TextFormField(
+                controller: _gifController,
+                textInputAction: TextInputAction.search,
+                keyboardType: TextInputType.multiline,
+                onFieldSubmitted: (value) {
+                  getGIFs();
+                },
+                cursorColor: blackFont,
+                cursorWidth: 1,
+                cursorHeight: 20,
+                maxLines: null,
+                cursorRadius: Radius.circular(16),
+                decoration: InputDecoration(
+                  hintText: "Search ${_isMessageIsSticker ? "Sticker" : "GIF"}",
+                  hintStyle: TextStyle(
+                    color: darkGrey,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  prefix: Padding(
+                    padding: EdgeInsets.only(left: 16),
+                  ),
+                  suffix: Padding(
+                    padding: EdgeInsets.only(right: 36),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(vertical: 10),
+                  isDense: true,
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(3),
+                    borderSide: BorderSide(
+                      color: chatBackgroundColor,
+                      width: 1.0,
+                    ),
+                  ),
+                  disabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(3),
+                    borderSide: BorderSide(
+                      color: chatBackgroundColor,
+                      width: 1.0,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(3),
+                    borderSide: BorderSide(
+                      color: chatBackgroundColor,
+                      width: 1.0,
+                    ),
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(3),
+                    borderSide: BorderSide(
+                      color: chatBackgroundColor,
+                      width: 1.0,
+                    ),
+                  ),
+                ),
+              ),
+            )),
+      ),
+    );
+  }
+
+  void getGIFs({bool isRandom = false}) async {
+    _isGIFLoading = true;
+    if (mounted) setState(() {});
+
+    List<GIFModel> results;
+    if (isRandom) {
+      results = await MessageAuth()
+          .searchGIF(isRandom: true, isSticker: _isMessageIsSticker)
+          .catchError((error) {
+        debugPrint("ERROR:- $error");
+      });
+    } else {
+      results = await MessageAuth()
+          .searchGIF(
+              query: _gifController.text.trim(), isSticker: _isMessageIsSticker)
+          .catchError((error) {
+        debugPrint("ERROR:- $error");
+      });
+    }
+
+    _isGIFLoading = false;
+    if (mounted) setState(() {});
+
+    if (results != null) {
+      if (results.isEmpty) {
+      } else {
+        _gifs.clear();
+        _gifs = results;
+        if (mounted) setState(() {});
+      }
+    }
+  }
+
   void addProductOrServiceToChat(var item) async {
     String url = secureBaseUrl +
         "/api/v1/${item is Product ? "products" : "services"}/" +
@@ -2557,6 +2779,30 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
             ),
             Icon(
               SlydoAppIcon.send_message_2,
+              color: navyBlue,
+              size: 22,
+            ),
+            SizedBox(
+              width: 12,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget searchGIFBtn() {
+    return InkWell(
+      onTap: getGIFs,
+      child: Container(
+        padding: EdgeInsets.all(2),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 10,
+            ),
+            Icon(
+              SlydoAppIcon.search,
               color: navyBlue,
               size: 22,
             ),

@@ -5,6 +5,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/AddGroupModel.dart
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/UpdateGroupDetailModel.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/GIFModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/models/message.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/Envelope.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -881,6 +882,46 @@ class MessageAuth extends AuthService {
       debugPrint(
           "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
       return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<List<GIFModel>> searchGIF(
+      {String query, bool isRandom = false, bool isSticker = false}) async {
+    var url = "";
+
+    url =
+        "https://api.giphy.com/v1/${isSticker ? "stickers" : "gifs"}/search?api_key=$gifApiKey&q=$query&limit=50";
+    if (isRandom) {
+      if (isSticker) {
+        url =
+            "https://api.giphy.com/v1/stickers/trending?type=stickers&limit=50&api_key=$gifApiKey";
+      } else {
+        url =
+            "https://api.giphy.com/v1/gifs/trending?type=gifs&limit=50&api_key=$gifApiKey";
+      }
+    }
+
+    url = Uri.encodeFull(url);
+    debugPrint("URL:- $url");
+
+    var headers = await getAuthHeaders();
+
+    var response = await http.get(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> responseBody = jsonDecode(response.body);
+
+      List data = responseBody['data'];
+
+      List<GIFModel> gifs = [];
+      for (var item in data) {
+        gifs.add(GIFModel.fromJson(item));
+      }
+      return gifs;
+    } else {
+      debugPrint(
+          "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+      return [];
     }
   }
 }

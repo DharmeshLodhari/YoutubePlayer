@@ -102,8 +102,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
 
     expenditure.forEach((data) {
       secondData[data["day"] - 1] =
-          // GraphData(day: data["day"] - 1, amount: 1000000000);
-      GraphData(day: data["day"] - 1, amount: data["amount"]);
+          GraphData(day: data["day"] - 1, amount: data["amount"]);
     });
   }
 
@@ -434,9 +433,9 @@ class _TransactionGraphState extends State<TransactionGraph> {
           renderSpec: new charts.GridlineRendererSpec(
             // Tick and Label styling here.
             labelStyle: new charts.TextStyleSpec(
-                fontSize: 12, // size in Pts.
+                fontSize: 10, // size in Pts.
                 color: charts.Color.fromHex(code: "#485465")),
-            labelOffsetFromAxisPx: -10,
+            labelOffsetFromAxisPx: -2,
             // Change the line colors to match text color.
             lineStyle: new charts.LineStyleSpec(
               color: charts.Color.fromHex(code: "#EBEDFC"),
@@ -446,7 +445,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
         animate: true,
         layoutConfig: charts.LayoutConfig(
           leftMarginSpec:
-              charts.MarginSpec.fromPixel(minPixel: 16, maxPixel: 16),
+              charts.MarginSpec.fromPixel(minPixel: 36, maxPixel: 36),
           topMarginSpec: charts.MarginSpec.defaultSpec,
           bottomMarginSpec: charts.MarginSpec.defaultSpec,
           rightMarginSpec:
