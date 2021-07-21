@@ -59,8 +59,8 @@ class _SelectCableProviderState extends State<SelectCableProvider> {
   Widget cableProviderTile({Map<String, dynamic> item}) {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context)
-            .pushNamed("/select-plan-for-cable", arguments: {"provider": item});
+        Navigator.of(context).pushNamed("/select-cable-plan-and-decoder-number",
+            arguments: {"provider": item});
       },
       child: Row(
         children: [

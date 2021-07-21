@@ -192,14 +192,14 @@ class _VerifyRegistrationOTPScreenState
   void verifyOTP() {
     if (_verifyOtpFormKey.currentState.validate()) {
       String enteredOTP = otpController.text.trim();
-    String passwordToken = "false";
-    UserAuth()
-        .verifyPhoneNumber(phoneNumber, enteredOTP, passwordToken)
-        .then((value) {
-    Navigator.of(context).popAndPushNamed('/register', arguments: {
-      'phoneNumber': phoneNumber,
-    });
-    });
+      String passwordToken = "false";
+      UserAuth()
+          .verifyPhoneNumber(phoneNumber, enteredOTP, passwordToken)
+          .then((value) {
+        Navigator.of(context).popAndPushNamed('/register', arguments: {
+          'phoneNumber': phoneNumber,
+        });
+      });
     }
   }
 }

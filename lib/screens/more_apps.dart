@@ -47,7 +47,6 @@ class _MoreAppsState extends State<MoreApps> {
                   height: 12,
                 ),
                 fifthRowOfUserDashboardItem(),
-
               ],
             ),
           ),

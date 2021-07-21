@@ -1,4 +1,4 @@
-import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/utility/cable/model/CablePlan.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -9,15 +9,17 @@ import 'package:flutter/material.dart';
 import 'package:toast/toast.dart';
 
 // ignore: must_be_immutable
-class SelectPlanForCable extends StatefulWidget {
+class SelectPlanAndDecoderNumber extends StatefulWidget {
   Map<String, dynamic> arguments;
 
-  SelectPlanForCable({this.arguments});
+  SelectPlanAndDecoderNumber({this.arguments});
   @override
-  _SelectPlanForCableState createState() => _SelectPlanForCableState();
+  _SelectPlanAndDecoderNumberState createState() =>
+      _SelectPlanAndDecoderNumberState();
 }
 
-class _SelectPlanForCableState extends State<SelectPlanForCable> {
+class _SelectPlanAndDecoderNumberState
+    extends State<SelectPlanAndDecoderNumber> {
   List<Map<String, dynamic>> plans = [
     {"name": "DStv Premium", "price": "₦18,400"},
     {"name": "DStv Compact Plus", "price": "₦12,400"},
@@ -26,12 +28,10 @@ class _SelectPlanForCableState extends State<SelectPlanForCable> {
     {"name": "DStv Yanga", "price": "₦2,565"},
     {"name": "DStv Padi", "price": "₦1,850"},
   ];
-  List<String> toPlace = ["Abuja"];
-  List<String> classes = ["A", "B"];
 
   Map<String, dynamic> provider;
 
-  Map<String, dynamic> selectedPlan;
+  CablePlan selectedPlan;
 
   @override
   void initState() {
@@ -158,63 +158,6 @@ class _SelectPlanForCableState extends State<SelectPlanForCable> {
     );
   }
 
-  Widget getFromPlace() {
-    return Card(
-      margin: EdgeInsets.all(0),
-      child: Container(
-        padding: EdgeInsets.all(8),
-        width: double.infinity,
-        child: DropdownButton<Map<String, dynamic>>(
-          isExpanded: true,
-          underline: Divider(
-            color: Colors.transparent,
-          ),
-          hint: Row(
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(left: 8.0),
-                child: Icon(
-                  Icons.category,
-                  color: Colors.grey[600],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 16.0),
-                child: Text(AppLocalization.of(context).category),
-              ),
-            ],
-          ),
-          value: selectedPlan,
-          onChanged: (Map<String, dynamic> value) {
-            setState(() {
-              selectedPlan = value;
-            });
-          },
-          items: plans.map((Map<String, dynamic> category) {
-            return DropdownMenuItem<Map<String, dynamic>>(
-              value: category,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 0),
-                child: Row(
-                  children: [
-                    Text(
-                      category['name'],
-                      style: TextStyle(color: Colors.black),
-                    ),
-                    Text(
-                      category['price'],
-                      style: TextStyle(color: Colors.black),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }).toList(),
-        ),
-      ),
-    );
-  }
-
   Widget selectPlanDropDown() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -239,7 +182,7 @@ class _SelectPlanForCableState extends State<SelectPlanForCable> {
             title: Row(
               children: [
                 Text(
-                  selectedPlan != null ? selectedPlan['name'] : "",
+                  selectedPlan != null ? selectedPlan.name : "",
                   softWrap: false,
                   overflow: TextOverflow.fade,
                   style: TextStyle(
@@ -252,7 +195,7 @@ class _SelectPlanForCableState extends State<SelectPlanForCable> {
                   width: 2,
                 )),
                 Text(
-                  selectedPlan != null ? selectedPlan['price'] : "",
+                  selectedPlan != null ? selectedPlan.price : "",
                   overflow: TextOverflow.fade,
                   softWrap: false,
                   style: TextStyle(
@@ -267,104 +210,21 @@ class _SelectPlanForCableState extends State<SelectPlanForCable> {
               Icons.keyboard_arrow_down,
               color: darkGrey,
             ),
-            onTap: () {
-              selectPlan();
+            onTap: () async {
+              // selectPlan();
+              var plan =
+                  await Navigator.of(context).pushNamed("/select-cable-plan");
+              if (plan != null) {
+                if (plan is CablePlan) {
+                  selectedPlan = plan;
+                  if (mounted) setState(() {});
+                }
+              }
             },
           ),
         ),
       ],
     );
-  }
-
-  void selectPlan() async {
-    final pressedCategory = await showDialog<Map<String, dynamic>>(
-        barrierDismissible: false,
-        context: context,
-        builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-              contentPadding: EdgeInsets.zero,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              content: Container(
-                width: MediaQuery.of(context).size.width - 40,
-                child: Card(
-                  elevation: 2,
-                  shadowColor: Colors.transparent,
-                  margin: EdgeInsets.zero,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: plans.map<Widget>((category) {
-                          if (selectedPlan == category) {
-                            return Container(
-                              color: selectedListItemBackgroundBlue,
-                              child: ListTile(
-                                dense: true,
-                                title: Text(
-                                  category['name'],
-                                  overflow: TextOverflow.fade,
-                                  softWrap: false,
-                                  style: TextStyle(
-                                      color: navyBlue,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                                trailing: Text(
-                                  category['price'],
-                                  overflow: TextOverflow.fade,
-                                  softWrap: false,
-                                  style: TextStyle(
-                                      color: navyBlue,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                      fontFamily: "Roborto"),
-                                ),
-                                onTap: () {
-                                  Navigator.pop(context, category);
-                                },
-                              ),
-                            );
-                          }
-                          return ListTile(
-                            title: Text(
-                              category['name'],
-                              softWrap: false,
-                              overflow: TextOverflow.fade,
-                              style: TextStyle(
-                                  color: blackFont,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400),
-                            ),
-                            trailing: Text(
-                              category['price'],
-                              overflow: TextOverflow.fade,
-                              softWrap: false,
-                              style: TextStyle(
-                                  color: blackFont,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  fontFamily: "Roborto"),
-                            ),
-                            dense: true,
-                            onTap: () {
-                              Navigator.pop(context, category);
-                            },
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ));
-    if (pressedCategory != null) {
-      selectedPlan = pressedCategory;
-      setState(() {});
-    }
   }
 
   Widget getDecoderNumber() {
@@ -397,7 +257,8 @@ class _SelectPlanForCableState extends State<SelectPlanForCable> {
 
                 Navigator.popUntil(
                     context, ModalRoute.withName("/utility-dashboard"));
-                Navigator.of(context).pushNamed("/cable-plan-payment-detail");
+                Navigator.of(context).pushNamed("/cable-plan-payment-detail",
+                    arguments: {"plan": selectedPlan});
               });
             },
             cancelCallBack: () {

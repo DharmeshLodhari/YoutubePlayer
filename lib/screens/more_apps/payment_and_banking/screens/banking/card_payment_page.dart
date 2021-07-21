@@ -250,10 +250,11 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                         sendPaymentData();
                       } else {
                         Toast.show(
-                            AppLocalization.of(context).invalidDetails + " !!",
-                            context,
+                          AppLocalization.of(context).invalidDetails + " !!",
+                          context,
                           backgroundColor: Colors.black,
-                          textColor: Colors.white,);
+                          textColor: Colors.white,
+                        );
                       }
                     },
                   ),
@@ -268,17 +269,21 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
     PaymentAndBankingAuth().topUpAccountByCC({"data": "data"}).then((value) {
       if (value == true) {
         Toast.show(
-            AppLocalization.of(context).topUp +
-                " " +
-                AppLocalization.of(context).done,
-            context,
+          AppLocalization.of(context).topUp +
+              " " +
+              AppLocalization.of(context).done,
+          context,
           backgroundColor: Colors.black,
-          textColor: Colors.white,);
+          textColor: Colors.white,
+        );
         Navigator.pop(context);
       } else {
-        Toast.show(AppLocalization.of(context).somethingWentWrong, context,
+        Toast.show(
+          AppLocalization.of(context).somethingWentWrong,
+          context,
           backgroundColor: Colors.black,
-          textColor: Colors.white,);
+          textColor: Colors.white,
+        );
       }
     });
   }

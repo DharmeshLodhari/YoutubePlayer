@@ -1,3 +1,4 @@
+import 'package:Slydo/screens/more_apps/utility/cable/model/CablePlan.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -5,6 +6,9 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 
 class CablePlanPaymentDetail extends StatefulWidget {
+  var arguments;
+
+  CablePlanPaymentDetail({this.arguments});
   @override
   _CablePlanPaymentDetailState createState() => _CablePlanPaymentDetailState();
 }
@@ -15,8 +19,11 @@ class _CablePlanPaymentDetailState extends State<CablePlanPaymentDetail> {
     "name": "DStv Subscription"
   };
 
+  CablePlan plan;
+
   @override
   void initState() {
+    plan = widget.arguments["plan"];
     super.initState();
   }
 
@@ -120,7 +127,7 @@ class _CablePlanPaymentDetailState extends State<CablePlanPaymentDetail> {
               height: 2,
             ),
             Text(
-              "DStv Compact Plus",
+              plan.name,
               style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
             ),
             SizedBox(
@@ -171,7 +178,7 @@ class _CablePlanPaymentDetailState extends State<CablePlanPaymentDetail> {
             fontSize: 14, fontWeight: FontWeight.w400, color: blackFont),
       ),
       subtitle: Text(
-        "₦1,850",
+        plan.price,
         style: TextStyle(
             fontFamily: "roborto",
             fontSize: 14,

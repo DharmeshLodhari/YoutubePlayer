@@ -160,10 +160,10 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
               decoration: InputDecoration(
                   contentPadding: EdgeInsets.zero,
                   hintText: "Type group name here",
-                  hintStyle:TextStyle(
+                  hintStyle: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w300,
-                      color: darkGrey) ,
+                      color: darkGrey),
                   helperStyle: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w400,

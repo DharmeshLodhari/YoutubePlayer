@@ -1,17 +1,17 @@
 class Onclick {
-    String url;
+  String url;
 
-    Onclick({this.url});
+  Onclick({this.url});
 
-    factory Onclick.fromJson(Map<String, dynamic> json) {
-        return Onclick(
-            url: json['url'], 
-        );
-    }
+  factory Onclick.fromJson(Map<String, dynamic> json) {
+    return Onclick(
+      url: json['url'],
+    );
+  }
 
-    Map<String, dynamic> toJson() {
-        final Map<String, dynamic> data = new Map<String, dynamic>();
-        data['url'] = this.url;
-        return data;
-    }
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['url'] = this.url;
+    return data;
+  }
 }

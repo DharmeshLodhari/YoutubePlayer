@@ -185,7 +185,8 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
         onPressed: () {
           Navigator.of(context).pop(groupDetail);
         },
-      ),leadingWidth: 40,
+      ),
+      leadingWidth: 40,
       title: Row(
         children: [
           getUserIcon(),

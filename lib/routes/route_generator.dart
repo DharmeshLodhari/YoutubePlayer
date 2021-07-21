@@ -101,8 +101,10 @@ import 'package:Slydo/screens/more_apps/user_profile/forms/verify_reset_password
 import 'package:Slydo/screens/more_apps/user_profile/screens/connection_module/connections_dashboard.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/search_users_product_and_service.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_profile_screen.dart';
-import 'package:Slydo/screens/more_apps/utility/cable/forms/select_plan_for_cable.dart';
+import 'package:Slydo/screens/more_apps/utility/cable/forms/select_plan_and_decoder_number.dart';
+import 'package:Slydo/screens/more_apps/utility/cable/screens/cable_plan_detail_page.dart';
 import 'package:Slydo/screens/more_apps/utility/cable/screens/cable_plan_payment_detail.dart';
+import 'package:Slydo/screens/more_apps/utility/cable/screens/select_cabel_plan.dart';
 import 'package:Slydo/screens/more_apps/utility/cable/screens/select_cabel_provider.dart';
 import 'package:Slydo/screens/more_apps/utility/utility_dashboard.dart';
 import 'package:Slydo/screens/more_apps/utility/utility_history.dart';
@@ -734,9 +736,24 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case '/select-plan-for-cable':
+      case '/select-cable-plan-and-decoder-number':
         return PageTransition(
-          child: SelectPlanForCable(arguments: settings.arguments),
+          child: SelectPlanAndDecoderNumber(arguments: settings.arguments),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case '/select-cable-plan':
+        return PageTransition(
+          child: SelectCablePlan(arguments: settings.arguments),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case '/cable-plan-detail':
+        return PageTransition(
+          child: CablePlanDetail(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -744,7 +761,7 @@ class RouteGenerator {
 
       case '/cable-plan-payment-detail':
         return PageTransition(
-          child: CablePlanPaymentDetail(),
+          child: CablePlanPaymentDetail(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

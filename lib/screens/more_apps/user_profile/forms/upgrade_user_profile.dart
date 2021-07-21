@@ -297,10 +297,11 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
               UserAuth().upgradeUserProfile(data).then((result) {
                 if (result) {
                   Toast.show(
-                      "Request sent !! Your Profile Will Be Updated Soon !!",
-                      context,
+                    "Request sent !! Your Profile Will Be Updated Soon !!",
+                    context,
                     backgroundColor: Colors.black,
-                    textColor: Colors.white,);
+                    textColor: Colors.white,
+                  );
 
                   _auth
                       .authenticate(
@@ -322,9 +323,12 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
                     });
                   });
                 } else {
-                  Toast.show("Something Went Wrong !!", context,
+                  Toast.show(
+                    "Something Went Wrong !!",
+                    context,
                     backgroundColor: Colors.black,
-                    textColor: Colors.white,);
+                    textColor: Colors.white,
+                  );
                 }
               });
             },
