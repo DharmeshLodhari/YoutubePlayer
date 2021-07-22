@@ -10,6 +10,149 @@ class MoreApps extends StatefulWidget {
 }
 
 class _MoreAppsState extends State<MoreApps> {
+  List<Widget> dashboardItems = [];
+
+  static const double GRID_ITEM_HEIGHT = 126;
+
+  @override
+  void initState() {
+    initializeDashBoardItem();
+    super.initState();
+  }
+
+  void initializeDashBoardItem() {
+    dashboardItems.addAll([
+      UserDashboardItemTile(
+        icon: SlydoAppIcon.utility,
+        title: "Utility",
+        onTap: () {
+          Navigator.pushNamed(context, "/utility-dashboard");
+        },
+        iconColor: HexColor("#FFAB00"),
+        height: GRID_ITEM_HEIGHT,
+      ),
+      UserDashboardItemTile(
+        icon: SlydoAppIcon.movies_moreapps,
+        title: "Movies",
+        onTap: () {
+          Navigator.of(context).pushNamed("/movies");
+        },
+        iconColor: HexColor("#9B51E0"),
+        height: GRID_ITEM_HEIGHT,
+      ),
+      UserDashboardItemTile(
+        icon: SlydoAppIcon.music_moreapps,
+        title: "Music",
+        onTap: () {
+          Navigator.of(context).pushNamed("/musics");
+        },
+        iconColor: HexColor("#FFAB00"),
+        height: GRID_ITEM_HEIGHT,
+      ),
+      UserDashboardItemTile(
+        icon: SlydoAppIcon.events_moreapps,
+        title: "Events",
+        onTap: () {
+          Navigator.of(context).pushNamed("/events");
+        },
+        iconColor: HexColor("#46CECE"),
+        height: GRID_ITEM_HEIGHT,
+      ),
+      UserDashboardItemTile(
+        icon: SlydoAppIcon.hotels_moreapps,
+        title: "Hotels",
+        onTap: () {
+          Navigator.of(context).pushNamed("/hotels");
+        },
+        iconColor: HexColor("#F35B46"),
+        height: GRID_ITEM_HEIGHT,
+      ),
+      UserDashboardItemTile(
+        icon: SlydoAppIcon.property_moreapps,
+        title: "Property",
+        onTap: () {
+          Navigator.of(context).pushNamed("/property");
+        },
+        iconColor: HexColor("#3F61DB"),
+        height: GRID_ITEM_HEIGHT,
+      ),
+      UserDashboardItemTile(
+        icon: SlydoAppIcon.transport_category,
+        title: "Bus",
+        onTap: () {
+          Navigator.of(context).pushNamed("/bus");
+        },
+        iconColor: HexColor("#374677"),
+        height: GRID_ITEM_HEIGHT,
+      ),
+      UserDashboardItemTile(
+        icon: SlydoAppIcon.train_moreapps,
+        title: "Train",
+        onTap: () {
+          Navigator.of(context).pushNamed("/train");
+        },
+        iconColor: HexColor("#46CE7C"),
+        height: GRID_ITEM_HEIGHT,
+      ),
+      UserDashboardItemTile(
+        icon: SlydoAppIcon.flight_moreapps,
+        title: "Flight",
+        onTap: () {
+          Navigator.of(context).pushNamed("/flight");
+        },
+        iconColor: HexColor("#F07097"),
+        height: GRID_ITEM_HEIGHT,
+      ),
+      UserDashboardItemTile(
+        icon: Icons.directions_car_rounded,
+        title: "Taxi",
+        onTap: () {
+          // Navigator.of(context).pushNamed("/flight");
+        },
+        iconColor: HexColor("#3F61DB"),
+        height: GRID_ITEM_HEIGHT,
+      ),
+      UserDashboardItemTile(
+        icon: SlydoAppIcon.news_moreapps,
+        title: "News",
+        onTap: () {
+          showDialog(
+            context: context,
+            builder: (context) => Center(
+              child: CircularLoadingIndicator(),
+            ),
+          );
+          Navigator.of(context).popAndPushNamed("/news");
+        },
+        iconColor: HexColor("#46CE7C"),
+        height: GRID_ITEM_HEIGHT,
+      ),
+      UserDashboardItemTile(
+        icon: SlydoAppIcon.shopping_category,
+        title: "Shopping",
+        onTap: () {
+          Navigator.of(context).pushNamed("/shopping");
+        },
+        iconColor: HexColor("#5218E9"),
+        height: GRID_ITEM_HEIGHT,
+      ),
+      UserDashboardItemTile(
+        icon: SlydoAppIcon.eatingout_category,
+        title: "Eat out",
+        onTap: () {},
+        iconColor: HexColor("#F35B46"),
+        height: GRID_ITEM_HEIGHT,
+      ),
+      UserDashboardItemTile(
+        icon: SlydoAppIcon.wealth_moreapps,
+        title: "Wealth",
+        onTap: () {},
+        iconColor: HexColor("#FFC42E"),
+        height: GRID_ITEM_HEIGHT,
+      )
+    ]);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,29 +168,8 @@ class _MoreAppsState extends State<MoreApps> {
         children: [
           Expanded(
             child: ListView(
-              padding: EdgeInsets.only(left: 16, right: 16),
-              children: [
-                SizedBox(
-                  height: 12,
-                ),
-                firstRowOfUserDashboardItem(),
-                SizedBox(
-                  height: 12,
-                ),
-                secondRowOfUserDashboardItem(),
-                SizedBox(
-                  height: 12,
-                ),
-                thirdRowOfUserDashboardItem(),
-                SizedBox(
-                  height: 12,
-                ),
-                forthRowOfUserDashboardItem(),
-                SizedBox(
-                  height: 12,
-                ),
-                fifthRowOfUserDashboardItem(),
-              ],
+              padding: EdgeInsets.only(left: 16, right: 16, top: 20),
+              children: getUserDashboardItem(),
             ),
           ),
         ],
@@ -79,208 +201,41 @@ class _MoreAppsState extends State<MoreApps> {
     );
   }
 
-  Widget firstRowOfUserDashboardItem() {
-    return Row(
-      children: [
-        Expanded(
-            child: UserDashboardItemTile(
-          icon: SlydoAppIcon.utility,
-          title: "Utility",
-          onTap: () {
-            Navigator.pushNamed(context, "/utility-dashboard");
-          },
-          iconColor: HexColor("#FFAB00"),
-          height: 126,
-        )),
-        SizedBox(
-          width: 12,
-        ),
-        Expanded(
-            child: UserDashboardItemTile(
-          icon: SlydoAppIcon.music_moreapps,
-          title: "Music",
-          onTap: () {
-            Navigator.of(context).pushNamed("/musics");
-          },
-          iconColor: HexColor("#FFAB00"),
-          height: 126,
-        )),
-        SizedBox(
-          width: 12,
-        ),
-        Expanded(
-            child: UserDashboardItemTile(
-          icon: SlydoAppIcon.news_moreapps,
-          title: "News",
-          onTap: () {
-            showDialog(
-              context: context,
-              builder: (context) => Center(
-                child: CircularLoadingIndicator(),
+  List<Widget> getUserDashboardItem() {
+    List<Widget> items = [];
+
+    for (int i = 0; i < dashboardItems.length; i = i + 3) {
+      items.add(Column(
+        children: [
+          Row(
+            children: [
+              Expanded(child: dashboardItems[i]),
+              SizedBox(
+                width: 12,
               ),
-            );
-            Navigator.of(context).popAndPushNamed("/news");
-          },
-          iconColor: HexColor("#46CE7C"),
-          height: 126,
-        )),
-      ],
-    );
-  }
-
-  Widget secondRowOfUserDashboardItem() {
-    return Row(
-      children: [
-        Expanded(
-            child: UserDashboardItemTile(
-          icon: SlydoAppIcon.events_moreapps,
-          title: "Events",
-          onTap: () {
-            Navigator.of(context).pushNamed("/events");
-          },
-          iconColor: HexColor("#46CECE"),
-          height: 126,
-        )),
-        SizedBox(
-          width: 12,
-        ),
-        Expanded(
-            child: UserDashboardItemTile(
-          icon: SlydoAppIcon.hotels_moreapps,
-          title: "Hotels",
-          onTap: () {
-            Navigator.of(context).pushNamed("/hotels");
-          },
-          iconColor: HexColor("#F35B46"),
-          height: 126,
-        )),
-        SizedBox(
-          width: 12,
-        ),
-        Expanded(
-            child: UserDashboardItemTile(
-          icon: SlydoAppIcon.property_moreapps,
-          title: "Property",
-          onTap: () {
-            Navigator.of(context).pushNamed("/property");
-          },
-          iconColor: HexColor("#3F61DB"),
-          height: 126,
-        )),
-      ],
-    );
-  }
-
-  Widget thirdRowOfUserDashboardItem() {
-    return Row(
-      children: [
-        Expanded(
-            child: UserDashboardItemTile(
-          icon: SlydoAppIcon.transport_category,
-          title: "Bus",
-          onTap: () {
-            Navigator.of(context).pushNamed("/bus");
-          },
-          iconColor: HexColor("#374677"),
-          height: 126,
-        )),
-        SizedBox(
-          width: 12,
-        ),
-        Expanded(
-            child: UserDashboardItemTile(
-          icon: SlydoAppIcon.train_moreapps,
-          title: "Train",
-          onTap: () {
-            Navigator.of(context).pushNamed("/train");
-          },
-          iconColor: HexColor("#46CE7C"),
-          height: 126,
-        )),
-        SizedBox(
-          width: 12,
-        ),
-        Expanded(
-            child: UserDashboardItemTile(
-          icon: SlydoAppIcon.flight_moreapps,
-          title: "Flight",
-          onTap: () {
-            Navigator.of(context).pushNamed("/flight");
-          },
-          iconColor: HexColor("#F07097"),
-          height: 126,
-        )),
-      ],
-    );
-  }
-
-  Widget forthRowOfUserDashboardItem() {
-    return Row(
-      children: [
-        Expanded(
-            child: UserDashboardItemTile(
-          icon: SlydoAppIcon.shopping_category,
-          title: "Shopping",
-          onTap: () {
-            Navigator.of(context).pushNamed("/shopping");
-          },
-          iconColor: HexColor("#5218E9"),
-          height: 126,
-        )),
-        SizedBox(
-          width: 12,
-        ),
-        Expanded(
-            child: UserDashboardItemTile(
-          icon: SlydoAppIcon.eatingout_category,
-          title: "Eat out",
-          onTap: () {},
-          iconColor: HexColor("#F35B46"),
-          height: 126,
-        )),
-        SizedBox(
-          width: 12,
-        ),
-        Expanded(
-            child: UserDashboardItemTile(
-          icon: SlydoAppIcon.wealth_moreapps,
-          title: "Wealth",
-          onTap: () {},
-          iconColor: HexColor("#FFC42E"),
-          height: 126,
-        )),
-      ],
-    );
-  }
-
-  Widget fifthRowOfUserDashboardItem() {
-    return Row(
-      children: [
-        Expanded(
-            child: UserDashboardItemTile(
-          icon: SlydoAppIcon.movies_moreapps,
-          title: "Movies",
-          onTap: () {
-            Navigator.of(context).pushNamed("/movies");
-          },
-          iconColor: HexColor("#9B51E0"),
-          height: 126,
-        )),
-        SizedBox(
-          width: 12,
-        ),
-        Expanded(
-            child: Container(
-          height: 126,
-        )),
-        SizedBox(
-          width: 12,
-        ),
-        Expanded(
-            child: Container(
-          height: 126,
-        )),
-      ],
-    );
+              Expanded(
+                  child: i + 1 < dashboardItems.length
+                      ? dashboardItems[i + 1]
+                      : Container(
+                          height: GRID_ITEM_HEIGHT,
+                        )),
+              SizedBox(
+                width: 12,
+              ),
+              Expanded(
+                  child: i + 2 < dashboardItems.length
+                      ? dashboardItems[i + 2]
+                      : Container(
+                          height: GRID_ITEM_HEIGHT,
+                        )),
+            ],
+          ),
+          SizedBox(
+            height: 12,
+          ),
+        ],
+      ));
+    }
+    return items;
   }
 }
