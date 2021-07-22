@@ -107,9 +107,25 @@ class _MoreAppsState extends State<MoreApps> {
         icon: Icons.directions_car_rounded,
         title: "Taxi",
         onTap: () {
-          // Navigator.of(context).pushNamed("/flight");
+          Navigator.of(context).pushNamed("/taxi");
         },
-        iconColor: HexColor("#3F61DB"),
+        iconColor: HexColor("#FFC42E"),
+        height: GRID_ITEM_HEIGHT,
+      ),
+      UserDashboardItemTile(
+        icon: SlydoAppIcon.eatingout_category,
+        title: "Eat out",
+        onTap: () {},
+        iconColor: HexColor("#F35B46"),
+        height: GRID_ITEM_HEIGHT,
+      ),
+      UserDashboardItemTile(
+        icon: SlydoAppIcon.shopping_category,
+        title: "Shopping",
+        onTap: () {
+          Navigator.of(context).pushNamed("/shopping");
+        },
+        iconColor: HexColor("#5218E9"),
         height: GRID_ITEM_HEIGHT,
       ),
       UserDashboardItemTile(
@@ -128,28 +144,12 @@ class _MoreAppsState extends State<MoreApps> {
         height: GRID_ITEM_HEIGHT,
       ),
       UserDashboardItemTile(
-        icon: SlydoAppIcon.shopping_category,
-        title: "Shopping",
-        onTap: () {
-          Navigator.of(context).pushNamed("/shopping");
-        },
-        iconColor: HexColor("#5218E9"),
-        height: GRID_ITEM_HEIGHT,
-      ),
-      UserDashboardItemTile(
-        icon: SlydoAppIcon.eatingout_category,
-        title: "Eat out",
-        onTap: () {},
-        iconColor: HexColor("#F35B46"),
-        height: GRID_ITEM_HEIGHT,
-      ),
-      UserDashboardItemTile(
         icon: SlydoAppIcon.wealth_moreapps,
         title: "Wealth",
         onTap: () {},
         iconColor: HexColor("#FFC42E"),
         height: GRID_ITEM_HEIGHT,
-      )
+      ),
     ]);
   }
 
@@ -164,15 +164,11 @@ class _MoreAppsState extends State<MoreApps> {
 
   Widget foregroundScreen() {
     return Container(
-      child: Column(
-        children: [
-          Expanded(
-            child: ListView(
-              padding: EdgeInsets.only(left: 16, right: 16, top: 20),
-              children: getUserDashboardItem(),
-            ),
-          ),
-        ],
+      padding: EdgeInsets.only(left: 16, right: 16, top: 20),
+      child: SingleChildScrollView(
+        child: Column(
+          children: getUserDashboardItem(),
+        ),
       ),
     );
   }
