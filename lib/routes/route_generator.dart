@@ -83,6 +83,8 @@ import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/ser
 import 'package:Slydo/screens/more_apps/shopping/screens/shopping/search_product.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/shopping/shopping_dashboard.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/shopping/specific_category_product_list.dart';
+import 'package:Slydo/screens/more_apps/taxi/ride_option.dart';
+import 'package:Slydo/screens/more_apps/taxi/select_address.dart';
 import 'package:Slydo/screens/more_apps/taxi/taxi_dashboard.dart';
 import 'package:Slydo/screens/more_apps/train/search_train.dart';
 import 'package:Slydo/screens/more_apps/train/train_dashboard.dart';
@@ -784,6 +786,24 @@ class RouteGenerator {
         return PageTransition(
           child: TaxiDashboard(),
           type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case "/select-destination-for-taxi-ride":
+        return PageTransition(
+          child: SelectAddressForTaxi(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case "/select-ride-type":
+        var arguments = settings.arguments as Map<String, dynamic>;
+        return PageTransition(
+          child: RideOption(),
+          childCurrent: arguments['currentChild'],
+          type: PageTransitionType.rightToLeftJoined,
           curve: Curves.ease,
           settings: settings,
         );

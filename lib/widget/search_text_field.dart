@@ -9,13 +9,15 @@ class SearchTextField extends StatefulWidget {
   final String hintText;
   TextStyle textStyle;
   TextStyle hintStyle;
+  bool isDisabled;
 
   SearchTextField(
       {@required this.textEditingController,
       @required this.onSubmit,
       @required this.hintText,
       this.textStyle,
-      this.hintStyle});
+      this.hintStyle,
+      this.isDisabled = false});
 
   @override
   _SearchTextFieldState createState() => _SearchTextFieldState();
@@ -47,6 +49,7 @@ class _SearchTextFieldState extends State<SearchTextField> {
                   ),
               cursorWidth: 1.5,
               cursorColor: navyBlue,
+              enabled: !widget.isDisabled,
               decoration: InputDecoration(
                   hintText: widget.hintText,
                   fillColor: Colors.white,

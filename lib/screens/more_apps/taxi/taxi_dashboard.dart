@@ -1,3 +1,4 @@
+import 'package:Slydo/screens/more_apps/taxi/select_address.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/location_service.dart';
 import 'package:Slydo/utils/colors.dart';
@@ -18,10 +19,19 @@ class TaxiDashboard extends StatefulWidget {
 class _TaxiDashboardState extends State<TaxiDashboard> {
   Map<String, dynamic> selectedDestination;
   bool isDestinationSelected = false;
+
+  bool isAddressSelection = false;
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
+        if (isAddressSelection) {
+          isAddressSelection = false;
+          if (mounted) setState(() {});
+          return false;
+        }
+
         if (selectedDestination == null)
           return Future.value(true);
         else {
@@ -34,10 +44,15 @@ class _TaxiDashboardState extends State<TaxiDashboard> {
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: appBar(),
-        body: ScaffoldBody(
-            selectedDestination: selectedDestination,
-            isDestinationSelected: isDestinationSelected,
-            updateSelectedDestination: updateSelectedDestination),
+        body: isAddressSelection
+            ? SelectAddressForTaxi(
+                toggleAddressSelection: toggleAddressSelection,
+                updateSelectedDestination: updateSelectedDestination)
+            : ScaffoldBody(
+                toggleAddressSelection: toggleAddressSelection,
+                selectedDestination: selectedDestination,
+                isDestinationSelected: isDestinationSelected,
+                updateSelectedDestination: updateSelectedDestination),
       ),
     );
   }
@@ -46,6 +61,11 @@ class _TaxiDashboardState extends State<TaxiDashboard> {
     isDestinationSelected = true;
     selectedDestination = place;
     setState(() {});
+  }
+
+  void toggleAddressSelection(bool selectAddress) {
+    isAddressSelection = selectAddress;
+    if (mounted) setState(() {});
   }
 
   Widget appBar() {
@@ -61,11 +81,16 @@ class _TaxiDashboardState extends State<TaxiDashboard> {
           size: 24,
         ),
         onPressed: () {
+          if (isAddressSelection) {
+            isAddressSelection = false;
+            if (mounted) setState(() {});
+            return;
+          }
           Navigator.pop(context);
         },
       ),
       title: Text(
-        "",
+        isAddressSelection ? "Select Address" : "",
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -76,18 +101,21 @@ class _TaxiDashboardState extends State<TaxiDashboard> {
 class ScaffoldBody extends StatefulWidget {
   Map<String, dynamic> selectedDestination;
   void Function(Map<String, dynamic> place) updateSelectedDestination;
+  void Function(bool selectAddress) toggleAddressSelection;
   bool isDestinationSelected;
-  ScaffoldBody(
-      {this.selectedDestination,
-      this.updateSelectedDestination,
-      this.isDestinationSelected});
+  ScaffoldBody({
+    this.selectedDestination,
+    this.updateSelectedDestination,
+    this.isDestinationSelected,
+    this.toggleAddressSelection,
+  });
   @override
   _ScaffoldBodyState createState() => _ScaffoldBodyState();
 }
 
 class _ScaffoldBodyState extends State<ScaffoldBody> {
   double _initialSheetChildSize = 0.135;
-  double _initialSheetChildSizeAfterDestination = 0.3;
+  double _initialSheetChildSizeAfterDestination = 0.25;
   double _dragScrollSheetExtent = 0;
 
   double _widgetHeight = 0;
@@ -240,7 +268,7 @@ class _ScaffoldBodyState extends State<ScaffoldBody> {
                 SizedBox(
                   height: 12,
                 ),
-                IgnorePointer(ignoring: true, child: getSearchTextField()),
+                getSearchTextField(),
                 for (int i = 0; i < places.length; i++)
                   ListTile(
                     contentPadding:
@@ -319,19 +347,26 @@ class _ScaffoldBodyState extends State<ScaffoldBody> {
   }
 
   Widget getSearchTextField() {
-    return SearchTextField(
-      hintText: "Search",
-      hintStyle:
-          TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: darkGrey),
-      onSubmit: () {},
-      textEditingController: searchDestinationController,
+    return GestureDetector(
+      onTap: () {
+        widget.toggleAddressSelection(true);
+      },
+      child: SearchTextField(
+        hintText: "Search",
+        isDisabled: true,
+        hintStyle: TextStyle(
+            fontSize: 14, fontWeight: FontWeight.w400, color: darkGrey),
+        onSubmit: () {},
+        textEditingController: searchDestinationController,
+      ),
     );
   }
 
   Widget submitButton() {
     return CurvedButton(
       onPressed: () {
-        // Navigator.of(context).pushNamed("/search-bus");
+        Navigator.of(context)
+            .pushNamed("/select-ride-type", arguments: {"currentChild": TaxiDashboard()});
       },
       backgroundColor: navyBlue,
       textColor: Colors.white,
