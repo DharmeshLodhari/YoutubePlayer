@@ -27,10 +27,11 @@ class _RideOptionState extends State<RideOption> {
         backgroundColor: Colors.white,
         appBar: appBar(),
         body: ScaffoldBody(
-            toggleAddressSelection: toggleAddressSelection,
-            selectedDestination: selectedDestination,
-            isDestinationSelected: isDestinationSelected,
-            updateSelectedDestination: updateSelectedDestination),
+          toggleAddressSelection: toggleAddressSelection,
+          selectedDestination: selectedDestination,
+          isDestinationSelected: isDestinationSelected,
+          updateSelectedDestination: updateSelectedDestination,
+        ),
       ),
     );
   }
@@ -80,13 +81,14 @@ class ScaffoldBody extends StatefulWidget {
   Map<String, dynamic> selectedDestination;
   void Function(Map<String, dynamic> place) updateSelectedDestination;
   void Function(bool selectAddress) toggleAddressSelection;
+
   bool isDestinationSelected;
-  ScaffoldBody({
-    this.selectedDestination,
-    this.updateSelectedDestination,
-    this.isDestinationSelected,
-    this.toggleAddressSelection,
-  });
+
+  ScaffoldBody(
+      {this.selectedDestination,
+      this.updateSelectedDestination,
+      this.isDestinationSelected,
+      this.toggleAddressSelection});
   @override
   _ScaffoldBodyState createState() => _ScaffoldBodyState();
 }
@@ -503,8 +505,9 @@ class _ScaffoldBodyState extends State<ScaffoldBody> {
   Widget submitButton() {
     return CurvedButton(
       onPressed: () {
-        if (isRideSelected) {}
-        // Navigator.of(context).pushNamed("/search-bus");
+        if (isRideSelected) {
+          Navigator.of(context).pushNamed("/search-driver",arguments: {"currentChild": RideOption()});
+        }
       },
       backgroundColor: navyBlue,
       textColor: Colors.white,

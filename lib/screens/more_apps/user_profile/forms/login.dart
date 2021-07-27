@@ -488,6 +488,11 @@ class _UserLoginState extends State<UserLogin> {
 
     FocusScope.of(context).unfocus();
 
+    // Navigator.of(context).pushNamedAndRemoveUntil(
+    //   "/dashboard",
+    //   (Route<dynamic> route) => false,
+    // );
+
     if (_loginFormKey.currentState.validate()) {
       showDialog(context: context, builder: (context) => LoadingIndicator());
 

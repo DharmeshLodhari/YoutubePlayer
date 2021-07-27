@@ -969,7 +969,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           if (mounted) setState(() {});
 
           ///PlaySoundAccordingToMessageType
-          MessageSoundPlayer(message: jsonEncode(previousMessage)).playSound();
+          // MessageSoundPlayer(message: jsonEncode(previousMessage)).playSound();
           break;
         }
       }

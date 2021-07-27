@@ -83,9 +83,12 @@ import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/ser
 import 'package:Slydo/screens/more_apps/shopping/screens/shopping/search_product.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/shopping/shopping_dashboard.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/shopping/specific_category_product_list.dart';
+import 'package:Slydo/screens/more_apps/taxi/arriving_driver.dart';
 import 'package:Slydo/screens/more_apps/taxi/ride_option.dart';
+import 'package:Slydo/screens/more_apps/taxi/searching_for_driver.dart';
 import 'package:Slydo/screens/more_apps/taxi/select_address.dart';
 import 'package:Slydo/screens/more_apps/taxi/taxi_dashboard.dart';
+import 'package:Slydo/screens/more_apps/taxi/trip_ended.dart';
 import 'package:Slydo/screens/more_apps/train/search_train.dart';
 import 'package:Slydo/screens/more_apps/train/train_dashboard.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/add_document.dart';
@@ -804,6 +807,31 @@ class RouteGenerator {
           child: RideOption(),
           childCurrent: arguments['currentChild'],
           type: PageTransitionType.rightToLeftJoined,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case "/search-driver":
+        var arguments = settings.arguments as Map<String, dynamic>;
+        return PageTransition(
+          child: SearchingForRide(),
+          childCurrent: arguments['currentChild'],
+          type: PageTransitionType.rightToLeftJoined,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case "/driver-arriving":
+        return PageTransition(
+          child: ArrivingDriver(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case "/trip-ended":
+        return PageTransition(
+          child: TripEnded(),
+          type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
