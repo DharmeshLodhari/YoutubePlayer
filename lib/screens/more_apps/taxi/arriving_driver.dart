@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
 import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
 
 class ArrivingDriver extends StatefulWidget {
   @override
@@ -24,6 +23,7 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
   bool isDriverStartedMoving = false;
   bool isDriverArrived = false;
   bool isTripStarted = false;
+  bool isNavigationStarted = false;
 
   @override
   void initState() {
@@ -35,16 +35,14 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
         isDriverStartedMoving = false;
         isDriverArrived = false;
         isTripStarted = true;
+
         if (mounted) setState(() {});
         Future.delayed(Duration(seconds: 5)).then((value) {
           isDriverStartedMoving = false;
           isDriverArrived = false;
           isTripStarted = false;
+          isNavigationStarted = true;
           if (mounted) setState(() {});
-          Toast.show("Trip Ended", context);
-          if (mounted) {
-            Navigator.of(context).pushNamed("/trip-ended");
-          }
         });
       });
     });
@@ -106,6 +104,47 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
                   )
                 : Container(),
 
+            isNavigationStarted
+                ? Container(
+                    // margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                    decoration: BoxDecoration(color: blackFont),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.arrow_upward_rounded,
+                          color: Colors.white,
+                          size: 30,
+                        ),
+                        SizedBox(
+                          width: 16,
+                        ),
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Text(
+                                "500 miles",
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white),
+                              ),
+                              SizedBox(
+                                width: 4,
+                              ),
+                              Text("Head southwest on Madison St",
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.white)),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : Container(),
+
             // FlutterMap(
             //   mapController: mapController,
             //   options: MapOptions(
@@ -148,7 +187,11 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
       automaticallyImplyLeading: false,
       leading: IconButton(
         icon: Icon(
-          isDriverStartedMoving ? Icons.close_rounded : Icons.menu_rounded,
+          isNavigationStarted
+              ? Icons.keyboard_arrow_left_sharp
+              : isDriverStartedMoving
+                  ? Icons.close_rounded
+                  : Icons.menu_rounded,
           color: navyBlue,
           size: 24,
         ),
@@ -158,7 +201,7 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
         },
       ),
       title: Text(
-        isTripStarted ? "On Trip" : "Arriving",
+        isTripStarted || isNavigationStarted ? "On Trip" : "Arriving",
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -189,32 +232,93 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
                   topLeft: Radius.circular(20),
                 ),
               ),
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 10,
-                  ),
-                  getDriverInfo(),
-                  isDriverStartedMoving
-                      ? Column(
-                          children: [
-                            SizedBox(height: 10),
-                            getRideInfo(),
-                          ],
-                        )
-                      : Container(),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  getDriverActions(),
-                  SizedBox(
-                    height: 20,
-                  ),
-                ],
-              ),
+              child: isNavigationStarted
+                  ? getNavigationUI()
+                  : Column(
+                      children: [
+                        SizedBox(
+                          height: 10,
+                        ),
+                        getDriverInfo(),
+                        isDriverStartedMoving
+                            ? Column(
+                                children: [
+                                  SizedBox(height: 10),
+                                  getRideInfo(),
+                                ],
+                              )
+                            : Container(),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        getDriverActions(),
+                        SizedBox(
+                          height: 20,
+                        ),
+                      ],
+                    ),
             ),
           ),
         ));
+  }
+
+  Widget getNavigationUI() {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "18 mins / 2.2km",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  "20, Pedro Street, Alausa,...",
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      color: darkGrey),
+                ),
+              ),
+              GestureDetector(
+                onTap: () {
+                  Navigator.of(context).pushNamed("/contact-driver");
+                },
+                child: ClipOval(
+                  child: Container(
+                      color: dividerColor,
+                      padding: EdgeInsets.all(8),
+                      child: Icon(Icons.alt_route)),
+                ),
+              ),
+              SizedBox(
+                width: 8,
+              ),
+              GestureDetector(
+                onTap: () {
+                  Navigator.of(context).pushNamed("/payment-options");
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                      color: mateRed, borderRadius: BorderRadius.circular(10)),
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  child: Text(
+                    "Exit",
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white),
+                  ),
+                ),
+              )
+            ],
+          )
+        ],
+      ),
+    );
   }
 
   Widget getDriverInfo() {

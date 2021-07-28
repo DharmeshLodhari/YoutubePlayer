@@ -1,18 +1,36 @@
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class TripEnded extends StatefulWidget {
+class CancelBooking extends StatefulWidget {
   @override
-  _TripEndedState createState() => _TripEndedState();
+  _CancelBookingState createState() => _CancelBookingState();
 }
 
-class _TripEndedState extends State<TripEnded> {
+class _CancelBookingState extends State<CancelBooking> {
   @override
   void initState() {
     super.initState();
   }
+
+  List<String> reasons = [
+    "I don’t want to share",
+    "Can't contact the driver",
+    "Driver is late",
+    "The price is not reasonable",
+    "Pickup address is incorrect",
+    "Driver asked me to cancel",
+    "Driver didn't match description",
+    "Long pickup time",
+    "Car didn't match description",
+    "Wrong pickup location",
+  ];
+
+  String selectedReason = "I don’t want to share";
 
   @override
   Widget build(BuildContext context) {
@@ -36,11 +54,13 @@ class _TripEndedState extends State<TripEnded> {
       automaticallyImplyLeading: false,
       leading: IconButton(
         icon: Icon(
-          Icons.menu_rounded,
+          Icons.keyboard_arrow_left_sharp,
           color: navyBlue,
           size: 24,
         ),
-        onPressed: () {},
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
       ),
       title: Text(
         "",
@@ -51,68 +71,106 @@ class _TripEndedState extends State<TripEnded> {
   }
 
   Widget scaffoldBody() {
-    return Column(
-      children: [
-        SizedBox(
-          height: 80,
-        ),
-        Stack(
-          clipBehavior: Clip.none,
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(
+            height: 20,
+          ),
+          Text(
+            "Please select the reason for cancellation:",
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+          ),
+          SizedBox(
+            height: 40,
+          ),
+          Expanded(child: getReason()),
+          getDriverActions(),
+          SizedBox(
+            height: 30,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget getReason() {
+    return SingleChildScrollView(
+      child: Column(
+        children: reasons.map((e) => getReasoneTile(reason: e)).toList(),
+      ),
+    );
+  }
+
+  Widget getReasoneTile({String reason}) {
+    bool isSelected = reason == selectedReason;
+    return GestureDetector(
+      onTap: () {
+        selectedReason = reason;
+        if (mounted) setState(() {});
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 8),
+        child: Row(
           children: [
-            Card(
-              elevation: 3,
-              shadowColor: dividerColor.withAlpha(125),
-              color: Colors.white,
-              borderOnForeground: true,
-              margin: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(20))),
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: 60,
-                    ),
-                    getDriverInfo(),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    getRideInfo(),
-                    SizedBox(
-                      height: 40,
-                    ),
-                  ],
-                ),
-              ),
+            Icon(
+              isSelected ? Icons.check_circle : Icons.radio_button_off_rounded,
+              color: isSelected ? navyBlue : dividerColor,
+              size: 26,
             ),
-            Positioned.fill(
-              top: -20,
-              child: Align(
-                alignment: Alignment.topCenter,
-                heightFactor: 0,
-                child: Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  color: naturalGreen,
-                  child: Container(
-                      height: 60,
-                      width: 60,
-                      padding: EdgeInsets.all(8),
-                      child: Icon(
-                        Icons.check_circle,
-                        color: Colors.white,
-                      )),
-                ),
+            SizedBox(
+              width: 16,
+            ),
+            Expanded(
+              child: Text(
+                reason,
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400),
               ),
             )
           ],
         ),
+      ),
+    );
+  }
+
+  Widget getTipUI() {
+    UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+
+    return Column(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(50),
+          child: CachedNetworkImage(
+            imageUrl: userBloc.user.avatar,
+            height: 80,
+            width: 80,
+            fit: BoxFit.fill,
+          ),
+        ),
         SizedBox(
           height: 40,
         ),
-        getDriverActions(),
+        Text(
+          "Add a tip?",
+          style: TextStyle(
+              fontSize: 22, fontWeight: FontWeight.w700, color: blackFont),
+        ),
+        SizedBox(
+          height: 30,
+        ),
+        SizedBox(
+          height: 30,
+        ),
+        Text(
+          "Tipping is welcome, but not required.\nThe amount is always up to you.",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+              fontSize: 14, fontWeight: FontWeight.w400, color: darkGrey),
+        ),
       ],
     );
   }
@@ -129,17 +187,14 @@ class _TripEndedState extends State<TripEnded> {
   }
 
   Widget getDriverActions() {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 32),
-      child: CurvedButton(
-        borderRadius: 10,
-        backgroundColor: navyBlue,
-        onPressed: () {
-          Navigator.of(context).pushNamed("/rate-and-tip-driver");
-        },
-        textColor: Colors.white,
-        text: "Ok",
-      ),
+    return CurvedButton(
+      borderRadius: 10,
+      backgroundColor: navyBlue,
+      onPressed: () {
+        Navigator.of(context).pushNamed("/payment-options");
+      },
+      textColor: Colors.white,
+      text: "Submit",
     );
   }
 

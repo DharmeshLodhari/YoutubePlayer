@@ -84,10 +84,16 @@ import 'package:Slydo/screens/more_apps/shopping/screens/shopping/search_product
 import 'package:Slydo/screens/more_apps/shopping/screens/shopping/shopping_dashboard.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/shopping/specific_category_product_list.dart';
 import 'package:Slydo/screens/more_apps/taxi/arriving_driver.dart';
+import 'package:Slydo/screens/more_apps/taxi/cancle_booking.dart';
+import 'package:Slydo/screens/more_apps/taxi/contact_driver.dart';
+import 'package:Slydo/screens/more_apps/taxi/no_vehicale_found.dart';
+import 'package:Slydo/screens/more_apps/taxi/payment_options.dart';
+import 'package:Slydo/screens/more_apps/taxi/rate_and_tip_driver.dart';
 import 'package:Slydo/screens/more_apps/taxi/ride_option.dart';
 import 'package:Slydo/screens/more_apps/taxi/searching_for_driver.dart';
 import 'package:Slydo/screens/more_apps/taxi/select_address.dart';
 import 'package:Slydo/screens/more_apps/taxi/taxi_dashboard.dart';
+import 'package:Slydo/screens/more_apps/taxi/terms_and_condition.dart';
 import 'package:Slydo/screens/more_apps/taxi/trip_ended.dart';
 import 'package:Slydo/screens/more_apps/train/search_train.dart';
 import 'package:Slydo/screens/more_apps/train/train_dashboard.dart';
@@ -828,9 +834,54 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
+
       case "/trip-ended":
         return PageTransition(
           child: TripEnded(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case "/payment-options":
+        return PageTransition(
+          child: PaymentOptions(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case "/no-vehicle-found":
+        return PageTransition(
+          child: NoVehicleFound(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case "/terms-and-condition":
+        return PageTransition(
+          child: TermsAndCondition(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case "/rate-and-tip-driver":
+        return PageTransition(
+          child: RateAndTipDriver(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case "/cancle-booking":
+        return PageTransition(
+          child: CancelBooking(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case "/contact-driver":
+        return PageTransition(
+          child: ContactDriver(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

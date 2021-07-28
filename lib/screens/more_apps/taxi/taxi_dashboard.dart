@@ -365,8 +365,9 @@ class _ScaffoldBodyState extends State<ScaffoldBody> {
   Widget submitButton() {
     return CurvedButton(
       onPressed: () {
-        Navigator.of(context)
-            .pushNamed("/select-ride-type", arguments: {"currentChild": TaxiDashboard()});
+        widget.isDestinationSelected = false;
+        Navigator.of(context).pushNamed("/select-ride-type",
+            arguments: {"currentChild": TaxiDashboard()});
       },
       backgroundColor: navyBlue,
       textColor: Colors.white,

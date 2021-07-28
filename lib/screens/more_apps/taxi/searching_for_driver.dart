@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:math';
+
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -17,6 +20,8 @@ class _SearchingForRideState extends State<SearchingForRide> {
 
   LatLng mapPoint = LatLng(6.605874, 3.349149);
 
+  Timer driverFindingTimer;
+
   @override
   void initState() {
     super.initState();
@@ -26,10 +31,12 @@ class _SearchingForRideState extends State<SearchingForRide> {
   }
 
   void navigateToArrivingDriver() async {
-    await Future.delayed(Duration(seconds: 2)).then((value) {
-      if (mounted) {
-        debugPrint("INT called!!");
+    driverFindingTimer = Timer(Duration(seconds: 5), () {
+      bool isDriverFound = Random().nextBool();
+      if (isDriverFound) {
         Navigator.of(context).pushNamed("/driver-arriving");
+      } else {
+        Navigator.of(context).pushNamed("/no-vehicle-found");
       }
     });
   }
@@ -239,7 +246,10 @@ class _SearchingForRideState extends State<SearchingForRide> {
   Widget getCancelBookingBtn() {
     return CurvedButton(
       onPressed: () {
-        // Navigator.of(context).pushNamed("/search-bus");
+        if (driverFindingTimer?.isActive ?? false) {
+          driverFindingTimer?.cancel();
+        }
+        Navigator.of(context).pushNamed("/cancle-booking");
       },
       borderRadius: 10,
       backgroundColor: navyBlue,
