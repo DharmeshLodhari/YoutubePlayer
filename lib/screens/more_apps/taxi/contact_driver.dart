@@ -1,4 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/more_apps/taxi/map_ui.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
@@ -34,12 +35,14 @@ class _ContactDriverState extends State<ContactDriver> {
         appBar: appBar(),
         body: Stack(
           children: [
-            Image.asset(
-              "assets/images/map.png",
-              height: double.infinity,
-              width: double.infinity,
-              fit: BoxFit.fill,
-            ),
+            // Image.asset(
+            //   "assets/images/map.png",
+            //   height: double.infinity,
+            //   width: double.infinity,
+            //   fit: BoxFit.fill,
+            // ),
+
+            MapUI(),
 
             // FlutterMap(
             //   mapController: mapController,
@@ -83,12 +86,12 @@ class _ContactDriverState extends State<ContactDriver> {
       automaticallyImplyLeading: false,
       leading: IconButton(
         icon: Icon(
-          Icons.menu_rounded,
+          Icons.keyboard_arrow_left_rounded,
           color: navyBlue,
           size: 24,
         ),
         onPressed: () {
-          setState(() {});
+          Navigator.of(context).pop();
         },
       ),
       title: Text(

@@ -36,11 +36,13 @@ class _TripEndedState extends State<TripEnded> {
       automaticallyImplyLeading: false,
       leading: IconButton(
         icon: Icon(
-          Icons.menu_rounded,
+          Icons.keyboard_arrow_left_rounded,
           color: navyBlue,
           size: 24,
         ),
-        onPressed: () {},
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
       ),
       title: Text(
         "",

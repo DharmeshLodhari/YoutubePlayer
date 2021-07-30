@@ -68,6 +68,13 @@ class _SearchTextFieldState extends State<SearchTextField> {
                       width: 1.0,
                     ),
                   ),
+                  disabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
+                      color: dividerColor,
+                      width: 1.0,
+                    ),
+                  ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(

@@ -80,12 +80,12 @@ class _NoVehicleFoundState extends State<NoVehicleFound> {
       automaticallyImplyLeading: false,
       leading: IconButton(
         icon: Icon(
-          Icons.menu_rounded,
+          Icons.keyboard_arrow_left_rounded,
           color: navyBlue,
           size: 24,
         ),
         onPressed: () {
-          setState(() {});
+          Navigator.of(context).pop();
         },
       ),
       title: Text(

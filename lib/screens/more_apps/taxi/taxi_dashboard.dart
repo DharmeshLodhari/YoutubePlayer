@@ -8,8 +8,8 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/search_text_field.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong/latlong.dart';
+// import 'package:flutter_map/flutter_map.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class TaxiDashboard extends StatefulWidget {
   @override
@@ -90,7 +90,7 @@ class _TaxiDashboardState extends State<TaxiDashboard> {
         },
       ),
       title: Text(
-        isAddressSelection ? "Select Address" : "",
+        isAddressSelection ? "Select Address" : "Transport",
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -124,6 +124,9 @@ class _ScaffoldBodyState extends State<ScaffoldBody> {
 
   TextEditingController searchDestinationController;
 
+  static const _initialCameraPosition =
+      CameraPosition(target: LatLng(6.605874, 3.349149), zoom: 11.5);
+
   List<Map<String, dynamic>> places = [
     {"name": "Ikeja City Mall, Alausa", "place": "Ikeja"},
     {"name": "101, Lagos-Ikorodu Expressway,", "place": "Lagos"},
@@ -133,14 +136,33 @@ class _ScaffoldBodyState extends State<ScaffoldBody> {
     {"name": "67, Mobolaji Bank Anthony Way,", "place": "Ikeja"},
   ];
 
-  MapController mapController;
-
   LatLng mapPoint = LatLng(6.605874, 3.349149);
+
+  GoogleMapController googleMapController;
+
+  Marker _carOneMarker = Marker(
+    markerId: MarkerId('Taxi'),
+    infoWindow: const InfoWindow(title: 'Taxi'),
+    icon: BitmapDescriptor.fromAsset("assets/images/car_top.png"),
+    position: LatLng(6.605874, 3.349152),
+  );
+  Marker _bikeOneMarker = Marker(
+    markerId: MarkerId('Bike'),
+    infoWindow: const InfoWindow(title: 'Bike'),
+    icon: BitmapDescriptor.fromAsset("assets/images/bike_top.png"),
+    position: LatLng(6.626400, 3.303030),
+  );
+  Marker _tricycleOneMarker = Marker(
+    markerId: MarkerId('Tricycle'),
+    infoWindow: const InfoWindow(title: 'Tricycle'),
+    icon: BitmapDescriptor.fromAsset("assets/images/tricycle_top.png"),
+    position: LatLng(6.505050, 3.404040),
+  );
 
   @override
   void initState() {
     super.initState();
-    mapController = MapController();
+
     searchDestinationController = TextEditingController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
@@ -153,40 +175,62 @@ class _ScaffoldBodyState extends State<ScaffoldBody> {
   @override
   Widget build(BuildContext context) {
     return Stack(
-      children: [
-        // Image.asset(
-        //   "assets/images/map.png",
-        //   height: double.infinity,
-        //   width: double.infinity,
-        //   fit: BoxFit.fill,
-        // ),
-        FlutterMap(
-          mapController: mapController,
-          options:
-              MapOptions(center: mapPoint, zoom: 18.0, minZoom: 5, maxZoom: 18),
-          layers: [
-            TileLayerOptions(
-              urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-              subdomains: ['a', 'b', 'c'],
-              overrideTilesWhenUrlChanges: true,
-            ),
-            MarkerLayerOptions(
-              markers: [
-                Marker(
-                  point: mapPoint,
-                  builder: (ctx) => Container(
-                    child: Icon(
-                      SlydoAppIcon.location,
-                      color: blackFont,
-                      size: 28,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-        getFloatingActionButton(),
+      children: getStackChildren(),
+    );
+  }
+
+  List<Widget> getStackChildren() {
+    List<Widget> items = [];
+    // items.add(Image.asset(
+    //   "assets/images/map.png",
+    //   height: double.infinity,
+    //   width: double.infinity,
+    //   fit: BoxFit.fill,
+    // ));
+    items.add(GoogleMap(
+      initialCameraPosition: _initialCameraPosition,
+      myLocationButtonEnabled: false,
+      zoomControlsEnabled: false,
+      onMapCreated: (controller) {
+        googleMapController = controller;
+      },
+      markers: {
+        if (_carOneMarker != null) _carOneMarker,
+        if (_bikeOneMarker != null) _bikeOneMarker,
+        if (_tricycleOneMarker != null) _tricycleOneMarker
+      },
+    ));
+
+    // FlutterMap(
+    //   mapController: mapController,
+    //   options:
+    //       MapOptions(center: mapPoint, zoom: 18.0, minZoom: 5, maxZoom: 18),
+    //   layers: [
+    //     TileLayerOptions(
+    //       urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    //       subdomains: ['a', 'b', 'c'],
+    //       overrideTilesWhenUrlChanges: true,
+    //     ),
+    //     MarkerLayerOptions(
+    //       markers: [
+    //         Marker(
+    //           point: mapPoint,
+    //           builder: (ctx) => Container(
+    //             child: Icon(
+    //               SlydoAppIcon.location,
+    //               color: blackFont,
+    //               size: 28,
+    //             ),
+    //           ),
+    //         ),
+    //       ],
+    //     ),
+    //   ],
+    // ),
+
+    if (widget.selectedDestination == null) {
+      items.add(getFloatingActionButton());
+      items.add(
         NotificationListener<DraggableScrollableNotification>(
           onNotification: (DraggableScrollableNotification notification) {
             setState(() {
@@ -218,90 +262,39 @@ class _ScaffoldBodyState extends State<ScaffoldBody> {
             ),
           ),
         ),
-      ],
-    );
+      );
+    } else {
+      items.add(getSelectedLocationUI());
+    }
+
+    return items;
   }
 
-  Widget getFloatingActionButton() {
+  Widget getSelectedLocationUI() {
     return Positioned(
-      bottom: _fabPosition + _fabPositionPadding,
-      right: _fabPositionPadding, // Padding to create some space on the right
-      child: FloatingActionButton(
-        child: Icon(
-          Icons.my_location,
-          color: blackFont,
-        ),
-        backgroundColor: Colors.white,
-        onPressed: () async {
-          final locationService = LocationService();
-          UserLocation userLocation =
-              await locationService.getLocation().catchError((error) {
-            debugPrint("ERROR:- $error");
-          });
-
-          if (userLocation == null) {
-            return null;
-          }
-
-          mapPoint = LatLng(userLocation.latitude, userLocation.longitude);
-          if (mounted) setState(() {});
-          mapController.moveAndRotate(mapPoint, 19, 0);
-        },
-      ),
-    );
-  }
-
-  Widget getSearchDestination({ScrollController scrollController}) {
-    return Container(
-      padding: EdgeInsets.only(left: 16, right: 16, top: 20),
-      child: widget.selectedDestination == null
-          ? ListView(
-              controller: scrollController,
-              children: [
-                Text(
-                  "Where are you going?",
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: blackFont),
+        bottom: 0,
+        right: 0,
+        left: 0,
+        child: Card(
+          elevation: 4,
+          shadowColor: dividerColor,
+          color: Colors.white,
+          margin: EdgeInsets.zero,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+          child: AnimatedContainer(
+            duration: Duration(milliseconds: 500),
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(20),
+                  topLeft: Radius.circular(20),
                 ),
-                SizedBox(
-                  height: 12,
-                ),
-                getSearchTextField(),
-                for (int i = 0; i < places.length; i++)
-                  ListTile(
-                    contentPadding:
-                        EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                    leading: RoundedBackgroundIcon(
-                      backgroundColor: lightGrey,
-                      height: 32,
-                      borderRadius: 12,
-                      width: 32,
-                      icon: Icon(
-                        SlydoAppIcon.location,
-                        size: 14,
-                        color: blackFont,
-                      ),
-                    ),
-                    title: Text(
-                      places[i]["name"],
-                      style: TextStyle(
-                          color: blackFont,
-                          fontWeight: FontWeight.w400,
-                          fontSize: 16),
-                    ),
-                    subtitle: Text(places[i]["place"]),
-                    onTap: () {
-                      widget.updateSelectedDestination(places[i]);
-                      setState(() {});
-                    },
-                  ),
-              ],
-            )
-          : Container(
-              child: ListView(
-                controller: scrollController,
+              ),
+              child: Column(
                 children: [
                   Text(
                     "Destination location",
@@ -343,6 +336,87 @@ class _ScaffoldBodyState extends State<ScaffoldBody> {
                 ],
               ),
             ),
+          ),
+        ));
+  }
+
+  Widget getFloatingActionButton() {
+    return Positioned(
+      bottom: _fabPosition + _fabPositionPadding,
+      right: _fabPositionPadding, // Padding to create some space on the right
+      child: FloatingActionButton(
+        elevation: 2,
+        child: Icon(
+          Icons.my_location,
+          color: blackFont,
+        ),
+        backgroundColor: Colors.white,
+        onPressed: () async {
+          final locationService = LocationService();
+          UserLocation userLocation =
+              await locationService.getLocation().catchError((error) {
+            debugPrint("ERROR:- $error");
+          });
+
+          if (userLocation == null) {
+            return null;
+          }
+          debugPrint("${userLocation.latitude}  ${userLocation.longitude}");
+          googleMapController.animateCamera(CameraUpdate.newLatLng(
+              LatLng(userLocation.latitude, userLocation.longitude)));
+
+          // mapPoint = LatLng(userLocation.latitude, userLocation.longitude);
+          // if (mounted) setState(() {});
+          // mapController.moveAndRotate(mapPoint, 19, 0);
+        },
+      ),
+    );
+  }
+
+  Widget getSearchDestination({ScrollController scrollController}) {
+    return Container(
+      padding: EdgeInsets.only(left: 16, right: 16, top: 20),
+      child: ListView(
+        controller: scrollController,
+        children: [
+          Text(
+            "Where are you going?",
+            style: TextStyle(
+                fontSize: 16, fontWeight: FontWeight.w700, color: blackFont),
+          ),
+          SizedBox(
+            height: 12,
+          ),
+          getSearchTextField(),
+          for (int i = 0; i < places.length; i++)
+            ListTile(
+              contentPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+              leading: RoundedBackgroundIcon(
+                backgroundColor: lightGrey,
+                height: 32,
+                borderRadius: 12,
+                width: 32,
+                icon: Icon(
+                  SlydoAppIcon.location,
+                  size: 14,
+                  color: blackFont,
+                ),
+              ),
+              title: Text(
+                places[i]["name"],
+                style: TextStyle(
+                    color: blackFont,
+                    fontWeight: FontWeight.w400,
+                    fontSize: 16),
+              ),
+              subtitle: Text(places[i]["place"]),
+              onTap: () {
+                widget.updateSelectedDestination(places[i]);
+                setState(() {});
+              },
+            ),
+        ],
+      ),
     );
   }
 
@@ -378,6 +452,7 @@ class _ScaffoldBodyState extends State<ScaffoldBody> {
   @override
   void dispose() {
     searchDestinationController?.dispose();
+    googleMapController?.dispose();
     super.dispose();
   }
 }

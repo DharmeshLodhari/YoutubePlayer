@@ -1,4 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/more_apps/taxi/map_ui.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -60,12 +61,13 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
         appBar: appBar(),
         body: Stack(
           children: [
-            Image.asset(
-              "assets/images/map.png",
-              height: double.infinity,
-              width: double.infinity,
-              fit: BoxFit.fill,
-            ),
+            // Image.asset(
+            //   "assets/images/map.png",
+            //   height: double.infinity,
+            //   width: double.infinity,
+            //   fit: BoxFit.fill,
+            // ),
+            MapUI(),
             isDriverArrived
                 ? Card(
                     shadowColor: dividerColor,
@@ -187,17 +189,16 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
       automaticallyImplyLeading: false,
       leading: IconButton(
         icon: Icon(
-          isNavigationStarted
-              ? Icons.keyboard_arrow_left_sharp
-              : isDriverStartedMoving
-                  ? Icons.close_rounded
-                  : Icons.menu_rounded,
+          isDriverStartedMoving
+              ? Icons.close_rounded
+              : Icons.keyboard_arrow_left_sharp,
           color: navyBlue,
           size: 24,
         ),
         onPressed: () {
           isDriverStartedMoving = !isDriverStartedMoving;
           setState(() {});
+          Navigator.of(context).pop();
         },
       ),
       title: Text(

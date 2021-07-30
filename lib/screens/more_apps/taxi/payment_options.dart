@@ -1,3 +1,4 @@
+import 'package:Slydo/screens/more_apps/taxi/map_ui.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -37,12 +38,14 @@ class _PaymentOptionsState extends State<PaymentOptions> {
         appBar: appBar(),
         body: Stack(
           children: [
-            Image.asset(
-              "assets/images/map.png",
-              height: double.infinity,
-              width: double.infinity,
-              fit: BoxFit.fill,
-            ),
+            // Image.asset(
+            //   "assets/images/map.png",
+            //   height: double.infinity,
+            //   width: double.infinity,
+            //   fit: BoxFit.fill,
+            // ),
+
+            MapUI(),
 
             // FlutterMap(
             //   mapController: mapController,
@@ -91,7 +94,7 @@ class _PaymentOptionsState extends State<PaymentOptions> {
           size: 24,
         ),
         onPressed: () {
-          setState(() {});
+          Navigator.of(context).pop();
         },
       ),
       title: Text(
