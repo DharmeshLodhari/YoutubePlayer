@@ -1,8 +1,11 @@
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/taxi/map_ui.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class RideOption extends StatefulWidget {
   @override
@@ -10,8 +13,6 @@ class RideOption extends StatefulWidget {
 }
 
 class _RideOptionState extends State<RideOption> {
-  Map<String, dynamic> selectedDestination;
-
   Map<String, dynamic> selectedRide;
 
   bool isRideSelected = false;
@@ -59,8 +60,23 @@ class _RideOptionState extends State<RideOption> {
     }
   ];
 
+  TaxiBloc taxiBloc;
+
+  @override
+  void initState() {
+    TaxiBloc taxiBloc =
+        Provider.of(myGlobals.navigationKey.currentContext, listen: false);
+    if (taxiBloc.rideDetail != null) {
+      isRideSelected = true;
+      selectedRide = taxiBloc.rideDetail;
+    }
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    taxiBloc = Provider.of<TaxiBloc>(context);
     return WillPopScope(
       onWillPop: () async {
         return Future.value(true);
@@ -70,41 +86,9 @@ class _RideOptionState extends State<RideOption> {
         appBar: appBar(),
         body: Stack(
           children: [
-            // Image.asset(
-            //   "assets/images/map.png",
-            //   height: double.infinity,
-            //   width: double.infinity,
-            //   fit: BoxFit.fill,
-            // ),
-
-            MapUI(),
-
-            // FlutterMap(
-            //   mapController: mapController,
-            //   options:
-            //       MapOptions(center: mapPoint, zoom: 18.0, minZoom: 5, maxZoom: 18),
-            //   layers: [
-            //     TileLayerOptions(
-            //       urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-            //       subdomains: ['a', 'b', 'c'],
-            //       overrideTilesWhenUrlChanges: true,
-            //     ),
-            //     MarkerLayerOptions(
-            //       markers: [
-            //         Marker(
-            //           point: mapPoint,
-            //           builder: (ctx) => Container(
-            //             child: Icon(
-            //               SlydoAppIcon.location,
-            //               color: blackFont,
-            //               size: 28,
-            //             ),
-            //           ),
-            //         ),
-            //       ],
-            //     ),
-            //   ],
-            // ),
+            MapUI(
+              showMarker: false,
+            ),
             isRideSelected
                 ? getBottomUI(bookingConfirmation())
                 : toggleCarOption
@@ -283,12 +267,13 @@ class _RideOptionState extends State<RideOption> {
                   } else {
                     isRideSelected = true;
                     selectedRide = ride;
+                    taxiBloc.rideDetail = ride;
                     if (mounted) setState(() {});
                   }
                 },
                 child: Card(
                   shadowColor: dividerColor,
-                  elevation: 2,
+                  elevation: 1,
                   borderOnForeground: true,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15)),
@@ -368,6 +353,7 @@ class _RideOptionState extends State<RideOption> {
               onTap: () {
                 isRideSelected = !isRideSelected;
                 selectedRide = car;
+                taxiBloc.rideDetail = car;
                 if (mounted) setState(() {});
               },
               child: Card(

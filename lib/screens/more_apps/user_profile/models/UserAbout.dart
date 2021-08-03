@@ -1,3 +1,7 @@
+import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/utils/global_key.dart';
+import 'package:provider/provider.dart';
+
 import 'OpeningHour.dart';
 
 class UserAbout {
@@ -15,6 +19,12 @@ class UserAbout {
       this.openingHours = const []});
 
   factory UserAbout.fromJson(Map<String, dynamic> json) {
+    UserBloc userBloc = Provider.of<UserBloc>(
+        myGlobals.navigationKey.currentContext,
+        listen: false);
+
+    userBloc.user.nickName = json['nickname'] ?? "";
+
     return UserAbout(
       address: json['address'] ?? "",
       bio: json['bio'] ?? "",

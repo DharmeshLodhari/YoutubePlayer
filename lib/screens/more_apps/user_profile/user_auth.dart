@@ -323,7 +323,8 @@ class UserAuth extends AuthService {
     return UserAbout();
   }
 
-  Future<UserAbout> addOrUpdateUserBio(UserAbout userAbout) async {
+  Future<UserAbout> addOrUpdateUserBio(
+      {UserAbout userAbout, String nickName}) async {
     var url = secureBaseUrl + "/api/v1/user/about/";
     Map<String, dynamic> data = userAbout.toJson();
     var headers = await getAuthHeaders();
@@ -336,6 +337,8 @@ class UserAuth extends AuthService {
       data.forEach((key, value) {
         request.fields[key] = value is List<Map> ? jsonEncode(value) : value;
       });
+
+      request.fields['nickname'] = nickName;
 
       //create multipart using filepath, string or bytes
       var multipartFile =
@@ -352,10 +355,17 @@ class UserAuth extends AuthService {
       response = await request.send();
 
       responseBody = await response.stream.bytesToString();
+      debugPrint(
+          "URL: $url STATUSCODE:- ${response.statusCode} body:- $responseBody");
     } else {
+      data['nickname'] = nickName;
       var _data = jsonEncode(data);
+      debugPrint("Data Send:- $_data");
       response = await http.patch(url, headers: headers, body: _data);
+
       responseBody = response.body;
+      debugPrint(
+          "URL: $url STATUSCODE:- ${response.statusCode} body:- $responseBody");
     }
     if (response.statusCode == 200) {
       return UserAbout.fromJson(jsonDecode(responseBody));
@@ -411,6 +421,7 @@ class UserAuth extends AuthService {
         "previous": jsonData["previous"],
         "results": jsonData["results"],
       };
+
       return result;
     } else {
       debugPrint("${response.statusCode} ${response.body}");

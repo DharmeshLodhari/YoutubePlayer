@@ -92,6 +92,7 @@ import 'package:Slydo/screens/more_apps/taxi/rate_and_tip_driver.dart';
 import 'package:Slydo/screens/more_apps/taxi/ride_option.dart';
 import 'package:Slydo/screens/more_apps/taxi/searching_for_driver.dart';
 import 'package:Slydo/screens/more_apps/taxi/select_address.dart';
+import 'package:Slydo/screens/more_apps/taxi/select_address_screen.dart';
 import 'package:Slydo/screens/more_apps/taxi/taxi_dashboard.dart';
 import 'package:Slydo/screens/more_apps/taxi/terms_and_condition.dart';
 import 'package:Slydo/screens/more_apps/taxi/trip_ended.dart';
@@ -801,7 +802,7 @@ class RouteGenerator {
 
       case "/select-destination-for-taxi-ride":
         return PageTransition(
-          child: SelectAddressForTaxi(),
+          child: SelectAddressScreen(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

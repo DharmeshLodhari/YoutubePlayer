@@ -161,6 +161,10 @@ void main() async {
           ChangeNotifierProvider<BackgroundFetchBloc>.value(
             value: BackgroundFetchBloc(),
           ),
+
+          ChangeNotifierProvider<TaxiBloc>.value(
+            value: TaxiBloc(),
+          ),
         ], child: MyApp()),
       );
     }, onError: (exception, stack) {

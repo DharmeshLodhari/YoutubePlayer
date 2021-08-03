@@ -1,11 +1,8 @@
-import 'package:Slydo/screens/more_apps/taxi/map_ui.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong/latlong.dart';
 import 'package:sizer/sizer.dart';
 
 class SelectAddressForTaxi extends StatefulWidget {
@@ -22,7 +19,8 @@ class SelectAddressForTaxi extends StatefulWidget {
 class _SelectAddressForTaxiState extends State<SelectAddressForTaxi> {
   double _initialSheetChildSize = 0.9;
 
-  TextEditingController searchDestinationController;
+  TextEditingController chooseDestinationPointController;
+  TextEditingController chooseStartingPointController;
 
   List<Map<String, dynamic>> places = [
     {"name": "Agege Post Office, Agege,", "place": "Lagos"},
@@ -36,28 +34,24 @@ class _SelectAddressForTaxiState extends State<SelectAddressForTaxi> {
     {"name": "67, Mobolaji Bank Anthony Way,", "place": "Ikeja"},
   ];
 
-  MapController mapController;
-
-  LatLng mapPoint = LatLng(6.605874, 3.349149);
-
   @override
   void initState() {
     super.initState();
-    mapController = MapController();
-    searchDestinationController = TextEditingController();
+    chooseDestinationPointController = TextEditingController();
+    chooseStartingPointController = TextEditingController();
   }
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // Image.asset(
-        //   "assets/images/map.png",
-        //   height: double.infinity,
-        //   width: double.infinity,
-        //   fit: BoxFit.fill,
-        // ),
-        MapUI(),
+        Image.asset(
+          "assets/images/map.png",
+          height: double.infinity,
+          width: double.infinity,
+          fit: BoxFit.fill,
+        ),
+        // MapUI(),
         NotificationListener<DraggableScrollableNotification>(
           onNotification: (DraggableScrollableNotification notification) {
             return;
@@ -230,7 +224,7 @@ class _SelectAddressForTaxiState extends State<SelectAddressForTaxi> {
 
   @override
   void dispose() {
-    searchDestinationController?.dispose();
+    chooseDestinationPointController?.dispose();
     super.dispose();
   }
 }

@@ -15,6 +15,7 @@ final String secureBaseUrl = "https://api.slydo.co";
 final String localHostUrl = "https://127.0.0.1:8080";
 final String gifApiKey = "Jmh8SVxEvtKVCegoJDNYnxSSSbfPISPs";
 final String socketUrl = "wss://slydo.co/ws/main";
+final String googleMapAPIKey = "AIzaSyCLDiXFm1mRQEsutNrxX_Hv-sHrbhvASzY";
 
 class AuthService {
   final Duration timeOutDuration = Duration(seconds: 4);
@@ -91,6 +92,7 @@ class AuthService {
       jsonData["url"] =
           secureBaseUrl + "/api/v1/user/customer/" + jsonData["username"];
 
+      debugPrint("=> $jsonData");
       User user = await createUser(jsonData);
 
       return user;

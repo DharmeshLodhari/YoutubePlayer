@@ -209,9 +209,9 @@ class _ChangePasswordState extends State<ChangePassword> {
 
     if (_formKey.currentState.validate()) {
       var data = {
-        "password1": newPassword,
-        "password2": confirmPassword,
-        "old-password": oldPassword,
+        "new_password1": newPassword,
+        "new_password2": confirmPassword,
+        "old_password": oldPassword,
       };
 
       showDialog(

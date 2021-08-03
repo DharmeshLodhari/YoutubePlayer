@@ -68,6 +68,7 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
+      nickName: json['nickname'] ?? "",
       type: json['account_type'],
       avatar: json['avatar'],
       currency: json['default_currency'],

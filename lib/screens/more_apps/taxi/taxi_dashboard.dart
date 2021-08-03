@@ -1,4 +1,8 @@
-import 'package:Slydo/screens/more_apps/taxi/select_address.dart';
+import 'dart:io';
+
+import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/more_apps/taxi/model/PlaceModal.dart';
+import 'package:Slydo/screens/more_apps/taxi/taxi_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/location_service.dart';
 import 'package:Slydo/utils/colors.dart';
@@ -10,6 +14,7 @@ import 'package:Slydo/widget/search_text_field.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter_map/flutter_map.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
 
 class TaxiDashboard extends StatefulWidget {
   @override
@@ -17,55 +22,34 @@ class TaxiDashboard extends StatefulWidget {
 }
 
 class _TaxiDashboardState extends State<TaxiDashboard> {
-  Map<String, dynamic> selectedDestination;
-  bool isDestinationSelected = false;
-
-  bool isAddressSelection = false;
+  TaxiBloc taxiBloc;
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        if (isAddressSelection) {
-          isAddressSelection = false;
-          if (mounted) setState(() {});
-          return false;
-        }
+    taxiBloc = Provider.of<TaxiBloc>(context);
+    return SafeArea(
+      bottom: Platform.isIOS ? true : false,
+      top: false,
+      left: false,
+      right: false,
+      child: WillPopScope(
+        onWillPop: () async {
+          if (taxiBloc.destinationPoint != null) {
+            taxiBloc.destinationPoint = null;
+            return Future.value(false);
+          }
 
-        if (selectedDestination == null)
+          taxiBloc.startingPoint = null;
+          taxiBloc.rideDetail = null;
           return Future.value(true);
-        else {
-          selectedDestination = null;
-          isDestinationSelected = false;
-          if (mounted) setState(() {});
-          return false;
-        }
-      },
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: appBar(),
-        body: isAddressSelection
-            ? SelectAddressForTaxi(
-                toggleAddressSelection: toggleAddressSelection,
-                updateSelectedDestination: updateSelectedDestination)
-            : ScaffoldBody(
-                toggleAddressSelection: toggleAddressSelection,
-                selectedDestination: selectedDestination,
-                isDestinationSelected: isDestinationSelected,
-                updateSelectedDestination: updateSelectedDestination),
+        },
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          appBar: appBar(),
+          body: ScaffoldBody(),
+        ),
       ),
     );
-  }
-
-  void updateSelectedDestination(Map<String, dynamic> place) {
-    isDestinationSelected = true;
-    selectedDestination = place;
-    setState(() {});
-  }
-
-  void toggleAddressSelection(bool selectAddress) {
-    isAddressSelection = selectAddress;
-    if (mounted) setState(() {});
   }
 
   Widget appBar() {
@@ -81,16 +65,18 @@ class _TaxiDashboardState extends State<TaxiDashboard> {
           size: 24,
         ),
         onPressed: () {
-          if (isAddressSelection) {
-            isAddressSelection = false;
-            if (mounted) setState(() {});
+          if (taxiBloc.destinationPoint != null) {
+            taxiBloc.destinationPoint = null;
             return;
+          } else {
+            taxiBloc.startingPoint = null;
+            taxiBloc.rideDetail = null;
+            Navigator.of(context).pop();
           }
-          Navigator.pop(context);
         },
       ),
       title: Text(
-        isAddressSelection ? "Select Address" : "Transport",
+        "Transport",
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -99,22 +85,12 @@ class _TaxiDashboardState extends State<TaxiDashboard> {
 }
 
 class ScaffoldBody extends StatefulWidget {
-  Map<String, dynamic> selectedDestination;
-  void Function(Map<String, dynamic> place) updateSelectedDestination;
-  void Function(bool selectAddress) toggleAddressSelection;
-  bool isDestinationSelected;
-  ScaffoldBody({
-    this.selectedDestination,
-    this.updateSelectedDestination,
-    this.isDestinationSelected,
-    this.toggleAddressSelection,
-  });
   @override
   _ScaffoldBodyState createState() => _ScaffoldBodyState();
 }
 
 class _ScaffoldBodyState extends State<ScaffoldBody> {
-  double _initialSheetChildSize = 0.135;
+  double _initialSheetChildSize = 0.3;
   double _initialSheetChildSizeAfterDestination = 0.25;
   double _dragScrollSheetExtent = 0;
 
@@ -127,40 +103,23 @@ class _ScaffoldBodyState extends State<ScaffoldBody> {
   static const _initialCameraPosition =
       CameraPosition(target: LatLng(6.605874, 3.349149), zoom: 11.5);
 
-  List<Map<String, dynamic>> places = [
-    {"name": "Ikeja City Mall, Alausa", "place": "Ikeja"},
-    {"name": "101, Lagos-Ikorodu Expressway,", "place": "Lagos"},
-    {"name": "67, Mobolaji Bank Anthony Way,", "place": "Ikeja"},
-    {"name": "Agege Post Office, Agege,", "place": "Lagos"},
-    {"name": "101, Lagos-Ikorodu Expressway,", "place": "Lagos"},
-    {"name": "67, Mobolaji Bank Anthony Way,", "place": "Ikeja"},
-  ];
+  List<PlaceModal> places = [];
 
   LatLng mapPoint = LatLng(6.605874, 3.349149);
 
   GoogleMapController googleMapController;
 
-  Marker _carOneMarker = Marker(
-    markerId: MarkerId('Taxi'),
-    infoWindow: const InfoWindow(title: 'Taxi'),
-    icon: BitmapDescriptor.fromAsset("assets/images/car_top.png"),
-    position: LatLng(6.605874, 3.349152),
-  );
-  Marker _bikeOneMarker = Marker(
-    markerId: MarkerId('Bike'),
-    infoWindow: const InfoWindow(title: 'Bike'),
-    icon: BitmapDescriptor.fromAsset("assets/images/bike_top.png"),
-    position: LatLng(6.626400, 3.303030),
-  );
-  Marker _tricycleOneMarker = Marker(
-    markerId: MarkerId('Tricycle'),
-    infoWindow: const InfoWindow(title: 'Tricycle'),
-    icon: BitmapDescriptor.fromAsset("assets/images/tricycle_top.png"),
-    position: LatLng(6.505050, 3.404040),
-  );
+  Marker _carOneMarker;
+  Marker _bikeOneMarker;
+  Marker _tricycleOneMarker;
+
+  TaxiBloc taxiBloc;
+  int index;
 
   @override
   void initState() {
+    places = TaxiAuth().getFakePlaces();
+
     super.initState();
 
     searchDestinationController = TextEditingController();
@@ -174,6 +133,7 @@ class _ScaffoldBodyState extends State<ScaffoldBody> {
 
   @override
   Widget build(BuildContext context) {
+    taxiBloc = Provider.of<TaxiBloc>(context);
     return Stack(
       children: getStackChildren(),
     );
@@ -228,7 +188,7 @@ class _ScaffoldBodyState extends State<ScaffoldBody> {
     //   ],
     // ),
 
-    if (widget.selectedDestination == null) {
+    if (taxiBloc.destinationPoint == null) {
       items.add(getFloatingActionButton());
       items.add(
         NotificationListener<DraggableScrollableNotification>(
@@ -243,13 +203,13 @@ class _ScaffoldBodyState extends State<ScaffoldBody> {
             return;
           },
           child: DraggableScrollableSheet(
-            initialChildSize: widget.isDestinationSelected
+            initialChildSize: taxiBloc.destinationPoint != null
                 ? _initialSheetChildSizeAfterDestination
                 : _initialSheetChildSize,
-            maxChildSize: widget.isDestinationSelected
+            maxChildSize: taxiBloc.destinationPoint != null
                 ? _initialSheetChildSizeAfterDestination
                 : 0.5,
-            minChildSize: widget.isDestinationSelected
+            minChildSize: taxiBloc.destinationPoint != null
                 ? _initialSheetChildSizeAfterDestination
                 : 0.135,
             builder: (context, scrollController) => ClipRRect(
@@ -321,13 +281,13 @@ class _ScaffoldBodyState extends State<ScaffoldBody> {
                       ),
                     ),
                     title: Text(
-                      widget.selectedDestination["name"],
+                      taxiBloc.destinationPoint.name,
                       style: TextStyle(
                           color: blackFont,
                           fontWeight: FontWeight.w400,
                           fontSize: 16),
                     ),
-                    subtitle: Text(widget.selectedDestination["place"]),
+                    subtitle: Text(taxiBloc.destinationPoint.formattedAddress),
                   ),
                   SizedBox(
                     height: 12,
@@ -403,16 +363,16 @@ class _ScaffoldBodyState extends State<ScaffoldBody> {
                 ),
               ),
               title: Text(
-                places[i]["name"],
+                places[i].name,
                 style: TextStyle(
                     color: blackFont,
                     fontWeight: FontWeight.w400,
                     fontSize: 16),
               ),
-              subtitle: Text(places[i]["place"]),
+              subtitle: Text(places[i].formattedAddress),
               onTap: () {
-                widget.updateSelectedDestination(places[i]);
-                setState(() {});
+                taxiBloc.destinationPoint = places[i];
+                index = i;
               },
             ),
         ],
@@ -423,7 +383,9 @@ class _ScaffoldBodyState extends State<ScaffoldBody> {
   Widget getSearchTextField() {
     return GestureDetector(
       onTap: () {
-        widget.toggleAddressSelection(true);
+        // widget.toggleAddressSelection(true);
+
+        Navigator.of(context).pushNamed("/select-destination-for-taxi-ride");
       },
       child: SearchTextField(
         hintText: "Search",
@@ -439,7 +401,13 @@ class _ScaffoldBodyState extends State<ScaffoldBody> {
   Widget submitButton() {
     return CurvedButton(
       onPressed: () {
-        widget.isDestinationSelected = false;
+        if (taxiBloc.startingPoint == null) {
+          if (index != 0) {
+            taxiBloc.startingPoint = places[0];
+          } else {
+            taxiBloc.startingPoint = places[1];
+          }
+        }
         Navigator.of(context).pushNamed("/select-ride-type",
             arguments: {"currentChild": TaxiDashboard()});
       },

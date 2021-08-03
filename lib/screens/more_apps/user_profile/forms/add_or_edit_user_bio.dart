@@ -920,8 +920,11 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
         UserAbout userAbout = tempUserBloc.userAbout;
 
         userAbout.wallpaper = croppedImage;
+        String nickName = _nicknameController.text.trim();
 
-        await UserAuth().addOrUpdateUserBio(userAbout).catchError((error) {
+        await UserAuth()
+            .addOrUpdateUserBio(userAbout: userAbout, nickName: nickName)
+            .catchError((error) {
           isSearchedUserAboutLoading = false;
           if (mounted) setState(() {});
 
@@ -953,7 +956,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     );
   }
 
-  void updateBio() {
+  void updateBio() async {
     if (_formKey.currentState.validate()) {
       addDataToUserAboutObject();
 
@@ -964,7 +967,10 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
                 child: CircularLoadingIndicator(),
               ));
 
-      UserAuth().addOrUpdateUserBio(userBioDetail).then((value) {
+      String nickName = _nicknameController.text.trim();
+      await UserAuth()
+          .addOrUpdateUserBio(userAbout: userBioDetail, nickName: nickName)
+          .then((value) {
         Navigator.pop(context);
         Navigator.pop(
             context, {"userAbout": value, "user_avatar": userBloc.user.avatar});

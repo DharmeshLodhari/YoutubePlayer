@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
@@ -32,7 +31,7 @@ class _SearchingForRideState extends State<SearchingForRide> {
 
   void navigateToArrivingDriver() async {
     driverFindingTimer = Timer(Duration(seconds: 5), () {
-      bool isDriverFound = Random().nextBool();
+      bool isDriverFound = true;
       if (isDriverFound) {
         Navigator.of(context).pushNamed("/driver-arriving");
       } else {

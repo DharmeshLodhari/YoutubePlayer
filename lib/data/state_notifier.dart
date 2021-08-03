@@ -4,6 +4,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_m
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_message_settings.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
+import 'package:Slydo/screens/more_apps/taxi/model/PlaceModal.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/secure_screen.dart';
@@ -266,6 +267,32 @@ class AddressBloc extends ChangeNotifier {
 
   set address(Address value) {
     _address = value;
+    notifyListeners();
+  }
+}
+
+class TaxiBloc extends ChangeNotifier {
+  PlaceModal _startingPoint;
+  PlaceModal _destinationPoint;
+
+  Map<String, dynamic> _rideDetail;
+
+  PlaceModal get startingPoint => _startingPoint;
+  PlaceModal get destinationPoint => _destinationPoint;
+  Map<String, dynamic> get rideDetail => _rideDetail;
+
+  set startingPoint(PlaceModal value) {
+    _startingPoint = value;
+    notifyListeners();
+  }
+
+  set destinationPoint(PlaceModal value) {
+    _destinationPoint = value;
+    notifyListeners();
+  }
+
+  set rideDetail(Map<String, dynamic> value) {
+    _rideDetail = value;
     notifyListeners();
   }
 }
