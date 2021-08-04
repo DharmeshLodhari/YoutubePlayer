@@ -1,12 +1,14 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/taxi/map_ui.dart';
+import 'package:Slydo/screens/more_apps/taxi/taxi_auth.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong/latlong.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
 class ArrivingDriver extends StatefulWidget {
@@ -17,37 +19,57 @@ class ArrivingDriver extends StatefulWidget {
 class _ArrivingDriverState extends State<ArrivingDriver> {
   bool isSearchingForDriver = false;
 
-  MapController mapController;
-
-  LatLng mapPoint = LatLng(6.605874, 3.349149);
-
   bool isDriverStartedMoving = false;
   bool isDriverArrived = false;
   bool isTripStarted = false;
   bool isNavigationStarted = false;
 
+  bool isLoading = false;
+
   @override
   void initState() {
-    Future.delayed(Duration(seconds: 5)).then((value) {
-      isDriverStartedMoving = false;
-      isDriverArrived = true;
-      if (mounted) setState(() {});
-      Future.delayed(Duration(seconds: 5)).then((value) {
-        isDriverStartedMoving = false;
-        isDriverArrived = false;
-        isTripStarted = true;
+    getExistingMapStatus();
 
-        if (mounted) setState(() {});
-        Future.delayed(Duration(seconds: 5)).then((value) {
-          isDriverStartedMoving = false;
-          isDriverArrived = false;
-          isTripStarted = false;
-          isNavigationStarted = true;
-          if (mounted) setState(() {});
-        });
-      });
-    });
+    // Future.delayed(Duration(seconds: 5)).then((value) {
+    //   isDriverStartedMoving = false;
+    //   isDriverArrived = true;
+    //   if (mounted) setState(() {});
+    //   Future.delayed(Duration(seconds: 5)).then((value) {
+    //     isDriverStartedMoving = false;
+    //     isDriverArrived = false;
+    //     isTripStarted = true;
+    //
+    //     if (mounted) setState(() {});
+    //     Future.delayed(Duration(seconds: 5)).then((value) {
+    //       isDriverStartedMoving = false;
+    //       isDriverArrived = false;
+    //       isTripStarted = false;
+    //       isNavigationStarted = true;
+    //       if (mounted) setState(() {});
+    //     });
+    //   });
+    // });
     super.initState();
+  }
+
+  void getExistingMapStatus() {
+    TaxiBloc taxiBloc =
+        Provider.of(myGlobals.navigationKey.currentContext, listen: false);
+    TaxiAuth()
+        .getDirections(
+      origin: LatLng(taxiBloc.startingPoint.geometry.location.lat - 0.0015,
+          taxiBloc.startingPoint.geometry.location.lng),
+      destination: LatLng(taxiBloc.startingPoint.geometry.location.lat,
+          taxiBloc.startingPoint.geometry.location.lng),
+    )
+        .then((value) {
+      taxiBloc.driverToStartingPointDirections = value;
+      isLoading = false;
+      if (mounted) setState(() {});
+    }).catchError((error) {
+      isLoading = false;
+      if (mounted) setState(() {});
+    });
   }
 
   @override
@@ -61,13 +83,12 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
         appBar: appBar(),
         body: Stack(
           children: [
-            // Image.asset(
-            //   "assets/images/map.png",
-            //   height: double.infinity,
-            //   width: double.infinity,
-            //   fit: BoxFit.fill,
-            // ),
-            MapUI(),
+            isLoading
+                ? Center(child: CircularLoadingIndicator())
+                : MapUI(
+                    showRideToStartingPointPolyline: true,
+                    showStartingPointToDestinationPolyline: true,
+                  ),
             isDriverArrived
                 ? Card(
                     shadowColor: dividerColor,

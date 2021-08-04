@@ -1,10 +1,13 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/taxi/map_ui.dart';
+import 'package:Slydo/screens/more_apps/taxi/taxi_auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
 class RideOption extends StatefulWidget {
@@ -62,6 +65,8 @@ class _RideOptionState extends State<RideOption> {
 
   TaxiBloc taxiBloc;
 
+  bool isLoading = false;
+
   @override
   void initState() {
     TaxiBloc taxiBloc =
@@ -71,6 +76,24 @@ class _RideOptionState extends State<RideOption> {
       selectedRide = taxiBloc.rideDetail;
     }
 
+    isLoading = true;
+    if (mounted) setState(() {});
+
+    TaxiAuth()
+        .getDirections(
+            origin: LatLng(taxiBloc.startingPoint.geometry.location.lat,
+                taxiBloc.startingPoint.geometry.location.lng),
+            destination: LatLng(taxiBloc.destinationPoint.geometry.location.lat,
+                taxiBloc.destinationPoint.geometry.location.lng))
+        .then((value) {
+      taxiBloc.startingPointToDestinationDirections = value;
+      isLoading = false;
+      if (mounted) setState(() {});
+    }).catchError((error) {
+      isLoading = false;
+      if (mounted) setState(() {});
+    });
+
     super.initState();
   }
 
@@ -79,6 +102,7 @@ class _RideOptionState extends State<RideOption> {
     taxiBloc = Provider.of<TaxiBloc>(context);
     return WillPopScope(
       onWillPop: () async {
+        taxiBloc.rideDetail = null;
         return Future.value(true);
       },
       child: Scaffold(
@@ -86,9 +110,11 @@ class _RideOptionState extends State<RideOption> {
         appBar: appBar(),
         body: Stack(
           children: [
-            MapUI(
-              showMarker: false,
-            ),
+            isLoading
+                ? Center(child: CircularLoadingIndicator())
+                : MapUI(
+                    showStartingPointToDestinationPolyline: true,
+                  ),
             isRideSelected
                 ? getBottomUI(bookingConfirmation())
                 : toggleCarOption
@@ -113,6 +139,7 @@ class _RideOptionState extends State<RideOption> {
           size: 24,
         ),
         onPressed: () {
+          taxiBloc.rideDetail = null;
           Navigator.pop(context);
         },
       ),

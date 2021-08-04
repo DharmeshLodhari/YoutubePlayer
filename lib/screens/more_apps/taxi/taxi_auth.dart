@@ -1,8 +1,10 @@
 import 'dart:convert';
 
+import 'package:Slydo/screens/more_apps/taxi/model/DirectionsModal.dart';
 import 'package:Slydo/screens/more_apps/taxi/model/PlaceModal.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 
 class TaxiAuth extends AuthService {
@@ -33,6 +35,32 @@ class TaxiAuth extends AuthService {
       debugPrint(
           "URL:- $url statusCode:- ${response.statusCode}  body:- ${response.body}");
       return [];
+    }
+  }
+
+  Future<Directions> getDirections(
+      {@required LatLng origin, @required LatLng destination}) async {
+    String url = "https://maps.googleapis.com/maps/api/directions/json?";
+
+    url = url + "origin=${origin.latitude},${origin.longitude}";
+    url = url + "&destination=${destination.latitude},${destination.longitude}";
+    url = url + "&key=$googleMapAPIKey";
+
+    url = Uri.encodeFull(url);
+    var headers = await getAuthHeaders();
+    var response = await http.get(url, headers: headers);
+    if (response.statusCode == 200) {
+      debugPrint(
+          "URL:- $url statusCode:- ${response.statusCode} body ${response.body}");
+
+      Directions directions = Directions.fromMap(jsonDecode(response.body));
+
+      return directions;
+    } else {
+      debugPrint(
+          "URL:- $url statusCode:- ${response.statusCode}  body:- ${response.body}");
+      return Future.error(
+          "URL:- $url statusCode:- ${response.statusCode}  body:- ${response.body}");
     }
   }
 

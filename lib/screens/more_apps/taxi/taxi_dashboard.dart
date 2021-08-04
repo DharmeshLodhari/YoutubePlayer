@@ -25,6 +25,19 @@ class _TaxiDashboardState extends State<TaxiDashboard> {
   TaxiBloc taxiBloc;
 
   @override
+  void initState() {
+    getNearbyRides();
+    super.initState();
+  }
+
+  void getNearbyRides() {
+    /// TODO: get user location and call api with location to get nearby rides
+    /// & display rides on maps
+  }
+
+  /// TODO: store selected places in database and show them in recent places
+
+  @override
   Widget build(BuildContext context) {
     taxiBloc = Provider.of<TaxiBloc>(context);
     return SafeArea(

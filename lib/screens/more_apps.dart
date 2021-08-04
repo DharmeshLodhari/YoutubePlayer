@@ -105,7 +105,7 @@ class _MoreAppsState extends State<MoreApps> {
       ),
       UserDashboardItemTile(
         icon: Icons.directions_car_rounded,
-        title: "Taxi",
+        title: "Ride",
         onTap: () {
           Navigator.of(context).pushNamed("/taxi");
         },
