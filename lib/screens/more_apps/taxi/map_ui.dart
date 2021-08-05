@@ -1,8 +1,13 @@
+import 'dart:async';
+import 'dart:typed_data';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 
 class MapUI extends StatefulWidget {
@@ -10,10 +15,12 @@ class MapUI extends StatefulWidget {
     Key key,
     this.showRideToStartingPointPolyline = false,
     this.showStartingPointToDestinationPolyline = false,
+    this.startRide = false,
   }) : super(key: key);
 
   final bool showStartingPointToDestinationPolyline;
   final bool showRideToStartingPointPolyline;
+  final bool startRide;
 
   @override
   _MapUIState createState() => _MapUIState();
@@ -28,6 +35,13 @@ class _MapUIState extends State<MapUI> {
   Marker _startingLocation;
   Marker _destinationLocation;
   TaxiBloc taxiBloc;
+
+  StreamSubscription _locationSubscription;
+  Location _locationTracker = Location();
+  Marker _riderMarker;
+  Circle _rideAccuracyCircle;
+
+  String rideMarkerImage = "assets/images/car_top.png";
 
   @override
   void initState() {
@@ -65,23 +79,26 @@ class _MapUIState extends State<MapUI> {
           taxiBloc.rideDetail["name"] == "Tricycle") {
         if (taxiBloc.rideDetail["name"] == "Bike") {
           pin = BitmapDescriptor.fromAsset("assets/images/bike_top.png");
+          rideMarkerImage = "assets/images/bike_top.png";
           markerName = "Bike";
         } else {
           pin = BitmapDescriptor.fromAsset("assets/images/tricycle_top.png");
+          rideMarkerImage = "assets/images/tricycle_top.png";
           markerName = "Tricycle";
         }
       } else {
         pin = BitmapDescriptor.fromAsset("assets/images/car_top.png");
+        rideMarkerImage = "assets/images/car_top.png";
         markerName = "Taxi";
       }
 
-      _rideMarker = Marker(
-        markerId: MarkerId(markerName),
-        infoWindow: const InfoWindow(title: "Taxi"),
-        icon: pin,
-        position: LatLng(taxiBloc.startingPoint.geometry.location.lat - 0.0015,
-            taxiBloc.startingPoint.geometry.location.lng),
-      );
+      // _rideMarker = Marker(
+      //   markerId: MarkerId(markerName),
+      //   infoWindow: const InfoWindow(title: "Taxi"),
+      //   icon: pin,
+      //   position: LatLng(taxiBloc.startingPoint.geometry.location.lat - 0.0015,
+      //       taxiBloc.startingPoint.geometry.location.lng),
+      // );
     }
 
     if (widget.showStartingPointToDestinationPolyline) {
@@ -95,8 +112,12 @@ class _MapUIState extends State<MapUI> {
       _initialCameraPosition = CameraPosition(
           target: LatLng(taxiBloc.startingPoint.geometry.location.lat - 0.0015,
               taxiBloc.startingPoint.geometry.location.lng),
-          zoom: 17,
-          bearing: 100);
+          zoom: 14);
+    }
+
+    if (widget.startRide) {
+      debugPrint("====>startRide ${widget.startRide}");
+      getCurrentLocation();
     }
 
     super.initState();
@@ -114,6 +135,7 @@ class _MapUIState extends State<MapUI> {
       },
       markers: getMarkers(),
       polylines: getPolylines(),
+      circles: getCircles(),
     );
   }
 
@@ -122,6 +144,13 @@ class _MapUIState extends State<MapUI> {
       if (_rideMarker != null) _rideMarker,
       if (_startingLocation != null) _startingLocation,
       if (_destinationLocation != null) _destinationLocation,
+      if (_riderMarker != null) _riderMarker,
+    };
+  }
+
+  Set<Circle> getCircles() {
+    return {
+      if (_rideAccuracyCircle != null) _rideAccuracyCircle,
     };
   }
 
@@ -137,22 +166,86 @@ class _MapUIState extends State<MapUI> {
               .map((e) => LatLng(e.latitude, e.longitude))
               .toList(),
         ),
-      if (taxiBloc.driverToStartingPointDirections != null &&
-          widget.showRideToStartingPointPolyline)
-        Polyline(
-          polylineId: PolylineId('driverToStartingPoint'),
-          color: naturalGreen,
-          width: 5,
-          points: taxiBloc.driverToStartingPointDirections.polylinePoints
-              .map((e) => LatLng(e.latitude, e.longitude))
-              .toList(),
-        ),
+      // if (taxiBloc.driverToStartingPointDirections != null &&
+      //     widget.showRideToStartingPointPolyline)
+      //   Polyline(
+      //     polylineId: PolylineId('driverToStartingPoint'),
+      //     color: naturalGreen,
+      //     width: 5,
+      //     points: taxiBloc.driverToStartingPointDirections.polylinePoints
+      //         .map((e) => LatLng(e.latitude, e.longitude))
+      //         .toList(),
+      //   ),
     };
+  }
+
+  Future<Uint8List> getRiderMarker() async {
+    debugPrint("rider=> $rideMarkerImage");
+    ByteData byteData =
+        await DefaultAssetBundle.of(context).load(rideMarkerImage);
+    return byteData.buffer.asUint8List();
+  }
+
+  void updateMarkerAndCircle(LocationData newLocalData, Uint8List imageData) {
+    LatLng latlng = LatLng(newLocalData.latitude, newLocalData.longitude);
+    this.setState(() {
+      _riderMarker = Marker(
+          markerId: MarkerId("home"),
+          position: latlng,
+          rotation: newLocalData.heading,
+          draggable: false,
+          zIndex: 2,
+          flat: true,
+          anchor: Offset(0.5, 0.5),
+          icon: BitmapDescriptor.fromBytes(imageData));
+      _rideAccuracyCircle = Circle(
+          circleId: CircleId("car"),
+          radius: newLocalData.accuracy,
+          zIndex: 1,
+          strokeColor: Colors.blue,
+          center: latlng,
+          fillColor: Colors.blue.withAlpha(70));
+    });
+  }
+
+  void getCurrentLocation() async {
+    try {
+      Uint8List imageData = await getRiderMarker();
+      var location = await _locationTracker.getLocation();
+
+      updateMarkerAndCircle(location, imageData);
+
+      if (_locationSubscription != null) {
+        _locationSubscription.cancel();
+      }
+
+      _locationSubscription =
+          _locationTracker.onLocationChanged.listen((newLocalData) {
+        debugPrint("==>$newLocalData");
+        if (googleMapController != null) {
+          googleMapController.animateCamera(CameraUpdate.newCameraPosition(
+              new CameraPosition(
+                  bearing: 30,
+                  target: LatLng(newLocalData.latitude, newLocalData.longitude),
+                  tilt: 0,
+                  zoom: 18.00)));
+          updateMarkerAndCircle(newLocalData, imageData);
+        }
+      });
+    } on PlatformException catch (e) {
+      if (e.code == 'PERMISSION_DENIED') {
+        debugPrint("Permission Denied");
+      }
+    }
   }
 
   @override
   void dispose() {
     googleMapController?.dispose();
+
+    if (_locationSubscription != null) {
+      _locationSubscription.cancel();
+    }
     super.dispose();
   }
 }

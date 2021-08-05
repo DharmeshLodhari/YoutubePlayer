@@ -26,9 +26,13 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
 
   bool isLoading = false;
 
+  bool startRide = false;
+
+  Key key = Key("map");
+
   @override
   void initState() {
-    getExistingMapStatus();
+    // getExistingMapStatus();
 
     // Future.delayed(Duration(seconds: 5)).then((value) {
     //   isDriverStartedMoving = false;
@@ -49,6 +53,16 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
     //     });
     //   });
     // });
+    Future.delayed(Duration(seconds: 5)).then((value) {
+      isDriverStartedMoving = false;
+      isDriverArrived = false;
+      isTripStarted = false;
+      isNavigationStarted = true;
+      startRide = true;
+      if (mounted) setState(() {});
+      debugPrint("startRide:- $startRide");
+    });
+
     super.initState();
   }
 
@@ -86,8 +100,10 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
             isLoading
                 ? Center(child: CircularLoadingIndicator())
                 : MapUI(
-                    showRideToStartingPointPolyline: true,
+                    key: UniqueKey(),
+                    showRideToStartingPointPolyline: false,
                     showStartingPointToDestinationPolyline: true,
+                    startRide: startRide,
                   ),
             isDriverArrived
                 ? Card(

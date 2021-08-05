@@ -50,9 +50,6 @@ class TaxiAuth extends AuthService {
     var headers = await getAuthHeaders();
     var response = await http.get(url, headers: headers);
     if (response.statusCode == 200) {
-      debugPrint(
-          "URL:- $url statusCode:- ${response.statusCode} body ${response.body}");
-
       Directions directions = Directions.fromMap(jsonDecode(response.body));
 
       return directions;

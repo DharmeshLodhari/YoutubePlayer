@@ -8,11 +8,11 @@ import 'package:Slydo/services/location_service.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/search_text_field.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter_map/flutter_map.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -24,13 +24,32 @@ class TaxiDashboard extends StatefulWidget {
 class _TaxiDashboardState extends State<TaxiDashboard> {
   TaxiBloc taxiBloc;
 
+  LatLng userCurrentLocation;
+  bool isLoading = false;
+
   @override
   void initState() {
     getNearbyRides();
     super.initState();
   }
 
-  void getNearbyRides() {
+  void getNearbyRides() async {
+    isLoading = true;
+    if (mounted) setState(() {});
+    UserLocation userLocation =
+        await LocationService().getLocation().catchError((error) {
+      isLoading = false;
+      if (mounted) setState(() {});
+      debugPrint("ERROR:- $error");
+    });
+
+    if (userLocation != null) {
+      userCurrentLocation =
+          LatLng(userLocation.latitude, userLocation.longitude);
+    }
+    isLoading = false;
+    if (mounted) setState(() {});
+
     /// TODO: get user location and call api with location to get nearby rides
     /// & display rides on maps
   }
@@ -59,7 +78,11 @@ class _TaxiDashboardState extends State<TaxiDashboard> {
         child: Scaffold(
           backgroundColor: Colors.white,
           appBar: appBar(),
-          body: ScaffoldBody(),
+          body: isLoading
+              ? Center(
+                  child: CircularLoadingIndicator(),
+                )
+              : ScaffoldBody(userCurrentLocation: userCurrentLocation),
         ),
       ),
     );
@@ -98,6 +121,9 @@ class _TaxiDashboardState extends State<TaxiDashboard> {
 }
 
 class ScaffoldBody extends StatefulWidget {
+  ScaffoldBody({this.userCurrentLocation});
+  final LatLng userCurrentLocation;
+
   @override
   _ScaffoldBodyState createState() => _ScaffoldBodyState();
 }
@@ -111,20 +137,16 @@ class _ScaffoldBodyState extends State<ScaffoldBody> {
   double _fabPosition = 0;
   double _fabPositionPadding = 10;
 
-  TextEditingController searchDestinationController;
-
-  static const _initialCameraPosition =
-      CameraPosition(target: LatLng(6.605874, 3.349149), zoom: 11.5);
+  CameraPosition _initialCameraPosition;
 
   List<PlaceModal> places = [];
-
-  LatLng mapPoint = LatLng(6.605874, 3.349149);
 
   GoogleMapController googleMapController;
 
   Marker _carOneMarker;
   Marker _bikeOneMarker;
   Marker _tricycleOneMarker;
+  Circle _myLocationMarker;
 
   TaxiBloc taxiBloc;
   int index;
@@ -134,8 +156,51 @@ class _ScaffoldBodyState extends State<ScaffoldBody> {
     places = TaxiAuth().getFakePlaces();
 
     super.initState();
+    _initialCameraPosition =
+        CameraPosition(target: LatLng(6.605874, 3.349149), zoom: 11.5);
 
-    searchDestinationController = TextEditingController();
+    if (widget.userCurrentLocation != null) {
+      _initialCameraPosition = CameraPosition(
+          target: LatLng(widget.userCurrentLocation.latitude,
+              widget.userCurrentLocation.longitude),
+          zoom: 14);
+
+      _myLocationMarker = Circle(
+          circleId: CircleId("MyLocation"),
+          center: LatLng(widget.userCurrentLocation.latitude,
+              widget.userCurrentLocation.longitude),
+          fillColor: navyBlue.withAlpha(70),
+          radius: 100,
+          visible: true,
+          zIndex: 1,
+          strokeWidth: 2,
+          strokeColor: navyBlue);
+
+      debugPrint(
+          "${widget.userCurrentLocation.latitude} => ${widget.userCurrentLocation.longitude}");
+      _carOneMarker = Marker(
+        markerId: MarkerId("Taxi"),
+        infoWindow: const InfoWindow(title: "Taxi"),
+        icon: BitmapDescriptor.fromAsset("assets/images/car_top.png"),
+        position: LatLng(widget.userCurrentLocation.latitude - 0.003300,
+            widget.userCurrentLocation.longitude + 0.009100),
+      );
+      _bikeOneMarker = Marker(
+        markerId: MarkerId("Bike"),
+        infoWindow: const InfoWindow(title: "Taxi"),
+        icon: BitmapDescriptor.fromAsset("assets/images/bike_top.png"),
+        position: LatLng(widget.userCurrentLocation.latitude - 0.010150,
+            widget.userCurrentLocation.longitude - 0.000100),
+      );
+      _tricycleOneMarker = Marker(
+        markerId: MarkerId("Tricycle"),
+        infoWindow: const InfoWindow(title: "Taxi"),
+        icon: BitmapDescriptor.fromAsset("assets/images/tricycle_top.png"),
+        position: LatLng(widget.userCurrentLocation.latitude - 0.010150,
+            widget.userCurrentLocation.longitude - 0.010100),
+      );
+    }
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
         // render the floating button on widget
@@ -154,12 +219,6 @@ class _ScaffoldBodyState extends State<ScaffoldBody> {
 
   List<Widget> getStackChildren() {
     List<Widget> items = [];
-    // items.add(Image.asset(
-    //   "assets/images/map.png",
-    //   height: double.infinity,
-    //   width: double.infinity,
-    //   fit: BoxFit.fill,
-    // ));
     items.add(GoogleMap(
       initialCameraPosition: _initialCameraPosition,
       myLocationButtonEnabled: false,
@@ -167,10 +226,13 @@ class _ScaffoldBodyState extends State<ScaffoldBody> {
       onMapCreated: (controller) {
         googleMapController = controller;
       },
+      circles: {
+        if (_myLocationMarker != null) _myLocationMarker,
+      },
       markers: {
         if (_carOneMarker != null) _carOneMarker,
         if (_bikeOneMarker != null) _bikeOneMarker,
-        if (_tricycleOneMarker != null) _tricycleOneMarker
+        if (_tricycleOneMarker != null) _tricycleOneMarker,
       },
     ));
 
@@ -406,7 +468,6 @@ class _ScaffoldBodyState extends State<ScaffoldBody> {
         hintStyle: TextStyle(
             fontSize: 14, fontWeight: FontWeight.w400, color: darkGrey),
         onSubmit: () {},
-        textEditingController: searchDestinationController,
       ),
     );
   }
@@ -432,7 +493,6 @@ class _ScaffoldBodyState extends State<ScaffoldBody> {
 
   @override
   void dispose() {
-    searchDestinationController?.dispose();
     googleMapController?.dispose();
     super.dispose();
   }
