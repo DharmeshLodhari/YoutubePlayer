@@ -106,6 +106,22 @@ class _MapUIState extends State<MapUI> {
           target: LatLng(taxiBloc.startingPoint.geometry.location.lat,
               taxiBloc.startingPoint.geometry.location.lng),
           zoom: 14.5);
+
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        Future.delayed(Duration(seconds: 1)).then((value) {
+          if (mounted) {
+            googleMapController.animateCamera(CameraUpdate.newLatLngBounds(
+                LatLngBounds(
+                    southwest: LatLng(
+                        taxiBloc.startingPoint.geometry.location.lat,
+                        taxiBloc.startingPoint.geometry.location.lng),
+                    northeast: LatLng(
+                        taxiBloc.destinationPoint.geometry.location.lat,
+                        taxiBloc.destinationPoint.geometry.location.lng)),
+                50));
+          }
+        });
+      });
     }
 
     if (widget.showRideToStartingPointPolyline) {
@@ -180,7 +196,7 @@ class _MapUIState extends State<MapUI> {
   }
 
   Future<Uint8List> getRiderMarker() async {
-    debugPrint("rider=> $rideMarkerImage");
+    debugPrint("rider => $rideMarkerImage");
     ByteData byteData =
         await DefaultAssetBundle.of(context).load(rideMarkerImage);
     return byteData.buffer.asUint8List();
@@ -192,7 +208,7 @@ class _MapUIState extends State<MapUI> {
       _riderMarker = Marker(
           markerId: MarkerId("home"),
           position: latlng,
-          rotation: newLocalData.heading,
+          rotation: newLocalData.heading + 40,
           draggable: false,
           zIndex: 2,
           flat: true,
@@ -221,13 +237,15 @@ class _MapUIState extends State<MapUI> {
 
       _locationSubscription =
           _locationTracker.onLocationChanged.listen((newLocalData) {
-        debugPrint("==>$newLocalData");
+        debugPrint("==>altitude ${newLocalData.altitude}");
+        debugPrint("==>${newLocalData.latitude}");
+        debugPrint("==>heading ${newLocalData.heading}");
+
         if (googleMapController != null) {
           googleMapController.animateCamera(CameraUpdate.newCameraPosition(
               new CameraPosition(
-                  bearing: 30,
+                  bearing: newLocalData.heading,
                   target: LatLng(newLocalData.latitude, newLocalData.longitude),
-                  tilt: 0,
                   zoom: 18.00)));
           updateMarkerAndCircle(newLocalData, imageData);
         }

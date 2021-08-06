@@ -60,7 +60,7 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
       isNavigationStarted = true;
       startRide = true;
       if (mounted) setState(() {});
-      debugPrint("startRide:- $startRide");
+      debugPrint("startRide :- $startRide");
     });
 
     super.initState();
