@@ -134,7 +134,6 @@ class DatabaseHelper {
   Future<Map<String, dynamic>> getJwt() async {
     var dbClient = await db;
     List<Map<String, dynamic>> res = await dbClient.query(JWT_TABLE);
-
     if (res != null && res.length > 0) {
       return res.first;
     }

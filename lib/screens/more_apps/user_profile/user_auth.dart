@@ -174,7 +174,10 @@ class UserAuth extends AuthService {
     headers.remove("Content-type");
     var _data = await getDeviceInfo();
     data.addAll(_body);
-    data.addAll(_data);
+
+    _data.entries.forEach((element) {
+      data[element.key] = element.value.toString();
+    });
 
     var response = await http.post(url, headers: headers, body: data);
     if (response.statusCode == 200) {
@@ -240,6 +243,7 @@ class UserAuth extends AuthService {
       String phoneNumber, String resetToken) async {
     var url = secureBaseUrl + "/api/v1/user/auth/password-reset/";
     var headers = getNonAuthHeader();
+
     var data = {
       "password1": passwordOne,
       "password2": passwordTwo,
@@ -247,8 +251,11 @@ class UserAuth extends AuthService {
       "phone-number": phoneNumber,
     };
     var _data = jsonEncode(data);
+    debugPrint(_data);
     var response = await http.patch(url, body: _data, headers: headers);
     var jsonData = json.decode(response.body);
+    debugPrint(
+        "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     if (response.statusCode == 200) {
       return true;
     } else {
@@ -256,7 +263,7 @@ class UserAuth extends AuthService {
     }
   }
 
-  Future<bool> changePassword(Map<String, dynamic> data) async {
+  Future<Map<String, dynamic>> changePassword(Map<String, dynamic> data) async {
     var url = secureBaseUrl + "/api/v1/user/change-password/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
@@ -287,7 +294,10 @@ class UserAuth extends AuthService {
       await deleteJwt();
       await DatabaseHelper().saveJwt(data);
 
-      return true;
+      /// TODO: Also update the password in secure storage if user has selected
+      /// Remember me button
+
+      return {"new_password": data["new_password1"]};
     } else {
       return Future.error("ERROR: -");
     }
@@ -338,7 +348,7 @@ class UserAuth extends AuthService {
         request.fields[key] = value is List<Map> ? jsonEncode(value) : value;
       });
 
-      request.fields['nickname'] = nickName;
+      request.fields['nickname'] = nickName.toLowerCase();
 
       //create multipart using filepath, string or bytes
       var multipartFile =
@@ -358,7 +368,7 @@ class UserAuth extends AuthService {
       debugPrint(
           "URL: $url STATUSCODE:- ${response.statusCode} body:- $responseBody");
     } else {
-      data['nickname'] = nickName;
+      data['nickname'] = nickName.toLowerCase();
       var _data = jsonEncode(data);
       debugPrint("Data Send:- $_data");
       response = await http.patch(url, headers: headers, body: _data);

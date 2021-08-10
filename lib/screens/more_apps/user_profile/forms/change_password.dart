@@ -1,8 +1,13 @@
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/services/secure_storage.dart';
+import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../utils/colors.dart';
 import '../user_auth.dart';
@@ -222,7 +227,14 @@ class _ChangePasswordState extends State<ChangePassword> {
               ));
 
       await UserAuth().changePassword(data).then((value) {
-        if (value) {
+        if (value != null) {
+          UserBloc userBloc = Provider.of<UserBloc>(
+              myGlobals.navigationKey.currentContext,
+              listen: false);
+          userBloc.user.password = value["new_password"];
+
+          storePasswordInSecureStorage(password: userBloc.user.password);
+
           Navigator.popUntil(context, ModalRoute.withName('/dashboard'));
         } else {
           Navigator.pop(context);
@@ -231,6 +243,15 @@ class _ChangePasswordState extends State<ChangePassword> {
         Navigator.pop(context);
         debugPrint("ERROR:- $error");
       });
+    }
+  }
+
+  void storePasswordInSecureStorage({String password}) async {
+    SharedPreferences _sharedPreferences =
+        await SharedPreferences.getInstance();
+    bool isRemember = _sharedPreferences.getBool('isChecked');
+    if (isRemember != null && isRemember) {
+      await SecureStorage().updateUserPassword(password: password);
     }
   }
 }

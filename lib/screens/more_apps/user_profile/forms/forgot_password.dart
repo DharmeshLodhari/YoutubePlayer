@@ -152,7 +152,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       keyboardType: TextInputType.phone,
       labelText: "Phone number",
       validator: (val) {
-        if (val.isNotEmpty && val.length == 13) {
+        if (val.isNotEmpty && val.length > 9) {
           return null;
         }
         return AppLocalization.of(context).invalidPhoneNumber;

@@ -441,16 +441,16 @@ class _UserDashboardState extends State<UserDashboard> {
         SizedBox(
           width: 12,
         ),
-        // Expanded(child: Container()),
-        Expanded(
-            child: UserDashboardItemTile(
-          icon: SlydoAppIcon.more,
-          title: "More",
-          onTap: () {
-            Navigator.pushNamed(context, "/more-apps");
-          },
-          iconColor: HexColor("#374677"),
-        )),
+        Expanded(child: Container()),
+        // Expanded(
+        //     child: UserDashboardItemTile(
+        //   icon: SlydoAppIcon.more,
+        //   title: "More",
+        //   onTap: () {
+        //     Navigator.pushNamed(context, "/more-apps");
+        //   },
+        //   iconColor: HexColor("#374677"),
+        // )),
         SizedBox(
           width: 12,
         ),
@@ -733,7 +733,7 @@ class _UserDashboardState extends State<UserDashboard> {
                       title: "My profile",
                       icon: SlydoAppIcon.user,
                       onTap: () async {
-                        await UserAuth()
+                        UserAuth()
                             .fetchCustomerProfile(userBloc.user.userName)
                             .then((user) {
                           if (mounted) {

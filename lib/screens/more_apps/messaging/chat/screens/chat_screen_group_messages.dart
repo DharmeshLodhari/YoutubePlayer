@@ -2346,7 +2346,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                   thickness: 2.5,
                   child: TextFormField(
                     controller: messageController,
-                    textInputAction: TextInputAction.send,
+                    textInputAction: TextInputAction.newline,
                     keyboardType: TextInputType.multiline,
                     focusNode: messageFocus,
                     onFieldSubmitted: (value) {

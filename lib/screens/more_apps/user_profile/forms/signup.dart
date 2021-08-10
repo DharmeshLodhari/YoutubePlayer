@@ -390,11 +390,11 @@ class _SignUpState extends State<SignUp> {
       phoneNumber = _phoneNumberController.text.trim();
       password = _passwordController.text.trim();
 
-      Map data = {
+      Map<String, dynamic> data = {
         "phone_number": _phoneNumberController.text.trim(),
         "full_name": _fullNameController.text.trim(),
-        "user_name": _userNameController.text.trim(),
-        "nick_name": _nickNameController.text.trim(),
+        "username": _userNameController.text.trim(),
+        "nickname": _nickNameController.text.trim(),
         "password1": _passwordController.text.trim(),
         "password2": _confirmPasswordController.text.trim(),
       };
@@ -409,7 +409,7 @@ class _SignUpState extends State<SignUp> {
           Navigator.of(context).popAndPushNamed("/login");
         }
       }).catchError((error) {
-        Toast.show(error, context,
+        Toast.show(error.toString(), context,
             textColor: Colors.white, backgroundColor: blackFont);
       });
     } else {

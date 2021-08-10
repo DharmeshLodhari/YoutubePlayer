@@ -22,6 +22,20 @@ class SecureStorage {
     return await _storage.write(key: "user", value: userData);
   }
 
+  // Write user
+  Future<void> updateUserPassword({String password}) async {
+    String userData = await _storage.read(key: "user");
+    if (userData == null) {
+      return;
+    }
+    SecureUser user = SecureUser.fromJson(jsonDecode(userData));
+    user.password = password;
+
+    String newUserData = jsonEncode(user.toJson());
+    // debugPrint("")
+    return await _storage.write(key: "user", value: newUserData);
+  }
+
   // Read user
   Future<SecureUser> getUser() async {
     String userData = await _storage.read(key: "user");

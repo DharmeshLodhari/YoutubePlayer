@@ -235,22 +235,8 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     return Column(
       children: [
         SizedBox(height: 20),
-        fullNameField(),
-        SizedBox(height: 20),
-        userNameField(),
-        SizedBox(height: 20),
         nickNameField(),
       ],
-    );
-  }
-
-  Widget fullNameField() {
-    return CustomizedTextFormField(
-      controller: _fullNameController,
-      labelColor: darkGrey,
-      labelText: "Full name",
-      keyboardType: TextInputType.name,
-      validator: fullNameValidator,
     );
   }
 
@@ -286,16 +272,6 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     }
 
     return null;
-  }
-
-  Widget userNameField() {
-    return CustomizedTextFormField(
-      controller: _userNameController,
-      labelColor: darkGrey,
-      labelText: "Username",
-      keyboardType: TextInputType.text,
-      validator: userNameValidator,
-    );
   }
 
   String userNameValidator(String username) {

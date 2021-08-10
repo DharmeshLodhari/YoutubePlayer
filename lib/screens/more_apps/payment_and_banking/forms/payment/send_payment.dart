@@ -124,7 +124,9 @@ class _SendPaymentState extends State<SendPayment> {
   }
 
   void setAllFieldProduct() {
-    _amountController.text = product.price;
+    _amountController.text =
+        moneyDisplayNormalizer(int.parse(product.price.toString()));
+
     amount = double.parse(_amountController.text);
     _referenceController.text = product.name;
     reference = _referenceController.text;
@@ -133,7 +135,8 @@ class _SendPaymentState extends State<SendPayment> {
   }
 
   void setAllFieldService() {
-    _amountController.text = service.price;
+    _amountController.text =
+        moneyDisplayNormalizer(int.parse(service.price.toString()));
     amount = double.parse(_amountController.text);
     _referenceController.text = service.name;
     reference = _referenceController.text;
