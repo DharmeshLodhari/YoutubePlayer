@@ -348,7 +348,7 @@ class UserAuth extends AuthService {
         request.fields[key] = value is List<Map> ? jsonEncode(value) : value;
       });
 
-      request.fields['nickname'] = nickName.toLowerCase();
+      request.fields['nickname'] = nickName;
 
       //create multipart using filepath, string or bytes
       var multipartFile =
@@ -368,7 +368,7 @@ class UserAuth extends AuthService {
       debugPrint(
           "URL: $url STATUSCODE:- ${response.statusCode} body:- $responseBody");
     } else {
-      data['nickname'] = nickName.toLowerCase();
+      data['nickname'] = nickName;
       var _data = jsonEncode(data);
       debugPrint("Data Send:- $_data");
       response = await http.patch(url, headers: headers, body: _data);
