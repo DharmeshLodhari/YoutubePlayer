@@ -464,7 +464,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
                       '/orders-list',
                     );
                   } else if (response.statusCode == 500) {
-                    Navigator.pop(context);
                     Toast.show(
                       AppLocalization.of(context).serverError,
                       context,

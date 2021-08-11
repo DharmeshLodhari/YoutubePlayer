@@ -141,6 +141,7 @@ class CustomerProfile {
   String userName;
   String avatar;
   String qrCode;
+  String nickname;
   String type;
   String conversationId;
   String uuid;
@@ -156,6 +157,7 @@ class CustomerProfile {
     this.avatar = "",
     this.userAbout,
     this.qrCode = "",
+    this.nickname,
     this.type = "user",
     this.conversationId = "",
     this.defaultCurrency = "NGN",
@@ -170,6 +172,7 @@ class CustomerProfile {
         userName: json['username'] ?? "",
         avatar: json['avatar'] ?? "",
         qrCode: json['qr_code'] ?? "",
+        nickname: json['nickname'],
         type: json['type'] ?? json['account_type'] ?? "user",
         conversationId: json['conversation_id'] ?? "",
         status: json['status'] ?? UserStatus.UNKNOWN);

@@ -267,6 +267,8 @@ class ShoppingAuthService extends AuthService {
       Product product = createProduct(jsonData);
       return product;
     } else {
+      debugPrint(
+          "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
       throw jsonData;
     }
   }

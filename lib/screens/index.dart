@@ -142,7 +142,7 @@ class _IndexState extends State<Index> {
                       SizedBox(
                         height: 10,
                       ),
-                      resetDeviceField(),
+                      // resetDeviceField(),
                     ],
                   ),
                 ),

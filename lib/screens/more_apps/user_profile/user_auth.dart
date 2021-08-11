@@ -51,6 +51,8 @@ class UserAuth extends AuthService {
     var response = await http.get(url, headers: headers);
 
     if (response.statusCode == 200) {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
       var jsonData = json.decode(response.body);
       CustomerProfile customerProfile = CustomerProfile.fromJson(jsonData);
       return customerProfile;

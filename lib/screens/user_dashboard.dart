@@ -497,13 +497,6 @@ class _UserDashboardState extends State<UserDashboard> {
 
     MainSocketMessageHandler().dispose();
 
-    // AssetsAudioPlayer.allPlayers().forEach((key, value) {
-    //   debugPrint("Key:- $key");
-    //   value.dispose();
-    // });
-
-    // ChatMessageSynchronizer().dispose();
-
     await _auth.logOut();
 
     CacheManager().deleteCache(clearAll: true);
@@ -522,12 +515,11 @@ class _UserDashboardState extends State<UserDashboard> {
     }
 
     if (mounted) {
-      Navigator.of(context).popUntil(ModalRoute.withName('/splash'));
+      Navigator.of(myGlobals.navigationKey.currentContext)
+          .popUntil(ModalRoute.withName('/splash'));
 
-      Navigator.of(context)
+      Navigator.of(myGlobals.navigationKey.currentContext)
           .pushNamed("/index", arguments: {'isIntroDone': true});
-      // Navigator.pushNamedAndRemoveUntil(context, "/index", (r) => false,
-      //     arguments: {'isIntroDone': true});
     }
   }
 

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:Slydo/data/database_helper.dart';
@@ -82,8 +83,6 @@ class AuthService {
       data["expiration"] =
           expirationTime.toString(); // Convert expirationTime int to string .
 
-      // Delete jwt from db if one exist
-      await deleteJwt();
       await _db.saveJwt(data);
 
       // Save user to database
@@ -91,8 +90,6 @@ class AuthService {
       jsonData["password"] = password;
       jsonData["url"] =
           secureBaseUrl + "/api/v1/user/customer/" + jsonData["username"];
-
-      debugPrint("=> $jsonData");
       User user = await createUser(jsonData);
 
       return user;
@@ -172,7 +169,7 @@ class AuthService {
     }
 
     String bearer = "Bearer " + tokenData["access"];
-    // debugPrint("Token:- $bearer");
+    log("Token:- $bearer");
     var uuid = Uuid();
     var transactionId = uuid.v4();
     var headers = {

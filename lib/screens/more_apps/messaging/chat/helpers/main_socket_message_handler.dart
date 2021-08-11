@@ -13,7 +13,12 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.d
 import 'package:Slydo/screens/more_apps/messaging/chat/models/MainSocketMessageModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
+import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/services/fcm_push_notification.dart';
+import 'package:Slydo/services/secure_storage.dart';
+import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -22,6 +27,7 @@ import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
 import 'package:uuid/uuid.dart';
 
@@ -191,6 +197,10 @@ class MainSocketMessageHandler {
         break;
 
       case "user_recording_audio_message":
+        break;
+
+      case "logout_user":
+        logoutUser();
         break;
 
       default:
@@ -516,5 +526,58 @@ class MainSocketMessageHandler {
 
       sendDataToSocket(data);
     }
+  }
+
+  void logoutUser() async {
+    BackgroundFetchBloc backgroundFetchBloc = Provider.of<BackgroundFetchBloc>(
+        myGlobals.navigationKey.currentContext,
+        listen: false);
+
+    backgroundFetchBloc.isAllowed = false;
+
+    emptyBasketCart();
+    SharedPreferences _sharedPreferences;
+
+    MainSocketMessageHandler().dispose();
+
+    await AuthService().logOut();
+
+    CacheManager().deleteCache(clearAll: true);
+    MainSocketProvider socketProvider = Provider.of<MainSocketProvider>(
+        myGlobals.navigationKey.currentContext,
+        listen: false);
+    await socketProvider?.close();
+
+    await PushNotificationService().logout();
+
+    BankAccountBloc bankAccountBloc = Provider.of<BankAccountBloc>(
+        myGlobals.navigationKey.currentContext,
+        listen: false);
+    bankAccountBloc.bankAccount = BankAccount();
+
+    DashboardBloc dashboardBloc = Provider.of<DashboardBloc>(
+        myGlobals.navigationKey.currentContext,
+        listen: false);
+    dashboardBloc.index = 0;
+    _sharedPreferences = await SharedPreferences.getInstance();
+    _sharedPreferences.setBool('isLoggedOut', true);
+    await _sharedPreferences.clear();
+
+    /// clearing all data when user is logout
+    await SecureStorage().clear();
+
+    Navigator.of(myGlobals.navigationKey.currentContext)
+        .popUntil(ModalRoute.withName('/splash'));
+
+    Navigator.of(myGlobals.navigationKey.currentContext)
+        .pushNamed("/index", arguments: {'isIntroDone': true});
+  }
+
+  void emptyBasketCart() {
+    BasketBloc basketBloc = Provider.of<BasketBloc>(
+        myGlobals.navigationKey.currentContext,
+        listen: false);
+    basketBloc.items.clear();
+    basketBloc.total = 0;
   }
 }

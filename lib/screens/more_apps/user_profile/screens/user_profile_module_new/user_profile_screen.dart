@@ -158,10 +158,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                         labelPadding: EdgeInsets.zero,
                         indicator: BoxDecoration(),
                         onTap: (int index) {
-                          currentIndex = index;
-                          if (mounted) setState(() {});
-                          pageController.jumpToPage(currentIndex);
-                          if (mounted) setState(() {});
+                          changeIndex(index);
                         },
                         tabs: getTabs(),
                       ),
@@ -173,6 +170,12 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         ),
       ),
     );
+  }
+
+  void changeIndex(int index) {
+    currentIndex = index;
+    if (mounted) setState(() {});
+    pageController.jumpToPage(currentIndex);
   }
 
   Widget getAppbar(var context) {
@@ -265,7 +268,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                           height: 16,
                         ),
                         Text(
-                          searchedUser.fullName,
+                          searchedUser.nickname ?? searchedUser.fullName,
                           style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w700,
@@ -631,7 +634,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     } else {
       list.addAll([
         KeepAlivePage(
-          child: UserInfo(user: searchedUser),
+          child: UserInfo(user: searchedUser, changeIndex: changeIndex),
         ),
         KeepAlivePage(
           child: UserQRCodeScreen(user: searchedUser),

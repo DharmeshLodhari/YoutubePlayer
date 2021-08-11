@@ -127,7 +127,7 @@ class _SendPaymentState extends State<SendPayment> {
     _amountController.text =
         moneyDisplayNormalizer(int.parse(product.price.toString()));
 
-    amount = double.parse(_amountController.text);
+    amount = double.parse(_amountController.text.replaceAll(",", ""));
     _referenceController.text = product.name;
     reference = _referenceController.text;
     selectedCategory = "Shopping";

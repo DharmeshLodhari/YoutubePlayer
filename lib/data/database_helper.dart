@@ -22,11 +22,6 @@ class DatabaseHelper {
 
   static Database _db;
 
-  /// if _db fail to get this data then we will return this variables
-  User _user;
-  Map<String, String> _jwt;
-  Map<String, dynamic> _deviceData;
-
   Future<Database> get db async {
     if (_db != null) return _db;
     _db = await openDB();
@@ -53,7 +48,6 @@ class DatabaseHelper {
   // Save user to the db
   Future<int> saveUser(User user) async {
     var dbClient = await db;
-    _user = user;
     int res;
     try {
       res = await dbClient.insert(USER_TABLE, user.toMap());
@@ -69,7 +63,6 @@ class DatabaseHelper {
   // Delete user from db
   Future<int> deleteUsers() async {
     var dbClient = await db;
-    _user = null;
     int res = await dbClient.delete(USER_TABLE);
     debugPrint("DATABASE:- $USER_TABLE deleted from db");
     return res;
@@ -103,8 +96,6 @@ class DatabaseHelper {
         password: obj["password"],
         isVerified: obj["is_verified"],
       );
-    } else {
-      user = _user;
     }
 
     return user;
@@ -114,8 +105,9 @@ class DatabaseHelper {
 
   // save user's jwt to the db
   Future<int> saveJwt(Map<String, String> data) async {
+    debugPrint("DATA:- ${data['access']}");
     var dbClient = await db;
-    _jwt = data;
+    await deleteJwt();
     int res = await dbClient.insert(JWT_TABLE, data);
     debugPrint("DATABASE:- $JWT_TABLE saved to db");
     return res;
@@ -124,7 +116,6 @@ class DatabaseHelper {
   // Delete the jwt from the db
   Future<int> deleteJwt() async {
     var dbClient = await db;
-    _jwt = null;
     int res = await dbClient.delete(JWT_TABLE);
     debugPrint("DATABASE:- $JWT_TABLE deleted from db");
     return res;
@@ -137,7 +128,7 @@ class DatabaseHelper {
     if (res != null && res.length > 0) {
       return res.first;
     }
-    return _jwt;
+    return null;
   }
 
   /// Device operation
@@ -149,15 +140,13 @@ class DatabaseHelper {
 
     if (res != null && res.length > 0) {
       return res.first;
-    } else {
-      return _deviceData;
     }
+    return null;
   }
 
   // delete device
   Future<int> deleteDevice() async {
     var dbClient = await db;
-    _deviceData = null;
     try {
       int res = await dbClient.delete(DEVICE_TABLE);
       return res;
@@ -174,7 +163,6 @@ class DatabaseHelper {
     try {
       await dbClient.delete(DEVICE_TABLE);
     } catch (e) {}
-    _deviceData = data;
     int res = await dbClient.insert(DEVICE_TABLE, data);
     return res;
   }

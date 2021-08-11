@@ -15,8 +15,8 @@ import 'package:provider/provider.dart';
 // ignore: must_be_immutable
 class UserInfo extends StatefulWidget {
   CustomerProfile user;
-
-  UserInfo({@required this.user});
+  void Function(int index) changeIndex;
+  UserInfo({@required this.user, this.changeIndex});
 
   @override
   _UserInfoState createState() => _UserInfoState(user: user);
@@ -189,10 +189,7 @@ class _UserInfoState extends State<UserInfo> {
                         color: navyBlue),
                   ),
                   onTap: () {
-                    Navigator.pushNamed(context, '/profile', arguments: {
-                      "searchedUserName": user.userName,
-                      "index": 2
-                    });
+                    widget.changeIndex(2);
                   },
                 ),
               ],
@@ -245,10 +242,7 @@ class _UserInfoState extends State<UserInfo> {
                         color: navyBlue),
                   ),
                   onTap: () {
-                    Navigator.pushNamed(context, '/profile', arguments: {
-                      "searchedUserName": user.userName,
-                      "index": 3
-                    });
+                    widget.changeIndex(3);
                   },
                 ),
               ],
