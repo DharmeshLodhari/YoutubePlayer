@@ -271,7 +271,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
       description: isRequestSent
           ? "Are you sure want to cancel the request?"
           : AppLocalization.of(context).areYouSureWantToRejectRequestFrom +
-              " ${user.fullName}",
+              " ${user.displayName()}",
       actionOne: isRequestSent
           ? AppLocalization.of(context).yes
           : AppLocalization.of(context).reject,
@@ -286,7 +286,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
             isRequestSent
                 ? "Request canceled successfully !!"
                 : AppLocalization.of(context).requestFrom +
-                    " ${user.fullName} " +
+                    " ${user.displayName()} " +
                     AppLocalization.of(context).isRejectedSuccessfully);
         setState(() {
           connectionRequestList.removeAt(index);
@@ -322,7 +322,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
       firstActionPrimary: true,
       title: AppLocalization.of(context).accept,
       description: AppLocalization.of(context).areYouSureWantToAdd +
-          " ${user.fullName} " +
+          " ${user.displayName()} " +
           "In Your Connections",
       actionOne: AppLocalization.of(context).accept,
       actionTwo: AppLocalization.of(context).cancel,
@@ -332,7 +332,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
       if (done) {
         _showSnackBar(
             context,
-            "${user.fullName} " +
+            "${user.displayName()} " +
                 AppLocalization.of(context).isAddedToYourContactList);
 
         connectionRequestList.removeAt(index);

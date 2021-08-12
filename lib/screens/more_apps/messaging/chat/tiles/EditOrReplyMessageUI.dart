@@ -747,7 +747,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  customerProfile.fullName ?? "",
+                  customerProfile.displayName() ?? "",
                   style: TextStyle(
                       color: blackFont,
                       fontSize: 14,

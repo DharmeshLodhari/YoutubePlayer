@@ -30,7 +30,8 @@ class AddOrEditUserBioScreen extends StatefulWidget {
 }
 
 class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
-  final _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _businessBioKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _userDetailKey = GlobalKey<FormState>();
 
   TextEditingController bioController;
   TextEditingController addressController;
@@ -196,7 +197,10 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
               child: Column(
                 children: [
                   getUserPersonalDetail(),
-                  isUserIsSimpleUser ? Container() : getUserBioDetails()
+                  isUserIsSimpleUser ? Container() : getUserBioDetails(),
+                  SizedBox(height: 20),
+                  getSubmitButton(),
+                  SizedBox(height: 40),
                 ],
               ),
             ),
@@ -205,7 +209,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
 
   Widget getUserBioDetails() {
     return Form(
-      key: _formKey,
+      key: _businessBioKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -223,20 +227,20 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
             height: 20,
           ),
           addOpeningHour(),
-          SizedBox(height: 20),
-          getSubmitButton(),
-          SizedBox(height: 40),
         ],
       ),
     );
   }
 
   Widget getUserPersonalDetail() {
-    return Column(
-      children: [
-        SizedBox(height: 20),
-        nickNameField(),
-      ],
+    return Form(
+      key: _userDetailKey,
+      child: Column(
+        children: [
+          SizedBox(height: 20),
+          nickNameField(),
+        ],
+      ),
     );
   }
 
@@ -335,7 +339,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
                 ],
           title: Container(
             child: Text(
-              userBloc.user.fullName,
+              userBloc.user.displayName(),
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 22,
@@ -924,16 +928,48 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     return CurvedButton(
       onPressed: () async {
         FocusScope.of(context).unfocus();
-        updateBio();
+        if (userBloc.user.type == "User") {
+          updateUserDetail();
+        } else {
+          updateBio();
+        }
       },
       backgroundColor: navyBlue,
       textColor: Colors.white,
-      text: "Update Bio",
+      text: userBloc.user.type == "User" ? "Update" : "Update Bio",
     );
   }
 
+  void updateUserDetail() async {
+    if (_userDetailKey.currentState.validate()) {
+      showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => Center(
+                child: CircularLoadingIndicator(),
+              ));
+
+      String nickName = _nicknameController.text.trim();
+      await UserAuth().addOrUpdateUserBio(nickName: nickName).then((value) {
+        Navigator.pop(context);
+        Navigator.pop(
+            context, {"userAbout": value, "user_avatar": userBloc.user.avatar});
+        Toast.show(
+          "Bio updated successfully!!",
+          context,
+          textColor: Colors.white,
+          duration: 3,
+        );
+      }).catchError((error) {
+        Navigator.pop(context);
+        debugPrint(error.toString());
+        Toast.show(error.toString(), context, textColor: Colors.white);
+      });
+    }
+  }
+
   void updateBio() async {
-    if (_formKey.currentState.validate()) {
+    if (_businessBioKey.currentState.validate()) {
       addDataToUserAboutObject();
 
       showDialog(

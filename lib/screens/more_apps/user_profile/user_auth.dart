@@ -338,14 +338,14 @@ class UserAuth extends AuthService {
   Future<UserAbout> addOrUpdateUserBio(
       {UserAbout userAbout, String nickName}) async {
     var url = secureBaseUrl + "/api/v1/user/about/";
-    Map<String, dynamic> data = userAbout.toJson();
+
     var headers = await getAuthHeaders();
 
     var responseBody;
     var response;
-    if (!userAbout.wallpaper.contains("https")) {
+    if (userAbout != null && !userAbout.wallpaper.contains("https")) {
       var request = http.MultipartRequest("PATCH", Uri.parse(url));
-
+      Map<String, dynamic> data = userAbout.toJson();
       data.forEach((key, value) {
         request.fields[key] = value is List<Map> ? jsonEncode(value) : value;
       });
@@ -370,6 +370,11 @@ class UserAuth extends AuthService {
       debugPrint(
           "URL: $url STATUSCODE:- ${response.statusCode} body:- $responseBody");
     } else {
+      Map<String, dynamic> data = {};
+      if (userAbout != null) {
+        data = userAbout.toJson();
+      }
+
       data['nickname'] = nickName;
       var _data = jsonEncode(data);
       debugPrint("Data Send:- $_data");

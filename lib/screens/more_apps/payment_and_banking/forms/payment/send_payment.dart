@@ -488,7 +488,7 @@ class _SendPaymentState extends State<SendPayment> {
                 child: ListTile(
                   contentPadding: EdgeInsets.zero,
                   title: Text(
-                    _payee.fullName,
+                    _payee.displayName(),
                     style: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,

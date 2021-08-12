@@ -206,7 +206,7 @@ class _GetUserConnectionListState extends State<GetUserConnectionList> {
       actionTwoTextColor: blackFont,
       title: AppLocalization.of(context).block,
       description: AppLocalization.of(context).areYouSureWantToBlock +
-          " ${user.fullName}",
+          " ${user.displayName()}",
       actionOne: AppLocalization.of(context).block,
       actionTwo: AppLocalization.of(context).cancel,
     );
@@ -216,7 +216,7 @@ class _GetUserConnectionListState extends State<GetUserConnectionList> {
       if (done) {
         _showSnackBar(
             context,
-            "${user.fullName} " +
+            "${user.displayName()} " +
                 AppLocalization.of(context).isBlockedSuccessfully);
         setState(() {
           connectionsList.removeAt(index);
@@ -252,7 +252,7 @@ class _GetUserConnectionListState extends State<GetUserConnectionList> {
       actionTwoTextColor: blackFont,
       title: AppLocalization.of(context).delete,
       description: AppLocalization.of(context).areYouSureWantToDelete +
-          " ${user.fullName} " +
+          " ${user.displayName()} " +
           "From Your Connection List",
       actionOne: AppLocalization.of(context).delete,
       actionTwo: AppLocalization.of(context).cancel,
@@ -262,7 +262,7 @@ class _GetUserConnectionListState extends State<GetUserConnectionList> {
       if (done) {
         _showSnackBar(
             context,
-            "${user.fullName} " +
+            "${user.displayName()} " +
                 AppLocalization.of(context).isRemovedSuccessfully);
         setState(() {
           connectionsList.removeAt(index);

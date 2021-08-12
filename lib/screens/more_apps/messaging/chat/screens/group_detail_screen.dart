@@ -869,7 +869,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
             selectedUsers.forEach((element) {
               usersAdded.add(Participant(
                   avatar: element.avatar,
-                  fullName: element.fullName,
+                  fullName: element.displayName(),
                   type: element.type,
                   userName: element.userName));
             });

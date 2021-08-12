@@ -85,27 +85,6 @@ class BankAccountBloc extends ChangeNotifier {
   }
 }
 
-class PayeeBloc extends ChangeNotifier {
-  // This block notify's the change in user status and pass it round the app.
-  Payee _payee = Payee(
-      uuid: "",
-      url: "",
-      fullName: null,
-      userName: null,
-      avatar: null,
-      qrCode: null,
-      currency: null);
-
-  // Getter
-  Payee get payee => _payee;
-
-  // Setter
-  set payee(Payee val) {
-    _payee = val;
-    notifyListeners();
-  }
-}
-
 class CustomerProfileBloc extends ChangeNotifier {
   // This block notify's the change in user status and pass it round the app.
   CustomerProfile _customer = CustomerProfile(

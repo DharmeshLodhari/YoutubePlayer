@@ -70,9 +70,6 @@ void main() async {
           ChangeNotifierProvider<UserBloc>.value(
             value: UserBloc(),
           ),
-          ChangeNotifierProvider<PayeeBloc>.value(
-            value: PayeeBloc(),
-          ),
           ChangeNotifierProvider<CustomerProfileBloc>.value(
             value: CustomerProfileBloc(),
           ),

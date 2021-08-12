@@ -163,7 +163,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
 
   Widget getTitle() {
     return Text(
-      "Envelope from ${isAuthor ? "you" : senderCustomer.fullName}",
+      "Envelope from ${isAuthor ? "you" : senderCustomer.displayName()}",
       style: TextStyle(
           fontSize: 18, fontWeight: FontWeight.w700, color: blackFont),
     );

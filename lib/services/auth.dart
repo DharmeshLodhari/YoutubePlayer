@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:Slydo/data/database_helper.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_message_handler.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'package:uuid/uuid.dart';
 
 import 'device_info.dart';
@@ -169,7 +170,7 @@ class AuthService {
     }
 
     String bearer = "Bearer " + tokenData["access"];
-    log("Token:- $bearer");
+    // log("Token:- $bearer");
     var uuid = Uuid();
     var transactionId = uuid.v4();
     var headers = {
@@ -179,7 +180,6 @@ class AuthService {
       "DeviceType": Platform.isAndroid ? "Android" : "IOS",
       "User-Agent": "Slydo-Mobile",
     };
-    // debugPrint("headres :- $headers");
     return headers;
   }
 
@@ -326,5 +326,28 @@ class AuthService {
     }
 
     return Future.error("$timeOutErrorMessage");
+  }
+
+  Future<void> wasTokenBlackListed(var response) async {
+    if (response.statusCode == 401 ||
+        response.statusCode == 403 ||
+        response.statusCode == 423) {
+      var jsonData = jsonDecode(response.body);
+      // {detail: Given token not valid for any token type, code: token_not_valid, messages: [{status_code: 423}]}
+
+      try {
+        if (jsonData["messages"][0]["status_code"] == 423) {
+          await MainSocketMessageHandler().logoutUser();
+        }
+      } catch (error) {
+        debugPrint("Token is Valid");
+      }
+    }
+  }
+
+  Future<Response> httpGet(String url, {Map<String, dynamic> headers}) async {
+    var response = await http.get(url, headers: headers);
+    wasTokenBlackListed(response);
+    return response;
   }
 }

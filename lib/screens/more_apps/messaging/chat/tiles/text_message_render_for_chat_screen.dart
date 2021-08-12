@@ -1157,7 +1157,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  customerProfile.fullName ?? "",
+                  customerProfile.displayName() ?? "",
                   style: TextStyle(
                       color: getDividerColor(
                           isSend: isSend, isRepliedSend: isRepliedSend),

@@ -453,7 +453,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
                 child: ListTile(
                   contentPadding: EdgeInsets.zero,
                   title: Text(
-                    messageReceiver.fullName,
+                    messageReceiver.displayName(),
                     style: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,

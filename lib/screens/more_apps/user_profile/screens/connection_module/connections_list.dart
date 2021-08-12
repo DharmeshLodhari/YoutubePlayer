@@ -459,7 +459,7 @@ class _ConnectionListState extends State<ConnectionList> {
       actionTwoTextColor: blackFont,
       title: AppLocalization.of(context).block,
       description: AppLocalization.of(context).areYouSureWantToBlock +
-          " ${user.fullName}",
+          " ${user.displayName()}",
       actionOne: AppLocalization.of(context).block,
       actionTwo: AppLocalization.of(context).cancel,
     );
@@ -469,7 +469,7 @@ class _ConnectionListState extends State<ConnectionList> {
       if (done) {
         _showSnackBar(
             context,
-            "${user.fullName} " +
+            "${user.displayName()} " +
                 AppLocalization.of(context).isBlockedSuccessfully);
         ConnectionListBloc connectionListBloc =
             Provider.of<ConnectionListBloc>(context, listen: false);
@@ -551,7 +551,7 @@ class _ConnectionListState extends State<ConnectionList> {
       actionTwoTextColor: blackFont,
       title: AppLocalization.of(context).delete,
       description: AppLocalization.of(context).areYouSureWantToDelete +
-          " ${user.fullName} " +
+          " ${user.displayName()} " +
           "From Your Connection List",
       actionOne: AppLocalization.of(context).delete,
       actionTwo: AppLocalization.of(context).cancel,
@@ -561,7 +561,7 @@ class _ConnectionListState extends State<ConnectionList> {
       if (done) {
         _showSnackBar(
             context,
-            "${user.fullName} " +
+            "${user.displayName()} " +
                 AppLocalization.of(context).isRemovedSuccessfully);
 
         ConnectionListBloc connectionListBloc =

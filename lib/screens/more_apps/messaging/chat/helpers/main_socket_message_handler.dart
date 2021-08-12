@@ -528,7 +528,7 @@ class MainSocketMessageHandler {
     }
   }
 
-  void logoutUser() async {
+  Future<void> logoutUser() async {
     BackgroundFetchBloc backgroundFetchBloc = Provider.of<BackgroundFetchBloc>(
         myGlobals.navigationKey.currentContext,
         listen: false);

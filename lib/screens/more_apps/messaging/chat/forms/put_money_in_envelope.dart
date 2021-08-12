@@ -164,7 +164,7 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
           child: ListTile(
             contentPadding: EdgeInsets.zero,
             title: Text(
-              customerProfile.fullName,
+              customerProfile.displayName(),
               style: TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,

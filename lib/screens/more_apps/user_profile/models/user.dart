@@ -112,28 +112,22 @@ class User {
     map["url"] = url;
     return map;
   }
-}
 
-class Payee {
-  //a person to whom money is paid or is to be paid, especially the person
-  // to whom a cheque is made payable.
-  final String uuid;
-  String url = '';
-  String fullName = '';
-  String userName = '';
-  String avatar = '';
-  String qrCode = '';
-  String currency;
+  String displayName() {
+    if (this.nickName != "" || this.nickName != null) {
+      if (this.type != null &&
+          this.type != "" &&
+          this.type != "Business" &&
+          this.type != "Developer") {
+        return this.nickName;
+      }
+    }
 
-  // Pass in as named parameter in constructor
-  Payee(
-      {this.uuid,
-      this.url,
-      this.fullName,
-      this.userName,
-      this.avatar,
-      this.qrCode,
-      this.currency = "₦"});
+    if (this.fullName != null && this.fullName != "") {
+      return this.fullName;
+    }
+    return this.userName;
+  }
 }
 
 class CustomerProfile {
@@ -141,7 +135,7 @@ class CustomerProfile {
   String userName;
   String avatar;
   String qrCode;
-  String nickname;
+  String nickName;
   String type;
   String conversationId;
   String uuid;
@@ -157,7 +151,7 @@ class CustomerProfile {
     this.avatar = "",
     this.userAbout,
     this.qrCode = "",
-    this.nickname,
+    this.nickName,
     this.type = "user",
     this.conversationId = "",
     this.defaultCurrency = "NGN",
@@ -172,7 +166,7 @@ class CustomerProfile {
         userName: json['username'] ?? "",
         avatar: json['avatar'] ?? "",
         qrCode: json['qr_code'] ?? "",
-        nickname: json['nickname'],
+        nickName: json['nickname'],
         type: json['type'] ?? json['account_type'] ?? "user",
         conversationId: json['conversation_id'] ?? "",
         status: json['status'] ?? UserStatus.UNKNOWN);
@@ -263,6 +257,22 @@ class CustomerProfile {
     data['qr_code'] = this.qrCode;
     data['type'] = this.type;
     return data;
+  }
+
+  String displayName() {
+    if (this.nickName != "" || this.nickName != null) {
+      if (this.type != null &&
+          this.type != "" &&
+          this.type != "Business" &&
+          this.type != "Developer") {
+        return this.nickName;
+      }
+    }
+
+    if (this.fullName != null && this.fullName != "") {
+      return this.fullName;
+    }
+    return this.userName;
   }
 }
 

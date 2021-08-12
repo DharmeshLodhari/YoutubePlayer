@@ -219,7 +219,7 @@ class _UserProfileTileState extends State<UserProfileTile> {
 
   Widget getTitle() {
     return Text(
-      widget.user.fullName,
+      widget.user.displayName(),
       maxLines: 1,
       style: TextStyle(
         color: blackFont,

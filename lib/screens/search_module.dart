@@ -485,7 +485,7 @@ class _SearchModuleState extends State<SearchModule> {
                 child: ListTile(
                   dense: true,
                   title: Text(
-                    user.fullName,
+                    user.displayName(),
                     maxLines: 1,
                     style: TextStyle(
                         color: blackFont,

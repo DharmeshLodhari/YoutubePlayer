@@ -206,7 +206,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           title: isShrink
               ? Container(
                   child: Text(
-                    searchedUser.fullName,
+                    searchedUser.displayName(),
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 22,
@@ -268,7 +268,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                           height: 16,
                         ),
                         Text(
-                          searchedUser.nickname ?? searchedUser.fullName,
+                          searchedUser.displayName(),
                           style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w700,
@@ -677,7 +677,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         },
       ),
       title: Text(
-        isLoading ? "" : searchedUser.fullName,
+        isLoading ? "" : searchedUser.displayName(),
         style: TextStyle(
             color: blackFont, fontSize: 22, fontWeight: FontWeight.bold),
         overflow: TextOverflow.fade,
@@ -697,7 +697,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           height: 8,
         ),
         Text(
-          isLoading ? "" : searchedUser.fullName,
+          isLoading ? "" : searchedUser.displayName(),
           style: TextStyle(
             color: Colors.white,
             fontSize: 14.0,
@@ -780,10 +780,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         icon: SlydoAppIcon.share,
         onTap: () {
           Navigator.pop(context);
-          var shareBody = "${searchedUser.fullName}\n" +
+          var shareBody = "${searchedUser.displayName()}\n" +
               "http://slydo.co/user/" +
               searchedUser.userName;
-          Share.share(shareBody, subject: "${searchedUser.fullName}");
+          Share.share(shareBody, subject: "${searchedUser.displayName()}");
         },
       ),
     );

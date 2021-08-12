@@ -152,7 +152,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
                 displayUserInfo(),
                 SizedBox(height: 30),
                 // displayPaymentButtons(),
-                displayUserProfileUpgradeOptions(),
+                //displayUserProfileUpgradeOptions(),
               ],
             ),
           ),
@@ -176,7 +176,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
               ),
             ),
           ),
-          title: Text(user.fullName),
+          title: Text(user.displayName()),
           subtitle: Text(user.userName),
           trailing: getTrailing()),
     );
@@ -254,7 +254,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
                             child: InkWell(
                               onTap: () {
                                 Toast.show(
-                                  "${user.fullName} " +
+                                  "${user.displayName()} " +
                                       AppLocalization.of(context).isBlocked,
                                   context,
                                   gravity: Toast.CENTER,

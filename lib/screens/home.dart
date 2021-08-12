@@ -153,7 +153,7 @@ class _HomeState extends State<Home> {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
           ),
           Text(
-            userBloc.user.fullName,
+            userBloc.user.displayName(),
             style: TextStyle(
               fontSize: 14,
             ),
@@ -364,7 +364,7 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                   title: Text(
-                    userBloc.user.fullName,
+                    userBloc.user.displayName(),
                     maxLines: 1,
                     style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
                   ),

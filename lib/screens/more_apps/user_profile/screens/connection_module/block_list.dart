@@ -244,7 +244,7 @@ class _BlockListState extends State<BlockList> {
       firstActionPrimary: false,
       title: AppLocalization.of(context).unblock,
       description: AppLocalization.of(context).areYouSureWantToUnblock +
-          " ${user.fullName}",
+          " ${user.displayName()}",
       actionOne: AppLocalization.of(context).cancel,
       actionTwo: AppLocalization.of(context).accept,
     );
@@ -254,7 +254,7 @@ class _BlockListState extends State<BlockList> {
       if (done) {
         _showSnackBar(
             context,
-            "${user.fullName} " +
+            "${user.displayName()} " +
                 AppLocalization.of(context).isUnblockedSuccessfully);
         setState(() {
           blockList.removeAt(index);

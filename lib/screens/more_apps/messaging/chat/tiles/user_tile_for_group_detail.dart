@@ -67,7 +67,7 @@ class _UserTileForGroupDetailState extends State<UserTileForGroupDetail> {
         child: ListTile(
           dense: true,
           title: Text(
-            widget.user.fullName,
+            widget.user.displayName(),
             maxLines: 1,
             style: TextStyle(
               color: blackFont,
