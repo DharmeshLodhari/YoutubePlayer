@@ -14,7 +14,7 @@ class BusinessAuth extends AuthService {
   Future<List<Contract>> getContractList() async {
     var url = secureBaseUrl + "/api/v1/transactions/payment-contract/";
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
     var jsonData = json.decode(response.body);
     List data = jsonData["results"];
 
@@ -30,7 +30,7 @@ class BusinessAuth extends AuthService {
   Future<Contract> getContract(String id) async {
     var url = secureBaseUrl + "/api/v1/transactions/payment-contract/$id/";
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
     if (response.statusCode == 200) {
       Contract contract = Contract.fromJson(json.decode(response.body));
 
@@ -59,7 +59,7 @@ class BusinessAuth extends AuthService {
       url = next;
     }
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
     debugPrint("${response.body}");
     if (response.statusCode == 200) {
       List<Transaction> transactions = [];
@@ -139,7 +139,7 @@ class BusinessAuth extends AuthService {
   Future<List<Invoice>> getInvoiceList() async {
     var url = secureBaseUrl + "/api/v1/transactions/invoice/";
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
 
     var jsonData = json.decode(response.body);
     List data = jsonData["results"];
@@ -156,7 +156,7 @@ class BusinessAuth extends AuthService {
   Future<Invoice> getInvoice(String id) async {
     var url = secureBaseUrl + "/api/v1/transactions/invoice/$id/";
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
       Invoice invoice = Invoice.fromJson(json.decode(response.body));

@@ -24,7 +24,7 @@ class ShoppingAuthService extends AuthService {
       url = getSecureUrl(url: next);
     }
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
 
     var jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
@@ -42,7 +42,7 @@ class ShoppingAuthService extends AuthService {
   Future<ShoppingProduct> getShoppingProduct(String id) async {
     var url = secureBaseUrl + "/api/v1/products/" + id + "/";
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
     var jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
       ShoppingProduct product = ShoppingProduct.fromJson(jsonData);
@@ -63,7 +63,7 @@ class ShoppingAuthService extends AuthService {
       url = getSecureUrl(url: next);
     }
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
@@ -135,7 +135,7 @@ class ShoppingAuthService extends AuthService {
     }
     debugPrint(url);
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
       List<Product> productList = [];
@@ -261,7 +261,7 @@ class ShoppingAuthService extends AuthService {
   Future<Product> getProduct(String id) async {
     var url = secureBaseUrl + "/api/v1/products/" + id + "/";
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
     var jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
       Product product = createProduct(jsonData);
@@ -275,7 +275,7 @@ class ShoppingAuthService extends AuthService {
 
   Future<Map<String, dynamic>> getProductOrService(String url) async {
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
     var jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
       return jsonData;
@@ -338,7 +338,7 @@ class ShoppingAuthService extends AuthService {
       url = getSecureUrl(url: next);
     }
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
       List<Service> serviceList = [];
@@ -465,7 +465,7 @@ class ShoppingAuthService extends AuthService {
   Future<Service> getService(String id) async {
     var url = secureBaseUrl + "/api/v1/services/" + id + "/";
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
     var jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
       Service service = createService(jsonData);
@@ -534,7 +534,7 @@ class ShoppingAuthService extends AuthService {
     }
 
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
     var jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
       List items = List();
@@ -557,7 +557,7 @@ class ShoppingAuthService extends AuthService {
   Future<dynamic> getOrder(String id) async {
     var url = secureBaseUrl + "/api/v1/order/" + id + "/";
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
     var jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
       List items = List();
@@ -590,7 +590,7 @@ class ShoppingAuthService extends AuthService {
   Future<List> getShoppingCart() async {
     var url = secureBaseUrl + "/api/v1/shopping-cart/";
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
     var jsonData = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
@@ -673,7 +673,7 @@ class ShoppingAuthService extends AuthService {
     var url = "$secureBaseUrl/api/v1/$type/$urlPart/$userId/?exclude=$exclude";
 
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
     List items = List();
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
@@ -725,7 +725,7 @@ class ShoppingAuthService extends AuthService {
       url = getSecureUrl(url: next);
     }
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
       List<Service> serviceList = [];
@@ -789,7 +789,7 @@ class ShoppingAuthService extends AuthService {
     }
     debugPrint(url);
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
       List<Product> productList = [];

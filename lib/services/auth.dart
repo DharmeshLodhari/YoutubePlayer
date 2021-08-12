@@ -117,7 +117,7 @@ class AuthService {
     var url = secureBaseUrl + "/api/v1/user/auth/logout/";
     var headers = await getAuthHeaders();
     debugPrint("URL:- $url Called !!");
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
     debugPrint(
         "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     await unRegisterDevice();

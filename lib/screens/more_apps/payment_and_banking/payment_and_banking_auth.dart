@@ -14,7 +14,7 @@ class PaymentAndBankingAuth extends AuthService {
   Future<List<BankAccount>> getBankAccounts() async {
     var url = secureBaseUrl + "/api/v1/transactions/bank-accounts-list/";
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
@@ -44,7 +44,7 @@ class PaymentAndBankingAuth extends AuthService {
   Future<Map<String, dynamic>> getAccountBalance() async {
     var url = secureBaseUrl + "/api/v1/transactions/check-account-balance/";
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
       return jsonData;
@@ -111,7 +111,7 @@ class PaymentAndBankingAuth extends AuthService {
       url = getSecureUrl(url: next);
     }
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
@@ -150,7 +150,7 @@ class PaymentAndBankingAuth extends AuthService {
         "/api/v1/transactions/transaction-filter/?week=" +
         weekNumber;
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
       return jsonData;
@@ -163,7 +163,7 @@ class PaymentAndBankingAuth extends AuthService {
   Future<Map<String, dynamic>> getPaymentCategory() async {
     var url = secureBaseUrl + "/api/v1/transactions/payment-category/";
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
 
@@ -253,7 +253,7 @@ class PaymentAndBankingAuth extends AuthService {
     }
 
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
     if (response.statusCode == 200) {
       List<PaymentRequest> paymentRequests = [];
       // This variable will hold list of transactions we got from server
@@ -319,7 +319,7 @@ class PaymentAndBankingAuth extends AuthService {
     var headers = await getAuthHeaders();
     debugPrint("URL:- $url");
 
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
     if (response.statusCode == 200) {
       List<Transaction> transactions = [];
       // This variable will hold list of transactions we got from server
@@ -407,7 +407,7 @@ class PaymentAndBankingAuth extends AuthService {
       url = getSecureUrl(url: next);
     }
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
       List<Payout> payouts = [];
@@ -472,7 +472,7 @@ class PaymentAndBankingAuth extends AuthService {
   Future<VirtualAccount> getVirtualAccountDetail() async {
     var url = secureBaseUrl + "/api/v1/transactions/get-virtual-account-info/";
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 

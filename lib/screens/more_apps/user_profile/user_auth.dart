@@ -28,7 +28,7 @@ class UserAuth extends AuthService {
       "DeviceType": Platform.isAndroid ? "Android" : "IOS",
       "User-Agent": "Slydo-Mobile",
     };
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
@@ -48,7 +48,7 @@ class UserAuth extends AuthService {
     var url = secureBaseUrl + "/api/v1/user/customer/" + userName.trim();
 
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
       debugPrint(
@@ -308,7 +308,7 @@ class UserAuth extends AuthService {
   Future<Address> fetchUserAddress() async {
     var url = secureBaseUrl + "/api/v1/user/address/";
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
     var jsonData = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
@@ -326,7 +326,7 @@ class UserAuth extends AuthService {
   Future<UserAbout> fetchUserAboutInfo({String userName}) async {
     var url = secureBaseUrl + "/api/v1/user/about/$userName/";
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
       var jsonData = jsonDecode(response.body);
@@ -427,7 +427,7 @@ class UserAuth extends AuthService {
       url = getSecureUrl(url: next);
     }
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body) ?? {};
@@ -478,7 +478,7 @@ class UserAuth extends AuthService {
         secureBaseUrl + "/api/v1/user/connections/" + userName.trim() + "/";
 
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
       var jsonData = jsonDecode(response.body);
@@ -566,7 +566,7 @@ class UserAuth extends AuthService {
       url = getSecureUrl(url: next);
     }
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
@@ -619,7 +619,7 @@ class UserAuth extends AuthService {
       url = getSecureUrl(url: next);
     }
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
@@ -676,7 +676,7 @@ class UserAuth extends AuthService {
   Future<List> getUserProfileUpgradeDetails() async {
     var url = secureBaseUrl + "/api/v1/user/profile-pricing/";
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
       return jsonData["results"];
@@ -760,7 +760,7 @@ class UserAuth extends AuthService {
   //   debugPrint("UR");
   //   var headers = await getAuthHeaders();
   //
-  //   var response = await http.get(url, headers: headers);
+  //   var response = await httpGet(url, headers: headers);
   //
   //   if (response.statusCode == 200) {
   //     debugPrint("Result:- ${response.body}");
@@ -789,7 +789,7 @@ class UserAuth extends AuthService {
       url = getSecureUrl(url: next);
     }
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);

@@ -5,7 +5,6 @@ import 'package:Slydo/screens/more_apps/taxi/model/PlaceModal.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:http/http.dart' as http;
 
 class TaxiAuth extends AuthService {
   Future<List> searchPlaces({String place = ""}) async {
@@ -16,7 +15,7 @@ class TaxiAuth extends AuthService {
 
     url = Uri.encodeFull(url);
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
     if (response.statusCode == 200) {
       debugPrint("URL:- $url statusCode:- ${response.statusCode}");
 
@@ -48,7 +47,7 @@ class TaxiAuth extends AuthService {
 
     url = Uri.encodeFull(url);
     var headers = await getAuthHeaders();
-    var response = await http.get(url, headers: headers);
+    var response = await httpGet(url, headers: headers);
     if (response.statusCode == 200) {
       Directions directions = Directions.fromMap(jsonDecode(response.body));
 
