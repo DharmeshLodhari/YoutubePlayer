@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
 import 'models/Contract.dart';
 import 'models/Invoice.dart';
@@ -113,7 +112,7 @@ class BusinessAuth extends AuthService {
 
     var _data = jsonEncode(data);
     debugPrint("$_data");
-    var response = await http.post(url, body: _data, headers: headers);
+    var response = await httpPost(url, body: _data, headers: headers);
 
     if (response.statusCode == 201) {
       return true;
@@ -127,7 +126,7 @@ class BusinessAuth extends AuthService {
     var url = secureBaseUrl + "/api/v1/transactions/payment-contract/$id/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
-    var response = await http.patch(url, body: _data, headers: headers);
+    var response = await httpPatch(url, headers: headers, body: _data);
     if (response.statusCode == 200) {
       return true;
     }
@@ -170,7 +169,7 @@ class BusinessAuth extends AuthService {
     var url = secureBaseUrl + "/api/v1/transactions/invoice/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
-    var response = await http.post(url, body: _data, headers: headers);
+    var response = await httpPost(url, body: _data, headers: headers);
     if (response.statusCode == 201) {
       return true;
     }
@@ -181,8 +180,9 @@ class BusinessAuth extends AuthService {
   Future<bool> updateInvoice(Invoice invoice) async {
     var url = secureBaseUrl + "/api/v1/messaging/send/";
     var headers = await getAuthHeaders();
-    var _data = invoice.toJson();
-    var response = await http.post(url, body: _data, headers: headers);
+    var data = invoice.toJson();
+    var _data = jsonEncode(data);
+    var response = await httpPost(url, body: _data, headers: headers);
     if (response.statusCode == 201) {
       return true;
     }

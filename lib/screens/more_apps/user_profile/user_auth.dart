@@ -120,7 +120,7 @@ class UserAuth extends AuthService {
     var url =
         secureBaseUrl + "/api/v1/user/update-avatar/" + user.userName + "/";
 
-    var response = await http.delete(url, headers: headers);
+    var response = await httpDelete(url, headers: headers);
     if (response.statusCode == 204) {
       return true;
     } else {
@@ -174,14 +174,16 @@ class UserAuth extends AuthService {
     var url = secureBaseUrl + "/api/v1/user/account/";
     var headers = getNonAuthHeader();
     headers.remove("Content-type");
-    var _data = await getDeviceInfo();
+    var _getData = await getDeviceInfo();
     data.addAll(_body);
 
-    _data.entries.forEach((element) {
+    _getData.entries.forEach((element) {
       data[element.key] = element.value.toString();
     });
 
-    var response = await http.post(url, headers: headers, body: data);
+    var _data = jsonEncode(_getData);
+
+    var response = await httpPost(url, headers: headers, body: _data);
     if (response.statusCode == 200) {
       return true;
     }
@@ -200,7 +202,7 @@ class UserAuth extends AuthService {
     };
 
     var _data = jsonEncode(data);
-    var response = await http.post(url, body: _data, headers: headers);
+    var response = await httpPost(url, body: _data, headers: headers);
 
     if (response.statusCode == 200) {
       return true;
@@ -227,7 +229,7 @@ class UserAuth extends AuthService {
       "password-token": passwordToken,
     };
     var _data = jsonEncode(data);
-    var response = await http.post(url, body: _data, headers: headers);
+    var response = await httpPost(url, body: _data, headers: headers);
     var jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
       var resetToken = jsonData['reset-token'];
@@ -254,7 +256,7 @@ class UserAuth extends AuthService {
     };
     var _data = jsonEncode(data);
     debugPrint(_data);
-    var response = await http.patch(url, body: _data, headers: headers);
+    var response = await httpPatch(url, headers: headers, body: _data);
     var jsonData = json.decode(response.body);
     debugPrint(
         "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
@@ -269,7 +271,7 @@ class UserAuth extends AuthService {
     var url = secureBaseUrl + "/api/v1/user/change-password/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
-    var response = await http.patch(url, body: _data, headers: headers);
+    var response = await httpPatch(url, headers: headers, body: _data);
     debugPrint(
         "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
@@ -378,7 +380,7 @@ class UserAuth extends AuthService {
       data['nickname'] = nickName;
       var _data = jsonEncode(data);
       debugPrint("Data Send:- $_data");
-      response = await http.patch(url, headers: headers, body: _data);
+      response = await httpPatch(url, headers: headers, body: _data);
 
       responseBody = response.body;
       debugPrint(
@@ -394,7 +396,7 @@ class UserAuth extends AuthService {
     var headers = await getAuthHeaders();
     var url = secureBaseUrl + "/api/v1/user/about/";
 
-    var response = await http.delete(url, headers: headers);
+    var response = await httpDelete(url, headers: headers);
 
     if (response.statusCode == 204) {
       return true;
@@ -408,7 +410,7 @@ class UserAuth extends AuthService {
     var url = secureBaseUrl + "/api/v1/user/address/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
-    var response = await http.post(url, headers: headers, body: _data);
+    var response = await httpPost(url, headers: headers, body: _data);
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
@@ -460,7 +462,7 @@ class UserAuth extends AuthService {
 
     debugPrint("DATA SENT:- $data");
     var response =
-        await http.post(url, headers: headers, body: jsonEncode(data));
+        await httpPost(url, headers: headers, body: jsonEncode(data));
 
     if (response.statusCode == 200) {
       debugPrint("STATUSCODE:- ${response.statusCode} BODY:- ${response.body}");
@@ -501,7 +503,7 @@ class UserAuth extends AuthService {
     var data = {"user": user.userName};
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
-    var response = await http.patch(url, headers: headers, body: _data);
+    var response = await httpPatch(url, headers: headers, body: _data);
     debugPrint(
         "RESPONSE :- STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     if (response.statusCode == 200) {
@@ -518,7 +520,7 @@ class UserAuth extends AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
 
-    var response = await http.patch(url, headers: headers, body: _data);
+    var response = await httpPatch(url, headers: headers, body: _data);
     // debugPrint("data $_data");
     // debugPrint("response ${response.statusCode} ${response.body}");
     if (response.statusCode == 200) {
@@ -533,7 +535,7 @@ class UserAuth extends AuthService {
     var data = {"to_user": user};
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
-    var response = await http.patch(url, headers: headers, body: _data);
+    var response = await httpPatch(url, headers: headers, body: _data);
     if (response.statusCode == 200) {
       return true;
     }
@@ -546,7 +548,7 @@ class UserAuth extends AuthService {
 
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
-    var response = await http.post(url, headers: headers, body: _data);
+    var response = await httpPost(url, headers: headers, body: _data);
     debugPrint("Data :- $data");
     debugPrint("response :- ${response.body}");
     if (response.statusCode == 201) {
@@ -589,7 +591,7 @@ class UserAuth extends AuthService {
     var data = {"user": user.userName};
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
-    var response = await http.patch(url, headers: headers, body: _data);
+    var response = await httpPatch(url, headers: headers, body: _data);
     if (response.statusCode == 200) {
       return true;
     }
@@ -601,7 +603,7 @@ class UserAuth extends AuthService {
     var data = {"user": user.userName};
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
-    var response = await http.patch(url, headers: headers, body: _data);
+    var response = await httpPatch(url, headers: headers, body: _data);
     if (response.statusCode == 200) {
       return true;
     }
@@ -642,7 +644,7 @@ class UserAuth extends AuthService {
     var data = {"user": user.userName};
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
-    var response = await http.patch(url, headers: headers, body: _data);
+    var response = await httpPatch(url, headers: headers, body: _data);
     if (response.statusCode == 200) {
       return true;
     }
@@ -654,7 +656,7 @@ class UserAuth extends AuthService {
     var data = {"user": user.userName};
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
-    var response = await http.patch(url, headers: headers, body: _data);
+    var response = await httpPatch(url, headers: headers, body: _data);
     if (response.statusCode == 200) {
       return true;
     }
@@ -665,7 +667,7 @@ class UserAuth extends AuthService {
     var url = secureBaseUrl + "/api/v1/user/upgrade-user-account/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
-    var response = await http.post(url, headers: headers, body: _data);
+    var response = await httpPost(url, headers: headers, body: _data);
 
     if (response.statusCode == 201) {
       return true;
@@ -697,7 +699,7 @@ class UserAuth extends AuthService {
     // var _data = jsonEncode(data);
     // debugPrint("URL:- $url");
     // debugPrint("DATA SENT:- $_data");
-    // var response = await http.post(url, body: _data, headers: headers);
+    // var response = await httpPost(url, body: _data, headers: headers);
     //
     // if (response.statusCode == 200) {
     return true;
@@ -718,7 +720,7 @@ class UserAuth extends AuthService {
     //   "phone": phoneNumber,
     // };
     // var _data = jsonEncode(data);
-    // var response = await http.post(url, body: _data, headers: headers);
+    // var response = await httpPost(url, body: _data, headers: headers);
     //
     // debugPrint("RESPONSE=> ${response.body}");
     //
@@ -738,7 +740,7 @@ class UserAuth extends AuthService {
     // var headers = getNonAuthHeader();
     // var data = {"phone": phoneNumber, "code": otp};
     // var _data = jsonEncode(data);
-    // var response = await http.post(url, body: _data, headers: headers);
+    // var response = await httpPost(url, body: _data, headers: headers);
     //
     // if (response.statusCode == 200) {
     //   var jsonData = json.decode(response.body);

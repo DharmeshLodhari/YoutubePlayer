@@ -226,7 +226,7 @@ class AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
 
-    var response = await http.post(url, headers: headers, body: _data);
+    var response = await httpPost(url, headers: headers, body: _data);
     if (response.statusCode == 200) {
       return true;
     }
@@ -243,7 +243,7 @@ class AuthService {
     debugPrint("URL:- $url Called !!");
     var response;
     try {
-      response = await http.patch(url, headers: headers, body: _data);
+      response = await httpPatch(url, headers: headers, body: _data);
     } catch (e) {
       debugPrint(
           "URL:- $url STATUS CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
@@ -261,7 +261,7 @@ class AuthService {
     var _data = jsonEncode(data);
     var response;
     try {
-      response = await http.patch(url, headers: headers, body: _data);
+      response = await httpPatch(url, headers: headers, body: _data);
     } catch (e) {
       debugPrint(
           "URL:- $url STATUSCODE:- ${response.statusCode} RESPONSEBODY:- ${response.body}");
@@ -300,8 +300,7 @@ class AuthService {
       url = next;
     }
     var headers = await getAuthHeaders();
-    var response = await http
-        .get(url, headers: headers)
+    var response = await httpGet(url, headers: headers)
         .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
 
     if (response.statusCode == 200) {
@@ -347,6 +346,27 @@ class AuthService {
 
   Future<Response> httpGet(String url, {Map<String, dynamic> headers}) async {
     var response = await http.get(url, headers: headers);
+    wasTokenBlackListed(response);
+    return response;
+  }
+
+  Future<Response> httpPost(String url,
+      {Map<String, dynamic> headers, String body}) async {
+    var response = await http.post(url, headers: headers, body: body);
+    wasTokenBlackListed(response);
+    return response;
+  }
+
+  Future<Response> httpPatch(String url,
+      {Map<String, dynamic> headers, String body}) async {
+    var response = await http.patch(url, headers: headers, body: body);
+    wasTokenBlackListed(response);
+    return response;
+  }
+
+  Future<Response> httpDelete(String url,
+      {Map<String, dynamic> headers}) async {
+    var response = await http.delete(url, headers: headers);
     wasTokenBlackListed(response);
     return response;
   }

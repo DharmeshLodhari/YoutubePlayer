@@ -87,7 +87,7 @@ class ShoppingAuthService extends AuthService {
     var url = secureBaseUrl + "/api/v1/images/" + imageId + "/";
     debugPrint("URL:- $url");
     var headers = await getAuthHeaders();
-    var response = await http.delete(url, headers: headers);
+    var response = await httpDelete(url, headers: headers);
     debugPrint("response:- ${response.body}");
     if (response.statusCode == 204) {
       return true;
@@ -288,7 +288,7 @@ class ShoppingAuthService extends AuthService {
   Future<bool> deleteProduct(String id) async {
     var url = secureBaseUrl + "/api/v1/products/" + id + "/";
     var headers = await getAuthHeaders();
-    var response = await http.delete(
+    var response = await httpDelete(
       url,
       headers: headers,
     );
@@ -479,7 +479,7 @@ class ShoppingAuthService extends AuthService {
   Future<bool> deleteService(String id) async {
     var url = secureBaseUrl + "/api/v1/services/" + id + "/";
     var headers = await getAuthHeaders();
-    var response = await http.delete(
+    var response = await httpDelete(
       url,
       headers: headers,
     );
@@ -497,7 +497,7 @@ class ShoppingAuthService extends AuthService {
     var _data = jsonEncode(data);
     var url = secureBaseUrl + "/api/v1/order/" + orderId + "/update-status/";
     var headers = await getAuthHeaders();
-    var response = await http.patch(url, headers: headers, body: _data);
+    var response = await httpPatch(url, headers: headers, body: _data);
     if (response.statusCode == 200) {
       return true;
     }
@@ -510,7 +510,7 @@ class ShoppingAuthService extends AuthService {
     var _data = jsonEncode(data);
     var url = secureBaseUrl + "/api/v1/order/" + orderId + "/add-note/";
     var headers = await getAuthHeaders();
-    var response = await http.patch(url, headers: headers, body: _data);
+    var response = await httpPatch(url, headers: headers, body: _data);
     if (response.statusCode == 200) {
       return true;
     }
@@ -605,7 +605,7 @@ class ShoppingAuthService extends AuthService {
     var url = secureBaseUrl + "/api/v1/shopping-cart/add-item/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
-    var response = await http.patch(url, headers: headers, body: _data);
+    var response = await httpPatch(url, headers: headers, body: _data);
     var jsonData = jsonDecode(response.body);
     debugPrint("sent data: " + _data.toString());
     if (response.statusCode == 200) {
@@ -619,7 +619,7 @@ class ShoppingAuthService extends AuthService {
     var url = secureBaseUrl + "/api/v1/shopping-cart/remove-item/";
     var _data = jsonEncode(data);
     var headers = await getAuthHeaders();
-    var response = await http.patch(url, headers: headers, body: _data);
+    var response = await httpPatch(url, headers: headers, body: _data);
     if (response.statusCode == 200) {
       var jsonData = jsonDecode(response.body);
       debugPrint("response" + jsonData.toString());
@@ -633,7 +633,7 @@ class ShoppingAuthService extends AuthService {
     var url = secureBaseUrl + "/api/v1/shopping-cart/";
     var _data = jsonEncode(data);
     var headers = await getAuthHeaders();
-    var response = await http.post(url, headers: headers, body: _data);
+    var response = await httpPost(url, headers: headers, body: _data);
     var jsonData = jsonDecode(response.body);
     if (response.statusCode == 201) {
       return jsonData;

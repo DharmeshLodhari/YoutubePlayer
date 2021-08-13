@@ -58,7 +58,7 @@ class PaymentAndBankingAuth extends AuthService {
     var url =
         secureBaseUrl + "/api/v1/transactions/delete-bank-account/" + id + "/";
     var headers = await getAuthHeaders();
-    var response = await http.delete(url, headers: headers);
+    var response = await httpDelete(url, headers: headers);
 
     debugPrint(
         "status code :- ${response.statusCode} response ${response.body}");
@@ -73,7 +73,7 @@ class PaymentAndBankingAuth extends AuthService {
     var url = secureBaseUrl + "/api/v1/transactions/add-bank-account/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
-    var response = await http.post(url, headers: headers, body: _data);
+    var response = await httpPost(url, headers: headers, body: _data);
     return response.statusCode == 201;
   }
 
@@ -87,7 +87,7 @@ class PaymentAndBankingAuth extends AuthService {
     var response;
     var _data = jsonEncode(data);
     try {
-      response = await http.patch(url, headers: headers, body: _data);
+      response = await httpPatch(url, headers: headers, body: _data);
     } catch (e) {
       debugPrint("update bank account : " + e.toString());
     }
@@ -189,7 +189,7 @@ class PaymentAndBankingAuth extends AuthService {
     var data = {"id": paymentRequest.id};
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
-    var response = await http.patch(url, headers: headers, body: _data);
+    var response = await httpPatch(url, headers: headers, body: _data);
     debugPrint("RESPONSE STATUS CODE:- ${response.statusCode}");
     debugPrint("RESPONSE BODY:- ${response.body}");
     return response;
@@ -210,7 +210,7 @@ class PaymentAndBankingAuth extends AuthService {
     var headers = await getAuthHeaders();
     var data = {};
     var _data = jsonEncode(data);
-    var response = await http.patch(url, headers: headers, body: _data);
+    var response = await httpPatch(url, headers: headers, body: _data);
 
     debugPrint("RESPONSE STATUS CODE:- ${response.statusCode}");
     debugPrint("RESPONSE BODY:- ${response.body}");
@@ -228,7 +228,7 @@ class PaymentAndBankingAuth extends AuthService {
     var url = secureBaseUrl + "/api/v1/transactions/request-payment/create/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
-    var response = await http.post(url, headers: headers, body: _data);
+    var response = await httpPost(url, headers: headers, body: _data);
     debugPrint(
         "RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
     return response;
@@ -371,7 +371,7 @@ class PaymentAndBankingAuth extends AuthService {
     var url = secureBaseUrl + "/api/v1/transactions/make-payment/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
-    var response = await http.post(url, headers: headers, body: _data);
+    var response = await httpPost(url, headers: headers, body: _data);
 
     return response;
   }
@@ -381,7 +381,7 @@ class PaymentAndBankingAuth extends AuthService {
     var url = secureBaseUrl + "/api/v1/transactions/make-payment-for-orders/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
-    var response = await http.post(url, headers: headers, body: _data);
+    var response = await httpPost(url, headers: headers, body: _data);
     return response;
   }
 
@@ -390,7 +390,7 @@ class PaymentAndBankingAuth extends AuthService {
     var url = secureBaseUrl + "/api/v1/transactions/payout/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
-    var response = await http.post(url, headers: headers, body: _data);
+    var response = await httpPost(url, headers: headers, body: _data);
     return response;
   }
 
@@ -448,7 +448,7 @@ class PaymentAndBankingAuth extends AuthService {
     var url = secureBaseUrl + "/api/v1/transactions/top-up/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
-    var response = await http.post(url, headers: headers, body: _data);
+    var response = await httpPost(url, headers: headers, body: _data);
     if (response.statusCode != 200) {
       return true;
     }
@@ -461,7 +461,7 @@ class PaymentAndBankingAuth extends AuthService {
     var url = secureBaseUrl + "/api/v1/transactions/get-payment-reference/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
-    var response = await http.post(url, headers: headers, body: _data);
+    var response = await httpPost(url, headers: headers, body: _data);
     if (response.statusCode == 200 || response.statusCode == 201) {
       return jsonDecode(response.body);
     } else {
@@ -490,7 +490,7 @@ class PaymentAndBankingAuth extends AuthService {
     var url = secureBaseUrl + "/api/v1/transactions/get-payment-reference/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
-    var response = await http.post(url, headers: headers, body: _data);
+    var response = await httpPost(url, headers: headers, body: _data);
     if (response.statusCode == 200 || response.statusCode == 201) {
       return jsonDecode(response.body);
     } else {
@@ -503,7 +503,7 @@ class PaymentAndBankingAuth extends AuthService {
     var url = secureBaseUrl + "/api/v1/transactions/topup-by-reference/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
-    var response = await http.post(url, headers: headers, body: _data);
+    var response = await httpPost(url, headers: headers, body: _data);
     debugPrint("Response ${response.statusCode}");
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
@@ -518,7 +518,7 @@ class PaymentAndBankingAuth extends AuthService {
     // var url = secureBaseUrl + "/api/v1/transactions/topup-by-reference/";
     // var headers = await getAuthHeaders();
     // var _data = jsonEncode(data);
-    // var response = await http.post(url, headers: headers, body: _data);
+    // var response = await httpPost(url, headers: headers, body: _data);
     // debugPrint("Response ${response.statusCode}");
     // if (response.statusCode == 200 || response.statusCode == 201) {
     //   return true;

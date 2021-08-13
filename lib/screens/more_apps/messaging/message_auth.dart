@@ -20,7 +20,7 @@ class MessageAuth extends AuthService {
     var url = secureBaseUrl + "/api/v1/messaging/send/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
-    var response = await http.post(url, body: _data, headers: headers);
+    var response = await httpPost(url, body: _data, headers: headers);
     if (response.statusCode == 201) {
       return true;
     } else {
@@ -86,7 +86,7 @@ class MessageAuth extends AuthService {
     var headers = await getAuthHeaders();
     debugPrint(
         "Data Sent MESSAGE ID:- $messageId CONVERSATION ID:- $conversationId DATA:- $data");
-    var response = await http.post(url, body: data, headers: headers);
+    var response = await httpPost(url, body: data, headers: headers);
     if (response.statusCode == 201) {
       return true;
     } else {
@@ -101,7 +101,7 @@ class MessageAuth extends AuthService {
     var url =
         secureBaseUrl + "/api/v1/messaging/update/" + id + "/" + action + "/";
     var headers = await getAuthHeaders();
-    var response = await http.patch(url, headers: headers);
+    var response = await httpPatch(url, headers: headers);
 
     if (response.statusCode == 200) {
       return true;
@@ -116,7 +116,7 @@ class MessageAuth extends AuthService {
   Future<bool> deleteMessage(String id) async {
     var url = secureBaseUrl + "/api/v1/messaging/delete/" + id + "/";
     var headers = await getAuthHeaders();
-    var response = await http.delete(url, headers: headers);
+    var response = await httpDelete(url, headers: headers);
     if (response.statusCode == 204) {
       return true;
     } else {
@@ -452,7 +452,7 @@ class MessageAuth extends AuthService {
     Map<String, dynamic> data = {"users": userList};
 
     var response =
-        await http.post(url, headers: headers, body: jsonEncode(data));
+        await httpPost(url, headers: headers, body: jsonEncode(data));
 
     if (response.statusCode == 200) {
       return true;
@@ -472,8 +472,9 @@ class MessageAuth extends AuthService {
     var headers = await getAuthHeaders();
     Map<String, dynamic> data = {"user": userName};
 
-    var response =
-        await http.patch(url, headers: headers, body: jsonEncode(data));
+    var _data = jsonEncode(data);
+
+    var response = await httpPatch(url, headers: headers, body: _data);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
@@ -493,8 +494,9 @@ class MessageAuth extends AuthService {
     var headers = await getAuthHeaders();
     Map<String, dynamic> data = {"user": userName};
 
-    var response =
-        await http.patch(url, headers: headers, body: jsonEncode(data));
+    var _data = jsonEncode(data);
+
+    var response = await httpPatch(url, headers: headers, body: _data);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
@@ -514,8 +516,9 @@ class MessageAuth extends AuthService {
     var headers = await getAuthHeaders();
     Map<String, dynamic> data = {"user": userName};
 
-    var response =
-        await http.patch(url, headers: headers, body: jsonEncode(data));
+    var _data = jsonEncode(data);
+
+    var response = await httpPatch(url, headers: headers, body: _data);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
@@ -535,8 +538,9 @@ class MessageAuth extends AuthService {
     var headers = await getAuthHeaders();
     Map<String, dynamic> data = {"user": userName};
 
-    var response =
-        await http.patch(url, headers: headers, body: jsonEncode(data));
+    var _data = jsonEncode(data);
+
+    var response = await httpPatch(url, headers: headers, body: _data);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
@@ -556,8 +560,9 @@ class MessageAuth extends AuthService {
     var headers = await getAuthHeaders();
     Map<String, dynamic> data = {"user": userName};
 
-    var response =
-        await http.patch(url, headers: headers, body: jsonEncode(data));
+    var _data = jsonEncode(data);
+
+    var response = await httpPatch(url, headers: headers, body: _data);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
@@ -577,8 +582,9 @@ class MessageAuth extends AuthService {
     var headers = await getAuthHeaders();
     Map<String, dynamic> data = {"user": userName};
 
-    var response =
-        await http.patch(url, headers: headers, body: jsonEncode(data));
+    var _data = jsonEncode(data);
+
+    var response = await httpPatch(url, headers: headers, body: _data);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
@@ -598,8 +604,9 @@ class MessageAuth extends AuthService {
     var headers = await getAuthHeaders();
     Map<String, dynamic> data = {"user": userName};
 
-    var response =
-        await http.patch(url, headers: headers, body: jsonEncode(data));
+    var _data = jsonEncode(data);
+
+    var response = await httpPatch(url, headers: headers, body: _data);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
@@ -635,7 +642,7 @@ class MessageAuth extends AuthService {
         "/";
     var headers = await getAuthHeaders();
 
-    var response = await http.delete(url, headers: headers);
+    var response = await httpDelete(url, headers: headers);
 
     if (response.statusCode == 200 ||
         response.statusCode == 201 ||
@@ -690,7 +697,7 @@ class MessageAuth extends AuthService {
     var headers = await getAuthHeaders();
 
     var response =
-        await http.post(url, headers: headers, body: jsonEncode(dataToSend));
+        await httpPost(url, headers: headers, body: jsonEncode(dataToSend));
 
     if (response.statusCode == 200 || response.statusCode == 201) {
     } else {
@@ -773,8 +780,9 @@ class MessageAuth extends AuthService {
     /// "username": "black",
     /// "delivered": true, "type": "acknowledge_message"}
 
-    var response =
-        await http.patch(url, headers: headers, body: jsonEncode(data));
+    var _data = jsonEncode(data);
+
+    var response = await httpPatch(url, headers: headers, body: _data);
 
     if (response.statusCode == 200) {
       debugPrint(
@@ -797,7 +805,7 @@ class MessageAuth extends AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
 
-    var response = await http.post(url, headers: headers, body: _data);
+    var response = await httpPost(url, headers: headers, body: _data);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       debugPrint(
@@ -820,7 +828,7 @@ class MessageAuth extends AuthService {
 
     debugPrint("Data sent => $data");
 
-    var response = await http.patch(url, headers: headers, body: _data);
+    var response = await httpPatch(url, headers: headers, body: _data);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       debugPrint(
@@ -865,14 +873,16 @@ class MessageAuth extends AuthService {
 
     var headers = await getAuthHeaders();
 
-    var _data = {
+    var param = {
       "check_id": data['check_id'],
       "conversation_id": data["conversation_id"] ?? data["conversation"],
     };
 
-    debugPrint("URL:- $url  DATA sent:- $_data}");
-    var response =
-        await http.patch(url, body: jsonEncode(_data), headers: headers);
+    debugPrint("URL:- $url  DATA sent:- $param}");
+
+    var _data = jsonEncode(param);
+
+    var response = await httpPatch(url, body: _data, headers: headers);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       debugPrint(
