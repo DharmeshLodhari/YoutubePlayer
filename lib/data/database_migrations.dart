@@ -19,6 +19,7 @@ final initialDBSchema = [
       "fullName"	TEXT,
       "userName"	TEXT,
       "phoneNumber"	TEXT,
+      "nickname" TEXT,
       "password"	TEXT,
       "avatar"	TEXT,
       "qrCode"	TEXT,

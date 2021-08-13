@@ -70,6 +70,7 @@ class _SplashScreenState extends State<SplashScreen> {
         try {
           await getLoggedInUser();
         } catch (error) {
+          await Future.delayed(Duration(seconds: 5));
           debugPrint("ERROR1:- $error");
           Navigator.pop(MyGlobals().navigationKey.currentContext);
           Navigator.of(MyGlobals().navigationKey.currentContext)
@@ -147,43 +148,55 @@ class _SplashScreenState extends State<SplashScreen> {
     return WillPopScope(
       onWillPop: () async => Future.value(false),
       child: hasConnection
+          // ? Scaffold(
+          //     body: Container(
+          //     height: double.infinity,
+          //     width: double.infinity,
+          //     color: navyBlue,
+          //     child: Column(
+          //       mainAxisAlignment: MainAxisAlignment.center,
+          //       children: [
+          //         Image.asset(
+          //           "assets/images/app_logo.png",
+          //           color: Colors.white,
+          //           fit: BoxFit.fill,
+          //           height: 75,
+          //         ),
+          //         SizedBox(
+          //           height: 16,
+          //         ),
+          //         Text(
+          //           "Slydo",
+          //           style: TextStyle(
+          //               fontFamily: "CircularStd",
+          //               fontSize: 52,
+          //               color: Colors.white,
+          //               fontWeight: FontWeight.w600),
+          //         ),
+          //         // SizedBox(
+          //         //   height: 16,
+          //         // ),
+          //         // Text(
+          //         //   errorText,
+          //         //   style: TextStyle(
+          //         //       fontFamily: "CircularStd",
+          //         //       fontSize: 14,
+          //         //       color: Colors.white,
+          //         //       fontWeight: FontWeight.w600),
+          //         // )
+          //       ],
+          //     ),
+          //   ))
           ? Scaffold(
               body: Container(
               height: double.infinity,
               width: double.infinity,
               color: navyBlue,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    "assets/images/app_logo.png",
-                    color: Colors.white,
-                    fit: BoxFit.fill,
-                    height: 75,
-                  ),
-                  SizedBox(
-                    height: 16,
-                  ),
-                  Text(
-                    "Slydo",
-                    style: TextStyle(
-                        fontFamily: "CircularStd",
-                        fontSize: 52,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600),
-                  ),
-                  // SizedBox(
-                  //   height: 16,
-                  // ),
-                  // Text(
-                  //   errorText,
-                  //   style: TextStyle(
-                  //       fontFamily: "CircularStd",
-                  //       fontSize: 14,
-                  //       color: Colors.white,
-                  //       fontWeight: FontWeight.w600),
-                  // )
-                ],
+              child: Image.asset(
+                "assets/images/splash/slydo_splash_v4.gif",
+                fit: BoxFit.contain,
+                height: double.infinity,
+                width: double.infinity,
               ),
             ))
           : Scaffold(

@@ -529,6 +529,14 @@ class MainSocketMessageHandler {
   }
 
   Future<void> logoutUser() async {
+    Navigator.of(myGlobals.navigationKey.currentContext)
+        .popUntil(ModalRoute.withName('/splash'));
+
+    Navigator.of(myGlobals.navigationKey.currentContext)
+        .pushNamed("/index", arguments: {'isIntroDone': true});
+
+    showUserLogoutCard(context: myGlobals.navigationKey.currentContext);
+
     BackgroundFetchBloc backgroundFetchBloc = Provider.of<BackgroundFetchBloc>(
         myGlobals.navigationKey.currentContext,
         listen: false);
@@ -558,19 +566,17 @@ class MainSocketMessageHandler {
     DashboardBloc dashboardBloc = Provider.of<DashboardBloc>(
         myGlobals.navigationKey.currentContext,
         listen: false);
-    dashboardBloc.index = 0;
+    try {
+      dashboardBloc.index = 0;
+    } catch (e) {
+      debugPrint("===>$e");
+    }
     _sharedPreferences = await SharedPreferences.getInstance();
     _sharedPreferences.setBool('isLoggedOut', true);
     await _sharedPreferences.clear();
 
     /// clearing all data when user is logout
     await SecureStorage().clear();
-
-    Navigator.of(myGlobals.navigationKey.currentContext)
-        .popUntil(ModalRoute.withName('/splash'));
-
-    Navigator.of(myGlobals.navigationKey.currentContext)
-        .pushNamed("/index", arguments: {'isIntroDone': true});
   }
 
   void emptyBasketCart() {

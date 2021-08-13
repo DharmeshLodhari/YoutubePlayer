@@ -416,8 +416,11 @@ class _HomeState extends State<Home> {
         //   '/nfc-reader',
         // );
 
-        // showSwipeHintCard(context: context);
+        //  MainSocketMessageHandler().logoutUser();
+
+        //  showSwipeHintCard(context: context);
         // showHoldHintCard(context: context);
+        // showUserLogoutCard(context: context);
       },
     );
   }

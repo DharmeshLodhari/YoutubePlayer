@@ -1,4 +1,5 @@
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/cutomized_alert/alert_style.dart';
 import 'package:Slydo/widget/cutomized_alert/customized_alert.dart';
@@ -6,6 +7,7 @@ import 'package:Slydo/widget/cutomized_alert/dialog_button.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 
+import 'curved_btn.dart';
 import 'cutomized_alert/customized_alert_for_nudge.dart';
 
 // import 'package:flutter/cupertino.dart';
@@ -245,6 +247,58 @@ void showHoldHintCard({BuildContext context}) {
         child: Image.asset(
           "assets/images/card_hold_hint.png",
         ),
+      ),
+    ),
+  );
+}
+
+void showUserLogoutCard({BuildContext context}) {
+  showDialog(
+    barrierDismissible: true,
+    context: context,
+    builder: (context) => WillPopScope(
+      onWillPop: () {
+        //  logoutUser(context);
+        return Future.value(true);
+      },
+      child: Dialog(
+        elevation: 0,
+        child: Container(
+            padding: EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "Login Alert!",
+                  style: TextStyle(
+                      color: mateRed,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 25),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  "You have logged in other device.",
+                  style: TextStyle(
+                      color: blackFont,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                CurvedButton(
+                  backgroundColor: navyBlue,
+                  text: "Ok",
+                  textColor: Colors.white,
+                  onPressed: () async {
+                    Navigator.pop(myGlobals.navigationKey.currentContext);
+                    //  logoutUser(context);
+                  },
+                ),
+              ],
+            )),
       ),
     ),
   );

@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:Slydo/data/database_helper.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_message_handler.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
@@ -117,7 +116,7 @@ class AuthService {
     var url = secureBaseUrl + "/api/v1/user/auth/logout/";
     var headers = await getAuthHeaders();
     debugPrint("URL:- $url Called !!");
-    var response = await httpGet(url, headers: headers);
+    var response = await http.get(url, headers: headers);
     debugPrint(
         "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     await unRegisterDevice();
@@ -243,7 +242,7 @@ class AuthService {
     debugPrint("URL:- $url Called !!");
     var response;
     try {
-      response = await httpPatch(url, headers: headers, body: _data);
+      response = await http.patch(url, headers: headers, body: _data);
     } catch (e) {
       debugPrint(
           "URL:- $url STATUS CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
@@ -264,7 +263,7 @@ class AuthService {
       response = await httpPatch(url, headers: headers, body: _data);
     } catch (e) {
       debugPrint(
-          "URL:- $url STATUSCODE:- ${response.statusCode} RESPONSEBODY:- ${response.body}");
+          "URL:- $url STATUSCODE:- ${response?.statusCode} RESPONSEBODY:- ${response?.body}");
       debugPrint("updateAppState : " + e.toString());
     }
     if (response != null) {
@@ -334,14 +333,17 @@ class AuthService {
       var jsonData = jsonDecode(response.body);
       // {detail: Given token not valid for any token type, code: token_not_valid, messages: [{status_code: 423}]}
 
+      debugPrint("===> $response");
       try {
-        if (jsonData["messages"][0]["status_code"] == 423) {
-          await MainSocketMessageHandler().logoutUser();
+        if (jsonData["messages"][0]["status_code"] == 423 ||
+            jsonData["messages"][0]["status_code"] == "423") {
+          //  showUserLogoutCard(context: myGlobals.navigationKey.currentContext);
         }
       } catch (error) {
         debugPrint("Token is Valid");
       }
     }
+    return false;
   }
 
   Future<Response> httpGet(String url, {Map<String, dynamic> headers}) async {

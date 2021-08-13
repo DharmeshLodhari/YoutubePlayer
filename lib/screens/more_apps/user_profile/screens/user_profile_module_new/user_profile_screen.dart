@@ -90,6 +90,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     CustomerProfile user =
         await UserAuth().fetchCustomerProfileWithAuth(searchedUserName);
     searchedUser = user;
+    debugPrint("searchUserName===>${searchedUser.nickName}");
     isLoading = false;
     if (searchedUser.type.toLowerCase() == "user") {
       isUserIsSimpleUser = true;

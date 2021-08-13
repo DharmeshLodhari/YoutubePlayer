@@ -1,6 +1,7 @@
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/Participant.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
+import 'package:flutter/cupertino.dart';
 
 class Address {
   String addressLineOne;
@@ -54,7 +55,7 @@ class User {
     this.phoneNumber = "",
     this.fullName = "",
     this.userName = "",
-    this.nickName = "",
+    this.nickName = "==>",
     this.type = "",
     this.avatar = "",
     this.qrCode = "",
@@ -90,6 +91,7 @@ class User {
     data['avatar'] = this.avatar;
     data['default_currency'] = this.currency;
     data['full_name'] = this.fullName;
+    data['nickname'] = this.nickName;
     data['is_verified'] = this.isVerified;
     data['password'] = this.password;
     data['phone_number'] = this.phoneNumber;
@@ -104,6 +106,7 @@ class User {
     var map = new Map<String, dynamic>();
     map["uuid"] = uuid;
     map["fullName"] = fullName;
+    map["nickname"] = nickName;
     map["userName"] = userName;
     map["phoneNumber"] = phoneNumber;
     map["password"] = password;
@@ -114,7 +117,9 @@ class User {
   }
 
   String displayName() {
-    if (this.nickName != "" || this.nickName != null) {
+    if (this.nickName != "" && this.nickName != null) {
+      debugPrint(
+          "displayName===>${this.type}+${this.nickName}+${this.userName}+${this.fullName}");
       if (this.type != null &&
           this.type != "" &&
           this.type != "Business" &&
@@ -260,7 +265,7 @@ class CustomerProfile {
   }
 
   String displayName() {
-    if (this.nickName != "" || this.nickName != null) {
+    if (this.nickName != "" && this.nickName != null) {
       if (this.type != null &&
           this.type != "" &&
           this.type != "Business" &&

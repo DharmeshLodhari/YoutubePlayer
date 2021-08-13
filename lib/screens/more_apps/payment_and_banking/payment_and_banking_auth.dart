@@ -294,7 +294,8 @@ class PaymentAndBankingAuth extends AuthService {
     } else if (response.statusCode == 500) {
       throw "Server Error";
     } else {
-      throw json.decode(response.body);
+      debugPrint("======> ${jsonEncode(response.body)}");
+      //  throw json.decode(response.body);
     }
   }
 
