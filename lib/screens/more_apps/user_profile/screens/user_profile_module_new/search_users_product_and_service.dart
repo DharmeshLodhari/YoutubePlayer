@@ -786,11 +786,11 @@ class _SearchUsersProductAndServiceState
   String getSearchUrl(String searchedText) {
     switch (filterValue) {
       case "Products":
-        return baseUrl + "/api/v1/search/products/byseller=" + searchedText;
+        return secureBaseUrl + "/api/v1/search/products/byseller=" + searchedText;
       case "Services":
-        return baseUrl + "/api/v1/search/services/?search=" + searchedText;
+        return secureBaseUrl + "/api/v1/search/services/?search=" + searchedText;
       default:
-        return baseUrl + "/api/v1/search/products/?search=" + searchedText;
+        return secureBaseUrl + "/api/v1/search/products/?search=" + searchedText;
     }
   }
 

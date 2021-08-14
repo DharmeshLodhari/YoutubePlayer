@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:Slydo/data/database_helper.dart';
@@ -11,11 +12,10 @@ import 'package:uuid/uuid.dart';
 
 import 'device_info.dart';
 
-final String baseUrl = "https://api.slydo.co";
 final String secureBaseUrl = "https://api.slydo.co";
 final String localHostUrl = "https://127.0.0.1:8080";
 final String gifApiKey = "Jmh8SVxEvtKVCegoJDNYnxSSSbfPISPs";
-final String socketUrl = "wss://slydo.co/ws/main";
+final String socketUrl = "wss://chat.slydo.co/ws/main";
 final String googleMapAPIKey = "AIzaSyCLDiXFm1mRQEsutNrxX_Hv-sHrbhvASzY";
 
 class AuthService {
@@ -169,7 +169,7 @@ class AuthService {
     }
 
     String bearer = "Bearer " + tokenData["access"];
-    // log("Token:- $bearer");
+    log("Token:- $bearer");
     var uuid = Uuid();
     var transactionId = uuid.v4();
     var headers = {

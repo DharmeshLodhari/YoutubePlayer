@@ -55,7 +55,7 @@ class ShoppingAuthService extends AuthService {
   // List the  item with pagination
   Future<Map<String, dynamic>> searchShoppingProducts(
       String searchedText, String next, String previous) async {
-    String url = baseUrl + "/api/v1/search/products/?search=" + searchedText;
+    String url = secureBaseUrl + "/api/v1/search/products/?search=" + searchedText;
     if (next == null) {
       return null;
     }

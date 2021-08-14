@@ -1,7 +1,6 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
@@ -41,8 +40,6 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
   bool profileValue = false;
   final auth = AuthService();
   int counter = 0;
-  UserAbout userAbout;
-  bool isAboutLoading = false;
 
   BankAccountBloc bankAccountBloc;
 
@@ -50,22 +47,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
 
   @override
   void initState() {
-    initialize();
     super.initState();
-  }
-
-  void initialize() async {
-    fetchUserAboutDetail();
-  }
-
-  void fetchUserAboutDetail() async {
-    isAboutLoading = true;
-    if (mounted) setState(() {});
-    await UserAuth().fetchUserAboutInfo(userName: user.userName).then((value) {
-      userAbout = value;
-      isAboutLoading = false;
-      if (mounted) setState(() {});
-    });
   }
 
   void checkCurrentUserIsInContact() async {

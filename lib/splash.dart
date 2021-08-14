@@ -69,6 +69,7 @@ class _SplashScreenState extends State<SplashScreen> {
         if (mounted) setState(() {});
         try {
           await getLoggedInUser();
+          await Future.delayed(Duration(seconds: 3));
         } catch (error) {
           await Future.delayed(Duration(seconds: 5));
           debugPrint("ERROR1:- $error");
@@ -316,7 +317,10 @@ class _SplashScreenState extends State<SplashScreen> {
                   "element:- ${element.accountName} ${element.isDefault} \n";
             });
 
-            bankAccountBloc.bankAccount = accounts.first;
+            if (accounts.length > 0) {
+              bankAccountBloc.bankAccount = accounts.first;
+            }
+
             userBloc.user = user;
 
             /// get user settings from DB

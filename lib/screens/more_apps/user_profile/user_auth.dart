@@ -392,6 +392,21 @@ class UserAuth extends AuthService {
     return Future.error("$responseBody");
   }
 
+  Future<bool> updateSimpleUserDetail({String nickName}) async {
+    var url = secureBaseUrl + "/api/v1/user/update-customer-nickname/";
+    debugPrint("URL:- $url");
+    var data = {"nickname": nickName};
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await httpPatch(url, headers: headers, body: _data);
+    debugPrint(
+        "RESPONSE :- STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+    if (response.statusCode == 200) {
+      return true;
+    }
+    return false;
+  }
+
   Future<bool> deleteImageCover() async {
     var headers = await getAuthHeaders();
     var url = secureBaseUrl + "/api/v1/user/about/";

@@ -121,6 +121,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
       bioController.text = userBioDetail.bio;
       addressController.text = userBioDetail.address;
       contactNumberController.text = userBioDetail.contact;
+      debugPrint("userBloc.nickName= ${userBloc.user.nickName}");
       _nicknameController.text = userBloc.user.nickName;
       _userNameController.text = userBloc.user.userName;
       _fullNameController.text = userBloc.user.fullName;
@@ -189,22 +190,20 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
   }
 
   Widget scaffoldBody() {
-    return isUserIsSimpleUser
-        ? Container()
-        : SingleChildScrollView(
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                children: [
-                  getUserPersonalDetail(),
-                  isUserIsSimpleUser ? Container() : getUserBioDetails(),
-                  SizedBox(height: 20),
-                  getSubmitButton(),
-                  SizedBox(height: 40),
-                ],
-              ),
-            ),
-          );
+    return SingleChildScrollView(
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          children: [
+            getUserPersonalDetail(),
+            isUserIsSimpleUser ? Container() : getUserBioDetails(),
+            SizedBox(height: 20),
+            getSubmitButton(),
+            SizedBox(height: 40),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget getUserBioDetails() {
@@ -950,10 +949,17 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
               ));
 
       String nickName = _nicknameController.text.trim();
-      await UserAuth().addOrUpdateUserBio(nickName: nickName).then((value) {
-        Navigator.pop(context);
-        Navigator.pop(
-            context, {"userAbout": value, "user_avatar": userBloc.user.avatar});
+      await UserAuth().updateSimpleUserDetail(nickName: nickName).then((value) {
+
+        if (value == true) {
+          UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+          userBloc.updateNickName = nickName;
+        }
+
+        DashboardBloc dashboardBloc = Provider.of<DashboardBloc>(context,listen:false);
+        dashboardBloc.index = 0;
+        Navigator.of(context).popUntil(ModalRoute.withName("/dashboard"));
+
         Toast.show(
           "Bio updated successfully!!",
           context,

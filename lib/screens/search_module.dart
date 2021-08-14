@@ -447,13 +447,13 @@ class _SearchModuleState extends State<SearchModule> {
   String getSearchUrl(String searchedText) {
     switch (filterValue) {
       case "Users":
-        return baseUrl + "/api/v1/search/users/?search=" + searchedText;
+        return secureBaseUrl + "/api/v1/search/users/?search=" + searchedText;
       case "Products":
-        return baseUrl + "/api/v1/search/products/?search=" + searchedText;
+        return secureBaseUrl + "/api/v1/search/products/?search=" + searchedText;
       case "Services":
-        return baseUrl + "/api/v1/search/services/?search=" + searchedText;
+        return secureBaseUrl + "/api/v1/search/services/?search=" + searchedText;
       default:
-        return baseUrl + "/api/v1/search/users/?search=" + searchedText;
+        return secureBaseUrl + "/api/v1/search/users/?search=" + searchedText;
     }
   }
 

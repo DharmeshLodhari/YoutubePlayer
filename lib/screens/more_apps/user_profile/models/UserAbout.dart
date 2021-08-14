@@ -23,7 +23,9 @@ class UserAbout {
         myGlobals.navigationKey.currentContext,
         listen: false);
 
-    userBloc.user.nickName = json['nickname'] ?? "";
+    if (json['nickname'] != null && json['nickname'] != "") {
+      userBloc.user.nickName = json['nickname'];
+    }
 
     return UserAbout(
       address: json['address'] ?? "",

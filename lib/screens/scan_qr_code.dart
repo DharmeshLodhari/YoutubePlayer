@@ -113,7 +113,7 @@ class _QRCodeViewState extends State<QRCodeView> {
       //if we get a text that belongs to us then we process it
       if (scanData != null) {
         if (scanData.startsWith(secureBaseUrl) ||
-            scanData.startsWith(baseUrl) ||
+            scanData.startsWith(secureBaseUrl) ||
             scanData.startsWith(localHostUrl)) {
           var scanDataList = scanData.split('/');
           scanDataList.removeWhere((value) => value == "");

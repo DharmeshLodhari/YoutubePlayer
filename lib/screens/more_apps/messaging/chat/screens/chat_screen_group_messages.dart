@@ -3856,13 +3856,13 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   String getSearchUrl() {
     if (isProductSearch) {
-      return baseUrl +
+      return secureBaseUrl +
           "/api/v1/search/products/?search=name__wildcard|*" +
           searchItemTextController.text +
           "*";
     }
     if (isServiceSearch) {
-      return baseUrl +
+      return secureBaseUrl +
           "/api/v1/search/services/?search=name__wildcard|*" +
           searchItemTextController.text +
           "*";

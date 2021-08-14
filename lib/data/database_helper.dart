@@ -98,10 +98,12 @@ class DatabaseHelper {
         phoneNumber: obj["phoneNumber"],
         fullName: obj["fullName"],
         userName: obj["userName"],
+        nickName: obj['nickname'],
         avatar: obj["avatar"],
         qrCode: obj["qrCode"],
         password: obj["password"],
         isVerified: obj["is_verified"],
+        type: obj['type'],
       );
     } else {
       user = _user;

@@ -47,6 +47,11 @@ class UserBloc extends ChangeNotifier {
     notifyListeners();
   }
 
+  set updateNickName(String nickName) {
+    _user.nickName = nickName;
+    notifyListeners();
+  }
+
   void updateProfileAvatar(String url) {
     _user.avatar = url;
     notifyListeners();

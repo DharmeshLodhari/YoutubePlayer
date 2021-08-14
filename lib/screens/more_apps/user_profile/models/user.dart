@@ -156,7 +156,7 @@ class CustomerProfile {
     this.avatar = "",
     this.userAbout,
     this.qrCode = "",
-    this.nickName,
+    this.nickName = "",
     this.type = "user",
     this.conversationId = "",
     this.defaultCurrency = "NGN",
@@ -171,7 +171,7 @@ class CustomerProfile {
         userName: json['username'] ?? "",
         avatar: json['avatar'] ?? "",
         qrCode: json['qr_code'] ?? "",
-        nickName: json['nickname'],
+        nickName: json['nickname'] ?? "",
         type: json['type'] ?? json['account_type'] ?? "user",
         conversationId: json['conversation_id'] ?? "",
         status: json['status'] ?? UserStatus.UNKNOWN);
@@ -196,6 +196,7 @@ class CustomerProfile {
       fullName: json['full_name'],
       userName: json['username'],
       avatar: json['avatar'],
+      nickName: json['nickname'],
       qrCode: json['qr_code'],
       type: json['type'],
       conversationId: json['conversation_id'],
@@ -230,6 +231,7 @@ class CustomerProfile {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['full_name'] = this.fullName;
     data['username'] = this.userName;
+    data['nickname'] = this.nickName;
     data['avatar'] = this.avatar;
     data['qr_code'] = this.qrCode;
     data['type'] = this.type;
@@ -247,6 +249,7 @@ class CustomerProfile {
     data['full_name'] = this.fullName;
     data['username'] = this.userName;
     data['avatar'] = this.avatar;
+    data['nickname'] = this.nickName;
     data['qr_code'] = this.qrCode;
     data['type'] = this.type;
     data['conversation_id'] = this.conversationId;
